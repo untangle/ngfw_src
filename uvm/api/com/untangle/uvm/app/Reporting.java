@@ -14,6 +14,8 @@ public interface Reporting
 
     void forceFlush();
 
+    boolean partitionTableExists(String wantTableName);
+
     double getAvgWriteTimePerEvent();
 
     long getWriteDelaySec();

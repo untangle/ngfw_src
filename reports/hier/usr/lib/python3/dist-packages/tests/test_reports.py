@@ -11,6 +11,7 @@ import os
 import re
 import requests
 import runtests
+import subprocess
 import sys
 import unittest
 import pytest
@@ -1418,6 +1419,284 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "EVENT_LIST")
+
+    def test_600_session_minutes_referral(self):
+        """
+        Verify that missing session table won't cause dependent inserts to fail
+
+        Test stages:
+        initialize:
+          -   Change uvm table cache timeout
+          -   Set system from NTP to manual
+          -   Change system date back to one day before current detention
+          -   Updatedatabase, update to begin"on that day"
+
+        pre:
+          -   Start long running curl command
+          -   Wait until both sessions and sessions_minute are populated with this new session across day boundary
+          -   On new day, simulate database rotation by removing old sessions table
+
+        post:
+          -   Wait a few conntrack cycles
+
+        verify:
+          -   We should have current populated session minutes for the original session id
+
+        Timeline for this test after initialization:
+        [        client curl       ]
+        [pre events] | [post events]
+
+        """
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+
+        global uvmContext
+        # # Safety to ensure database is fully aged out as expected
+        # subprocess.call(f"/etc/cron.daily/reports-cron",shell=True)
+
+        # This cache is 5 minutes by default; we need to reduce it to verify
+        cache_interval_seconds = 1
+        # How long we'll wait in our pre-state
+        pre_duration_interval_seconds = 200
+        # How long we'll wait in the post state
+        # post_duration_interval = 200
+        post_duration_interval = 130
+        # Session should last a little longer than our waits
+        session_duration_interval = pre_duration_interval_seconds + post_duration_interval + 30
+
+        # Query conditions to match our session
+        event_query_conditions = [
+            {"column": "c_client_addr", "operator":"=", "value":remote_control.client_ip},
+            {"column": "s_server_addr", "operator":"=", "value":global_functions.test_server_ip},
+            {"column": "s_server_port", "operator":"=", "value":443}
+        ]
+
+        # Reports app id
+        app_id = ReportsTests._app.getAppSettings()["id"]
+
+        # Log file with reports app id
+        log_file = f"/var/log/uvm/app-{app_id}.log"
+
+        # Tables to perform delete operations upon
+        delete_tables = ["sessions", "session_minutes", "http_events"]
+
+        # Original settings to restore at end
+        original_system_settings = uvmContext.systemManager().getSettings()
+
+        # Backip existing untangle-vm.conf
+        global_functions.vm_conf_backup()
+
+        # Kill curl from possibly aborted test run
+        remote_control.run_command(f"ps awwwux | grep [c]url | cut -d' ' -f3 | xargs kill -9 2>/dev/null")
+
+        # Run our test in a try so that on any failure, we can properly cleanup
+        print()
+        failures = []
+        try:
+            print("-" * 80)
+            print("stage=initialize")
+            print("-" * 80)
+
+            # Make sure we're in day-only retention mode
+            report_settings = copy.deepcopy(orig_settings)
+            report_settings["dbRetentionHourly"] = 0
+
+            # How many days ago to start
+            # days_ago = report_settings["dbRetention"] + 1
+            days_ago = 1
+
+            # Disable NTP
+            original_system_settings = uvmContext.systemManager().getSettings()
+            system_settings = copy.deepcopy(original_system_settings)
+            system_settings['timeSource'] = 'manual'
+            uvmContext.systemManager().setSettings(system_settings)
+
+            # Set time to 90 seconds before 1 day before end of day of retention.
+            # This gives enough time for both the session and session_minute entries
+            initialize_date = subprocess.check_output(f"date -Ins -d '-{days_ago} day 23:58:30'", shell=True).decode("utf-8").strip()
+            print(f"initialize_date={initialize_date}")
+            subprocess.call(f"date -Ins -s '{initialize_date}' >/dev/null",shell=True)
+
+            # Restart UVM due to date change and while we're at it,
+            # change the cacheTableInterval to 1s instead of its 30 min default
+            uvmContext = global_functions.vm_conf_update(search="reports_cacheTableInterval=", replace=f"reports_cacheTableInterval=\"{cache_interval_seconds}000\"")
+
+            # Run report sync script to add table
+            print(f"running reports-cron to setup today's tables")
+            subprocess.call(f"/etc/cron.daily/reports-cron",shell=True)
+            # Delete from tables
+            print("pre-delete all rows from tables:")
+            for delete_table in delete_tables:
+                print(f"\tdelete_table={delete_table}")
+                subprocess.check_output(f"psql -U postgres uvm -c \"delete from reports.{delete_table}\"", shell=True).decode("utf-8").strip()
+
+            print("available session tables")
+            for info in subprocess.check_output(f"psql -U postgres uvm -c \"select table_name from information_schema.tables where table_name like 'sessions_%' order by table_name\"", shell=True).decode("utf-8").strip().split("\n"):
+                print(f"\t{info}")
+
+            print("-" * 80)
+            print("stage=pre")
+            print("-" * 80)
+
+            # Start the forked curl command
+            # This uses HTTPS to keep the session alive (via keepalive) througout this test which is critical.
+            # Since curl doesn't have a way to "wait", we rely on the remote server performing a sleep to "pause" the session
+            # IMPORTANT: Assumption is that no other HTTPS traffic from client to test server via HTTPS is occuring during this test
+            curl_command=global_functions.build_curl_command(uri=f"https://{global_functions.TEST_SERVER_HOST}/sleep.php?seconds=1&length=1024&[1-{session_duration_interval}]", max_time=None, override_arguments=["--silent"])
+            print(f"fork curl_command={curl_command} for {session_duration_interval} seconds")
+            remote_control.run_command(f"{curl_command} > /dev/null", nowait=True)
+
+            # We need to wait long enough for:
+            # - Session table to be updated with initial packet (quick, within a second or so)
+            # - The next day's session minute table to be populated with at least one entry
+            # So overall, a little over 2 min to be safe.
+            print()
+            print(f"* sleep pre_duration_interval_seconds={pre_duration_interval_seconds}")
+            sys.stdout.flush()
+
+            # For sessions, ONLY consider sessions that are in our current first day
+            pre_start_date_seconds = subprocess.check_output(f"date +%s -d 'today 00:00:00'", shell=True).decode("utf-8").strip()
+            pre_end_date_seconds = subprocess.check_output(f"date +%s -d '{pre_duration_interval_seconds} seconds'", shell=True).decode("utf-8").strip()
+            # Minutes we are expecting to see something in next day
+            pre_session_minutes_end_date_seconds = subprocess.check_output(f"date +%s -d '{pre_duration_interval_seconds} seconds'", shell=True).decode("utf-8").strip()
+
+            time.sleep(pre_duration_interval_seconds)
+            now_date = subprocess.check_output(f"date", shell=True).decode("utf-8").strip()
+            print(f"ended at {now_date}")
+
+            print()
+            # Collect session and session minute ids and their timestamps
+            session_id_timestamps = {}
+            events = global_functions.get_events("Network", "All Sessions", event_query_conditions, 5,
+                start_date={"javaClass": "java.util.Date", "time": int(pre_start_date_seconds) * 1000},
+                end_date={"javaClass": "java.util.Date", "time": (int(pre_end_date_seconds) * 1000)}
+            )
+            print("pre sessions events=")
+            if events is not None and "list" in events:
+                for event in events["list"]:
+                    session_id = event['session_id']
+                    time_stamp = datetime.fromtimestamp(int(event['time_stamp']['time'])/1000).strftime('%Y-%m-%d %H:%M:%S')
+                    print(f"\t{time_stamp} {session_id} {event['c_client_addr']} {event['s_server_addr']} {event['s_server_port']}")
+                    session_id_timestamps[session_id] = [f"pre_sessions-{time_stamp}"]
+
+            events = global_functions.get_events("Network", "All Session Minutes", event_query_conditions, 5,
+                start_date={"javaClass": "java.util.Date", "time": int(pre_start_date_seconds) * 1000},
+                end_date={"javaClass": "java.util.Date", "time": (int(pre_session_minutes_end_date_seconds) * 1000)}
+            )
+            print("pre session_minutes events=")
+            matching_session_ids = []
+            if events is not None and "list" in events:
+                for event in events["list"]:
+                    session_id = event['session_id']
+                    time_stamp = datetime.fromtimestamp(int(event['time_stamp']['time'])/1000).strftime('%Y-%m-%d %H:%M:%S')
+                    print(f"\t{time_stamp} {session_id} {event['c_client_addr']} {event['s_server_addr']} {event['s_server_port']}")
+                    if session_id in session_id_timestamps:
+                        session_id_timestamps[session_id].append(f"pre_session_minutes-{time_stamp}")
+                        if session_id not in matching_session_ids:
+                            matching_session_ids.append(session_id)
+
+            # We are expecting to find our session_id in sessions and session_minutes
+            assert len(matching_session_ids) > 0, "in pre stage, found corresponding sessions/session_minutes session id"
+            print(f"matching_session_ids={','.join(map(str, matching_session_ids))}")
+
+            # Running reports-cron won't work the next day (unless we set time to actual current, then back..) so we need to simulate the aging by
+            # deleting delete the now-previous day's sessions and session_minutes partition tables.
+            drop_tables = []
+            drop_tables.append(subprocess.check_output("psql -U postgres uvm -c \"select table_name from information_schema.tables where table_schema = 'reports' and table_name like 'sessions_%' order by table_name limit 1\" | grep sessions_", shell=True).decode("utf-8").strip())
+            drop_tables.append(subprocess.check_output("psql -U postgres uvm -c \"select table_name from information_schema.tables where table_schema = 'reports' and table_name like 'session_minutes_%' order by table_name limit 1\" | grep session_minutes_", shell=True).decode("utf-8").strip())
+            print()
+            print("drop tables:")
+            for drop_table in drop_tables:
+                print(f"\tdrop_table={drop_table}")
+                subprocess.check_output(f"psql -U postgres uvm -c \"drop table reports.{drop_table}\"", shell=True).decode("utf-8").strip()
+
+            print("available session tables (should not have earliest table as before)")
+            for info in subprocess.check_output(f"psql -U postgres uvm -c \"select table_name from information_schema.tables where table_name like 'sessions_%' order by table_name\"", shell=True).decode("utf-8").strip().split("\n"):
+                print(f"\t{info}")
+
+            # Get last reports log line so we can monitor entries thereafter
+            last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
+            last_log_line = int(last_log_line) + 1
+
+            print("-" * 80)
+            print("stage=post")
+            print("-" * 80)
+
+            post_start_date = subprocess.check_output(f"date +%s", shell=True).decode("utf-8").strip()
+
+            # After day change, give a few (3) minutes and a little extra before going into POST
+            # Get the date to start querying after we go into post; we will query for events on this timestamp onward
+            # post_start_date = subprocess.check_output(f"date +%s", shell=True).decode("utf-8").strip()
+            print()
+            print(f"* sleep post_duration_interval={post_duration_interval}")
+            sys.stdout.flush()
+            time.sleep(post_duration_interval)
+
+            events = None
+            events = global_functions.get_events("Network", "All Session Minutes", event_query_conditions, 100,
+                start_date={"javaClass": "java.util.Date", "time": int(post_start_date) * 1000},
+                end_date={"javaClass": "java.util.Date", "time": (int(post_start_date) + 86400) * 1000}
+            )
+            print("post session_minutes events=")
+            found_sessions = []
+            if events is not None and "list" in events:
+                for event in events["list"]:
+                    session_id = event['session_id']
+                    time_stamp = datetime.fromtimestamp(int(event['time_stamp']['time'])/1000).strftime('%Y-%m-%d %H:%M:%S')
+                    print(f"\t{time_stamp} {session_id} {event['c_client_addr']} {event['s_server_addr']} {event['s_server_port']}")
+                    if session_id in session_id_timestamps:
+                        if session_id not in found_sessions:
+                            found_sessions.append(session_id)
+                        session_id_timestamps[session_id].append(f"post_session_minutes-{time_stamp}")
+
+            # Check for exceptions in logs
+            # This may introduce some false positives for other sessions that may be going on that we don't care about
+            log_sql = subprocess.check_output(f"awk 'NR >= {last_log_line} && /BatchUpdateException/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+            if log_sql != "":
+                print("update/insert exceptions=")
+                print(f"{log_sql}")
+            assert log_sql == "", "no sql exceptions found in logs"
+
+            print("-" * 80)
+            print("stage=verify")
+            print("-" * 80)
+            assert len(found_sessions) > 0, "found at least one session candidate" 
+
+            if len(found_sessions) > 0:
+                print("finding matching sessions:")
+                for session_id in matching_session_ids:
+                    pre_sessions = False
+                    pre_session_minutes = False
+                    post_session_minutes = False
+                    print(f"\tsession_id={session_id}")
+                    for time_stamp in session_id_timestamps[session_id]:
+                        if time_stamp.startswith("pre_sessions-"):
+                            pre_sessions = True
+                        if time_stamp.startswith("pre_session_minutes-"):
+                           pre_session_minutes = True
+                        if time_stamp.startswith("post_session_minutes"):
+                            post_session_minutes = True
+                        print(f"\t\ttime_stamp={time_stamp}")
+                    assert pre_sessions and pre_session_minutes and post_session_minutes, f"found all stages for session_id={session_id}"
+
+        except Exception as e:
+            failures.append(e)
+
+        # Cleanup
+
+        # Kill lingering curl session (it may not naturally end)
+        remote_control.run_command(f"ps awwwux | grep [c]url | cut -d' ' -f3 | xargs kill -9 2>/dev/null")
+
+        # Restore system back to standard working order
+        uvmContext = global_functions.vm_conf_restore()
+
+        # Change system back to NTP
+        uvmContext.systemManager().setSettings(original_system_settings)
+        uvmContext.forceTimeSync()
+        uvmContext = global_functions.restart_uvm()
+        subprocess.call(f"/etc/cron.daily/reports-cron",shell=True)
+
+        assert len(failures) == 0, ", ".join(map(str, failures))
 
     @classmethod
     def final_extra_tear_down(cls):

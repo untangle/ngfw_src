@@ -7,6 +7,7 @@ import fcntl
 import struct
 import datetime
 import random
+import shutil
 import string
 import html
 import inspect
@@ -56,6 +57,8 @@ VPN_CLIENT_IP = "10.112.56.23"
 
 # Servers running remote syslog
 LIST_SYSLOG_SERVER = '10.112.56.23'
+
+Smtp_timeout_seconds = overrides.get("Smtp_timeout_seconds", default=30)
 
 uvmContext = Uvm().getUvmContext(timeout=240)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
@@ -862,7 +865,7 @@ def restart_uvm():
     Restart uvm.
     IMPORTANT: This changes uvmContext!
     """
-    global uvmContext
+    global uvmContext, uvmContextLongTimeout
     subprocess.call(["/etc/init.d/untangle-vm","restart"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
     uvmContext = None
@@ -870,6 +873,7 @@ def restart_uvm():
     while max_tries > 0:
         try:
             uvmContext = Uvm().getUvmContext(timeout=240)
+            uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
         except Exception as e:
             pass
         if uvmContext is not None:
@@ -955,7 +959,7 @@ def get_download_speed(download_server="",meg=20):
         print(e)
         return None
 
-def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
+def get_events( eventEntryCategory, eventEntryTitle, conditions, limit, start_date=None, end_date=None ):
     reports = uvmContextLongTimeout.appManager().app("reports")
     if reports == None:
         print("WARNING: reports app not found")
@@ -970,7 +974,10 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
         print(("WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)))
         return None
 
-    events = reportsManager.getEvents( reportEntry, conditions, limit )
+    if start_date is not None and end_date is not None:
+        events = reportsManager.getDataForReportEntry( reportEntry, start_date, end_date, None, conditions, None, limit )
+    else:
+        events = reportsManager.getEvents( reportEntry, conditions, limit )
     if events == None:
         return None
 
@@ -1128,7 +1135,7 @@ def send_test_email(mailhost=TEST_SERVER_HOST):
     """
 
     try:
-       smtpObj = smtplib.SMTP(mailhost)
+       smtpObj = smtplib.SMTP(mailhost,timeout=Smtp_timeout_seconds)
        smtpObj.sendmail(sender, receivers, message)
        print(("Successfully sent email through " + mailhost))
        return 1
@@ -1552,3 +1559,50 @@ def is_vpn_routing(route_table, expected_route=None):
             return True
 
     return False
+
+Vm_conf_filename = "/usr/share/untangle/conf/untangle-vm.conf"
+
+def vm_conf_backup(filename=None):
+    """
+    Make a copy of the current untangle-vm.conf file
+    """
+    if filename is None:
+        filename = f"{Vm_conf_filename}.orig"
+
+    shutil.copyfile(Vm_conf_filename, filename)
+
+    return filename
+
+def vm_conf_restore(filename=None):
+    """
+    Copy file to untangle-vm.conf and perform uvm restart
+    """
+    global uvmContext, uvmContextLongTimeout
+
+    if filename is None:
+        filename = f"{Vm_conf_filename}.orig"
+
+    shutil.copyfile(filename, Vm_conf_filename)
+
+    return restart_uvm()
+
+def vm_conf_update(search=None, replace=None):
+    """
+    Update vm_conf (into a temp file).
+    """
+    temp_filename = f"/tmp/untangle-vm.conf.tmp"
+
+    vm_conf = []
+    with open(Vm_conf_filename, "r") as file:
+        for line in file:
+            if line.startswith(search):
+                line = f"{replace}\n"
+            vm_conf.append(line)
+        file.close()
+
+    with open(temp_filename, "w") as file:
+        for line in vm_conf:
+            file.write(line)
+        file.close()
+
+    return vm_conf_restore(temp_filename)
