@@ -15,6 +15,7 @@ Ext.define('Ung.config.events.MainModel', {
     stores: {
         alertRules: { data: '{settings.alertRules.list}' },
         triggerRules: { data: '{settings.triggerRules.list}' },
-        syslogRules: { data: '{settings.syslogRules.list}' }
+        syslogRules: { data: '{settings.syslogRules.list}' },
+        syslogServers: { data: '{settings.syslogServers.list}'}
     }
 });
