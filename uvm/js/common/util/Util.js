@@ -1244,5 +1244,5 @@ Ext.define('Ung.util.Util', {
             ]];
         }
     },
-
+    
 });
