@@ -131,6 +131,10 @@ Ext.define('Ung.view.extra.Hosts', {
             type: 'string',
             sortType: 'asUnString'
         },{
+            name: 'hostnameWireGuardVpn',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
             name: 'username',
             type: 'string',
             sortType: 'asUnString'
@@ -156,6 +160,10 @@ Ext.define('Ung.view.extra.Hosts', {
             sortType: 'asUnString'
         },{
             name: 'usernameIpsecVpn',
+            type: 'string',
+            sortType: 'asUnString'
+        },{
+            name: 'usernameWireGuardVpn',
             type: 'string',
             sortType: 'asUnString'
         },{
@@ -318,6 +326,12 @@ Ext.define('Ung.view.extra.Hosts', {
             hidden: true,
             filter: Renderer.stringFilter
         },{
+            header: 'Hostname (WireGuardVPN)'.t(),
+            dataIndex: 'hostnameWireGuardVpn',
+            width: Renderer.hostnameWidth,
+            hidden: true,
+            filter: Renderer.stringFilter
+        },{
             header: 'Username'.t(),
             dataIndex: 'username',
             width: Renderer.usernameWidth,
@@ -355,6 +369,12 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             header: 'Username (IPsec VPN)'.t(),
             dataIndex: 'usernameIpsecVpn',
+            width: Renderer.usernameWidth,
+            hidden: true,
+            filter: Renderer.stringFilter
+        },{
+            header: 'Username (WireGuard VPN)'.t(),
+            dataIndex: 'usernameWireGuardVpn',
             width: Renderer.usernameWidth,
             hidden: true,
             filter: Renderer.stringFilter
