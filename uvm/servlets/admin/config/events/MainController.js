@@ -4,9 +4,13 @@ Ext.define('Ung.config.events.MainController', {
     alias: 'controller.config-events',
 
     control: {
-        '#': {
-            afterrender: 'loadEvents',
-        },
+        '#': { afterrender: 'loadEvents', },
+        '#syslog': { 
+            afterrender: function() {
+                var me = this;
+                Ext.Function.defer(function() { me.onSyslogRulesGridChange(); }, 1000);
+            } 
+        }
     },
 
     loadEvents: function () {
@@ -189,6 +193,7 @@ Ext.define('Ung.config.events.MainController', {
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
+            Ext.Function.defer(function() { me.onSyslogRulesGridChange(); }, 1000);
         }, function(ex) {
             if(!Util.isDestroyed(v, vm)){
                 vm.set('panel.saveDisabled', true);
@@ -306,6 +311,51 @@ Ext.define('Ung.config.events.MainController', {
                 }
             }
         });
+    },
+
+    onSyslogServersGridChange: function(store, record){
+        var vm = this.getViewModel();
+        if((store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0)) {
+            vm.set('syslogRuleGridDisabled', true);
+        } else {
+            vm.set('syslogRuleGridDisabled', false);
+        }
+    },
+
+    onSyslogRulesGridChange: function(store, record) {
+        var view = this.getView(),
+            vm = this.getViewModel(),
+            usedServerIds = {},
+            serverList = [];
+        store = store ? store : view.down('config-events-syslog').down('[itemId=syslogrules]').getStore();
+
+        // Find serverId's of syslog servers which are used in syslog rules         
+        store.each(function(rulesRecord) {
+            if(!rulesRecord.get('markedForDelete')) {
+                if(rulesRecord.data.syslogServers && rulesRecord.data.syslogServers.list) {
+                    serverList = rulesRecord.data.syslogServers.list;
+                    if(!Ext.isArray(serverList)) {
+                        serverList = [ serverList ];
+                    }
+                    serverList.forEach(function(serverId) {
+                        usedServerIds[serverId] = true;
+                    });
+                }
+            }
+        });
+
+        // Mark used syslog server records as reserved
+        var syslogServerStore = view.down('config-events-syslog').down('[itemId=syslogservers]').getStore();
+        syslogServerStore.each(function(serversRecord) {
+            if(usedServerIds[serversRecord.get('serverId')]) {
+                serversRecord.set('reserved', true);
+            } else {
+                serversRecord.set('reserved', false);
+            }
+        });
+        vm.set('syslogRuleGridDisabled', false);
     },
 
     statics: {
