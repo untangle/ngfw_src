@@ -1191,7 +1191,7 @@ Ext.define('Ung.util.Util', {
 
             if(index !== null) return "Address pool conflict".t();
 
-            if(context.dirty) {
+            if(context.dirty && context.ui === "default") {
                 var ntwkSpace=null;
                 if(currentIpDirtyCheck){
                     ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', currentFieldIp.trim());   
