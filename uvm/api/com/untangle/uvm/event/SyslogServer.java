@@ -21,6 +21,7 @@ public class SyslogServer implements Serializable, JSONString {
     private int port = 514;
     private String protocol = "UDP";
     private String tag = "";
+    private String description;
 
     /**
      * Initialize empty instance of SyslogServer. 
@@ -36,14 +37,16 @@ public class SyslogServer implements Serializable, JSONString {
      * @param  port                   integer, port of server  boolean if true remote syslog the event, otherwise don't syslog
      * @param  protocol               integer, protocol for communication UDP/TCP
      * @param  tag                    String, server identifier
+     * @param  description            String, server description
      */
-    public SyslogServer(int serverId, boolean enabled, String host, int port, String protocol, String tag) {
+    public SyslogServer(int serverId, boolean enabled, String host, int port, String protocol, String tag, String description) {
         this.serverId = serverId;
         this.enabled = enabled;
         this.host = host;
         this.port = port;
         this.protocol = protocol;
         this.tag = tag;
+        this.description = description;
     }
 
     public int getServerId() {
@@ -81,6 +84,13 @@ public class SyslogServer implements Serializable, JSONString {
     }
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String toJSONString()

@@ -52,7 +52,9 @@ class SysLogTests(NGFWTestCase):
               syslogSettings['syslogRules']['list'][0]['syslogServers']['list'].append(1)
         uvmContext.eventManager().setSettings(syslogSettings)
         syslogUpdatedSettings = uvmContext.eventManager().getSettings()
-        assert(len(syslogSettings['syslogRules']['list'][0]['syslogServers']['list']) == 1)
+        assert(len(syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list']) == 1)
+        #check for description field populated in case of setup where syslog server is enabled
+        assert("Default Syslog Server" == syslogUpdatedSettings['syslogServers']['list'][0]['description'])
         assert (len(syslogUpdatedSettings['syslogServers']['list']) == 1)
         if (len(syslogUpdatedSettings['syslogRules']['list']) == 1):
            if "syslogServers" in syslogUpdatedSettings['syslogRules']['list'][0].keys() and syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']:
