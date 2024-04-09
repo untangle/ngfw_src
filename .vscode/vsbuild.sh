@@ -98,6 +98,7 @@ for target_address in "${TARGET_ADDRESSES[@]}"; do
     rsync -a -e "ssh -p $port" dist/usr/share/untangle/conf/untangle-vm.conf root@$target_address:/usr/share/untangle/conf/untangle-vm.conf
     rsync -a -e "ssh -p $port" dist/usr/share/untangle/web root@$target_address:/usr/share/untangle
     rsync -a -e "ssh -p $port" dist/usr/share/untangle/lang/lang.cfg root@$target_address:/usr/share/untangle/lang
+    rsync -a -e "ssh -p $port" dist/usr/share/untangle/conf root@$target_address:/usr/share/untangle
 
     ssh -p $port root@$target_address "systemctl daemon-reload"
 
