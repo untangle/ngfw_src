@@ -216,7 +216,7 @@ public class EventManagerImpl implements EventManager
                     LinkedList<SyslogServer> syslogList = new LinkedList<SyslogServer>();
                     //  syslogHost for newsetups will be null, skip the default syslog addition, but initialize empty list
                     if (newSettings.getSyslogHost() != null) {
-                        SyslogServer logServer = new SyslogServer(getLastUsedServerId(inputServerList) + 1, true, newSettings.getSyslogHost(), newSettings.getSyslogPort(), newSettings.getSyslogProtocol(), SyslogManagerImpl.LOG_TAG_PREFIX);
+                        SyslogServer logServer = new SyslogServer(getLastUsedServerId(inputServerList) + 1, true, newSettings.getSyslogHost(), newSettings.getSyslogPort(), newSettings.getSyslogProtocol(), SyslogManagerImpl.LOG_TAG_PREFIX, "Default Syslog Server");
                         syslogList.add(logServer);
                     }
                     newSettings.setSyslogServers(syslogList);
