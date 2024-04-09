@@ -185,16 +185,6 @@ public class EventManagerImpl implements EventManager
         idx = 0;
         for (SyslogRule rule : newSettings.getSyslogRules()) {
             rule.setRuleId(++idx);
-            if(newSettings.getSyslogEnabled()) {
-                //Initialize empty LinkedList for each rule 
-                if (rule.getSyslogServers() == null ) {
-                    LinkedList<Integer> syslogServerIDsList = new LinkedList<Integer>();
-                    rule.setSyslogServers(syslogServerIDsList);
-                }
-            }
-            if(!newSettings.getSyslogEnabled() && rule.getSyslogServers() != null && rule.getSyslogServers().size() > 0) {
-                rule.getSyslogServers().clear();
-            }
         }
         idx = 0;
         for (TriggerRule rule : newSettings.getTriggerRules()) {
@@ -210,31 +200,39 @@ public class EventManagerImpl implements EventManager
 
         if (newSettings != null) {
             LinkedList<SyslogServer> inputServerList =  newSettings.getSyslogServers();
-            if(newSettings.getSyslogEnabled()) {
-                //cover the Base scenario of default LogServer enabled and default logserver post upgrade restart
-                if (inputServerList == null || inputServerList.size() == 0  ) {
-                    LinkedList<SyslogServer> syslogList = new LinkedList<SyslogServer>();
-                    //  syslogHost for newsetups will be null, skip the default syslog addition, but initialize empty list
-                    if (newSettings.getSyslogHost() != null) {
-                        SyslogServer logServer = new SyslogServer(getLastUsedServerId(inputServerList) + 1, true, newSettings.getSyslogHost(), newSettings.getSyslogPort(), newSettings.getSyslogProtocol(), SyslogManagerImpl.LOG_TAG_PREFIX);
-                        syslogList.add(logServer);
-                    }
+            //cover the Base scenario of default LogServer enabled and default logserver post upgrade restart
+            if (inputServerList == null ) {
+                LinkedList<SyslogServer> syslogList = new LinkedList<SyslogServer>();
+                LinkedList<Integer> sysLogIntegerList = new LinkedList<Integer>();
+                if (newSettings.getSyslogEnabled()) {
+                    SyslogServer logServer = new SyslogServer(getLastUsedServerId(inputServerList) + 1, true, newSettings.getSyslogHost(), newSettings.getSyslogPort(), newSettings.getSyslogProtocol(), SyslogManagerImpl.LOG_TAG_PREFIX, "Default Syslog Server");
+                    syslogList.add(logServer);
+                    //Disable sysLogHost, and sysLogEnabled field
+                    //Syslog servers will be managed by List
+                    newSettings.setSyslogHost(null);
+                    newSettings.setSyslogEnabled(false);
                     newSettings.setSyslogServers(syslogList);
+                    //During Upgrade with Syslog enabled and default syslog set
+                    // first syslog server will have server ID as 1.
+                    sysLogIntegerList.add(1);
                 } else {
-                    // set ServerIDs based on last used logic 
-                    for (SyslogServer syslogServer : inputServerList ) {
-                        //Skip Default Scenario, and set serverID and Tag for New SyslogServers
-                        if (syslogServer.getServerId() == -1) {
-                            syslogServer.setServerId(getLastUsedServerId(inputServerList) + 1);
-                        }
+                    newSettings.setSyslogServers(syslogList);
+                }
+                //Set Empty List in case of Syslog Disabled during upgrade.
+                for (SyslogRule rule : newSettings.getSyslogRules()) {
+                    rule.setSyslogServers(sysLogIntegerList);
+                }
+            } else {
+                // set ServerIDs based on last used logic
+                for (SyslogServer syslogServer : inputServerList ) {
+                    //Skip Default Scenario, and set serverID and Tag for New SyslogServers
+                    if (syslogServer.getServerId() == -1) {
+                        syslogServer.setServerId(getLastUsedServerId(inputServerList) + 1);
                     }
                 }
             }
-            if (!newSettings.getSyslogEnabled() && inputServerList != null && inputServerList.size() > 0) {
-                inputServerList.clear();
-            }
-
         }
+
         /**
          * Save the settings
          */
@@ -1328,8 +1326,6 @@ public class EventManagerImpl implements EventManager
     {
         if ( event == null )
             return;
-        if ( ! settings.getSyslogEnabled() )
-            return;
 
         List<SyslogRule> rules = UvmContextFactory.context().eventManager().getSettings().getSyslogRules();
         if ( rules == null )
@@ -1357,7 +1353,7 @@ public class EventManagerImpl implements EventManager
                 //get syslogserver list using IDs
                 for (SyslogServer syslogServer: getFilteredSyslogByIDs(rulesSyslogServerIDList) ) {
                     event.setTag(syslogServer.getTag());
-                    if ( rule.getSyslog() ) {
+                    if ( rule.getSyslog() && syslogServer.isEnabled()) {
                         try {
                             SyslogManagerImpl.sendSyslog( event, jsonSendObject );
                         } catch (Exception exn) {

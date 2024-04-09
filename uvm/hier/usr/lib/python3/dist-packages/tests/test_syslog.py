@@ -45,23 +45,25 @@ class SysLogTests(NGFWTestCase):
         syslogSettings["syslogPort"] = 514
         syslogSettings["syslogProtocol"] = "UDP"
         syslogSettings["syslogHost"] = "192.168.56.195"
-        uvmContext.eventManager().setSettings(syslogSettings)
-        #this will add rule with server id as 1, the first server is assigned server id 1 always
-        if (len(syslogSettings['syslogRules']['list']) == 1):
-           if "syslogServers" in syslogSettings['syslogRules']['list'][0].keys() and syslogSettings['syslogRules']['list'][0]['syslogServers']:
-              syslogSettings['syslogRules']['list'][0]['syslogServers']['list'].append(1)
+        if "syslogServers" in syslogSettings:
+           syslogSettings.pop("syslogServers")
+        for rule in syslogSettings['syslogRules']['list']:
+            if "syslogServers" in  rule.keys():
+               rule.pop("syslogServers")
         uvmContext.eventManager().setSettings(syslogSettings)
         syslogUpdatedSettings = uvmContext.eventManager().getSettings()
-        assert(len(syslogSettings['syslogRules']['list'][0]['syslogServers']['list']) == 1)
+        assert(syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'][0] == 1)
         assert (len(syslogUpdatedSettings['syslogServers']['list']) == 1)
-        if (len(syslogUpdatedSettings['syslogRules']['list']) == 1):
-           if "syslogServers" in syslogUpdatedSettings['syslogRules']['list'][0].keys() and syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']:
-              syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'].clear()
-              syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'].append(2)
+        print(syslogUpdatedSettings['syslogServers']['list'])
+        print(syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers'])
+        if "syslogServers" in syslogUpdatedSettings['syslogRules']['list'][0].keys() and syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']:
+           syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'].clear()
+           syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'].append(2)
         uvmContext.eventManager().setSettings(syslogUpdatedSettings)
         syslogUpdatedSettings = uvmContext.eventManager().getSettings()
         assert (len(syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list']) == 1)
         #server ID should be updated to 2 for the syslogRule
+        print(syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'])
         assert (syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'][0] == 2)
         uvmContext.eventManager().setSettings(orig_settings)
 
@@ -86,7 +88,7 @@ class SysLogTests(NGFWTestCase):
         syslogSettings = uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
         syslogSettings["syslogEnabled"] = True
-        if "syslogServers" in syslogSettings.keys():
+        if "syslogServers" not in syslogSettings.keys():
            syslogSettings['syslogServers'] = {"javaClass": "java.util.LinkedList","list": [] }
         else:
            initial_logservers = len(syslogSettings['syslogServers']['list'])
@@ -106,7 +108,7 @@ class SysLogTests(NGFWTestCase):
         syslogSettings["syslogEnabled"] = True
         #Default setup list will not be present. UI payload will contain server list, need to generate for unittest
         #Testcase covers both enabled and disabled syslogserver scenario
-        if "syslogServers" in syslogSettings.keys():
+        if "syslogServers" not in syslogSettings.keys():
            syslogSettings['syslogServers'] = {"javaClass": "java.util.LinkedList","list": [] }
         else:
            initial_logservers = len(syslogSettings['syslogServers']['list'])
