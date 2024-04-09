@@ -62,10 +62,6 @@ public class SyslogManagerImpl
      */
     public static void sendSyslog(LogEvent e, JSONObject jsonEvent)
     {
-        if (!enabled) {
-            return;
-        }
-
         try {
             logger.log(org.apache.log4j.Level.INFO, e.getTag() + " " + jsonEvent);
         } catch (Exception exn) {
@@ -100,13 +96,10 @@ public class SyslogManagerImpl
      */
     public static void reconfigure(EventSettings eventSettings)
     {
-        if (eventSettings != null && eventSettings.getSyslogEnabled() && eventSettings.getSyslogServers() != null) {
-            enabled = true;
+        if (eventSettings != null && eventSettings.getSyslogServers() != null ) {
             //Delete the CONF_FILE as rsyslog process is restarted at the end of reconfigure method
             CONF_FILE.delete();
             for (SyslogServer sysLogServer: eventSettings.getSyslogServers()) {
-                //skip if SyslogServer  is not enabled
-                if (!sysLogServer.isEnabled()) continue;
                 String hostname = sysLogServer.getHost();
                 int port = sysLogServer.getPort();
                 String protocol = sysLogServer.getProtocol();
@@ -141,7 +134,6 @@ public class SyslogManagerImpl
 
         } else {
             // Remove rsyslog conf
-            enabled = false;
             CONF_FILE.delete();
         }
 
