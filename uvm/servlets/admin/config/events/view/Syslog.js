@@ -16,14 +16,6 @@ Ext.define('Ung.config.events.view.Syslog', {
     }],
 
     items:[
-    //     {
-    //     title: 'Remote Syslog Configuration'.t(),
-    //     padding: '20 0',
-    //     items: [{
-    //         xtype: 'component',
-    //         //html: 'Logged events will be sent in real-time to a remote syslog for custom processing.'.t()
-    //     }]
-    // },
     {
         xtype: 'ungrid',
         title: 'Servers'.t(),
