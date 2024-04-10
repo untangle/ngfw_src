@@ -8,35 +8,23 @@ Ext.define('Ung.config.events.view.Syslog', {
     bodyPadding: 10,
     withValidation: true,
 
-    items:[{
-        title: 'Remote Syslog Configuration'.t(),
-        items: [{
-            xtype: 'component',
-            html: 'If enabled logged events will be sent in real-time to a remote syslog for custom processing.'.t()
-        }, {
-            xtype:'checkbox',
-            labelWidth: 160,
-            bind: "{settings.syslogEnabled}",
-            fieldLabel: 'Enable Remote Syslog'.t(),
-            listeners: {
-                disable: function (ck) {
-                    ck.setValue(false);
-                }
-            }
-        }]
-    },{
+    tbar: [{
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<strong>' + 'Remote Syslog Configuration'.t() + '</strong> <br/>'
+    }],
+
+    items:[
+    {
         xtype: 'ungrid',
-        title: 'Syslog Servers'.t(),
+        title: 'Servers'.t(),
         itemId: 'syslogservers',
         region: 'center',
 
-        hidden: true,
-        disabled: true,
         padding: '20 0',
         bind: {
             store: '{syslogServers}',
-            hidden: '{settings.syslogEnabled == false}',
-            disabled: '{settings.syslogEnabled == false}'
         },
 
         listProperty: 'settings.syslogServers.list',
@@ -101,16 +89,12 @@ Ext.define('Ung.config.events.view.Syslog', {
     },{
         xtype: 'ungrid',
         controller: 'uneventssyslogrulesgrid',
-        title: 'Syslog Rules'.t(),
+        title: 'Rules'.t(),
         itemId: 'syslogrules',
         region: 'center',
 
-        hidden: true,
-        disabled: true,
         bind: {
             store: '{syslogRules}',
-            hidden: '{settings.syslogEnabled == false}',
-            disabled: '{settings.syslogEnabled == false}'
         },
 
         listProperty: 'settings.syslogRules.list',
