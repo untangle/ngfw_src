@@ -8,9 +8,25 @@ Ext.define('Ung.config.events.view.Syslog', {
     bodyPadding: 10,
     withValidation: true,
 
-    items:[{
+    tbar: [{
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        html: '<strong>' + 'Remote Syslog Configuration'.t() + '</strong> <br/>'
+    }],
+
+    items:[
+    //     {
+    //     title: 'Remote Syslog Configuration'.t(),
+    //     padding: '20 0',
+    //     items: [{
+    //         xtype: 'component',
+    //         //html: 'Logged events will be sent in real-time to a remote syslog for custom processing.'.t()
+    //     }]
+    // },
+    {
         xtype: 'ungrid',
-        title: 'Syslog Servers'.t(),
+        title: 'Servers'.t(),
         itemId: 'syslogservers',
         region: 'center',
 
@@ -81,7 +97,7 @@ Ext.define('Ung.config.events.view.Syslog', {
     },{
         xtype: 'ungrid',
         controller: 'uneventssyslogrulesgrid',
-        title: 'Syslog Rules'.t(),
+        title: 'Rules'.t(),
         itemId: 'syslogrules',
         region: 'center',
 
