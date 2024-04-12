@@ -65,7 +65,23 @@ Ext.define('Ung.config.events.view.Syslog', {
 
         editorFields: [
             Field.enableRule(),
-            Field.description,
+            {
+                xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                bind: '{record.description}',
+                emptyText: '[no description]'.t(),
+                allowBlank: false,
+                validator: function(value) {
+                    var store = this.up('#syslogservers').getStore(),
+                        currentDesc = this.up('window').getViewModel().get('record.description');
+                
+                    // Check if a record with the same description exists in the store
+                    var isDescUnique = store.findBy(function(record) {
+                        return record.get('description') === value;
+                    }) === -1;
+                    return (value === currentDesc || isDescUnique) ? true : 'Duplicate description.'.t();
+                }
+            },
             {
                 xtype: 'textfield',
                 fieldLabel: 'Host'.t(),
