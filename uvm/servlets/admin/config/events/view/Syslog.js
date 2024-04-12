@@ -47,6 +47,7 @@ Ext.define('Ung.config.events.view.Syslog', {
         columns: [
             Column.serverId,
             Column.enabled,
+            Column.description,
         {
             header: 'Host'.t(),
             dataIndex: 'host',
@@ -64,6 +65,7 @@ Ext.define('Ung.config.events.view.Syslog', {
 
         editorFields: [
             Field.enableRule(),
+            Field.description,
             {
                 xtype: 'textfield',
                 fieldLabel: 'Host'.t(),
