@@ -22,6 +22,11 @@ Ext.define('Ung.config.events.view.Syslog', {
         itemId: 'syslogservers',
         region: 'center',
 
+        restrictedRecords: {
+            keyMatch: 'reserved',
+            valueMatch: true
+        },
+
         padding: '20 0',
         bind: {
             store: '{syslogServers}',
@@ -87,14 +92,25 @@ Ext.define('Ung.config.events.view.Syslog', {
             }
         ]
     },{
+        xtype: 'container',
+        padding: '8 5',
+        style: { fontSize: '12px', background: '#DADADA'},
+        html: '<i class="fa fa-info-circle" style="color: orange;"></i> ' + 'Save the New/Modified/Deleted records in Syslog Server grid to enable Syslog Rules'.t(),
+        hidden: true,
+        bind: {
+            hidden: '{!syslogRuleGridDisabled}'
+        }
+    },{
         xtype: 'ungrid',
         controller: 'uneventssyslogrulesgrid',
         title: 'Rules'.t(),
         itemId: 'syslogrules',
         region: 'center',
 
+        disabled: false,
         bind: {
             store: '{syslogRules}',
+            disabled: '{syslogRuleGridDisabled}'
         },
 
         listProperty: 'settings.syslogRules.list',
