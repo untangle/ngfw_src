@@ -61,7 +61,17 @@ Ext.define('Ung.config.events.view.Syslog', {
             header: 'Protocol'.t(),
             width: Renderer.protocolWidth,
             dataIndex: 'protocol'
-        }],
+        },{
+            header: 'Tag'.t(),
+            width: Renderer.tagsWidth,
+            dataIndex: 'tag',
+            renderer: function(value, column, record) {
+                if(!value) {
+                    return Ext.String.format('uvm-to-{0}', record.get('host'));
+                }
+                return value;
+            }
+		}],
 
         editorFields: [
             Field.enableRule(),
@@ -111,6 +121,25 @@ Ext.define('Ung.config.events.view.Syslog', {
                 queryMode: 'local',
                 store: [["UDP", 'UDP'.t()],
                         ["TCP", "TCP".t()]]
+            },{
+                xtype: 'textfield',
+                fieldLabel: 'Tag'.t(),
+                bind: '{record.tag}',
+                emptyText: '[default tag: uvm-to-{host}]'.t(),
+                validator: function(value) {
+                    var store = this.up('#syslogservers').getStore(),
+                        currentServerId = this.up('window').getViewModel().get('record.serverId');
+                
+                    // Check if a record with the same tag exists in the store
+                    var isTagUnique = store.findBy(function(record) {
+                        if(currentServerId == -1) {
+                            return record.get('tag') === value;
+                        } else {
+                            return record.get('serverId') !== currentServerId && record.get('tag') === value;
+                        }                        
+                    }) === -1;
+                    return (isTagUnique) ? true : 'Tag already exists.'.t();
+                }
             }
         ]
     },{
