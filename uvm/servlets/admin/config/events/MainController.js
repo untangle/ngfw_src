@@ -416,7 +416,7 @@ Ext.define('Ung.config.events.SyslogRulesController', {
             data = serverList.filter(function(server) {
                 return serverIds.includes(server.serverId);
             }).map(function(server) {
-                return server.host;
+                return server.description;
             });
         column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(data.join(", ")) + '"';
         return data.join(", ");
@@ -451,6 +451,7 @@ Ext.define('Ung.config.events.SyslogRulesEditorController', {
             useParentDefinition: true,
             itemId: 'syslogserverscheckbox',
             labelWidth: 155,
+            readOnlyCls: 'x-item-disabled',
             bind: {
                 value: '{record.syslogServers}'
             },
@@ -467,14 +468,17 @@ Ext.define('Ung.config.events.SyslogRulesEditorController', {
 
         syslogServerStore.each(function(record) {
             if(record.get('serverId') > 0 && !record.get('markedForDelete')) {
+                var readOnly = !record.get('enabled'),
+                    qtip = readOnly ? Ext.String.format('Enable the server with host {0}'.t(), record.get('host')) : record.get('host');
                 items.push({ 
-                    boxLabel: record.get('host'), 
+                    boxLabel: record.get('description'),
                     name: 'list', 
                     inputValue: Number(record.get('serverId')),
                     autoEl: {
                         tag: 'div',
-                        'data-qtip': record.get('host')
-                    }
+                        'data-qtip': qtip
+                    },
+                    readOnly: readOnly
                 });
             }
         });

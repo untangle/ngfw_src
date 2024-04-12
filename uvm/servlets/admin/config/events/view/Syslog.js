@@ -47,6 +47,7 @@ Ext.define('Ung.config.events.view.Syslog', {
         columns: [
             Column.serverId,
             Column.enabled,
+            Column.description,
         {
             header: 'Host'.t(),
             dataIndex: 'host',
@@ -64,6 +65,27 @@ Ext.define('Ung.config.events.view.Syslog', {
 
         editorFields: [
             Field.enableRule(),
+            {
+                xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                bind: '{record.description}',
+                emptyText: '[no description]'.t(),
+                allowBlank: false,
+                validator: function(value) {
+                    var store = this.up('#syslogservers').getStore(),
+                        currentServerId = this.up('window').getViewModel().get('record.serverId');
+                
+                    // Check if a record with the same description exists in the store
+                    var isDescUnique = store.findBy(function(record) {
+                        if(currentServerId == -1) {
+                            return record.get('description') === value;
+                        } else {
+                            return record.get('serverId') !== currentServerId && record.get('description') === value;
+                        }
+                    }) === -1;
+                    return (isDescUnique) ? true : 'Duplicate description.'.t();
+                }
+            },
             {
                 xtype: 'textfield',
                 fieldLabel: 'Host'.t(),
