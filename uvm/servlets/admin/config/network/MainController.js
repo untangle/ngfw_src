@@ -1094,18 +1094,9 @@ Ext.define('Ung.config.network.MainController', {
 
             app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn');
             if(app){
-                settings = app.getSettings();
-                settings.tunnels.list.forEach(function(network){
-                    if(network.enabled){
-                        dev = 'wg0' + network.id.toString();
-                        if(interfacesInUse.indexOf(dev) > -1){
-                            return;
-                        }
-                        interfaceData.push({
-                            dev: dev,
-                            interface: network.description
-                        });
-                    }
+                interfaceData.push({
+                    dev: 'wg0',
+                    interface: 'wireguard'
                 });
             }
 
