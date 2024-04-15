@@ -1092,6 +1092,23 @@ Ext.define('Ung.config.network.MainController', {
                 });
             }
 
+            app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn');
+            if(app){
+                settings = app.getSettings();
+                settings.tunnels.list.forEach(function(network){
+                    if(network.enabled){
+                        dev = 'tun' + network.id.toString();
+                        if(interfacesInUse.indexOf(dev) > -1){
+                            return;
+                        }
+                        interfaceData.push({
+                            dev: dev,
+                            interface: network.description
+                        });
+                    }
+                });
+            }
+
             vm.get('ospfDevices').loadData(interfaceData);
             view.setLoading(false);
             if(view.itemId && view.itemId == 'interfaces'){
