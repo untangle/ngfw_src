@@ -904,11 +904,27 @@ Ext.define('Ung.util.Util', {
         var broadcastAddr = networkInt.map(function(octet, index) { return (octet & netmaskInt[index]) | (~netmaskInt[index] & 255); }).join('.');
 
         // Convert IP addresses to decimals
-        var ipInt = Util.convertIPIntoDecimal(ip);
-        var broadcastAddress =  Util.convertIPIntoDecimal(broadcastAddr);
-        var networkAddress =  Util.convertIPIntoDecimal(network);
+        var ipInt = Util.convertIPIntoDecimalForEachOctet(ip);
+        var broadcastAddress =  Util.convertIPIntoDecimalForEachOctet(broadcastAddr);
+        var networkAddress =  Util.convertIPIntoDecimalForEachOctet(network);
 
         return ipInt > networkAddress && ipInt < broadcastAddress;
+    },
+
+    convertIPIntoDecimalForEachOctet: function(ip) {
+    
+        var octets = ip.split(".");
+    
+        var decimalValue = 0;
+        var powers = [16777216, 65536, 256, 1]; // Powers of 256
+    
+        for (var i = 0; i < 4; i++) {
+            var octet = parseInt(octets[i], 10);
+           
+            decimalValue += octet * powers[i];
+        }
+    
+        return decimalValue;
     },
 
     getUnusedPoolAddr: function(addressPool, store, field){
@@ -1191,7 +1207,7 @@ Ext.define('Ung.util.Util', {
 
             if(index !== null) return "Address pool conflict".t();
 
-            if(context.dirty && context.ui === "default") {
+            if(context.dirty) {
                 var ntwkSpace=null;
                 if(currentIpDirtyCheck){
                     ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', currentFieldIp.trim());   
