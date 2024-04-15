@@ -478,7 +478,7 @@ Ext.define('Ung.cmp.GridController', {
         
                             if (validationErrorMsg !== null) {
                                 isValidRecord = false;
-                                validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}', fieldName, fieldValue, validationErrorMsg).t()); 
+                                validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, fieldValue, validationErrorMsg)); 
                                 break; // Stop validation for this record if any field fails
                             }
                         }
