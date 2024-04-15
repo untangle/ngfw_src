@@ -443,7 +443,6 @@ Ext.define('Ung.cmp.GridController', {
         var validData = [];
         var validationErrors = [];
         newData.forEach(function(record) {
-            if (record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel') {
                 var isValidRecord = true;
                 for (var fieldName in record) {
                     if (record.hasOwnProperty(fieldName)) {
@@ -470,9 +469,12 @@ Ext.define('Ung.cmp.GridController', {
                             }
         
                             // Check custom validator 
-                            if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
-                                validationErrorMsg = fieldConfig.validator(fieldValue, this);
+                            if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel'){
+                                if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
+                                    validationErrorMsg = fieldConfig.validator(fieldValue, this);
+                                }
                             }
+                            
         
                             if (validationErrorMsg !== null) {
                                 isValidRecord = false;
@@ -485,7 +487,6 @@ Ext.define('Ung.cmp.GridController', {
                 if (isValidRecord) {
                     validData.push(record);
                 }
-            }
         }, this);
         
 
