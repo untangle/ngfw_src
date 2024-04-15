@@ -1096,6 +1096,7 @@ Ext.define('Ung.config.network.MainController', {
             if(app){
                 settings = app.getSettings();
                 settings.tunnels.list.forEach(function(network){
+                    if(network.enabled){
                         dev = 'wg0' + network.id.toString();
                         if(interfacesInUse.indexOf(dev) > -1){
                             return;
@@ -1104,6 +1105,7 @@ Ext.define('Ung.config.network.MainController', {
                             dev: dev,
                             interface: network.description
                         });
+                    }
                 });
             }
 
