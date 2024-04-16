@@ -53,6 +53,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static final int YOUTUBE_RESTRICT_COOKIE_TIMEOUT = 60 * 1000;
     private static final DateFormat COOKIE_DATE_FORMATTER = new SimpleDateFormat("E, MM-dd-yyyy HH:mm:ss z");
     private static final Pattern SEPARATORS_REGEX = Pattern.compile("\\.");
+    private static final Pattern SPECIAL_CHARACTERS = Pattern.compile(".*[!@#$%&*()_+=|<>?{}\\[\\]~-].*");
 
     private static Integer UNCATEGORIZED_CATEGORY = 0;
 
@@ -142,8 +143,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                         try{
                             //Code to handle special characters in search terms
                             String match = null;
-                            Pattern specialCharacter = Pattern.compile (".*[!@#$%&*()_+=|<>?{}\\[\\]~-].*");
-                            Matcher m1 = specialCharacter.matcher(rule.getString());
+                            Matcher m1 = SPECIAL_CHARACTERS.matcher(rule.getString());
                             if (m1.find()) {
                                 match = "*" + rule.getString() + "*";
                             } else {
