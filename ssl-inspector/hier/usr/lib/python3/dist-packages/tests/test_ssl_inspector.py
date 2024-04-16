@@ -10,7 +10,6 @@ import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 
-
 default_policy_id = 1
 app = None
 appWeb = None
@@ -233,6 +232,52 @@ class SslInspectorTests(NGFWTestCase):
                                                    'flagged', True )
             assert( found )
         search_term_rules_clear()
+
+    def test_650_web_search_rules(self):
+        """check the web filter search terms with $ are evaluated and blocked if set
+            %24 will be converted to $
+        """
+        term = "a$$"
+        termTests = [{
+            "host": "www.google.com",
+            "uri":  ("/search?hl=en&q=%s" % "a%24%24"),
+        }]
+        search_term_rule_add(term)
+        for t in termTests:
+            eventTime = datetime.datetime.now()
+            result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1", uri=f"https://{t['host']}{t['uri']}"))
+            events = global_functions.get_events("Web Filter",'All Search Events',None,1)
+            found = global_functions.check_events( events.get('list'), 5,
+                                                   "host", t["host"],
+                                                   "term", term,
+                                                   'blocked', True,
+                                                   'flagged', True )
+            assert( found )
+        search_term_rules_clear()
+
+
+    def test_655_web_search_rules(self):
+        """check the web filter search terms with $ are evaluated and blocked if set"""
+        term = "a$$"
+        termTests = [{
+            "host": "www.google.com",
+            "uri":  ("/search?hl=en&q=%s" % "a\$\$"),
+        }]
+        search_term_rule_add(term)
+        for t in termTests:
+            eventTime = datetime.datetime.now()
+            result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1", uri=f"https://{t['host']}{t['uri']}"))
+            events = global_functions.get_events("Web Filter",'All Search Events',None,1)
+            found = global_functions.check_events( events.get('list'), 5,
+                                                   "host", t["host"],
+                                                   "term", term,
+                                                   'blocked', True,
+                                                   'flagged', True )
+            assert( found )
+        search_term_rules_clear()
+
+
+
 
     def test_700_youtube_safe_search(self):
         """Verify activation of YouTube Safe Search"""

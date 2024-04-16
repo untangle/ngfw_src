@@ -30,14 +30,39 @@ public class GlobUtil
         /**
          * transform globbing operators into regex ones
          */
-        String re = glob;
-        re = re.replaceAll(Pattern.quote("."), "\\.");
-        re = re.replaceAll(Pattern.quote("*"), ".*");
-        re = re.replaceAll(Pattern.quote("?"), ".");
-
-        re = "^" + re + "$";
-        
-        return re;
+        StringBuilder re = new StringBuilder();
+        re.append("^");
+        for (char c : glob.toCharArray()) {
+            switch (c) {
+                case '*':
+                    re.append(".*");
+                    break;
+                case '?':
+                    re.append(".");
+                    break;
+                case '.':
+                case '(':
+                case ')':
+                case '{':
+                case '}':
+                case '+':
+                case '|':
+                case '^':
+                case '[':
+                case ']':
+                case '@':
+                    re.append("\\").append(c);
+                    break;
+                case '$':  // Handle $ as a literal character
+                    re.append("\\$");
+                    break;
+                default:
+                    re.append(c);
+                    break;
+            }
+        }
+        re.append("$");
+        return re.toString();
     }
 
     /**

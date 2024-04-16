@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONArray;
@@ -52,6 +53,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
     private static final int YOUTUBE_RESTRICT_COOKIE_TIMEOUT = 60 * 1000;
     private static final DateFormat COOKIE_DATE_FORMATTER = new SimpleDateFormat("E, MM-dd-yyyy HH:mm:ss z");
     private static final Pattern SEPARATORS_REGEX = Pattern.compile("\\.");
+    private static final Pattern SPECIAL_CHARACTERS = Pattern.compile(".*[!@#$%&*()_+=|<>?{}\\[\\]~-].*");
 
     private static Integer UNCATEGORIZED_CATEGORY = 0;
 
@@ -139,7 +141,15 @@ public class WebFilterDecisionEngine extends DecisionEngine
                      */
                     if (matcherO == null || !(matcherO instanceof GlobMatcher)) {
                         try{
-                            matcher = GlobMatcher.getMatcher("*\\b" + rule.getString() + "\\b*");
+                            //Code to handle special characters in search terms
+                            String match = null;
+                            Matcher m1 = SPECIAL_CHARACTERS.matcher(rule.getString());
+                            if (m1.find()) {
+                                match = "*" + rule.getString() + "*";
+                            } else {
+                                match = "*\\b" + rule.getString() + "\\b*";
+                            }
+                            matcher = GlobMatcher.getMatcher(match);
                         }catch(Exception e){
                             logger.warn("Invalid matching string:" + rule.getString());
                             continue;
