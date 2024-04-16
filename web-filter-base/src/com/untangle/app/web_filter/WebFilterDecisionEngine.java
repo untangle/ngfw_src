@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONArray;
@@ -139,7 +140,16 @@ public class WebFilterDecisionEngine extends DecisionEngine
                      */
                     if (matcherO == null || !(matcherO instanceof GlobMatcher)) {
                         try{
-                            matcher = GlobMatcher.getMatcher("*\\b" + rule.getString() + "\\b*");
+                            //Code to handle special characters in search terms
+                            String match = null;
+                            Pattern specialCharacter = Pattern.compile (".*[!@#$%&*()_+=|<>?{}\\[\\]~-].*");
+                            Matcher m1 = specialCharacter.matcher(rule.getString());
+                            if (m1.find()) {
+                                match = "*" + rule.getString() + "*";
+                            } else {
+                                match = "*\\b" + rule.getString() + "\\b*";
+                            }
+                            matcher = GlobMatcher.getMatcher(match);
                         }catch(Exception e){
                             logger.warn("Invalid matching string:" + rule.getString());
                             continue;
