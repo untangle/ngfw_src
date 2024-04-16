@@ -8,7 +8,7 @@
 
 commonName="${1}"
 siteName="${2}"
-publicAddress="${3}"
+networkConfigurations="${3}"
 
 if [ -z "${commonName}" ]; then
     echo "Must specify a common name."
@@ -44,35 +44,7 @@ CA_CERT_DATA=$(cat $CA_CERT_FILE |  sed -e '/-----BEGIN CERTIFICATE-----/,/-----
 cat>$ONC_CONFIG_FILE<<EOF
 {
 "Type": "UnencryptedConfiguration",
-"NetworkConfigurations": [
-{
-    "GUID": "{$siteName-$commonName}",
-    "Name": "OpenVPN $siteName - $commonName",
-    "Type": "VPN",
-    "VPN":
-    {
-        "Type": "OpenVPN",
-        "Host": "$publicAddress",
-        "OpenVPN":
-        {
-            "Cipher": "AES-128-CBC",
-            "ClientCertType": "Ref",
-            "ClientCertRef": "{client-$siteName-$commonName}",
-            "CompLZO": "true",
-            "NsCertType": "server",
-            "Port": 1194,
-            "Proto": "udp",
-            "RemoteCertTLS": "none",
-            "Username": "$commonName",
-            "Password": "password",
-            "SaveCredentials": true,
-            "ServerCARef": "{server-$siteName}",
-            "Verb": "3",
-            "ServerPollTimeout": 360
-        },
-    }
-}
-],
+"NetworkConfigurations": $networkConfigurations,
 "Certificates": [
 {
 "GUID": "{server-$siteName}",
