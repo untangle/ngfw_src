@@ -6,6 +6,8 @@ package com.untangle.uvm;
 import java.util.Map;
 import java.util.LinkedList;
 
+import org.json.JSONArray;
+
 /**
  * The Device Table is responsible for storing known information about devices
  */
@@ -23,7 +25,7 @@ public interface DeviceTable
 
     public DeviceTableEntry getDevice( String macAddress );
     
-    public String lookupMacVendor( String macAddress, String type );
+    public JSONArray lookupMacVendor( String macAddress );
 
     public void saveDevices();
 }

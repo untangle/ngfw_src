@@ -19,6 +19,8 @@ import java.io.DataOutputStream;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.Pulse;
@@ -189,10 +191,9 @@ public class DeviceTableImpl implements DeviceTable
      * Lookup the hardware vendors for the MAC addresses
      *
      * @param macAddress The MAC address List String
-     * @param type it tells whether the list has single or multiple mac addresses
      * @return The hardware vendor for the given mac addresses, or null
      */
-    public String lookupMacVendor(String macAddress, String type)
+    public JSONArray lookupMacVendor(String macAddress)
     {
         logger.warn("lookupMacVendor:" + macAddress);
         if (macAddress == null) return null;
@@ -227,8 +228,6 @@ public class DeviceTableImpl implements DeviceTable
             StringBuilder builder = new StringBuilder(256);
 
             for (int c = input.read(); c != -1; c = input.read()) {
-                if (type == Constants.MAC_LOOKUP_SINGLE_VENDOR  && (char) c == '[') continue;
-                if (type == Constants.MAC_LOOKUP_SINGLE_VENDOR && (char) c == ']') continue;
                 builder.append((char) c);
             }
 
@@ -239,14 +238,8 @@ public class DeviceTableImpl implements DeviceTable
             if ((cloudString.indexOf('{') < 0) || (cloudString.indexOf('}') < 0)) cloudString = "{}";
             logger.info("Cloud MAC reply = CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage() + " DATA: + " + cloudString);
 
-            // if single mac address is present in the list
-            if(type == Constants.MAC_LOOKUP_SINGLE_VENDOR){
-                JSONObject cloudObject = new JSONObject(cloudString);
-                if (cloudObject.has("Organization")) return (cloudObject.getString("Organization"));
-            }else{
-                // if multiple mac addresses are present in the list
-                return cloudString;
-            }
+            JSONArray macVendorArray = new JSONArray(cloudString);
+            return macVendorArray;
         }
 
         catch (Exception exn) {
@@ -271,24 +264,27 @@ public class DeviceTableImpl implements DeviceTable
         }
         lastSaveTime = System.currentTimeMillis();
 
-        /**
-         * If this is the first time we're saving. Lookup any unknown MAC
-         * vendors We only do this once so we don't flood the cloud server
-         */
-        if (lastSaveTime == 0) {
-            for (DeviceTableEntry entry : deviceTable.values()) {
+        try {
                 /**
-                 * If we don't know the MAC vendor, do a lookup in case we know
-                 * it now with an updated DB
-                 */
-                if (entry.getMacVendor() == null || entry.getMacVendor().equals("")) {
-                    String macVendor = lookupMacVendor(entry.getMacAddress(), Constants.MAC_LOOKUP_SINGLE_VENDOR );
-                    if (macVendor != null && !("".equals(macVendor))) entry.setMacVendor(macVendor);
+             * If this is the first time we're saving. Lookup any unknown MAC
+             * vendors We only do this once so we don't flood the cloud server
+             */
+            if (lastSaveTime == 0) {
+                for (DeviceTableEntry entry : deviceTable.values()) {
+                    /**
+                     * If we don't know the MAC vendor, do a lookup in case we know
+                     * it now with an updated DB
+                     */
+                    if (entry.getMacAddress()!= null && (entry.getMacVendor() == null || entry.getMacVendor().equals(""))) {
+                        JSONArray macAddressVendor = lookupMacVendor(entry.getMacAddress());
+                        if(macAddressVendor.length() > 0){
+                            JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
+                            if (macAddrVendor.has("MAC") && macAddrVendor.has("Organization") && macAddrVendor.getString("Organization") != null && macAddrVendor.getString("Organization") != "") entry.setMacVendor(macAddrVendor.getString("Organization"));
+                        }
+                    }
                 }
             }
-        }
 
-        try {
             Collection<DeviceTableEntry> entries = deviceTable.values();
             logger.info("Saving devices to file... (" + entries.size() + " entries)");
 
@@ -381,10 +377,18 @@ public class DeviceTableImpl implements DeviceTable
 
         newEntry.enableLogging(); // no on by default, make sure its on when going in the table
 
-        String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor(newEntry.getMacAddress(), Constants.MAC_LOOKUP_SINGLE_VENDOR);
-        if (macVendor != null && !("".equals(macVendor))) newEntry.setMacVendor(macVendor);
-
-        deviceTable.put(newEntry.getMacAddress(), newEntry);
+        try{
+            if (newEntry.getMacAddress()!= null) {
+                JSONArray macAddressVendor = lookupMacVendor(newEntry.getMacAddress());
+                if(macAddressVendor.length() > 0){
+                    JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
+                    if (macAddrVendor.has("MAC") && macAddrVendor.has("Organization") && macAddrVendor.getString("Organization") != null && macAddrVendor.getString("Organization") != "") newEntry.setMacVendor(macAddrVendor.getString("Organization"));
+                }
+            }
+            deviceTable.put(newEntry.getMacAddress(), newEntry);
+        } catch (Exception exn) {
+            logger.warn("Exception looking up MAC address vendor:", exn);
+        }
     }
 
     /**

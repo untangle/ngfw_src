@@ -199,7 +199,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             sourceConfig: {
                 device: { displayName: 'Device'.t() },
                 macAddress: { displayName: 'MAC Address'.t() },
-                vendor: { displayName: 'Vendor'.t() },
+                vendor: { displayName: 'MAC Vendor'.t() },
                 address: { displayName: 'IPv4 Address'.t() },
                 v6Addr: { displayName: 'IPv6 Address'.t() },
                 rxbytes: {
@@ -262,7 +262,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
                 width: Renderer.ipWidth,
                 flex: 1
             },{
-                header: 'Vendor'.t(),
+                header: 'MAC Vendor'.t(),
                 dataIndex: 'vendor',
                 width: Renderer.messageWidth,
                 flex: 1

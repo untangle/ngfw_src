@@ -2815,8 +2815,7 @@ public class NetworkManagerImpl implements NetworkManager
                 String macAddresses = String.join(",",nonExistingKeysList);
                 logger.info("Cloud MAC lookup = " + macAddresses);
                 // fetch the vendors for the mac addresses
-                String macAddressVendors = UvmContextFactory.context().deviceTable().lookupMacVendor(macAddresses, Constants.MAC_LOOKUP_MULTIPLE_VENDOR);
-                JSONArray macAddrVendorArr = new JSONArray(macAddressVendors);
+                JSONArray macAddrVendorArr = UvmContextFactory.context().deviceTable().lookupMacVendor(macAddresses);
                 for(int i = 0; i < macAddrVendorArr.length(); i++){
                     JSONObject macAddrVendor = macAddrVendorArr.getJSONObject(i);
                     if(macAddrVendor.has("MAC") && macAddrVendor.has("Organization")){
