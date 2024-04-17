@@ -24,7 +24,6 @@ import org.json.JSONArray;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.Pulse;
-import com.untangle.uvm.util.Constants;
 
 /**
  * DeviceTable stores a known "devices" (MAC addresses) that have ever been

@@ -69,7 +69,6 @@ import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
-import com.untangle.uvm.util.Constants;
 
 /**
  * The Network Manager handles all the network configuration
