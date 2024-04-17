@@ -468,7 +468,8 @@ Ext.define('Ung.cmp.GridController', {
                                }
                             }
         
-                            // Check custom validator 
+                            // Currently, custom validator is tailored exclusively for the WG App.
+                            // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
                             if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel'){
                                 if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
                                     validationErrorMsg = fieldConfig.validator(fieldValue, this);
