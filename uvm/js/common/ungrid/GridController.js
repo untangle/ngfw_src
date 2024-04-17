@@ -440,6 +440,69 @@ Ext.define('Ung.cmp.GridController', {
         var grid = this.getView(),
             existingData = Ext.Array.pluck(grid.getStore().getRange(), 'data');
 
+        var validData = [];
+        var validationErrors = [];
+        newData.forEach(function(record) {
+                var isValidRecord = true;
+                for (var fieldName in record) {
+                    if (record.hasOwnProperty(fieldName)) {
+                        var fieldValue = record[fieldName];
+                        var fieldConfig = this.getFieldConfig(fieldName);
+        
+                        if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype)) {
+                            var validationErrorMsg = null;
+        
+                            if (!fieldConfig.allowBlank && !fieldConfig.bind.disabled && Ext.isEmpty(fieldValue)) {
+                                validationErrorMsg = 'This field is required.'; 
+                            } else if (fieldConfig.allowBlank && Ext.isEmpty(fieldValue)) {
+                                continue; // Skip validation if allowBlank is true and field value is empty
+                            }
+        
+                            // Check vtype validation
+                            if (fieldConfig.vtype) {
+                                var vtype = fieldConfig.vtype;
+                               if(fieldValue !== null){
+                                    if (!Ext.form.field.VTypes[vtype](fieldValue)) {
+                                        validationErrorMsg = Ext.form.field.VTypes[vtype + 'Text'];
+                                    }
+                               }
+                            }
+        
+                            // Currently, custom validator is tailored exclusively for the WG App.
+                            // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
+                            if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel'){
+                                if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
+                                    validationErrorMsg = fieldConfig.validator(fieldValue, this);
+                                }
+                            }
+                            
+        
+                            if (validationErrorMsg !== null) {
+                                isValidRecord = false;
+                                validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, fieldValue, validationErrorMsg)); 
+                                break; // Stop validation for this record if any field fails
+                            }
+                        }
+                    }
+                }
+                if (isValidRecord) {
+                    validData.push(record);
+                }
+        }, this);
+        
+
+        // Show validation errors as alert
+        if (validationErrors.length > 0) {
+            var errorMessage = Ext.String.format("Import record validation error:\n\n{0}".t(), validationErrors.join("\n"));
+            alert(errorMessage);  // Do not proceed with loading data if there are validation errors for record
+           
+        }
+
+        //To import all the record for another app
+        if (validData.length === 0) {
+            validData = newData;
+        }
+    
         Ext.Array.forEach(existingData, function (rec, index) {
             delete rec._id;
         });
@@ -448,20 +511,51 @@ Ext.define('Ung.cmp.GridController', {
             grid.getStore().removeAll();
         }
         if (importMode === 'append') {
-            Ext.Array.insert(existingData, existingData.length, newData);
-            newData = existingData;
+            Ext.Array.insert(existingData, existingData.length, validData);
+            validData = existingData;
         }
         if (importMode === 'prepend') {
-            Ext.Array.insert(existingData, 0, newData);
-            newData = existingData;
+            Ext.Array.insert(existingData, 0, validData);
+            validData = existingData;
         }
-
-        grid.getStore().loadData(newData);
+    
+        grid.getStore().loadData(validData);
         grid.getStore().each(function(record){
             record.set('markedForNew', true);
         });
     },
-
+    
+    getFieldConfig: function(fieldName) {
+        // Retrieve the field configuration from editorFields array based on field name extracted from bind property
+        return this.getView().editorFields.find(function(fieldConfig) {
+            if (fieldConfig.bind) {
+                // Extract the field name from bind property in various formats
+                var bindValue = fieldConfig.bind.value || fieldConfig.bind;
+                if (typeof bindValue === 'string') {
+                    // If bindValue is a string, check if it's in the specified format
+                    var fieldNameFromBind = bindValue.split('.')[1].split('}')[0];
+                    if (fieldNameFromBind === fieldName) {
+                        return fieldConfig;
+                    }
+                } else if (typeof bindValue === 'object') {
+                    // If bindValue is an object, check each key for the specified format
+                    for (var key in bindValue) {
+                        if (bindValue.hasOwnProperty(key) && key === 'value') {
+                            var value = bindValue[key];
+                            if (typeof value === 'string' && value.includes('{record.')) {
+                                var fieldNameFromBindValue = value.split('.')[1].split('}')[0];
+                                if (fieldNameFromBindValue === fieldName) {
+                                    return fieldConfig;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        });
+    },
+    
     getExportData: function (useId) {
         var data = Ext.Array.pluck(this.getView().getStore().getRange(), 'data');
         Ext.Array.forEach(data, function (rec, index) {
