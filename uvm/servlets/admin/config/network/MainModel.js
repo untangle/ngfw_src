@@ -65,6 +65,9 @@ Ext.define('Ung.config.network.MainModel', {
             }, {
                 name: 'address',
                 sortType: 'asIp'
+            }, {
+                name: 'vendor',
+                sortType: 'string'
             }],
             sorters: [{
                 property: 'address',

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.net.InetAddress;
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,6 +65,7 @@ import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
 import com.untangle.uvm.network.DynamicRouteNetwork;
 import com.untangle.uvm.network.DynamicRouteOspfArea;
 import com.untangle.uvm.network.DynamicRouteOspfInterface;
+import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -89,6 +91,9 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ADDRESS = "static-address";
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
+
+    // creating a cache for the lookedup mac addresses and vendors
+    private static HashMap<String,String> cachedMacAddrVendorList = new HashMap<>();
 
     /**
      * The current network settings
@@ -2772,6 +2777,62 @@ public class NetworkManagerImpl implements NetworkManager
     public String getUpnpManager(String command, String arguments)
     {
         return UvmContextFactory.context().execManager().execOutput(upnpManagerScript + " " + command + " " + arguments);
+    }
+
+    /**
+     * Lookup the hardware vendors for a MAC addresses
+     *
+     * @param macAddressList
+     *        The MAC address List
+     * @return The MAC addresses with hardware vendors, or null
+     */
+    public HashMap<String, String> lookupMacVendorList(List<String> macAddressList)
+    {
+        // creating a map to store the result mac address with vendor pairs
+        HashMap<String,String> macAddressVendorMap = new HashMap<>();
+        if(macAddressList.size() <= 0){
+            return macAddressVendorMap;
+        }
+        List<String> nonExistingKeysList = new ArrayList<>();
+        /**
+         * Iterating over the required mac addresses to get the already present vendors from
+         * the cache
+         */
+        for(int i=0; i < macAddressList.size();i++){
+            String key = macAddressList.get(i);
+            if(cachedMacAddrVendorList.containsKey(key)){
+                // fetching from cache
+                macAddressVendorMap.put(key, cachedMacAddrVendorList.get(key));
+            }else{
+                // if not present in cache, then adding it to the lookup list
+                nonExistingKeysList.add(key);
+            }
+        }
+        try{
+            // if the lookup list is non-empty
+            if(nonExistingKeysList.size() > 0){
+                String macAddresses = String.join(",",nonExistingKeysList);
+                logger.info("Cloud MAC lookup = " + macAddresses);
+                // fetch the vendors for the mac addresses
+                JSONArray macAddrVendorArr = UvmContextFactory.context().deviceTable().lookupMacVendor(macAddresses);
+                for(int i = 0; i < macAddrVendorArr.length(); i++){
+                    JSONObject macAddrVendor = macAddrVendorArr.getJSONObject(i);
+                    if(macAddrVendor.has("MAC") && macAddrVendor.has("Organization")){
+                        String macAddr = macAddrVendor.getString("MAC"), vendorName = macAddrVendor.getString("Organization");
+                        logger.info("Cloud MAC lookup= " + macAddr + " Cloud Vendor lookup= "+ vendorName);
+                        // add the fetched mac address with vendor in our cache
+                        cachedMacAddrVendorList.put(macAddr, vendorName);
+                        // add the fetched mac address with vendor in our result map
+                        macAddressVendorMap.put(macAddr, vendorName);
+                    }
+                }
+            }
+            // return the resultant mac address and vendor lookup map
+            return macAddressVendorMap;
+        } catch (Exception exn) {
+            logger.warn("Exception looking up MAC address vendor:", exn);
+        }
+        return (null);
     }
 
     /**

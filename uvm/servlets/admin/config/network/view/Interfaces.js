@@ -116,7 +116,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             dataIndex: 'v4Address',
             width: Renderer.networkWidth,
             renderer: Ung.config.network.MainController.addressRenderer
-        }, {
+        },{
             header: 'is WAN'.t(),
             width: Renderer.booleanWidth,
             resizable: false,
@@ -199,6 +199,7 @@ Ext.define('Ung.config.network.view.Interfaces', {
             sourceConfig: {
                 device: { displayName: 'Device'.t() },
                 macAddress: { displayName: 'MAC Address'.t() },
+                vendor: { displayName: 'MAC Vendor'.t() },
                 address: { displayName: 'IPv4 Address'.t() },
                 v6Addr: { displayName: 'IPv6 Address'.t() },
                 rxbytes: {
@@ -260,7 +261,13 @@ Ext.define('Ung.config.network.view.Interfaces', {
                 dataIndex: 'address',
                 width: Renderer.ipWidth,
                 flex: 1
-            }],
+            },{
+                header: 'MAC Vendor'.t(),
+                dataIndex: 'vendor',
+                width: Renderer.messageWidth,
+                flex: 1
+            }
+        ],
             tbar: [{
                 xtype: 'button',
                 iconCls: 'fa fa-refresh',
