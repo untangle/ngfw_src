@@ -12,9 +12,13 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -288,6 +292,7 @@ public class OpenVpnManager
         String cmdStr;
         ExecManagerResult result;
 
+        Map<String, String> wanInfoMap = new HashMap<>();
         String publicAddress = UvmContextFactory.context().networkManager().getPublicUrl();
 
         /*
@@ -297,7 +302,19 @@ public class OpenVpnManager
         publicAddress = publicAddress.split(":")[0];
         publicAddress = publicAddress.trim();
 
-        cmdStr = GENERATE_ONC_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"" + " " + "\"" + publicAddress + "\"";
+        wanInfoMap.put("publicAddress", publicAddress);
+
+        // Also add the IP of any statically addressed WANs
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        for (InterfaceSettings interfaceSettings : networkSettings.getInterfaces()) {
+            if (interfaceSettings.getIsWan() && interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC) {
+                wanInfoMap.put("Wan-" + interfaceSettings.getInterfaceId(), interfaceSettings.getV4StaticAddress().getHostAddress());
+            }
+        }
+
+        JSONArray wanNetworkConfigs = createWanConfigList(client.getName(), settings.getSiteName(), wanInfoMap);
+
+        cmdStr = GENERATE_ONC_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"" + " " + "\'" + wanNetworkConfigs + "\'";
         logger.debug("Executing: " + cmdStr);
         result = UvmContextFactory.context().execManager().exec(cmdStr);
         try {
@@ -307,6 +324,67 @@ public class OpenVpnManager
                 logger.info(GENERATE_ONC_SCRIPT + ": " + line);
         } catch (Exception e) {
         }
+    }
+
+    /**
+     * Create remote client Network Configurations for onc file 
+     * @param commonName    Client Name 
+     * @param siteName      Site Name
+     * @param wanInfoMap    Map of WAN Name and WAN IP Address
+     * @return Json array of Network Configurations
+     */
+    protected JSONArray createWanConfigList(String commonName, String siteName, Map<String, String> wanInfoMap) {
+        JSONArray networkConfigurations = new JSONArray();
+        for (Map.Entry<String, String> entry : wanInfoMap.entrySet()) {
+            try {
+                String wanName = entry.getKey();
+                String wanIpAddress = entry.getValue();
+
+                // Create a JSON object for VPN configuration
+                JSONObject networkConfig = new JSONObject();
+                String guid = siteName + "-" + commonName + "-" + wanName;
+                String vpnName = "OpenVPN-" + siteName + "-" + commonName + "-" + wanName;
+
+                // Set common properties
+                networkConfig.put("GUID", guid);
+                networkConfig.put("Name", vpnName);
+                networkConfig.put("Type", "VPN");
+
+                // Create VPN object
+                JSONObject vpnObject = new JSONObject();
+                vpnObject.put("Type", "OpenVPN");
+                vpnObject.put("Host", wanIpAddress);
+
+                // Create OpenVPN object
+                JSONObject openVpnObject =  new JSONObject();
+                openVpnObject.put("Cipher", "AES-128-CBC");
+                openVpnObject.put("ClientCertType", "Ref");
+                openVpnObject.put("ClientCertRef", "{client-"+siteName+"-"+commonName+"}");
+                openVpnObject.put("CompLZO", "true");
+                openVpnObject.put("NsCertType", "server");
+                openVpnObject.put("Port", 1194);
+                openVpnObject.put("Proto", "udp");
+                openVpnObject.put("RemoteCertTLS", "none");
+                openVpnObject.put("Username", commonName);
+                openVpnObject.put("Password", "password");
+                openVpnObject.put("SaveCredentials", true);
+                openVpnObject.put("ServerCARef", "{server-"+siteName+"}");
+                openVpnObject.put("Verb", "3");
+                openVpnObject.put("ServerPollTimeout", 360);
+
+                // Add Open VPN object to VPN object
+                vpnObject.put("OpenVPN", openVpnObject);
+
+                // Add VPN object to configuration
+                networkConfig.put("VPN", vpnObject);
+
+                // Add configuration to the list
+                networkConfigurations.put(networkConfig);
+            } catch (Exception e) {
+                logger.error( "Error generating Network Configurations for ONC file", e );
+            }
+        }
+        return networkConfigurations;
     }
 
     /**
