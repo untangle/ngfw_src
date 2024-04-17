@@ -444,7 +444,8 @@ Ext.define('Ung.config.network.MainController', {
                 txpkts: null,
                 txbytes: null,
                 txerr: null,
-                txdrop: null
+                txdrop: null,
+                vendor: null
             };
 
 
@@ -493,6 +494,9 @@ Ext.define('Ung.config.network.MainController', {
             if(stat.v6Addr && typeof(stat.v6Addr) === 'object'){
                 stat.v6Addr = stat.v6Addr.join(', ');
             }
+            if(vm.get('interfacesGrid.selection') && vm.get('interfacesGrid.selection').data && vm.get('interfacesGrid.selection').data.vendor){
+                stat.vendor = vm.get('interfacesGrid.selection').data.vendor;
+            }
             vm.set('siStatus', stat);
             v.setLoading(false);
         });
@@ -516,6 +520,7 @@ Ext.define('Ung.config.network.MainController', {
                 return;
             }
             var connections = [];
+            var macAddressList = [];
             result.split("\n").forEach(function(row){
                 if(row.trim() == ""){
                     return;
@@ -529,11 +534,34 @@ Ext.define('Ung.config.network.MainController', {
                         macAddress = item;
                     }
                 });
+                if(macAddress != null){
+                    macAddressList.push(macAddress);
+                }
                 connections.push({
                     address: address,
-                    macAddress: macAddress
+                    macAddress: macAddress,
+                    vendor: null
                 });
             });
+            if(macAddressList.length > 0){
+                var list = { javaClass: 'java.util.LinkedList', list: macAddressList };
+                var lookUpResult = Rpc.directData('rpc.networkManager.lookupMacVendorList', list);
+                var macVendorArr = Object.entries(lookUpResult.map);
+                if(macVendorArr.length > 0){
+                    for(var i=0; i< macVendorArr.length; i++){
+                        var currMacVendor = macVendorArr[i];
+                        var macAddress = currMacVendor[0];
+                        var vendor = currMacVendor[1];
+                        for(var j=0;j<connections.length; j++){
+                            var currentConnection = connections[j];
+                            if(currentConnection.macAddress == macAddress){
+                                connections[j].vendor = vendor;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             vm.set('siArp', connections);
             v.setLoading(false);
         });

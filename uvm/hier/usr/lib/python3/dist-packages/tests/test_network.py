@@ -2604,6 +2604,15 @@ class NetworkTests(NGFWTestCase):
         # Cleanup
         uvmContext.hostTable().removeHostTableEntry( client_entry['address'] )
 
+    def test_705_mac_address_vendor_lookup_list(self):
+        """
+        Verify we can get vendors for the mac addresses
+        """
+        mac_address_list = { 'javaClass': 'java.util.LinkedList', 'list': ["08:00:27:45:bf:f6"] }
+
+        # Get vendor for mac Address
+        mac_address_vendor_map = uvmContext.networkManager().lookupMacVendorList(mac_address_list)
+        assert(len(mac_address_vendor_map) > 0)
 
     @classmethod
     def final_extra_tear_down(cls):

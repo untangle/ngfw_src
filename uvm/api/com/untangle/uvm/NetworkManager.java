@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm;
 
+import java.util.HashMap;
 import java.util.List;
 import java.net.InetAddress;
 
@@ -82,6 +83,8 @@ public interface NetworkManager
     void setInterfacesOverloadedFlag(boolean value);
 
     boolean getInterfacesOverloadedFlag();
+
+    HashMap<String, String> lookupMacVendorList(List<String> macAddressList);
 
     public static enum StatusCommands {
         INTERFACE_TRANSFER,

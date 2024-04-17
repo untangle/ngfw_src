@@ -23,7 +23,7 @@ public interface DeviceTable
 
     public DeviceTableEntry getDevice( String macAddress );
     
-    public String lookupMacVendor( String macAddress );
+    public String lookupMacVendor( String macAddress, String type );
 
     public void saveDevices();
 }
