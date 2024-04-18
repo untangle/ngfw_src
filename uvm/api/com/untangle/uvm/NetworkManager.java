@@ -3,9 +3,9 @@
  */
 package com.untangle.uvm;
 
-import java.util.HashMap;
 import java.util.List;
 import java.net.InetAddress;
+import java.util.concurrent.ConcurrentMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -84,7 +84,7 @@ public interface NetworkManager
 
     boolean getInterfacesOverloadedFlag();
 
-    HashMap<String, String> lookupMacVendorList(List<String> macAddressList);
+    ConcurrentMap<String, String> lookupMacVendorList(List<String> macAddressList);
 
     public static enum StatusCommands {
         INTERFACE_TRANSFER,

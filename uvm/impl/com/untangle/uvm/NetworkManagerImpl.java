@@ -3,22 +3,20 @@
  */
 package com.untangle.uvm;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.net.InetAddress;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -75,6 +73,9 @@ import com.untangle.uvm.servlet.DownloadHandler;
  */
 public class NetworkManagerImpl implements NetworkManager
 {
+    public static final String MAC = "MAC";
+    public static final String ORGANIZATION = "Organization";
+    public static final String COMMA = ",";
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
@@ -93,7 +94,7 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
 
     // creating a cache for the lookedup mac addresses and vendors
-    private static HashMap<String,String> cachedMacAddrVendorList = new HashMap<>();
+    private static ConcurrentMap<String,String> cachedMacAddrVendorList = new ConcurrentHashMap<>();
 
     /**
      * The current network settings
@@ -2786,53 +2787,37 @@ public class NetworkManagerImpl implements NetworkManager
      *        The MAC address List
      * @return The MAC addresses with hardware vendors, or null
      */
-    public HashMap<String, String> lookupMacVendorList(List<String> macAddressList)
-    {
-        // creating a map to store the result mac address with vendor pairs
-        HashMap<String,String> macAddressVendorMap = new HashMap<>();
-        if(macAddressList.size() <= 0){
-            return macAddressVendorMap;
-        }
-        List<String> nonExistingKeysList = new ArrayList<>();
-        /**
-         * Iterating over the required mac addresses to get the already present vendors from
-         * the cache
-         */
-        for(int i=0; i < macAddressList.size();i++){
-            String key = macAddressList.get(i);
-            if(cachedMacAddrVendorList.containsKey(key)){
-                // fetching from cache
-                macAddressVendorMap.put(key, cachedMacAddrVendorList.get(key));
-            }else{
-                // if not present in cache, then adding it to the lookup list
-                nonExistingKeysList.add(key);
-            }
-        }
-        try{
-            // if the lookup list is non-empty
-            if(nonExistingKeysList.size() > 0){
-                String macAddresses = String.join(",",nonExistingKeysList);
+    public ConcurrentMap<String, String> lookupMacVendorList(List<String> macAddressList) {
+        // find MAC addresses that are missing in cache
+        List<String> missingMacAddressList = macAddressList.stream()
+                .filter(macAddress -> !cachedMacAddrVendorList.containsKey(macAddress))
+                .toList();
+
+        if (!missingMacAddressList.isEmpty()) {
+            try {
+                String macAddresses = String.join(COMMA, missingMacAddressList);
                 logger.info("Cloud MAC lookup = " + macAddresses);
                 // fetch the vendors for the mac addresses
                 JSONArray macAddrVendorArr = UvmContextFactory.context().deviceTable().lookupMacVendor(macAddresses);
-                for(int i = 0; i < macAddrVendorArr.length(); i++){
-                    JSONObject macAddrVendor = macAddrVendorArr.getJSONObject(i);
-                    if(macAddrVendor.has("MAC") && macAddrVendor.has("Organization")){
-                        String macAddr = macAddrVendor.getString("MAC"), vendorName = macAddrVendor.getString("Organization");
-                        logger.info("Cloud MAC lookup= " + macAddr + " Cloud Vendor lookup= "+ vendorName);
-                        // add the fetched mac address with vendor in our cache
-                        cachedMacAddrVendorList.put(macAddr, vendorName);
-                        // add the fetched mac address with vendor in our result map
-                        macAddressVendorMap.put(macAddr, vendorName);
+                if (macAddrVendorArr != null) {
+                    for (int i = 0; i < macAddrVendorArr.length(); i++) {
+                        JSONObject macAddrVendor = macAddrVendorArr.getJSONObject(i);
+                        if (macAddrVendor.has(MAC) && macAddrVendor.has(ORGANIZATION)) {
+                            String macAddr = macAddrVendor.getString(MAC), vendorName = macAddrVendor.getString(ORGANIZATION);
+                            if (logger.isDebugEnabled())
+                                logger.debug("Cloud MAC lookup= " + macAddr + " Cloud Vendor lookup= " + vendorName);
+                            // add the fetched mac address with vendor in our cache
+                            cachedMacAddrVendorList.put(macAddr, vendorName);
+                        }
                     }
+                } else {
+                    logger.info("Vendors not found for MAC addresses=" + macAddresses);
                 }
+            } catch (Exception exn) {
+                logger.warn("Exception looking up MAC address vendor:", exn);
             }
-            // return the resultant mac address and vendor lookup map
-            return macAddressVendorMap;
-        } catch (Exception exn) {
-            logger.warn("Exception looking up MAC address vendor:", exn);
         }
-        return (null);
+        return cachedMacAddrVendorList;
     }
 
     /**
