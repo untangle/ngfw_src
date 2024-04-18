@@ -1,4 +1,5 @@
 """tunnel_vpn tests"""
+import copy
 import time
 import subprocess
 
@@ -17,14 +18,28 @@ app = None
 TUNNEL_ID = 200
 VPN_TUNNEL_URI = overrides.get( "VPN_TUNNEL_URI", default="http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip")
 TUNNEL_VPN_ISOLATED_CLIENT = overrides.get( "TUNNEL_VPN_ISOLATED_CLIENT", default="192.168.72.22")
+CLIENT_TAGGED_CONDITION = {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "conditionType": "CLIENT_TAGGED",
+                    "invert": False,
+                    "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnRuleCondition",
+                    "value": "test-tag"
+                }
+            ]
+        }
 
-def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=TUNNEL_ID):
+DEFAULT_RULE_DESCRIPTION = "Route all traffic over any available Tunnel."
+DEFAULT_CONDITION = {
+            "javaClass": "java.util.LinkedList",
+            "list": []
+        }
+
+def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=TUNNEL_ID, description=DEFAULT_RULE_DESCRIPTION, conditions=DEFAULT_CONDITION):
     return {
-            "conditions": {
-                "javaClass": "java.util.LinkedList",
-                "list": []
-            },
-            "description": "Route all traffic over any available Tunnel.",
+            "conditions": conditions,
+            "description": description,
             "enabled": vpn_enabled,
             "ipv6Enabled": vpn_ipv6,
             "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnRule",
@@ -32,18 +47,44 @@ def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=T
             "tunnelId": vpn_tunnel_id
     }
 
-def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
+def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",name="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
     return {
             "allTraffic": False,
             "enabled": vpn_enabled,
             "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
-            "name": "tunnel-Arista",
+            "name": name,
             "provider": "Arista",
             "tags": {
                 "javaClass": "java.util.LinkedList",
                 "list": []
             },
             "tunnelId": vpn_tunnel_id
+    }
+
+def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, description, field, operator, value, field2, operator2, value2):
+    return {
+        "description": description,
+        "action": action,
+        "tagTarget": tag_target,
+        "tagName": tag_name,
+        "tagLifetimeSec": tag_lifetime_sec,
+        "enabled": True,
+        "javaClass": "com.untangle.uvm.event.TriggerRule",
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [{
+                "javaClass": "com.untangle.uvm.event.EventRuleCondition",
+                "comparator": operator,
+                "field": field,
+                "fieldValue": value
+            }, {
+                "javaClass": "com.untangle.uvm.event.EventRuleCondition",
+                "comparator": operator2,
+                "field": field2,
+                "fieldValue": value2
+            }]
+        },
+        "ruleId": 1
     }
 
 
@@ -184,5 +225,60 @@ class TunnelVpnTests(NGFWTestCase):
         assert(connectStatus == "CONNECTED")
         assert(pingPcLanResult == 0)
 
+
+    def test_040_verify_tunnel_connection_with_client_tagged_rule(self):
+        """
+        Verify tunnel connection for client tagged condition
+        """
+        currentWanIP = global_functions.get_public_ip_address()
+        if (currentWanIP == ""):
+            raise unittest.SkipTest("Unable to get WAN IP")
+        print("Original WAN IP: " + str(currentWanIP))
+
+        # Create trigger rule for SessionEvent to Tag host
+
+        settings = uvmContext.eventManager().getSettings()
+        orig_settings = copy.deepcopy(settings)
+        new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.client_ip+"*")
+        settings['triggerRules']['list'] = [ new_rule ]
+        uvmContext.eventManager().setSettings( settings )
+
+        time.sleep(4)
+
+        # Create a tunnel: Tunnel1 and tunnel VPN rule to route all hosts tagged with 'test-tag' over Tunnel1.
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/config.zip",uri=VPN_TUNNEL_URI), shell=True)
+        if (result != 0):
+            raise unittest.SkipTest("Unable to download VPN file: " + VPN_TUNNEL_URI)
+        self._app.importTunnelConfig("/tmp/config.zip", "Untangle", TUNNEL_ID)
+
+        appData = self._app.getSettings()
+        appData['rules']['list'].append(create_tunnel_rule(conditions=CLIENT_TAGGED_CONDITION, description="Route all hosts tagged with \"test-tag\" over Tunnel1."))
+        appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1"))
+        self._app.setSettings(appData)
+
+        # wait for vpn tunnel to form
+        timeout = 60
+        connected = False
+        while (not connected and timeout > 0):
+            newWanIP = global_functions.get_public_ip_address()
+            if (currentWanIP != newWanIP and newWanIP != ""):
+                listOfConnections = self._app.getTunnelStatusList()
+                connectStatus = listOfConnections['list'][0]['stateInfo']
+                connected = True
+                listOfConnections = self._app.getTunnelStatusList()
+                connectStatus = listOfConnections['list'][0]['stateInfo']
+            else:
+                time.sleep(1)
+                timeout-=1
+
+        assert True is global_functions.is_vpn_running(interface=f"tun{TUNNEL_ID}",route_table=f"tunnel.{TUNNEL_ID}"), "vpn running"
+        assert True is global_functions.is_vpn_routing(route_table=f"tunnel.{TUNNEL_ID}"), "vpn routing"
+
+        # Set original event settings
+        uvmContext.eventManager().setSettings( orig_settings )
+
+        # If VPN tunnel has failed to connect, fail the test,
+        assert(connected)
+        assert(connectStatus == "CONNECTED")
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
