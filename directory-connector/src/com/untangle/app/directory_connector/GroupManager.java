@@ -656,7 +656,7 @@ public class GroupManager
                 domainsGroupsChildrenCache.put(domain, groupsChildrenMap);
                 domainsUsersCache.put(domain, domainUsersMap);
                 logger.info("Renewing AD Group Cache: domain=" + domain + ", users=" + domainUsersMap.size() + ", groups=" + groupsUsersMap.size());
-}
+            }
             GroupManager.this.domainsGroupsUsersCache = domainsGroupsUsersCache;
             GroupManager.this.domainsGroupsChildrenCache = domainsGroupsChildrenCache;
             GroupManager.this.domainsUsersCache = domainsUsersCache;
