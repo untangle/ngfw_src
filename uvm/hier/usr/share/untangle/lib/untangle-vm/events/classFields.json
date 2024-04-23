@@ -1631,6 +1631,36 @@
         },
     ]
     },
+    OperationsEvent: {
+        description: "These events are created when certain operations are performed and inserted to the [[Database_Schema#system_operations|system_operations]] table when operations are stored.",
+        fields: [
+            {
+            name: "class",
+            type: "Class",
+            description: "The class name",
+            },
+            {
+            name: "hostname",
+            type: "String",
+            description: "The hostname",
+            },
+            {
+            name: "operation",
+            type: "String",
+            description: "The operation name",
+            },
+            {
+            name: "timeStamp",
+            type: "Timestamp",
+            description: "The timestamp",
+            },
+            {
+            name: "username",
+            type: "String",
+            description: "The username",
+            },
+        ]
+    },
     CriticalAlertEvent: {
     description: "These events are created by the base system and inserted to the [[Database_Schema#critical_alerts|critical_alerts]] table to record critical system alerts.",
     fields: [

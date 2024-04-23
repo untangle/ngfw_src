@@ -110,6 +110,7 @@ human_names = {
 'old_value': 'Old Value',
 'os_name': 'Interface O/S Name',
 'out_bytes': 'Out Bytes',
+'operation': 'Operation',
 'p2c_bytes': 'To-Client Bytes',
 'p2s_bytes': 'To-Server Bytes',
 'phish_blocker_action': 'Phish Blocker ' + 'Action',
@@ -650,6 +651,14 @@ dict['settings_changes'] = copy.deepcopy(generic)
 dict['settings_changes'].update({
     'table_description' : 'This table stores settings changes.',
     'settings_file' : 'The name of the file changed',
+    'username' : 'The username logged in at the time of the change',
+    'hostname' : 'The remote hostname',
+})
+
+dict['system_operations'] = copy.deepcopy(generic)
+dict['system_operations'].update({
+    'table_description' : 'This table stores all operations.',
+    'operation' : 'The name of the operation',
     'username' : 'The username logged in at the time of the change',
     'hostname' : 'The remote hostname',
 })

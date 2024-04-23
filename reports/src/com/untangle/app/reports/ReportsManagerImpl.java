@@ -3,6 +3,8 @@
  */
 package com.untangle.app.reports;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,6 +27,7 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.OperationsEvent;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.WebBrowser;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -33,7 +36,7 @@ import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.app.PolicyManager;
-
+import com.untangle.uvm.app.HostnameLookup;
 /**
  * Reports manager implementation for reports manager API
  */
@@ -44,6 +47,8 @@ public class ReportsManagerImpl implements ReportsManager
     private static ReportsManagerImpl instance = null;
 
     private static ReportsApp app = null;
+
+    private static String DELETE_ALL_REPORTS = "delete all reports data";
 
     /**
      * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
@@ -1200,6 +1205,17 @@ public class ReportsManagerImpl implements ReportsManager
     public void reinitializeDatabase()
     {
         String cmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
+        String username = null;
+        String hostname = null;
+        String userHostNameInfo = UvmContextFactory.context().settingsManager().getUserAndHostNameInfo("reports");
+        if (userHostNameInfo != null) {
+            String infoArray[] = userHostNameInfo.split(",");
+            if (infoArray != null & infoArray.length == 2) {
+                username = infoArray[0];
+                hostname = infoArray[1];
+            }
+        }
+        UvmContextFactory.context().logEvent(new OperationsEvent(DELETE_ALL_REPORTS, username, hostname));
     }
 }

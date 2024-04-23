@@ -12,6 +12,7 @@ def generate_tables():
     __create_alerts_events_table()
     __create_settings_changes_table()
     __create_critical_alerts_table()
+    __create_system_operations_table()
     # 13.0 conversion
     if sql_helper.table_exists( "penaltybox" ):
         sql_helper.drop_table("penaltybox") 
@@ -274,3 +275,13 @@ CREATE TABLE reports.user_table_updates (
         value text,
         old_value text,
         time_stamp timestamp)""",[],["time_stamp"])
+
+
+@sql_helper.print_timing
+def __create_system_operations_table(  ):
+    sql_helper.create_table("""\
+CREATE TABLE reports.system_operations (
+        time_stamp timestamp NOT NULL,
+        operation text NOT NULL,
+        username text NOT NULL,
+        hostname text NOT NULL)""")

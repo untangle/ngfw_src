@@ -1,0 +1,13 @@
+{
+    "category": "Administration",
+    "readOnly": true,
+    "type": "EVENT_LIST",
+    "conditions": [],
+    "defaultColumns": ["time_stamp","hostname","username","operation"],
+    "description": "All operations performed by an administrator.",
+    "displayOrder": 1010,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "table": "system_operations",
+    "title": "All Operations",
+    "uniqueId": "administration-sHKXX7Tj"
+}

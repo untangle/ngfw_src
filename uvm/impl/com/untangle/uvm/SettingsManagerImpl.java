@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SettingsChangesEvent;
 import com.untangle.uvm.app.HostnameLookup;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * SettingsManager is the manager for all settings files
@@ -306,6 +308,37 @@ public class SettingsManagerImpl implements SettingsManager
         _saveImpl( fileName, inputFilename, saveVersion, true );
     }
 
+     /**
+     *Retrieve  username and hostname for reports app
+     *  @param  appName for which data is fetched
+     *
+     *  @return A string with comma separated username and hostname
+     */
+    public String getUserAndHostNameInfo(String appName) {
+
+        String username = null;
+        String hostname = null;
+        InheritableThreadLocal<HttpServletRequest> inheritableThreadLocal = UvmContextImpl.getInstance().threadRequest();
+        if((inheritableThreadLocal != null) &&
+           (inheritableThreadLocal.get() != null)){
+            username = inheritableThreadLocal.get().getRemoteUser();
+            HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().appManager().app(appName);
+            try {
+                hostname = inheritableThreadLocal.get().getRemoteAddr();
+                if( reports != null && hostname != null){
+                    hostname = reports.lookupHostname(InetAddress.getByName(inheritableThreadLocal.get().getRemoteAddr()));
+                }
+                if( hostname == null ){
+                    hostname = inheritableThreadLocal.get().getRemoteAddr();
+                }
+                if (hostname != null  & username != null) return username + "," +hostname;
+            } catch(UnknownHostException e) {
+                logger.warn("Host not found: ", e);
+            }
+        }
+        return null;
+    }
+
     /**
      * Set the serializer used for settings
      * @param serializer
@@ -551,16 +584,12 @@ public class SettingsManagerImpl implements SettingsManager
             
                 String username = null;
                 String hostname = null;
-                if((UvmContextImpl.getInstance().threadRequest() != null) &&
-                   (UvmContextImpl.getInstance().threadRequest().get() != null)){
-                    username = UvmContextImpl.getInstance().threadRequest().get().getRemoteUser();
-                    HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().appManager().app("reports");
-                    hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
-                    if( reports != null && hostname != null){
-                        hostname = reports.lookupHostname(InetAddress.getByName(UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr()));
-                    }
-                    if( hostname == null ){
-                        hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
+                String userHostNameInfo = getUserAndHostNameInfo("reports");
+                if (userHostNameInfo != null) {
+                    String infoArray[] = userHostNameInfo.split(",");
+                    if (infoArray != null & infoArray.length == 2) {
+                        username = infoArray[0];
+                        hostname = infoArray[1];
                     }
                 }
                 if (!outputFileName.contains(LICENSE_FILE_NAME)) {
