@@ -728,14 +728,17 @@ can look deeper. - mahotz
     /**
      * This test all the risks which might cause upgrade failure before actual upgrade starts
      * 
-     * @return List of failure raised while upgrade   
+     * @return List of risks which might cause upgrade failure before actual upgrade starts 
      */
-    public List<String>  canUpgrade()
+    public List<UpgradeFailures> canUpgrade() 
     {
-        List<String> upgradeIssues = new ArrayList<>();
+        List<UpgradeFailures> upgradeIssues = new ArrayList<>();
       
         try {
-            testDiskSpace(upgradeIssues);
+            UpgradeFailures failure = testDiskSpace();
+            if (failure != null) {
+                upgradeIssues.add(failure);
+            }
         } catch (Exception e) {
             logger.warn("Disk space check failed", e);
         }
@@ -745,9 +748,30 @@ can look deeper. - mahotz
     /**
      * This test that disk free % is less than 75%
      * 
-     * @param upgradeIssues take list of existing failure
+     * @return UpgradeFailures type of failure
      */
-    private void testDiskSpace(List<String> upgradeIssues){
+    private UpgradeFailures testDiskSpace() {
+        int percentUsed;
+        try {
+            percentUsed = getUsedDiskSpacePercentage();
+        } catch (Exception e) {
+            return UpgradeFailures.FAILED_TO_TEST;
+        }
+
+        if (percentUsed > 75) {
+            return UpgradeFailures.LOW_DISK;
+        } else {
+            return null; // No failures
+        }
+    }
+
+
+    /**
+     * This calculate the used disk space in percent
+     * 
+     * @return percentUsed  used disk space 
+     */
+    public int getUsedDiskSpacePercentage(){
         int percentUsed;
         try {
             File rootFile = new File("/");
@@ -756,14 +780,10 @@ can look deeper. - mahotz
             percentUsed =(int) ((1-((double) usedSpace / totalSpace) )* 100);
         } catch (Exception e) {
             logger.warn("Unable to determine free disk space", e);
-            return;
+            throw e;
         }
-
-        if (percentUsed > 75) {
-            upgradeIssues.add("LOW_DISK");
-        }
+        return percentUsed;
     }
-
 
     /**
      * If support access in enabled, start pyconnector and enable on startup. If

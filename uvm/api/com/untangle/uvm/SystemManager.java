@@ -12,6 +12,14 @@ import java.util.List;
  */
 public interface SystemManager
 {
+    /**
+     * Upgrade issues enum
+     */    
+    public enum UpgradeFailures {
+        LOW_DISK,
+        FAILED_TO_TEST
+    }
+    
     SystemSettings getSettings();
 
     void setSettings(SystemSettings settings);
@@ -58,7 +66,9 @@ public interface SystemManager
 
     boolean downloadUpgrades();
 
-    List<String> canUpgrade();
+    List<UpgradeFailures> canUpgrade();
+
+    int getUsedDiskSpacePercentage();
 
     org.json.JSONObject getDownloadStatus();
 

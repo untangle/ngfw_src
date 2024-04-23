@@ -340,12 +340,8 @@ public class NotificationManagerImpl implements NotificationManager
     {
         int percentUsed;
         try {
-            File rootFile = new File("/");
-            long totalSpace = rootFile.getTotalSpace();
-            long usedSpace = rootFile.getUsableSpace();
-            percentUsed =(int) ((1-((double) usedSpace / totalSpace) )* 100);
+            percentUsed = UvmContextFactory.context().systemManager().getUsedDiskSpacePercentage();
         } catch (Exception e) {
-            logger.warn("Unable to determine free disk space", e);
             return;
         }
 
