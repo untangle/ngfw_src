@@ -119,5 +119,20 @@ Ext.define('Ung.Application', {
             });
 
         }
+    },
+
+    /**
+     * Method called when bandwidth-control app is enabled
+     */
+    qosEnableHandler: function (cb) {
+        // fetching network settings
+        var networkSettings = Rpc.directData('rpc.networkManager.app("bandwidth-control").getNetworkSettings');
+        if(networkSettings.qosSettings.qosEnabled){
+            return;
+        }
+        networkSettings.qosSettings.qosEnabled = true;
+        // settings the qosEnabled to true
+        Rpc.directData('rpc.networkManager.setNetworkSettings', networkSettings);
+        cb();
     }
 });

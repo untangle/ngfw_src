@@ -81,6 +81,12 @@ Ext.define('Ung.cmp.AppState', {
                         return;
                     }
                     btn.setDisabled(false);
+                    if (appManager.getAppProperties().name === 'bandwidth-control') {
+                        // if app is bandwidth-control and if it's enabled
+                        Ung.app.qosEnableHandler(function(){
+                            appView.getController().fetchQosData();
+                        });
+                    }
                     me.reload();
                 },function(ex){
                     Ext.Msg.alert('Error', ex.message);
