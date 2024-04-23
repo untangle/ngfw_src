@@ -39,6 +39,7 @@ Ext.define('Ung.config.upgrade.MainController', {
 
         me.loadSettings();
         me.checkUpgrades();
+        
     },
 
     canUpgrade: function() {
