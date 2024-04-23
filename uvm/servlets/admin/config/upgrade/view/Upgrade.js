@@ -28,7 +28,14 @@ Ext.define('Ung.config.upgrade.view.Upgrade', {
             padding: 5,
             margin: 20,
             html: 'No upgrades available.'.t(),
-            hidden: true
+            hidden: true,
+        },{
+            xtype: "component",
+            name: 'upgradeIssueText',
+            padding: 5,
+            margin: 20,
+            html: 'Unable to upgrade.'.t(),
+            hidden: true,
         }, {
             xtype: "button",
             name: 'upgradeButton',

@@ -5,6 +5,7 @@ package com.untangle.uvm;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.List;
 
 /**
  * the System Manager API
@@ -56,6 +57,8 @@ public interface SystemManager
     boolean getIsUpgrading();
 
     boolean downloadUpgrades();
+
+    List<String> canUpgrade();
 
     org.json.JSONObject getDownloadStatus();
 

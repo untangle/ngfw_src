@@ -726,6 +726,46 @@ can look deeper. - mahotz
     }
 
     /**
+     * This test all the risks which might cause upgrade failure before actual upgrade starts
+     * 
+     * @return List of failure raised while upgrade   
+     */
+    public List<String>  canUpgrade()
+    {
+        List<String> upgradeIssues = new ArrayList<>();
+      
+        try {
+            testDiskSpace(upgradeIssues);
+        } catch (Exception e) {
+            logger.warn("Disk space check failed", e);
+        }
+        return upgradeIssues;
+    }
+
+    /**
+     * This test that disk free % is less than 75%
+     * 
+     * @param upgradeIssues take list of existing failure
+     */
+    private void testDiskSpace(List<String> upgradeIssues){
+        int percentUsed;
+        try {
+            File rootFile = new File("/");
+            long totalSpace = rootFile.getTotalSpace();
+            long usedSpace = rootFile.getUsableSpace();
+            percentUsed =(int) ((1-((double) usedSpace / totalSpace) )* 100);
+        } catch (Exception e) {
+            logger.warn("Unable to determine free disk space", e);
+            return;
+        }
+
+        if (percentUsed > 75) {
+            upgradeIssues.add("LOW_DISK");
+        }
+    }
+
+
+    /**
      * If support access in enabled, start pyconnector and enable on startup. If
      * not, stop it and disable on startup
      */

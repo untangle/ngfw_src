@@ -39,9 +39,52 @@ Ext.define('Ung.config.upgrade.MainController', {
 
         me.loadSettings();
         me.checkUpgrades();
-
     },
 
+    canUpgrade: function() {
+        var view = this.getView();
+            Rpc.asyncData('rpc.systemManager.canUpgrade')
+                .then(function(result) {
+                        var upgradeIssues = result.list;
+                        var upgradeButton  = view.down('[name="upgradeButton"]');
+                        var upgradeIssueText = view.down('[name="upgradeIssueText"]');
+                        if (upgradeIssues.length === 0) {
+                            // Enable Upgrade Now button
+                            if(upgradeButton)
+                                upgradeButton.show();
+                        } else {
+                            // Hide UpgradeNow button if having any system issue
+                            upgradeButton.hide();
+
+                            // Display upgrade issues message 
+                            var message = '<b>Upgrades are ready but unable to install:</b><ul>'.t();
+                            
+                            // Iterate through each upgrade issue and list them 
+                            upgradeIssues.forEach(function(issue) {
+                                message += '<li>';
+                                switch (issue) {
+                                    case 'LOW_DISK':
+                                        message += 'Not enough disk space'.t();
+                                        break;
+                                    // Add more cases for other upgrade issues
+                                    default:
+                                        message += 'Unknown issue: '.t() + issue;
+                                        break;
+                                }
+                                message += '</li>';
+                            });
+                            message += '</ul>';
+
+                            upgradeIssueText.update(message);
+                            upgradeIssueText.show();
+                        }
+                   
+                }, function(ex) {
+                    console.error('Failed to check upgrade issues:', ex);
+
+                });
+    },
+    
     loadSettings: function () {
         var me = this,
             v = me.getView(),
@@ -99,18 +142,16 @@ Ext.define('Ung.config.upgrade.MainController', {
     },
 
     checkUpgrades: function () {
+        var me = this;
         var view = this.getView();
-
         setTimeout( function(){
             Rpc.asyncData('rpc.systemManager.upgradesAvailable')
             .then(function (result) {
                 if(Util.isDestroyed(view)){
                     return;
                 }
-                if(result) {
-                    var upgradeButton = view.down('[name="upgradeButton"]');
-                    if (upgradeButton)
-                        upgradeButton.show();
+                if(result) {                   
+                    me.canUpgrade();
                 } else {
                     var upgradeText = view.down('[name="upgradeText"]');
                     if (upgradeText)
