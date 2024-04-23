@@ -5,7 +5,7 @@ package com.untangle.uvm;
 
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * the System Manager API
@@ -66,7 +66,7 @@ public interface SystemManager
 
     boolean downloadUpgrades();
 
-    List<UpgradeFailures> canUpgrade();
+    HashSet<UpgradeFailures> canUpgrade();
 
     int getUsedDiskSpacePercentage();
 
