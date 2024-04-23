@@ -377,15 +377,15 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                 var clients = [{
                   name: 'downloadUntangleConfigurationFile',
                   type: 'zip',
-                  message: 'Click here to download this client\'s configuration zip file for remote NGFW OpenVPN site to site connections.'.t()
+                  message: 'Download client configuration zip file for remote NGFW OpenVPN site to site connections.'.t()
                 },{
                   name: 'downloadGenericConfigurationFile',
                   type: 'ovpn',
-                  message: 'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline (For use with OpenVPN Community Edition).'.t()
+                  message: 'Download client configuration as a single ovpn file with all certificates included inline (For use with OpenVPN Community Edition).'.t()
                 },{
                   name: 'downloadChromebookConfigurationFile',
                   type: 'onc',
-                  message: 'Click here to download this client\'s configuration onc file for Chromebook.'.t()
+                  message: 'Download client configuration ONC file for Chromebook.'.t()
                 }];
 
                 Ext.MessageBox.wait("Building OpenVPN Clients...".t(), "Please Wait".t());
