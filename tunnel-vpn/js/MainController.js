@@ -464,7 +464,7 @@ Ext.define('Ung.apps.tunnel-vpn.TunnelRecordEditorController', {
             var record = vm.get('record');
             if( ( oldValue != null ) &&
                 ( newValue != oldValue ) &&
-                ( ( typeof record.modified.provider == undefined ) || record.modified.provider != newValue ) ){
+                ( record.modified && (( typeof record.modified.provider == undefined ) || record.modified.provider != newValue )) ){
                 fileButton.setValidation('Provider changed');
             }
 
