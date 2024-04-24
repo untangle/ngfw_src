@@ -12,9 +12,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.uvm.UvmContextFactory;
-// import com.untangle.app.directory_connector.GroupEntry;
-// import com.untangle.app.directory_connector.UserEntry;
 import com.untangle.uvm.app.GroupMatcher;
 import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.util.Pulse;
@@ -524,7 +521,7 @@ public class GroupManager
                         groupList = adAdapter.listAllGroups(true, searchBase);
                     } catch ( Exception ex ) {
                         logger.warn("Unable to retrieve the group entries", ex);
-                        return;
+                        continue;
                     }
 
                     // Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<String,Boolean>();
