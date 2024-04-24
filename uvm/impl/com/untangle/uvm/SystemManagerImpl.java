@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -731,9 +732,9 @@ can look deeper. - mahotz
      * 
      * @return Set of risks which might cause upgrade failure before actual upgrade starts 
      */
-    public HashSet<UpgradeFailures> canUpgrade() 
+    public Set<UpgradeFailures> canUpgrade() 
     {
-        HashSet<UpgradeFailures> upgradeIssues = new HashSet<>();
+        Set<UpgradeFailures> upgradeIssues = new HashSet<>();
       
         try {
             UpgradeFailures failure = testDiskSpace();
