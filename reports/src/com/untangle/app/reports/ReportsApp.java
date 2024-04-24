@@ -353,6 +353,21 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
         return 0;
     }
+
+
+    /**
+     * Return EventWriterImpl object.
+     *
+     * @return
+     *  EventWriterImpl object.
+     */
+    protected EventWriterImpl getEventWriter()
+    {
+        if (ReportsApp.eventWriter != null)
+            return ReportsApp.eventWriter;
+
+        return null;
+    }
     
     /** 
      * Save settings using default values.

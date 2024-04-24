@@ -3,8 +3,6 @@
  */
 package com.untangle.app.reports;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,7 +34,7 @@ import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.app.PolicyManager;
-import com.untangle.uvm.app.HostnameLookup;
+
 /**
  * Reports manager implementation for reports manager API
  */
@@ -1204,18 +1202,54 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public void reinitializeDatabase()
     {
-        String cmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(cmd);
-        String username = null;
-        String hostname = null;
-        String userHostNameInfo = UvmContextFactory.context().settingsManager().getUserAndHostNameInfo("reports");
-        if (userHostNameInfo != null) {
-            String infoArray[] = userHostNameInfo.split(",");
-            if (infoArray != null & infoArray.length == 2) {
-                username = infoArray[0];
-                hostname = infoArray[1];
+        try {
+            //Need to stop EventWriter thread to avoid DB write failures
+            if (app.getEventWriter() != null) {
+                app.getEventWriter().stop();
             }
+            String pgCleanupCmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
+            String pgStopCmd = "/etc/init.d/postgresql stop >/dev/null 2>&1";
+            String pgStatusCmd = "/etc/init.d/postgresql status";
+            String pgStartCmd = "/etc/init.d/postgresql start >/dev/null 2>&1";
+            String generateReportTablesCmd = "/usr/share/untangle/bin/reports-generate-tables.py";
+            UvmContextFactory.context().execManager().execResult(pgStopCmd);
+            int pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd + " | grep Stopped");
+            UvmContextFactory.context().execManager().execOutput(pgCleanupCmd);
+            UvmContextFactory.context().execManager().execResult(pgStartCmd);
+            pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd);
+            if (pgStatus == 0) {
+                UvmContextFactory.context().execManager().execOutput(generateReportTablesCmd);
+                String username = null;
+                String hostname = null;
+                String userHostNameInfo = UvmContextFactory.context().settingsManager().getUserAndHostNameInfo("reports");
+                if (userHostNameInfo != null) {
+                    String infoArray[] = userHostNameInfo.split(",");
+                    if (infoArray != null & infoArray.length == 2) {
+                        username = infoArray[0];
+                        hostname = infoArray[1];
+                    }
+
+                    OperationsEvent event = new OperationsEvent(DELETE_ALL_REPORTS, username, hostname);
+                    //Start EventWriter after successful completion of DELETE_ALL_REPORTS data
+                    if (app.getEventWriter() != null) {
+                        app.getEventWriter().start(app);
+                        //Added additional wait, EventWriter yet to be ready
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            logger.warn("Interrupted during wait....");
+                        }
+                        UvmContextFactory.context().logEvent(event);
+                    }
+                    } else {
+                        logger.info("Operation event generation failed, EventWriter not ready, Restart is required ");
+                    }
+            } else {
+                logger.warn("postgres not ready, cannot reinitialize db " + pgStatusCmd);
+                if (app.getEventWriter() != null) app.getEventWriter().start(app);
+            }
+        } catch (Exception e) {
+            logger.warn("Exception occured during reinitializeDB", e);
         }
-        UvmContextFactory.context().logEvent(new OperationsEvent(DELETE_ALL_REPORTS, username, hostname));
     }
 }
