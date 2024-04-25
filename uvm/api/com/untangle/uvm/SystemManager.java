@@ -5,12 +5,21 @@ package com.untangle.uvm;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.Set;
 
 /**
  * the System Manager API
  */
 public interface SystemManager
 {
+    /**
+     * Upgrade issues enum
+     */    
+    public enum UpgradeFailures {
+        LOW_DISK,
+        FAILED_TO_TEST
+    }
+    
     SystemSettings getSettings();
 
     void setSettings(SystemSettings settings);
@@ -56,6 +65,10 @@ public interface SystemManager
     boolean getIsUpgrading();
 
     boolean downloadUpgrades();
+
+    Set<UpgradeFailures> canUpgrade();
+
+    int getUsedDiskSpacePercentage();
 
     org.json.JSONObject getDownloadStatus();
 

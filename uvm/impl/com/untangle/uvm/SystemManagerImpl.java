@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.TimeZone;
@@ -723,6 +725,66 @@ can look deeper. - mahotz
     public boolean upgradesAvailable()
     {
         return upgradesAvailable(true);
+    }
+
+    /**
+     * This test all the risks which might cause upgrade failure before actual upgrade starts
+     * 
+     * @return Set of risks which might cause upgrade failure before actual upgrade starts 
+     */
+    public Set<UpgradeFailures> canUpgrade() 
+    {
+        Set<UpgradeFailures> upgradeIssues = new HashSet<>();
+      
+        try {
+            UpgradeFailures failure = testDiskSpace();
+            if (failure != null) {
+                upgradeIssues.add(failure);
+            }
+        } catch (Exception e) {
+            logger.warn("Disk space check failed", e);
+        }
+        return upgradeIssues;
+    }
+
+    /**
+     * This test that disk free % is less than 75%
+     * 
+     * @return UpgradeFailures type of failure
+     */
+    private UpgradeFailures testDiskSpace() {
+        int percentUsed;
+        try {
+            percentUsed = getUsedDiskSpacePercentage();
+        } catch (Exception e) {
+            return UpgradeFailures.FAILED_TO_TEST;
+        }
+
+        if (percentUsed > 75) {
+            return UpgradeFailures.LOW_DISK;
+        } else {
+            return null; // No failures
+        }
+    }
+
+
+    /**
+     * This calculate the used disk space in percent
+     * 
+     * @return percentUsed  used disk space 
+     */
+    public int getUsedDiskSpacePercentage(){
+        int percentUsed;
+        try {
+            File rootFile = new File("/");
+            long totalSpace = rootFile.getTotalSpace();
+            long usedSpace = rootFile.getUsableSpace();
+            percentUsed =(int) ((1-((double) usedSpace / totalSpace) )* 100);
+        } catch (Exception e) {
+            logger.warn("Unable to determine free disk space", e);
+            throw e;
+        }
+        return percentUsed;
     }
 
     /**
