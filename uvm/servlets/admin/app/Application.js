@@ -119,6 +119,5 @@ Ext.define('Ung.Application', {
             });
 
         }
-    },
-
+    }
 });
