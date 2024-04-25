@@ -81,8 +81,7 @@ Ext.define('Ung.config.upgrade.MainController', {
                         }
                    
                 }, function(ex) {
-                    console.error('Failed to check upgrade issues:', ex);
-
+                    Util.handleException(ex);
                 });
     },
     
