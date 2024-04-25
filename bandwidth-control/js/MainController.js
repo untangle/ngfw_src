@@ -44,6 +44,19 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
             Util.handleException(ex);
         });
     },
+    
+    /**
+     * Method called to fetch the current value of qosEnabled
+     */
+    fetchQosData: function (){
+        var v = this.getView(), vm = this.getViewModel();
+        try{
+            var qosEnabled = Rpc.directData('rpc.networkManager.getNetworkSettings.qosSettings.qosEnabled');
+            vm.set("qosEnabled",qosEnabled);
+        }catch (error){
+            Util.handleException(error);
+        }
+    },
 
     setSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();

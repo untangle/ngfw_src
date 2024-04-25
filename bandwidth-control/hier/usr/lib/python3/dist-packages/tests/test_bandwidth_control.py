@@ -658,6 +658,19 @@ class BandwidthControlTests(NGFWTestCase):
             uvmContext.appManager().destroy( cls._app_web_filter.getAppSettings()["id"] )
             cls._app_web_filter = None
 
+    def test_qos_enabled_101(self):
+        """
+        Verify if qosEnabled is disabled and if the app is started then qosEnabled is enabled
+        """
+        global networkSettings,appName, remote_app, test_var, appName
+        self._app.stop()
+        networkSettings = uvmContext.networkManager().getNetworkSettings()
+        networkSettings['qosSettings']['qosEnabled']=False
+        uvmContext.networkManager().setNetworkSettings(networkSettings)
+        self._app.start()
+        networkSettings = uvmContext.networkManager().getNetworkSettings()
+        assert(networkSettings['qosSettings']['qosEnabled'])
+
 
 test_registry.register_module("bandwidth-control", BandwidthControlTests)
 
