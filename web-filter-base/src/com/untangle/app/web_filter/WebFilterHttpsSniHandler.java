@@ -264,7 +264,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             // Attach the domain as the HTTP:URL here
             if(sess.globalAttachment(AppSession.KEY_HTTP_URL) == null)
             {
-                sess.globalAttach(AppSession.KEY_HTTP_URL, domain + "/");
+                sess.globalAttach(AppSession.KEY_HTTP_URL, encodedDomain + "/");
             }
 
         } catch (Exception e) {
