@@ -5,7 +5,9 @@
 package com.untangle.app.threat_prevention;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.BufferUnderflowException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
@@ -248,13 +250,14 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             logger.debug("Using existing requestLine: " + requestLine.toString());
         }
 
+        String encodedDomain = URLEncoder.encode(domain, StandardCharsets.UTF_8);
         URI fakeUri;
         try {
             fakeUri = new URI("/");
             /**
              * Test that https://domain/ is a valid URL
              */
-            URI uri = new URI("https://" + domain + "/");
+            URI uri = new URI("https://" + encodedDomain + "/");
         } catch (Exception e) {
             if (e.getMessage().contains("Illegal character")) {
                 logger.error("Could not parse (illegal character): " + domain);
@@ -308,7 +311,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         evt = (HttpRequestEvent) sess.globalAttachment(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT);
 
         if (evt == null) {
-            evt = new HttpRequestEvent(requestLine, domain, null, 0);
+            evt = new HttpRequestEvent(requestLine, encodedDomain, null, 0);
             requestLine.setHttpRequestEvent(evt);
             this.app.logEvent(evt);
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT, evt);
@@ -318,10 +321,10 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         }
 
         // attach the hostname we extracted to the session
-        sess.globalAttach(AppSession.KEY_HTTP_HOSTNAME, domain);
+        sess.globalAttach(AppSession.KEY_HTTP_HOSTNAME, encodedDomain);
 
         HeaderToken h = new HeaderToken();
-        h.addField("host", domain);
+        h.addField("host", encodedDomain);
 
         // pass the info to the decision engine to see if we should block
         HttpRedirect redirect = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
