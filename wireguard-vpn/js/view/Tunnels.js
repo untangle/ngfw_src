@@ -88,7 +88,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             vtype: 'isSingleIpValid',
             emptyText: '[enter peer IP address]'.t(),
             validator: function(value) {
-                return peerIpAddrValidator(value, 'peerAddress', this);
+                return peerIpAddrValidator(value, 'peerAddress', this, 'app-wireguard-vpn-server-tunnels-grid');
             }
         }
     }, {
@@ -136,7 +136,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         validator: function(value, component) {
             if(component === undefined)
                     component = this;
-            return isUnique(value, 'description', component);
+            return Util.isUnique(value, 'tunnel', 'description', component, 'app-wireguard-vpn-server-tunnels-grid');
         }
     }, {
         xtype: 'textfield',
@@ -150,7 +150,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             if(component == undefined){
                 component = this;
             }
-            return isUnique(value, 'publicKey', component);
+            return Util.isUnique(value, 'tunnel', 'publicKey', component, 'app-wireguard-vpn-server-tunnels-grid');
         }
     }, {
         xtype: 'fieldset',
@@ -215,7 +215,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             if(component == undefined){
                 component = this;
             }
-            return peerIpAddrValidator(value, 'peerAddress', component);
+            return peerIpAddrValidator(value, 'peerAddress', component, 'app-wireguard-vpn-server-tunnels-grid');
         }
     }, {
         xtype: 'textarea',
@@ -367,8 +367,8 @@ function isIPAddressUnderNWRange(value, component) {
     }       
 }
 
-function peerIpAddrValidator(value, field, component) {
-    var uniqueError = isUnique(value, field, component);
+function peerIpAddrValidator(value, field, component, grid) {
+    var uniqueError = Util.isUnique(value, 'tunnel', field, component, grid);
     var rangeError = isIPAddressUnderNWRange(value, component);
     
     if (rangeError !== true) {

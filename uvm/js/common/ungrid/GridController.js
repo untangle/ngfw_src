@@ -449,7 +449,7 @@ Ext.define('Ung.cmp.GridController', {
                         var fieldValue = record[fieldName];
                         var fieldConfig = this.getFieldConfig(fieldName);
         
-                        if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype)) {
+                        if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
                             var validationErrorMsg = null;
         
                             if (!fieldConfig.allowBlank && !fieldConfig.bind.disabled && Ext.isEmpty(fieldValue)) {
@@ -470,7 +470,7 @@ Ext.define('Ung.cmp.GridController', {
         
                             // Currently, custom validator is tailored exclusively for the WG App.
                             // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
-                            if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel'){
+                            if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnRemoteClient' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnGroup' || record.javaClass === "com.untangle.app.openvpn.OpenVpnExport" || record.javaClass === "com.untangle.app.openvpn.OpenVpnConfigItem" ){
                                 if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
                                     validationErrorMsg = fieldConfig.validator(fieldValue, this);
                                 }
@@ -499,7 +499,7 @@ Ext.define('Ung.cmp.GridController', {
         }
 
         //To import all the record for another app
-        if (validData.length === 0) {
+        if (validData.length === 0 && validationErrors.length === 0) {
             validData = newData;
         }
     
@@ -527,33 +527,36 @@ Ext.define('Ung.cmp.GridController', {
     
     getFieldConfig: function(fieldName) {
         // Retrieve the field configuration from editorFields array based on field name extracted from bind property
-        return this.getView().editorFields.find(function(fieldConfig) {
-            if (fieldConfig.bind) {
-                // Extract the field name from bind property in various formats
-                var bindValue = fieldConfig.bind.value || fieldConfig.bind;
-                if (typeof bindValue === 'string') {
-                    // If bindValue is a string, check if it's in the specified format
-                    var fieldNameFromBind = bindValue.split('.')[1].split('}')[0];
-                    if (fieldNameFromBind === fieldName) {
-                        return fieldConfig;
-                    }
-                } else if (typeof bindValue === 'object') {
-                    // If bindValue is an object, check each key for the specified format
-                    for (var key in bindValue) {
-                        if (bindValue.hasOwnProperty(key) && key === 'value') {
-                            var value = bindValue[key];
-                            if (typeof value === 'string' && value.includes('{record.')) {
-                                var fieldNameFromBindValue = value.split('.')[1].split('}')[0];
-                                if (fieldNameFromBindValue === fieldName) {
-                                    return fieldConfig;
+        if(this.getView().editorFields !== null){
+            return this.getView().editorFields.find(function(fieldConfig) {
+                if (fieldConfig.bind) {
+                    // Extract the field name from bind property in various formats
+                    var bindValue = fieldConfig.bind.value || fieldConfig.bind;
+                    if (typeof bindValue === 'string') {
+                        // If bindValue is a string, check if it's in the specified format
+                        var fieldNameFromBind = bindValue.split('.')[1].split('}')[0];
+                        if (fieldNameFromBind === fieldName) {
+                            return fieldConfig;
+                        }
+                    } else if (typeof bindValue === 'object') {
+                        // If bindValue is an object, check each key for the specified format
+                        for (var key in bindValue) {
+                            if (bindValue.hasOwnProperty(key) && key === 'value') {
+                                var value = bindValue[key];
+                                if (typeof value === 'string' && value.includes('{record.')) {
+                                    var fieldNameFromBindValue = value.split('.')[1].split('}')[0];
+                                    if (fieldNameFromBindValue === fieldName) {
+                                        return fieldConfig;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            return false;
-        });
+                return false;
+            });
+        }
+       
     },
     
     getExportData: function (useId) {
