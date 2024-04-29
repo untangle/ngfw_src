@@ -1260,5 +1260,151 @@ Ext.define('Ung.util.Util', {
             ]];
         }
     },
+
+    /**
+     * Method to check if new value is not exists in current store
+     * @param value that has to check for uniqueness.
+     * @param form tab for which error has to be shown.
+     * @param field against which value has to be validated.
+     * @param component current object.
+     * @param query grid name to fetch the value of grid.
+     * @return boolean if value is validated else error for invalid value.
+     */
+    isUnique: function(value, form, field, component, query) {
+        var currentRecord ;
+        if(component.getId().indexOf('textfield') !== -1){
+        if(component.up('window')!=undefined)
+            currentRecord = component.up('window').getViewModel().data.record.get(field);
+        if (value === currentRecord) {
+            return true;
+        }
+        //Return true if editable field peerAddress in grid is not modified
+        if(!component.dirty && field === 'peerAddress') {
+            return true; 
+        }
+        }
+        var grid = Ext.ComponentQuery.query(query)[0];
+        var store = grid.getStore();
+
+        var isNameUnique = store.findBy(function(record) {
+            return record.get(field) === value;
+        }) === -1;
+        
+        return isNameUnique? true : Ext.String.format('A {0} with this {1} already exists.'.t(), form, field);
+    },
+
+    /**
+     * Method to get list of ip addresses and netmasks from remote networks seprated by comma
+     * @param remoteNetworks networks in CIDR format seprated by comma.
+     * @return List of objects containg Ip and subnetMask of individual network.
+     */
+    getParsedAddresses: function(remoteNetworks){
+        var parsedAddresses = [];
+        // Split remoteNetworks by commas to handle multiple networks
+        var addresses = remoteNetworks.split(',');
+        addresses.forEach(function (address) {
+            // Trim each address to remove leading/trailing spaces
+            address = address.trim();
+            // Split the address into IP and subnet mask
+            var parts = address.split('/');
+            var ip = parts[0];
+            var subnetMask = parseInt(parts[1], 10); // Specify radix as 10
+
+            parsedAddresses.push({
+                ip: ip,
+                subnetMask: subnetMask
+            });
+        });
+
+        return parsedAddresses;
+    },
+
+    /**
+     * Method to check if two IP ranges overlap
+     * @param address1 first object containg ip address and subnet mask.
+     * @param address2 second object containg ip address and subnet mask.
+     * @return boolean, true if both value overlap else false.
+     */
+    doRangesOverlap: function(address1, address2) {
+
+        // Extract network from addresses and subnet masks
+        var network1 = Util.convertIPIntoDecimalForEachOctet(address1.ip) & (0xFFFFFFFF << (32 - address1.subnetMask));
+        var network2 = Util.convertIPIntoDecimalForEachOctet(address2.ip) & (0xFFFFFFFF << (32 - address2.subnetMask));
     
+        // Check if the network addresses are the same and if they intersect
+        return network1 === network2;
+    },
+
+    /**
+     * Method to validate network intersection
+     * @param value that has to check for uniqueness.
+     * @param form tab for which error has to be shown.
+     * @param field against which value has to be validated.
+     * @param component current object.
+     * @param query grid name to fetch the value of grid.
+     * @return boolean if value is validated else error for invalid value.
+     */
+    isIpIntersects: function(value, form, field, component, query) {
+        var grid = Ext.ComponentQuery.query(query)[0];
+        var store = grid.getStore();
+    
+        var parsedAddresses;
+        // Array to store parsed new IP addresses with subnet masks
+        if(value !== null && value !== "")
+            parsedAddresses = Util.getParsedAddresses(value);
+       
+        // Fetch already stored values
+        var allStoredAddresses = [];
+
+        store.each(function(record) {
+            var fieldValue = record.get(field);
+            if (fieldValue != null) {
+                allStoredAddresses.push(Util.getParsedAddresses(fieldValue));
+            }
+        });
+        // For edit grid, check only for newly added values
+        if (component.getId().indexOf('textfield') !== -1 && component.bind !== null && component.bind.value.lastValue !== undefined) {
+
+            if(component.bind.value.lastValue !== null){
+                // Fetch previous value stored in grid
+                var currentStoredValueInGrid = component.bind.value.lastValue;
+                // Current parsed addresses with subnet masks in editor grid
+                var currentParsedAddresses = Util.getParsedAddresses(currentStoredValueInGrid);
+        
+                // Check for intersection between new IP ranges and already stored values in current record
+                var newlyAddedValue = parsedAddresses.filter(function(parsedAddress) {
+                    return !currentParsedAddresses.some(function(currentAddress) {
+                        return Util.doRangesOverlap(parsedAddress, currentAddress);
+                    });
+                });
+        
+                // Check for intersection between new IP ranges within the same record
+                if (parsedAddresses.some(function(parsedAddress, k) {
+                    return parsedAddresses.slice(k + 1).some(function(nextParsedAddress) {
+                        return Util.doRangesOverlap(parsedAddress, nextParsedAddress);
+                    });
+                })) {
+                    return Ext.String.format('The {0} values intersect with each other.'.t(), form);
+                }
+                parsedAddresses = newlyAddedValue;
+            }
+        }
+
+        // Check if parsedAddresses is defined and not empty
+        if (parsedAddresses && parsedAddresses.length > 0) {
+            // Check for intersection between new IP ranges and stored values
+            if (allStoredAddresses.some(function(storedAddressesArray) {
+                return storedAddressesArray.some(function(storedAddress) {
+                    return parsedAddresses.some(function(parsedAddress) {
+                        return Util.doRangesOverlap(storedAddress, parsedAddress);
+                    });
+                });
+            })) {
+                return Ext.String.format('The {0} values intersect with already stored values in {1} records.'.t(), field, form);
+            }
+        }
+    
+        // If no intersection found, return true
+        return true;
+    }
 });
