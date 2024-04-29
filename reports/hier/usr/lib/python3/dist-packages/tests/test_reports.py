@@ -843,6 +843,11 @@ class ReportsTests(NGFWTestCase):
         
         assert(len(pre_reinit_tables) == len(post_reinit_tables))
         assert(pre_reinit_tables == post_reinit_tables)
+        # Verify delete all reports data operation event is generated.
+        events = global_functions.get_events("Administration",'All Operations',None,5)
+        found = global_functions.check_events( events.get('list'), 5,
+                                              "operation", "delete all reports data" )
+        assert(found)
 
     def test_040_remote_syslog(self):
         if (not can_syslog):

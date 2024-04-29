@@ -45,6 +45,11 @@ public interface SettingsManager
     public String getDiff(String fileName) throws SettingsException;
 
     /**
+     * See SettingsManagerImpl
+     */
+    public String getUserAndHostNameInfo(String appName);
+
+    /**
      * Settings exception
      */
     @SuppressWarnings("serial")

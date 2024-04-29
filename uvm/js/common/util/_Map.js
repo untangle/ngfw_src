@@ -399,6 +399,10 @@ Ext.define('Ung.util.Map', {
             col: { text: 'Out Bytes'.t(), filter: Rndr.filters.numeric, width: 100 },
             fld: { type: 'number' }
         },
+        operation: {
+            col: { text: 'Operation'.t(), width: 200, renderer: Rndr.operation },
+            fld: { type: 'string' }
+        },
         p2c_bytes: {
             col: { text: 'To-Client Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
             fld: { type: 'number' }
@@ -1227,6 +1231,12 @@ Ext.define('Ung.util.Map', {
             'username',
             'hostname',
             'differences' // custom non sql table field
+        ],
+        system_operations: [
+            'time_stamp',
+            'operation',
+            'username',
+            'hostname'
         ],
         critical_alerts: [
             'time_stamp',
