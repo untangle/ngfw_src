@@ -470,7 +470,7 @@ Ext.define('Ung.cmp.GridController', {
         
                             // Currently, custom validator is tailored exclusively for the WG App.
                             // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
-                            if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnRemoteClient' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnGroup' || record.javaClass === "com.untangle.app.openvpn.OpenVpnExport" || record.javaClass === "com.untangle.app.openvpn.OpenVpnConfigItem" ){
+                            if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnRemoteClient' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnGroup' || record.javaClass === "com.untangle.app.openvpn.OpenVpnExport" || record.javaClass === "com.untangle.app.openvpn.OpenVpnConfigItem" || record.javaClass === "com.untangle.app.ipsec_vpn.IpsecVpnTunnel" || record.javaClass === "com.untangle.app.ipsec_vpn.IpsecVpnNetwork"  ){
                                 if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
                                     validationErrorMsg = fieldConfig.validator(fieldValue, this);
                                 }
