@@ -467,10 +467,11 @@ Ext.define('Ung.cmp.GridController', {
                                     }
                                }
                             }
-        
+
+                            
                             // Currently, custom validator is tailored exclusively for the WG App.
                             // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
-                            if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnRemoteClient' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnGroup' || record.javaClass === "com.untangle.app.openvpn.OpenVpnExport" || record.javaClass === "com.untangle.app.openvpn.OpenVpnConfigItem" || record.javaClass === "com.untangle.app.ipsec_vpn.IpsecVpnTunnel" || record.javaClass === "com.untangle.app.ipsec_vpn.IpsecVpnNetwork"  ){
+                            if(record.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnRemoteClient' || record.javaClass === 'com.untangle.app.openvpn.OpenVpnGroup' || record.javaClass === "com.untangle.app.openvpn.OpenVpnExport" || record.javaClass === "com.untangle.app.openvpn.OpenVpnConfigItem" || record.javaClass === "com.untangle.app.ipsec_vpn.IpsecVpnTunnel" || record.javaClass === "com.untangle.app.ipsec_vpn.IpsecVpnNetwork" || record.javaClass ==="com.untangle.app.tunnel_vpn.TunnelVpnRule" ){
                                 if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
                                     validationErrorMsg = fieldConfig.validator(fieldValue, this);
                                 }
@@ -480,6 +481,52 @@ Ext.define('Ung.cmp.GridController', {
                             if (validationErrorMsg !== null) {
                                 isValidRecord = false;
                                 validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, fieldValue, validationErrorMsg)); 
+                                break; // Stop validation for this record if any field fails
+                            }
+                        }
+
+                        // check allowblank and vtype validation for conditions applied
+
+                        if(fieldConfig && fieldConfig.conditionsOrder && fieldConfig.conditions){
+                            var errorMsgForConditions = null;
+                            var currentValue = null;
+                            for (var i=0; i < fieldConfig.conditionsOrder.length; i++){
+                                var conditionName = fieldConfig.conditionsOrder[i];
+                                if(Object.entries(fieldConfig.conditions).length > 0){
+                                    var currentCondition = fieldConfig.conditions[conditionName];
+                                    if(currentCondition && fieldValue && fieldValue.list){
+                                        for(var j=0; j < fieldValue.list.length; j++){
+                                            var currentRow = fieldValue.list[j];
+                                            currentValue = currentRow.value;
+                                            if(currentRow.conditionType && currentRow.conditionType === conditionName){
+                                                if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                                                    errorMsgForConditions = 'This field is required.';
+                                                    break; 
+                                                } else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                                                    continue; // Skip validation if allowBlank is true and field value is empty
+                                                }
+
+                                                if (currentCondition.vtype) {
+                                                    var currVtype = currentCondition.vtype;
+                                                   if(currentValue){
+                                                        if (!Ext.form.field.VTypes[currVtype](currentValue)) {
+                                                            errorMsgForConditions = Ext.form.field.VTypes[currVtype + 'Text'];
+                                                            break;
+                                                        }
+                                                   }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if(errorMsgForConditions){
+                                    break;
+                                }
+                            }
+
+                            if (errorMsgForConditions !== null) {
+                                isValidRecord = false;
+                                validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, currentValue, errorMsgForConditions)); 
                                 break; // Stop validation for this record if any field fails
                             }
                         }

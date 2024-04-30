@@ -459,12 +459,14 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             name:"DST_ADDR",
             displayName: "Destination Address".t(),
             type: 'textfield',
-            vtype:"ipMatcher"
+            vtype:"ipMatcher",
+            allowBlank: false,
         },{
             name:"DST_PORT",
             displayName: "Destination Port".t(),
             type: 'textfield',
-            vtype:"portMatcher"
+            vtype:"portMatcher",
+            allowBlank: false
         },{
             name:"DST_INTF",
             displayName: "Destination Interface".t(),
@@ -489,25 +491,30 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             displayName: "Source Interface".t(),
             type: 'checkboxgroup',
             values: Util.getInterfaceList(true, true),
+            allowBlank: false,
         },{
             name:"SRC_ADDR",
             displayName: "Source Address".t(),
             type: 'textfield',
-            vtype:"ipMatcher"
+            vtype:"ipMatcher",
+            allowBlank: false,
         },{
             name:"SRC_PORT",
             displayName: "Source Port".t(),
             type: 'textfield',
             vtype:"portMatcher",
-            visible: Rpc.directData('rpc.isExpertMode')
+            visible: Rpc.directData('rpc.isExpertMode'),
+            allowBlank: false,
         },{
             name:"CLIENT_TAGGED",
             displayName: 'Client Tagged'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:"SERVER_TAGGED",
             displayName: 'Server Tagged'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'TAGGED',
             displayName: 'Tagged'.t(),
