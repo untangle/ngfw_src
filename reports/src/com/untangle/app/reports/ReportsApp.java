@@ -1218,7 +1218,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                             // do nothing - object not found
                         }
                         String oStr = "";
-                        if (o != null)
+                        if (o != null) {
                             /**
                              * Unescape any html
                              */
@@ -1229,6 +1229,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                              * with a single quote to prevent formula injections
                              */
                             oStr = oStr.replaceAll(",","").replaceAll("(^|,)([-\"@+=])","$1'$2");
+                        }
                     
                         if (writtenColumnCount != 0)
                             resp.getWriter().write(",");

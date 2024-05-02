@@ -70,10 +70,7 @@ public class CharSeqTransalator {
         }
         try {
             final StringWriter writer = new StringWriter(input.length() * 2);
-            translate(input, writer, false);
-            if(!isEscape) {
-                translate(input, writer, true);
-            }
+            translate(input, writer, !isEscape);
             return writer.toString();
         } catch (final IOException ioe) {
             throw new UncheckedIOException(ioe);
@@ -96,12 +93,7 @@ public class CharSeqTransalator {
         int pos = 0;
         final int len = input.length();
         while (pos < len) {
-            final int consumed;
-            if(callNumeric) {
-                consumed = numericTranslate(input, pos, writer);
-            } else {
-                consumed = lookupTranslate(input, pos, writer);
-            }
+            final int consumed = translate(input, pos, writer, callNumeric);
             if (consumed == 0) {
                 final char c1 = input.charAt(pos);
                 writer.write(c1);
@@ -119,6 +111,26 @@ public class CharSeqTransalator {
                 pos += Character.charCount(Character.codePointAt(input, pos));
             }
         }
+    }
+
+    /**
+     * Wrapper translate method to distinguish escape and unescape functionality
+     *
+     * @param input CharSequence that is being translated
+     * @param index int representing the current point of translation
+     * @param writer Writer to translate the text to
+     * @param callNumeric boolean to determine whether we need to call numericTransalate method or not
+     * @return int count of code points consumed
+     * @throws IOException if and only if the Writer produces an IOException
+     */
+    public int translate(final CharSequence input, final int index, final Writer writer, final boolean callNumeric) throws IOException {
+        final int consumed = lookupTranslate(input, index, writer);
+        if (consumed != 0) {
+            return consumed;
+        } else if(callNumeric) {
+            return numericTranslate(input, index, writer);
+        }
+        return 0;
     }
 
     /**
