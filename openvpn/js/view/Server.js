@@ -220,6 +220,8 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         'existing': false
     },
 
+    importValidationJavaClass: true,
+
     bind: '{remoteClients}',
 
     columns: [{
@@ -334,6 +336,8 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
         'export': false
     },
 
+    importValidationJavaClass: true,
+
     bind: '{groups}',
 
     columns: [{
@@ -432,6 +436,8 @@ Ext.define('Ung.apps.openvpn.cmp.ExportedNetworksGrid', {
         'name': '',
         'network': ''
     },
+
+    importValidationJavaClass: true,
 
     bind: '{exportedNetworks}',
 

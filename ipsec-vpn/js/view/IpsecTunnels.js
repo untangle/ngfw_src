@@ -62,6 +62,8 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'pingAddress': ''
         },
 
+    importValidationJavaClass: true,
+
     bind: '{tunnelList}',
 
     columns: [{

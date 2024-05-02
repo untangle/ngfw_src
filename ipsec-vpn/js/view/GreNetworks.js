@@ -71,6 +71,8 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
         'mtu': 1476
         },
 
+    importValidationJavaClass: true,
+
     bind: '{networkList}',
 
     columns: [{

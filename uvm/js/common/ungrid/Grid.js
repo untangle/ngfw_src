@@ -183,6 +183,11 @@ Ext.define('Ung.cmp.Grid', {
             // If you want to override the styling, just add an emptyText member to the defined viewConfig
             viewConfig.emptyText = '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + this.emptyText + '</p>';
         }
+        if(this.importValidationJavaClass !== undefined){
+            viewConfig.importValidationJavaClass = this.importValidationJavaClass;
+        }else{
+            viewConfig.importValidationJavaClass = false;
+        }
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
         }

@@ -129,6 +129,8 @@ Ext.define('Ung.apps.openvpn.view.ConfigEditorGrid', {
         'readOnly': false,
     },
 
+    importValidationJavaClass: true,
+
     listeners: {
         cellclick: function(grid,td,cellIndex,record,tr,rowIndex,e,eOpts)  {
             // not allowed to edit default options
