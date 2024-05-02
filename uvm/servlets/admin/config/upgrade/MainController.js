@@ -46,10 +46,13 @@ Ext.define('Ung.config.upgrade.MainController', {
         var view = this.getView();
             Rpc.asyncData('rpc.systemManager.canUpgrade')
                 .then(function(result) {
-                        var upgradeIssues = result.list;
+                        var upgradeIssues = result.set;
                         var upgradeButton  = view.down('[name="upgradeButton"]');
                         var upgradeIssueText = view.down('[name="upgradeIssueText"]');
-                        if (upgradeIssues.length === 0) {
+
+                        // Get the number of upgrade issues
+                        var numIssues = Object.keys(upgradeIssues).length;
+                        if (numIssues === 0) {
                             // Enable Upgrade Now button
                             if(upgradeButton)
                                 upgradeButton.show();
@@ -61,7 +64,7 @@ Ext.define('Ung.config.upgrade.MainController', {
                             var message = '<b>Upgrades are ready but unable to install:</b><ul>'.t();
                             
                             // Iterate through each upgrade issue and list them 
-                            upgradeIssues.forEach(function(issue) {
+                            Object.keys(upgradeIssues).forEach(function(issue) {
                                 message += '<li>';
                                 switch (issue) {
                                     case 'LOW_DISK':
