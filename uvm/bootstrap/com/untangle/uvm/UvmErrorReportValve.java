@@ -8,8 +8,6 @@ import java.io.PrintWriter;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ErrorReportValve;
@@ -79,7 +77,7 @@ public class UvmErrorReportValve extends ErrorReportValve
             }
         }
 
-        errorMessage  = StringEscapeUtils.escapeHtml4(errorMessage);
+        errorMessage  = StringEscaperUtil.escapeHtml4(errorMessage);
 
         response.setContentType("text/html");
         response.setCharacterEncoding("utf-8");

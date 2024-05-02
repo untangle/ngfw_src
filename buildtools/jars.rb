@@ -32,8 +32,7 @@ class Jars
 
   def Jars.findJars
     ## Named groups of jars
-    const_set(:CommonsText, [ Jars.downloadTarget('commons-lang3-3.9/commons-lang3-3.9.jar'),
-                              Jars.downloadTarget('commons-text-1.8/commons-text-1.8.jar')])
+    const_set(:CommonsLang, [ Jars.downloadTarget('commons-lang3-3.9/commons-lang3-3.9.jar') ])
     const_set(:Log4j, [ Jars.downloadTarget('apache-log4j-1.2.16/log4j-1.2.16.jar') ])
     const_set(:JavaMailApi, [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ])
     const_set(:Jabsorb, [ Jars.downloadTarget('jabsorb-1.2.2/jabsorb-1.2.2.jar')])
@@ -99,7 +98,7 @@ class Jars
 
     ## Groups used for compiling
     # This is available to everything?
-    const_set(:Base, Jars.makeGroup(CommonsText, Log4j, Postgres, JavaMailApi,
+    const_set(:Base, Jars.makeGroup(CommonsLang, Log4j, Postgres, JavaMailApi,
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, Jstl, Json, Jabsorb,
                                    Slf4j, DnsJava, Selenium, GeoIP, SqlLite,
