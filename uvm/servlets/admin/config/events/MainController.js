@@ -135,6 +135,11 @@ Ext.define('Ung.config.events.MainController', {
                 templateUnmatched: ''
             });
 
+            if(vm.get("settings.syslogServers.list").length > 0){
+                vm.set('syslogServersGridEmpty', false);
+            }else{
+                vm.set('syslogServersGridEmpty', true);
+            }
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);

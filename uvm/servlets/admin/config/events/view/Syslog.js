@@ -8,13 +8,6 @@ Ext.define('Ung.config.events.view.Syslog', {
     bodyPadding: 10,
     withValidation: true,
 
-    tbar: [{
-        xtype: 'tbtext',
-        padding: '8 5',
-        style: { fontSize: '12px' },
-        html: '<strong>' + 'Remote Syslog Configuration'.t() + '</strong> <br/>'
-    }],
-
     items:[
     {
         xtype: 'ungrid',
@@ -27,7 +20,7 @@ Ext.define('Ung.config.events.view.Syslog', {
             valueMatch: true
         },
 
-        padding: '20 0',
+        padding: '0 0 10 0',
         bind: {
             store: '{syslogServers}',
         },
@@ -35,6 +28,8 @@ Ext.define('Ung.config.events.view.Syslog', {
         listProperty: 'settings.syslogServers.list',
         tbar: ['@add'],
         recordActions: ['edit', 'delete'],
+
+        emptyText: 'No Servers Configured'.t(),
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.SyslogServer',
@@ -161,7 +156,7 @@ Ext.define('Ung.config.events.view.Syslog', {
         disabled: false,
         bind: {
             store: '{syslogRules}',
-            disabled: '{syslogRuleGridDisabled}'
+            disabled: '{syslogRuleGridDisabled || syslogServersGridEmpty}'
         },
 
         listProperty: 'settings.syslogRules.list',
@@ -169,6 +164,8 @@ Ext.define('Ung.config.events.view.Syslog', {
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
         copyId: 'ruleId',
         copyAppendField: 'description',
+
+        emptyText: 'No Rules Configured'.t(),
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.SyslogRule',
