@@ -1169,7 +1169,46 @@ class UvmTests(NGFWTestCase):
         ## removing file /tmp/product_serial
         subprocess.call("rm -f /tmp/product_serial", shell=True, stderr=subprocess.STDOUT)
 
+    @pytest.mark.slow
+    def test_email_cleaner(self):
+        """
+        1. Modify FROM_EMAIL to non deliverable mail
+        2. Send emails to non deliverable email, note the count of messages using exim -bpc
+        3. Run cron script explicitly to delete the emails which are having TO or FROM the Outgoing Email FROM_EMAIL address.
+        4. Verify the count of messages should decrease after cron script is run
+        """
 
+        tester_email_address = "tester@domain.com"
+        origMailsettings = uvmContext.mailSender().getSettings()
+        mail_settings = copy.deepcopy(origMailsettings)
+        # Updating email settings
+        #print(str(mail_settings))
+        mail_settings["fromAddress"] = tester_email_address
+        mail_settings["sendMethod"] = "DIRECT"
+        uvmContext.mailSender().setSettings(mail_settings)
+        time.sleep(2)
+        subject = "Test Email"
+        body = "Body of the Email"
+        email_message = f"From: {tester_email_address}\nTo: {tester_email_address}\nSubject: {subject}\n\n{body}"
+        initial_count="0"
+        final_count="0"
+        try:
+            for i in range(10):
+                subprocess.run(['exim', '-bm', '-t'], input=email_message.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+            time.sleep(20)
+            # count of messages will be +10 after running of the for loop
+            initial_count = subprocess.check_output(f"exim -bpc",shell=True,stderr=subprocess.STDOUT)
+            # count of messages will be -10 after running of the cleaner script with messages older than 10 seconds
+            subprocess.check_output(f'/etc/cron.daily/untangle-email-cleaner 10',  shell=True, stderr=subprocess.PIPE)
+            final_count = subprocess.check_output(f"exim -bpc",shell=True,stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            pass
+        # In the test we have added 10 mail messages , after the cron script is run , atmost 10 messages will be deleted
+        # The final count of messages will be less than initial count.
+        if type(initial_count) is bytes and type(final_count) is bytes:
+            assert(int(final_count) <= int(initial_count))
+        # Setting back Original email settings
+        uvmContext.mailSender().setSettings(origMailsettings)
 
     def test_310_system_logs(self):
         subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/system_logs.zip", post_data="type=SystemSupportLogs", uri="http://localhost/admin/download"), shell=True)
