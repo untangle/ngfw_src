@@ -3,6 +3,7 @@
 Create IPS configuration filesfrom settings
 """
 import getopt
+import os.path
 import sys
 import re
 from subprocess import call
@@ -29,6 +30,8 @@ def main(argv):
     global _debug
     _debug = False
     default_home_net = ""
+    # If this file exists, preserve "flow:established".  Otherwise, remove it.
+    default_flow_established = os.path.isfile("/usr/share/untangle/conf/intrusion-prevention-signatures-flow-established")
 
     try:
         opts, args = getopt.getopt(argv, "hsincaqvx:d", ["help", "home_net=", "debug"])
@@ -47,6 +50,7 @@ def main(argv):
 
     if _debug is True:
         print("_debug = %r" % (_debug))
+        print("default_flow_established = %r" % (default_flow_established))
 
     settings = get_app_settings("intrusion-prevention")
 
@@ -138,7 +142,7 @@ def main(argv):
 
         print(signature_action_counts)
 
-    signatures.save()
+    signatures.save(flow_established=default_flow_established)
 
     ##
     ## Create event map
