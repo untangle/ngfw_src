@@ -280,6 +280,22 @@ Ext.define('Ung.controller.Global', {
 
     },
 
+    getAppInstanceFromPolicyStore: function (policyId, app) {
+        if (!policyId) { policyId = 1;}
+        var policy = Ext.getStore('policies').findRecord('policyId', policyId);
+        return Ext.Array.findBy(policy.get('instances').list, function (inst) {
+            return inst.appName === app;
+        });
+    },
+
+    getAppPropertiesFromPolicyStore: function (policyId, app) {
+        if (!policyId) { policyId = 1;}
+        var policy = Ext.getStore('policies').findRecord('policyId', policyId);
+        return Ext.Array.findBy(policy.get('appProperties').list, function (prop) {
+            return prop.name === app;
+        });
+    },
+
     loadApp: function (policyId, app, view, subView) {
         var subViews = [];
         for( var i = 3; i < arguments.length; i++){
@@ -304,20 +320,31 @@ Ext.define('Ung.controller.Global', {
         if (!policyId) { policyId = 1;}
 
         var policy = Ext.getStore('policies').findRecord('policyId', policyId);
-        var appInstance = Ext.Array.findBy(policy.get('instances').list, function (inst) {
-            return inst.appName === app;
-        });
-        var appProps = Ext.Array.findBy(policy.get('appProperties').list, function (prop) {
-            return prop.name === app;
-        });
-
-        if (!appInstance || !appProps) {
-            // Util.handleException('Unable to find app: ' + app);
-            Ext.fireEvent('invalidquery');
-            return;
-        }
+        var appInstance = me.getAppInstanceFromPolicyStore(policyId, app);
+        var appProps = me.getAppPropertiesFromPolicyStore(policyId, app);
 
         mainView.setLoading(true);
+        if (!appInstance || !appProps) {
+            // load the policy store one more time
+            try {
+                var result = Rpc.directData('rpc.appManager.getAppsViews');
+                Ext.getStore('policies').loadData(result);
+                Ung.app.getGlobalController().getAppsView().getController().getApps();
+            } catch (error) {
+                Util.handleException(error);
+            }
+
+            // fetch values from the updated policy store
+            appInstance = me.getAppInstanceFromPolicyStore(policyId, app);
+            appProps = me.getAppPropertiesFromPolicyStore(policyId, app);
+            if (!appInstance || !appProps) {
+                mainView.setLoading(false);
+                // Util.handleException('Unable to find app: ' + app);
+                Ext.fireEvent('invalidquery');
+                return;
+            }
+        }
+
         Ext.Loader.loadScript({
             //url: 'script/apps/' + app + '.js',
             // This hack changes the name of ad-blocker to ab.js
