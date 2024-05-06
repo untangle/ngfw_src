@@ -621,35 +621,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             "url": "http://"
         },
 
-        referenceRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-            var references = [];
-            var optionReferences = record.getOption('reference');
-            if(optionReferences != null){
-                if(!Array.isArray(optionReferences)){
-                    optionReferences = [optionReferences];
-                }
-                optionReferences.forEach(function(reference){
-                    if(typeof(reference) != 'string'){
-                        return false;
-                    }
-                    reference = reference.split(',', 2);
-                    if(Ung.apps.intrusionprevention.MainController.referencesMap[reference[0]]){
-                        reference[1].split(',').forEach( function(target){
-                            target = target.trim(target);
-                            if((target.charAt(0) == '"') &&
-                                (target.charAt(target.length - 1) == '"')){
-                                target = target.substr(1,target.length - 2);
-                            }
-                            var url = Ung.apps.intrusionprevention.MainController.referencesMap[reference[0]] + target;
-                            references.push('<a class="fa fa-search fa-black" style="text-decoration: none; color:black" target="_reference"></a>');
-                        });
-                    }   
-                });
-            }
-            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
-            return references.join("");
-        },
-
         signatureRenderer: function(value, metaData, record, rowIdx, colIdx, store){
             if(record.build){
                 metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
