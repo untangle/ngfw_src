@@ -641,9 +641,9 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
                                 target = target.substr(1,target.length - 2);
                             }
                             var url = Ung.apps.intrusionprevention.MainController.referencesMap[reference[0]] + target;
-                            references.push('<a href="'+ url + '" class="fa fa-search fa-black" style="text-decoration: none; color:black" target="_reference"></a>');
+                            references.push('<a class="fa fa-search fa-black" style="text-decoration: none; color:black" target="_reference"></a>');
                         });
-                    }
+                    }   
                 });
             }
             metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
