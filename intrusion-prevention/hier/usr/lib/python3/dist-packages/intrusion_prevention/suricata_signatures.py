@@ -78,7 +78,7 @@ class SuricataSignatures:
     ## just save to passed filename
     ### classtypes, categories, msgs don't matter!
     # def save(self, path=None, classtypes=None, categories=None, msgs=None):
-    def save(self):
+    def save(self, flow_established=False):
         """
         Save signature set
         """
@@ -108,6 +108,8 @@ class SuricataSignatures:
                     category = signature.category
                     signatures_file.write("\n\n# ---- Begin " + category + " Rules Category ----#" + "\n\n")
 
+                if flow_established is False:
+                    signature.remove_flow_established()
                 signatures_file.write(signature.build() + "\n")
         signatures_file.close()
 

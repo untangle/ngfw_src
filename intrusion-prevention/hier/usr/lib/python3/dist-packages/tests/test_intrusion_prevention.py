@@ -10,6 +10,8 @@ import glob
 import os
 import shutil
 
+from pathlib import Path
+
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -538,5 +540,29 @@ class IntrusionPreventionTests(NGFWTestCase):
             print("&".join(post_data))
             signature_set = subprocess.check_output(global_functions.build_wget_command(output_file='-', post_data="&".join(post_data), uri="http://localhost/admin/download"), shell=True, stderr=subprocess.STDOUT).decode('utf-8').split("\n")
             assert len(signature_set) > 0, f"non empty signature set {file_name}"
+
+    def test_300_flow_established_toggle(self):
+        """
+        Verify that with/without the file flag toggle, established is removed or not.
+        """
+        global app, appSettings
+        flow_established_enabled_flag_filename = "/usr/share/untangle/conf/intrusion-prevention-signatures-flow-established"
+        rules_filename = "/etc/suricata/ngfw.rules"
+        # Add "|| true" because if grep doesn't find anything, it will exit with an error code causing an exception
+        command = f"grep -v 'not_established' {rules_filename} | grep -c 'flow:.*established' || true"
+
+        # Flag enabled
+        Path(flow_established_enabled_flag_filename).touch()
+        app.setSettings(appSettings, True, True)
+        established_count = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"with {flow_established_enabled_flag_filename}, found {established_count}")
+        assert established_count > 0, "established found in signatures"
+
+        # Flag disabled (default)
+        Path(flow_established_enabled_flag_filename).unlink()
+        app.setSettings(appSettings, True, True)
+        established_count = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"without {flow_established_enabled_flag_filename}, found {established_count}")
+        assert established_count == 0, "established not found in signatures"
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)
