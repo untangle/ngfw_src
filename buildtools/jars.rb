@@ -90,11 +90,11 @@ class Jars
                        Jars.downloadTarget('apache-taglibs-standard-1.2.5/taglibs-standard-jstlel-1.2.5.jar'),
                        Jars.downloadTarget('apache-taglibs-standard-1.2.5/taglibs-standard-compat-1.2.5.jar') ])
 
-    const_set(:GeoIP, [ Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-annotations-2.7.0.jar'),
-                           Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-databind-2.7.0.jar'),
-                           Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/jackson-core-2.7.0.jar'),
-                           Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/maxmind-db-1.2.0.jar'),
-                           Jars.downloadTarget('geoip2-2.6.0-with-dependencies/geoip2-2.6.0/lib/geoip2-2.6.0.jar')])
+    const_set(:GeoIP, [ Jars.downloadTarget('geoip2-2.17.0-with-dependencies/geoip2-2.17.0/lib/jackson-annotations-2.16.0.jar'),
+                           Jars.downloadTarget('geoip2-2.17.0-with-dependencies/geoip2-2.17.0/lib/jackson-databind-2.16.0.jar'),
+                           Jars.downloadTarget('geoip2-2.17.0-with-dependencies/geoip2-2.17.0/lib/jackson-core-2.16.0.jar'),
+                           Jars.downloadTarget('geoip2-2.17.0-with-dependencies/geoip2-2.17.0/lib/maxmind-db-2.1.0.jar'),
+                           Jars.downloadTarget('geoip2-2.17.0-with-dependencies/geoip2-2.17.0/lib/geoip2-2.17.0.jar')])
 
     ## Groups used for compiling
     # This is available to everything?

@@ -1210,6 +1210,24 @@ class UvmTests(NGFWTestCase):
         # Setting back Original email settings
         uvmContext.mailSender().setSettings(origMailsettings)
 
+    def test_geo_ip_address(self):
+        """
+        1. Validating GeoIP methods for given IP Address
+        """
+        ip_address = "128.101.101.101"
+        expected_output = "United States : US : Minnesota : MN : Saint Paul : 55113"
+        country_name = uvmContext.geographyManager().getCountryName(ip_address)
+        country_code = uvmContext.geographyManager().getCountryCode(ip_address)
+        sub_division_name = uvmContext.geographyManager().getSubdivisionName(ip_address)
+        sub_division_code = uvmContext.geographyManager().getSubdivisionCode(ip_address)
+        city_name = uvmContext.geographyManager().getCityName(ip_address)
+        postal_code = uvmContext.geographyManager().getPostalCode(ip_address)
+        recieved_output = country_name + " : " + country_code + " : " + sub_division_name + " : " + sub_division_code  + " : " + city_name + " : " + postal_code
+        assert(expected_output == recieved_output)
+        # for IPs with no information None is received
+        country_name = uvmContext.geographyManager().getCountryName("192.168.56.120")
+        assert(country_name is None)
+
     def test_310_system_logs(self):
         subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/system_logs.zip", post_data="type=SystemSupportLogs", uri="http://localhost/admin/download"), shell=True)
         subprocess.call("unzip -q /tmp/system_logs -d /tmp/system_logs && rm -rf /tmp/system_logs.zip", shell=True)
