@@ -515,6 +515,7 @@ Ext.define('Ung.cmp.GridController', {
                                                         }
                                                    }
                                                 }
+                                                break;
                                             }
                                         }
                                     }

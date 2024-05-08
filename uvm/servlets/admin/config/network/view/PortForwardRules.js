@@ -24,7 +24,14 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
 
         simpleEditorAlias: 'config-network-portforwardsimple',
 
-        tbar: ['@addSimple', '->', '@import', '@export'],
+        tbar: ['@addSimple', '->', '@import',{
+            xtype: 'button',
+            text: 'Export'.t(), 
+            iconCls: 'fa fa-arrow-up', 
+            handler: function (){
+                this.up("config-network").getController().exportDataHandler();
+            },
+        }],
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
         copyId: 'ruleId',  
         copyAppendField: 'description',
@@ -33,6 +40,8 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
         recordJavaClass: 'com.untangle.uvm.network.PortForwardRule',
 
         emptyText: 'No Port Forward Rules defined'.t(),
+
+        importValidationJavaClass: true,
 
         actionText: 'Forward to the following location:'.t(),
         emptyRow: {
