@@ -801,6 +801,34 @@ Ext.define('Ung.config.network.MainController', {
         staticDhcpGrid.getStore().add(newDhcpEntry);
     },
 
+    getExportData: function (useId) {
+        var grid = this.getView().down("[itemId=port-forward-rules]").down("ungrid");
+        var data = Ext.Array.pluck(grid.getStore().getRange(), 'data'); 
+        Ext.Array.forEach(data, function (rec, index) {
+            delete rec._id;
+            if (useId) {
+                rec.id = index + 1;
+            }
+            Ext.Array.forEach(rec.conditions.list,function(currentCondition){
+                currentCondition["value"] = currentCondition.value.toString();
+            }); 
+        });
+        return Ext.encode(data);
+    },
+
+    exportDataHandler: function () {
+        var grid = this.getView();
+
+        Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
+
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm.gridName.value = grid.getXType();
+        exportForm.gridData.value = this.getExportData(false);
+        exportForm.submit();
+        Ext.MessageBox.hide();
+    },
+
+
     getDynamicRoutingOverview: function(){
         var me = this,
             vm = this.getViewModel();
