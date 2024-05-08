@@ -21,7 +21,7 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.db.CHMCache;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-
+import java.util.Optional;
 import com.untangle.uvm.GeographyManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.Pulse;
@@ -214,8 +214,8 @@ public class GeographyManagerImpl implements GeographyManager
     {
         try {
             InetAddress inetAddress = InetAddress.getByName(netAddress);
-            CityResponse response = databaseReader.city(inetAddress);
-            return (response);
+            Optional<CityResponse> response = databaseReader.tryCity(inetAddress);
+            if (response.isPresent() ) return (response.get());
         } catch (Exception exn) {
             logger.debug("Exception getting database object for " + netAddress, exn);
         }
