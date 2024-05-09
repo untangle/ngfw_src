@@ -196,6 +196,16 @@ class SuricataSignature:
         if self.options_raw != new_options_raw:
             self.options_raw = new_options_raw
 
+    def remove_option(self, key):
+        """
+        Remove option entirely
+        """
+        find = key+":\s*"+self.options[key]+"\s*;"
+        new_options_raw = re.sub(find, "", self.options_raw)
+
+        if self.options_raw != new_options_raw:
+            self.options_raw = new_options_raw
+
     def get_options(self, key):
         """
         Set options on key with value
@@ -341,8 +351,11 @@ class SuricataSignature:
 
             if "established" in flow_values:
                 flow_values.remove("established")
-                flow_value = ",".join(flow_values)
-                self.set_options("flow", flow_value)
+                if len(flow_values) == 0:
+                    self.remove_option("flow")
+                else:
+                    flow_value = ",".join(flow_values)
+                    self.set_options("flow", flow_value)
 
     def get_rule(self):
         """
