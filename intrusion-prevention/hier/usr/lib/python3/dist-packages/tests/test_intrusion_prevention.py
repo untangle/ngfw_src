@@ -564,5 +564,8 @@ class IntrusionPreventionTests(NGFWTestCase):
         established_count = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
         print(f"without {flow_established_enabled_flag_filename}, found {established_count}")
         assert established_count == 0, "established not found in signatures"
+        empty_flow_count = int(subprocess.check_output(f"grep -c 'flow:;' {rules_filename}|| true", shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"empty flow count {flow_established_enabled_flag_filename}, found {empty_flow_count}")
+        assert empty_flow_count == 0, "empty flow not found in signatures"
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)
