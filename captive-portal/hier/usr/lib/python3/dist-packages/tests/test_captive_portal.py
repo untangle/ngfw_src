@@ -1031,7 +1031,7 @@ class CaptivePortalTests(NGFWTestCase):
         self._app.setSettings(appData)
 
         # check that basic captive page is show when secure redirection is enabled
-        result = remote_control.run_command(global_functions.build_curl_command(extra_arguments='--tlsv1.2 --tls-max 1.2', output_file="/tmp/capture_test_071.out", verbose=True))
+        result = remote_control.run_command(global_functions.build_curl_command(extra_arguments='--tlsv1.2 --tls-max 1.2', output_file="/tmp/capture_test_071.out"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_071.out")
         assert (search == 0)
