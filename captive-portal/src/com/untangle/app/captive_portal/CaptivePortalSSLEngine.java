@@ -325,11 +325,6 @@ public class CaptivePortalSSLEngine
         result = sslEngine.unwrap(data, target);
         logger.debug("EXEC_UNWRAP " + result.toString());
 
-        if(result.getStatus() == SSLEngineResult.Status.OK && data.hasRemaining() == false){
-            // Nothing more to process.
-            return true;
-        }
-
         if (result.getStatus() == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
             // underflow during unwrap means the SSLEngine needs more data
             // but it's also possible it used some of the passed data so we

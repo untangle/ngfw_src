@@ -1017,6 +1017,25 @@ class CaptivePortalTests(NGFWTestCase):
         result = remote_control.run_command(global_functions.build_curl_command(output_file="/tmp/capture_test_072.out"))
         assert (result != 0)
 
+    @pytest.mark.failure_for_seb
+    def test_073_check_secure_redirect_enabled_with_tls1_2(self):
+        global app, appData
+
+        # Create Internal NIC capture rule with basic login page
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        appData['disableSecureRedirect'] = False
+        self._app.setSettings(appData)
+
+        # check that basic captive page is show when secure redirection is enabled
+        result = remote_control.run_command(global_functions.build_curl_command(extra_arguments='--tlsv1.2 --tls-max 1.2', output_file="/tmp/capture_test_071.out"))
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_071.out")
+        assert (search == 0)
+
     def test_080_check_captive_page_on_non_standard_port(self):
         # Test for captive page when HTTP is set to nonstandard port
         global app, appData
