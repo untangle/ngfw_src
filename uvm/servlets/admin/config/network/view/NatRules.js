@@ -28,6 +28,8 @@ Ext.define('Ung.config.network.view.NatRules', {
 
         emptyText: 'No NAT Rules defined'.t(),
 
+        importValidationJavaClass: true,
+
         listProperty: 'settings.natRules.list',
 
         emptyRow: {
