@@ -449,6 +449,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                 copyAppendField: 'description',
 
                 emptyText: 'No Access Rules defined'.t(),
+                
+                importValidationJavaClass: true,
 
                 listProperty: 'settings.accessRules.list',
 
