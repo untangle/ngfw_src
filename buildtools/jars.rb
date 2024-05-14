@@ -63,10 +63,10 @@ class Jars
     const_set(:Velocity, [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar'),
                            Jars.downloadTarget('velocity-1.4/velocity-dep-1.4.jar')])
 
-    const_set(:JRadius, [Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/commons-pool-1.5.4.jar'),
-                         Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/gnu-crypto-2.0.1.jar'),
-                         Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/jradius-core-1.1.4.jar'),
-                         Jars.downloadTarget('jradius-client-1.1.4-release/jradius/lib/jradius-dictionary-1.1.4.jar')])
+    const_set(:JRadius, [Jars.downloadTarget('jradius-client-1.0.0-release/jradius/lib/commons-pool-1.6.jar'),
+                         Jars.downloadTarget('jradius-client-1.0.0-release/jradius/lib/gnu-crypto-2.0.1.jar'),
+                         Jars.downloadTarget('jradius-client-1.0.0-release/jradius/lib/jradius-core-1.0.0.jar'),
+                         Jars.downloadTarget('jradius-client-1.0.0-release/jradius/lib/jradius-dictionary-1.0.0.jar')])
 
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-3.5.0-20211020/dnsjava-3.5.0-20211020.jar') ])
 

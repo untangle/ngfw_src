@@ -33,6 +33,7 @@ import net.jradius.packet.AccessRequest;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
@@ -258,7 +259,12 @@ public class RadiusLdapAdapter
                     response = CommandStatus.UNKNOWN_ERROR;
                 }            
             }
-        } catch (UnknownAttributeException e) {
+        
+        }
+        catch (java.security.NoSuchAlgorithmException e) {
+            System.out.println(e.getMessage());
+        }
+        catch (UnknownAttributeException e) {
             logger.info( "Unknown attribute?", e );
         } catch ( TimeoutException e ) {
             logger.info( "Timeout connecting to radius server");
