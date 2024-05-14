@@ -21,7 +21,7 @@
     <param name="Facility" value="LOCAL0"/>
     <param name="Threshold" value="ALL"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%c{1}] %-5p %m%n"/>
+      <param name="ConversionPattern" value="[%c{1}:%L] %-5p %m%n"/>
     </layout>
   </appender>
 
@@ -39,7 +39,7 @@
     <param name="Facility" value="LOCAL1"/>
     <param name="Threshold" value="ALL"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="@AppLogFileName@: [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n"/>
+      <param name="ConversionPattern" value="@AppLogFileName@: [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n"/>
     </layout>
   </appender>
 
