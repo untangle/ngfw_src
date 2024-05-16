@@ -42,6 +42,9 @@ Ext.define('Ung.config.network.view.BypassRules', {
 
         listProperty: 'settings.bypassRules.list',
 
+        importValidationJavaClass: true,
+
+
         emptyRow: {
             ruleId: -1,
             enabled: true,
