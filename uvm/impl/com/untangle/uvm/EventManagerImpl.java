@@ -337,7 +337,7 @@ public class EventManagerImpl implements EventManager
         if(f.exists()){
             try{
                 InputStream is = new FileInputStream( classesFilename );
-                String jsonTxt = IOUtils.toString(is);
+                String jsonTxt = IOUtils.toString(is, "UTF-8");
                 classFields = new JSONObject(jsonTxt);
             }catch(Exception e){
                 logger.warn( "Unable to load event classes:", e);

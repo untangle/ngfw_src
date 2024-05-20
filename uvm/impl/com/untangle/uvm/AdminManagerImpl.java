@@ -204,7 +204,8 @@ public class AdminManagerImpl implements AdminManager
 
         List<?> zshContent; // List<String>
         try {
-            zshContent = (List<?>) FileUtils.readLines(zshHistoryFile, null);
+            String encoding = null;
+            zshContent = (List<?>) FileUtils.readLines(zshHistoryFile, encoding);
         } catch (IOException e) {
             return "UNKNOWN";
         }
