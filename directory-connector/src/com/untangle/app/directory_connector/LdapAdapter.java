@@ -845,7 +845,8 @@ abstract class LdapAdapter
         Control[] controls = ctx.getResponseControls();
         if (controls != null) {
             for (Control control : controls) {
-                if (control instanceof PagedResultsResponseControl prrc) {
+                if (control instanceof PagedResultsResponseControl) {
+                    PagedResultsResponseControl prrc = (PagedResultsResponseControl)control;
                     total = prrc.getResultSize();
                     if (total != 0) {
                         logger.debug("End of page (total : " + total + ")");
