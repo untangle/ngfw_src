@@ -1959,6 +1959,13 @@ Ext.define('Ung.config.network.cmp.OspfAreaRecordEditor', {
 
 });
 
+
+Ext.define('Ung.config.network.cmp.OspfAreaRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unospfarearecordeditorcontroller',
+
+});
+
 Ext.define('Ung.config.network.cmp.BypassRulesController', {
     extend: 'Ung.cmp.GridController',
     alias: 'controller.unconfigbypassrulesgridcontroller',
