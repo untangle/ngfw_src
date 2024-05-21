@@ -1448,7 +1448,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     bind: '{record.virtualLinks.list}',
                                     maxHeight: 140,
                                     emptyRow: {
-                                        field1: ''.t(),
+                                        field1: '',
                                     },
                                     
                                     importValidationJavaClass: true,
