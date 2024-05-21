@@ -1959,7 +1959,6 @@ Ext.define('Ung.config.network.cmp.OspfAreaRecordEditor', {
 
 });
 
-
 Ext.define('Ung.config.network.cmp.OspfAreaRecordEditorController', {
     extend: 'Ung.cmp.RecordEditorController',
     alias: 'controller.unospfarearecordeditorcontroller',
