@@ -436,104 +436,192 @@ Ext.define('Ung.cmp.GridController', {
         this.importDialog.show();
     },
 
+    getNestedEditorFieldConfig: function(){
+        var editorFields = this.getView().editorFields;
+        var mappedObject={};
+
+        editorFields.forEach(function(currFieldConfig){
+            if(currFieldConfig.xtype === 'container'){
+                if(currFieldConfig.items){
+                    currFieldConfig.items.forEach(function(currItem){
+                        var fieldObj = {};
+                        if(currItem.xtype === 'ungrid'){
+                            if(currItem.columns){
+                                currItem.columns.forEach(function(currColumn){
+                                    if(currColumn.dataIndex && Object.keys(currColumn.editor).length > 0){
+                                        fieldObj[currColumn.dataIndex] = currColumn.editor;
+                                    }
+                                });
+                            }
+                        }
+                        if(Object.keys(fieldObj).length > 0){
+                            var fieldName = currItem.bind;
+                            var mapKey = null;
+                            if(typeof currItem.bind === "object"){
+                                for(var key in currItem.bind){
+                                    if(key === "store"){
+                                        fieldName = currItem.bind[key];
+                                    }
+                                }
+                            }
+                            if(fieldName.split(".").length > 1){
+                                mapKey = fieldName.split('.')[1].split('}')[0];
+                            }else{
+                                mapKey = fieldName.split('.')[0].split('}')[0].split('{')[1];
+                            }
+                            if(mapKey){
+                                mappedObject[mapKey]=fieldObj;
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        return mappedObject;
+    },
+
+    importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid){
+        for (var fieldName in record) {
+            if(!isNestedEditor && mappedObject[fieldName]){
+                continue;
+            }else if(isNestedEditor && !nestedObject[fieldName]){
+                continue;
+            }
+            if (record.hasOwnProperty(fieldName)) {
+                var fieldValue = fieldValueFn(fieldName);
+                var fieldConfig = fieldConfigFn(fieldName);
+
+                if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
+                    var validationErrorMsg = null;
+
+                    if (!fieldConfig.allowBlank && (!fieldConfig.bind || (fieldConfig.bind && !fieldConfig.bind.disabled)) && Ext.isEmpty(fieldValue)) {
+                        validationErrorMsg = 'This field is required.'; 
+                    } else if (fieldConfig.allowBlank && Ext.isEmpty(fieldValue)) {
+                        continue; // Skip validation if allowBlank is true and field value is empty
+                    }
+
+                    // Check vtype validation
+                    if (fieldConfig.vtype) {
+                        var vtype = fieldConfig.vtype;
+                       if(fieldValue !== null){
+                            if (!Ext.form.field.VTypes[vtype](fieldValue)) {
+                                validationErrorMsg = Ext.form.field.VTypes[vtype + 'Text'];
+                            }
+                       }
+                    }
+
+                    
+                    // Currently, custom validator is tailored exclusively for the WG App.
+                    // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
+                    if(grid.viewConfig.importValidationJavaClass){
+                        if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
+                            validationErrorMsg = fieldConfig.validator(fieldValue, this);
+                        }
+                    }
+                    
+
+                    if (validationErrorMsg !== null) {
+                        errorObj.isValidRecord = false;
+                        validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, fieldValue, validationErrorMsg)); 
+                        break; // Stop validation for this record if any field fails
+                    }
+                }
+
+                // check allowblank and vtype validation for conditions applied
+
+                if(fieldConfig && fieldConfig.conditionsOrder && fieldConfig.conditions){
+                    var errorMsgForConditions = null;
+                    var currentValue = null;
+                    for (var i=0; i < fieldConfig.conditionsOrder.length; i++){
+                        var conditionName = fieldConfig.conditionsOrder[i];
+                        if(Object.entries(fieldConfig.conditions).length > 0){
+                            var currentCondition = fieldConfig.conditions[conditionName];
+                            if(currentCondition && fieldValue && fieldValue.list){
+                                for(var j=0; j < fieldValue.list.length; j++){
+                                    var currentRow = fieldValue.list[j];
+                                    currentValue = currentRow.value;
+                                    if(currentRow.conditionType && currentRow.conditionType === conditionName){
+                                        if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                                            errorMsgForConditions = 'This field is required.';
+                                            break; 
+                                        } else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                                            continue; // Skip validation if allowBlank is true and field value is empty
+                                        }
+
+                                        if (currentCondition.vtype) {
+                                            var currVtype = currentCondition.vtype;
+                                           if(currentValue){
+                                                if (!Ext.form.field.VTypes[currVtype](currentValue)) {
+                                                    errorMsgForConditions = Ext.form.field.VTypes[currVtype + 'Text'];
+                                                    break;
+                                                }
+                                           }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if(errorMsgForConditions){
+                            break;
+                        }
+                    }
+
+                    if (errorMsgForConditions !== null) {
+                        errorObj.isValidRecord = false;
+                        validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, currentValue, errorMsgForConditions)); 
+                        break; // Stop validation for this record if any field fails
+                    }
+                }
+            }
+        }
+    },
+
     importHandler: function (importMode, newData) {
         var grid = this.getView(),
-            existingData = Ext.Array.pluck(grid.getStore().getRange(), 'data');
+            existingData = Ext.Array.pluck(grid.getStore().getRange(), 'data'),
+            me = this;
 
         var validData = [];
         var validationErrors = [];
+
+        //check and if nested editor is present get the list
+        var mappedObject = this.getNestedEditorFieldConfig();
+
         newData.forEach(function(record) {
-                var isValidRecord = true;
-                for (var fieldName in record) {
-                    if (record.hasOwnProperty(fieldName)) {
-                        var fieldValue = record[fieldName];
-                        var fieldConfig = this.getFieldConfig(fieldName);
-        
-                        if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
-                            var validationErrorMsg = null;
-        
-                            if (!fieldConfig.allowBlank && !fieldConfig.bind.disabled && Ext.isEmpty(fieldValue)) {
-                                validationErrorMsg = 'This field is required.'; 
-                            } else if (fieldConfig.allowBlank && Ext.isEmpty(fieldValue)) {
-                                continue; // Skip validation if allowBlank is true and field value is empty
-                            }
-        
-                            // Check vtype validation
-                            if (fieldConfig.vtype) {
-                                var vtype = fieldConfig.vtype;
-                               if(fieldValue !== null){
-                                    if (!Ext.form.field.VTypes[vtype](fieldValue)) {
-                                        validationErrorMsg = Ext.form.field.VTypes[vtype + 'Text'];
-                                    }
-                               }
-                            }
-
-                            
-                            // Currently, custom validator is tailored exclusively for the WG App.
-                            // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
-                            if(grid.viewConfig.importValidationJavaClass){
-                                if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
-                                    validationErrorMsg = fieldConfig.validator(fieldValue, this);
-                                }
-                            }
-                            
-        
-                            if (validationErrorMsg !== null) {
-                                isValidRecord = false;
-                                validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, fieldValue, validationErrorMsg)); 
-                                break; // Stop validation for this record if any field fails
-                            }
+                var errorObj = {isValidRecord:true};
+                this.importHandlerValidator(record,
+                function(fieldNm){
+                    return record[fieldNm];
+                },
+                function(fieldNm){
+                    return me.getFieldConfig(fieldNm);
+                },
+                false, mappedObject, validationErrors, errorObj, {}, grid);
+                if(errorObj.isValidRecord){
+                    for(var fieldName in record){
+                        if(!errorObj.isValidRecord){
+                            break;
                         }
-
-                        // check allowblank and vtype validation for conditions applied
-
-                        if(fieldConfig && fieldConfig.conditionsOrder && fieldConfig.conditions){
-                            var errorMsgForConditions = null;
-                            var currentValue = null;
-                            for (var i=0; i < fieldConfig.conditionsOrder.length; i++){
-                                var conditionName = fieldConfig.conditionsOrder[i];
-                                if(Object.entries(fieldConfig.conditions).length > 0){
-                                    var currentCondition = fieldConfig.conditions[conditionName];
-                                    if(currentCondition && fieldValue && fieldValue.list){
-                                        for(var j=0; j < fieldValue.list.length; j++){
-                                            var currentRow = fieldValue.list[j];
-                                            currentValue = currentRow.value;
-                                            if(currentRow.conditionType && currentRow.conditionType === conditionName){
-                                                if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
-                                                    errorMsgForConditions = 'This field is required.';
-                                                    break; 
-                                                } else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
-                                                    continue; // Skip validation if allowBlank is true and field value is empty
-                                                }
-
-                                                if (currentCondition.vtype) {
-                                                    var currVtype = currentCondition.vtype;
-                                                   if(currentValue){
-                                                        if (!Ext.form.field.VTypes[currVtype](currentValue)) {
-                                                            errorMsgForConditions = Ext.form.field.VTypes[currVtype + 'Text'];
-                                                            break;
-                                                        }
-                                                   }
-                                                }
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                if(errorMsgForConditions){
+                        if(mappedObject[fieldName]){
+                            for(var i=0; i<record[fieldName].list.length; i++ ){
+                                if(!errorObj.isValidRecord){
                                     break;
                                 }
-                            }
-
-                            if (errorMsgForConditions !== null) {
-                                isValidRecord = false;
-                                validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, currentValue, errorMsgForConditions)); 
-                                break; // Stop validation for this record if any field fails
+                                this.importHandlerValidator(record[fieldName].list[i],
+                                function(fieldNm){
+                                    return record[fieldName].list[i][fieldNm];
+                                },
+                                function(fieldNm){
+                                    return mappedObject[fieldName][fieldNm];
+                                },
+                                true,mappedObject, validationErrors, errorObj, mappedObject[fieldName], grid);
                             }
                         }
                     }
                 }
-                if (isValidRecord) {
+                if (errorObj.isValidRecord) {
                     validData.push(record);
                 }
         }, this);
@@ -543,7 +631,6 @@ Ext.define('Ung.cmp.GridController', {
         if (validationErrors.length > 0) {
             var errorMessage = Ext.String.format("Import record validation error:\n\n{0}".t(), validationErrors.join("\n"));
             alert(errorMessage);  // Do not proceed with loading data if there are validation errors for record
-           
         }
 
         //To import all the record for another app
@@ -614,6 +701,13 @@ Ext.define('Ung.cmp.GridController', {
             if (useId) {
                 rec.id = index + 1;
             }
+            Ext.Object.each(rec,function(objKey, ObjValue){
+                if(ObjValue.list){
+                    Ext.Array.forEach(ObjValue.list, function (innerRec) {
+                        delete innerRec._id;
+                    });
+                }
+            });
         });
         return Ext.encode(data);
     },

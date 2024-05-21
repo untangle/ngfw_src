@@ -1104,6 +1104,8 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                             emptyText: 'No BGP Neighbors defined'.t(),
 
+                            importValidationJavaClass: true,
+
                             listProperty: 'settings.dynamicRoutingSettings.bgpNeighbors.list',
 
                             emptyRow: {
@@ -1177,6 +1179,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                             copyAppendField: 'description',
 
                             emptyText: 'No BGP Networks defined'.t(),
+
+                            importValidationJavaClass: true,
 
                             listProperty: 'settings.dynamicRoutingSettings.bgpNetworks.list',
 
@@ -1260,6 +1264,8 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                             emptyText: 'No OSPF Networks defined'.t(),
 
+                            importValidationJavaClass: true,
+
                             listProperty: 'settings.dynamicRoutingSettings.ospfNetworks.list',
 
                             emptyRow: {
@@ -1341,6 +1347,8 @@ Ext.define('Ung.config.network.view.Advanced', {
 
                             emptyText: 'No OSPF Areas defined'.t(),
 
+                            importValidationJavaClass: true,
+
                             listProperty: 'settings.dynamicRoutingSettings.ospfAreas.list',
 
                             emptyRow: {
@@ -1400,7 +1408,7 @@ Ext.define('Ung.config.network.view.Advanced', {
                                 bind: '{record.area}',
                                 fieldLabel: 'Area'.t(),
                                 emptyText: "[no area]".t(),
-                                vtyoe: 'routerArea',
+                                vtype: 'routerArea',
                                 allowBlank: false
                             },{
                                 xtype: 'combo',
@@ -1437,14 +1445,21 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     titleCollapse: true,
                                     tbar: ['@addInline'],
                                     recordActions: ['delete'],
-                                    bind: '{record.virtualLinks.list}',
+                                    bind: {
+                                        store:'{virtualLinks}'
+                                    },
+                                    listProperty: 'virtualLinks',
                                     maxHeight: 140,
                                     emptyRow: {
-                                        field1: ''
+                                        ipAddress: ''.t(),
+                                        javaClass: 'com.untangle.uvm.network.VirtualLink'
                                     },
+                                    
+                                    importValidationJavaClass: true,
+
                                     columns: [{
                                         header: 'Virtual Link Address'.t(),
-                                        dataIndex: 'field1',
+                                        dataIndex: 'ipAddress',
                                         width: 200,
                                         flex: 1,
                                         editor : {
@@ -1483,6 +1498,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                             copyAppendField: 'description',
 
                             emptyText: 'No OSPF Interfaces defined'.t(),
+
+                            importValidationJavaClass: true,
 
                             listProperty: 'settings.dynamicRoutingSettings.ospfInterfaces.list',
 
