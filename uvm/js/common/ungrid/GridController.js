@@ -478,6 +478,16 @@ Ext.define('Ung.cmp.GridController', {
             }
         });
 
+        // adjusting key values of objects if in nested grid only one column field1 is present
+        Ext.Object.each(mappedObject, function(currObjKey, currObjValue) {
+            if(Object.keys(currObjValue).length === 1 && currObjValue["field1"]){
+                currObjValue[currObjKey] = currObjValue["field1"];
+            }
+            if(currObjValue["field1"]){
+                delete currObjValue["field1"];
+            }
+        });
+
         return mappedObject;
     },
 
@@ -609,9 +619,15 @@ Ext.define('Ung.cmp.GridController', {
                                 if(!errorObj.isValidRecord){
                                     break;
                                 }
-                                this.importHandlerValidator(record[fieldName].list[i],
+                                var currListElement = {};
+                                if(typeof record[fieldName].list[i] === "object"){
+                                    currListElement = record[fieldName].list[i];
+                                }else{
+                                    currListElement[fieldName] = record[fieldName].list[i];
+                                }
+                                this.importHandlerValidator(currListElement,
                                 function(fieldNm){
-                                    return record[fieldName].list[i][fieldNm];
+                                    return currListElement[fieldNm];
                                 },
                                 function(fieldNm){
                                     return mappedObject[fieldName][fieldNm];
@@ -702,7 +718,7 @@ Ext.define('Ung.cmp.GridController', {
                 rec.id = index + 1;
             }
             Ext.Object.each(rec,function(objKey, ObjValue){
-                if(ObjValue.list){
+                if(ObjValue.list && typeof ObjValue === "object"){
                     Ext.Array.forEach(ObjValue.list, function (innerRec) {
                         delete innerRec._id;
                     });

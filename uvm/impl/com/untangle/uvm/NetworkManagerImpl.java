@@ -55,7 +55,6 @@ import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
-import com.untangle.uvm.network.VirtualLink;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.network.NetflowSettings;
@@ -2168,7 +2167,7 @@ public class NetworkManagerImpl implements NetworkManager
         ospfArea.setDescription("Backbone");
         ospfArea.setArea("0.0.0.0");
         ospfArea.setType(0);
-        ospfArea.setVirtualLinks(new LinkedList<VirtualLink>());
+        ospfArea.setVirtualLinks(new LinkedList<InetAddress>());
         ospfAreas.add(ospfArea);
 
         drSettings.setOspfAreas(ospfAreas);

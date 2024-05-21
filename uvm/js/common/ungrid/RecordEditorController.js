@@ -77,7 +77,7 @@ Ext.define('Ung.cmp.RecordEditorController', {
      *  Build stores for ungrid fields 
      */
     initGrid: function(field, vm){
-        if ("store" in field.bind){
+        if (typeof field.bind === "object" && "store" in field.bind){
             var storeName = field.bind["store"].replace('{', '').replace('}', '');
             var storeObj = {};
             var listProperty = field.bind["listProperty"];

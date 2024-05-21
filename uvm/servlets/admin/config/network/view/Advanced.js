@@ -1445,21 +1445,17 @@ Ext.define('Ung.config.network.view.Advanced', {
                                     titleCollapse: true,
                                     tbar: ['@addInline'],
                                     recordActions: ['delete'],
-                                    bind: {
-                                        store:'{virtualLinks}'
-                                    },
-                                    listProperty: 'virtualLinks',
+                                    bind: '{record.virtualLinks.list}',
                                     maxHeight: 140,
                                     emptyRow: {
-                                        ipAddress: ''.t(),
-                                        javaClass: 'com.untangle.uvm.network.VirtualLink'
+                                        field1: ''.t(),
                                     },
                                     
                                     importValidationJavaClass: true,
 
                                     columns: [{
                                         header: 'Virtual Link Address'.t(),
-                                        dataIndex: 'ipAddress',
+                                        dataIndex: 'field1',
                                         width: 200,
                                         flex: 1,
                                         editor : {
