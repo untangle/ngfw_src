@@ -40,6 +40,8 @@ Ext.define('Ung.config.email.view.SafeList', {
         emptyRow: {
         },
 
+        importValidationJavaClass: true,
+
         topInsert: true,
 
         columns: [{

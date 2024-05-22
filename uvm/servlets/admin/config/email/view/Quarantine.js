@@ -182,6 +182,8 @@ Ext.define('Ung.config.email.view.Quarantine', {
                     address: ''
                 },
 
+                importValidationJavaClass: true,
+
                 columns: [{
                     header: 'Quarantinable Address'.t(),
                     flex: 1,
@@ -219,6 +221,8 @@ Ext.define('Ung.config.email.view.Quarantine', {
 
                 emptyText: 'No Quarantine Forwards defined'.t(),
                 bind: '{qForwards}',
+
+                importValidationJavaClass: true,
 
                 tbar: ['@addInline', '->', '@import', '@export'],
                 recordActions: ['delete'],
