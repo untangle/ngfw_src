@@ -440,53 +440,55 @@ Ext.define('Ung.cmp.GridController', {
         var editorFields = this.getView().editorFields;
         var mappedObject={};
 
-        editorFields.forEach(function(currFieldConfig){
-            if(currFieldConfig.xtype === 'container'){
-                if(currFieldConfig.items){
-                    currFieldConfig.items.forEach(function(currItem){
-                        var fieldObj = {};
-                        if(currItem.xtype === 'ungrid'){
-                            if(currItem.columns){
-                                currItem.columns.forEach(function(currColumn){
-                                    if(currColumn.dataIndex && Object.keys(currColumn.editor).length > 0){
-                                        fieldObj[currColumn.dataIndex] = currColumn.editor;
-                                    }
-                                });
-                            }
-                        }
-                        if(Object.keys(fieldObj).length > 0){
-                            var fieldName = currItem.bind;
-                            var mapKey = null;
-                            if(typeof currItem.bind === "object"){
-                                for(var key in currItem.bind){
-                                    if(key === "store"){
-                                        fieldName = currItem.bind[key];
-                                    }
+        if(editorFields){
+            editorFields.forEach(function(currFieldConfig){
+                if(currFieldConfig.xtype === 'container'){
+                    if(currFieldConfig.items){
+                        currFieldConfig.items.forEach(function(currItem){
+                            var fieldObj = {};
+                            if(currItem.xtype === 'ungrid'){
+                                if(currItem.columns){
+                                    currItem.columns.forEach(function(currColumn){
+                                        if(currColumn.dataIndex && Object.keys(currColumn.editor).length > 0){
+                                            fieldObj[currColumn.dataIndex] = currColumn.editor;
+                                        }
+                                    });
                                 }
                             }
-                            if(fieldName.split(".").length > 1){
-                                mapKey = fieldName.split('.')[1].split('}')[0];
-                            }else{
-                                mapKey = fieldName.split('.')[0].split('}')[0].split('{')[1];
+                            if(Object.keys(fieldObj).length > 0){
+                                var fieldName = currItem.bind;
+                                var mapKey = null;
+                                if(typeof currItem.bind === "object"){
+                                    for(var key in currItem.bind){
+                                        if(key === "store"){
+                                            fieldName = currItem.bind[key];
+                                        }
+                                    }
+                                }
+                                if(fieldName.split(".").length > 1){
+                                    mapKey = fieldName.split('.')[1].split('}')[0];
+                                }else{
+                                    mapKey = fieldName.split('.')[0].split('}')[0].split('{')[1];
+                                }
+                                if(mapKey){
+                                    mappedObject[mapKey]=fieldObj;
+                                }
                             }
-                            if(mapKey){
-                                mappedObject[mapKey]=fieldObj;
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
-            }
-        });
+            });
 
-        // adjusting key values of objects if in nested grid only one column field1 is present
-        Ext.Object.each(mappedObject, function(currObjKey, currObjValue) {
-            if(Object.keys(currObjValue).length === 1 && currObjValue["field1"]){
-                currObjValue[currObjKey] = currObjValue["field1"];
-            }
-            if(currObjValue["field1"]){
-                delete currObjValue["field1"];
-            }
-        });
+            // adjusting key values of objects if in nested grid only one column field1 is present
+            Ext.Object.each(mappedObject, function(currObjKey, currObjValue) {
+                if(Object.keys(currObjValue).length === 1 && currObjValue["field1"]){
+                    currObjValue[currObjKey] = currObjValue["field1"];
+                }
+                if(currObjValue["field1"]){
+                    delete currObjValue["field1"];
+                }
+            });
+        }
 
         return mappedObject;
     },
@@ -706,6 +708,19 @@ Ext.define('Ung.cmp.GridController', {
                 }
                 return false;
             });
+        }else if(this.getView().config && this.getView().config.columns){
+            var editorConfig = null;
+            editorConfig = this.getView().config.columns.find(function (fieldConfig){
+                if(fieldConfig.dataIndex){
+                    if(fieldConfig.dataIndex === fieldName && fieldConfig.editor){
+                        return fieldConfig.editor;
+                    }
+                }
+                return false;
+            });
+            if(editorConfig && editorConfig.editor){
+                return editorConfig.editor;
+            }
         }
        
     },
@@ -718,7 +733,7 @@ Ext.define('Ung.cmp.GridController', {
                 rec.id = index + 1;
             }
             Ext.Object.each(rec,function(objKey, ObjValue){
-                if(ObjValue.list && typeof ObjValue === "object"){
+                if(ObjValue && ObjValue.list && typeof ObjValue === "object"){
                     Ext.Array.forEach(ObjValue.list, function (innerRec) {
                         delete innerRec._id;
                     });
