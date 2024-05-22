@@ -1,4 +1,4 @@
-We have a couple minor modifications to jabsorb
+We have a couple minor modifications to jabsorb so have created custom zip with version jabsorb-1.2.3
 
 1) One is a classloader fix to get Class.forName to work when unmarshalling in our enviroment.
 I'm not sure why it doesn't just inherit the correct ClassLoader
@@ -9,6 +9,8 @@ I'm not sure why it doesn't just inherit the correct ClassLoader
 
 4) Make the serializer and object table per connection instead of global
    This is for security because not all connections are admin enable, so those connection should not be able to reference obj12345 if 12345 is the uvmContext just because its in the global table
+
+5) Updated jetty from 6.1.6 to 6.1.23 to remove vulnerablility.
 
 We also change jabsorb to build json.jar because it contains the org.json.* sources 
 
