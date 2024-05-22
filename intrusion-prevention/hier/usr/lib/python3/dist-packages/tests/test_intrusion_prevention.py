@@ -11,6 +11,8 @@ import glob
 import os
 import shutil
 
+from pathlib import Path
+
 from tests.common import NGFWTestCase
 from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
@@ -649,5 +651,32 @@ class IntrusionPreventionTests(NGFWTestCase):
         #Verify the content of restored_file and original_file is identical
         is_restored = self.compare_files(original_content, restored_content)
         assert not is_restored, "Content of updated file does not matches original file"
+
+    def test_300_flow_established_toggle(self):
+        """
+        Verify that with/without the file flag toggle, established is removed or not.
+        """
+        global app, appSettings
+        flow_established_enabled_flag_filename = "/usr/share/untangle/conf/intrusion-prevention-signatures-flow-established"
+        rules_filename = "/etc/suricata/ngfw.rules"
+        # Add "|| true" because if grep doesn't find anything, it will exit with an error code causing an exception
+        command = f"grep -v 'not_established' {rules_filename} | grep -c 'flow:.*established' || true"
+
+        # Flag enabled
+        Path(flow_established_enabled_flag_filename).touch()
+        app.setSettings(appSettings, True, True)
+        established_count = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"with {flow_established_enabled_flag_filename}, found {established_count}")
+        assert established_count > 0, "established found in signatures"
+
+        # Flag disabled (default)
+        Path(flow_established_enabled_flag_filename).unlink()
+        app.setSettings(appSettings, True, True)
+        established_count = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"without {flow_established_enabled_flag_filename}, found {established_count}")
+        assert established_count == 0, "established not found in signatures"
+        empty_flow_count = int(subprocess.check_output(f"grep -c 'flow:;' {rules_filename}|| true", shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"empty flow count {flow_established_enabled_flag_filename}, found {empty_flow_count}")
+        assert empty_flow_count == 0, "empty flow not found in signatures"
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)
