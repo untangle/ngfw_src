@@ -27,7 +27,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 
 tarballs_bz2=
 
-zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip \
+zips=javamail-1_3_3_01.zip jabsorb-1.2.3-src.zip \
 	jradius-client-1.0.0-release.zip apache-taglibs-standard-1.2.5.zip \
 	selenium-java-3.141.59.zip geoip2-2.17.0-with-dependencies.zip
 
@@ -43,7 +43,6 @@ packages+=$(patsubst %.tar.gz,$(OUTPUT_DIRECTORY)/%,$(tarballs_gz))
 packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
 
-$(OUTPUT_DIRECTORY)/jabsorb-1.2.2-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 jabsorb-1.2.2-src.patch
 $(OUTPUT_DIRECTORY)/apache-log4j-1.2.16: $(OUTPUT_DIRECTORY)/logging-log4j-1.2.16.tar.gz $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 apache-log4j-1.2.16.patch
 
 all: $(packages) ;
