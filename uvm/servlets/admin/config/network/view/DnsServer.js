@@ -20,6 +20,8 @@ Ext.define('Ung.config.network.view.DnsServer', {
         recordActions: ['delete'],
 
         emptyText: 'No Static DNS Entries defined'.t(),
+        
+        importValidationJavaClass: true,
 
         listProperty: 'settings.dnsSettings.staticEntries.list',
 
@@ -68,6 +70,8 @@ Ext.define('Ung.config.network.view.DnsServer', {
         recordActions: ['delete'],
 
         emptyText: 'No Domain DNS Servers defined'.t(),
+
+        importValidationJavaClass: true,
 
         listProperty: 'settings.dnsSettings.localServers.list',
 
