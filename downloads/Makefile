@@ -15,7 +15,7 @@ UNZIP=unzip
 #* EDIT HERE WHEN ADDING, UPGRADING, OR REMOVING.
 ###############################################################################
 tarballs_gz=apache-ant-1.6.5.tar.gz \
-	apache-tomcat-8.5.83-embed.tar.gz \
+	apache-tomcat-9.0.89-embed.tar.gz \
 	logging-log4j-1.2.16.tar.gz \
 	velocity-1.4.tar.gz \
 	commons-fileupload-1.5-bin.tar.gz \
