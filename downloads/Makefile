@@ -18,7 +18,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 	apache-tomcat-8.5.83-embed.tar.gz \
 	logging-log4j-1.2.16.tar.gz \
 	velocity-1.4.tar.gz \
-	commons-fileupload-1.1.tar.gz \
+	commons-fileupload-1.5-bin.tar.gz \
 	commons-io-2.11.0.tar.gz \
 	commons-lang3-3.9-bin.tar.gz \
 	httpcomponents-client-4.5.1-bin.tar.gz \

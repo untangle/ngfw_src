@@ -76,7 +76,7 @@ class Jars
                              Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpcore-4.4.3.jar'),
                              Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-codec-1.9.jar'),
                              Jars.downloadTarget('commons-io-2.11.0/commons-io-2.11.0.jar'),
-                             Jars.downloadTarget('commons-fileupload-1.1/commons-fileupload-1.1.jar')])
+                             Jars.downloadTarget('commons-fileupload-1.5-bin/commons-fileupload-1.5.jar')])
 
     const_set(:Selenium, [ Jars.downloadTarget('selenium-java-3.141.59/client-combined-3.141.59.jar'),
                            Jars.downloadTarget('selenium-java-3.141.59/libs/byte-buddy-1.8.15.jar'),
