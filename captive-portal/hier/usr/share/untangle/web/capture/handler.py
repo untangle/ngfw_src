@@ -16,6 +16,8 @@ import uvm.i18n_helper
 
 from urllib.parse import urlparse
 
+from uvm import settings_reader
+
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 # Dictionary of Oauth providers by name, each with the following fields:
@@ -558,20 +560,20 @@ def load_capture_settings(req,appid=None):
     companyName = 'Arista'
 
     # if there is an OEM name configured we use that instead of our company name
-    oemName = uvm.settings_reader.get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
+    oemName = settings_reader.get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
     if (oemName != None):
         companyName = oemName
 
     # if there is a company name in the branding manager it wins over everything else
-    brandco = uvm.settings_reader.get_app_settings_item('branding-manager','companyName')
+    brandco = settings_reader.get_app_settings_item('branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 
     try:
         if (appid == None):
-            captureSettings = uvm.settings_reader.get_app_settings('captive-portal')
+            captureSettings = settings_reader.get_app_settings('captive-portal')
         else:
-            captureSettings = uvm.settings_reader.get_appid_settings(int(appid))
+            captureSettings = settings_reader.get_appid_settings(int(appid))
     except Exception as e:
         req.log_error("handler.py: Exception loading settings: %s" % str(e))
 

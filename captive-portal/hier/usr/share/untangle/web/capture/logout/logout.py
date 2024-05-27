@@ -9,6 +9,8 @@ from uvm import Uvm
 from mod_python import Cookie
 import uvm.i18n_helper
 
+from uvm import settings_reader
+
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 #-----------------------------------------------------------------------------
@@ -98,18 +100,18 @@ def load_capture_settings(req,appid=None):
 
     companyName = 'Arista'
 
-    oemName = uvm.settings_reader.get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
+    oemName = settings_reader.get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
     if (oemName != None):
         companyName = oemName
 
-    brandco = uvm.settings_reader.get_app_settings_item('branding-manager','companyName')
+    brandco = settings_reader.get_app_settings_item('branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 
     if (appid == None):
-        captureSettings = uvm.settings_reader.get_app_settings('captive-portal')
+        captureSettings = settings_reader.get_app_settings('captive-portal')
     else:
-        captureSettings = uvm.settings_reader.get_appid_settings(int(appid))
+        captureSettings = settings_reader.get_appid_settings(int(appid))
 
     # add the company name to the app settings dictionary
     captureSettings['companyName'] = companyName
