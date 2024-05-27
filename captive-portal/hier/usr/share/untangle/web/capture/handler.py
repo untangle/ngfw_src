@@ -16,11 +16,6 @@ import uvm.i18n_helper
 
 from urllib.parse import urlparse
 
-from uvm.settings_reader import get_app_settings_item
-from uvm.settings_reader import get_appid_settings
-from uvm.settings_reader import get_app_settings
-from uvm.settings_reader import get_settings_item
-
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
 
 # Dictionary of Oauth providers by name, each with the following fields:
@@ -230,7 +225,7 @@ def index(req):
     # found a custom.py file so load it up, grab the index function reference
     # and call the index function to generate the capture page
     if (os.path.exists(rawpath + "custom.py")):
-        cust = import_file(rawpath + "custom.py")
+        cust = _import_file(rawpath + "custom.py")
         if not cust:
             raise Exception("Unable to locate or import custom.py")
         func = getattr(cust,"index")
@@ -563,20 +558,20 @@ def load_capture_settings(req,appid=None):
     companyName = 'Arista'
 
     # if there is an OEM name configured we use that instead of our company name
-    oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
+    oemName = uvm.settings_reader.get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
     if (oemName != None):
         companyName = oemName
 
     # if there is a company name in the branding manager it wins over everything else
-    brandco = get_app_settings_item('branding-manager','companyName')
+    brandco = uvm.settings_reader.get_app_settings_item('branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 
     try:
         if (appid == None):
-            captureSettings = get_app_settings('captive-portal')
+            captureSettings = uvm.settings_reader.get_app_settings('captive-portal')
         else:
-            captureSettings = get_appid_settings(int(appid))
+            captureSettings = uvm.settings_reader.get_appid_settings(int(appid))
     except Exception as e:
         req.log_error("handler.py: Exception loading settings: %s" % str(e))
 
@@ -673,7 +668,7 @@ def custom_handler(req):
     return(page)
 
 #-----------------------------------------------------------------------------
-def import_file(filename):
+def _import_file(filename):
     (path, name) = os.path.split(filename)
     (name, ext) = os.path.splitext(name)
     (file, filename, data) = imp.find_module(name, [path])
