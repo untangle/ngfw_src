@@ -654,7 +654,7 @@ def custom_handler(req):
     webpath = "/capture/custom_" + str(args['APPID']) + "/"
 
     # import the custom.py
-    cust = import_file(rawpath + "custom")
+    cust = _import_file(rawpath + "custom")
     if not cust:
         raise Exception("Unable to locate or import custom.py")
 
