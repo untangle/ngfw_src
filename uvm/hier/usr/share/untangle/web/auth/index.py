@@ -18,11 +18,6 @@ if "@PREFIX@" != '' and '@' not in '@PREFIX@':
 from uvm import login_tools
 import uvm_login
 
-def get_app_settings_item(a,b):
-    return None
-def get_uvm_settings_item(a,b):
-    return None
-
 try:
     from uvm import settings_reader
 except ImportError:
