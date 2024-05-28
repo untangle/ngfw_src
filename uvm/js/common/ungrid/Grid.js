@@ -188,6 +188,11 @@ Ext.define('Ung.cmp.Grid', {
         }else{
             viewConfig.importValidationJavaClass = false;
         }
+        if(this.importValidationForAlertEvents !== undefined){
+            viewConfig.importValidationForAlertEvents = this.importValidationForAlertEvents;
+        }else{
+            viewConfig.importValidationForAlertEvents = false;
+        }
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
         }
