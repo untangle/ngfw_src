@@ -493,7 +493,25 @@ Ext.define('Ung.cmp.GridController', {
         return mappedObject;
     },
 
-    importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid){
+    getFieldConditions: function(condition){
+        if(condition){
+            var newConditions = null;
+            switch (condition.type) {
+            case 'textfield':
+            case 'numberfield':
+            case 'sizefield':
+                newConditions = {
+                    allowBlank: false,
+                };
+                break;
+            default:
+                newConditions={};
+            }
+            return Ext.merge(condition, newConditions); 
+        }
+    },
+
+    importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid, me){
         for (var fieldName in record) {
             if(!isNestedEditor && mappedObject[fieldName]){
                 continue;
@@ -542,48 +560,105 @@ Ext.define('Ung.cmp.GridController', {
 
                 // check allowblank and vtype validation for conditions applied
 
-                if(fieldConfig && fieldConfig.conditionsOrder && fieldConfig.conditions){
-                    var errorMsgForConditions = null;
-                    var currentValue = null;
-                    for (var i=0; i < fieldConfig.conditionsOrder.length; i++){
-                        var conditionName = fieldConfig.conditionsOrder[i];
-                        if(Object.entries(fieldConfig.conditions).length > 0){
-                            var currentCondition = fieldConfig.conditions[conditionName];
-                            if(currentCondition && fieldValue && fieldValue.list){
-                                for(var j=0; j < fieldValue.list.length; j++){
-                                    var currentRow = fieldValue.list[j];
-                                    currentValue = currentRow.value;
-                                    if(currentRow.conditionType && currentRow.conditionType === conditionName){
-                                        if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
-                                            errorMsgForConditions = 'This field is required.';
-                                            break; 
-                                        } else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
-                                            continue; // Skip validation if allowBlank is true and field value is empty
-                                        }
+                if(fieldConfig && fieldConfig.conditionsOrder){
+                    if(fieldConfig && fieldConfig.conditions){
+                        var errorMsgForConditions = null;
+                        var currentValue = null;
+                        for (var i=0; i < fieldConfig.conditionsOrder.length; i++){
+                            var conditionName = fieldConfig.conditionsOrder[i];
+                            if(Object.entries(fieldConfig.conditions).length > 0){
+                                var currentCondition = fieldConfig.conditions[conditionName];
+                                if(currentCondition && fieldValue && fieldValue.list){
+                                    for(var j=0; j < fieldValue.list.length; j++){
+                                        var currentRow = fieldValue.list[j];
+                                        currentValue = currentRow.value;
+                                        if(currentRow.conditionType && currentRow.conditionType === conditionName){
+                                            if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                                                errorMsgForConditions = 'This field is required.';
+                                                break; 
+                                            } else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                                                continue; // Skip validation if allowBlank is true and field value is empty
+                                            }
 
-                                        if (currentCondition.vtype) {
-                                            var currVtype = currentCondition.vtype;
-                                           if(currentValue){
-                                                if (!Ext.form.field.VTypes[currVtype](currentValue)) {
-                                                    errorMsgForConditions = Ext.form.field.VTypes[currVtype + 'Text'];
-                                                    break;
+                                            if (currentCondition.vtype) {
+                                                var currVtype = currentCondition.vtype;
+                                                if(currentValue){
+                                                    if (!Ext.form.field.VTypes[currVtype](currentValue)) {
+                                                        errorMsgForConditions = Ext.form.field.VTypes[currVtype + 'Text'];
+                                                        break;
+                                                    }
                                                 }
-                                           }
+                                            }
+                                            break;
                                         }
-                                        break;
+                                    }
+                                }
+                            }
+                            if(errorMsgForConditions){
+                                break;
+                            }
+                        }
+
+                        if (errorMsgForConditions !== null) {
+                            errorObj.isValidRecord = false;
+                            validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, currentValue, errorMsgForConditions)); 
+                            break; // Stop validation for this record if any field fails
+                        }
+                    }
+                }else if(grid.viewConfig.importValidationForAlertEvents && fieldConfig && !fieldConfig.conditionsOrder && fieldConfig.conditions){
+                    var classFieldConditions = {};
+                    var appVm = this.getView().up("config-events");
+                    if(appVm){
+                        appVm = appVm.getViewModel();
+                        for(var listIndex = 0; listIndex < fieldValue.list.length; listIndex++){
+                            if(fieldValue.list[listIndex] && fieldValue.list[listIndex].field === "class"){
+                                var currCls = fieldValue.list[listIndex].fieldValue;
+                                currCls = currCls.split("*");
+                                if(currCls.length === 0){
+                                    currCls = currCls[0];
+                                }else{
+                                    currCls = currCls[1];
+                                }
+                                if(appVm.get("classFields")){
+                                    classFieldConditions = appVm.get("classFields")[currCls];
+                                }
+                            }
+                        }
+                    }
+                    
+                    // check allowblank and vtype validation for conditions applied for events
+                    if(Object.keys(classFieldConditions).length > 0 && fieldConfig && fieldConfig.conditions && fieldValue && fieldValue.list){
+                        var errorMsgForCurrCondn = null;
+                        var currentValueObj = null;
+                        for (var k=0; k < fieldValue.list.length; k++){
+                            currentValueObj = fieldValue.list[k];
+                            if(currentValueObj.field !== "class"){
+                                var currentCondn = me.getFieldConditions(classFieldConditions.conditions[currentValueObj.field]);
+                                if(currentCondn && Object.keys(currentCondn).length > 0 && fieldValue && fieldValue.list){
+                                    if (currentCondn.hasOwnProperty("allowBlank") && !currentCondn.allowBlank && Ext.isEmpty(currentValueObj.fieldValue)) {
+                                        errorMsgForCurrCondn = 'This field is required.';
+                                        break; 
+                                    } else if ((!currentCondn.hasOwnProperty("allowBlank") || currentCondn.allowBlank) && Ext.isEmpty(currentValueObj.fieldValue)) {
+                                        continue; // Skip validation if allowBlank is true and field value is empty
+                                    }
+                                    if (currentCondn.vtype) {
+                                        var currCondnVtype = currentCondn.vtype;
+                                        if(currentValueObj.fieldValue){
+                                            if (!Ext.form.field.VTypes[currCondnVtype](currentValueObj.fieldValue)) {
+                                                errorMsgForCurrCondn = Ext.form.field.VTypes[currCondnVtype + 'Text'];
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-                        if(errorMsgForConditions){
-                            break;
-                        }
-                    }
 
-                    if (errorMsgForConditions !== null) {
-                        errorObj.isValidRecord = false;
-                        validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, currentValue, errorMsgForConditions)); 
-                        break; // Stop validation for this record if any field fails
+                        if (errorMsgForCurrCondn !== null) {
+                            errorObj.isValidRecord = false;
+                            validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), currentValueObj.field, currentValueObj.fieldValue, errorMsgForCurrCondn)); 
+                            break; // Stop validation for this record if any field fails
+                        }
                     }
                 }
             }
@@ -610,7 +685,7 @@ Ext.define('Ung.cmp.GridController', {
                 function(fieldNm){
                     return me.getFieldConfig(fieldNm);
                 },
-                false, mappedObject, validationErrors, errorObj, {}, grid);
+                false, mappedObject, validationErrors, errorObj, {}, grid, me);
                 if(errorObj.isValidRecord){
                     for(var fieldName in record){
                         if(!errorObj.isValidRecord){
@@ -634,7 +709,7 @@ Ext.define('Ung.cmp.GridController', {
                                 function(fieldNm){
                                     return mappedObject[fieldName][fieldNm];
                                 },
-                                true,mappedObject, validationErrors, errorObj, mappedObject[fieldName], grid);
+                                true,mappedObject, validationErrors, errorObj, mappedObject[fieldName], grid, me);
                             }
                         }
                     }
