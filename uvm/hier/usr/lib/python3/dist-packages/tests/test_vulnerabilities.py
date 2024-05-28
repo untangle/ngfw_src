@@ -27,7 +27,7 @@ class VulnerabilitiesTests(NGFWTestCase):
         CURL_EXTRA_ARGS = '-s -o /dev/null -w "%{http_code}"'
 
         # Test auth/index.py
-        AUTH_INDEX_URL = 'auth/index.py'
+        AUTH_INDEX_URL = 'auth'
         command = global_functions.build_curl_command(uri=BASE_URL + AUTH_INDEX_URL + GET_APP_SETTINGS_ITEM_URL, 
                                                       extra_arguments=CURL_EXTRA_ARGS)
         result = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
