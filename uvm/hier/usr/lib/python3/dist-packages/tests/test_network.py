@@ -23,6 +23,7 @@ import runtests.remote_control as remote_control
 import runtests.overrides as overrides
 from . import global_functions
 from . import ipaddr
+from uvm import Uvm
 
 import tests.test_ipsec_vpn as test_ipsec_vpn
 
@@ -42,6 +43,23 @@ office_ftp_client = overrides.get('office_ftp_client')
 if office_ftp_client is None:
     ftp_server = "10.112.56.23"
 #dyndns_resolver = "resolver1.dyndnsinternetguide.com"
+    
+# Remote BGP NGFW server
+BGP_REMOTE = overrides.get("BGP_REMOTE", default={
+        "serverAddress": "192.168.58.115",
+        "networks": "192.168.58.0",
+        "lan_prefix": "24",
+        "adminPassword": "passwd"
+})
+
+
+# Local BGP NGFW server
+BGP_LOCAL = overrides.get("BGP_LOCAL", default={
+    "serverAddress": "192.168.58.112",
+    "networks": "192.168.58.0",
+    "lan_prefix": "24",
+    "adminPassword": "passwd"
+  })
 
 def get_usable_name(dyn_checkip):
     selected_name = ""
@@ -2348,6 +2366,90 @@ class NetworkTests(NGFWTestCase):
         assert "sed:" not in status, "dynamic ospf does not contain sed error"
         # Empty string is fine
         assert status is not None, "dynamic route ospf is not None"
+
+
+
+    def test_577_bgp_dynamic_routing(self):
+        """
+        This tests adds remote NGFW as a BGP neighbor
+        If successfully connected, the local NGFW's BGP neighbor should show as RemoteNGFW ip address
+        """
+
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+        bgp_remote = subprocess.call(["ping","-W","5","-c","1",BGP_REMOTE["serverAddress"]],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        bgp_local = subprocess.call(["ping","-W","5","-c","1",BGP_LOCAL["serverAddress"]],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (bgp_remote !=0):
+            raise unittest.SkipTest("Remote BGP NGFW Unreachable")
+        if (bgp_local !=0):
+            raise unittest.SkipTest("Local BGP NGFW Unreachable")
+        remote_uvm_context = Uvm().getUvmContext(timeout=240, scheme="https", hostname=BGP_REMOTE["serverAddress"], username="admin", password=BGP_REMOTE["adminPassword"])
+        remote_uid = remote_uvm_context.getServerUID()
+        local_uid = uvmContext.getServerUID()
+        assert(remote_uid != local_uid)
+        network_settings = uvmContext.networkManager().getNetworkSettings()
+        remote_network_settings = remote_uvm_context.networkManager().getNetworkSettings()
+
+        network_settings = uvmContext.networkManager().getNetworkSettings()
+        network_settings["dynamicRoutingSettings"]["enabled"] = True
+        network_settings["dynamicRoutingSettings"]["bgpEnabled"] = True
+        network_settings["dynamicRoutingSettings"]["bgpRouterAs"] = "3456"
+        network_settings["dynamicRoutingSettings"]["bgpRouterId"] = "99.99.99.99"
+        network_settings["dynamicRoutingSettings"]["bgpNetworks"]["list"] = [{
+            "area": 0,
+            "description": "local",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteNetwork",
+            "network": BGP_REMOTE["networks"],
+            "prefix": BGP_REMOTE["lan_prefix"],
+            "ruleId": 1
+        }]
+        network_settings["dynamicRoutingSettings"]["bgpNeighbors"]["list"] = [{
+            "as": "6543",
+            "description": "remote",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteBgpNeighbor",
+            "ipAddress": BGP_REMOTE["serverAddress"],
+            "ruleId": 1
+        }]
+        uvmContext.networkManager().setNetworkSettings(network_settings)
+
+        remote_network_settings = remote_uvm_context.networkManager().getNetworkSettings()
+        orig_remote_network_settings = copy.deepcopy(remote_network_settings)
+        remote_network_settings["dynamicRoutingSettings"]["enabled"] = True
+        remote_network_settings["dynamicRoutingSettings"]["bgpEnabled"] = True
+        remote_network_settings["dynamicRoutingSettings"]["bgpRouterAs"] = "6543"
+        remote_network_settings["dynamicRoutingSettings"]["bgpRouterId"] = "88.88.88.88"
+        remote_network_settings["dynamicRoutingSettings"]["bgpNetworks"]["list"] = [{
+            "area": 0,
+            "description": "local",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteNetwork",
+            "network": BGP_LOCAL["networks"],
+            "prefix": BGP_LOCAL["lan_prefix"],
+            "ruleId": 1
+        }]
+        remote_network_settings["dynamicRoutingSettings"]["bgpNeighbors"]["list"] = [{
+            "as": "3456",
+            "description": "remote",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteBgpNeighbor",
+            "ipAddress": BGP_LOCAL["serverAddress"],
+            "ruleId": 1
+        }]
+        remote_uvm_context.networkManager().setNetworkSettings(remote_network_settings)
+
+        time.sleep(10)
+        status = None
+        try:
+            status = uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_BGP', None)
+        except:
+            assert False, "could not run command"
+        assert( BGP_REMOTE['serverAddress'] in status)
+        print(f"bgp_status={status}")
+        
+        remote_uvm_context.networkManager().setNetworkSettings(orig_remote_network_settings)
+
 
     def test_504_status_routing_table(self):
         """
