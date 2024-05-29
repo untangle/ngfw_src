@@ -536,18 +536,18 @@ Ext.define('Ung.cmp.GridController', {
 
                     if(fieldConfig.hasOwnProperty("minValue")){
                         if(fieldValue < fieldConfig.minValue){
-                            validationErrorMsg = 'The minimum value for this field is ' + fieldConfig.minValue + "."; 
+                            validationErrorMsg = Ext.String.format('The minimum value for this field is {0}.'.t(), fieldConfig.minValue);
                         }
                     }
                     
                     if(fieldConfig.hasOwnProperty("maxValue")){
                         if(fieldValue > fieldConfig.maxValue){
-                            validationErrorMsg = 'The maximum value for this field is ' + fieldConfig.minValue + "."; 
+                            validationErrorMsg = Ext.String.format('The maximum value for this field is {0}.'.t(), fieldConfig.maxValue);
                         }
                     }
 
                     if (!fieldConfig.allowBlank && (!fieldConfig.bind || (fieldConfig.bind && !fieldConfig.bind.disabled)) && Ext.isEmpty(fieldValue)) {
-                        validationErrorMsg = 'This field is required.'; 
+                        validationErrorMsg = Ext.String.format('This field is required.'.t()); 
                     } else if (fieldConfig.allowBlank && Ext.isEmpty(fieldValue)) {
                         continue; // Skip validation if allowBlank is true and field value is empty
                     }
@@ -593,7 +593,7 @@ Ext.define('Ung.cmp.GridController', {
                                         currentValue = currentRow.value;
                                         if(currentRow.conditionType && currentRow.conditionType === conditionName){
                                             if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
-                                                errorMsgForConditions = 'This field is required.';
+                                                errorMsgForConditions = Ext.String.format('This field is required.'.t());
                                                 break; 
                                             } else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
                                                 continue; // Skip validation if allowBlank is true and field value is empty
@@ -655,7 +655,7 @@ Ext.define('Ung.cmp.GridController', {
                                 var currentCondn = me.getFieldConditions(classFieldConditions.conditions[currentValueObj.field]);
                                 if(currentCondn && Object.keys(currentCondn).length > 0 && fieldValue && fieldValue.list){
                                     if (currentCondn.hasOwnProperty("allowBlank") && !currentCondn.allowBlank && Ext.isEmpty(currentValueObj.fieldValue)) {
-                                        errorMsgForCurrCondn = 'This field is required.';
+                                        errorMsgForCurrCondn = Ext.String.format('This field is required.'.t());
                                         break; 
                                     } else if ((!currentCondn.hasOwnProperty("allowBlank") || currentCondn.allowBlank) && Ext.isEmpty(currentValueObj.fieldValue)) {
                                         continue; // Skip validation if allowBlank is true and field value is empty
