@@ -441,7 +441,16 @@ Ext.define('Ung.cmp.GridController', {
         var mappedObject={};
 
         if(editorFields){
-            editorFields.forEach(function(currFieldConfig){
+            editorFields.forEach(function(currFieldConfigObj){
+                var currFieldConfig = {};
+                if(currFieldConfigObj.xtype === 'container'){
+                    currFieldConfig = currFieldConfigObj;
+                }else if(currFieldConfigObj.xtype === 'ungrid' && currFieldConfigObj.columns){
+                    currFieldConfig = {
+                        xtype : 'container',
+                        items : [currFieldConfigObj]
+                    };
+                }
                 if(currFieldConfig.xtype === 'container'){
                     if(currFieldConfig.items){
                         currFieldConfig.items.forEach(function(currItem){
@@ -449,7 +458,7 @@ Ext.define('Ung.cmp.GridController', {
                             if(currItem.xtype === 'ungrid'){
                                 if(currItem.columns){
                                     currItem.columns.forEach(function(currColumn){
-                                        if(currColumn.dataIndex && Object.keys(currColumn.editor).length > 0){
+                                        if(currColumn.dataIndex && currColumn.editor && Object.keys(currColumn.editor).length > 0){
                                             fieldObj[currColumn.dataIndex] = currColumn.editor;
                                         }
                                     });
@@ -525,6 +534,18 @@ Ext.define('Ung.cmp.GridController', {
                 if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
                     var validationErrorMsg = null;
 
+                    if(fieldConfig.hasOwnProperty("minValue")){
+                        if(fieldValue < fieldConfig.minValue){
+                            validationErrorMsg = 'The minimum value for this field is ' + fieldConfig.minValue + "."; 
+                        }
+                    }
+                    
+                    if(fieldConfig.hasOwnProperty("maxValue")){
+                        if(fieldValue > fieldConfig.maxValue){
+                            validationErrorMsg = 'The maximum value for this field is ' + fieldConfig.minValue + "."; 
+                        }
+                    }
+
                     if (!fieldConfig.allowBlank && (!fieldConfig.bind || (fieldConfig.bind && !fieldConfig.bind.disabled)) && Ext.isEmpty(fieldValue)) {
                         validationErrorMsg = 'This field is required.'; 
                     } else if (fieldConfig.allowBlank && Ext.isEmpty(fieldValue)) {
@@ -540,7 +561,6 @@ Ext.define('Ung.cmp.GridController', {
                             }
                        }
                     }
-
                     
                     // Currently, custom validator is tailored exclusively for the WG App.
                     // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
@@ -550,7 +570,6 @@ Ext.define('Ung.cmp.GridController', {
                         }
                     }
                     
-
                     if (validationErrorMsg !== null) {
                         errorObj.isValidRecord = false;
                         validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, fieldValue, validationErrorMsg)); 
@@ -756,7 +775,20 @@ Ext.define('Ung.cmp.GridController', {
     getFieldConfig: function(fieldName) {
         // Retrieve the field configuration from editorFields array based on field name extracted from bind property
         if(this.getView().editorFields !== null){
-            return this.getView().editorFields.find(function(fieldConfig) {
+            // generating the editorFieldsConfig Array for normal fields and fields with fieldcontainer type
+            // as fieldContainer again has items in it which we need to take as well.
+            var editorFieldsConfig = [];
+            this.getView().editorFields.forEach(function(currObj){
+                if(currObj.xtype === "fieldcontainer" && currObj.items){
+                    currObj.items.forEach(function(currItem){
+                       editorFieldsConfig.push(currItem); 
+                    });
+                }else{
+                    editorFieldsConfig.push(currObj);
+                }
+            });
+
+            return editorFieldsConfig.find(function(fieldConfig) {
                 if (fieldConfig.bind) {
                     // Extract the field name from bind property in various formats
                     var bindValue = fieldConfig.bind.value || fieldConfig.bind;

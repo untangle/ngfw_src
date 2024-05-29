@@ -46,6 +46,8 @@ Ext.define('Ung.config.network.view.DhcpServer', {
 
                 emptyText: 'No Static Entries defined'.t(),
 
+                importValidationJavaClass: true,
+
                 listProperty: 'settings.staticDhcpEntries.list',
 
                 emptyRow: {
@@ -158,6 +160,8 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                 copyAppendField: 'description',
 
                 emptyText: 'No Relays defined'.t(),
+
+                importValidationJavaClass: true,
 
                 listProperty: 'settings.dhcpRelays.list',
                 bind: '{dhcpRelays}',
