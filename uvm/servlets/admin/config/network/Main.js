@@ -33,6 +33,7 @@ Ext.define('Ung.config.network.Main', {
         { xtype: 'config-network-bypass-rules' },
         { xtype: 'config-network-filter-rules' },
         { xtype: 'config-network-routes' },
+        { xtype: 'config-network-dynamicrouting' },
         { xtype: 'config-network-dns-server' },
         { xtype: 'config-network-dhcp-server' },
         { xtype: 'config-network-advanced' },

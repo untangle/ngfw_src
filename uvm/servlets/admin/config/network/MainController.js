@@ -8,6 +8,22 @@ Ext.define('Ung.config.network.MainController', {
         '#interfaces': { beforerender: 'onInterfaces' },
         '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
         '#routes': { afterrender: 'refreshRoutes' },
+        '#dynamic_routing': {
+            activate: 'getDynamicRoutingOverview',
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#dynamic_routing #status':{
+            activate: 'getDynamicRoutingStatus'
+        },
+        '#dynamic_routing #bgp': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#dynamic_routing #ospf': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#dynamic_routing #ospf #interfaces':{
+            activate: 'getOspfInterfaces'
+        },
         '#qos_statistics': { afterrender: 'refreshQosStatistics' },
         '#upnp_status': { afterrender: 'refreshUpnpStatus' },
         '#dhcpLeases': { afterrender: 'refreshDhcpLeases' },
@@ -27,22 +43,6 @@ Ext.define('Ung.config.network.MainController', {
         '#advanced #networkCardsGrid': {
             reconfigure: 'networkCardsGridReconfigure',
             select: 'networkCardsGridSelect'
-        },
-        '#advanced #dynamic_routing': {
-            activate: 'getDynamicRoutingOverview',
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#advanced #dynamic_routing #status':{
-            activate: 'getDynamicRoutingStatus'
-        },
-        '#advanced #dynamic_routing #bgp': {
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#advanced #dynamic_routing #ospf': {
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#advanced #dynamic_routing #ospf #interfaces':{
-            activate: 'getOspfInterfaces'
         },
         '#troubleshooting': {
             activate: Ung.controller.Global.onSubtabActivate,
