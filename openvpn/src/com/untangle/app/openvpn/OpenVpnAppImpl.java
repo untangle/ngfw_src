@@ -375,6 +375,15 @@ public class OpenVpnAppImpl extends AppBase
         // Protocol changes
         if (!oldSettings.getProtocol().equals(newSettings.getProtocol())) { logger.debug("Server Protocol has changed."); return true;}
 
+        // Remote Server changes
+        if (oldSettings.getRemoteServers() == null ||
+                newSettings.getRemoteServers() == null ||
+                oldSettings.getRemoteServers().size() != newSettings.getRemoteServers().size() ||
+                !oldSettings.getRemoteServers().containsAll(newSettings.getRemoteServers())) {
+            logger.debug("Remote servers settings have changed.");
+            return true;
+        }
+
         // Listening Port changes
         if (oldSettings.getPort() != newSettings.getPort()) { logger.debug("Server Port has changed."); return true;}
 
