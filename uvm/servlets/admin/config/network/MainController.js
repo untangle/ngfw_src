@@ -985,6 +985,9 @@ Ext.define('Ung.config.network.MainController', {
                 if(line.indexOf("Exiting:") > -1){
                     return;
                 }
+                if(line.indexOf("bgpd is not running") > -1){
+                    return;
+                }
                 var columns = line.split(" ");
                 var uptime = 0;
                 if(columns[8] != 'never'){
@@ -1015,6 +1018,9 @@ Ext.define('Ung.config.network.MainController', {
                     return;
                 }
                 if(line.indexOf("Exiting:") > -1){
+                    return;
+                }
+                if(line.indexOf("ospfd is not running") > -1){
                     return;
                 }
                 var columns = line.split(" ");
