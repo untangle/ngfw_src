@@ -140,25 +140,6 @@ def check_dpkg():
         cmd_to_log(dpkg_config)
         return
 
-def install_frr():
-    frr_output = subprocess.call(["dpkg-query", "-W", "frr"])
-    log(frr_output)
-    if frr_output == 0:
-        log("frr is already installed") 
-        return
-    else:
-        log("frr is being installed")
-        '''
-        During upgrade if frr is being installed for first time, sync settings has dependency on quagaa.
-        Quagga  dependency is to be removed from /var/lib/dpkg/status from sync settings.
-        This is done to avoid untangle-sync-settings and its dependant packages being removed when installing frr.
-        For Subsequent Upgrades,  upgrade() method will take care of it as quagga dependency is removed.
-        '''
-        subprocess.call(["sed", "-i", "-e", 's/python3, quagga/python3/g', "/var/lib/dpkg/status"])
-        cmd_to_log("apt install -y frr")
-        return
-
-
 
 log_date( os.path.basename( sys.argv[0]) )
 
@@ -175,8 +156,6 @@ if "2.6.32" in platform.platform():
 
 log_date("")
 log("")
-
-install_frr()
 
 r = check_upgrade();
 if r != 0:
