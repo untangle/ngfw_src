@@ -1170,7 +1170,7 @@ class UvmTests(NGFWTestCase):
         subprocess.call("rm -f /tmp/product_serial", shell=True, stderr=subprocess.STDOUT)
 
     @pytest.mark.slow
-    def test_email_cleaner(self):
+    def test_304_email_cleaner(self):
         """
         1. Modify FROM_EMAIL to non deliverable mail
         2. Send emails to non deliverable email, note the count of messages using exim -bpc
@@ -1210,7 +1210,7 @@ class UvmTests(NGFWTestCase):
         # Setting back Original email settings
         uvmContext.mailSender().setSettings(origMailsettings)
 
-    def test_geo_ip_address(self):
+    def test_307_geo_ip_address(self):
         """
         1. Validating GeoIP methods for given IP Address
         """
