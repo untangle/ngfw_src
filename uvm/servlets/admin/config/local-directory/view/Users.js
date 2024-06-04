@@ -18,6 +18,8 @@ Ext.define('Ung.config.local-directory.view.Users', {
         recordActions: ['edit', 'delete'],
 
         listProperty: 'usersData.list',
+        
+        importValidationJavaClass: true,
 
         emptyRow: {
             username: '',
