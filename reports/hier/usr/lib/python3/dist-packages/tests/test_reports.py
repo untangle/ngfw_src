@@ -1251,7 +1251,7 @@ class ReportsTests(NGFWTestCase):
         resultLoginPage = subprocess.call(global_functions.build_wget_command(output_file="-", uri=adminURL + 'auth/login?url=/reports&realm=Reports&username=' + test_email_address + "&password=passwd") + " 2>&1 | grep -q Report", shell=True)
         assert (resultLoginPage == 0)
 
-    def test_data_retention_days(self):
+    def test_111_data_retention_days(self):
         """
         Day retention removal
 
@@ -1283,7 +1283,7 @@ class ReportsTests(NGFWTestCase):
         print(f"Pre/post table counts: {start_count} < {end_count}")
         assert(end_count < start_count)
 
-    def test_data_retention_hours(self):
+    def test_112_data_retention_hours(self):
         """
         Hour retention removal
 

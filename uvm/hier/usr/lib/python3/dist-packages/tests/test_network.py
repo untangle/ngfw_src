@@ -1472,7 +1472,7 @@ class NetworkTests(NGFWTestCase):
         assert(found)
 
     
-    def test_invert_iptables_command(self):
+    def test_148_invert_iptables_command(self):
         file_path = '/etc/untangle/iptables-rules.d/240-filter-rules'
           # Lines to search for in the file content
         expected_iptables_commands = [
