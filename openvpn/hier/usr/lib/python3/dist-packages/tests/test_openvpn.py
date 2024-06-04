@@ -410,7 +410,7 @@ class OpenVpnTests(NGFWTestCase):
         assert(pre_events_connect < post_events_connect)
 
     @pytest.mark.slow
-    def test_createDisableClientVPNTunnel(self):
+    def test_041_createDisableClientVPNTunnel(self):
         global appData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest.SkipTest("No paried VPN client available")

@@ -622,7 +622,7 @@ class IntrusionPreventionTests(NGFWTestCase):
             assert len(signature_set) > 0, f"non empty signature set {file_name}"
 
     @pytest.mark.slow
-    def test_settings_changes(self):
+    def test_201_settings_changes(self):
         global app, appSettings 
         original_file_path = "/usr/share/untangle/settings/intrusion-prevention/settings_"+str(app_id)+".js"
         #Read original settings file
