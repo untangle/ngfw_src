@@ -22,12 +22,12 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 	commons-io-2.11.0.tar.gz \
 	commons-lang3-3.9-bin.tar.gz \
 	httpcomponents-client-4.5.1-bin.tar.gz \
-	slf4j-1.4.3.tar.gz \
+	slf4j-2.0.9.tar.gz \
 	Ext.ux.Exporter-1.0.tar.gz
 
 tarballs_bz2=
 
-zips=javamail-1_3_3_01.zip jabsorb-1.2.3-src.zip \
+zips=javamail-1_3_3_01.zip jabsorb-1.2.4-src.zip \
 	jradius-client-1.0.0-release.zip apache-taglibs-standard-1.2.5.zip \
 	selenium-java-3.141.59.zip geoip2-2.17.0-with-dependencies.zip
 
