@@ -449,12 +449,14 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         int extensionLength = Math.abs(data.getShort());
 
         while (counter < extensionLength) {
+            if (data.remaining() < 2) throw new BufferUnderflowException();
             int extType = Math.abs(data.getShort());
             int extSize = Math.abs(data.getShort());
 
             // if not server name extension adjust the offset to the next
             // extension record and continue
             if (extType != SERVER_NAME) {
+                if (data.remaining() < extSize) throw new BufferUnderflowException();
                 data.position(data.position() + extSize);
                 counter += (extSize + 4);
                 continue;
@@ -463,6 +465,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             // we read the name list info by passing the offset location so we
             // don't modify the position which makes it easier to skip over the
             // whole extension if we bail out during name extraction
+            if (data.remaining() < 6) throw new BufferUnderflowException();
             int listLength = Math.abs(data.getShort(data.position()));
             int nameType = Math.abs(data.get(data.position() + 2));
             int nameLength = Math.abs(data.getShort(data.position() + 3));
@@ -470,6 +473,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             // if we find a name type we don't understand we just abandon
             // processing the rest of the extension
             if (nameType != HOST_NAME) {
+                if (data.remaining() < extSize) throw new BufferUnderflowException();
                 data.position(data.position() + extSize);
                 counter += (extSize + 4);
                 continue;
@@ -477,6 +481,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
             // found a valid host name so adjust the position to skip over
             // the list length and name type info we directly accessed above
+            if (data.remaining() < 5) throw new BufferUnderflowException();
             data.position(data.position() + 5);
             byte[] hostData = new byte[nameLength];
             data.get(hostData, 0, nameLength);
