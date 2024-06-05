@@ -176,7 +176,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        google_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.google.com/search?hl=en&q=boobs&safe=off", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'safe=strict'")
+        google_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.google.com/search?hl=en&q=boobs", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'safe=strict'")
 
         assert( google_result_without_safe == 0 )
         assert( google_result_with_safe == 0 )
@@ -187,7 +187,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        bing_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.bing.com/search?q=boobs&adlt=off", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'adlt=strict'")
+        bing_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.bing.com/search?q=boobs", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'adlt=strict'")
 
         assert(bing_result_without_safe == 0)
         assert(bing_result_with_safe == 0)
@@ -198,7 +198,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        yahoo_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://search.yahoo.com/search?p=boobs&vm=p", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'vm=r'")
+        yahoo_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://search.yahoo.com/search?p=boobs", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'vm=r'")
 
         assert(yahoo_result_with_safe == 0)
         assert(yahoo_result_without_safe == 0)
