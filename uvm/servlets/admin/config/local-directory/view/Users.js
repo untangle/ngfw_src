@@ -19,8 +19,6 @@ Ext.define('Ung.config.local-directory.view.Users', {
 
         listProperty: 'usersData.list',
         
-        importValidationJavaClass: true,
-
         emptyRow: {
             username: '',
             firstName: '',

@@ -42,8 +42,6 @@ Ext.define('Ung.config.system.view.Shield', {
 
         listProperty: 'shieldSettings.rules.list',
 
-        importValidationJavaClass: true,
-
         emptyRow: {
             ruleId: -1,
             enabled: true,
