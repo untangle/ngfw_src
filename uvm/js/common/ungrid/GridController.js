@@ -280,6 +280,60 @@ Ext.define('Ung.cmp.GridController', {
         return true;
     },
 
+    tooltipRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
+        metaData.tdAttr = 'data-qtip="' + value + '"';
+        return value;
+    },
+
+    getErrorGrid: function(){
+        var vm = this.getViewModel();
+        //Create a store for error grid
+        var errorStore = Ext.create('Ext.data.Store', {
+            fields: ['fieldName', 'fieldValue', 'fieldErrorDesc'], // Define the fields
+            data: [] // Set the data
+        });
+        
+        // setting store
+        vm.setStores({errorStore: errorStore});
+        
+        return {
+            xtype: 'ungrid',
+            scrollable: true,
+            withValidation: false,
+            width: 418,
+            height: 250,
+            margin: '10 0 0 0',
+            tbar: ['->','->','->','@export'],
+            reference: 'errorGrid',
+            hidden: true,
+            bind: {
+                store : '{errorStore}',
+            },
+            columns: [{
+                text: 'Field Name'.t(),
+                dataIndex: 'fieldName',
+                align: 'center',
+                width: 150,
+                resizable: false,
+                renderer: this.tooltipRenderer,
+            }, {
+                text: 'Field Value'.t(),
+                dataIndex: 'fieldValue',
+                align: 'center',
+                flex: 1,
+                resizable: false,
+                renderer: this.tooltipRenderer,
+            }, {
+                text: 'Description'.t(),
+                dataIndex: 'fieldErrorDesc',
+                align: 'center',
+                flex: 1,
+                resizable: false,
+                renderer: this.tooltipRenderer,
+            }],
+        };
+    },
+
     // import/export features
     importData: function () {
         var me = this,
@@ -331,7 +385,8 @@ Ext.define('Ung.cmp.GridController', {
                     xtype: 'hidden',
                     name: 'type',
                     value: 'import'
-                }]
+                }, 
+                me.getErrorGrid()]
                 ),
                 buttons: [{
                     text: 'Cancel'.t(),
@@ -356,15 +411,15 @@ Ext.define('Ung.cmp.GridController', {
                                     return;
                                 }
                                 me.importHandler(form.getValues().importMode, action.result.msg);
-                                me.importDialog.close();
                             },
                             failure: function(form, action) {
                                 Ext.MessageBox.alert('Warning'.t(), action.result.msg);
                             }
                         });
                     }
-                }]
-            }],
+                }],
+            },
+        ],
         });
         this.importDialog.show();
     },
@@ -399,7 +454,8 @@ Ext.define('Ung.cmp.GridController', {
                     xtype: 'hidden',
                     name: 'type',
                     value: 'import'
-                }],
+                }, 
+                me.getErrorGrid()],
                 buttons: [{
                     text: 'Cancel'.t(),
                     iconCls: 'fa fa-ban fa-red',
@@ -423,7 +479,6 @@ Ext.define('Ung.cmp.GridController', {
                                     return;
                                 }
                                 me.importHandler('replace', action.result.msg);
-                                me.importDialog.close();
                             },
                             failure: function(form, action) {
                                 Ext.MessageBox.alert('Warning'.t(), action.result.msg);
@@ -572,7 +627,7 @@ Ext.define('Ung.cmp.GridController', {
                     
                     if (validationErrorMsg !== null) {
                         errorObj.isValidRecord = false;
-                        validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, fieldValue, validationErrorMsg)); 
+                        validationErrors.push({fieldName:fieldName, fieldValue:fieldValue, fieldErrorDesc:validationErrorMsg}); 
                         break; // Stop validation for this record if any field fails
                     }
                 }
@@ -620,7 +675,7 @@ Ext.define('Ung.cmp.GridController', {
 
                         if (errorMsgForConditions !== null) {
                             errorObj.isValidRecord = false;
-                            validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), fieldName, currentValue, errorMsgForConditions)); 
+                            validationErrors.push({fieldName:fieldName, fieldValue:currentValue, fieldErrorDesc:errorMsgForConditions}); 
                             break; // Stop validation for this record if any field fails
                         }
                     }
@@ -675,7 +730,7 @@ Ext.define('Ung.cmp.GridController', {
 
                         if (errorMsgForCurrCondn !== null) {
                             errorObj.isValidRecord = false;
-                            validationErrors.push(Ext.String.format('Validation failed for field: {0}, value: {1}, error: {2}'.t(), currentValueObj.field, currentValueObj.fieldValue, errorMsgForCurrCondn)); 
+                            validationErrors.push({fieldName:currentValueObj.field, fieldValue:currentValueObj.fieldValue, fieldErrorDesc:errorMsgForCurrCondn}); 
                             break; // Stop validation for this record if any field fails
                         }
                     }
@@ -687,7 +742,8 @@ Ext.define('Ung.cmp.GridController', {
     importHandler: function (importMode, newData) {
         var grid = this.getView(),
             existingData = Ext.Array.pluck(grid.getStore().getRange(), 'data'),
-            me = this;
+            me = this,
+            vm = me.getViewModel();
 
         var validData = [];
         var validationErrors = [];
@@ -737,13 +793,6 @@ Ext.define('Ung.cmp.GridController', {
                     validData.push(record);
                 }
         }, this);
-        
-
-        // Show validation errors as alert
-        if (validationErrors.length > 0) {
-            var errorMessage = Ext.String.format("Import record validation error:\n\n{0}".t(), validationErrors.join("\n"));
-            alert(errorMessage);  // Do not proceed with loading data if there are validation errors for record
-        }
 
         //To import all the record for another app
         if (validData.length === 0 && validationErrors.length === 0) {
@@ -754,7 +803,7 @@ Ext.define('Ung.cmp.GridController', {
             delete rec._id;
         });
 
-        if (importMode === 'replace') {
+        if (importMode === 'replace' && validData.length > 0) {
             grid.getStore().removeAll();
         }
         if (importMode === 'append') {
@@ -766,10 +815,27 @@ Ext.define('Ung.cmp.GridController', {
             validData = existingData;
         }
     
-        grid.getStore().loadData(validData);
+        if(validData.length > 0){
+            grid.getStore().loadData(validData);
+        }
+
         grid.getStore().each(function(record){
             record.set('markedForNew', true);
         });
+
+        if(validationErrors.length > 0){
+            vm.getStore("errorStore").loadData(validationErrors);
+        }else{
+            me.importDialog.close();
+        }
+
+        var lookupRefHolder = me.importDialog.lookupReferenceHolder("errorGrid");
+        if(lookupRefHolder){
+            var errorGrid = lookupRefHolder.lookupReference("errorGrid");
+            if(errorGrid){
+                errorGrid.setHidden(vm.getStore("errorStore").getCount() === 0);
+            }
+        }
     },
     
     getFieldConfig: function(fieldName) {
