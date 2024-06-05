@@ -546,7 +546,7 @@ Ext.define('Ung.cmp.GridController', {
                         }
                     }
 
-                    if (!fieldConfig.allowBlank && (!fieldConfig.bind || (fieldConfig.bind && !fieldConfig.bind.disabled)) && Ext.isEmpty(fieldValue)) {
+                    if (fieldConfig.hasOwnProperty("allowBlank") && !fieldConfig.allowBlank && (!fieldConfig.bind || (fieldConfig.bind && !fieldConfig.bind.disabled)) && Ext.isEmpty(fieldValue)) {
                         validationErrorMsg = Ext.String.format('This field is required.'.t()); 
                     } else if (fieldConfig.allowBlank && Ext.isEmpty(fieldValue)) {
                         continue; // Skip validation if allowBlank is true and field value is empty
