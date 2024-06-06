@@ -7,8 +7,8 @@ smtp = BuildEnv::SRC['untangle-app-smtp']
 jt = [smtp['src']]
 
 deps = %w(
-           slf4j-1.4.3/slf4j-log4j12-1.4.3.jar
-           slf4j-1.4.3/slf4j-api-1.4.3.jar
+           slf4j-2.0.9/slf4j-reload4j-2.0.9.jar
+           slf4j-2.0.9/slf4j-api-2.0.9.jar
          ).map { |f| Jars.downloadTarget(f) }
 deps +=  Jars::Jabsorb
 
