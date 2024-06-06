@@ -86,6 +86,16 @@ class VulnerabilitiesTests(NGFWTestCase):
                                                       extra_arguments=CURL_EXTRA_ARGS)
         result = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
         assert (result == 404)
+    
+    def test_020_mod_apache_status(self):
+
+        URL = global_functions.get_http_url() + '/server-status'
+        CURL_EXTRA_ARGS = '-s -o /dev/null -w "%{http_code}"'
+
+        command = global_functions.build_curl_command(uri=URL, 
+                                                      extra_arguments=CURL_EXTRA_ARGS)
+        result = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        assert (result == 404)
 
 
 test_registry.register_module("vulnerabilities", VulnerabilitiesTests)
