@@ -40,6 +40,10 @@ class ThreatpreventionTests(NGFWTestCase):
         global appData
         appData = cls._app.getSettings()
 
+    @classmethod
+    def initial_extra_setup(cls):
+        global_functions.get_latest_client_test_pkg("web")
+
     def rule_add(self, conditionType, conditionData, action="block", flagged=True, description="description"):
         newRule =  {
             "flag": flagged,
@@ -272,7 +276,7 @@ class ThreatpreventionTests(NGFWTestCase):
         for index in range(2, max_index,packet_split_iteration):
             last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
             last_log_line = int(last_log_line) + 1
-            result = remote_control.run_command(f"./https_client.py -i {index}")
+            result = remote_control.run_command(f"./web/https_client.py -i {index}")
 
             log_invalid_exception = subprocess.check_output(f"awk 'NR >= {last_log_line} && /WARN  Exception calling extractSNIhostname/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
             print(log_invalid_exception)
