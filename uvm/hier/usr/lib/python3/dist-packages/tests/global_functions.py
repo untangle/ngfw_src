@@ -1606,3 +1606,13 @@ def vm_conf_update(search=None, replace=None):
         file.close()
 
     return vm_conf_restore(temp_filename)
+
+def get_latest_client_test_pkg(name=None):
+    """
+    Download and install latest client test package
+    """
+    if name is not None:
+        package_filename=f"{name}pkg.tar"
+        remote_control.run_command(f"rm -f {package_filename}*") # remove all previous mail packages
+        results = remote_control.run_command(build_wget_command(uri=f"http://test.untangle.com/test/{package_filename}"))
+        results = remote_control.run_command(f"tar -xvf {package_filename}")
