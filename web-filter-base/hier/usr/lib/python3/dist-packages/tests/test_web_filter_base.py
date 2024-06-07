@@ -1,7 +1,11 @@
 """web_filter_base tests"""
 import copy
 import pytest
+import runtests
+import subprocess
 import sys
+import time
+import unittest
 import datetime
 
 from tests.common import NGFWTestCase
@@ -540,6 +544,43 @@ class WebFilterBaseTests(NGFWTestCase):
         assert (result == 0)
         found = self.check_events("test.untangle.com", "/", True)
         assert( found )
+
+    def test_551_https_with_sni_packet_split(self):
+        """Check SNI block list handling with Hello TLS split packets"""
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+
+        sni_domain = "docs.google.com"
+        self.block_url_list_add(sni_domain)
+        app_id = self._app.getAppSettings()["id"]
+        log_file = f"/var/log/uvm/app-{app_id}.log"
+
+        count = 0
+        exceptions = 0
+
+        # Not the entire packet, but a little bit beyond the position of the SNI server record.
+        max_index=1600
+        # Hit as many places as we could be out of bounds with split
+        packet_split_iteration = 2
+
+        for index in range(2, max_index,packet_split_iteration):
+            last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
+            last_log_line = int(last_log_line) + 1
+            result = remote_control.run_command(f"./https_client.py -i {index}")
+
+            log_invalid_exception = subprocess.check_output(f"awk 'NR >= {last_log_line} && /WARN  Exception calling extractSNIhostname/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+            print(log_invalid_exception)
+            for log in log_invalid_exception.split("\n"):
+                if len(log) == 0:
+                    continue
+                exceptions += 1
+                break
+
+            count += 1
+
+        self.block_url_list_clear()
+        print(f"count={count}, exceptions={exceptions}")
+        assert exceptions == 0, "exceptions"
 
     def test_560_https_blockflag_glob_sni(self):
         """verify that a block list glob * matches"""
