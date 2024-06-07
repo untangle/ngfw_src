@@ -22,7 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
@@ -41,7 +42,7 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class WebrootQuery
 {
-    private static final Logger logger = Logger.getLogger(WebrootQuery.class);
+    private static final Logger logger = LogManager.getLogger(WebrootQuery.class);
     /**
      * The singleton instance
      */

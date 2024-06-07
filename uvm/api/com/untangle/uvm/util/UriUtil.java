@@ -6,14 +6,15 @@ package com.untangle.uvm.util;
 
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utilities for escaping URIs.
  */
 public class UriUtil
 {
-    private static Logger logger = Logger.getLogger(UriUtil.class);
+    private static Logger logger = LogManager.getLogger(UriUtil.class);
 
     /**
      * Escape a URI

@@ -9,7 +9,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -27,7 +28,7 @@ import com.untangle.uvm.vnet.PipelineConnector;
  */
 public class WanFailoverApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String PINGABLE_HOSTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/wan-failover-pingable-hosts.sh";
 
@@ -221,7 +222,7 @@ public class WanFailoverApp extends AppBase
 
         if (WanFailoverApp.execManager == null) {
             WanFailoverApp.execManager = UvmContextFactory.context().createExecManager();
-            WanFailoverApp.execManager.setLevel(org.apache.log4j.Level.INFO);
+            WanFailoverApp.execManager.setLevel(org.apache.logging.log4j.Level.INFO);
         }
 
         if (this.wanFailoverTesterMonitor == null) this.wanFailoverTesterMonitor = new WanFailoverTesterMonitor(this);

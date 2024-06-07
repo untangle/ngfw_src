@@ -25,7 +25,8 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.fileupload.FileItem;
 
 import com.untangle.uvm.ExecManagerResult;
@@ -55,7 +56,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 {
     public static final String REPORTS_EVENT_LOG_DOWNLOAD_HANDLER = "reportsEventLogExport";
 
-    private static final Logger logger = Logger.getLogger(ReportsApp.class);
+    private static final Logger logger = LogManager.getLogger(ReportsApp.class);
 
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
     private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-tables.py";

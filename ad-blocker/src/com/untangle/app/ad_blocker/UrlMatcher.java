@@ -12,7 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.GenericRule;
 
@@ -21,7 +22,7 @@ import com.untangle.uvm.app.GenericRule;
  */
 public class UrlMatcher
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private Map<String, List<GenericRule>> ruleByKeyword = new ConcurrentHashMap<>();
     private Map<String, String> keywordByRule = new ConcurrentHashMap<>();

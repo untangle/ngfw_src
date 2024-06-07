@@ -4,7 +4,8 @@
 package com.untangle.app.web_cache;
 
 import java.util.TimerTask;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.util.LoadAvg;
 
 /**
@@ -15,7 +16,7 @@ import com.untangle.uvm.util.LoadAvg;
  */
 public class WebCacheTimer extends TimerTask
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final WebCacheApp app;
 
     private long lastHitCount = 0;

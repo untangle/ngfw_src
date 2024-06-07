@@ -9,7 +9,8 @@ import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.SessionAttachments;
 
@@ -22,7 +23,7 @@ import com.untangle.uvm.vnet.SessionAttachments;
 @SuppressWarnings("serial")
 public class FirewallRule implements JSONString, Serializable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private List<FirewallRuleCondition> matchers;
 

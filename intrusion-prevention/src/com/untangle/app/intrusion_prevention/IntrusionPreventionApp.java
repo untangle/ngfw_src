@@ -34,7 +34,8 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.codec.binary.Hex;
 
@@ -70,7 +71,7 @@ import com.untangle.uvm.util.StringUtil;
  */
 public class IntrusionPreventionApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String STAT_SCAN = "scan";
     private static final String STAT_DETECT = "detect";

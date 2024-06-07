@@ -9,7 +9,8 @@ import java.util.regex.Matcher;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class manages the "matching" of URLs.
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class UrlMatcher implements java.io.Serializable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String LEFT_SIDE_ANCHOR = "^([a-zA-Z_0-9-]*\\.)*";
     private static final String RIGHT_SIDE_ANCHOR = ".*$";

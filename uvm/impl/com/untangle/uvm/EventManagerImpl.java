@@ -49,7 +49,8 @@ import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.io.IOUtils;
 
 import org.json.JSONArray;
@@ -63,7 +64,7 @@ public class EventManagerImpl implements EventManager
 {
     private static final Integer SETTINGS_CURRENT_VERSION = 4;
 
-    private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(EventManagerImpl.class);
 
     /**
      * If the event queue length reaches the high water mark

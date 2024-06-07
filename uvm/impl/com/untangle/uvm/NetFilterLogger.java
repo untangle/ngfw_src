@@ -14,7 +14,8 @@ import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.UvmContextFactory;
@@ -32,7 +33,7 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class NetFilterLogger
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     protected final InetSocketAddress daemonAddress = new InetSocketAddress("127.0.0.1", 1999);
     protected SocketChannel daemonSocket;

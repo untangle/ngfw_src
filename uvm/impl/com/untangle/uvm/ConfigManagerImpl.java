@@ -34,7 +34,8 @@ import java.io.FileNotFoundException;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
 
@@ -46,7 +47,7 @@ public class ConfigManagerImpl implements ConfigManager
     private static final String FACTORY_RESET_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-factory-defaults";
     private static final String DIAGNOSTIC_DUMP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-diagnostic-dump";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final UvmContext context = UvmContextFactory.context();
 
     // this is managed by our getDatabaseConnection member

@@ -8,7 +8,8 @@ import java.util.List;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.AppSession;
 
@@ -22,7 +23,7 @@ import com.untangle.uvm.vnet.AppSession;
 @SuppressWarnings("serial")
 public class WebFilterRule implements JSONString, Serializable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private List<WebFilterRuleCondition> conditions = null;
     private String description = null;

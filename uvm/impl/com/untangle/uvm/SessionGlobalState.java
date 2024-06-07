@@ -10,7 +10,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jnetcap.NetcapTCPSession;
@@ -24,7 +25,7 @@ import com.untangle.uvm.vnet.SessionAttachments;
  */
 public class SessionGlobalState implements SessionAttachments
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private static final String NO_KEY_VALUE = "NOKEY";
 
     protected final NetcapSession netcapSession;

@@ -11,8 +11,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Level;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
 
@@ -33,7 +34,7 @@ import com.untangle.uvm.ExecManagerResultReader;
  */
 public class ExecManagerImpl implements ExecManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private JSONSerializer serializer = null;
 

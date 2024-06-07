@@ -12,7 +12,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Class for managing the list of Vineyard/Procera/SandVine applications which
@@ -23,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public class ApplicationControlProtoList
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private ApplicationControlApp app;
 
     /**

@@ -14,14 +14,15 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The traffic event handler for application control lite
  */
 public class EventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(EventHandler.class);
+    private final Logger logger = LogManager.getLogger(EventHandler.class);
 
     private Set<ApplicationControlLitePattern> _patternSet;
     private int                     _byteLimit;

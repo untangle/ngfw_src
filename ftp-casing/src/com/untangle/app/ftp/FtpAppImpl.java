@@ -3,7 +3,8 @@
  */
 package com.untangle.app.ftp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Affinity;
@@ -18,7 +19,7 @@ import com.untangle.uvm.vnet.PipelineConnector;
  */
 public class FtpAppImpl extends AppBase
 {
-    private final Logger logger = Logger.getLogger(FtpAppImpl.class);
+    private final Logger logger = LogManager.getLogger(FtpAppImpl.class);
 
     private SessionEventHandler clientSideCtlHandler = new ForkedEventHandler( new FtpClientParserEventHandler(), new FtpUnparserEventHandler(true) );
     private SessionEventHandler serverSideCtlHandler = new ForkedEventHandler( new FtpUnparserEventHandler(false), new FtpServerParserEventHandler() );

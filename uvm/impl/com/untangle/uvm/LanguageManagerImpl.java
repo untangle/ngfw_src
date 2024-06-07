@@ -42,7 +42,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,7 +78,7 @@ public class LanguageManagerImpl implements LanguageManager
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* Check every minute */
     private final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private LanguageSettings languageSettings;
     private Map<String, String> allLanguages;

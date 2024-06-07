@@ -22,7 +22,8 @@ import java.io.FileOutputStream;
 import java.io.BufferedReader;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
@@ -65,7 +66,7 @@ public class CaptivePortalApp extends AppBase
         SESSALLOW, SESSBLOCK, SESSQUERY, AUTHGOOD, AUTHFAIL
     }
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final Integer policyId = getAppSettings().getPolicyId();
 
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-create";

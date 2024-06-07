@@ -28,7 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.CertificateInformation;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -75,7 +76,7 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String MARKER_GKEY_HEAD = "-----BEGIN PRIVATE KEY-----";
     private static final String MARKER_GKEY_TAIL = "-----END PRIVATE KEY-----";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
 
     // This is the list of subject alternative name types we extract from

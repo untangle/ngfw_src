@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.reports.ReportEntry;
 import com.untangle.app.reports.ReportsManager;
@@ -29,7 +30,7 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final UvmContext context;
     private static final String TIMEZONE_FILE = "/etc/timezone";

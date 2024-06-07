@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.Date;
 import java.util.Calendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -24,7 +25,7 @@ import com.untangle.uvm.UvmContextFactory;
 @SuppressWarnings("serial")
 public abstract class LogEvent implements Serializable, JSONString
 {
-    protected static final Logger logger = Logger.getLogger(LogEvent.class);
+    protected static final Logger logger = LogManager.getLogger(LogEvent.class);
 
     protected static String schemaPrefix = "reports.";
     protected static boolean partitionsSupported = true;

@@ -16,14 +16,15 @@ import com.untangle.app.virus_blocker.VirusCloudFeedback;
 import com.untangle.app.clam.ClamScannerClientLauncher;
 import com.untangle.uvm.vnet.AppSession;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The Clam Virus Scanner
  */
 public class ClamScanner implements VirusScanner
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final int timeout = 29500; /* XXX should be user configurable */
 

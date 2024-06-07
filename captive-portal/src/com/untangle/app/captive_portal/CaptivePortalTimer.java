@@ -6,7 +6,8 @@ package com.untangle.app.captive_portal;
 
 import java.util.TimerTask;
 import java.util.ArrayList;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This is a timer task that runs periodically, gets a list of stale users, and
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
 
 public class CaptivePortalTimer extends TimerTask
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final CaptivePortalApp app;
 
     /**

@@ -7,7 +7,8 @@ import java.util.List;
 import java.io.Serializable;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -40,7 +41,7 @@ import com.untangle.uvm.app.AppBase;
 @SuppressWarnings("serial")
 public class RuleCondition implements JSONString, Serializable
 {
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * The different type of matchers currently available

@@ -12,7 +12,8 @@ import java.net.Socket;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
 
@@ -24,7 +25,7 @@ import com.untangle.uvm.DaemonManager;
  */
 public class DaemonManagerImpl extends TimerTask implements DaemonManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final Timer timer = new Timer("DaemonManager", true);
 
     enum MonitorType

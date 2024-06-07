@@ -12,7 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.http.HttpMethod;
 import com.untangle.app.http.HttpEventHandler;
@@ -65,7 +66,7 @@ class VirusHttpHandler extends HttpEventHandler
      */
     private static final int MEMORY_SIZE_LIMIT = 1024 * 16; //16 Kilobytes
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final VirusBlockerBaseApp app;
 

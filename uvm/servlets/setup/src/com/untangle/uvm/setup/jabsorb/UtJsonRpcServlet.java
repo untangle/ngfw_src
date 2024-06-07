@@ -14,7 +14,8 @@ import javax.transaction.TransactionRolledbackException;
 
 import com.untangle.uvm.servlet.ServletUtils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 import org.json.JSONObject;
@@ -27,7 +28,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 {
     private static final String BRIDGE_ATTRIBUTE = "SetupJSONRPCBridge";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
 

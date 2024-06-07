@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 
@@ -24,7 +25,7 @@ import com.untangle.uvm.UvmContextFactory;
 @SuppressWarnings("serial")
 public class AdvancedSupportHandler extends HttpServlet
 {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private static final String ADVANCED_SUPPORT_HANDLER_SCRIPT = System.getProperty("uvm.conf.dir") + "/advanced-support-handler";
 

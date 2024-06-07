@@ -5,7 +5,8 @@ package com.untangle.app.smtp;
 
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.mime.MIMEMessageTemplateValues;
 import com.untangle.app.smtp.mime.MIMEUtil;
@@ -27,7 +28,7 @@ import com.untangle.uvm.UvmContextFactory;
 public class WrappedMessageGenerator
 {
 
-    private final Logger m_logger = Logger.getLogger(getClass());
+    private final Logger m_logger = LogManager.getLogger(getClass());
     private Template m_subjectTemplate;
     private Template m_bodyTemplate;
     private String templateLanguage = "";

@@ -6,7 +6,8 @@ package com.untangle.uvm;
 import java.util.Set;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
@@ -54,7 +55,7 @@ public class PipelineConnectorImpl implements PipelineConnector
     private final String buddy; 
     
     
-    protected static final Logger logger = Logger.getLogger( PipelineConnectorImpl.class );
+    protected static final Logger logger = LogManager.getLogger( PipelineConnectorImpl.class );
     
     /**
      * PipelineConnectorImpl constructor

@@ -14,7 +14,8 @@ import java.nio.channels.FileChannel;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.SmtpMessageEvent;
 import com.untangle.uvm.vnet.AppTCPSession;
@@ -33,7 +34,7 @@ public class MIMETCPStreamer implements TCPStreamer
     private final int m_chunkSz;
     private FileInputStream m_fos;
     private FileChannel m_channel;
-    private final Logger m_logger = Logger.getLogger(MIMETCPStreamer.class);
+    private final Logger m_logger = LogManager.getLogger(MIMETCPStreamer.class);
     private final boolean m_disposeWhenComplete;
     private boolean m_closed = false;
     private long m_fileLength;

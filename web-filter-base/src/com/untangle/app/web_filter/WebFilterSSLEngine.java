@@ -24,7 +24,8 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.HeaderToken;
@@ -42,7 +43,7 @@ import com.untangle.app.http.StatusLine;
  */
 public class WebFilterSSLEngine
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private AppTCPSession session;
     private SSLContext sslContext;
     private SSLEngine sslEngine;

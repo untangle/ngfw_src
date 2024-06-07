@@ -10,7 +10,8 @@ import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -21,7 +22,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class UserTableEntry implements Serializable, JSONString
 {
-    private static final Logger logger = Logger.getLogger(UserTableEntry.class);
+    private static final Logger logger = LogManager.getLogger(UserTableEntry.class);
 
     private String      username = null;
     private long        creationTime = 0;

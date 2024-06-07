@@ -4,7 +4,8 @@
 
 package com.untangle.app.spam_blocker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
@@ -14,7 +15,7 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  */
 class TarpitEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private SpamBlockerBaseApp spamImpl;
     private DnsblChecker dnsblChecker;

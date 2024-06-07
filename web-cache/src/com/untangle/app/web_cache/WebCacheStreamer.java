@@ -6,7 +6,8 @@ package com.untangle.app.web_cache;
 
 import java.nio.ByteBuffer;
 import com.untangle.uvm.vnet.TCPStreamer;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This is our streamer class that is used to get cached content from Squid and
@@ -14,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class WebCacheStreamer implements TCPStreamer
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final WebCacheSessionInfo sessInfo;
     private final WebCacheApp app;
     private int total = 0;

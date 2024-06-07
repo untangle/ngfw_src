@@ -6,7 +6,8 @@ package com.untangle.uvm;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
@@ -18,7 +19,7 @@ public class SyncSettingsImpl implements SyncSettings
 {
     public static final String SYNC_SETTINGS = "/usr/bin/sync-settings";
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
     /**
      * Run sync-settings with filenames.
      * @param arguments Variable length list of arguments to run of the following types:

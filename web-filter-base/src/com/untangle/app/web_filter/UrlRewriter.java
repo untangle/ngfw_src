@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Holds mappings between popular search engines and their safe search HTTP
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class UrlRewriter
 {
-    private static final Logger logger = Logger.getLogger(UrlRewriter.class);
+    private static final Logger logger = LogManager.getLogger(UrlRewriter.class);
 
     private static final Map<Pattern, String> safeSearchRewrites;
     static {

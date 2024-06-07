@@ -15,7 +15,8 @@ import java.util.regex.Pattern;
 
 import javax.mail.internet.InternetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.GlobEmailAddressMapper;
 import com.untangle.app.smtp.SmtpImpl;
@@ -27,7 +28,7 @@ import com.untangle.app.smtp.quarantine.Quarantine;
  */
 public class SafelistManager implements SafelistAdminView, SafelistAppView
 {
-    private final Logger m_logger = Logger.getLogger(SafelistManager.class);
+    private final Logger m_logger = LogManager.getLogger(SafelistManager.class);
     private final Quarantine quarantine;
 
     private SmtpImpl mlImpl;

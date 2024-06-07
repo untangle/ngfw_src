@@ -6,7 +6,8 @@ package com.untangle.uvm.app;
 
 import java.io.Serializable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The License class
@@ -14,7 +15,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class License implements Serializable
 {
-    private final Logger logger = Logger.getLogger(License.class);
+    private final Logger logger = LogManager.getLogger(License.class);
 
     public static final String LICENSE_TYPE_TRIAL = "Trial";
     public static final String LICENSE_TYPE_SUBSCRIPTION = "Subscription";

@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
@@ -57,7 +58,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
 
     private static Integer UNCATEGORIZED_CATEGORY = 0;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private WebFilterBase ourApp = null;
 
     /**

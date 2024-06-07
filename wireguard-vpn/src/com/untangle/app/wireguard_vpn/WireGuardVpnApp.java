@@ -13,7 +13,8 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -43,7 +44,7 @@ public class WireGuardVpnApp extends AppBase
 {
     private final static String WIREGUARD_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/wireguard-status";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final String SettingsDirectory = "/wireguard-vpn/";
 

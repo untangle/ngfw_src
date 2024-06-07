@@ -6,7 +6,8 @@ package com.untangle.app.reports;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -16,7 +17,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class EmailTemplate implements JSONString, Serializable
 {
-    private static final Logger logger = Logger.getLogger( EmailTemplate.class );
+    private static final Logger logger = LogManager.getLogger( EmailTemplate.class );
 
     private Integer templateId;
     private String title;

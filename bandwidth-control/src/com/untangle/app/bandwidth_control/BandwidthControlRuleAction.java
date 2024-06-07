@@ -10,7 +10,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTableEntry;
@@ -36,7 +37,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     public static final int END_OF_WEEK = -3;
     public static final int END_OF_MONTH = -4;
     
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * The action type enumeration

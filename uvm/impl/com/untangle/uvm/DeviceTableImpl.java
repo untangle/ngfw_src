@@ -17,7 +17,8 @@ import java.net.URL;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -47,7 +48,7 @@ public class DeviceTableImpl implements DeviceTable
                                                                         */
     private static final String DEVICES_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/devices.js";
 
-    private static final Logger logger = Logger.getLogger(DeviceTableImpl.class);    
+    private static final Logger logger = LogManager.getLogger(DeviceTableImpl.class);    
 
     private ConcurrentHashMap<String, DeviceTableEntry> deviceTable;
 

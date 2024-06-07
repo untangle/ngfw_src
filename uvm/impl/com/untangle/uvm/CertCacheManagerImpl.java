@@ -18,7 +18,8 @@ import java.util.HashSet;
 import java.net.SocketTimeoutException;
 import java.net.SocketException;
 import java.net.URL;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.CertCacheManager;
 
 /**
@@ -46,7 +47,7 @@ public class CertCacheManagerImpl implements CertCacheManager
     private static ConcurrentHashMap<String, CertificateHolder> certTable = new ConcurrentHashMap<>();
     private static HashSet<String> certLocker = new HashSet<>();
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final long cacheTimeout = 60000;
     private final int prefetchTimeout = 1000;
 

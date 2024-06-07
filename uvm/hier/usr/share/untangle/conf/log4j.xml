@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-
 <!-- ===================================================================== -->
 <!--                                                                       -->
 <!--  Log4j Configuration for Untangle                                     -->
@@ -10,372 +8,150 @@
 
 <!-- $Id: log4j.xml,v 1.00 2012/04/12 21:57:25 dmorris Exp $ -->
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+<Configuration>
 
   <!-- ============================================== -->
   <!-- Appenders                                      -->
   <!-- ============================================== -->
-
-  <appender name="UVMLOG" class="org.apache.log4j.net.SyslogAppender">
-    <param name="SyslogHost" value="localhost"/>
-    <param name="Facility" value="LOCAL0"/>
-    <param name="Threshold" value="ALL"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%c{1}:%L] %-5p %m%n"/>
-    </layout>
-  </appender>
-
-  <appender name="EVENTS" class="org.apache.log4j.net.SyslogAppender">
-    <param name="SyslogHost" value="localhost"/>
-    <param name="Facility" value="LOCAL5"/>
-    <param name="Threshold" value="ALL"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%-5p %m%n"/>
-    </layout>
-  </appender>
-
-  <appender name="APPLOG" class="org.apache.log4j.net.SyslogAppender">
-    <param name="SyslogHost" value="localhost"/>
-    <param name="Facility" value="LOCAL1"/>
-    <param name="Threshold" value="ALL"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="@AppLogFileName@: [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n"/>
-    </layout>
-  </appender>
-
-  <!-- ============================================== -->
-  <!-- Misc Categories                                -->
-  <!-- ============================================== -->
-
-  <category name="org.apache">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="org.apache.catalina">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="org.apache.jk">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="org.jabsorb">
-    <priority value="WARN"/>
-  </category>
-
-  <!-- ============================================== -->
-  <!-- Untangle Platform Categories                   -->
-  <!-- ============================================== -->
-
-  <category name="com.untangle.jnetcap">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.jvector">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.uvm.logging">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.uvm.snmp">
-    <priority value="INFO"/>
-  </category>
-
-  <!-- event logs need to have a specific facility -->
-  <category name="com.untangle.uvm.SyslogManagerImpl" additivity="false">
-    <priority value="ALL"/>
-    <appender-ref ref="EVENTS"/>
-  </category>
-
-  <!-- normal level for engine and following is INFO -->
-  <category name="com.untangle.uvm">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.PipelineFoundryImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.SettingsManagerImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.AppManagerImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.CertCacheManagerImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.ConfigManagerImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.NetspaceManagerImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.HostsFileManagerImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.HostTableImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.DeviceTableImpl">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.UserTableImpl">
-    <priority value="INFO"/>
-  </category>
   
-  <category name="com.untangle.uvm.ConntrackMonitorImpl">
-    <priority value="INFO"/>
-  </category>
+  <Appenders>
+    <Syslog name="UVMLOG" host="localhost" facility="LOCAL0">
+      <ThresholdFilter level="ALL"/>
+      <PatternLayout>
+	      <pattern>${appLogFileName}: [%c{1}:%L] %-5p %m%n</pattern>
+      </PatternLayout>
+    </Syslog>
 
-  <category name="com.untangle.uvm.EventManagerImpl">
-    <priority value="INFO"/>
-  </category>
-  
-  <category name="com.untangle.uvm.util.Pulse">
-    <priority value="INFO"/>
-  </category>
-  
-  <category name="com.untangle.uvm.networking">
-    <priority value="INFO"/>
-  </category>
+    <Syslog name="EVENTS" host="localhost" facility="LOCAL5">
+      <ThresholdFilter level="ALL"/>
+      <PatternLayout>
+	      <pattern>%-5p %m%n</pattern>
+      </PatternLayout>
+    </Syslog>
 
-  <category name="com.untangle.uvm.license">
-    <priority value="INFO"/>
-  </category>
+    <Syslog name="APPLOG" host="localhost" facility="LOCAL1">
+      <ThresholdFilter level="ALL"/>
+      <PatternLayout>
+	      <pattern>${appLogFileName}: [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n</pattern>
+      </PatternLayout>
+    </Syslog>
+  </Appenders>
 
-  <category name="com.untangle.uvm.UserLicenseMessage">
-    <priority value="INFO"/>
-  </category>
+  <Loggers>
 
-  <category name="com.untangle.uvm.util">
-    <priority value="INFO"/>
-  </category>
+    <!-- ============================================== -->
+    <!-- Misc Categories                                -->
+    <!-- ============================================== -->
 
-  <category name="com.untangle.app.util">
-    <priority value="INFO"/>
-  </category>
+    <Logger name="org.apache" level="WARN"></Logger>
+    <Logger name="org.apache.catalina" level="INFO"></Logger>
+    <Logger name="org.apache.jk" level="INFO"></Logger>
+    <Logger name="org.jabsorb" level="WARN"></Logger>
 
-  <!-- ============================================== -->
-  <!-- Untangle App/App Categories                   -->
-  <!-- ============================================== -->
+    <!-- ============================================== -->
+    <!-- Untangle Platform Categories                   -->
+    <!-- ============================================== -->
 
-  <category name="com.untangle.uvm.app">
-    <priority value="INFO"/>
-  </category>
+    <Logger name="com.untangle.jnetcap" level="WARN"></Logger>
+    <Logger name="com.untangle.jvector" level="WARN"></Logger>
+    <Logger name="com.untangle.uvm.logging" level="WARN"></Logger>
+    <Logger name="com.untangle.uvm.snmp" level="INFO"></Logger>
 
-  <category name="com.untangle.app.util">
-    <priority value="INFO"/>
-  </category>
+    <!-- event logs need to have a specific facility -->
+    <Logger name="com.untangle.uvm.SyslogManagerImpl" level="ALL" additivity="false">
+      <appender-ref ref="EVENTS"/>
+    </Logger>
 
-  <category name="com.untangle.app.token">
-    <priority value="INFO"/>
-  </category>
+    <!-- normal level for engine and following is INFO -->
+    <Logger name="com.untangle.uvm" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.PipelineFoundryImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.SettingsManagerImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.AppManagerImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.CertCacheManagerImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.ConfigManagerImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.NetspaceManagerImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.HostsFileManagerImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.HostTableImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.DeviceTableImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.UserTableImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.ConntrackMonitorImpl" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.EventManagerImpl" level="INFO"></Logger>   
+    <Logger name="com.untangle.uvm.util.Pulse" level="INFO"></Logger>    
+    <Logger name="com.untangle.uvm.networking" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.license" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.UserLicenseMessage" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.util" level="INFO"></Logger>
+    <Logger name="com.untangle.app.util" level="INFO"></Logger>
 
-  <category name="com.untangle.app.router">
-    <priority value="INFO"/>
-  </category>
+    <!-- ============================================== -->
+    <!-- Untangle App/App Categories                    -->
+    <!-- ============================================== -->
 
-  <category name="com.untangle.app.ad_blocker">
-    <priority value="INFO"/>
-  </category>
+    <Logger name="com.untangle.uvm.app" level="INFO"></Logger>
+    <Logger name="com.untangle.app.util" level="INFO"></Logger>
+    <Logger name="com.untangle.app.token" level="INFO"></Logger>
+    <Logger name="com.untangle.app.router" level="INFO"></Logger>
+    <Logger name="com.untangle.app.ad_blocker" level="INFO"></Logger>
+    <Logger name="com.untangle.app.directory_connector" level="INFO"></Logger>
+    <Logger name="com.untangle.app.bandwidth_control" level="INFO"></Logger>
+    <Logger name="com.untangle.app.configuration-backup" level="INFO"></Logger>
+    <Logger name="com.untangle.app.branding_manager" level="INFO"></Logger>
+    <Logger name="com.untangle.app.captive_portal" level="INFO"></Logger>
+    <Logger name="com.untangle.app.application_control" level="INFO"></Logger>
+    <Logger name="com.untangle.app.wan_failover" level="INFO"></Logger>
+    <Logger name="com.untangle.app.firewall" level="INFO"></Logger>
+    <Logger name="com.untangle.app.ftp" level="INFO"></Logger>
+    <Logger name="com.untangle.app.http" level="INFO"></Logger>
+    <Logger name="com.untangle.app.ssl_inspector" level="INFO"></Logger>
+    <Logger name="com.untangle.app.intrusion_prevention" level="INFO"></Logger>
+    <Logger name="com.untangle.app.ipsec_vpn" level="INFO"></Logger>
+    <Logger name="com.untangle.app.threat_prevention" level="INFO"></Logger>
+    <Logger name="com.untangle.app.wireguard_vpn" level="INFO"></Logger>
+    <Logger name="com.untangle.app.license" level="WARN"></Logger>
+    <Logger name="com.untangle.app.openvpn" level="INFO"></Logger>
+    <Logger name="com.untangle.app.tunnel_vpn" level="INFO"></Logger>
+    <Logger name="com.untangle.app.phish_blocker" level="INFO"></Logger>
+    <Logger name="com.untangle.app.policy_manager" level="INFO"></Logger>
+    <Logger name="com.untangle.app.application_control_lite" level="INFO"></Logger>
+    <Logger name="com.untangle.app.reports" level="INFO"></Logger>
+    <Logger name="com.untangle.app.shield" level="INFO"></Logger>
+    <Logger name="com.untangle.app.smtp" level="INFO"></Logger>
+    <Logger name="com.untangle.app.spam" level="INFO"></Logger>
+    <Logger name="com.untangle.app.spam_blocker" level="INFO"></Logger>
+    <Logger name="com.untangle.app.spam_blocker_lite" level="INFO"></Logger>
+    <Logger name="com.untangle.app.wan_balancer" level="INFO"></Logger>
+    <Logger name="com.untangle.app.live_support" level="INFO"></Logger>
+    <Logger name="com.untangle.app.clam" level="INFO"></Logger>
+    <Logger name="com.untangle.app.virus" level="INFO"></Logger>
+    <Logger name="com.untangle.app.virus_blocker" level="INFO"></Logger>
+    <Logger name="com.untangle.app.virus_blocker_lite" level="INFO"></Logger>
+    <Logger name="com.untangle.app.web_cache" level="INFO"></Logger>
+    <Logger name="com.untangle.app.web_filter" level="INFO"></Logger>
+    <Logger name="com.untangle.app.web_monitor" level="INFO"></Logger>
+    <Logger name="com.untangle.app" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.app.AppBase" level="INFO"></Logger>
 
-  <category name="com.untangle.app.directory_connector">
-    <priority value="INFO"/>
-  </category>
+    <!-- ============================================== -->
+    <!-- Untangle VNET Categories                       -->
+    <!-- #      DEBUG           new session debugging   -->
+    <!-- #      INFO            each new session        -->
+    <!-- #      WARN            excep                   -->
+    <!-- ============================================== -->
 
-  <category name="com.untangle.app.bandwidth_control">
-    <priority value="INFO"/>
-  </category>
+    <Logger name="com.untangle.uvm.vnet" level="INFO"></Logger>
+    <Logger name="com.untangle.uvm.vnet.PipelineConnector" level="WARN"></Logger>
+    <Logger name="com.untangle.uvm.AppTCPSessionImpl" level="WARN"></Logger>
+    <Logger name="com.untangle.uvm.AppUDPSessionImpl" level="WARN"></Logger>
+    <Logger name="com.untangle.uvm.AppSessionImpl" level="WARN"></Logger>
 
-  <category name="com.untangle.app.configuration-backup">
-    <priority value="INFO"/>
-  </category>
+    <!-- ============================================== -->
+    <!-- The Root Category                              -->
+    <!-- ============================================== -->
 
-  <category name="com.untangle.app.branding_manager">
-    <priority value="INFO"/>
-  </category>
+    <Root level="WARN">
+      <AppenderRef ref="${appendRef}"/>
+    </Root>
 
-  <category name="com.untangle.app.captive_portal">
-    <priority value="INFO"/>
-  </category>
+  </Loggers>
+</Configuration>
 
-  <category name="com.untangle.app.application_control">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.wan_failover">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.firewall">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.ftp">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.http">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.ssl_inspector">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.intrusion_prevention">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.ipsec_vpn">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.threat_prevention">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.wireguard_vpn">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.license">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.app.openvpn">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.tunnel_vpn">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.phish_blocker">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.policy_manager">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.application_control_lite">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.reports">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.shield">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.smtp">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.spam">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.spam_blocker">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.spam_blocker_lite">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.wan_balancer">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.live_support">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.clam">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.virus">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.virus_blocker">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.virus_blocker_lite">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.web_cache">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.web_filter">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app.web_monitor">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.app">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.app.AppBase">
-    <priority value="INFO"/>
-  </category>
-
-  <!-- ============================================== -->
-  <!-- Untangle VNET Categories                       -->
-  <!-- #      DEBUG           new session debugging   -->
-  <!-- #      INFO            each new session        -->
-  <!-- #      WARN            excep                   -->
-  <!-- ============================================== -->
-
-  <category name="com.untangle.uvm.vnet">
-    <priority value="INFO"/>
-  </category>
-
-  <category name="com.untangle.uvm.vnet.PipelineConnector">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.uvm.AppTCPSessionImpl">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.uvm.AppUDPSessionImpl">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.uvm.AppSessionImpl">
-    <priority value="WARN"/>
-  </category>
-
-
-  <!-- ============================================== -->
-  <!-- The Root Category                              -->
-  <!-- ============================================== -->
-
-  <root>
-    <priority value="WARN"/>
-    <appender-ref ref="UVMLOG"/>
-  </root>
-</log4j:configuration>

@@ -6,7 +6,8 @@ package com.untangle.app.router;
 import java.util.Date;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Object that represents a DhcpLease
@@ -16,7 +17,7 @@ public class DhcpLease
     private static final int EXPIRED = 0;
     private static final int ACTIVE  = 1;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private String mac        = null;
     private String     hostname   = "";

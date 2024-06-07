@@ -8,7 +8,8 @@ import java.util.TimerTask;
 import java.util.Timer;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostsFileManager;
 import com.untangle.uvm.HookCallback;
@@ -29,7 +30,7 @@ import com.untangle.uvm.network.NetworkSettings;
  */
 public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final Timer timer = new Timer("HostsFileManager", true);
 
     private static final String HOSTS_FILE_UPDATE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-update-hosts-file";

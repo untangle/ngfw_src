@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.TCPStreamer;
 
@@ -19,7 +20,7 @@ public class FileStreamer implements TCPStreamer
     private final FileChannel channel;
     private final int chunkSize;
     private final boolean closeWhenDone;
-    private final Logger logger = Logger.getLogger(FileStreamer.class);
+    private final Logger logger = LogManager.getLogger(FileStreamer.class);
 
     /**
      * FileStreamer constructor

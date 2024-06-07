@@ -16,7 +16,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
@@ -28,7 +29,7 @@ import com.untangle.uvm.util.UrlMatchingUtil;
  */
 public class SearchEngine
 {
-    private static final Logger logger = Logger.getLogger(SearchEngine.class);
+    private static final Logger logger = LogManager.getLogger(SearchEngine.class);
 
     private static final List<String> SearchEngineHosts;
     private static final List<Pattern> SearchEngines;

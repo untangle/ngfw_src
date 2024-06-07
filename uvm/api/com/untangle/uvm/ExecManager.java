@@ -17,7 +17,7 @@ public interface ExecManager
      */
     ExecManagerResult exec( String cmd, boolean rateLimit );
 
-    void setLevel( org.apache.log4j.Level level );
+    void setLevel( org.apache.logging.log4j.Level level );
     
     /**
      * Execute the specified command and return the exit code

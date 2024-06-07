@@ -42,7 +42,8 @@ import com.untangle.uvm.servlet.UploadHandler;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The SSL Inspector application performs MitM decryption/encryption of secure
@@ -55,7 +56,7 @@ import org.apache.log4j.Logger;
 
 public class SslInspectorApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(SslInspectorApp.class);
+    private final Logger logger = LogManager.getLogger(SslInspectorApp.class);
 
     private static HashSet<String> brokenServerList = new HashSet<>();
 

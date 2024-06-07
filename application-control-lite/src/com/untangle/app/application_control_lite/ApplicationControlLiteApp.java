@@ -7,7 +7,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -35,7 +36,7 @@ public class ApplicationControlLiteApp extends AppBase
     private final PipelineConnector connector;
     private final PipelineConnector[] connectors;
 
-    private final Logger logger = Logger.getLogger(ApplicationControlLiteApp.class);
+    private final Logger logger = LogManager.getLogger(ApplicationControlLiteApp.class);
 
     private ApplicationControlLiteSettings appSettings = null;
 

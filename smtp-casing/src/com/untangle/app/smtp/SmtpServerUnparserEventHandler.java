@@ -7,7 +7,8 @@ import static com.untangle.uvm.util.AsciiUtil.bbToString;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.BeginMIMEToken;
 import com.untangle.app.smtp.ByteBufferByteStuffer;
@@ -34,7 +35,7 @@ class SmtpServerUnparserEventHandler extends AbstractEventHandler
 
     private static final String SERVER_UNPARSER_STATE_KEY = "SMTP-server-parser-state";
 
-    private static final Logger logger = Logger.getLogger(SmtpServerUnparserEventHandler.class);
+    private static final Logger logger = LogManager.getLogger(SmtpServerUnparserEventHandler.class);
 
     /**
      * Maintain SmtpServerUnprserEventHandler state.

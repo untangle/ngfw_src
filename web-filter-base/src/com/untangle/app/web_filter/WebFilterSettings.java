@@ -6,7 +6,8 @@ package com.untangle.app.web_filter;
 import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -18,7 +19,7 @@ import com.untangle.uvm.app.GenericRule;
 @SuppressWarnings("serial")
 public class WebFilterSettings implements Serializable, JSONString
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public static final String UNBLOCK_MODE_NONE   = "None";
     public static final String UNBLOCK_MODE_HOST   = "Host";

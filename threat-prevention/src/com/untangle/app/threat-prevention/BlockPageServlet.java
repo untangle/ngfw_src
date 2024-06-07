@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.http.BlockPageUtil;
 import com.untangle.uvm.BrandingManager;
@@ -26,7 +27,7 @@ import com.untangle.uvm.util.I18nUtil;
 @SuppressWarnings("serial")
 public class BlockPageServlet extends HttpServlet
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Handle GET requests

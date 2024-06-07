@@ -19,7 +19,8 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
@@ -37,7 +38,7 @@ import com.untangle.uvm.network.InterfaceSettings;
  */
 public class OpenVpnManager
 {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
     private final OpenVpnAppImpl app;
 
     private static final String VPN_START_SCRIPT = System.getProperty("uvm.bin.dir") + "/openvpn-start";

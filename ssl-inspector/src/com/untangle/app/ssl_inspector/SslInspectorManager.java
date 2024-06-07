@@ -41,7 +41,8 @@ import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This is where we manage all of the low level objects used to talk SSL
@@ -92,7 +93,7 @@ class SslInspectorManager
         CLIENT, SERVER
     }
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final AppTCPSession session;
     private final SslInspectorApp app;
 

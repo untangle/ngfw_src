@@ -10,7 +10,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The PingTimer class runs periodically and uses ping to determine if tunnels
@@ -59,7 +60,7 @@ public class IpsecVpnPingTimer extends TimerTask
         }
     }
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final IpsecVpnApp app;
 
     // the number of ping failures before we force a tunnel restart

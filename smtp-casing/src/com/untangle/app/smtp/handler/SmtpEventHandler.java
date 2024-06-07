@@ -10,7 +10,8 @@ import java.util.List;
 
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.AUTHCommand;
 import com.untangle.app.smtp.BeginMIMEToken;
@@ -49,7 +50,7 @@ public abstract class SmtpEventHandler extends AbstractEventHandler
                                                                  "QUIT", "RSET", "VRFY", "NOOP", "SIZE", "DSN", "DELIVERBY",
                                                                  "AUTH", "AUTH=LOGIN", "OK", "STARTTLS" };
 
-    private final Logger logger = Logger.getLogger(SmtpEventHandler.class);
+    private final Logger logger = LogManager.getLogger(SmtpEventHandler.class);
 
     /**
      * SMTP session state.

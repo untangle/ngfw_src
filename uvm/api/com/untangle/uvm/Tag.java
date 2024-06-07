@@ -10,7 +10,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -20,7 +21,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class Tag implements Serializable, JSONString
 {
-    private static final Logger logger = Logger.getLogger(Tag.class);
+    private static final Logger logger = LogManager.getLogger(Tag.class);
 
     public static final int EXPIRE_NEVER = 0;
     public static final int EXPIRE_END_OF_HOUR  = -1;

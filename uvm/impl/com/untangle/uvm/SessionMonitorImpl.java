@@ -17,7 +17,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.UvmContext;
@@ -36,7 +37,7 @@ import com.untangle.uvm.app.SessionEvent;
  */
 public class SessionMonitorImpl implements SessionMonitor
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final String[] conntrackCommands = new String[]{
 	"/usr/sbin/conntrack -L -f ipv6",

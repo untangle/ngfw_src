@@ -5,7 +5,8 @@ package com.untangle.app.intrusion_prevention;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.intrusion_prevention.IntrusionPreventionStatisticsParser;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSuricataFastParser;
@@ -24,7 +25,7 @@ class IntrusionPreventionEventMonitor implements Runnable
     /* Delay a second while the thread is joining */
     private static final long THREAD_JOIN_TIME_MSEC = 1000;
 
-    protected static final Logger logger = Logger.getLogger( IntrusionPreventionEventMonitor.class );
+    protected static final Logger logger = LogManager.getLogger( IntrusionPreventionEventMonitor.class );
 
     private final IntrusionPreventionApp app;
 

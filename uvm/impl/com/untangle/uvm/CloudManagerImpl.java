@@ -11,7 +11,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.http.NameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.client.methods.HttpPost;
@@ -33,7 +34,7 @@ import org.apache.http.client.methods.HttpGet;
  */
 public class CloudManagerImpl implements CloudManager
 {
-    private final Logger logger = Logger.getLogger(CloudManagerImpl.class);
+    private final Logger logger = LogManager.getLogger(CloudManagerImpl.class);
 
     private static final String ZEROTOUCH_API = "/appliance/IsProvisioned?serialNumber=%serial%&uid=%uid%";
     private static final int ZEROTOUCH_SLEEP_TIME_MILLI = 30 * 1000;

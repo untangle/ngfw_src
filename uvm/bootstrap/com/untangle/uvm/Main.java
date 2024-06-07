@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.security.Security;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.core.impl.Log4jContextFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Bootstraps the UVM. Access to the Main object should be protected.
@@ -36,7 +37,7 @@ public class Main
 
     private static Main MAIN;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private URLClassLoader uvmClassLoader;
     private UvmContextBase uvmContext;
@@ -50,8 +51,11 @@ public class Main
         /**
          * Configure the basic logging setup
          */
-        LogManager.setRepositorySelector(UvmRepositorySelector.instance(), new Object());
-        UvmRepositorySelector.instance().setLoggingUvm();
+        LogManager.setFactory(new Log4jContextFactory(UvmContextSelector.instance()));
+        UvmContextSelector.instance().setLoggingUvm();
+
+        // LogManager.setRepositorySelector(UvmRepositorySelector.instance(), new Object());
+        // UvmRepositorySelector.instance().setLoggingUvm();
     }
 
     /**
@@ -230,6 +234,8 @@ public class Main
         System.setProperty("java.security.egd","file:" + "/dev/./urandom");
         // Set the postgres jdbc driver
         System.setProperty("jdbc.drivers","org.postgresql.Driver");
+
+        System.setProperty("log4j2.contextSelector", "com.untangle.uvm.UvmContextSelector");
         // Set log4j config file location
         System.setProperty("log4j.configuration","file:" + prefix + "/usr/share/untangle/conf/log4j.xml");
 

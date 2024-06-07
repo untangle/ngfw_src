@@ -5,7 +5,8 @@ package com.untangle.app.ftp;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
@@ -25,7 +26,7 @@ public class FtpClientParserEventHandler extends AbstractEventHandler
     private static final char CR = '\r';
     private static final char LF = '\n';
 
-    private final Logger logger = Logger.getLogger(FtpClientParserEventHandler.class);
+    private final Logger logger = LogManager.getLogger(FtpClientParserEventHandler.class);
 
     /**
      * Create a new FtpClientParserEventHandler

@@ -41,7 +41,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.sun.mail.smtp.SMTPTransport;
 import com.untangle.uvm.MailSender;
@@ -123,7 +124,7 @@ public class MailSenderImpl implements MailSender
 
     private MailSenderNetworkSettingsHook networkSettingsChangeHook = new MailSenderNetworkSettingsHook();
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Constructor

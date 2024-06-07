@@ -7,7 +7,8 @@ package com.untangle.app.wan_failover;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.HookManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -27,7 +28,7 @@ public class WanFailoverTesterMonitor
 
     private static final String UPLINK_SCRIPT = System.getProperty("uvm.bin.dir") + "/wan-failover-set-active-wan.sh";
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private WanFailoverApp app;
 

@@ -11,7 +11,8 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This is the HTTPS handler used when we are configured to capture and redirect
@@ -27,7 +28,7 @@ import org.apache.log4j.Logger;
 
 public class CaptivePortalHttpsHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final CaptivePortalApp captureApp;
 
     /**

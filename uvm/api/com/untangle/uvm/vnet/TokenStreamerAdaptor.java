@@ -3,7 +3,8 @@
  */
 package com.untangle.uvm.vnet;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.TCPStreamer;
 import com.untangle.uvm.vnet.AppTCPSession;
@@ -13,7 +14,7 @@ import com.untangle.uvm.vnet.AppTCPSession;
  */
 public class TokenStreamerAdaptor implements TCPStreamer
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final TokenStreamer streamer;
     private final AppTCPSession session;

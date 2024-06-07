@@ -11,7 +11,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.UriUtil;
 import com.untangle.uvm.app.SessionEvent;
@@ -189,7 +190,7 @@ public class RequestLine implements Serializable
         try {
             uriStr = new String(b, "UTF-8");
         } catch (UnsupportedEncodingException exn) {
-            Logger.getLogger(getClass()).warn("Could not decode URI", exn);
+            LogManager.getLogger(getClass()).warn("Could not decode URI", exn);
             uriStr = new String(b);
         }
 
@@ -198,7 +199,7 @@ public class RequestLine implements Serializable
         try {
             return new URI(uriStr);
         } catch (URISyntaxException exn) {
-            Logger.getLogger(getClass()).warn( "ignoring bad uri: " + uriStr );
+            LogManager.getLogger(getClass()).warn( "ignoring bad uri: " + uriStr );
             try {
                 return new URI("/");
             } catch (URISyntaxException e) {
