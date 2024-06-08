@@ -108,6 +108,8 @@ class SslInspectorTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global appData, appWeb, appWebData
 
+        global_functions.get_latest_client_test_pkg("web")
+
         appData = cls._app.getSettings()
         if (uvmContext.appManager().isInstantiated(cls.appWeb())):
             raise Exception('app %s already instantiated' % cls.appWeb())
@@ -226,7 +228,7 @@ class SslInspectorTests(NGFWTestCase):
         for index in range(2, max_index,packet_split_iteration):
             last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
             last_log_line = int(last_log_line) + 1
-            result = remote_control.run_command(f"./https_client.py -i {index}")
+            result = remote_control.run_command(f"./web/https_client.py -i {index}")
 
             log_invalid_exception = subprocess.check_output(f"awk 'NR >= {last_log_line} && /WARN  Exception calling extractSNIhostname/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
             print(log_invalid_exception)
