@@ -222,6 +222,8 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
 
     importValidationJavaClass: true,
 
+    importValidationForComboBox: true,
+
     bind: '{remoteClients}',
 
     columns: [{
@@ -337,6 +339,8 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
     },
 
     importValidationJavaClass: true,
+
+    importValidationForComboBox: true,
 
     bind: '{groups}',
 
