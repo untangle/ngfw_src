@@ -491,6 +491,47 @@ Ext.define('Ung.cmp.GridController', {
         this.importDialog.show();
     },
 
+    checkIfValueExists: function(array, valueToCheck, fieldConfig){
+        return array.some(function(entry) {
+            if(typeof entry === 'object' && Array.isArray(entry)){
+                return entry[0] === valueToCheck;
+            }else{
+                return entry[fieldConfig.valueField] === valueToCheck;
+            }
+        });
+    },
+
+    getFieldName: function (bindedObject) {
+        var fieldName = null;
+        if(typeof bindedObject === "object"){
+            for(var key in bindedObject){
+                if(key === "store"){
+                    fieldName = bindedObject[key];
+                }
+            }
+        }
+        if(fieldName.split(".").length > 1){
+            fieldName = fieldName.split('.')[1].split('}')[0];
+        }else{
+            fieldName = fieldName.split('.')[0].split('}')[0].split('{')[1];
+        }
+        return fieldName;
+    },
+
+    comboStoreValidator:function(fieldConfig, valueToCheck){
+        var isEntryExists = false;
+        if(fieldConfig.store){
+            isEntryExists = this.checkIfValueExists(fieldConfig.store, valueToCheck, fieldConfig);
+        }else if(fieldConfig.bind){
+            var fieldName = this.getFieldName(fieldConfig.bind);     
+            if(fieldName){
+                var store = Ext.Array.pluck(this.getViewModel().get(fieldName).getRange(),"data");
+                isEntryExists = this.checkIfValueExists(store, valueToCheck, fieldConfig);
+            }
+        }
+        return isEntryExists;
+    },
+
     getNestedEditorFieldConfig: function(){
         var editorFields = this.getView().editorFields;
         var mappedObject={};
@@ -588,6 +629,13 @@ Ext.define('Ung.cmp.GridController', {
 
                 if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
                     var validationErrorMsg = null;
+
+                    if(grid.viewConfig.importValidationForComboBox && fieldConfig.xtype && (fieldConfig.xtype === 'combo' || fieldConfig.xtype === 'combobox')){
+                        var isValidValue = me.comboStoreValidator(fieldConfig, fieldValue);
+                        if(!isValidValue){
+                            validationErrorMsg = Ext.String.format('Invalid value for the dropdown field {0}'.t(), fieldName);
+                        }
+                    }
 
                     if(fieldConfig.hasOwnProperty("minValue")){
                         if(fieldValue < fieldConfig.minValue){
