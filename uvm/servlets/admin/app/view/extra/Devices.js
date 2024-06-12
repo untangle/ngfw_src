@@ -40,7 +40,7 @@ Ext.define('Ung.view.extra.Devices', {
             }
         },
 
-        tbar: ['@add', '->', '@import', '@export'],
+        tbar: ['@add'],
         recordActions: ['edit', 'delete'],
         emptyRow: {
             macAddress: '',
