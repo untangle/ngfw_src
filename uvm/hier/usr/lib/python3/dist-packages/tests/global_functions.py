@@ -1098,7 +1098,6 @@ def get_wait_for_events(prefix="", report_category="", report_title="", report_c
         tries -= 1
         events = get_events(report_category, report_title, report_conditions, event_limit)
         assert events != None, f"{prefix} total events found"
-        print(events)
         found = check_events( events.get('list'), check_num_events, matches)
         if found is True:
             return True
