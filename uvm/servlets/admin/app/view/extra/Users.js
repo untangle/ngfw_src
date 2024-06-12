@@ -76,7 +76,7 @@ Ext.define('Ung.view.extra.Users', {
 
         bind: '{users}',
 
-        tbar: ['@add', '->', '@import', '@export'],
+        tbar: ['@add'],
         recordActions: ['edit', 'delete'],
         emptyRow: {
             username: '',
