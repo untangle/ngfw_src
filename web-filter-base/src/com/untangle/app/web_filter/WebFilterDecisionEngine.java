@@ -114,7 +114,7 @@ public class WebFilterDecisionEngine extends DecisionEngine
                 }
             }
 
-            String term = SearchEngine.getQueryTerm(clientIp, host, uri.toString(), header);
+            String term = SearchEngine.getQueryTerm(clientIp, host, uri.toString(), header, requestLine);
 
             if (term != null) {
 

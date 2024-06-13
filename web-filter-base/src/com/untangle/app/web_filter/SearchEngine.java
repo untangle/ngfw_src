@@ -48,6 +48,7 @@ public class SearchEngine
 
         SearchEngines = new ArrayList<Pattern>();
         SearchEngines.add(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/results\\?search_query=([^&]+).*"));
+       // SearchEngines.add(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/api/stats/qoe\\?*(\\?|&)q=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*(youtube|google)\\.[a-z]+(\\.[a-z]+)?/(complete/|)search.*(\\?|&)q=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*(youtube|google)\\.[a-z]+(\\.[a-z]+)?/gen_204(\\?|&)oq=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*"));
@@ -80,10 +81,12 @@ public class SearchEngine
      *        URL URI.
      * @param header
      *        The header token
+    * @param requestLine
+     *        The requestLine token
      *
      * @return The query term
      */
-    public static String getQueryTerm(InetAddress clientIp, String host, String uri, HeaderToken header)
+    public static String getQueryTerm(InetAddress clientIp, String host, String uri, HeaderToken header, RequestLineToken requestLine)
     {
         boolean hostFound = false;
         for(String hostPiece : SearchEngineHosts){
@@ -132,6 +135,25 @@ public class SearchEngine
             }
         }
 
+        if(host.contains(WebFilterDecisionEngine.YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
+           String referer = requestLine.getRequestLine().getHttpRequestEvent().getReferer();
+            if (referer == null) {
+                return term;
+            }
+            for (Pattern p : SearchEngines) {
+                Matcher m = p.matcher(referer);
+                if (m.matches()) {
+                    try {
+                        term = m.group(m.groupCount());
+                        term = URLDecoder.decode(term, "UTF-8");
+                    } catch (Exception e) {
+    
+                    }
+                    return term;
+                }
+            }
+            
+        }
         return term;
     }
 
