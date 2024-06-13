@@ -14,6 +14,7 @@ import java.security.Security;
 import org.apache.logging.log4j.core.impl.Log4jContextFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  * Bootstraps the UVM. Access to the Main object should be protected.
@@ -235,9 +236,10 @@ public class Main
         // Set the postgres jdbc driver
         System.setProperty("jdbc.drivers","org.postgresql.Driver");
 
-        System.setProperty("log4j2.contextSelector", "com.untangle.uvm.UvmContextSelector");
+
+        System.setProperty("log4j2.disable.jmx", "true");
         // Set log4j config file location
-        System.setProperty("log4j.configuration","file:" + prefix + "/usr/share/untangle/conf/log4j.xml");
+        System.setProperty("log4j2.configurationFile","file:" + prefix + "/usr/share/untangle/conf/log4j.xml");
 
         // Java 7 disables the MD2 certificate algorithm by default but it is still used
         // in many server certs so we clear the disabled algorithm property to allow everythin
@@ -282,6 +284,9 @@ public class Main
      */
     private void startUvm() throws Exception
     {
+        // UvmContextSelector.instance().setLoggingUvm();
+        ThreadContext.put("appName", "uvm");
+        ThreadContext.put("logType", "uvm");
         uvmContext = (UvmContextBase)uvmClassLoader.loadClass(UVM_CONTEXT_CLASSNAME).getMethod("context").invoke(null);
         uvmContext.main = this;
         uvmContext.init();

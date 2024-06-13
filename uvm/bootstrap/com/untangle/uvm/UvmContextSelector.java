@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm;
 
-import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
@@ -14,6 +13,7 @@ import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.util.Loader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,27 +22,39 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Selects logging context based on the fileName String.
  */
 public class UvmContextSelector implements ContextSelector {
 
-    public static final String DEFAULT_LOG = "uvm";
+    private final ConcurrentHashMap<String, LoggerContext> contexts = new ConcurrentHashMap<>();
+    private static final StatusLogger LOGGER = StatusLogger.getLogger();
+    private final ReentrantLock lock = new ReentrantLock();
+    public static final String DEFAULT_LOG = "default";
+    public static final String UVM_LOG = "uvm";
     private static final UvmContextSelector INSTANCE;
-
-    private final ConcurrentHashMap<String, LoggerContext> contextMap = new ConcurrentHashMap<>();
-
-    // private final Map<String, UvmHierarchy> repositories;
-    // private final ThreadLocal<String> threadLogInfo;
-
+    private final ThreadLocal<String> threadLogInfo;
 
     static {
         INSTANCE = new UvmContextSelector();
+    }
+
+    /**
+     * UvmRepositorySelector constructor
+     * Use instance() go get the singleton instance
+     */
+    private UvmContextSelector()
+    {
+        threadLogInfo = new InheritableThreadLocal<>();
     }
 
     /**
@@ -62,55 +74,31 @@ public class UvmContextSelector implements ContextSelector {
      */
     @Override
     public LoggerContext getContext(String fqcn, ClassLoader loader, boolean currentContext) {
-        // String fileName = ThreadContext.get("logFileName");
-        // if (fileName != null) {
-        //     try {
-        //         URI configURI = new URI(fileName);
-        //         return contextMap.computeIfAbsent(fileName, key -> {
-        //             try {
-        //                 URL configURL = configURI.toURL();
-        //                 File configFile = new File(configURI);
-        //                 ConfigurationSource source = new ConfigurationSource(configURL.openStream(), configFile);
-        //                 return Configurator.initialize(null, source).getContext();
-        //                 // URL configURL = new URL(fileName);
-        //                 // return Configurator.initialize(null, configURL);
-        //             } catch (IOException e) {
-        //                 e.printStackTrace();
-        //                 return null;
-        //             }
-        //         });
-        //     } catch (URISyntaxException e) {
-        //         e.printStackTrace();
-        //     }
-        // }
-        // return LoggerContext.getContext(currentContext);
-        String appName = ThreadContext.get("appName");
+        lock.lock();
         try{
-            URL configURL = getClass().getClassLoader().getResource("log4j.xml");
-            if (null == configURL) {
-                throw new IllegalArgumentException("file not found!");
+            String contextName = ThreadContext.get("appName");
+            if (contextName == null) {
+                contextName = DEFAULT_LOG;
+                this.setDefaultLogging();
             }
-            URI configURI = configURL.toURI();
-            if(null != appName) {
-                // Load the existing configuration file
-                ConfigurationSource source = new ConfigurationSource(configURL.openStream(), new File(configURI));
-                ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
 
-                // Set the properties dynamically
-                builder.setConfigurationSource(source);
-                builder.addProperty("appLogFileName", appName);
-                builder.addProperty("appendRef", appName == DEFAULT_LOG ? "UVMLOG" : "APPLOG") ;
-
-                // Initialize the configuration
-                BuiltConfiguration configuration = builder.build();
-                LoggerContext context = Configurator.initialize(configuration);
-            }
-            return contextMap.computeIfAbsent(appName, k -> new LoggerContext(k, null, configURI));
-        } catch (Exception e) {
-
+            return contexts.computeIfAbsent(contextName, key -> {
+                LoggerContext context = new LoggerContext(key);
+                URI configLocation = null;
+                try {
+                    configLocation = getClass().getClassLoader().getResource("log4j.xml").toURI();
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+                context.setConfigLocation(configLocation);
+                return context;
+            });
+        } catch(Exception e) {
+            LOGGER.error("Exception: ", e);
+        } finally {
+            lock.unlock();
         }
-        return null;
-        // return LoggerContext.getContext(currentContext);
+        return contexts.get(DEFAULT_LOG);
     }
 
     /**
@@ -123,7 +111,6 @@ public class UvmContextSelector implements ContextSelector {
      */
     @Override
     public LoggerContext getContext(String fqcn, ClassLoader loader, boolean currentContext, URI configLocation) {
-        System.out.println(configLocation);
         return getContext(fqcn, loader, currentContext);
     }
 
@@ -133,8 +120,12 @@ public class UvmContextSelector implements ContextSelector {
      */
     @Override
     public void removeContext(LoggerContext context) {
-        contextMap.values().remove(context);
-        context.stop();
+        lock.lock();
+        try {
+            LoggerContext remove = contexts.remove(context.getName());
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -143,7 +134,8 @@ public class UvmContextSelector implements ContextSelector {
      */
     @Override
     public List<LoggerContext> getLoggerContexts() {
-        return Collections.unmodifiableList(contextMap.values().stream().toList());
+        Collection<LoggerContext> values = contexts.values();
+        return new ArrayList<>(values);
     }
 
     /**
@@ -151,7 +143,10 @@ public class UvmContextSelector implements ContextSelector {
      * @param appId
      */
     public void setLoggingApp(Long appId) {
+        this.setThreadLoggingInformation("app-" + appId.toString());
+
         ThreadContext.put("appName", "app-" + appId.toString());
+        ThreadContext.put("logType", "app");
     }
 
     /**
@@ -159,16 +154,30 @@ public class UvmContextSelector implements ContextSelector {
      */
     public void setLoggingUvm() {
         // String filePath = "file:/usr/share/untangle/conf/log4j.xml";
+        this.setThreadLoggingInformation("uvm");
+
+        ThreadContext.put("appName", UVM_LOG);
+        ThreadContext.put("logType", UVM_LOG);
+    }
+
+    /**
+     * Set the current thread's logging config to the "default" settings
+     */
+    public void setDefaultLogging() {
+        this.setThreadLoggingInformation(DEFAULT_LOG);
+
         ThreadContext.put("appName", DEFAULT_LOG);
+        ThreadContext.put("logType", null);
     }
 
     /**
      * Sets the current thread's logging config
      * @param fileName
      */
-    // private void setThreadLoggingInformation(String fileName) {
-    //     threadLogInfo.set(fileName);
-    // }
+    private void setThreadLoggingInformation(String fileName)
+    {
+        threadLogInfo.set(fileName);
+    }
     
     /**
      * Causes all logging repositories to reconfigure themselves from

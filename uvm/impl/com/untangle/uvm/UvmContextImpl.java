@@ -18,11 +18,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-// import org.apache.logging.log4j.Logger;
-// import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
 
 import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
@@ -87,7 +87,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String TEMPFS_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-tempfs-backup";
     private Pulse tempfsBackupPulse = null;
 
-    private static final Logger logger = LoggerFactory.getLogger(UvmContextImpl.class);
+    private static final Logger logger = LogManager.getLogger(UvmContextImpl.class);
 
     private static String uid = null;
     private static String regionName = null;
@@ -1912,7 +1912,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
          */
         public void run()
         {
-            org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UvmContextImpl.class);
+            Logger logger = LogManager.getLogger(UvmContextImpl.class);
             logger.info("Calling tempfs backup script");
             owner.execManager.exec(TEMPFS_BACKUP_SCRIPT);
         }

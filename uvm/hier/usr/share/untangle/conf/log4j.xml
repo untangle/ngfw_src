@@ -15,26 +15,56 @@
   <!-- ============================================== -->
   
   <Appenders>
-    <Syslog name="UVMLOG" host="localhost" facility="LOCAL0">
+
+    <Routing name="Routing">
+      <Routes pattern="${ctx:logType}">
+        <Route key="uvm">
+            <Syslog name="UVMLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL0">
+              <ThresholdFilter level="ALL"/>
+              <PatternLayout>
+                <pattern>%X{appName}: [%c{1}:%L] %-5p %m%n</pattern>
+              </PatternLayout>
+            </Syslog>
+        </Route>
+        <Route key="app">
+            <Syslog name="APPLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL1">
+              <ThresholdFilter level="ALL"/>
+              <PatternLayout>
+                <pattern>%X{appName}: [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n</pattern>
+              </PatternLayout>
+            </Syslog>
+        </Route>
+        <Route>
+            <Syslog name="DEFAULT" host="localhost" port="514" protocol="UDP">
+              <ThresholdFilter level="ALL"/>
+              <PatternLayout>
+                <pattern>%X{appName}: [%c{1}:%L] %-5p %m%n</pattern>
+              </PatternLayout>
+            </Syslog>
+        </Route>
+      </Routes>
+    </Routing>
+
+    <!-- <Syslog name="UVMLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL0">
       <ThresholdFilter level="ALL"/>
       <PatternLayout>
-	      <pattern>${appLogFileName}: [%c{1}:%L] %-5p %m%n</pattern>
+	      <pattern>%X{appName}: [%c{1}:%L] %-5p %m%n</pattern>
       </PatternLayout>
-    </Syslog>
+    </Syslog> -->
 
-    <Syslog name="EVENTS" host="localhost" facility="LOCAL5">
+    <Syslog name="EVENTS" host="localhost" port="514" protocol="UDP" facility="LOCAL5">
       <ThresholdFilter level="ALL"/>
       <PatternLayout>
 	      <pattern>%-5p %m%n</pattern>
       </PatternLayout>
     </Syslog>
 
-    <Syslog name="APPLOG" host="localhost" facility="LOCAL1">
+    <!-- <Syslog name="APPLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL1">
       <ThresholdFilter level="ALL"/>
       <PatternLayout>
-	      <pattern>${appLogFileName}: [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n</pattern>
+	      <pattern>%X{appName}: [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n</pattern>
       </PatternLayout>
-    </Syslog>
+    </Syslog> -->
   </Appenders>
 
   <Loggers>
@@ -149,7 +179,7 @@
     <!-- ============================================== -->
 
     <Root level="WARN">
-      <AppenderRef ref="${appendRef}"/>
+      <AppenderRef ref="Routing"/>
     </Root>
 
   </Loggers>
