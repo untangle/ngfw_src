@@ -48,7 +48,6 @@ public class SearchEngine
 
         SearchEngines = new ArrayList<Pattern>();
         SearchEngines.add(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/results\\?search_query=([^&]+).*"));
-       // SearchEngines.add(Pattern.compile(".*youtube\\.[a-z]+(\\.[a-z]+)?/api/stats/qoe\\?*(\\?|&)q=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*(youtube|google)\\.[a-z]+(\\.[a-z]+)?/(complete/|)search.*(\\?|&)q=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*(youtube|google)\\.[a-z]+(\\.[a-z]+)?/gen_204(\\?|&)oq=([^&]+).*"));
         SearchEngines.add(Pattern.compile(".*ask\\.[a-z]+(\\.[a-z]+)?/web.*(\\?|&)q=([^&]+).*"));
@@ -134,7 +133,7 @@ public class SearchEngine
                 }
             }
         }
-
+        //For YouTube Retry button fetching URL from RequestLine referer to match with patterns
         if(host.contains(WebFilterDecisionEngine.YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
            String referer = requestLine.getRequestLine().getHttpRequestEvent().getReferer();
             if (referer == null) {
