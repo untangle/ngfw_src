@@ -80,10 +80,12 @@ public class SearchEngine
      *        URL URI.
      * @param header
      *        The header token
+    * @param requestLine
+     *        The requestLine token
      *
      * @return The query term
      */
-    public static String getQueryTerm(InetAddress clientIp, String host, String uri, HeaderToken header)
+    public static String getQueryTerm(InetAddress clientIp, String host, String uri, HeaderToken header, RequestLineToken requestLine)
     {
         boolean hostFound = false;
         for(String hostPiece : SearchEngineHosts){
@@ -131,7 +133,26 @@ public class SearchEngine
                 }
             }
         }
-
+        //For YouTube Retry button fetching URL from RequestLine referer to match with patterns
+        if(host.contains(WebFilterDecisionEngine.YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
+           String referer = requestLine.getRequestLine().getHttpRequestEvent().getReferer();
+            if (referer == null) {
+                return term;
+            }
+            for (Pattern p : SearchEngines) {
+                Matcher m = p.matcher(referer);
+                if (m.matches()) {
+                    try {
+                        term = m.group(m.groupCount());
+                        term = URLDecoder.decode(term, "UTF-8");
+                    } catch (Exception e) {
+    
+                    }
+                    return term;
+                }
+            }
+            
+        }
         return term;
     }
 

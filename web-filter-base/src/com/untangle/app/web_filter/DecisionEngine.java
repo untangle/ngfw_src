@@ -551,7 +551,7 @@ public abstract class DecisionEngine
                 host = clientIp.getHostAddress();
             }
         }
-        String term = SearchEngine.getQueryTerm(clientIp, host, uri.toString(), header);
+        String term = SearchEngine.getQueryTerm(clientIp, host, uri.toString(), header, requestLine);
 
         if(isItemUnblocked(term, clientIp)) {
             if (logger.isDebugEnabled()) logger.debug("LOG: " + term + " in unblock list for " + clientIp);
