@@ -476,11 +476,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             name:"SRC_MAC",
             displayName: "Client MAC Address".t(), 
             type: 'textfield',
-            vtype: 'macAddress'
+            vtype: 'macAddress',
+            allowBlank: false,
         },{
             name:'DST_MAC',
             displayName: 'Server MAC Address'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:"PROTOCOL",
             displayName: "Protocol".t(),
@@ -518,7 +520,8 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'TAGGED',
             displayName: 'Tagged'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'USERNAME',
             displayName: 'Username'.t(),
@@ -526,7 +529,8 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_HOSTNAME',
             displayName: 'Host Hostname'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'CLIENT_HOSTNAME',
             displayName: 'Client Hostname'.t(),
@@ -540,11 +544,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'CLIENT_MAC_VENDOR',
             displayName: 'Client MAC Vendor'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'SERVER_MAC_VENDOR',
             displayName: 'Server MAC Vendor'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'CLIENT_IN_PENALTY_BOX',
             displayName: 'Client in Penalty Box'.t(),
@@ -594,11 +600,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_QUOTA_ATTAINMENT',
             displayName: 'Host Quota Attainment'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'USER_QUOTA_ATTAINMENT',
             displayName: 'User Quota Attainment'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'CLIENT_QUOTA_ATTAINMENT',
             displayName: 'Client Quota Attainment'.t(),
@@ -616,55 +624,68 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HTTP_HOST',
             displayName: 'HTTP: Hostname'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REFERER',
             displayName: 'HTTP: Referrer'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_URI', 
             displayName: 'HTTP: URI'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_URL',
             displayName: 'HTTP: URL'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_CONTENT_TYPE',
             displayName: 'HTTP: Content Type'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_CONTENT_LENGTH',
             displayName: 'HTTP: Content Length'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REQUEST_METHOD',
             displayName: 'HTTP: Request Method'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REQUEST_FILE_PATH',
             displayName: 'HTTP: Request File Path'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REQUEST_FILE_NAME',
             displayName: 'HTTP: Request File Name'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REQUEST_FILE_EXTENSION',
             displayName: 'HTTP: Request File Extension'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_RESPONSE_FILE_NAME',
             displayName: 'HTTP: Response File Name'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_RESPONSE_FILE_EXTENSION',
             displayName: 'HTTP: Response File Extension'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_USER_AGENT',
             displayName: 'HTTP: Client User Agent'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_USER_AGENT_OS',
             displayName: 'HTTP: Client User OS'.t(), 
@@ -701,23 +722,28 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'PROTOCOL_CONTROL_SIGNATURE',
             displayName: 'Application Control Lite: Signature'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'PROTOCOL_CONTROL_CATEGORY',
             displayName: 'Application Control Lite: Category'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'PROTOCOL_CONTROL_DESCRIPTION',
             displayName: 'Application Control Lite: Description'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_CATEGORY',
             displayName: 'Web Filter: Category'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_CATEGORY_DESCRIPTION',
             displayName: 'Web Filter: Category Description'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_FLAGGED',
             displayName: 'Web Filter: Website is Flagged'.t(),
@@ -725,31 +751,38 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'WEB_FILTER_REQUEST_METHOD',
             displayName: 'Web Filter: Request Method'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_REQUEST_FILE_PATH',
             displayName: 'Web Filter: Request File Path'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_REQUEST_FILE_NAME',
             displayName: 'Web Filter: Request File Name'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_REQUEST_FILE_EXTENSION',
             displayName: 'Web Filter: Request File Extension'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_RESPONSE_CONTENT_TYPE',
             displayName: 'Web Filter: Content Type'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_RESPONSE_FILE_NAME',
             displayName: 'Web Filter: Response File Name'.t(),
             type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_RESPONSE_FILE_EXTENSION',
             displayName: 'Web Filter: Response File Extension'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'DIRECTORY_CONNECTOR_GROUP',
             displayName: 'Directory Connector: User in Group'.t(),
@@ -792,15 +825,18 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'SSL_INSPECTOR_SNI_HOSTNAME',
             displayName: 'SSL Inspector: SNI Host Name'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'SSL_INSPECTOR_SUBJECT_DN',
             displayName: 'SSL Inspector: Certificate Subject'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'SSL_INSPECTOR_ISSUER_DN',
             displayName: 'SSL Inspector: Certificate Issuer'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         }]
     }
 });

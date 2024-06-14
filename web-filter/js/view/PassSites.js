@@ -24,6 +24,8 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
 
     emptyText: 'No Pass Sites defined'.t(),
 
+    importValidationJavaClass: true,
+
     listProperty: 'settings.passedUrls.list',
     emptyRow: {
         string: '',

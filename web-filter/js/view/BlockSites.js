@@ -24,6 +24,8 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
 
     emptyText: 'No Block Sites defined'.t(),
 
+    importValidationJavaClass: true,
+
     listProperty: 'settings.blockedUrls.list',
     emptyRow: {
         string: '',

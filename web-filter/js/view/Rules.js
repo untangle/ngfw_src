@@ -26,6 +26,8 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
 
     emptyText: 'No Rules defined'.t(),
 
+    importValidationJavaClass: true,
+
     listProperty: 'settings.filterRules.list',
 
     emptyRow: {

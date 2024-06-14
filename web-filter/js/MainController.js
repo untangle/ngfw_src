@@ -306,7 +306,6 @@ Ext.define('Ung.apps.webfilter.cmp.SearchTermsGridController', {
                 }
 
                 me.importHandler(form.getValues().importMode, jsonArray);
-                me.importDialog.close();
             },
             failure: function(form, action) {
                 Ext.MessageBox.alert('Warning'.t(), action.result.msg);
