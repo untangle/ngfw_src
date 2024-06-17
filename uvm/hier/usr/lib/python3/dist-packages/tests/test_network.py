@@ -2710,7 +2710,7 @@ class NetworkTests(NGFWTestCase):
         """
         Verify we can get vendors for the mac addresses
         """
-        deviceStatus = uvmContext.networkManager().getDeviceStatus()
+        deviceStatus = global_functions.uvmContext.networkManager().getDeviceStatus()
         interfaceList = deviceStatus["list"]
         if(len(interfaceList) <= 0): 
             raise unittest.SkipTest('Interface Not Known')
@@ -2719,7 +2719,7 @@ class NetworkTests(NGFWTestCase):
         mac_address_list = { 'javaClass': 'java.util.LinkedList', 'list': [interfaceList[0]["macAddress"]] }
 
         # Get vendor for mac Address
-        mac_address_vendor_map = uvmContext.networkManager().lookupMacVendorList(mac_address_list)
+        mac_address_vendor_map = global_functions.uvmContext.networkManager().lookupMacVendorList(mac_address_list)
         assert(len(mac_address_vendor_map) > 0)
 
     @classmethod
