@@ -42,7 +42,7 @@ public class UvmContextSelector implements ContextSelector {
     public static final String DEFAULT_LOG = "default";
     public static final String UVM_LOG = "uvm";
     private static final UvmContextSelector INSTANCE;
-    private final ThreadLocal<String> threadLogInfo;
+    private static final ThreadLocal<String> THREAD_LOG_INFO = new InheritableThreadLocal<>();;
 
     static {
         INSTANCE = new UvmContextSelector();
@@ -52,10 +52,10 @@ public class UvmContextSelector implements ContextSelector {
      * UvmRepositorySelector constructor
      * Use instance() go get the singleton instance
      */
-    private UvmContextSelector()
-    {
-        threadLogInfo = new InheritableThreadLocal<>();
-    }
+//    private UvmContextSelector()
+//    {
+//        threadLogInfo = new InheritableThreadLocal<>();
+//    }
 
     /**
      * instance() provides the UvmContextSelector singleton
@@ -76,13 +76,27 @@ public class UvmContextSelector implements ContextSelector {
     public LoggerContext getContext(String fqcn, ClassLoader loader, boolean currentContext) {
         lock.lock();
         try{
-            String contextName = ThreadContext.get("appName");
-            if (contextName == null) {
-                contextName = DEFAULT_LOG;
-                this.setDefaultLogging();
-            }
+//            String contextName = ThreadContext.get("appName");
+            String contextName = THREAD_LOG_INFO.get();
+            if (contextName != null && !contextName.equals("uvm")) {
 
-            return contexts.computeIfAbsent(contextName, key -> {
+                ThreadContext.put("appName", contextName);
+                ThreadContext.put("logType", "app");
+
+//                if(contextName.equals(UVM_LOG)) {
+//                    ThreadContext.put("logType", UVM_LOG);
+//                }
+//                else {
+//                    ThreadContext.put("logType", "app");
+//                }
+//                this.setDefaultLogging();
+            } else {
+                contextName = UVM_LOG;
+                ThreadContext.put("appName", contextName);
+                ThreadContext.put("logType", contextName);
+
+            }
+            LoggerContext returnContext = contexts.computeIfAbsent(contextName, key -> {
                 LoggerContext context = new LoggerContext(key);
                 URI configLocation = null;
                 try {
@@ -93,6 +107,7 @@ public class UvmContextSelector implements ContextSelector {
                 context.setConfigLocation(configLocation);
                 return context;
             });
+            return returnContext;
         } catch(Exception e) {
             LOGGER.error("Exception: ", e);
         } finally {
@@ -145,8 +160,8 @@ public class UvmContextSelector implements ContextSelector {
     public void setLoggingApp(Long appId) {
         this.setThreadLoggingInformation("app-" + appId.toString());
 
-        ThreadContext.put("appName", "app-" + appId.toString());
-        ThreadContext.put("logType", "app");
+//        ThreadContext.put("appName", "app-" + appId.toString());
+//        ThreadContext.put("logType", "app");
     }
 
     /**
@@ -156,27 +171,26 @@ public class UvmContextSelector implements ContextSelector {
         // String filePath = "file:/usr/share/untangle/conf/log4j.xml";
         this.setThreadLoggingInformation("uvm");
 
-        ThreadContext.put("appName", UVM_LOG);
-        ThreadContext.put("logType", UVM_LOG);
+//        ThreadContext.put("appName", UVM_LOG);
+//        ThreadContext.put("logType", UVM_LOG);
     }
 
     /**
      * Set the current thread's logging config to the "default" settings
      */
-    public void setDefaultLogging() {
-        this.setThreadLoggingInformation(DEFAULT_LOG);
-
-        ThreadContext.put("appName", DEFAULT_LOG);
-        ThreadContext.put("logType", null);
-    }
+//    public void setDefaultLogging() {
+//        this.setThreadLoggingInformation(DEFAULT_LOG);
+//
+//        ThreadContext.put("appName", DEFAULT_LOG);
+//        ThreadContext.put("logType", null);
+//    }
 
     /**
      * Sets the current thread's logging config
      * @param fileName
      */
-    private void setThreadLoggingInformation(String fileName)
-    {
-        threadLogInfo.set(fileName);
+    private void setThreadLoggingInformation(String fileName) {
+        THREAD_LOG_INFO.set(fileName);
     }
     
     /**
