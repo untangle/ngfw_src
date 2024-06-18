@@ -29,6 +29,8 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
     
     importValidationJavaClass: true,
 
+    importValidationForComboBox: true,
+
     listProperty: 'settings.rules.list',
 
     emptyRow: {
