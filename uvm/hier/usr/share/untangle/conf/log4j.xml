@@ -16,41 +16,12 @@
   
   <Appenders>
 
-    <Routing name="Routing">
-      <Routes pattern="${ctx:logType}">
-        <Route key="uvm">
-            <Syslog name="UVMLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL0">
-              <ThresholdFilter level="ALL"/>
-              <PatternLayout>
-                <pattern>%X{appName}: [%c{1}:%L] %-5p %m%n</pattern>
-              </PatternLayout>
-            </Syslog>
-        </Route>
-        <Route key="app">
-            <Syslog name="APPLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL1">
-              <ThresholdFilter level="ALL"/>
-              <PatternLayout>
-                <pattern>%X{appName}: [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n</pattern>
-              </PatternLayout>
-            </Syslog>
-        </Route>
-        <Route>
-            <Syslog name="DEFAULT" host="localhost" port="514" protocol="UDP">
-              <ThresholdFilter level="ALL"/>
-              <PatternLayout>
-                <pattern>%X{appName}: [%c{1}:%L] %-5p %m%n</pattern>
-              </PatternLayout>
-            </Syslog>
-        </Route>
-      </Routes>
-    </Routing>
-
-    <!-- <Syslog name="UVMLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL0">
-      <ThresholdFilter level="ALL"/>
+    <Syslog name="SYSLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL0">
+      <!-- <ThresholdFilter level="ALL"/> -->
       <PatternLayout>
-	      <pattern>%X{appName}: [%c{1}:%L] %-5p %m%n</pattern>
+	      <pattern>uvm: [%c{1}:%L] %-5p %m%n</pattern>
       </PatternLayout>
-    </Syslog> -->
+    </Syslog>
 
     <Syslog name="EVENTS" host="localhost" port="514" protocol="UDP" facility="LOCAL5">
       <ThresholdFilter level="ALL"/>
@@ -179,7 +150,7 @@
     <!-- ============================================== -->
 
     <Root level="WARN">
-      <AppenderRef ref="Routing"/>
+      <AppenderRef ref="SYSLOG"/>
     </Root>
 
   </Loggers>
