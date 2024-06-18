@@ -532,6 +532,34 @@ Ext.define('Ung.cmp.GridController', {
         return isEntryExists;
     },
 
+    checkBoxGroupStoreValidator:function(fieldConfig, valuesToCheck){
+        var availableFieldValues = [];
+        if(fieldConfig.values && fieldConfig.values.length <= 0){
+            return false;
+        }else{
+            for(var j=0; j<fieldConfig.values.length; j++){
+                availableFieldValues.push(fieldConfig.values[j][0]);
+            }
+        }
+        var isEntryValid = true;
+        valuesToCheck = valuesToCheck.split(",");
+        for(var i=0; i<valuesToCheck.length; i++){
+            var currValue = valuesToCheck[i].trim();
+            if(currValue){
+                if(availableFieldValues.includes(currValue)){
+                    continue;
+                }else{
+                    isEntryValid = false;
+                    break;
+                }
+            }else{
+                isEntryValid = false;
+                break;
+            }
+        }
+        return isEntryValid;
+    },
+
     getNestedEditorFieldConfig: function(){
         var editorFields = this.getView().editorFields;
         var mappedObject={};
@@ -698,6 +726,12 @@ Ext.define('Ung.cmp.GridController', {
                                             if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
                                                 errorMsgForConditions = Ext.String.format('This field is required.'.t());
                                                 break; 
+                                            }else if(grid.viewConfig.importValidationForComboBox && currentCondition.type && currentCondition.type === 'checkboxgroup'){
+                                                var areValuesValid = me.checkBoxGroupStoreValidator(currentCondition, currentValue);
+                                                if(!areValuesValid){
+                                                    errorMsgForConditions = Ext.String.format('Invalid value for the checkbox field {0}'.t(), currentCondition.displayName);
+                                                    break;
+                                                }
                                             } else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
                                                 continue; // Skip validation if allowBlank is true and field value is empty
                                             }
