@@ -3,17 +3,17 @@
  */
 package com.untangle.uvm;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.impl.Log4jContextFactory;
+
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.security.Security;
-
-import org.apache.logging.log4j.core.impl.Log4jContextFactory;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Bootstraps the UVM. Access to the Main object should be protected.
@@ -53,9 +53,6 @@ public class Main
          */
         LogManager.setFactory(new Log4jContextFactory(UvmContextSelector.instance()));
         UvmContextSelector.instance().setLoggingUvm();
-
-        // LogManager.setRepositorySelector(UvmRepositorySelector.instance(), new Object());
-        // UvmRepositorySelector.instance().setLoggingUvm();
     }
 
     /**
@@ -234,8 +231,7 @@ public class Main
         System.setProperty("java.security.egd","file:" + "/dev/./urandom");
         // Set the postgres jdbc driver
         System.setProperty("jdbc.drivers","org.postgresql.Driver");
-
-
+        // disable log4j2 jmx
         System.setProperty("log4j2.disable.jmx", "true");
 
         // Java 7 disables the MD2 certificate algorithm by default but it is still used

@@ -27,7 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Selects logging context based on the fileName String.
+ * Custom {@link ContextSelector} implementation to
+ * create multiple logger context for apps
  */
 public class UvmContextSelector implements ContextSelector {
 
@@ -37,15 +38,13 @@ public class UvmContextSelector implements ContextSelector {
     public static final String UVM_LOG = "uvm";
     private static final UvmContextSelector INSTANCE;
     private static final ThreadLocal<String> THREAD_LOG_INFO = new InheritableThreadLocal<>();
-    ;
 
     static {
         INSTANCE = new UvmContextSelector();
     }
 
     /**
-     * instance() provides the UvmContextSelector singleton
-     *
+     * Provides the UvmContextSelector singleton
      * @return UvmContextSelector
      */
     public static UvmContextSelector instance() {
@@ -53,39 +52,36 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * provides the LoggerContext based on logFileName
-     *
-     * @param fqcn
-     * @param loader
-     * @param currentContext
+     * Overrides getContext method of {@link ContextSelector} interface
+     * @param fqcn fqcn
+     * @param loader ClassLoader
+     * @param currentContext boolean isCurrentContext
      * @return LoggerContext
      */
     @Override
     public LoggerContext getContext(String fqcn, ClassLoader loader, boolean currentContext) {
-        lock.lock();
-        try {
+        try{
             String contextName = THREAD_LOG_INFO.get();
-            if (!contexts.containsKey(contextName)) {
-                UvmHierarchy context = new UvmHierarchy(contextName, contextName);
-                context.start();
-                contexts.put(contextName, context);
+            synchronized (contexts) {
+                if (!contexts.containsKey(contextName)) {
+                    UvmLoggerContext context = new UvmLoggerContext(contextName, contextName);
+                    context.start();
+                    contexts.put(contextName, context);
+                }
             }
             return contexts.get(contextName);
         } catch (Exception e) {
             LOGGER.error("Exception: ", e);
-        } finally {
-            lock.unlock();
         }
         return contexts.get(UVM_LOG);
     }
 
     /**
-     * provides the LoggerContext based on logFileName
-     *
-     * @param fqcn
-     * @param loader
-     * @param currentContext
-     * @param configLocation
+     * Overrides getContext method of {@link ContextSelector} interface
+     * @param fqcn fqcn
+     * @param loader ClassLoader
+     * @param currentContext boolean isCurrentContext
+     * @param configLocation URI
      * @return LoggerContext
      */
     @Override
@@ -94,23 +90,18 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * Removes the LoggerContext
-     *
-     * @param context
+     * Overrides removeContext method of {@link ContextSelector} interface
+     * @param context LoggerContext
      */
     @Override
     public void removeContext(LoggerContext context) {
-        lock.lock();
-        try {
+        synchronized (contexts) {
             LoggerContext remove = contexts.remove(context.getName());
-        } finally {
-            lock.unlock();
         }
     }
 
     /**
-     * returns all LoggerContexts in a unmodifiable list
-     *
+     * Overrides getLoggerContexts method of {@link ContextSelector} interface
      * @return List<LoggerContext>
      */
     @Override
@@ -121,8 +112,7 @@ public class UvmContextSelector implements ContextSelector {
 
     /**
      * Set the current thread's logging config to the "App" settings
-     *
-     * @param appId
+     * @param appId appId
      */
     public void setLoggingApp(Long appId) {
         this.setThreadLoggingInformation("app-" + appId.toString());
@@ -136,47 +126,45 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * Sets the current thread's logging config
-     *
-     * @param fileName
+     * Sets the current thread's logging context
+     * @param contextName contextName
      */
-    private void setThreadLoggingInformation(String fileName) {
-        THREAD_LOG_INFO.set(fileName);
+    private void setThreadLoggingInformation(String contextName) {
+        THREAD_LOG_INFO.set(contextName);
     }
 
     /**
-     * Causes all logging repositories to reconfigure themselves from
-     * the configuration file specified in the {@link UvmLoggingContext}.
+     * Causes all logging contexts to reconfigure themselves from
+     * the configuration context specified in the {@link UvmLoggerContext}.
      */
     public void reconfigureAll() {
-        // synchronized (repositories) {
-        //     for (UvmHierarchy hier : repositories.values()) {
-        //         hier.configure();
-        //     }
-        // }
+         synchronized (contexts) {
+             for (LoggerContext loggerContext : contexts.values()) {
+                 loggerContext.reconfigure();
+             }
+         }
     }
 
     /**
-     * A {@link org.apache.logging.log4j.core.LoggerContext} that associates the
-     * current {@link UvmLoggingContext} and allows configuration
+     * A {@link LoggerContext} that associates the
+     * current {@link UvmLoggerContext} and allows configuration
      * based on the contexts configuration file.
      */
-    private class UvmHierarchy extends LoggerContext {
+    private static class UvmLoggerContext extends LoggerContext {
         private final String contextName;
 
         /**
-         * UvmHierarchy
-         *
-         * @param name
-         * @param contextName
+         * UvmLoggerContext
+         * @param name name
+         * @param contextName contextName
          */
-        public UvmHierarchy(String name, String contextName) {
+        public UvmLoggerContext(String name, String contextName) {
             super(name);
             this.contextName = contextName;
         }
 
         /**
-         * reconfigure
+         * Overrides reconfigure method of {@link LoggerContext} interface
          */
         @Override
         public void reconfigure() {
@@ -186,64 +174,68 @@ public class UvmContextSelector implements ContextSelector {
                 configLocation = getClass().getClassLoader().getResource("log4j.xml").toURI();
                 source = new ConfigurationSource(configLocation.toURL().openStream(), new File(configLocation));
             } catch (URISyntaxException | IOException e) {
+                LOGGER.error("Exception: ", e);
                 throw new RuntimeException(e);
             }
             // Initialize the configuration
             Configuration configuration = new XmlConfiguration(this, source);
             configuration.initialize();
-            Configuration config = updateConfiguration(configuration, contextName);
-            this.setConfiguration(config);
+            updateConfiguration(configuration, contextName);
+            this.setConfiguration(configuration);
         }
 
         /**
-         * provides the LoggerContext based on logFileName
-         *
-         * @param config      config
+         * Updates the configuration according to contextName
+         * @param config config
          * @param contextName contextName
-         * @return LoggerContext
          */
-        private Configuration updateConfiguration(Configuration config, String contextName) {
+        private void updateConfiguration(Configuration config, String contextName) {
             Appender oldAppender = config.getAppender("SYSLOG");
 
-            if (oldAppender instanceof SyslogAppender) {
-                SyslogAppender oldSyslogAppender = (SyslogAppender) oldAppender;
+            if (oldAppender instanceof SyslogAppender oldSyslogAppender) {
 
-                // Create a new PatternLayout with the desired pattern
+                // Creating a new PatternLayout based on contextName
                 PatternLayout newPatternLayout;
                 Facility facility;
-                if (contextName != null && !contextName.equals("uvm")) {
-                    newPatternLayout = PatternLayout.newBuilder().withPattern(contextName + ": [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n").withConfiguration(config).build();
+                if (contextName != null && !contextName.equals(UVM_LOG)) {
+                    newPatternLayout = PatternLayout.newBuilder()
+                        .withPattern(contextName + ": [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n")
+                        .withConfiguration(config)
+                        .build();
                     facility = Facility.LOCAL1;
                 } else {
-                    newPatternLayout = PatternLayout.newBuilder().withPattern("uvm: [%c{1}:%L] %-5p %m%n").withConfiguration(config).build();
+                    newPatternLayout = PatternLayout.newBuilder()
+                        .withPattern("uvm: [%c{1}:%L] %-5p %m%n")
+                        .withConfiguration(config)
+                        .build();
                     facility = Facility.LOCAL0;
                 }
+                // Creating a new SyslogAppender with the new PatternLayout
+                SyslogAppender newSyslogAppender = SyslogAppender.newSyslogAppenderBuilder()
+                        .setName(oldSyslogAppender.getName())
+                        .setConfiguration(config)
+                        .setProtocol(Protocol.UDP).setHost("localhost")
+                        .setPort(514).setLayout(newPatternLayout)
+                        .setFacility(facility)
+                        .build();
 
-                // Create a new SyslogAppender with the new PatternLayout
-                SyslogAppender newSyslogAppender = SyslogAppender.newSyslogAppenderBuilder().setName(oldSyslogAppender.getName()).setConfiguration(config).setProtocol(Protocol.UDP).setHost("localhost").setPort(514).setLayout(newPatternLayout).setFacility(facility).build();
-
-                // Stop the old SyslogAppender
+                // Stop the old SyslogAppender and remove from configuration
                 oldSyslogAppender.stop();
-
-                // Remove the old SyslogAppender from configuration
                 config.getAppenders().remove(oldSyslogAppender.getName());
-
                 // Add the new SyslogAppender to configuration
                 config.addAppender(newSyslogAppender);
 
                 // Replace the appender references in the loggers
-                for (LoggerConfig loggerConfig : config.getLoggers().values()) {
-                    loggerConfig.removeAppender(oldSyslogAppender.getName());
-                    loggerConfig.addAppender(newSyslogAppender, null, null);
+                for (LoggerConfig loggers : config.getLoggers().values()) {
+                    loggers.removeAppender(oldSyslogAppender.getName());
+                    loggers.addAppender(newSyslogAppender, null, null);
+                    loggers.setAdditive(false);
                 }
-                this.updateLoggers();
-
+                this.updateLoggers(config);
                 // Start the new SyslogAppender
                 newSyslogAppender.start();
             }
-            return config;
         }
-
     }
 }
 
