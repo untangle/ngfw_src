@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentMap;
 public class UvmContextSelector implements ContextSelector {
     public static final String UVM_LOG = "uvm";
     private static final String APP_HYPHEN = "app-";
-    private static final String LOG4J_XML = "log4j.xml";
+    private static final String LOG4J_XML = "log4j2.xml";
     private static final String SYSLOG = "SYSLOG";
     private static final String LOCALHOST = "localhost";
     private static final String APP_PATTERN_TEMPLATE = ": [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n";
@@ -188,7 +188,7 @@ public class UvmContextSelector implements ContextSelector {
         /**
          * Updates the configuration according to contextName.
          * Removes current syslog appender and on the basis of contextName (appName) adds a new appender
-         * finally the loggerConfigs
+         * finally updates the loggerConfigs
          * @param config config
          * @param contextName contextName
          */
