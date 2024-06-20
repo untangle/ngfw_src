@@ -1,6 +1,7 @@
 /**
  * $Id$
  */
+
 package com.untangle.uvm;
 
 import org.apache.logging.log4j.core.Appender;
@@ -24,17 +25,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Custom {@link ContextSelector} implementation to
- * create multiple logger context for apps
+ * Custom ContextSelector implementation to create multiple logger context for apps
  */
 public class UvmContextSelector implements ContextSelector {
 
     private final ConcurrentHashMap<String, LoggerContext> contexts = new ConcurrentHashMap<>();
     private static final StatusLogger LOGGER = StatusLogger.getLogger();
-    private final ReentrantLock lock = new ReentrantLock();
     public static final String UVM_LOG = "uvm";
     private static final UvmContextSelector INSTANCE;
     private static final ThreadLocal<String> THREAD_LOG_INFO = new InheritableThreadLocal<>();
@@ -44,7 +42,7 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * Provides the UvmContextSelector singleton
+     * instance() Provides the UvmContextSelector singleton
      * @return UvmContextSelector
      */
     public static UvmContextSelector instance() {
@@ -52,9 +50,9 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * Overrides getContext method of {@link ContextSelector} interface
+     * Overrides getContext method of ContextSelector interface
      * @param fqcn fqcn
-     * @param loader ClassLoader
+     * @param loader loader
      * @param currentContext boolean isCurrentContext
      * @return LoggerContext
      */
@@ -64,7 +62,7 @@ public class UvmContextSelector implements ContextSelector {
             String contextName = THREAD_LOG_INFO.get();
             synchronized (contexts) {
                 if (!contexts.containsKey(contextName)) {
-                    UvmLoggerContext context = new UvmLoggerContext(contextName, contextName);
+                    UvmLoggerContext context = new UvmLoggerContext(contextName);
                     context.start();
                     contexts.put(contextName, context);
                 }
@@ -77,11 +75,11 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * Overrides getContext method of {@link ContextSelector} interface
+     * Overrides getContext method of ContextSelector interface
      * @param fqcn fqcn
-     * @param loader ClassLoader
+     * @param loader loader
      * @param currentContext boolean isCurrentContext
-     * @param configLocation URI
+     * @param configLocation configLocation
      * @return LoggerContext
      */
     @Override
@@ -90,7 +88,7 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * Overrides removeContext method of {@link ContextSelector} interface
+     * Overrides removeContext method of ContextSelector interface
      * @param context LoggerContext
      */
     @Override
@@ -101,7 +99,7 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * Overrides getLoggerContexts method of {@link ContextSelector} interface
+     * Overrides getLoggerContexts method of ContextSelector interface
      * @return List<LoggerContext>
      */
     @Override
@@ -135,7 +133,7 @@ public class UvmContextSelector implements ContextSelector {
 
     /**
      * Causes all logging contexts to reconfigure themselves from
-     * the configuration context specified in the {@link UvmLoggerContext}.
+     * the configuration context specified in the UvmLoggerContext.
      */
     public void reconfigureAll() {
          synchronized (contexts) {
@@ -146,25 +144,21 @@ public class UvmContextSelector implements ContextSelector {
     }
 
     /**
-     * A {@link LoggerContext} that associates the
-     * current {@link UvmLoggerContext} and allows configuration
+     * A LoggerContext that associates the
+     * current UvmLoggerContext and allows configuration
      * based on the contexts configuration file.
      */
     private static class UvmLoggerContext extends LoggerContext {
-        private final String contextName;
-
         /**
-         * UvmLoggerContext
+         * UvmLoggerContext constructor
          * @param name name
-         * @param contextName contextName
          */
-        public UvmLoggerContext(String name, String contextName) {
+        public UvmLoggerContext(String name) {
             super(name);
-            this.contextName = contextName;
         }
 
         /**
-         * Overrides reconfigure method of {@link LoggerContext} interface
+         * Overrides reconfigure method of LoggerContext
          */
         @Override
         public void reconfigure() {
@@ -180,7 +174,7 @@ public class UvmContextSelector implements ContextSelector {
             // Initialize the configuration
             Configuration configuration = new XmlConfiguration(this, source);
             configuration.initialize();
-            updateConfiguration(configuration, contextName);
+            updateConfiguration(configuration, this.getName());
             this.setConfiguration(configuration);
         }
 
