@@ -7,6 +7,10 @@
 <!-- ===================================================================== -->
 
 <!-- $Id: log4j.xml,v 1.00 2012/04/12 21:57:25 dmorris Exp $ -->
+<!-- This file defines the key elements in log4j configuration.
+     Configuration is modified dynamically using java code 
+     (UvmContextSelector Class) based on app. 
+-->
 
 <Configuration>
 
