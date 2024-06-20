@@ -7,7 +7,6 @@ import traceback
 import socket
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -101,7 +100,7 @@ class FirewallTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     # verify client is online
     def test_012_defaultIsPass(self):
@@ -532,9 +531,9 @@ class FirewallTests(NGFWTestCase):
     # verify bogus user agent match is blocked after setting agent
     @pytest.mark.failure_behind_ngfw
     def test_121_clientUserAgent2(self):
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         entry['httpUserAgent'] = "Mozilla foo bar"
-        uvmContext.hostTable().setHostTableEntry( remote_control.client_ip, entry )
+        global_functions.uvmContext.hostTable().setHostTableEntry( remote_control.client_ip, entry )
 
         rules_clear()
         rule_append( create_rule_single_condition( "HTTP_USER_AGENT", "*Mozilla*" ) )
@@ -542,7 +541,7 @@ class FirewallTests(NGFWTestCase):
         assert (result != 0)
 
         entry['httpUserAgent'] = None
-        uvmContext.hostTable().setHostTableEntry( remote_control.client_ip, entry )
+        global_functions.uvmContext.hostTable().setHostTableEntry( remote_control.client_ip, entry )
 
     # verify bogus hostname match not blocked
     def test_130_clientHostnameBogus(self):
@@ -718,7 +717,7 @@ class FirewallTests(NGFWTestCase):
 
     # verify block by client MAC
     def test_160_clientMacAddress(self):
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         if entry.get('macAddress') == None:
             raise unittest.SkipTest('MAC not known')
         mac = entry.get('macAddress')
@@ -730,7 +729,7 @@ class FirewallTests(NGFWTestCase):
 
     # verify block client MAC by *
     def test_161_clientMacAddressStar(self):
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         if entry.get('macAddress') == None:
             raise unittest.SkipTest('MAC not known')
 
@@ -741,7 +740,7 @@ class FirewallTests(NGFWTestCase):
 
     # verify block by client MAC in list
     def test_162_clientMacAddressMultiple(self):
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         if entry.get('macAddress') == None:
             raise unittest.SkipTest('MAC not known')
         mac = entry.get('macAddress')
