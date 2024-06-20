@@ -15,8 +15,6 @@ import java.nio.ByteBuffer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
-// import org.apache.logging.log4j.MDC;
-// import org.apache.logging.log4j.helpers.AbsoluteTimeDateFormat;
 import static com.untangle.uvm.Dispatcher.SESSION_ID_MDC_KEY;
 
 import com.untangle.uvm.Tag;
@@ -57,8 +55,6 @@ public abstract class AppSessionImpl implements AppSession
     protected final int newClientPort;
     protected final InetAddress newServerAddr;
     protected final int newServerPort;
-
-    // private static DateFormat formatter = new AbsoluteTimeDateFormat();
 
     protected final Dispatcher dispatcher;
 
@@ -1069,10 +1065,6 @@ public abstract class AppSessionImpl implements AppSession
      */
     public void orClientMark(int bitmask)
     {
-        //java.lang.StringBuilder sb = new java.lang.StringBuilder();
-        //java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
-        //logger.debug(formatter.format("Set ClientMark to 0x%08x",client_mark).toString()); sb.setLength(0);
-
         this.sessionGlobalState().netcapSession().orClientMark(bitmask);
     }
 
@@ -1120,10 +1112,6 @@ public abstract class AppSessionImpl implements AppSession
      */
     public void orServerMark(int bitmask)
     {
-        //java.lang.StringBuilder sb = new java.lang.StringBuilder();
-        //java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
-        //logger.debug(formatter.format("Set ServerMark to 0x%08x",server_mark).toString()); sb.setLength(0);
-
         this.sessionGlobalState().netcapSession().orServerMark(bitmask);
     }
 

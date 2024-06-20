@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
-// import org.apache.logging.log4j.MDC;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.App;
