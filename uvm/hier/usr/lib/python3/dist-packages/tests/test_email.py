@@ -11,7 +11,6 @@ import runtests
 import unittest
 import runtests.test_registry as test_registry
 
-from .global_functions import uvmContext
 from uvm import Uvm
 
 @pytest.mark.email_tests
@@ -27,7 +26,7 @@ class EmailTests(NGFWTestCase):
     @classmethod
     def initial_extra_setup(cls):
         if EmailTests.original_mail_settings is None:
-            EmailTests.original_mail_settings = uvmContext.mailSender().getSettings()
+            EmailTests.original_mail_settings = global_functions.uvmContext.mailSender().getSettings()
 
     @pytest.mark.slow
     def test_010_mail_send_method_modes(self):
@@ -84,6 +83,7 @@ class EmailTests(NGFWTestCase):
         exim_log_filename = "/var/log/exim4/mainlog"
 
         tester_email_address = "tester@domain.com"
+        orig_mail_settings = EmailTests.original_mail_settings
 
         # uvm_context_timeout = 60
         uvm_context_timeout = 30
@@ -199,10 +199,11 @@ class EmailTests(NGFWTestCase):
         assert found_event, "found event"
         assert found_delivery_attempt, "found delivery attempt"
         assert elapsed_time < uvm_context_timeout, f"network settings completed in under {uvm_context_timeout}s"
+        global_functions.uvmContext.mailSender().setSettings(orig_mail_settings)
 
     @classmethod
     def final_extra_tear_down(cls):
         if EmailTests.original_mail_settings is not None:
-            uvmContext.mailSender().getSettings(EmailTests.original_mail_settings)
+            global_functions.uvmContext.mailSender().setSettings(EmailTests.original_mail_settings)
 
 test_registry.register_module("email", EmailTests)
