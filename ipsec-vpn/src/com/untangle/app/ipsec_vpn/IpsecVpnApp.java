@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -402,7 +403,7 @@ public class IpsecVpnApp extends AppBase
 
         if (IpsecVpnApp.execManager == null) {
             IpsecVpnApp.execManager = UvmContextFactory.context().createExecManager();
-            IpsecVpnApp.execManager.setLevel(org.apache.logging.log4j.Level.DEBUG);
+            IpsecVpnApp.execManager.setLevel(Level.DEBUG);
             IpsecVpnApp.execManager.exec(APP_STARTUP_SCRIPT);
         }
 

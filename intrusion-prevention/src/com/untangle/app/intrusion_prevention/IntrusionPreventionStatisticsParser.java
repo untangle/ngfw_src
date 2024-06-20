@@ -3,6 +3,7 @@
  */
 package com.untangle.app.intrusion_prevention;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
@@ -43,7 +44,7 @@ public class IntrusionPreventionStatisticsParser
     {
         if ( IntrusionPreventionStatisticsParser.execManager == null) {
             IntrusionPreventionStatisticsParser.execManager = UvmContextFactory.context().createExecManager();
-            IntrusionPreventionStatisticsParser.execManager.setLevel( org.apache.logging.log4j.Level.DEBUG );    
+            IntrusionPreventionStatisticsParser.execManager.setLevel( Level.DEBUG );    
         }
     }
 

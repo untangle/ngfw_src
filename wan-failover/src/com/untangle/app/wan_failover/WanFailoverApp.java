@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -222,7 +223,7 @@ public class WanFailoverApp extends AppBase
 
         if (WanFailoverApp.execManager == null) {
             WanFailoverApp.execManager = UvmContextFactory.context().createExecManager();
-            WanFailoverApp.execManager.setLevel(org.apache.logging.log4j.Level.INFO);
+            WanFailoverApp.execManager.setLevel(Level.INFO);
         }
 
         if (this.wanFailoverTesterMonitor == null) this.wanFailoverTesterMonitor = new WanFailoverTesterMonitor(this);

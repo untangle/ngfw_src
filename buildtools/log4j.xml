@@ -12,7 +12,7 @@ $Id$
   
   <Loggers>
     <Root level="debug">
-      <AppenderRef ref="STDOUT"/>
+      <AppenderRef ref="CONSOLE"/>
     </Root>
   </Loggers>
 </Configuration>

@@ -22,19 +22,25 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Custom ContextSelector implementation to create multiple logger context for apps
  */
 public class UvmContextSelector implements ContextSelector {
-
-    private final ConcurrentHashMap<String, LoggerContext> contexts = new ConcurrentHashMap<>();
-    private static final StatusLogger LOGGER = StatusLogger.getLogger();
     public static final String UVM_LOG = "uvm";
+    private static final String APP_HYPHEN = "app-";
+    private static final String LOG4J_XML = "log4j.xml";
+    private static final String SYSLOG = "SYSLOG";
+    private static final String LOCALHOST = "localhost";
+    private static final String APP_PATTERN_TEMPLATE = ": [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n";
+    private static final String UVM_PATTERN_TEMPLATE = "uvm: [%c{1}:%L] %-5p %m%n";
+
     private static final UvmContextSelector INSTANCE;
+    private static final StatusLogger LOGGER = StatusLogger.getLogger();
+    private final ConcurrentMap<String, LoggerContext> loggerContexts = new ConcurrentHashMap<>();
     private static final ThreadLocal<String> THREAD_LOG_INFO = new InheritableThreadLocal<>();
 
     static {
@@ -60,18 +66,18 @@ public class UvmContextSelector implements ContextSelector {
     public LoggerContext getContext(String fqcn, ClassLoader loader, boolean currentContext) {
         try{
             String contextName = THREAD_LOG_INFO.get();
-            synchronized (contexts) {
-                if (!contexts.containsKey(contextName)) {
+            synchronized (loggerContexts) {
+                if (!loggerContexts.containsKey(contextName)) {
                     UvmLoggerContext context = new UvmLoggerContext(contextName);
                     context.start();
-                    contexts.put(contextName, context);
+                    loggerContexts.put(contextName, context);
                 }
             }
-            return contexts.get(contextName);
+            return loggerContexts.get(contextName);
         } catch (Exception e) {
             LOGGER.error("Exception: ", e);
         }
-        return contexts.get(UVM_LOG);
+        return loggerContexts.get(UVM_LOG);
     }
 
     /**
@@ -93,8 +99,8 @@ public class UvmContextSelector implements ContextSelector {
      */
     @Override
     public void removeContext(LoggerContext context) {
-        synchronized (contexts) {
-            LoggerContext remove = contexts.remove(context.getName());
+        synchronized (loggerContexts) {
+            loggerContexts.remove(context.getName());
         }
     }
 
@@ -104,8 +110,7 @@ public class UvmContextSelector implements ContextSelector {
      */
     @Override
     public List<LoggerContext> getLoggerContexts() {
-        Collection<LoggerContext> values = contexts.values();
-        return new ArrayList<>(values);
+        return new ArrayList<>(loggerContexts.values());
     }
 
     /**
@@ -113,14 +118,14 @@ public class UvmContextSelector implements ContextSelector {
      * @param appId appId
      */
     public void setLoggingApp(Long appId) {
-        this.setThreadLoggingInformation("app-" + appId.toString());
+        this.setThreadLoggingInformation(APP_HYPHEN + appId.toString());
     }
 
     /**
      * Set the current thread's logging config to the "UVM" settings
      */
     public void setLoggingUvm() {
-        this.setThreadLoggingInformation("uvm");
+        this.setThreadLoggingInformation(UVM_LOG);
     }
 
     /**
@@ -136,8 +141,8 @@ public class UvmContextSelector implements ContextSelector {
      * the configuration context specified in the UvmLoggerContext.
      */
     public void reconfigureAll() {
-         synchronized (contexts) {
-             for (LoggerContext loggerContext : contexts.values()) {
+         synchronized (loggerContexts) {
+             for (LoggerContext loggerContext : loggerContexts.values()) {
                  loggerContext.reconfigure();
              }
          }
@@ -165,7 +170,7 @@ public class UvmContextSelector implements ContextSelector {
             URI configLocation = null;
             ConfigurationSource source = null;
             try {
-                configLocation = getClass().getClassLoader().getResource("log4j.xml").toURI();
+                configLocation = getClass().getClassLoader().getResource(LOG4J_XML).toURI();
                 source = new ConfigurationSource(configLocation.toURL().openStream(), new File(configLocation));
             } catch (URISyntaxException | IOException e) {
                 LOGGER.error("Exception: ", e);
@@ -179,27 +184,30 @@ public class UvmContextSelector implements ContextSelector {
         }
 
         /**
-         * Updates the configuration according to contextName
+         * Updates the configuration according to contextName.
+         * Removes current syslog appender and on the basis of contextName (appName) adds a new appender
+         * finally the loggerConfigs
          * @param config config
          * @param contextName contextName
          */
         private void updateConfiguration(Configuration config, String contextName) {
-            Appender oldAppender = config.getAppender("SYSLOG");
+            Appender oldAppender = config.getAppender(SYSLOG);
 
-            if (oldAppender instanceof SyslogAppender oldSyslogAppender) {
+            if (oldAppender instanceof SyslogAppender) {
+                SyslogAppender oldSyslogAppender = (SyslogAppender) oldAppender;
 
                 // Creating a new PatternLayout based on contextName
                 PatternLayout newPatternLayout;
                 Facility facility;
                 if (contextName != null && !contextName.equals(UVM_LOG)) {
                     newPatternLayout = PatternLayout.newBuilder()
-                        .withPattern(contextName + ": [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n")
+                        .withPattern(contextName + APP_PATTERN_TEMPLATE)
                         .withConfiguration(config)
                         .build();
                     facility = Facility.LOCAL1;
                 } else {
                     newPatternLayout = PatternLayout.newBuilder()
-                        .withPattern("uvm: [%c{1}:%L] %-5p %m%n")
+                        .withPattern(UVM_PATTERN_TEMPLATE)
                         .withConfiguration(config)
                         .build();
                     facility = Facility.LOCAL0;
@@ -208,7 +216,8 @@ public class UvmContextSelector implements ContextSelector {
                 SyslogAppender newSyslogAppender = SyslogAppender.newSyslogAppenderBuilder()
                         .setName(oldSyslogAppender.getName())
                         .setConfiguration(config)
-                        .setProtocol(Protocol.UDP).setHost("localhost")
+                        .setProtocol(Protocol.UDP)
+                        .setHost(LOCALHOST)
                         .setPort(514).setLayout(newPatternLayout)
                         .setFacility(facility)
                         .build();

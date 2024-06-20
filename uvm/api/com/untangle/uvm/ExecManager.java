@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.io.IOException;
+import org.apache.logging.log4j.Level;
 
 public interface ExecManager
 {
@@ -17,7 +18,7 @@ public interface ExecManager
      */
     ExecManagerResult exec( String cmd, boolean rateLimit );
 
-    void setLevel( org.apache.logging.log4j.Level level );
+    void setLevel( Level level );
     
     /**
      * Execute the specified command and return the exit code

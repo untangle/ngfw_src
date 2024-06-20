@@ -43,8 +43,6 @@ packages+=$(patsubst %.tar.gz,$(OUTPUT_DIRECTORY)/%,$(tarballs_gz))
 packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
 
-# $(OUTPUT_DIRECTORY)/apache-log4j-1.2.16: $(OUTPUT_DIRECTORY)/logging-log4j-1.2.16.tar.gz $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 apache-log4j-1.2.16.patch
-
 all: $(packages) ;
 # remove files and directories with spaces in names
 	@find ${OUTPUT_DIRECTORY} -type f -name '* *' -print0 | xargs -0 rm -f
