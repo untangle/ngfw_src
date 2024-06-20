@@ -231,7 +231,8 @@ public class Main
         System.setProperty("java.security.egd","file:" + "/dev/./urandom");
         // Set the postgres jdbc driver
         System.setProperty("jdbc.drivers","org.postgresql.Driver");
-        // disable log4j2 jmx
+        // Log4j 2 has built-in support for JMX and by default it's enabled
+        // disabling log4j2 jmx
         System.setProperty("log4j2.disable.jmx", "true");
 
         // Java 7 disables the MD2 certificate algorithm by default but it is still used
