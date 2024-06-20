@@ -66,6 +66,8 @@ public class UvmContextSelector implements ContextSelector {
     public LoggerContext getContext(String fqcn, ClassLoader loader, boolean currentContext) {
         try{
             String contextName = THREAD_LOG_INFO.get();
+            if(contextName == null)
+                contextName = UVM_LOG;
             synchronized (loggerContexts) {
                 if (!loggerContexts.containsKey(contextName)) {
                     UvmLoggerContext context = new UvmLoggerContext(contextName);
