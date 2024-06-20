@@ -143,6 +143,8 @@ class NGFWTestCase(TestCase):
             if cls._app or uvmContext.appManager().isInstantiated(name):
                 uvmContext.appManager().destroy(cls.get_app_id())
             cls._app = None
+        
+        cls.final_extra_tear_down()
 
     @classmethod
     def setup_class(cls):
