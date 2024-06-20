@@ -41,6 +41,8 @@ public class UvmRepositorySelector implements RepositorySelector
      */
     private UvmRepositorySelector()
     {
+        // This is comment for testing
+        String test = "test1";
         repositories = new HashMap<>();
         threadLogInfo = new InheritableThreadLocal<>();
     }

@@ -9,6 +9,7 @@
 <!-- ===================================================================== -->
 
 <!-- $Id: log4j.xml,v 1.00 2012/04/12 21:57:25 dmorris Exp $ -->
+<!-- This comment should be reflected on upgrade. Changing root log to ALL -->
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
 
@@ -375,7 +376,7 @@
   <!-- ============================================== -->
 
   <root>
-    <priority value="WARN"/>
+    <priority value="ALL"/>
     <appender-ref ref="UVMLOG"/>
   </root>
 </log4j:configuration>
