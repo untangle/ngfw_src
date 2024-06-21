@@ -44,6 +44,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
 
         importValidationJavaClass: true,
 
+        importValidationForComboBox: true,
 
         emptyRow: {
             ruleId: -1,
