@@ -30,6 +30,8 @@ Ext.define('Ung.config.network.view.NatRules', {
 
         importValidationJavaClass: true,
 
+        importValidationForComboBox: true,
+
         listProperty: 'settings.natRules.list',
 
         emptyRow: {
