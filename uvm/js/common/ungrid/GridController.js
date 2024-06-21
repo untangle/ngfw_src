@@ -660,7 +660,7 @@ Ext.define('Ung.cmp.GridController', {
                         }
                     }
 
-                    if(grid.viewConfig.importValidationForComboBox && fieldConfig.xtype && (fieldConfig.xtype === 'combo' || fieldConfig.xtype === 'combobox')){
+                    if(grid.viewConfig.importValidationForComboBox && fieldConfig.xtype && (fieldConfig.xtype === 'combo' || fieldConfig.xtype === 'combobox') && !fieldConfig.editable){
                         var isValidValue = me.comboStoreValidator(fieldConfig, fieldValue);
                         if(!isValidValue){
                             validationErrorMsg = Ext.String.format('Invalid value for the dropdown field {0}'.t(), fieldName);
