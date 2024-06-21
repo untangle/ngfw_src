@@ -30,6 +30,8 @@ Ext.define('Ung.config.network.view.FilterRules', {
 
         importValidationJavaClass: true,
 
+        importValidationForComboBox: true,
+
         listProperty: 'settings.filterRules.list',
 
         emptyRow: {
