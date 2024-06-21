@@ -545,13 +545,8 @@ Ext.define('Ung.cmp.GridController', {
         valuesToCheck = valuesToCheck.split(",");
         for(var i=0; i<valuesToCheck.length; i++){
             var currValue = valuesToCheck[i].trim();
-            if(currValue){
-                if(availableFieldValues.includes(currValue)){
+            if(currValue && availableFieldValues.includes(currValue)){
                     continue;
-                }else{
-                    isEntryValid = false;
-                    break;
-                }
             }else{
                 isEntryValid = false;
                 break;
@@ -732,7 +727,13 @@ Ext.define('Ung.cmp.GridController', {
                                                     errorMsgForConditions = Ext.String.format('Invalid value for the checkbox field {0}'.t(), currentCondition.displayName);
                                                     break;
                                                 }
-                                            } else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                                            }else if(currentCondition.type && currentCondition.type === 'boolean'){
+                                                var booleanOptionValues = ['true', 'false'];
+                                                if(!booleanOptionValues.includes(currentValue)){
+                                                    errorMsgForConditions = Ext.String.format('Invalid value for the boolean field {0}'.t(), currentCondition.displayName);
+                                                    break;
+                                                }
+                                            }else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
                                                 continue; // Skip validation if allowBlank is true and field value is empty
                                             }
 

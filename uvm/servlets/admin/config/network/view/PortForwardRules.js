@@ -43,6 +43,8 @@ Ext.define('Ung.config.network.view.PortForwardRules', {
 
         importValidationJavaClass: true,
 
+        importValidationForComboBox: true,
+
         actionText: 'Forward to the following location:'.t(),
         emptyRow: {
             ruleId: -1,
