@@ -1,6 +1,0 @@
-JVM = java-17-openjdk-amd64
-SRC_HOME = .
-DevelBuild = true
-DevelEnvironment = remote
-[jsbuild ] ungrid-all: ["uvm/js/common/ungrid"] -> usr/share/untangle/web/script/common/ungrid-all.js
-[jslint  ] ["./uvm/js/common"]
