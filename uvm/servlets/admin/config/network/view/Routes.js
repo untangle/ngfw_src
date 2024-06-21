@@ -30,6 +30,8 @@ Ext.define('Ung.config.network.view.Routes', {
 
         importValidationJavaClass: true,
 
+        importValidationForComboBox: true,
+
         listProperty: 'settings.staticRoutes.list',
 
         emptyRow: {
