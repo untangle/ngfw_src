@@ -1016,67 +1016,67 @@ class NetworkTests(NGFWTestCase):
         assert(global_functions.ftp_server == ip_address_foobar)
 
     # Test dynamic hostname
-    # @pytest.mark.slow
-    # def test_100_dynamic_dns(self):
-    #     if runtests.quick_tests_only:
-    #         raise unittest.SkipTest("Skipping a time consuming test")
-    #     netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
-    #     index_of_wans = global_functions.get_wan_tuples()
-    #     if (len(index_of_wans) > 1):
-    #         raise unittest.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
+    @pytest.mark.slow
+    def test_100_dynamic_dns(self):
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest("Skipping a time consuming test")
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        index_of_wans = global_functions.get_wan_tuples()
+        if (len(index_of_wans) > 1):
+            raise unittest.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
 
-    #     # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
-    #     # we need a name never used or name with cache IP different than in the cache
-    #     outside_IP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
+        # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
+        # we need a name never used or name with cache IP different than in the cache
+        outside_IP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
 
-    #     dyn_hostname = get_usable_name(outside_IP)
-    #     if dyn_hostname == "":
-    #         raise unittest.SkipTest("Skipping since all dyndns names already used")
-    #     else:
-    #         print(("Using name: %s" % dyn_hostname))
-    #     dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(dyn_hostname)
-    #     # account not found if message returned
-    #     if dyn_DNS_user_name == "message":
-    #         raise unittest.SkipTest("no dyn user")
+        dyn_hostname = get_usable_name(outside_IP)
+        if dyn_hostname == "":
+            raise unittest.SkipTest("Skipping since all dyndns names already used")
+        else:
+            print(("Using name: %s" % dyn_hostname))
+        dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(dyn_hostname)
+        # account not found if message returned
+        if dyn_DNS_user_name == "message":
+            raise unittest.SkipTest("no dyn user")
 
-    #     # Clear the ddclient cache and set DynDNS info
-    #     ddclient_cache_file = "/var/cache/ddclient/ddclient.cache"
-    #     if os.path.isfile(ddclient_cache_file):
-    #         os.remove(ddclient_cache_file)        
-    #     set_dyn_dns(dyn_DNS_user_name, dyn_DNS_password, dyn_hostname)
+        # Clear the ddclient cache and set DynDNS info
+        ddclient_cache_file = "/var/cache/ddclient/ddclient.cache"
+        if os.path.isfile(ddclient_cache_file):
+            os.remove(ddclient_cache_file)        
+        set_dyn_dns(dyn_DNS_user_name, dyn_DNS_password, dyn_hostname)
 
-    #     # myip.dnsomatic.com site is sometimes offline so use test. 
-    #     ddclient_file = "/etc/ddclient.conf"
-    #     with open(ddclient_file) as f:
-    #         newText=f.read().replace('myip.dnsomatic.com', 'test.untangle.com/cgi-bin/myipaddress.py')
-    #     with open(ddclient_file, "w") as f:
-    #         f.write(newText)        
-    #     # subprocess.check_output("sed -i \'s/myip.dnsomatic.com/test.untangle.com/\cgi-bin\/myipaddress.py/g\' /etc/ddclient.conf", shell=True)
-    #     subprocess.check_output("systemctl restart ddclient.service", shell=True)
+        # myip.dnsomatic.com site is sometimes offline so use test. 
+        ddclient_file = "/etc/ddclient.conf"
+        with open(ddclient_file) as f:
+            newText=f.read().replace('myip.dnsomatic.com', 'test.untangle.com/cgi-bin/myipaddress.py')
+        with open(ddclient_file, "w") as f:
+            f.write(newText)        
+        # subprocess.check_output("sed -i \'s/myip.dnsomatic.com/test.untangle.com/\cgi-bin\/myipaddress.py/g\' /etc/ddclient.conf", shell=True)
+        subprocess.check_output("systemctl restart ddclient.service", shell=True)
 
-    #     loop_counter = 80
-    #     dyn_IP_found = False
-    #     while loop_counter > 0 and not dyn_IP_found:
-    #         # run force to get it to run now
-    #         try: 
-    #             subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
-    #         except subprocess.CalledProcessError:
-    #             print(("Unexpected error:", sys.exc_info()))
-    #         except OSError:
-    #             pass # executable environment not ready
-    #         # time.sleep(10)
-    #         loop_counter -= 1
-    #         dynIP = global_functions.get_hostname_ip_address(hostname=dyn_hostname)
-    #         dynIP = dynIP.decode('utf8')
-    #         print(f"For dyn_hostname={dyn_hostname}, outside_IP={outside_IP}, current dynIP={dynIP}")
-    #         dyn_IP_found = False
-    #         if outside_IP == dynIP:
-    #             dyn_IP_found = True
-    #         else:
-    #             time.sleep(60)
+        loop_counter = 80
+        dyn_IP_found = False
+        while loop_counter > 0 and not dyn_IP_found:
+            # run force to get it to run now
+            try: 
+                subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
+            except subprocess.CalledProcessError:
+                print(("Unexpected error:", sys.exc_info()))
+            except OSError:
+                pass # executable environment not ready
+            # time.sleep(10)
+            loop_counter -= 1
+            dynIP = global_functions.get_hostname_ip_address(hostname=dyn_hostname)
+            dynIP = dynIP.decode('utf8')
+            print(f"For dyn_hostname={dyn_hostname}, outside_IP={outside_IP}, current dynIP={dynIP}")
+            dyn_IP_found = False
+            if outside_IP == dynIP:
+                dyn_IP_found = True
+            else:
+                time.sleep(60)
 
-    #     global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-    #     assert(dyn_IP_found)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert(dyn_IP_found)
         
     # Test VRRP is active
     @pytest.mark.slow
@@ -2628,6 +2628,7 @@ class NetworkTests(NGFWTestCase):
 
         #*-snort* extension files are present
         snort_files = find_files(dir_path, search_string)
+        print(snort_files)
         assert len(snort_files) > 0
         # Set settings forces sync-settings call
         # Restore original settings to return to initial settings
