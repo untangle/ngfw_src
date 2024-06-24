@@ -724,6 +724,10 @@ Ext.define('Ung.cmp.GridController', {
                                     for(var j=0; j < fieldValue.list.length; j++){
                                         var currentRow = fieldValue.list[j];
                                         currentValue = currentRow.value;
+                                        if(!currentRow.conditionType || (currentRow.conditionType && !fieldConfig.conditionsOrder.includes(currentRow.conditionType))){
+                                            errorMsgForConditions = Ext.String.format('Invalid Row Condition Type {0}.'.t(),currentRow.conditionType);
+                                            break; 
+                                        }
                                         if(currentRow.conditionType && currentRow.conditionType === conditionName){
                                             if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
                                                 errorMsgForConditions = Ext.String.format('This field is required.'.t());
