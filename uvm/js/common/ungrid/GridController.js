@@ -660,12 +660,6 @@ Ext.define('Ung.cmp.GridController', {
                         }
                     }
 
-                    if(fieldConfig.xtype && fieldConfig.xtype === 'checkbox'){
-                        var boolOptions = [true, false];
-                        if(!boolOptions.includes(fieldValue)){
-                            validationErrorMsg = Ext.String.format('Invalid value for the boolean field {0}'.t(), fieldName);
-                        }
-                    }
 
                     if(grid.viewConfig.importValidationForComboBox && fieldConfig.xtype && (fieldConfig.xtype === 'combo' || fieldConfig.xtype === 'combobox') && !fieldConfig.editable){
                         var isValidValue = me.comboStoreValidator(fieldConfig, fieldValue);
