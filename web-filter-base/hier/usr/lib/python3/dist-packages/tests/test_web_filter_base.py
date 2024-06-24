@@ -9,7 +9,6 @@ import unittest
 import datetime
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import tests.global_functions as global_functions
 
@@ -172,7 +171,7 @@ class WebFilterBaseTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_012_test_untangle_com_reachable(self):
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="text123")
