@@ -452,6 +452,8 @@ Ext.define('Ung.config.network.view.Advanced', {
                 
                 importValidationJavaClass: true,
 
+                importValidationForComboBox: true,
+
                 listProperty: 'settings.accessRules.list',
 
                 emptyRow: {
