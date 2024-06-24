@@ -163,6 +163,8 @@ Ext.define('Ung.config.network.view.DhcpServer', {
 
                 importValidationJavaClass: true,
 
+                importValidationForComboBox: true,
+
                 listProperty: 'settings.dhcpRelays.list',
                 bind: '{dhcpRelays}',
 

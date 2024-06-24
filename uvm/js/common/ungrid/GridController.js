@@ -577,7 +577,9 @@ Ext.define('Ung.cmp.GridController', {
                             if(currItem.xtype === 'ungrid'){
                                 if(currItem.columns){
                                     currItem.columns.forEach(function(currColumn){
-                                        if(currColumn.dataIndex && currColumn.editor && Object.keys(currColumn.editor).length > 0){
+                                        if(currColumn.xtype && currColumn.xtype === 'checkcolumn' && currColumn.dataIndex){
+                                            fieldObj[currColumn.dataIndex] = currColumn;
+                                        }else if(currColumn.dataIndex && currColumn.editor && Object.keys(currColumn.editor).length > 0){
                                             fieldObj[currColumn.dataIndex] = currColumn.editor;
                                         }
                                     });
@@ -653,7 +655,7 @@ Ext.define('Ung.cmp.GridController', {
                 if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
                     var validationErrorMsg = null;
 
-                    if(fieldConfig.xtype && fieldConfig.xtype === 'checkbox'){
+                    if(fieldConfig.xtype && (fieldConfig.xtype === 'checkbox' || fieldConfig.xtype === 'checkcolumn')){
                         var boolOptions = [true, false];
                         if(!boolOptions.includes(fieldValue)){
                             validationErrorMsg = Ext.String.format('Invalid value for the boolean field {0}'.t(), fieldName);
