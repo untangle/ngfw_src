@@ -1104,14 +1104,6 @@ class NetworkTests(NGFWTestCase):
         print(("using interface: %i %s\n" % (interfaceId, interface.get('name'))))
         # get next IP not used
 
-        # verify that this NIC is connected (otherwise keepalive wont claim address)
-        try:
-            result = subprocess.check_output("mii-tool " + interface.get('symbolicDev') + " 2>/dev/null", shell=True)
-            if not "link ok" in result:
-                raise unittest.SkipTest('LAN not connected')
-        except:
-            raise unittest.SkipTest('LAN not connected')
-
         ipStep = 1
         loopCounter = 10
         vrrpIP = None

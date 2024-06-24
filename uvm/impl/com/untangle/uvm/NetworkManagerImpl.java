@@ -599,11 +599,11 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("VRRP alias not found on interface " + interfaceId );
             return false;
         }
-
-        String command = "ip add list " + intfSettings.getSymbolicDev() + " | grep '" + vrrpAddress.getHostAddress() + "/'";
+        //Frr uses vtysh to verify the status ,verify output result > 0 -> VRRP Master
+        String command = "vtysh -c 'show vrrp' | grep Backup";
         int retCode = UvmContextFactory.context().execManager().execResult( command );
 
-        if ( retCode == 0 )
+        if ( retCode > 0 )
             return true;
         else
             return false;
