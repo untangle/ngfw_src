@@ -6,7 +6,6 @@ package com.untangle.uvm;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -15,7 +14,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 
 import java.text.DateFormat;
@@ -23,38 +21,28 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 import com.untangle.uvm.util.I18nUtil;
-
-import com.untangle.uvm.LanguageSettings;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.LocaleInfo;
-import com.untangle.uvm.LanguageManager;
-import com.untangle.uvm.SettingsManager;
 
 /**
  * Implementation of LanguageManagerImpl.
@@ -779,9 +767,9 @@ public class LanguageManagerImpl implements LanguageManager
         InputStream is = null;
 
         RequestConfig defaultRequestConfig = RequestConfig.custom()
-            .setSocketTimeout(5000)
-            .setConnectTimeout(5000)
-            .setConnectionRequestTimeout(5000)
+            .setResponseTimeout(Timeout.ofMilliseconds(5000))
+            .setConnectTimeout(Timeout.ofMilliseconds(5000))
+            .setConnectionRequestTimeout(Timeout.ofMilliseconds(5000))
             .build();
         CloseableHttpClient httpClient = HttpClients.custom()
             .setDefaultRequestConfig(defaultRequestConfig)

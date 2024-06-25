@@ -23,12 +23,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.config.RequestConfig;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
@@ -37,8 +38,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.util.IOUtil;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SettingsChangesEvent;
 import com.untangle.uvm.app.HostnameLookup;
 import javax.servlet.http.HttpServletRequest;
 
@@ -128,9 +127,9 @@ public class SettingsManagerImpl implements SettingsManager
 
         CloseableHttpResponse response = null;
         RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(90000)
-            .setSocketTimeout(90000)
-            .setConnectionRequestTimeout(90000)
+            .setConnectTimeout(Timeout.ofMilliseconds(90000))
+            .setResponseTimeout(Timeout.ofMilliseconds(90000))
+            .setConnectionRequestTimeout(Timeout.ofMilliseconds(90000))
             .build();
         CloseableHttpClient httpClient = HttpClients.custom()
             .setDefaultRequestConfig(requestConfig)

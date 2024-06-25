@@ -4,29 +4,28 @@
 
 package com.untangle.uvm;
 
-import com.untangle.uvm.WizardSettings;
-
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 
+import org.apache.hc.core5.util.Timeout;
 import org.apache.log4j.Logger;
-import org.apache.http.NameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 
 /**
  * The cloud manager
@@ -253,9 +252,9 @@ public class CloudManagerImpl implements CloudManager
              * Create client with short timeout.
              */
             RequestConfig.Builder config = RequestConfig.custom()
-                .setConnectTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI)
-                .setConnectionRequestTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI)
-                .setSocketTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI);
+                .setConnectTimeout(Timeout.ofMilliseconds(ZEROTOUCH_TIMEOUT_TIME_MILLI))
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(ZEROTOUCH_TIMEOUT_TIME_MILLI))
+                .setResponseTimeout(Timeout.ofMilliseconds(ZEROTOUCH_TIMEOUT_TIME_MILLI));
             CloseableHttpClient httpClient = HttpClientBuilder
                 .create()
                 .setDefaultRequestConfig(config.build())

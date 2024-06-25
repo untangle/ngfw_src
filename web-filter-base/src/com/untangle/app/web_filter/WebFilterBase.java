@@ -17,7 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.apache.log4j.Logger;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.hc.core5.net.URIBuilder;
 import org.apache.commons.codec.digest.Crypt;
 
 import com.untangle.uvm.AdminSettings;
