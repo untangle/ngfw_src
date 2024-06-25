@@ -21,7 +21,9 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 	commons-fileupload-1.5-bin.tar.gz \
 	commons-io-2.11.0.tar.gz \
 	commons-lang3-3.9-bin.tar.gz \
-	httpcomponents-client-4.5.1-bin.tar.gz \
+	commons-logging-1.3.2-bin.tar.gz \
+	commons-codec-1.17.0-bin.tar.gz \
+	httpcomponents-client-5.3.1-bin.tar.gz \
 	slf4j-2.0.9.tar.gz \
 	Ext.ux.Exporter-1.0.tar.gz
 
