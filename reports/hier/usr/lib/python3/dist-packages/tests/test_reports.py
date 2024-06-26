@@ -1244,6 +1244,7 @@ class ReportsTests(NGFWTestCase):
         settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
         self._app.setSettings(settings)
         adminURL = global_functions.get_http_url()
+        print("URL %s" % adminURL)
         resultLoginPage = subprocess.call(global_functions.build_wget_command(output_file="-", uri=adminURL + "reports") + " 2>&1 | grep -q Login", shell=True)
         assert (resultLoginPage == 0)
         
@@ -1723,8 +1724,6 @@ class ReportsTests(NGFWTestCase):
     @classmethod
     def final_extra_tear_down(cls):
         global web_app, orig_settings
-        #Restoring original report settings
-        # cls._app.setSettings(orig_settings)
         # remove all the apps in case test 103 does not remove them.
         for name in apps_list:
             if (global_functions.uvmContext.appManager().isInstantiated(name)):
