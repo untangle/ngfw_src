@@ -24,13 +24,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.core5.http.HttpEntityContainer;
 import org.apache.hc.core5.util.Timeout;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
@@ -123,10 +123,11 @@ public class SettingsManagerImpl implements SettingsManager
      * @return The object that was loaded or null if an object was not loaded.
      * @throws SettingsException
      */
+    @SuppressWarnings("deprecation")
     public <T> T loadUrl( Class<T> clz, String urlStr ) throws SettingsException
     {
         InputStream is = null;
-
+        CloseableHttpResponse response = null;
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectionRequestTimeout(Timeout.ofMilliseconds(90000))
                 .build();
@@ -147,7 +148,8 @@ public class SettingsManagerImpl implements SettingsManager
 
             HttpGet get = new HttpGet(url.toString());
             get.addHeader("Accept-Encoding", "gzip");
-            HttpEntity entity = httpClient.execute(get, HttpEntityContainer::getEntity);
+            response = httpClient.execute(get);
+            HttpEntity entity = response.getEntity();
             if ( entity == null ) {
                 throw new IllegalArgumentException("Invalid Response: " + entity);
             }
@@ -164,6 +166,7 @@ public class SettingsManagerImpl implements SettingsManager
         catch (java.io.IOException e) {
             throw new IllegalArgumentException("Invalid content in URL: '" + urlStr + "'", e);
         } finally {
+            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
     }
@@ -366,7 +369,7 @@ public class SettingsManagerImpl implements SettingsManager
      * @param clz the class
      * @param fileName the filename to load
      * @return The loaded value
-     * @throws SettingSException
+     * @throws SettingsException
      */
     private <T> T _loadImpl( Class<T> clz, String fileName ) throws SettingsException
     {

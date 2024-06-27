@@ -763,9 +763,6 @@ public class LanguageManagerImpl implements LanguageManager
      */
     private boolean getRemoteLanguagesList(Set<String> alreadyFound, List<LocaleInfo> locales, languageSource source ){
         boolean result = true;
-        boolean headerAdded = false;
-
-        InputStream is = null;
 
         RequestConfig defaultRequestConfig = RequestConfig.custom()
             .setConnectionRequestTimeout(Timeout.ofMilliseconds(5000))
@@ -781,8 +778,6 @@ public class LanguageManagerImpl implements LanguageManager
             .setConnectionManager(poolingConnManager)
             .build();
 
-        JSONObject remoteObject = null;
-
         String urlString = UvmContextFactory.context().uriManager().getUri(REMOTE_LANGUAGES_URL) + "json/" + REMOTE_LANGUAGES_PROJECT + '/' + source.getComponent();
         try {
             URL url = new URL(urlString);
@@ -790,88 +785,94 @@ public class LanguageManagerImpl implements LanguageManager
             HttpGet get = new HttpGet(url.toString());
 
             get.addHeader("Accept-Encoding", "gzip");
-            HttpEntity entity = httpClient.execute(get, HttpEntityContainer::getEntity);
-            if ( entity == null ) {
-                logger.warn("Invalid Response: " + entity);
-                return result;
-            }
-            is = entity.getContent();
+            result = httpClient.execute(get, response -> {
+                HttpEntity entity = response.getEntity();
 
-            BufferedReader reader = null;
-            try {
-                StringBuilder jsonString = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    jsonString.append(line+"\n");
+                if ( entity == null ) {
+                    logger.warn("Invalid Response: " + entity);
+                    return false;
                 }
 
-                try{
-                    remoteObject = new JSONObject(jsonString.toString());
-                    try{
-                        JSONObject remoteStats = remoteObject.getJSONObject("stats");
-                        JSONObject stats = null;
-                        String[] codes = remoteStats.names().join(",").split(",");
-                        Arrays.sort(codes);
-                        String code;
-                        LocaleInfo header = null;
-                        int enabledCount = 0;
-                        for(int i = 0; i < codes.length; i++){
-                            code = codes[i];
-                            code = code.substring(1,code.length()-1);
-                            if(code.equals("templates")){
-                                continue;
-                            }
-                            if(headerAdded == false){
-                                // Add header
-                                header = new LocaleInfo(null, "<em><b>" + source.getTitle() + "</b></em>", null, null, true);
-                                locales.add(header);
-                                headerAdded = true;
-                            }
-                            stats = remoteStats.getJSONObject(code);
+                boolean headerAdded = false;
+                InputStream is = entity.getContent();
 
-                            boolean enabled = false;
-                            try{
-                                // We set this from the static server, reliably only.
-                                enabled = stats.getBoolean("enabled");
-                            }catch(Exception JSONException){
-                                // If not defined, from Weblate/Pootle, assume to be enabled.
-                                enabled = true;
-                            }
-                            if(enabled){
-                                enabledCount++;
-                            }
-                            StringBuilder statistics = new StringBuilder();
-                            if(!stats.isNull("last_change")){
-                                int lastChange = stats.getInt("last_change");
-                                if(lastChange > 0){
-                                    Date d = new Date((long) lastChange * 1000);
-                                    statistics.append(I18nUtil.marktr("Last modified") + ": " + dateFormatter.format(d.getTime()));
-                                    statistics.append("<br>");
-                                }
-                            }
-                            statistics.append(I18nUtil.marktr("Percent completed") + ": " + stats.getDouble("translated_percent") + "%");
-			                alreadyFound.add(code);
-                            locales.add(new LocaleInfo(source.getId() + "-" + code, stats.getString("name"), null, null, statistics.toString(), enabled));
-                        }
-                        if(header != null){
-                            header.setEnabled(enabledCount == codes.length);
-                        }
-                    }catch(JSONException e){
-                        logger.warn("JSON Exception " + e);
-                    }
-                }catch( JSONException e){
-                    logger.warn("Unable to convert json to remoteObject " + e);
-                    result = false;
-                }
-            } finally {
+                BufferedReader reader = null;
                 try {
-                    if (reader != null) {
-                        reader.close();
+                    StringBuilder jsonString = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        jsonString.append(line).append("\n");
                     }
-                } catch (Exception e) {}
-            }
+
+                    try{
+                        JSONObject remoteObject = new JSONObject(jsonString.toString());
+                        try{
+                            JSONObject remoteStats = remoteObject.getJSONObject("stats");
+                            JSONObject stats = null;
+                            String[] codes = remoteStats.names().join(",").split(",");
+                            Arrays.sort(codes);
+                            String code;
+                            LocaleInfo header = null;
+                            int enabledCount = 0;
+                            for (String s : codes) {
+                                code = s;
+                                code = code.substring(1, code.length() - 1);
+                                if (code.equals("templates")) {
+                                    continue;
+                                }
+                                if (headerAdded == false) {
+                                    // Add header
+                                    header = new LocaleInfo(null, "<em><b>" + source.getTitle() + "</b></em>", null, null, true);
+                                    locales.add(header);
+                                    headerAdded = true;
+                                }
+                                stats = remoteStats.getJSONObject(code);
+
+                                boolean enabled = false;
+                                try {
+                                    // We set this from the static server, reliably only.
+                                    enabled = stats.getBoolean("enabled");
+                                } catch (Exception JSONException) {
+                                    // If not defined, from Weblate/Pootle, assume to be enabled.
+                                    enabled = true;
+                                }
+                                if (enabled) {
+                                    enabledCount++;
+                                }
+                                StringBuilder statistics = new StringBuilder();
+                                if (!stats.isNull("last_change")) {
+                                    int lastChange = stats.getInt("last_change");
+                                    if (lastChange > 0) {
+                                        Date d = new Date((long) lastChange * 1000);
+                                        statistics.append(I18nUtil.marktr("Last modified")).append(": ").append(dateFormatter.format(d.getTime()));
+                                        statistics.append("<br>");
+                                    }
+                                }
+                                statistics.append(I18nUtil.marktr("Percent completed")).append(": ").append(stats.getDouble("translated_percent")).append("%");
+                                alreadyFound.add(code);
+                                locales.add(new LocaleInfo(source.getId() + "-" + code, stats.getString("name"), null, null, statistics.toString(), enabled));
+                            }
+                            if(header != null){
+                                header.setEnabled(enabledCount == codes.length);
+                            }
+                        }catch(JSONException e){
+                            logger.warn("JSON Exception " + e);
+                        }
+                    }catch( JSONException e){
+                        logger.warn("Unable to convert json to remoteObject " + e);
+                        return false;
+                    }
+                } finally {
+                    try {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    } catch (Exception e) {}
+                }
+                return true;
+            });
 
         }
         catch (java.net.MalformedURLException e) {
@@ -893,11 +894,7 @@ public class LanguageManagerImpl implements LanguageManager
      * @param language Language to download.
      */
     private void downloadLanguage(String sourceId, String language){
-        InputStream is = null;
         CloseableHttpClient httpClient = HttpClients.custom().build();
-        boolean success = true;
-        String msg = "";
-        BufferedOutputStream dest = null;
 
         languageSource source = getLanguageSource(sourceId);
         if(source == null){
@@ -910,51 +907,55 @@ public class LanguageManagerImpl implements LanguageManager
 
             HttpGet get = new HttpGet(url.toString());
             get.addHeader("Accept-Encoding", "gzip");
-            HttpEntity entity = httpClient.execute(get, HttpEntityContainer::getEntity);
-            if ( entity == null ) {
-                logger.warn("Invalid Response: " + entity);
-            }else{
-                is = entity.getContent();
+            httpClient.execute(get, response -> {
+                HttpEntity entity = response.getEntity();
+                if ( entity == null ) {
+                    logger.warn("Invalid Response: " + entity);
+                    return false;
+                }else{
+                    InputStream is = entity.getContent();
+                    boolean success = true;
+                    String msg = "";
+                    BufferedOutputStream dest = null;
 
-                ZipEntry entry = null;
-                ZipInputStream zis = new ZipInputStream(is);
-                String extension = null;
-                int extensionIndex = 0;
-                while ((entry = zis.getNextEntry()) != null) {
-                    if (!isValid(entry)){
-                        success = false;
-                        msg = "Invalid Entry";
-                        break;
-                    }
-                    if (entry.isDirectory()) {
-                        File dir = new File(source.getDirectory() + File.separator + entry.getName());
-                        if (!dir.exists()) {
-                            dir.mkdir();
+                    ZipEntry entry = null;
+                    ZipInputStream zis = new ZipInputStream(is);
+                    String extension = null;
+                    int extensionIndex = 0;
+                    while ((entry = zis.getNextEntry()) != null) {
+                        if (!isValid(entry)){
+                            success = false;
+                            msg = "Invalid Entry";
+                            break;
                         }
-                    } else {
-                        // ## look at file extensions
-                        extensionIndex = entry.getName().lastIndexOf(".");
-                        if(extensionIndex > 0){
-                            extension = entry.getName().substring(extensionIndex + 1);
-                        }
-
-                        File file = new File(source.getDirectory() + File.separator + entry.getName());
-                        File parentDir = file.getParentFile();
-                        if(extension != null){
-                            switch(extension){
-                                case "mo":
-                                    copyZipEntryToDisk(zis, entry, LOCALE_DIR + File.separator + language + File.separator + LC_MESSAGES);
-                                    break;
-                                case "class":
-                                    copyZipEntryToDisk(zis, entry, RESOURCES_DIR + File.separator + source.getId());
-                                    break;
+                        if (entry.isDirectory()) {
+                            File dir = new File(source.getDirectory() + File.separator + entry.getName());
+                            if (!dir.exists()) {
+                                dir.mkdir();
+                            }
+                        } else {
+                            // ## look at file extensions
+                            extensionIndex = entry.getName().lastIndexOf(".");
+                            if(extensionIndex > 0){
+                                extension = entry.getName().substring(extensionIndex + 1);
+                            }
+                            if(extension != null){
+                                switch(extension){
+                                    case "mo":
+                                        copyZipEntryToDisk(zis, entry, LOCALE_DIR + File.separator + language + File.separator + LC_MESSAGES);
+                                        break;
+                                    case "class":
+                                        copyZipEntryToDisk(zis, entry, RESOURCES_DIR + File.separator + source.getId());
+                                        break;
+                                }
                             }
                         }
                     }
+                    zis.close();
+                    is.close();
+                    return true;
                 }
-                zis.close();
-                is.close();
-            }
+            });
         }catch (java.net.MalformedURLException e) {
             logger.warn("Invalid URL: '" + urlString + "'", e);
         }
