@@ -23,12 +23,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.http.HttpEntityContainer;
 import org.apache.hc.core5.util.Timeout;
 import org.apache.log4j.Logger;
 import org.jabsorb.JSONSerializer;
@@ -125,15 +127,19 @@ public class SettingsManagerImpl implements SettingsManager
     {
         InputStream is = null;
 
-        CloseableHttpResponse response = null;
         RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(Timeout.ofMilliseconds(90000))
-            .setResponseTimeout(Timeout.ofMilliseconds(90000))
-            .setConnectionRequestTimeout(Timeout.ofMilliseconds(90000))
-            .build();
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(90000))
+                .build();
+
+        PoolingHttpClientConnectionManager poolingConnManager = new PoolingHttpClientConnectionManager();
+        poolingConnManager.setDefaultConnectionConfig(ConnectionConfig.custom()
+                .setConnectTimeout(Timeout.ofMilliseconds(90000))
+                .setSocketTimeout(Timeout.ofMilliseconds(90000))
+                .build());
         CloseableHttpClient httpClient = HttpClients.custom()
-            .setDefaultRequestConfig(requestConfig)
-            .build();
+                .setDefaultRequestConfig(requestConfig)
+                .setConnectionManager(poolingConnManager)
+                .build();
         
         try {
             URL url = new URL(urlStr);
@@ -141,8 +147,7 @@ public class SettingsManagerImpl implements SettingsManager
 
             HttpGet get = new HttpGet(url.toString());
             get.addHeader("Accept-Encoding", "gzip");
-            response = httpClient.execute(get);
-            HttpEntity entity = response.getEntity();
+            HttpEntity entity = httpClient.execute(get, HttpEntityContainer::getEntity);
             if ( entity == null ) {
                 throw new IllegalArgumentException("Invalid Response: " + entity);
             }
@@ -159,7 +164,6 @@ public class SettingsManagerImpl implements SettingsManager
         catch (java.io.IOException e) {
             throw new IllegalArgumentException("Invalid content in URL: '" + urlStr + "'", e);
         } finally {
-            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
     }

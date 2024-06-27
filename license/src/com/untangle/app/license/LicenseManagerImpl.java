@@ -490,7 +490,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
         
         CloseableHttpClient httpClient = HttpClients.custom().build();
-        CloseableHttpResponse response = null;
         HttpGet get;
         URL url;
         
@@ -498,15 +497,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.info("Requesting Trial: " + urlStr);
             url = new URL(urlStr);
             get = new HttpGet(url.toString());
-            response = httpClient.execute(get);
-            if ( response != null ) { response.close(); response = null; }
-            
+            httpClient.execute(get, res -> res);
+
             if ( urlStr1 != null ) {
                 logger.info("Requesting Trial: " + urlStr1);
                 url = new URL(urlStr1);
                 get = new HttpGet(url.toString());
-                response = httpClient.execute(get);
-                if ( response != null ) { response.close(); response = null; }
+                httpClient.execute(get, res -> res);
             }
         } catch ( java.net.UnknownHostException e ) {
             logger.warn("Exception requesting trial license:" + e.toString());
@@ -518,7 +515,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.warn("Exception requesting trial license:" + e.toString());
             throw ( new Exception( "Unable to fetch trial license: " + e.toString(), e ) );
         } finally {
-            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
 

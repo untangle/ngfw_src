@@ -31,15 +31,16 @@ import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpEntityContainer;
 import org.apache.hc.core5.util.Timeout;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.untangle.uvm.util.I18nUtil;
@@ -767,14 +768,18 @@ public class LanguageManagerImpl implements LanguageManager
         InputStream is = null;
 
         RequestConfig defaultRequestConfig = RequestConfig.custom()
-            .setResponseTimeout(Timeout.ofMilliseconds(5000))
-            .setConnectTimeout(Timeout.ofMilliseconds(5000))
             .setConnectionRequestTimeout(Timeout.ofMilliseconds(5000))
             .build();
+
+        PoolingHttpClientConnectionManager poolingConnManager = new PoolingHttpClientConnectionManager();
+        poolingConnManager.setDefaultConnectionConfig(ConnectionConfig.custom()
+                .setConnectTimeout(Timeout.ofMilliseconds(5000))
+                .setSocketTimeout(Timeout.ofMilliseconds(5000))
+                .build());
         CloseableHttpClient httpClient = HttpClients.custom()
             .setDefaultRequestConfig(defaultRequestConfig)
+            .setConnectionManager(poolingConnManager)
             .build();
-        CloseableHttpResponse response = null;
 
         JSONObject remoteObject = null;
 
@@ -785,8 +790,7 @@ public class LanguageManagerImpl implements LanguageManager
             HttpGet get = new HttpGet(url.toString());
 
             get.addHeader("Accept-Encoding", "gzip");
-            response = httpClient.execute(get);
-            HttpEntity entity = response.getEntity();
+            HttpEntity entity = httpClient.execute(get, HttpEntityContainer::getEntity);
             if ( entity == null ) {
                 logger.warn("Invalid Response: " + entity);
                 return result;
@@ -876,7 +880,6 @@ public class LanguageManagerImpl implements LanguageManager
         catch (java.io.IOException e) {
             logger.warn("Invalid content in URL: '" + urlString + "'", e);
         } finally {
-            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
 
@@ -892,7 +895,6 @@ public class LanguageManagerImpl implements LanguageManager
     private void downloadLanguage(String sourceId, String language){
         InputStream is = null;
         CloseableHttpClient httpClient = HttpClients.custom().build();
-        CloseableHttpResponse response = null;
         boolean success = true;
         String msg = "";
         BufferedOutputStream dest = null;
@@ -908,8 +910,7 @@ public class LanguageManagerImpl implements LanguageManager
 
             HttpGet get = new HttpGet(url.toString());
             get.addHeader("Accept-Encoding", "gzip");
-            response = httpClient.execute(get);
-            HttpEntity entity = response.getEntity();
+            HttpEntity entity = httpClient.execute(get, HttpEntityContainer::getEntity);
             if ( entity == null ) {
                 logger.warn("Invalid Response: " + entity);
             }else{
@@ -960,7 +961,6 @@ public class LanguageManagerImpl implements LanguageManager
         catch (java.io.IOException e) {
             logger.warn("Invalid content in URL: '" + urlString + "'", e);
         } finally {
-            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
     }
