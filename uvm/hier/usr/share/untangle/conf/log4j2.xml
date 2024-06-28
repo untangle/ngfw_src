@@ -23,14 +23,16 @@
     <Syslog name="SYSLOG" host="localhost" port="514" protocol="UDP" facility="LOCAL0">
       <!-- <ThresholdFilter level="ALL"/> -->
       <PatternLayout>
-	      <pattern>uvm: [%c{1}:%L] %-5p %m%n</pattern>
+        <alwaysWriteExceptions>false</alwaysWriteExceptions>
+	      <pattern>uvm: [%c{1}:%L] %-5p %m%n%uvm{uvm}</pattern>
       </PatternLayout>
     </Syslog>
 
     <Syslog name="EVENTS" host="localhost" port="514" protocol="UDP" facility="LOCAL5">
       <ThresholdFilter level="ALL"/>
       <PatternLayout>
-	      <pattern>%-5p %m%n</pattern>
+        <alwaysWriteExceptions>false</alwaysWriteExceptions>
+	      <pattern>%-5p %m%n%uvm{uvm}</pattern>
       </PatternLayout>
     </Syslog>
 
