@@ -8,7 +8,8 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This in the implementation of a TunnelVpn Rule
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class TunnelVpnRule implements JSONString, Serializable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private List<TunnelVpnRuleCondition> conditions;
 

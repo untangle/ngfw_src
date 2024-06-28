@@ -19,7 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,7 +41,7 @@ import com.untangle.uvm.app.PolicyManager;
  */
 public class ReportsManagerImpl implements ReportsManager
 {
-    private static final Logger logger = Logger.getLogger(ReportsManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(ReportsManagerImpl.class);
 
     private static ReportsManagerImpl instance = null;
 

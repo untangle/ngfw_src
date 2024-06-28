@@ -9,7 +9,8 @@ import java.net.UnknownHostException;
 
 import com.untangle.uvm.UvmContextFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class actually implements the DnsBL lookup It launches a new thread,
@@ -18,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public final class DnsblClient implements Runnable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private Thread myThread = null;
     private String dbgName; // thread name and socket host

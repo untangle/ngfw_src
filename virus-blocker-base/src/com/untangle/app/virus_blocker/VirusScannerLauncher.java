@@ -6,7 +6,8 @@ package com.untangle.app.virus_blocker;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AppSession;
@@ -16,7 +17,7 @@ import com.untangle.uvm.vnet.AppSession;
  */
 abstract public class VirusScannerLauncher implements Runnable
 {
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
 
     protected String scanfilePath = null;
     protected AppSession appSession = null;

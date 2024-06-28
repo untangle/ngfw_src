@@ -17,7 +17,8 @@ import java.util.Collections;
 import java.util.concurrent.Semaphore;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookBucket;
@@ -48,7 +49,7 @@ public class HostTableImpl implements HostTable
     private static final String HOSTS_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/hosts.js";
     private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; // 6 hours
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private ConcurrentHashMap<InetAddress, HostTableEntry> hostTable;
 

@@ -13,7 +13,8 @@ import java.io.FileWriter;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -26,7 +27,7 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public class ExtensionImpl implements Runnable
 {
-    private static final Logger logger = Logger.getLogger( ExtensionImpl.class );
+    private static final Logger logger = LogManager.getLogger( ExtensionImpl.class );
 
     private static final String CLASS_EVENTS_JSON_FILE_NAME = "/tmp/classFields.json";
 

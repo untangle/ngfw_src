@@ -17,7 +17,8 @@ import java.util.LinkedList;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -38,7 +39,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     private static final String TAB = "\t";
     private static final String RET = "\n";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 

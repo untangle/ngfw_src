@@ -15,7 +15,8 @@ import javax.mail.Session;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.SmtpMessageEvent;
 import com.untangle.uvm.vnet.AppTCPSession;
@@ -49,7 +50,7 @@ import com.untangle.uvm.vnet.TCPStreamer;
 public class MIMEAccumulator
 {
 
-    private final Logger logger = Logger.getLogger(MIMEAccumulator.class);
+    private final Logger logger = LogManager.getLogger(MIMEAccumulator.class);
     private static final int CHUNK_SZ = 1024 * 4;
     private static final int MAX_FILE_SIZE = 100 * 1024 * 1024; /* 100M */
     private File file;
@@ -596,7 +597,7 @@ public class MIMEAccumulator
         private FileInputStream fis;
         private FileChannel fileInChannel;
         private final ByteBuffer readBuf = ByteBuffer.allocate(CHUNK_SZ);
-        private Logger logger = Logger.getLogger(MIMEAccumulator.PartialTCPStreamer.class);
+        private Logger logger = LogManager.getLogger(MIMEAccumulator.PartialTCPStreamer.class);
 
         /**
          * Initialize instance of PartialTCPStreamer.

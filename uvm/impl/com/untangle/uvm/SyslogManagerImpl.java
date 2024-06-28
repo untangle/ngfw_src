@@ -9,7 +9,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONObject;
 
@@ -23,7 +24,7 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public class SyslogManagerImpl
 {
-    private static final Logger logger = Logger.getLogger(SyslogManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(SyslogManagerImpl.class);
 
     private static final SyslogManagerImpl MANAGER = new SyslogManagerImpl();
 
@@ -63,7 +64,7 @@ public class SyslogManagerImpl
     public static void sendSyslog(LogEvent e, JSONObject jsonEvent)
     {
         try {
-            logger.log(org.apache.log4j.Level.INFO, e.getTag() + " " + jsonEvent);
+            logger.log(org.apache.logging.log4j.Level.INFO, e.getTag() + " " + jsonEvent);
         } catch (Exception exn) {
             logger.warn("Failed to syslog Event: " + e, exn);
         }

@@ -10,7 +10,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This is our DataTimer class that runs periodically to capture and record
@@ -52,7 +53,7 @@ public class IpsecVpnDataTimer extends TimerTask
     }
 
     private final String TUNNEL_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-status";
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final IpsecVpnApp app;
 
     private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<>();

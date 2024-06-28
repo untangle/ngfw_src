@@ -10,7 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.Comparator;
 import java.util.Collections;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UserTable;
@@ -33,7 +34,7 @@ public class UserTableImpl implements UserTable
     private static final String USERS_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/users.js";
     private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; // 6 hours
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private ConcurrentHashMap<String, UserTableEntry> userTable;
 

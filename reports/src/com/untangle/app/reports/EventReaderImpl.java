@@ -13,7 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 /**
@@ -30,7 +31,7 @@ public class EventReaderImpl
 {
     private int MAX_SIMULTANEOUS_QUERIES = 2;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     

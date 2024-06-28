@@ -11,7 +11,8 @@ import java.nio.ByteBuffer;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class implments a singleton for managing data that is cached by Squid.
@@ -29,7 +30,7 @@ public enum WebCacheParent implements Runnable
     INSTANCE;
 
     private Hashtable<Long, WebCacheSessionInfo> socklist = new Hashtable<Long, WebCacheSessionInfo>();
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private AtomicInteger UserCount = new AtomicInteger();
     private AtomicLong SessionIndex = new AtomicLong();
     private ServerSocketChannel server = null;

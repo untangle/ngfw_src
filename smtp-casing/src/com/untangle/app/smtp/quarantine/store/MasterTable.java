@@ -7,7 +7,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.quarantine.InboxIndex;
 import com.untangle.app.smtp.quarantine.InboxRecord;
@@ -29,7 +30,7 @@ final class MasterTable
 {
     private static final String DATA_DIR_NAME = "inboxes";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private String rootDir;
     private StoreSummary summary;
@@ -53,7 +54,7 @@ final class MasterTable
      */
     static MasterTable open(String rootDir)
     {
-        Logger logger = Logger.getLogger(MasterTable.class);
+        Logger logger = LogManager.getLogger(MasterTable.class);
 
         StoreSummary summary = QuarantineStorageManager.readSummary(rootDir);
 
@@ -79,7 +80,7 @@ final class MasterTable
      */
     static MasterTable rebuild(String rootDir)
     {
-        Logger logger = Logger.getLogger(MasterTable.class);
+        Logger logger = LogManager.getLogger(MasterTable.class);
         StoreSummary storeMeta = new StoreSummary();
         logger.debug("About to scan Inbox directories to rebuild summary");
         visitInboxes(new File(rootDir, DATA_DIR_NAME), storeMeta);

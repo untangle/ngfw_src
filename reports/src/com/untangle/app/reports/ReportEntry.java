@@ -17,7 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -30,7 +31,7 @@ import com.untangle.uvm.logging.LogEvent;
 @SuppressWarnings("serial")
 public class ReportEntry implements Serializable, JSONString
 {
-    private static final Logger logger = Logger.getLogger(ReportEntry.class);
+    private static final Logger logger = LogManager.getLogger(ReportEntry.class);
 
     // Injections to find
     private static final List<Pattern> Injections;

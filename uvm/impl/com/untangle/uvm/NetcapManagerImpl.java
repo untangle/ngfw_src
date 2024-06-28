@@ -5,7 +5,8 @@ package com.untangle.uvm;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jvector.Vector;
@@ -39,7 +40,7 @@ public class NetcapManagerImpl implements NetcapManager
     int numThreads        = 15;
 
     /* Debugging */
-    private final Logger logger = Logger.getLogger( this.getClass());
+    private final Logger logger = LogManager.getLogger( this.getClass());
 
     /**
      * Singleton

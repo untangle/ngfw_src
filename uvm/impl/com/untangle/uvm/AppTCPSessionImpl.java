@@ -9,7 +9,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
@@ -29,7 +30,7 @@ import com.untangle.uvm.vnet.TCPStreamer;
  */
 public class AppTCPSessionImpl extends AppSessionImpl implements AppTCPSession
 {
-    private static final Logger logger = Logger.getLogger(AppTCPSessionImpl.class);
+    private static final Logger logger = LogManager.getLogger(AppTCPSessionImpl.class);
 
     private static final ByteBuffer EMPTY_BUF = ByteBuffer.allocate(0);
     private static final String TEMP_FILE_KEY = "temp_file_attachemnt_key";

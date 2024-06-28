@@ -7,7 +7,8 @@ package com.untangle.uvm;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.UserLicenseMessage;
 import com.untangle.uvm.app.License;
@@ -19,7 +20,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class DefaultLicenseManagerImpl implements LicenseManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final List<License> licenses = new LinkedList<>();
 

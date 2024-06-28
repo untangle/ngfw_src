@@ -12,7 +12,8 @@ import java.util.Map;
 import java.util.Iterator;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.jnetcap.Conntrack;
 import com.untangle.uvm.app.SessionTuple;
@@ -30,7 +31,7 @@ public class ConntrackMonitorImpl
     private static final double CONNTRACK_PULSE_FREQUENCY_SEC = 60; // 1 minute
     private static final int CLEANER_PULSE_FREQUENCY = 5 * 60 * 1000; // 5 minutes
     private static final long LIFETIME_MS = 2 * 60 * 1000;// 2 minutes (amount of time to keep complete sessions in table)
-    private static final Logger logger = Logger.getLogger(ConntrackMonitorImpl.class);
+    private static final Logger logger = LogManager.getLogger(ConntrackMonitorImpl.class);
 
     private static ConntrackMonitorImpl INSTANCE = null;
 

@@ -6,7 +6,8 @@ package com.untangle.app.shield;
 import java.util.Set;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -18,7 +19,7 @@ import com.untangle.uvm.vnet.PipelineConnector;
  */
 public class ShieldApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(ShieldApp.class);
+    private final Logger logger = LogManager.getLogger(ShieldApp.class);
 
     private static final String SHIELD_RULES_FILE = "/etc/untangle/iptables-rules.d/600-shield";
 

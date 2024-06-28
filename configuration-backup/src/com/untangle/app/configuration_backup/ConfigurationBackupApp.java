@@ -18,7 +18,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.GoogleManager;
@@ -33,7 +34,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class ConfigurationBackupApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(ConfigurationBackupApp.class);
+    private final Logger logger = LogManager.getLogger(ConfigurationBackupApp.class);
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/configuration-backup-send-backup.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-configuration-backup-nightly");

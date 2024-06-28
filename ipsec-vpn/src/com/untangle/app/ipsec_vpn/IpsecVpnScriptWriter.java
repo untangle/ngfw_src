@@ -8,7 +8,8 @@ import java.util.LinkedList;
 import java.io.FileWriter;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.UvmContextFactory;
@@ -23,7 +24,7 @@ import com.untangle.uvm.UvmContextFactory;
 
 public class IpsecVpnScriptWriter
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String IPTABLES_IPSEC_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/710-ipsec";
     private static final String IPTABLES_XAUTH_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/711-xauth";

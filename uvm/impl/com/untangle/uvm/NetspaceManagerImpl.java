@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Random;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.codec.binary.Hex;
 
 import com.untangle.uvm.NetspaceManager;
@@ -24,7 +25,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
  */
 public class NetspaceManagerImpl implements NetspaceManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final LinkedList<NetworkSpace> networkRegistry = new LinkedList<NetworkSpace>();
 
     // this is the total number of private class C networks in the RFC1918 reserved blocks

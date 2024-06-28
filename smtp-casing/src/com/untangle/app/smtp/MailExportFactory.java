@@ -3,7 +3,8 @@
  */
 package com.untangle.app.smtp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Factory for the exported MailApp interface.
@@ -13,7 +14,7 @@ public class MailExportFactory
 {
     private static final MailExportFactory FACTORY = new MailExportFactory();
 
-    private final Logger logger = Logger.getLogger(MailExportFactory.class);
+    private final Logger logger = LogManager.getLogger(MailExportFactory.class);
 
     private MailExport export;
 

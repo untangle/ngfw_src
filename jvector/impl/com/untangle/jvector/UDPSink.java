@@ -3,7 +3,8 @@
  */
 package com.untangle.jvector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.jnetcap.*;
 
@@ -12,7 +13,7 @@ import com.untangle.jnetcap.*;
  */
 public class UDPSink extends Sink
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     protected SinkEndpointListener listener = null;
 

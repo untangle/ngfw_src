@@ -12,7 +12,8 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.TemplateValues;
 
@@ -50,7 +51,7 @@ public class SpamReport implements TemplateValues
 
     public static final SpamReport EMPTY = new SpamReport(new LinkedList<ReportItem>(), MAX_THRESHOLD);
 
-    private Logger logger = Logger.getLogger(SpamReport.class);
+    private Logger logger = LogManager.getLogger(SpamReport.class);
 
     /**
      * Constructor

@@ -4,7 +4,8 @@
 
 package com.untangle.app.spam_blocker_lite;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.spam_blocker.SpamBlockerBaseApp;
 import com.untangle.app.spam_blocker.SpamSettings;
@@ -16,7 +17,7 @@ import com.untangle.uvm.SettingsManager;
  */
 public class SpamBlockerLiteApp extends SpamBlockerBaseApp
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Constructor

@@ -12,9 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.nio.ByteBuffer;
 import java.net.InetAddress;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.App;
@@ -41,7 +42,7 @@ public class Dispatcher
     private static final int TCP_READ_BUFFER_SIZE = 8192;
     private static final int UDP_MAX_PACKET_SIZE = 16384;
 
-    protected static final Logger logger = Logger.getLogger(Dispatcher.class);
+    protected static final Logger logger = LogManager.getLogger(Dispatcher.class);
 
     private final PipelineConnectorImpl pipelineConnector;
     private final AppBase app;
@@ -174,11 +175,11 @@ public class Dispatcher
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingApp(app.getAppSettings().getId());
-            MDC.put(SESSION_ID_MDC_KEY, "TCP_" + request.id());
+            ThreadContext.put(SESSION_ID_MDC_KEY, "TCP_" + request.id());
             return newSessionInternal(request);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
-            MDC.remove(SESSION_ID_MDC_KEY);
+            ThreadContext.remove(SESSION_ID_MDC_KEY);
         }
     }
 
@@ -193,11 +194,11 @@ public class Dispatcher
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingApp(app.getAppSettings().getId());
-            MDC.put(SESSION_ID_MDC_KEY, "UDP_" + request.id());
+            ThreadContext.put(SESSION_ID_MDC_KEY, "UDP_" + request.id());
             return newSessionInternal(request);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
-            MDC.remove(SESSION_ID_MDC_KEY);
+            ThreadContext.remove(SESSION_ID_MDC_KEY);
         }
     }
 
@@ -827,7 +828,7 @@ public class Dispatcher
      */
     private void elog(Level level, String eventName, long sessionId)
     {
-        if (logger.isEnabledFor(level)) {
+        if (logger.isEnabled(level)) {
             StringBuilder message = new StringBuilder("EV[");
             message.append(sessionId);
             message.append(",");
@@ -853,7 +854,7 @@ public class Dispatcher
      */
     private void elog(Level level, String eventName, long sessionId, long dataSize)
     {
-        if (logger.isEnabledFor(level)) {
+        if (logger.isEnabled(level)) {
             StringBuilder message = new StringBuilder("EV[");
             message.append(sessionId);
             message.append(",");

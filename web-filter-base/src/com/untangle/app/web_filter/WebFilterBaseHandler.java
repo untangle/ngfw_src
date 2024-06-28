@@ -3,7 +3,8 @@
  */
 package com.untangle.app.web_filter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.http.HttpEventHandler;
 import com.untangle.app.http.RequestLineToken;
@@ -19,7 +20,7 @@ import com.untangle.uvm.vnet.AppTCPSession;
  */
 public class WebFilterBaseHandler extends HttpEventHandler
 {
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
 
     protected final WebFilterBase app;
 

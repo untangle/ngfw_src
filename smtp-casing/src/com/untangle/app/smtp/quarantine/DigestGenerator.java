@@ -10,7 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -38,7 +39,7 @@ class DigestGenerator
     // a lot of stupid copies.
     private int m_htmlTemplateLen = 0;
 
-    private final Logger m_logger = Logger.getLogger(DigestGenerator.class);
+    private final Logger m_logger = LogManager.getLogger(DigestGenerator.class);
 
     private VelocityEngine m_velocityEngine;
     private Template m_htmlTemplate;

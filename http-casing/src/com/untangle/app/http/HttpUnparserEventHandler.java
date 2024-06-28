@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
@@ -26,7 +27,7 @@ import com.untangle.uvm.vnet.AppTCPSession;
  */
 public class HttpUnparserEventHandler extends AbstractEventHandler
 {
-    private static final Logger logger = Logger.getLogger(HttpUnparserEventHandler.class);
+    private static final Logger logger = LogManager.getLogger(HttpUnparserEventHandler.class);
 
     private static final String CONTENT_LENGTH_HEADER = "content-length";
     private static final String TRANSFER_ENCODING_HEADER = "transfer-encoding";

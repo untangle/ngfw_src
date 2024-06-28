@@ -6,7 +6,8 @@ package com.untangle.app.wan_failover;
 
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
@@ -26,7 +27,7 @@ public class WanFailoverTester implements Runnable
     private static final String HTTP_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-http-test.sh";
     private static final String DNS_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-dns-test.sh";
 
-    private static final Logger logger = Logger.getLogger(WanFailoverTester.class);
+    private static final Logger logger = LogManager.getLogger(WanFailoverTester.class);
 
     private WanFailoverTesterMonitor monitor;
     private WanFailoverApp app;

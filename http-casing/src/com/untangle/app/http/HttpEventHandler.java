@@ -9,7 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
@@ -33,7 +34,7 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
  */
 public abstract class HttpEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String CONNECTION_HEADER = "connection";
     private static final String HOST_HEADER = "host";

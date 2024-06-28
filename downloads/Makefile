@@ -16,7 +16,7 @@ UNZIP=unzip
 ###############################################################################
 tarballs_gz=apache-ant-1.6.5.tar.gz \
 	apache-tomcat-9.0.89-embed.tar.gz \
-	logging-log4j-1.2.16.tar.gz \
+	logging-log4j-2.23.1.tar.gz \
 	velocity-1.4.tar.gz \
 	commons-fileupload-1.5-bin.tar.gz \
 	commons-io-2.11.0.tar.gz \
@@ -42,8 +42,6 @@ packages=$(patsubst %.zip,$(OUTPUT_DIRECTORY)/%,$(zips))
 packages+=$(patsubst %.tar.gz,$(OUTPUT_DIRECTORY)/%,$(tarballs_gz))
 packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
-
-$(OUTPUT_DIRECTORY)/apache-log4j-1.2.16: $(OUTPUT_DIRECTORY)/logging-log4j-1.2.16.tar.gz $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 apache-log4j-1.2.16.patch
 
 all: $(packages) ;
 # remove files and directories with spaces in names

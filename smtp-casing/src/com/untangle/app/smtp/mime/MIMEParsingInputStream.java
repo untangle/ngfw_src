@@ -13,7 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.ByteBufferBuilder;
 import com.untangle.uvm.util.DynPushbackInputStream;
@@ -31,7 +32,7 @@ import com.untangle.uvm.util.DynPushbackInputStream;
 public class MIMEParsingInputStream extends InputStream
 {
 
-    private final Logger m_logger = Logger.getLogger(MIMEParsingInputStream.class);
+    private final Logger m_logger = LogManager.getLogger(MIMEParsingInputStream.class);
 
     private static final int LINE_SZ = 1024;
 

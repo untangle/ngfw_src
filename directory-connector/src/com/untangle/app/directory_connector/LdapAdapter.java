@@ -38,7 +38,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.SSLContext;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.Pair;
 
@@ -53,7 +54,7 @@ abstract class LdapAdapter
     private static final String DN = "dn=";
     private TrustManager[] trustAllCerts = null;
 
-    private final Logger logger = Logger.getLogger(LdapAdapter.class);
+    private final Logger logger = LogManager.getLogger(LdapAdapter.class);
 
     /**
      * For subclasses to hold the settings.

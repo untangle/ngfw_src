@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.GroupMatcher;
 import com.untangle.uvm.app.DomainMatcher;
@@ -28,7 +29,7 @@ public class GroupManager
 
     private static final int CACHE_COUNT_MAX = 4000;
 
-    private final Logger logger = Logger.getLogger( getClass());
+    private final Logger logger = LogManager.getLogger( getClass());
 
     /**
      * Mapping from users to the groups they are in.  Using a boolean because

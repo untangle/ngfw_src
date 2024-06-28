@@ -10,7 +10,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Pulse class for scheduling periodic tasks
@@ -23,7 +24,7 @@ public class Pulse implements Runnable
     /* wait at most a second for the pulse to execute when force running */
     private static final long FORCE_RUN_MAX_WAIT = 60000;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public enum PulseState
     {

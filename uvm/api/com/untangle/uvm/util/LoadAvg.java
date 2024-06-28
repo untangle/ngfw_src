@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -29,7 +30,7 @@ public class LoadAvg
     private static final String PATH_PROC_LOADAVG = "/proc/loadavg";
     private static final long SAMPLING_FREQ = 100; // .1 seconds
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static LoadAvg instance = new LoadAvg();
 

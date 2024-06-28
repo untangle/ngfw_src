@@ -39,7 +39,8 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.TomcatManager;
@@ -58,7 +59,7 @@ public class TomcatManagerImpl implements TomcatManager
     private static final String WELCOME_URI = "/setup/welcome.do";
     private static final String WELCOME_FILE = System.getProperty("uvm.conf.dir") + "/apache2/conf.d/homepage.conf";
 
-    private static final Logger logger = Logger.getLogger(TomcatManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(TomcatManagerImpl.class);
 
     private final Tomcat tomcat;
     private final StandardHost baseHost;
@@ -477,7 +478,7 @@ public class TomcatManagerImpl implements TomcatManager
      */
     private class AdministrationValve extends ValveBase
     {
-        private final Logger logger = Logger.getLogger(getClass());
+        private final Logger logger = LogManager.getLogger(getClass());
 
         /**
          * constructor

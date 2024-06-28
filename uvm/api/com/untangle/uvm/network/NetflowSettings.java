@@ -3,7 +3,8 @@
  */
 package com.untangle.uvm.network;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.Serializable;
 
@@ -16,7 +17,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class NetflowSettings implements Serializable, JSONString
 {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private boolean enabled = false;
     private String host = "1.2.3.4";

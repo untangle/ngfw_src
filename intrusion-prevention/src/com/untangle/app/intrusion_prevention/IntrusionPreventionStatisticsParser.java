@@ -3,7 +3,9 @@
  */
 package com.untangle.app.intrusion_prevention;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import com.untangle.uvm.ExecManager;
@@ -31,7 +33,7 @@ public class IntrusionPreventionStatisticsParser
     private static final String STATISTICS_IPS_BLOCKED_KEY = "blocked";
     private static final String STATISTICS_IPS_ACCEPTED_KEY = "accepted";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     protected static ExecManager execManager = null;
 
@@ -42,7 +44,7 @@ public class IntrusionPreventionStatisticsParser
     {
         if ( IntrusionPreventionStatisticsParser.execManager == null) {
             IntrusionPreventionStatisticsParser.execManager = UvmContextFactory.context().createExecManager();
-            IntrusionPreventionStatisticsParser.execManager.setLevel( org.apache.log4j.Level.DEBUG );    
+            IntrusionPreventionStatisticsParser.execManager.setLevel( Level.DEBUG );    
         }
     }
 

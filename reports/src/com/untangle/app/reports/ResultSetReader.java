@@ -10,7 +10,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import com.untangle.uvm.StringEscaperUtil;
@@ -27,7 +28,7 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class ResultSetReader implements Runnable
 {
-    private static final Logger logger = Logger.getLogger(ResultSetReader.class);
+    private static final Logger logger = LogManager.getLogger(ResultSetReader.class);
 
     /**
      * MAX_RESULTS defines the maximum # of results that can be serialized in memory at one time

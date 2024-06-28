@@ -7,7 +7,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.Pair;
 
@@ -22,7 +23,7 @@ class AuthTokenManager
         OK, NOT_A_TOKEN, MALFORMED_TOKEN
     };
 
-    private final Logger m_logger = Logger.getLogger(AuthTokenManager.class);
+    private final Logger m_logger = LogManager.getLogger(AuthTokenManager.class);
 
     private static final String ALG = "Blowfish";
     private static final byte[] INNER_MAGIC = "eks".getBytes();

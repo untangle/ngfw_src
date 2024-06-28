@@ -10,7 +10,8 @@ import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The class <code>IPMaskedAddress</code> represents a masked IP address.
@@ -18,7 +19,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class IPMaskedAddress implements Serializable
 {
-    private static final Logger logger = Logger.getLogger(IPMaskedAddress.class);
+    private static final Logger logger = LogManager.getLogger(IPMaskedAddress.class);
 
     private static final int V4_FULL_PREFIXLENGTH = 32;
     private static final int V6_FULL_PREFIXLENGTH = 128;

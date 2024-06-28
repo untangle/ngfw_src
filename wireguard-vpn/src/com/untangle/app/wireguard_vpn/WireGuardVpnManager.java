@@ -12,7 +12,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
@@ -37,7 +38,7 @@ public class WireGuardVpnManager
     private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY = "%PUBLIC_KEY%";
     private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE = "/etc/wireguard/untangle/remote-" + WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY + ".conf";
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
     private final WireGuardVpnApp app;
 
     /**

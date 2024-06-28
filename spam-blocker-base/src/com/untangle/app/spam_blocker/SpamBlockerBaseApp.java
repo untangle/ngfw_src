@@ -12,7 +12,8 @@ import java.util.Set;
 import java.util.Collections;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
@@ -28,7 +29,7 @@ import com.untangle.uvm.app.AppMetric;
  */
 public abstract class SpamBlockerBaseApp extends AppBase
 {
-    private static final Logger logger = Logger.getLogger(SpamBlockerBaseApp.class);
+    private static final Logger logger = LogManager.getLogger(SpamBlockerBaseApp.class);
 
     private static final String STAT_RECEIVED = "email-received";
     private static final String STAT_SPAM = "spam-detected";

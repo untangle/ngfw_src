@@ -4,7 +4,8 @@
 
 package com.untangle.app.web_filter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
@@ -15,7 +16,7 @@ import com.untangle.uvm.vnet.IPNewSessionRequest;
  */
 public class WebFilterQuicHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private WebFilterBase app;
 
     /**

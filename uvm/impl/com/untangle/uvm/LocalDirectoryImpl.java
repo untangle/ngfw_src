@@ -13,7 +13,8 @@ import com.google.common.io.BaseEncoding;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Base32;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.time.Instant;
 import java.security.MessageDigest;
@@ -66,7 +67,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private LinkedList<LocalDirectoryUser> currentList;
 

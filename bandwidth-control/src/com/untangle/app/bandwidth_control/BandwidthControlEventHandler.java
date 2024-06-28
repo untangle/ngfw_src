@@ -3,7 +3,8 @@
  */
 package com.untangle.app.bandwidth_control;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import java.util.List;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -23,7 +24,7 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  */
 public class BandwidthControlEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger( BandwidthControlEventHandler.class );
+    private final Logger logger = LogManager.getLogger( BandwidthControlEventHandler.class );
 
     private static final int TCP_HEADER_SIZE_ESTIMATE = 32;
     private static final int IP_HEADER_SIZE = 20;

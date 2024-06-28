@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jvector.Relay;
@@ -34,7 +35,7 @@ import com.untangle.uvm.network.InterfaceSettings;
  */
 public abstract class NetcapHook implements Runnable
 {
-    private static final Logger logger = Logger.getLogger( NetcapHook.class );
+    private static final Logger logger = LogManager.getLogger( NetcapHook.class );
 
     /* Reject the client with whatever response the server returned */
     protected static final int REJECT_CODE_SRV = -1;

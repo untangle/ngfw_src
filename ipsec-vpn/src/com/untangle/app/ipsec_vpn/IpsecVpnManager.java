@@ -9,7 +9,8 @@ import java.util.LinkedList;
 import java.util.Formatter;
 import java.io.FileWriter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -25,7 +26,7 @@ import com.untangle.uvm.ExecManagerResult;
 
 public class IpsecVpnManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final IpsecVpnScriptWriter scriptWriter = new IpsecVpnScriptWriter();
 
 // THIS IS FOR ECLIPSE - @formatter:off
