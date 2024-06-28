@@ -14,7 +14,8 @@ import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.UvmContextFactory;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class contains the main traffic handlers where we decide if traffic
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class CaptivePortalTrafficHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private CaptivePortalApp app = null;
 
     /**

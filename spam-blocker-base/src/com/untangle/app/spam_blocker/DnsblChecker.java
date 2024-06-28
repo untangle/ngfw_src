@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 
@@ -21,7 +22,7 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  */
 public class DnsblChecker
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final int MSECS_PER_SEC = 1000;
     private static final int SKIP_COUNT = 20;

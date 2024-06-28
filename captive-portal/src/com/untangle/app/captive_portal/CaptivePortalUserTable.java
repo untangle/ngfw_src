@@ -6,7 +6,8 @@ package com.untangle.app.captive_portal;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTableEntry;
 
@@ -19,7 +20,7 @@ import com.untangle.uvm.HostTableEntry;
 
 public class CaptivePortalUserTable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private ConcurrentHashMap<String, CaptivePortalUserEntry> activeUserTable = null;
     private CaptivePortalApp ownerApp = null;
 

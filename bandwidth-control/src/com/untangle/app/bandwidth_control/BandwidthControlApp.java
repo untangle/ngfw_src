@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.net.InetAddress;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -28,7 +29,7 @@ public class BandwidthControlApp extends AppBase
     public static final String STAT_PRIORITIZE = "prioritize";
     public static final String STAT_TAGGED = "tagged";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private boolean shownExpiredWarning = false;
     

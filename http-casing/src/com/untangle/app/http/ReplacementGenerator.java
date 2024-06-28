@@ -25,14 +25,15 @@ import com.untangle.uvm.vnet.AppTCPSession;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Generates a replacement page for Apps that block traffic.
  */
 public abstract class ReplacementGenerator<T extends RedirectDetails>
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static HashMap<Class<?>,Map<String,Method>> ParameterClassMethodMap = new HashMap<>();
 

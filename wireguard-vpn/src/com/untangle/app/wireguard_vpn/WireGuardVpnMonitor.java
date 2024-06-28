@@ -19,7 +19,8 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import org.json.JSONArray;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.UvmContextFactory;
@@ -64,7 +65,7 @@ class WireGuardVpnMonitor implements Runnable
     private static final long THREAD_JOIN_TIME_MSEC = 1000; // milliseconds delay to allow thread join when shutting down
     private static final long TUNNEL_ACTIVITY_TIMEOUT = 60; // seconds to wait before considering a tunnel down
 
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
     private final WireGuardVpnApp app;
 
     private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<>();

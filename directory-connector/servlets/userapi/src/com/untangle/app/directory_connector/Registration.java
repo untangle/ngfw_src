@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTableEntry;
@@ -35,7 +36,7 @@ public class Registration extends HttpServlet
     private static final String AD_REPLACE_ADDRESS = "%UNTANGLE_REPLACE_WITH_ADDRESS%";
     private static final String AD_REPLACE_SECRET = "%UNTANGLE_REPLACE_WITH_SECRET%";
 
-    private final Logger logger = Logger.getLogger( this.getClass());
+    private final Logger logger = LogManager.getLogger( this.getClass());
 
     /**
      * Handle GET from user API request.

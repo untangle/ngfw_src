@@ -22,7 +22,8 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Extracts the SNI information from HTTPS ClientHello messages and does block
@@ -33,7 +34,7 @@ import org.apache.log4j.Logger;
  */
 public class WebFilterHttpsSniHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private WebFilterBase app;
 
     // these are used while extracting the SNI from the SSL ClientHello packet

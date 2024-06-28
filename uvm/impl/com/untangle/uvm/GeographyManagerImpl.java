@@ -19,7 +19,8 @@ import com.maxmind.geoip2.record.City;
 import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.db.CHMCache;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import java.util.Optional;
 import com.untangle.uvm.GeographyManager;
@@ -32,7 +33,7 @@ import com.untangle.uvm.util.Pulse;
  */
 public class GeographyManagerImpl implements GeographyManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final static String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.mmdb";
     private final static String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";

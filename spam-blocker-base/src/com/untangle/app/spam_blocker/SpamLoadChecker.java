@@ -6,7 +6,8 @@ package com.untangle.app.spam_blocker;
 
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.LoadAvg;
 

@@ -16,7 +16,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -66,7 +68,7 @@ public class IpsecVpnApp extends AppBase
     private static final String NETSPACE_GRE = "GRE";
     private static final String NETSPACE_XAUTH = "Xauth";
 
-    private static final Logger logger = Logger.getLogger(IpsecVpnApp.class);
+    private static final Logger logger = LogManager.getLogger(IpsecVpnApp.class);
     private final VirtualUserTable virtualUserTable = new VirtualUserTable();
     private final Integer policyId = getAppSettings().getPolicyId();
     private final PipelineConnector[] connectors = new PipelineConnector[0];
@@ -401,7 +403,7 @@ public class IpsecVpnApp extends AppBase
 
         if (IpsecVpnApp.execManager == null) {
             IpsecVpnApp.execManager = UvmContextFactory.context().createExecManager();
-            IpsecVpnApp.execManager.setLevel(org.apache.log4j.Level.DEBUG);
+            IpsecVpnApp.execManager.setLevel(Level.DEBUG);
             IpsecVpnApp.execManager.exec(APP_STARTUP_SCRIPT);
         }
 

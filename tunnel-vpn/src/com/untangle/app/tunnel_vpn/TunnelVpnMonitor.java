@@ -16,7 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
@@ -45,7 +46,7 @@ class TunnelVpnMonitor implements Runnable
     private static final String RECV_MARKER = "TCP/UDP read bytes";
     private static final String END_MARKER = "end";
 
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
 
     private final ConcurrentHashMap<Integer, TunnelVpnTunnelStatus> tunnelStatusList = new ConcurrentHashMap<>();
     private final TunnelVpnManager manager;

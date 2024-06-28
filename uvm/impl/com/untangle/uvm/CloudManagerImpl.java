@@ -9,10 +9,11 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.core5.util.Timeout;
-import org.apache.log4j.Logger;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -34,7 +35,7 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 public class CloudManagerImpl implements CloudManager
 {
     private static final String UTF_8 = "UTF-8";
-    private final Logger logger = Logger.getLogger(CloudManagerImpl.class);
+    private final Logger logger = LogManager.getLogger(CloudManagerImpl.class);
 
     private static final String ZEROTOUCH_API = "/appliance/IsProvisioned?serialNumber=%serial%&uid=%uid%";
     private static final int ZEROTOUCH_SLEEP_TIME_MILLI = 30 * 1000;

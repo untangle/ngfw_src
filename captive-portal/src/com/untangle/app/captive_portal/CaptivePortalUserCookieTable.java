@@ -5,7 +5,8 @@
 package com.untangle.app.captive_portal;
 
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * When a user is forced to log out, their cookie must be expired. There's no
@@ -21,7 +22,7 @@ import org.apache.log4j.Logger;
 
 public class CaptivePortalUserCookieTable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private ConcurrentHashMap<String, CaptivePortalUserEntry> userTable;
 
     /**

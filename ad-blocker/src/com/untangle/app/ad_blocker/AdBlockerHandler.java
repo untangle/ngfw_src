@@ -11,7 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.ad_blocker.cookies.CookieEvent;
 import com.untangle.app.ad_blocker.cookies.CookieParser;
@@ -34,7 +35,7 @@ import com.untangle.uvm.vnet.AppTCPSession;
  */
 public class AdBlockerHandler extends HttpEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final AdBlockerApp app;
 
     /**

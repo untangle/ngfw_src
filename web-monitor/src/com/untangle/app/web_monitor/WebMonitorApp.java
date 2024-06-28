@@ -7,7 +7,8 @@ package com.untangle.app.web_monitor;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.codec.digest.Crypt;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -41,7 +42,7 @@ import com.untangle.app.web_filter.WebFilterHandler;
  */
 public class WebMonitorApp extends WebFilterBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final WebFilterDecisionEngine engine = new WebFilterDecisionEngine(this);
 

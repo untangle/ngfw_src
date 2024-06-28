@@ -9,7 +9,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.GlobUtil;
 
@@ -20,7 +21,7 @@ public class GlobMatcher
 {
     private static final String MARKER_SEPERATOR = ",";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static Map<String,GlobMatcher> MatcherCache;
     static {

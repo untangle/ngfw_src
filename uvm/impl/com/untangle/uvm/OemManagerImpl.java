@@ -6,7 +6,8 @@ package com.untangle.uvm;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -18,7 +19,7 @@ import com.untangle.uvm.OemSettings;
  */
 public class OemManagerImpl implements OemManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String SETTINGS_OVERRIDE_SCRIPT = System.getProperty("uvm.bin.dir") + "/oem-settings-override.py";
     private static final String SETTINGS_OVERRIDE_FILE = System.getProperty("uvm.conf.dir") + "/oem-settings-override.js";

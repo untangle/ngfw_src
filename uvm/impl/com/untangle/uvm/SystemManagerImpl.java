@@ -34,7 +34,8 @@ import java.util.zip.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -81,7 +82,7 @@ public class SystemManagerImpl implements SystemManager
     // must update file in mods-enabled since it is a symlink to our own version
     private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/eap";
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private SystemSettings settings;
 

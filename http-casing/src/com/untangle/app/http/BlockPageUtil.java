@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
@@ -26,7 +27,7 @@ public class BlockPageUtil
 {
     private static final BlockPageUtil INSTANCE = new BlockPageUtil();
     
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     /**
      * Can not be instantiated. Use getInstance to get the global singleton

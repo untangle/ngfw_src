@@ -18,7 +18,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NetcapManager;
@@ -45,7 +46,7 @@ public class MetricManagerImpl implements MetricManager
     private static final Pattern NET_DEV_PATTERN = Pattern.compile("^\\s*([a-z0-9\\.]+\\d+):\\s*(\\d+)\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+\\d+\\s+(\\d+)");
     private static final Pattern DISK_STATS_PATTERN = Pattern.compile("\\s*\\d+\\s+\\d+\\s+[hs]d[a-zA-Z]+\\d+\\s+(\\d+)\\s+\\d+\\s+(\\d+)");
 
-    private static final Logger logger = Logger.getLogger(MetricManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(MetricManagerImpl.class);
 
     private static final Set<String> MEMINFO_KEEPERS;
     private static final Set<String> VMSTAT_KEEPERS;

@@ -8,7 +8,8 @@ import java.util.LinkedList;
 import java.util.Collections;
 
 import javax.naming.ServiceUnavailableException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,7 +19,7 @@ import org.json.JSONObject;
  */
 public class ActiveDirectoryManagerImpl
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * This is just a copy of the current settings being used

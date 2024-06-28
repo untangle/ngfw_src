@@ -20,7 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
@@ -31,7 +32,7 @@ import com.untangle.uvm.CriticalAlertEvent;
  */
 public class EventWriterImpl implements Runnable
 {
-    private static final Logger logger = Logger.getLogger(EventWriterImpl.class);
+    private static final Logger logger = LogManager.getLogger(EventWriterImpl.class);
 
     /**
      * The amount of time for the event write to sleep

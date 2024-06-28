@@ -5,14 +5,15 @@ package com.untangle.uvm.util;
 
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utilities for transforming globs to regexs
  */
 public class GlobUtil
 {
-    private static final Logger logger = Logger.getLogger(GlobUtil.class);
+    private static final Logger logger = LogManager.getLogger(GlobUtil.class);
 
     /**
      * Return regular expression from glob.

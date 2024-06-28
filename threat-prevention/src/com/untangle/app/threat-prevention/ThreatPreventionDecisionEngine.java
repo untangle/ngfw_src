@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,7 +48,7 @@ public class ThreatPreventionDecisionEngine
     private Map<String, String> i18nMap;
     Long i18nMapLastUpdated = 0L;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * This regex matches any URL that is IP based - http://1.2.3.4/

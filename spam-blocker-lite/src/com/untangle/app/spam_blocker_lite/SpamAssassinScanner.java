@@ -10,14 +10,15 @@ import java.util.Date;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.spam_blocker.SpamReport;
 import com.untangle.app.spam_blocker.SpamScanner;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The spam assassin scanner
  */
 public class SpamAssassinScanner implements SpamScanner
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String SPAM_SCANNER_USERNAME = "spamd";
 

@@ -26,7 +26,8 @@ import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
@@ -99,7 +100,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private static final long TIMER_DELAY_NO_INTERNET = 1000 * 60 * 10;
 
-    private static final Logger logger = Logger.getLogger(LicenseManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(LicenseManagerImpl.class);
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 

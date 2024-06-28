@@ -8,7 +8,8 @@ import java.io.File;
 import java.util.Date;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.spam_blocker.ReportItem;
@@ -20,7 +21,7 @@ import com.untangle.app.spam_blocker.SpamScanner;
  */
 public class SpamBlockerScanner implements SpamScanner
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String SPAM_SCANNER_USERNAME = "spamd";
 

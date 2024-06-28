@@ -6,7 +6,8 @@ package com.untangle.app.firewall;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
@@ -20,7 +21,7 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
  */
 public class EventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(EventHandler.class);
+    private final Logger logger = LogManager.getLogger(EventHandler.class);
 
     private List<FirewallRule> firewallRuleList = new LinkedList<>();
 

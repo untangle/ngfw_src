@@ -7,7 +7,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.ReleaseToken;
@@ -21,7 +22,7 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
  */
 class FtpUnparserEventHandler extends AbstractEventHandler
 {
-    private static final Logger logger = Logger.getLogger(FtpUnparserEventHandler.class);
+    private static final Logger logger = LogManager.getLogger(FtpUnparserEventHandler.class);
 
     private final boolean clientSide;
 

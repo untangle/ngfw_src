@@ -12,14 +12,15 @@
  */
 package com.untangle.app.directory_connector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * RadiusManagerImpl provides the API implementation of all RADIUS related functionality
  */
 public class RadiusManagerImpl
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * This is just a copy of the current settings being used

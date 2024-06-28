@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jabsorb.JSONSerializer;
 
 import com.untangle.app.ad_blocker.cookies.CookieElement;
@@ -29,7 +30,7 @@ public class RulesLoader
             + "/ad-blocker/adblock_easylist_2_0_backup.txt";
     private static final String COOKIE_LIST_GHOSTERY = System.getProperty("uvm.lib.dir")
             + "/ad-blocker/ghostery-lsos.json";
-    private static final Logger logger = Logger.getLogger(RulesLoader.class);
+    private static final Logger logger = LogManager.getLogger(RulesLoader.class);
     
     private static final String LAST_UPDATE_LINE = "! Last modified:";
 

@@ -14,7 +14,8 @@ import java.net.InetSocketAddress;
 import java.io.File;
 import java.lang.reflect.Method;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.NotificationManager;
@@ -44,7 +45,7 @@ import org.xbill.DNS.SimpleResolver;
  */
 public class NotificationManagerImpl implements NotificationManager
 {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private I18nUtil i18nUtil;
     private boolean timezoneChanged = false;

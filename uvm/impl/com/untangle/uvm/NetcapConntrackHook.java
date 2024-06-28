@@ -6,7 +6,8 @@ package com.untangle.uvm;
 import java.net.InetAddress;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.jnetcap.NetcapCallback;
 import com.untangle.jnetcap.Conntrack;
@@ -26,7 +27,7 @@ public class NetcapConntrackHook implements NetcapCallback
     
     private static NetcapConntrackHook INSTANCE;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private HashMap<SessionTuple,Long> conntrackSessionIdMap = new HashMap<>();
     

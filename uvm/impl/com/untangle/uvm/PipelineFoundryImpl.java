@@ -14,7 +14,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,7 +48,7 @@ import com.untangle.uvm.vnet.SessionEventHandler;
  */
 public class PipelineFoundryImpl implements PipelineFoundry
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Global PipelineFoundryImpl instance

@@ -7,14 +7,15 @@ import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Inet4AddressConverter
  */
 public class Inet4AddressConverter
 {
-    private static final Logger logger = Logger.getLogger( Inet4AddressConverter.class );
+    private static final Logger logger = LogManager.getLogger( Inet4AddressConverter.class );
     
     static final int INADDRSZ = 4;
     

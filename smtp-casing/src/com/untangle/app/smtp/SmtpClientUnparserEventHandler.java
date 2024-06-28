@@ -5,7 +5,8 @@ package com.untangle.app.smtp;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.Response;
 import com.untangle.app.smtp.SASLExchangeToken;
@@ -22,7 +23,7 @@ public class SmtpClientUnparserEventHandler extends AbstractEventHandler
 {
     protected static final String SHARED_STATE_KEY = "SMTP-shared-state";
 
-    private final Logger logger = Logger.getLogger(SmtpClientUnparserEventHandler.class);
+    private final Logger logger = LogManager.getLogger(SmtpClientUnparserEventHandler.class);
 
     /**
      * Initialize SmtpClientUnparserEventHandler.

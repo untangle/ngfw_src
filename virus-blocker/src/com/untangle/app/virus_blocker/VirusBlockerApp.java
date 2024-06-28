@@ -5,7 +5,8 @@
 package com.untangle.app.virus_blocker;
 
 import java.io.File;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
@@ -16,7 +17,7 @@ import com.untangle.app.virus_blocker.VirusBlockerBaseApp;
  */
 public class VirusBlockerApp extends VirusBlockerBaseApp
 {
-    private final Logger logger = Logger.getLogger(VirusBlockerApp.class);
+    private final Logger logger = LogManager.getLogger(VirusBlockerApp.class);
 
     /**
      * Constructor

@@ -4,7 +4,8 @@
 
 package com.untangle.uvm;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.io.InputStreamReader;
  */
 public class ExecManagerResultReader
 {
-    private static final Logger logger = Logger.getLogger(ExecManagerResultReader.class);
+    private static final Logger logger = LogManager.getLogger(ExecManagerResultReader.class);
 
     private Process process;
     private BufferedReader stdoutBufferedReader;

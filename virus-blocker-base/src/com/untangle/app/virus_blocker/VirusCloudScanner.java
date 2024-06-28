@@ -10,7 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -20,7 +21,7 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class VirusCloudScanner extends Thread
 {
-    private final Logger logger = Logger.getLogger(VirusBlockerBaseApp.class);
+    private final Logger logger = LogManager.getLogger(VirusBlockerBaseApp.class);
 
     private static final String CLOUD_SCANNER_URL = "https://classify.untangle.com/v1/md5s";
     private static final String CLOUD_SCANNER_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";

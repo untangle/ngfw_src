@@ -16,14 +16,15 @@ import java.util.regex.Pattern;
 import com.untangle.app.virus_blocker.VirusClient;
 import com.untangle.app.virus_blocker.VirusClientContext;
 import com.untangle.app.virus_blocker.VirusClientSocket;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * ClamClient is a client scanner implementation for clamd
  */
 public class ClamClient extends VirusClient
 {
-    protected final Logger clogger = Logger.getLogger(getClass());
+    protected final Logger clogger = LogManager.getLogger(getClass());
 
     private final static String CRLF = "\r\n"; // end-of-line
     private final static String LWSPO = "(\\p{Blank})+"; // linear-white-spaces

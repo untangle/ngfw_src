@@ -12,7 +12,8 @@ import java.net.InetAddress;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,7 +52,7 @@ import com.untangle.uvm.app.License;
 /** Threat Prevention application */
 public class ThreatPreventionApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public List<IPMaskedAddress> localNetworks = null;
     public WebrootQuery webrootQuery = null;

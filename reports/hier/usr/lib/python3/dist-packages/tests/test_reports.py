@@ -24,7 +24,6 @@ from datetime import timedelta
 from html.parser import HTMLParser
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.overrides as overrides
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -63,11 +62,11 @@ class ContentIdParser(HTMLParser):
 def configure_mail_relay():
     global orig_mailsettings, test_email_address
     test_email_address = global_functions.random_email()
-    orig_mailsettings = uvmContext.mailSender().getSettings()
+    orig_mailsettings = global_functions.uvmContext.mailSender().getSettings()
     new_mailsettings = copy.deepcopy(orig_mailsettings)
     new_mailsettings['sendMethod'] = 'DIRECT'
     new_mailsettings['fromAddress'] = test_email_address
-    uvmContext.mailSender().setSettings(new_mailsettings)
+    global_functions.uvmContext.mailSender().setSettings(new_mailsettings)
 
 
 def create_firewall_rule( conditionType, value, blocked=True ):
@@ -804,9 +803,9 @@ class ReportsTests(NGFWTestCase):
         reportSettings = cls._app.getSettings()
         orig_settings = copy.deepcopy(reportSettings)
 
-        if (uvmContext.appManager().isInstantiated(cls.webAppName())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.webAppName())):
             raise Exception('app %s already instantiated' % cls.webAppName())
-        web_app = uvmContext.appManager().instantiate(cls.webAppName(), default_policy_id)
+        web_app = global_functions.uvmContext.appManager().instantiate(cls.webAppName(), default_policy_id)
         # Skip checking relaying is possible if we have determined it as true on previous test.
         try:
             can_relay = global_functions.send_test_email()
@@ -815,7 +814,7 @@ class ReportsTests(NGFWTestCase):
 
         if can_syslog == None:
             can_syslog = False
-            wan_IP = uvmContext.networkManager().getFirstWanAddress()
+            wan_IP = global_functions.uvmContext.networkManager().getFirstWanAddress()
             syslog_server_host = global_functions.find_syslog_server(wan_IP)
             if syslog_server_host:
                 portResult = remote_control.run_command("sudo lsof -i :514", host=syslog_server_host)
@@ -828,12 +827,12 @@ class ReportsTests(NGFWTestCase):
         assert (result == 0)
     
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
         
     # Test that the database can be reinitialized (deleted then initialized) by checking 
     # that all of the tables are present before and after
     def test_020_reinitialize_database(self):
-        reports_manager = uvmContext.appManager().app("reports").getReportsManager()
+        reports_manager = global_functions.uvmContext.appManager().app("reports").getReportsManager()
         pre_reinit_tables = reports_manager.getTables()
         print(pre_reinit_tables)
         
@@ -854,11 +853,11 @@ class ReportsTests(NGFWTestCase):
             raise unittest.SkipTest('Unable to syslog through ' + syslog_server_host)
 
         firewall_app = None
-        if (uvmContext.appManager().isInstantiated("firewall")):
+        if (global_functions.uvmContext.appManager().isInstantiated("firewall")):
             print("App %s already installed" % "firewall")
-            firewall_app = uvmContext.appManager().app("firewall")
+            firewall_app = global_functions.uvmContext.appManager().app("firewall")
         else:
-            firewall_app = uvmContext.appManager().instantiate("firewall", default_policy_id)
+            firewall_app = global_functions.uvmContext.appManager().instantiate("firewall", default_policy_id)
 
         # Install firewall rule to generate syslog events
         rules = firewall_app.getRules()
@@ -871,12 +870,12 @@ class ReportsTests(NGFWTestCase):
                 targetRuleId = rule['ruleId']
                 break
         # Setup syslog to send events to syslog host in /config/events/syslog
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         syslogSettings["syslogEnabled"] = True
         syslogSettings["syslogPort"] = 514
         syslogSettings["syslogProtocol"] = "UDP"
         syslogSettings["syslogHost"] = syslog_server_host
-        uvmContext.eventManager().setSettings( syslogSettings )
+        global_functions.uvmContext.eventManager().setSettings( syslogSettings )
 
         # create some traffic (blocked by firewall and thus create a syslog event)
         exactly_now = datetime.now()
@@ -896,7 +895,7 @@ class ReportsTests(NGFWTestCase):
 
         # remove firewall
         if firewall_app != None:
-            uvmContext.appManager().destroy( firewall_app.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( firewall_app.getAppSettings()["id"] )
         firewall_app = None
         
         # parse the output and look for a rule that matches the expected values
@@ -934,9 +933,9 @@ class ReportsTests(NGFWTestCase):
             time.sleep(2)
 
         # Disable syslog
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         syslogSettings["syslogEnabled"] = False
-        uvmContext.eventManager().setSettings( syslogSettings )
+        global_functions.uvmContext.eventManager().setSettings( syslogSettings )
             
         assert(found_count == num_string_find)
 
@@ -999,10 +998,10 @@ class ReportsTests(NGFWTestCase):
         subprocess.call("rm /tmp/test_100_email_report_admin_file > /dev/null 2>&1", shell=True)
 
         # add administrator
-        adminsettings = uvmContext.adminManager().getSettings()
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(create_admin_user(useremail=test_email_address))
-        uvmContext.adminManager().setSettings(adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         # clear all report users
         settings = app.getSettings()
@@ -1021,7 +1020,7 @@ class ReportsTests(NGFWTestCase):
             email_context_found2 = remote_control.run_command("grep -i -e 'Content-Type: image/png; name=' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
 
         # restore
-        uvmContext.adminManager().setSettings(orig_adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
@@ -1065,10 +1064,10 @@ class ReportsTests(NGFWTestCase):
         configure_mail_relay()
 
         # add administrator
-        adminsettings = uvmContext.adminManager().getSettings()
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(create_admin_user(useremail=test_email_address))
-        uvmContext.adminManager().setSettings(adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         settings = app.getSettings()
         # add custom template with a test not in daily reports
@@ -1090,7 +1089,7 @@ class ReportsTests(NGFWTestCase):
             email_context_found2 = remote_control.run_command("grep -i 'Administration-VWuRol5uWw' /tmp/test_101_email_admin_override_custom_report_file 2>&1", stdout=True)
 
         # restore
-        uvmContext.adminManager().setSettings(orig_adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
@@ -1113,10 +1112,10 @@ class ReportsTests(NGFWTestCase):
         subprocess.call("rm /tmp/test_102_email_admin_override_custom_report_mobile_file > /dev/null 2>&1", shell=True)
 
         # add administrator
-        adminsettings = uvmContext.adminManager().getSettings()
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(create_admin_user(useremail=test_email_address))
-        uvmContext.adminManager().setSettings(adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         settings = app.getSettings()
         # add custom template with a test not in daily reports
@@ -1138,7 +1137,7 @@ class ReportsTests(NGFWTestCase):
             email_context_found2 = remote_control.run_command("grep -i 'Administration-VWuRol5uWw' /tmp/test_102_email_admin_override_custom_report_mobile_file 2>&1", stdout=True)
 
         # restore
-        uvmContext.adminManager().setSettings(orig_adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
@@ -1183,10 +1182,10 @@ class ReportsTests(NGFWTestCase):
         configure_mail_relay()
 
         # add administrator
-        adminsettings = uvmContext.adminManager().getSettings()
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(create_admin_user(useremail=test_email_address))
-        uvmContext.adminManager().setSettings(adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         # clear all report users
         settings = self._app.getSettings()
@@ -1194,7 +1193,7 @@ class ReportsTests(NGFWTestCase):
         self._app.setSettings(settings)
         
         # install all the apps that aren't already installed
-        system_stats = uvmContext.metricManager().getStats()
+        system_stats = global_functions.uvmContext.metricManager().getStats()
         # print system_stats
         system_memory = system_stats['systemStats']['MemTotal']
         if (int(system_memory) < 2200000000):   # don't use high memory apps in devices with 2G or less.
@@ -1202,10 +1201,10 @@ class ReportsTests(NGFWTestCase):
             apps_name_list = apps_name_list_short
         apps = []
         for name in apps_list:
-            if (uvmContext.appManager().isInstantiated(name)):
+            if (global_functions.uvmContext.appManager().isInstantiated(name)):
                 print("App %s already installed" % name)
             else:
-                apps.append( uvmContext.appManager().instantiate(name, default_policy_id) )
+                apps.append( global_functions.uvmContext.appManager().instantiate(name, default_policy_id) )
             
         # create some traffic 
         result = remote_control.is_online(tries=1)
@@ -1226,19 +1225,20 @@ class ReportsTests(NGFWTestCase):
                 results.append(remote_control.run_command("grep -q -i '%s' /tmp/test_103_email_report_admin_file 2>&1"%str))
 
         # restore
-        uvmContext.adminManager().setSettings(orig_adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
 
         # remove apps that were installed above
-        for a in apps: uvmContext.appManager().destroy( a.getAppSettings()["id"] )
+        for a in apps: global_functions.uvmContext.appManager().destroy( a.getAppSettings()["id"] )
         
         assert(email_found)
         for result in results:
             assert(result == 0)
 
+
     def test_110_verify_report_users(self):
         # Test report only user can login and report servlet displays 
         # add report user with test_email_address
-        settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
         settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
@@ -1250,6 +1250,9 @@ class ReportsTests(NGFWTestCase):
         
         resultLoginPage = subprocess.call(global_functions.build_wget_command(output_file="-", uri=adminURL + 'auth/login?url=/reports&realm=Reports&username=' + test_email_address + "&password=passwd") + " 2>&1 | grep -q Report", shell=True)
         assert (resultLoginPage == 0)
+        # Restore original settings
+        self._app.setSettings(original_settings)
+
 
     def test_111_data_retention_days(self):
         """
@@ -1368,6 +1371,8 @@ class ReportsTests(NGFWTestCase):
     def test_500_sql_injection_pie_graph(self):
         """
         """
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1376,10 +1381,13 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "PIE_GRAPH")
+        self._app.setSettings(original_settings)
 
     def test_501_sql_injection_time_graph(self):
         """
         """
+        original_settings = self._app.getSettings()    
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1388,10 +1396,13 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TIME_GRAPH")
+        self._app.setSettings(original_settings)
 
     def test_502_sql_injection_time_graph_dynamic(self):
         """
         """
+        original_settings = self._app.getSettings()    
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1400,10 +1411,13 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TIME_GRAPH_DYNAMIC")
+        self._app.setSettings(original_settings)
 
     def test_503_sql_injection_text(self):
         """
         """
+        original_settings = self._app.getSettings()    
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1412,10 +1426,13 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TEXT")
+        self._app.setSettings(original_settings)
 
     def test_504_sql_injection_event_list(self):
         """
         """
+        original_settings = self._app.getSettings()    
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1424,6 +1441,7 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "EVENT_LIST")
+        self._app.setSettings(original_settings)
 
     def test_600_session_minutes_referral(self):
         """
@@ -1486,7 +1504,7 @@ class ReportsTests(NGFWTestCase):
         delete_tables = ["sessions", "session_minutes", "http_events"]
 
         # Original settings to restore at end
-        original_system_settings = uvmContext.systemManager().getSettings()
+        original_system_settings = global_functions.uvmContext.systemManager().getSettings()
 
         # Backip existing untangle-vm.conf
         global_functions.vm_conf_backup()
@@ -1511,10 +1529,10 @@ class ReportsTests(NGFWTestCase):
             days_ago = 1
 
             # Disable NTP
-            original_system_settings = uvmContext.systemManager().getSettings()
+            original_system_settings = global_functions.uvmContext.systemManager().getSettings()
             system_settings = copy.deepcopy(original_system_settings)
             system_settings['timeSource'] = 'manual'
-            uvmContext.systemManager().setSettings(system_settings)
+            global_functions.uvmContext.systemManager().setSettings(system_settings)
 
             # Set time to 90 seconds before 1 day before end of day of retention.
             # This gives enough time for both the session and session_minute entries
@@ -1524,7 +1542,7 @@ class ReportsTests(NGFWTestCase):
 
             # Restart UVM due to date change and while we're at it,
             # change the cacheTableInterval to 1s instead of its 30 min default
-            uvmContext = global_functions.vm_conf_update(search="reports_cacheTableInterval=", replace=f"reports_cacheTableInterval=\"{cache_interval_seconds}000\"")
+            global_functions.uvmContext = global_functions.vm_conf_update(search="reports_cacheTableInterval=", replace=f"reports_cacheTableInterval=\"{cache_interval_seconds}000\"")
 
             # Run report sync script to add table
             print(f"running reports-cron to setup today's tables")
@@ -1693,12 +1711,12 @@ class ReportsTests(NGFWTestCase):
         remote_control.run_command(f"ps awwwux | grep [c]url | cut -d' ' -f3 | xargs kill -9 2>/dev/null")
 
         # Restore system back to standard working order
-        uvmContext = global_functions.vm_conf_restore()
+        global_functions.uvmContext = global_functions.vm_conf_restore()
 
         # Change system back to NTP
-        uvmContext.systemManager().setSettings(original_system_settings)
-        uvmContext.forceTimeSync()
-        uvmContext = global_functions.restart_uvm()
+        global_functions.uvmContext.systemManager().setSettings(original_system_settings)
+        global_functions.uvmContext.forceTimeSync()
+        global_functions.uvmContext = global_functions.restart_uvm()
         subprocess.call(f"/etc/cron.daily/reports-cron",shell=True)
 
         assert len(failures) == 0, ", ".join(map(str, failures))
@@ -1706,15 +1724,13 @@ class ReportsTests(NGFWTestCase):
     @classmethod
     def final_extra_tear_down(cls):
         global web_app, orig_settings
-        #Restoring original report settings
-        cls._app.setSettings(orig_settings)
         # remove all the apps in case test 103 does not remove them.
         for name in apps_list:
-            if (uvmContext.appManager().isInstantiated(name)):
-                remove_app = uvmContext.appManager().app(name)
-                uvmContext.appManager().destroy(remove_app.getAppSettings()["id"])
+            if (global_functions.uvmContext.appManager().isInstantiated(name)):
+                remove_app = global_functions.uvmContext.appManager().app(name)
+                global_functions.uvmContext.appManager().destroy(remove_app.getAppSettings()["id"])
         if orig_mailsettings != None:
-            uvmContext.mailSender().setSettings(orig_mailsettings)
+            global_functions.uvmContext.mailSender().setSettings(orig_mailsettings)
 
         web_app = None
 

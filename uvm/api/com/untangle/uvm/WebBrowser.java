@@ -9,7 +9,8 @@ import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.By;
@@ -30,7 +31,7 @@ import com.untangle.uvm.util.IOUtil;
  */
 public class WebBrowser
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public enum FIND_KEYS {
         CLASS,

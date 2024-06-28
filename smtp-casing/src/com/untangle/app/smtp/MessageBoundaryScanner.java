@@ -14,7 +14,8 @@ import static com.untangle.uvm.util.BufferUtil.findPattern;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Specialized little class to process ByteBuffers which contain RFC821 Messages (MIME). <br>
@@ -39,7 +40,7 @@ public class MessageBoundaryScanner
         INIT, LOOKING_FOR_HEADERS_END, INIT_BODY, LOOKING_FOR_BODY_END, DONE
     };
 
-    private final Logger m_logger = Logger.getLogger(MessageBoundaryScanner.class);
+    private final Logger m_logger = LogManager.getLogger(MessageBoundaryScanner.class);
 
     private boolean m_headersBlank = false;
     private boolean m_isEmptyMessage = false;

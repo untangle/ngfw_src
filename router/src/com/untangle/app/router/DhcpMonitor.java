@@ -18,7 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.DeviceTableEntry;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This monitors the DHCP status file and maintains a map of existing DHCP entries
@@ -61,7 +62,7 @@ class DhcpMonitor implements Runnable
      */
     private final Map<InetAddress,DhcpLease> currentLeaseMap = new ConcurrentHashMap<>();
 
-    private final Logger logger = Logger.getLogger( this.getClass());
+    private final Logger logger = LogManager.getLogger( this.getClass());
     private final RouterImpl app;
 
     /**

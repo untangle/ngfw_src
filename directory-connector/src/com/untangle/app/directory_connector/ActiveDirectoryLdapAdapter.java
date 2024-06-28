@@ -27,7 +27,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.directory_connector.GroupEntry;
 import com.untangle.app.directory_connector.ActiveDirectoryServer;
@@ -39,7 +40,7 @@ import com.untangle.app.directory_connector.UserEntry;
  */
 class ActiveDirectoryLdapAdapter extends LdapAdapter
 {
-    private final Logger logger = Logger.getLogger(ActiveDirectoryLdapAdapter.class);
+    private final Logger logger = LogManager.getLogger(ActiveDirectoryLdapAdapter.class);
 
     private ActiveDirectoryServer settings;
 

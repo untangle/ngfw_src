@@ -13,7 +13,8 @@ import java.util.List;
 import javax.mail.internet.InternetAddress;
 
 import javax.mail.internet.InternetHeaders;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.mime.HeaderNames;
 import com.untangle.app.smtp.mime.MIMEAccumulator;
@@ -35,7 +36,7 @@ class SmtpClientParserEventHandler extends AbstractEventHandler
 
     private static final String CLIENT_PARSER_STATE_KEY = "SMTP-client-parser-state";
 
-    private static final Logger logger = Logger.getLogger(SmtpClientParserEventHandler.class);
+    private static final Logger logger = LogManager.getLogger(SmtpClientParserEventHandler.class);
 
     private static final int MAX_COMMAND_LINE_SZ = 1024 * 2;
 

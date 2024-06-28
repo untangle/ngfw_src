@@ -9,7 +9,8 @@ import static com.untangle.uvm.util.BufferUtil.findCrLf;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.NotAnSMTPResponseLineException;
 import com.untangle.app.smtp.Response;
@@ -47,7 +48,7 @@ class SmtpSASLObserver
         EXCHANGE_COMPLETE
     };
 
-    private final Logger m_logger = Logger.getLogger(SmtpSASLObserver.class);
+    private final Logger m_logger = LogManager.getLogger(SmtpSASLObserver.class);
 
     private final SASLObserver m_observer;
     private StringBuilder m_fromClientSB;

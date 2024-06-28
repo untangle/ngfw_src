@@ -3,7 +3,8 @@
  */
 package com.untangle.uvm.network;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,7 +19,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DynamicRoutingSettings implements Serializable, JSONString
 {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private Boolean enabled = false;
     private Boolean bgpEnabled = false;

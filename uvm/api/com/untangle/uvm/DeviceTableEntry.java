@@ -12,7 +12,8 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -23,7 +24,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DeviceTableEntry implements Serializable, JSONString
 {
-    private static final Logger logger = Logger.getLogger(DeviceTableEntry.class);
+    private static final Logger logger = LogManager.getLogger(DeviceTableEntry.class);
 
     /**
      * MAC address is all lower case

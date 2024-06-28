@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -27,7 +28,7 @@ import com.untangle.uvm.vnet.SessionAttachments;
 /** FirewalApp is the Firewall Application implementation */
 public class FirewallApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String STAT_BLOCK = "block";
     private static final String STAT_FLAG = "flag";

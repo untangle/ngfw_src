@@ -18,7 +18,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,7 +77,7 @@ public class NetworkManagerImpl implements NetworkManager
     public static final String MAC = "MAC";
     public static final String ORGANIZATION = "Organization";
     public static final String COMMA = ",";
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
     private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";

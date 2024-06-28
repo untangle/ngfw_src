@@ -35,7 +35,8 @@ import net.jradius.packet.attribute.AttributeFactory;
 import net.jradius.packet.attribute.AttributeList;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.directory_connector.RadiusSettings;
 
@@ -50,7 +51,7 @@ public class RadiusLdapAdapter
     /* This is the number of retries */
     private static int NUM_RETRIES = 5;
     
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     
     private enum CommandStatus { UNCONFIGURED, ACCEPTED, REJECTED, UNREACHABLE_OR_WRONG_SHARED_SECRET, UNKNOWN_ERROR };
     

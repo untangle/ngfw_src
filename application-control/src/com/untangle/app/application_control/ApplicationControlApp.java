@@ -14,7 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -39,7 +40,7 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public class ApplicationControlApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     protected static final String STAT_SCAN = "scan";
     protected static final String STAT_PASS = "pass";

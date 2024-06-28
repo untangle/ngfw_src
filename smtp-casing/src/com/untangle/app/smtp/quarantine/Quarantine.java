@@ -17,7 +17,8 @@ import java.util.Set;
 
 import javax.mail.internet.InternetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.EmailAddressPairRule;
 import com.untangle.app.smtp.EmailAddressRule;
@@ -37,7 +38,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView, QuarantineUserView
 {
-    private final Logger logger = Logger.getLogger(Quarantine.class);
+    private final Logger logger = LogManager.getLogger(Quarantine.class);
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/smtp-send-quarantine-digests.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-smtp-quarantine-digests");

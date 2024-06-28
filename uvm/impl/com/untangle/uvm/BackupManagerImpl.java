@@ -18,7 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
@@ -37,7 +38,7 @@ public class BackupManagerImpl implements BackupManager
     private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";;
     private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore.sh";
 
-    private final Logger logger = Logger.getLogger(BackupManagerImpl.class);
+    private final Logger logger = LogManager.getLogger(BackupManagerImpl.class);
 
     private I18nUtil i18nUtil;
 

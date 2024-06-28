@@ -9,7 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 
@@ -27,7 +28,7 @@ public class UtJsonRpcServlet extends JSONRPCServlet
 {
     private static final String BRIDGE_ATTRIBUTE = "ReportsJSONRPCBridge";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
 

@@ -7,7 +7,8 @@ package com.untangle.uvm.util;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.app.IPMatcher;
@@ -18,7 +19,7 @@ import com.untangle.uvm.app.UrlMatcher;
  */
 public class UrlMatchingUtil
 {
-    private static final Logger logger = Logger.getLogger(UrlMatchingUtil.class);
+    private static final Logger logger = LogManager.getLogger(UrlMatchingUtil.class);
 
     /**
      * normalize the hostname

@@ -32,7 +32,9 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.core5.util.Timeout;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
@@ -48,7 +50,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class SettingsManagerImpl implements SettingsManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Valid characters for settings file names
@@ -566,17 +568,17 @@ public class SettingsManagerImpl implements SettingsManager
         
         if ( prettyFormat ) {
             String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName );
-            UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.DEBUG);
+            UvmContextImpl.context().execManager().setLevel(Level.DEBUG);
             UvmContextImpl.context().execManager().execResult(formatCmd);
-            UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.INFO);
+            UvmContextImpl.context().execManager().setLevel(Level.INFO);
         }
 
         /**
          * Call sync to force save to filesystem
          */
-        UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.DEBUG);
+        UvmContextImpl.context().execManager().setLevel(Level.DEBUG);
         UvmContextImpl.context().execManager().execResult("sync");
-        UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.INFO);
+        UvmContextImpl.context().execManager().setLevel(Level.INFO);
         
         if ( saveVersion ) {
             String[] chops = outputFileName.split(File.separator);

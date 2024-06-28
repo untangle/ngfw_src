@@ -30,7 +30,8 @@ import com.untangle.uvm.OAuthDomain;
 import com.untangle.uvm.UvmContextFactory;
 
 import org.apache.hc.core5.net.URIBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * We do just enough SSL MitM to receive and extract the request and send back a
@@ -43,7 +44,7 @@ import org.apache.log4j.Logger;
 public class CaptivePortalSSLEngine
 {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final CaptivePortalApp captureApp;
     private AppTCPSession session;
     private SSLContext sslContext;

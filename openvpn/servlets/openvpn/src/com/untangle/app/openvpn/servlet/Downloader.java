@@ -17,7 +17,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Implementation of the OpenVPN client download handler servlet
@@ -43,7 +44,7 @@ public class Downloader extends HttpServlet
     private static final String INLINE_NAME_SUFFIX = ".ovpn";
     private static final String INLINE_TYPE = "application/download";
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     /**
      * The main service handler for client download requests

@@ -10,7 +10,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.json.JSONObject;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ConnectivityTester;
@@ -21,7 +22,7 @@ import com.untangle.uvm.network.InterfaceSettings;
  */
 public class ConnectivityTesterImpl implements ConnectivityTester
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /* Name of the DNS test script */
     private static final String DNS_TEST_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-dns-test";

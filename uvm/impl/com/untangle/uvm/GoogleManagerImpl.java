@@ -12,7 +12,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import org.apache.hc.core5.net.URIBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 
@@ -24,7 +25,7 @@ public class GoogleManagerImpl implements GoogleManager
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
     private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
     
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * This is just a copy of the current settings being used

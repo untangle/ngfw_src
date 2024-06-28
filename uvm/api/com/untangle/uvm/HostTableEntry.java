@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -22,7 +23,7 @@ import org.json.JSONString;
 public class HostTableEntry implements Serializable, JSONString
 {
     private static final int LICENSE_TRAFFIC_AGE_MAX_TIME = 60 * 60 * 1000; /* 60 minutes */
-    private static final Logger logger = Logger.getLogger(HostTableEntry.class);
+    private static final Logger logger = LogManager.getLogger(HostTableEntry.class);
 
     private InetAddress address = null;
     private String      macAddress = null;

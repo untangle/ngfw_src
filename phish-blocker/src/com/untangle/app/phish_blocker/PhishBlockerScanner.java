@@ -15,14 +15,15 @@ import com.untangle.app.spam_blocker.ReportItem;
 import com.untangle.app.spam_blocker.SpamReport;
 import com.untangle.app.spam_blocker.SpamScanner;
 import com.untangle.app.virus_blocker.VirusScannerResult;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Implementation of a scanner for phishing emails
  */
 public class PhishBlockerScanner implements SpamScanner
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final float HIT_SCORE = 100f;
     private static final int TIMEOUT = 10000;

@@ -8,7 +8,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 
@@ -23,7 +24,7 @@ class FixedReportsQueue
 {
     public static final long SLEEP_TIME_MSEC = 10 * 1000;
 
-    protected static final Logger logger = Logger.getLogger( FixedReportsQueue.class );
+    protected static final Logger logger = LogManager.getLogger( FixedReportsQueue.class );
 
     private final ReportsApp app;
 

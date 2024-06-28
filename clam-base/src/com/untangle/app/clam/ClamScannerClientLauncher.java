@@ -9,14 +9,15 @@ import com.untangle.app.virus_blocker.VirusClientContext;
 import com.untangle.app.virus_blocker.VirusClientSocket;
 import com.untangle.app.virus_blocker.VirusScannerClientLauncher;
 import com.untangle.app.virus_blocker.VirusScannerResult;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A clam scanner launcher utility
  */
 public class ClamScannerClientLauncher extends VirusScannerClientLauncher
 {
-    protected final Logger clogger = Logger.getLogger(getClass());
+    protected final Logger clogger = LogManager.getLogger(getClass());
 
     /**
      * These are "FOUND" viruses by clamdscan, but are not really viruses

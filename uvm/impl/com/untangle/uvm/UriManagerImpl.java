@@ -11,7 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.hc.core5.net.URIBuilder;
 
@@ -30,7 +31,7 @@ public class UriManagerImpl implements UriManager
     private Map<String,String> UriMap = new HashMap<>();
     private Map<String,UriTranslation> HostUriTranslations = new HashMap<>();
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     /**
      * Constructor

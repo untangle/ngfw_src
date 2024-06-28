@@ -15,7 +15,8 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
@@ -46,7 +47,7 @@ import com.untangle.app.intrusion_prevention.IntrusionPreventionLogEvent;
  */
 public class IntrusionPreventionSuricataFastParser
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public static final String FAST_LOG_FILE = "/var/log/suricata/fast.log";
     public static final String EVENT_MAP = "/etc/suricata/intrusion-prevention.event.map.conf";

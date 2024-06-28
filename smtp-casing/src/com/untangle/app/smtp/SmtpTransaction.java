@@ -10,7 +10,8 @@ import java.util.List;
 
 import javax.mail.internet.InternetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.mime.MIMEUtil;
 
@@ -40,7 +41,7 @@ public final class SmtpTransaction implements TemplateValues
     private static final String SMTP_TX_TEMPLATE_PREFIX = "SMTPTransaction:".toLowerCase();
     private static final String TO_TV = "TO".toLowerCase();
     private static final String FROM_TV = "FROM".toLowerCase();
-    private final Logger logger = Logger.getLogger(SmtpImpl.class);
+    private final Logger logger = LogManager.getLogger(SmtpImpl.class);
 
     /**
      * Enum of Transaction states.

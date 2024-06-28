@@ -7,7 +7,8 @@ package com.untangle.app.web_filter;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Affinity;
@@ -32,7 +33,7 @@ import com.untangle.app.web_filter.WebFilterSettings;
  */
 public class WebFilterApp extends WebFilterBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final WebFilterDecisionEngine engine = new WebFilterDecisionEngine(this);
 

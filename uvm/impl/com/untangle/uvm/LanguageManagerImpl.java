@@ -38,9 +38,8 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.core5.http.HttpEntityContainer;
-import org.apache.hc.core5.util.Timeout;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.untangle.uvm.util.I18nUtil;
@@ -66,7 +65,7 @@ public class LanguageManagerImpl implements LanguageManager
     private static final int CLEANER_SLEEP_TIME_MILLI = 60 * 1000; /* Check every minute */
     private final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private LanguageSettings languageSettings;
     private Map<String, String> allLanguages;

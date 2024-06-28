@@ -3,7 +3,8 @@
  */
 package com.untangle.uvm.vnet;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.PortRange;
@@ -18,7 +19,7 @@ import com.untangle.uvm.app.SessionTuple;
  */
 public class Subscription
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final Protocol protocol;
     private final IPMaskedAddress serverAddress;

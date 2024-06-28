@@ -4,7 +4,8 @@
 
 package com.untangle.uvm;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.logging.LoggingManager;
 
@@ -13,7 +14,7 @@ import com.untangle.uvm.logging.LoggingManager;
  */
 public class LoggingManagerImpl implements LoggingManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Constructor
@@ -30,7 +31,7 @@ public class LoggingManagerImpl implements LoggingManager
      */
     public void setLoggingApp(Long appId)
     {
-        UvmRepositorySelector.instance().setLoggingApp(appId);
+        UvmContextSelector.instance().setLoggingApp(appId);
     }
 
     /**
@@ -38,7 +39,7 @@ public class LoggingManagerImpl implements LoggingManager
      */
     public void setLoggingUvm()
     {
-        UvmRepositorySelector.instance().setLoggingUvm();
+        UvmContextSelector.instance().setLoggingUvm();
     }
 
     /**
@@ -46,6 +47,6 @@ public class LoggingManagerImpl implements LoggingManager
      */
     public void resetAllLogs()
     {
-        UvmRepositorySelector.instance().reconfigureAll();
+        UvmContextSelector.instance().reconfigureAll();
     }
 }

@@ -12,7 +12,8 @@ import com.untangle.uvm.app.AppSettings;
 import java.util.Map;
 
 import org.apache.hc.core5.net.URIBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This is the implementation of the replacement generator that creates the HTTP
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
 
 class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePortalBlockDetails>
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final CaptivePortalApp captureApp;
 
 // THIS IS FOR ECLIPSE - @formatter:off

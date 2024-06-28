@@ -14,7 +14,6 @@ import shutil
 from pathlib import Path
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -180,7 +179,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     @pytest.mark.slow
     def test_030_rule_add(self):
@@ -255,7 +254,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
-        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+        wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
         # Also test that it can probably reach us (we're on a 10.x network)
@@ -401,7 +400,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
-        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+        wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
         # Also test that it can probably reach us (we're on a 10.x network)
