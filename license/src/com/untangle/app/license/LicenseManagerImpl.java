@@ -21,21 +21,17 @@ import java.security.MessageDigest;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.Iterator;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +39,6 @@ import org.json.JSONObject;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookManager;
-import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.Pulse;
@@ -496,7 +491,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
         
         CloseableHttpClient httpClient = HttpClients.custom().build();
-        CloseableHttpResponse response = null;
         HttpGet get;
         URL url;
         
@@ -504,15 +498,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.info("Requesting Trial: " + urlStr);
             url = new URL(urlStr);
             get = new HttpGet(url.toString());
-            response = httpClient.execute(get);
-            if ( response != null ) { response.close(); response = null; }
-            
+            httpClient.execute(get, res -> res);
+
             if ( urlStr1 != null ) {
                 logger.info("Requesting Trial: " + urlStr1);
                 url = new URL(urlStr1);
                 get = new HttpGet(url.toString());
-                response = httpClient.execute(get);
-                if ( response != null ) { response.close(); response = null; }
+                httpClient.execute(get, res -> res);
             }
         } catch ( java.net.UnknownHostException e ) {
             logger.warn("Exception requesting trial license:" + e.toString());
@@ -524,7 +516,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.warn("Exception requesting trial license:" + e.toString());
             throw ( new Exception( "Unable to fetch trial license: " + e.toString(), e ) );
         } finally {
-            try { if ( response != null ) response.close(); } catch (Exception e) { logger.warn("close",e); }
             try { httpClient.close(); } catch (Exception e) { logger.warn("close",e); }
         }
 

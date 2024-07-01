@@ -56,7 +56,8 @@ class Jars
                 Jars.downloadTarget("apache-tomcat-9.0.89-embed/#{n}")
               end)
     
-    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-logging-1.2.jar')])
+    const_set(:TomcatEmb, TomcatCommon + TomcatServer + [Jars.downloadTarget('commons-logging-1.3.2/commons-logging-1.3.2.jar'),
+                                                         Jars.downloadTarget('commons-codec-1.17.0/commons-codec-1.17.0.jar')])
     
     ## Miscellaneous Jars
     const_set(:JavaMail, [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ])
@@ -73,9 +74,9 @@ class Jars
 
     const_set(:SqlLite, [ Jars.downloadTarget('sqlite-jdbc-3.15.1/sqlite-jdbc-3.15.1.jar') ])
     
-    const_set(:HttpClient, [ Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpclient-4.5.1.jar'),
-                             Jars.downloadTarget('httpcomponents-client-4.5.1/lib/httpcore-4.4.3.jar'),
-                             Jars.downloadTarget('httpcomponents-client-4.5.1/lib/commons-codec-1.9.jar'),
+    const_set(:HttpClient, [ Jars.downloadTarget('httpcomponents-client-5.3.1/lib/httpclient5-5.3.1.jar'),
+                             Jars.downloadTarget('httpcomponents-client-5.3.1/lib/httpcore5-5.2.4.jar'),
+                             Jars.downloadTarget('httpcomponents-client-5.3.1/lib/httpcore5-h2-5.2.4.jar'),
                              Jars.downloadTarget('commons-io-2.11.0/commons-io-2.11.0.jar'),
                              Jars.downloadTarget('commons-fileupload-1.5-bin/commons-fileupload-1.5.jar')])
 

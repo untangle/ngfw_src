@@ -4,8 +4,6 @@
 
 package com.untangle.uvm;
 
-import com.untangle.uvm.WizardSettings;
-
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -13,27 +11,30 @@ import java.util.LinkedList;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.http.NameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.util.Timeout;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 
 /**
  * The cloud manager
  */
 public class CloudManagerImpl implements CloudManager
 {
+    private static final String UTF_8 = "UTF-8";
     private final Logger logger = LogManager.getLogger(CloudManagerImpl.class);
 
     private static final String ZEROTOUCH_API = "/appliance/IsProvisioned?serialNumber=%serial%&uid=%uid%";
@@ -120,9 +121,8 @@ public class CloudManagerImpl implements CloudManager
             post.setHeader("Content-Type", "application/x-www-form-urlencoded");
             post.setEntity(body);
 
-            CloseableHttpResponse response = httpClient.execute(post, context);
+            String responseBody = httpClient.execute(post, context, response -> EntityUtils.toString(response.getEntity(), UTF_8));
 
-            String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
             responseBody = responseBody.trim();
 
             logger.info("accountLogin( " + email + " ) = " + responseBody);
@@ -185,9 +185,7 @@ public class CloudManagerImpl implements CloudManager
             post.setHeader("Content-Type", "application/x-www-form-urlencoded");
             post.setEntity(body);
 
-            CloseableHttpResponse response = httpClient.execute(post, context);
-
-            String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+            String responseBody = httpClient.execute(post, context, response -> EntityUtils.toString(response.getEntity(), UTF_8));
             responseBody = responseBody.trim();
 
             logger.info("accountCreate( " + email + " ) = " + responseBody);
@@ -240,8 +238,8 @@ public class CloudManagerImpl implements CloudManager
             String zerotouchApiCall = UvmContextImpl.getInstance().getStoreUrl() + ZEROTOUCH_API;
             try{
                 zerotouchApiCall = zerotouchApiCall
-                .replace("%serial%",URLEncoder.encode(serialNumber, "UTF-8"))
-                .replace("%uid%",URLEncoder.encode(uid, "UTF-8"));
+                .replace("%serial%",URLEncoder.encode(serialNumber, UTF_8))
+                .replace("%uid%",URLEncoder.encode(uid, UTF_8));
             } catch(Exception exn){
                 logger.error("zerotouchMonitor: Unable to encode: " + exn);
                 return;
@@ -254,14 +252,18 @@ public class CloudManagerImpl implements CloudManager
              * Create client with short timeout.
              */
             RequestConfig.Builder config = RequestConfig.custom()
-                .setConnectTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI)
-                .setConnectionRequestTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI)
-                .setSocketTimeout(ZEROTOUCH_TIMEOUT_TIME_MILLI);
+                    .setConnectionRequestTimeout(Timeout.ofMilliseconds(ZEROTOUCH_TIMEOUT_TIME_MILLI));
+
+            PoolingHttpClientConnectionManager poolingConnManager = new PoolingHttpClientConnectionManager();
+            poolingConnManager.setDefaultConnectionConfig(ConnectionConfig.custom()
+                    .setConnectTimeout(Timeout.ofMilliseconds(ZEROTOUCH_TIMEOUT_TIME_MILLI))
+                    .setSocketTimeout(Timeout.ofMilliseconds(ZEROTOUCH_TIMEOUT_TIME_MILLI))
+                    .build());
             CloseableHttpClient httpClient = HttpClientBuilder
-                .create()
-                .setDefaultRequestConfig(config.build())
-                .build();
-            CloseableHttpResponse response = null;
+                    .create()
+                    .setConnectionManager(poolingConnManager)
+                    .setDefaultRequestConfig(config.build())
+                    .build();
             HttpGet get;
             URL url;
 
@@ -284,21 +286,19 @@ public class CloudManagerImpl implements CloudManager
                     /**
                      * Peform query.
                      */
-                    String responseBody = "";
+                    String responseBody = null;
                     try {
                         logger.info("zerotouchMonitor: Requesting: " + zerotouchApiCall);
                         url = new URL(zerotouchApiCall);
                         get = new HttpGet(url.toString());
-                        response = httpClient.execute(get);
-                        if ( response != null ) {
+                        responseBody = httpClient.execute(get, response -> EntityUtils.toString(response.getEntity()));
+                        if ( responseBody != null ) {
                             /**
                              * It doesn't matter what the response is.
                              * If false, nothing will be done.
                              * If true, command center will contact unit to launch ut-restore.sh.
                              */
                             receivedResponse = true;
-                            responseBody = EntityUtils.toString(response.getEntity());
-                            response.close();
                         }
                     } catch ( java.net.UnknownHostException e ) {
                         logger.warn("zerotouchMonitor: Exception requesting (unknown host):" + e.toString());
@@ -308,9 +308,7 @@ public class CloudManagerImpl implements CloudManager
                         logger.warn("zerotouchMonitor: Exception requesting(other exception):" + e.toString());
                     } finally {
                         try {
-                            if ( response != null ){
-                                response.close();
-                            }
+                            httpClient.close();
                         } catch (Exception e) {
                             logger.warn("zerotouchMonitor: close",e);
                         }
@@ -320,7 +318,6 @@ public class CloudManagerImpl implements CloudManager
                         logger.info("zerotouchMonitor: stopping after receiving response: " + responseBody);
                         break;
                     }
-                    response = null;
                 }
 
                 try {

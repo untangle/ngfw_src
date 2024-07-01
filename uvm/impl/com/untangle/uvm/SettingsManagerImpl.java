@@ -23,12 +23,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.config.RequestConfig;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -39,8 +42,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.util.IOUtil;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SettingsChangesEvent;
 import com.untangle.uvm.app.HostnameLookup;
 import javax.servlet.http.HttpServletRequest;
 
@@ -124,19 +125,24 @@ public class SettingsManagerImpl implements SettingsManager
      * @return The object that was loaded or null if an object was not loaded.
      * @throws SettingsException
      */
+    @SuppressWarnings("deprecation")
     public <T> T loadUrl( Class<T> clz, String urlStr ) throws SettingsException
     {
         InputStream is = null;
-
         CloseableHttpResponse response = null;
         RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(90000)
-            .setSocketTimeout(90000)
-            .setConnectionRequestTimeout(90000)
-            .build();
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(90000))
+                .build();
+
+        PoolingHttpClientConnectionManager poolingConnManager = new PoolingHttpClientConnectionManager();
+        poolingConnManager.setDefaultConnectionConfig(ConnectionConfig.custom()
+                .setConnectTimeout(Timeout.ofMilliseconds(90000))
+                .setSocketTimeout(Timeout.ofMilliseconds(90000))
+                .build());
         CloseableHttpClient httpClient = HttpClients.custom()
-            .setDefaultRequestConfig(requestConfig)
-            .build();
+                .setDefaultRequestConfig(requestConfig)
+                .setConnectionManager(poolingConnManager)
+                .build();
         
         try {
             URL url = new URL(urlStr);
@@ -365,7 +371,7 @@ public class SettingsManagerImpl implements SettingsManager
      * @param clz the class
      * @param fileName the filename to load
      * @return The loaded value
-     * @throws SettingSException
+     * @throws SettingsException
      */
     private <T> T _loadImpl( Class<T> clz, String fileName ) throws SettingsException
     {

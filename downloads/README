@@ -4,8 +4,8 @@ geoip2: MaxMind GeoIP stuff used in the untangle-vm GeographyManager
 logging-log4j: used in the untangle-vm (logging)
 velocity: used in templates for quarantine email
 httpcomponents-client: httpclient for settings manager (uvm), license manager, other HTTP requests
-httpcomponents-client: commons-codec - base64 stuff (uvm & apps)
-httpcomponents-client: commons-logging 
+commons-codec: - base64 stuff (uvm & apps)
+commons-logging: logging
 commons-fileupload: file upload (uvm & servlets)
 commons-io: used for file upload servlets internally in tomcat (not needed for compile, only runtime)
 slf4j: logging

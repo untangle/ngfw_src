@@ -14,10 +14,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import org.apache.http.client.utils.URIBuilder;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
+import org.apache.hc.core5.net.URIBuilder;
 
 /**
  * The Manager for system-based url translations
