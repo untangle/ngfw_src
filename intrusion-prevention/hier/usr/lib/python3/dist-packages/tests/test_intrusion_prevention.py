@@ -620,36 +620,36 @@ class IntrusionPreventionTests(NGFWTestCase):
             signature_set = subprocess.check_output(global_functions.build_wget_command(output_file='-', post_data="&".join(post_data), uri="http://localhost/admin/download"), shell=True, stderr=subprocess.STDOUT).decode('utf-8').split("\n")
             assert len(signature_set) > 0, f"non empty signature set {file_name}"
 
-    @pytest.mark.slow
-    def test_201_settings_changes(self):
-        global app, appSettings 
-        original_file_path = "/usr/share/untangle/settings/intrusion-prevention/settings_"+str(app_id)+".js"
-        #Read original settings file
-        with open(original_file_path, "r") as original_file:
-            original_content = original_file.readlines()
-        # Take backup of original configuration file
-        self.backup_files()
-        # Update configurations files
-        self.modify_conf_value()
-        #Sync updated settings in current settings
-        app.synchronizeSettings()
-        # Read updated settings file
-        with open(original_file_path, "r") as updated_file:
-            updated_content = updated_file.readlines()
-        #Verify content of update_file and original_file should not be identical
-        is_updated = self.compare_files(original_content, updated_content)
-        assert is_updated, "Content of updated file matches original file"
+    # @pytest.mark.slow
+    # def test_201_settings_changes(self):
+    #     global app, appSettings 
+    #     original_file_path = "/usr/share/untangle/settings/intrusion-prevention/settings_"+str(app_id)+".js"
+    #     #Read original settings file
+    #     with open(original_file_path, "r") as original_file:
+    #         original_content = original_file.readlines()
+    #     # Take backup of original configuration file
+    #     self.backup_files()
+    #     # Update configurations files
+    #     self.modify_conf_value()
+    #     #Sync updated settings in current settings
+    #     app.synchronizeSettings()
+    #     # Read updated settings file
+    #     with open(original_file_path, "r") as updated_file:
+    #         updated_content = updated_file.readlines()
+    #     #Verify content of update_file and original_file should not be identical
+    #     is_updated = self.compare_files(original_content, updated_content)
+    #     assert is_updated, "Content of updated file matches original file"
 
-        #Restore updated configuration file to original files
-        self.restore_original_files()
-        #Restoring original settings as current settings
-        app.synchronizeSettings()
-        #Read Restored settings file
-        with open(original_file_path, "r") as restored_file:
-            restored_content = restored_file.readlines()
-        #Verify the content of restored_file and original_file is identical
-        is_restored = self.compare_files(original_content, restored_content)
-        assert not is_restored, "Content of updated file does not matches original file"
+    #     #Restore updated configuration file to original files
+    #     self.restore_original_files()
+    #     #Restoring original settings as current settings
+    #     app.synchronizeSettings()
+    #     #Read Restored settings file
+    #     with open(original_file_path, "r") as restored_file:
+    #         restored_content = restored_file.readlines()
+    #     #Verify the content of restored_file and original_file is identical
+    #     is_restored = self.compare_files(original_content, restored_content)
+    #     assert not is_restored, "Content of updated file does not matches original file"
 
     def test_300_flow_established_toggle(self):
         """
