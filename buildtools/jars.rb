@@ -73,6 +73,9 @@ class Jars
     const_set(:DnsJava, [ Jars.downloadTarget('dnsjava-3.5.0-20211020/dnsjava-3.5.0-20211020.jar') ])
 
     const_set(:SqlLite, [ Jars.downloadTarget('sqlite-jdbc-3.15.1/sqlite-jdbc-3.15.1.jar') ])
+
+    const_set(:Annotations, [ Jars.downloadTarget('spotbugs-annotations-4.7.3/spotbugs-annotations-4.7.3.jar'),
+                              Jars.downloadTarget('biz.aQute.bndlib-7.0.0/biz.aQute.bndlib-7.0.0.jar') ])
     
     const_set(:HttpClient, [ Jars.downloadTarget('httpcomponents-client-5.3.1/lib/httpclient5-5.3.1.jar'),
                              Jars.downloadTarget('httpcomponents-client-5.3.1/lib/httpcore5-5.2.4.jar'),
@@ -104,8 +107,7 @@ class Jars
                                    GetText, JavaMail, TomcatEmb, Velocity, 
                                    HttpClient, Jstl, Json, Jabsorb,
                                    Slf4j, DnsJava, Selenium, GeoIP, SqlLite,
-                                   JakartaActivation, JavaTransaction))
-
+                                   JakartaActivation, JavaTransaction, Annotations))
     const_set(:JDKTools, [ ThirdpartyJar.get("#{ENV['JAVA_HOME']}/lib/tools.jar") ])
   end
 end
