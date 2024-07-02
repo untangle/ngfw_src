@@ -162,13 +162,6 @@ class IntrusionPreventionTests(NGFWTestCase):
         if os.path.exists(backup_dir):
             shutil.rmtree(backup_dir)
 
-    @staticmethod
-    def compare_files(file1_lines, file2_lines):
-        flag = False
-        for i in range(len(file2_lines)):
-            if file2_lines[i] != file1_lines[i]:
-                flag = True
-        return flag
 
     def test_009_IsRunning(self):
         result = subprocess.call("ps aux | grep suricata | grep -v grep >/dev/null 2>&1", shell=True)
@@ -620,36 +613,25 @@ class IntrusionPreventionTests(NGFWTestCase):
             signature_set = subprocess.check_output(global_functions.build_wget_command(output_file='-', post_data="&".join(post_data), uri="http://localhost/admin/download"), shell=True, stderr=subprocess.STDOUT).decode('utf-8').split("\n")
             assert len(signature_set) > 0, f"non empty signature set {file_name}"
 
-    # @pytest.mark.slow
-    # def test_201_settings_changes(self):
-    #     global app, appSettings 
-    #     original_file_path = "/usr/share/untangle/settings/intrusion-prevention/settings_"+str(app_id)+".js"
-    #     #Read original settings file
-    #     with open(original_file_path, "r") as original_file:
-    #         original_content = original_file.readlines()
-    #     # Take backup of original configuration file
-    #     self.backup_files()
-    #     # Update configurations files
-    #     self.modify_conf_value()
-    #     #Sync updated settings in current settings
-    #     app.synchronizeSettings()
-    #     # Read updated settings file
-    #     with open(original_file_path, "r") as updated_file:
-    #         updated_content = updated_file.readlines()
-    #     #Verify content of update_file and original_file should not be identical
-    #     is_updated = self.compare_files(original_content, updated_content)
-    #     assert is_updated, "Content of updated file matches original file"
+    @pytest.mark.slow
+    def test_201_settings_changes(self):
+        global app, appSettings 
+        original_file_path = "/usr/share/untangle/settings/intrusion-prevention/settings_"+str(app_id)+".js"
+        #Read original settings file
+        with open(original_file_path, "r") as original_file:
+            original_content = original_file.readlines()
+        # Take backup of original configuration file
+        self.backup_files()
+        # Update configurations files
+        self.modify_conf_value()
+        #Sync updated settings in current settings
+        app.synchronizeSettings()
+        # Read updated settings file
+        with open(original_file_path, "r") as updated_file:
+            updated_content = updated_file.readlines()
+        #Verify content of update_file and original_file should not be identical
+        assert original_content != updated_content, "Content of updated file matches original file"
 
-    #     #Restore updated configuration file to original files
-    #     self.restore_original_files()
-    #     #Restoring original settings as current settings
-    #     app.synchronizeSettings()
-    #     #Read Restored settings file
-    #     with open(original_file_path, "r") as restored_file:
-    #         restored_content = restored_file.readlines()
-    #     #Verify the content of restored_file and original_file is identical
-    #     is_restored = self.compare_files(original_content, restored_content)
-    #     assert not is_restored, "Content of updated file does not matches original file"
 
     def test_300_flow_established_toggle(self):
         """
@@ -677,5 +659,13 @@ class IntrusionPreventionTests(NGFWTestCase):
         empty_flow_count = int(subprocess.check_output(f"grep -c 'flow:;' {rules_filename}|| true", shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
         print(f"empty flow count {flow_established_enabled_flag_filename}, found {empty_flow_count}")
         assert empty_flow_count == 0, "empty flow not found in signatures"
+
+    @classmethod
+    def final_extra_tear_down(cls):
+        # Restore original settings to return to initial settings
+        global app
+        cls.restore_original_files()
+        #Restoring default settings
+        app.synchronizeSettings()
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)
