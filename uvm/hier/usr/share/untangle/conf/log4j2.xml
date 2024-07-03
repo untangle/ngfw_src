@@ -24,7 +24,7 @@
       <!-- <ThresholdFilter level="ALL"/> -->
       <PatternLayout>
         <alwaysWriteExceptions>false</alwaysWriteExceptions>
-	      <pattern>uvm: [%c{1}:%L] %-5p %m%n%uvm{uvm}</pattern>
+	      <pattern>uvm: [%c{1}] %-5p %m%n%uvm{uvm}</pattern>
       </PatternLayout>
     </Syslog>
 
