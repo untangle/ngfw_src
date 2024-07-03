@@ -35,8 +35,8 @@ public class UvmContextSelector implements ContextSelector {
     private static final String LOG4J_XML = "log4j2.xml";
     private static final String SYSLOG = "SYSLOG";
     private static final String LOCALHOST = "localhost";
-    private static final String APP_PATTERN_TEMPLATE = ": [%c{1}:%L] &lt;%X{SessionID}&gt; %-5p %m%n%uvm{CONTEXTNAME}";
-    private static final String UVM_PATTERN_TEMPLATE = "uvm: [%c{1}:%L] %-5p %m%n%uvm{CONTEXTNAME}";
+    private static final String APP_PATTERN_TEMPLATE = "CONTEXTNAME: [%c{1}] &lt;%X{SessionID}&gt; %-5p %m%n%uvm{CONTEXTNAME}";
+    private static final String UVM_PATTERN_TEMPLATE = "uvm: [%c{1}] %-5p %m%n%uvm{CONTEXTNAME}";
     private static final String CONTEXTNAME = "CONTEXTNAME";
 
     private static final UvmContextSelector INSTANCE;
@@ -204,7 +204,7 @@ public class UvmContextSelector implements ContextSelector {
                 Facility facility;
                 if (contextName != null && !contextName.equals(UVM_LOG)) {
                     newPatternLayout = PatternLayout.newBuilder()
-                        .withPattern(contextName + APP_PATTERN_TEMPLATE.replaceAll(CONTEXTNAME, contextName))
+                        .withPattern(APP_PATTERN_TEMPLATE.replaceAll(CONTEXTNAME, contextName))
                         .withAlwaysWriteExceptions(false)
                         .withConfiguration(config)
                         .build();
