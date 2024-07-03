@@ -6,7 +6,6 @@ import unittest
 import pytest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -141,7 +140,7 @@ class PolicyManagerTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     # add a rack
     def test_015_addRack(self):
@@ -167,7 +166,7 @@ class PolicyManagerTests(NGFWTestCase):
     # add firewall to second rack
     def test_022_addFirewallToSecondRack(self):
         global secondRackFirewall 
-        secondRackFirewall = uvmContext.appManager().instantiate("firewall", secondRackId)
+        secondRackFirewall = global_functions.uvmContext.appManager().instantiate("firewall", secondRackId)
         assert (secondRackFirewall != None)
         # add a block rule for the client IP
         rules = secondRackFirewall.getRules()
@@ -178,7 +177,7 @@ class PolicyManagerTests(NGFWTestCase):
     def test_023_childShouldNotEffectParent(self):
         # add a child that blocks everything
         blockRackId = addRack(self._app, name="Block Rack", parentId=default_policy_id)
-        blockRackFirewall = uvmContext.appManager().instantiate("firewall", blockRackId)
+        blockRackFirewall = global_functions.uvmContext.appManager().instantiate("firewall", blockRackId)
         assert (blockRackFirewall != None)
         # add a block rule for the client IP
         rules = blockRackFirewall.getRules()
@@ -187,7 +186,7 @@ class PolicyManagerTests(NGFWTestCase):
         # client should still be online
         result = remote_control.is_online()
         assert (result == 0)
-        uvmContext.appManager().destroy( blockRackFirewall.getAppSettings()["id"] )
+        global_functions.uvmContext.appManager().destroy( blockRackFirewall.getAppSettings()["id"] )
         assert (removeRack(self._app, blockRackId))
 
         # Get the IP address of test.untangle.com
@@ -233,7 +232,7 @@ class PolicyManagerTests(NGFWTestCase):
     # add firewall to third rack - this should override the second rack's firewall with the block rule
     def test_028_addFirewallToThirdRack(self):
         global thirdRackFirewall
-        thirdRackFirewall = uvmContext.appManager().instantiate("firewall", thirdRackId)
+        thirdRackFirewall = global_functions.uvmContext.appManager().instantiate("firewall", thirdRackId)
         assert (thirdRackFirewall != None)
         result = remote_control.is_online()
         assert (result == 0)
@@ -250,7 +249,7 @@ class PolicyManagerTests(NGFWTestCase):
     # add a app that requires a casing to second rack to make sure casing is inherited
     def test_030_addWebFilterToSecondRack(self):
         global secondRackWebfilter
-        secondRackWebfilter = uvmContext.appManager().instantiate("web-filter", secondRackId)
+        secondRackWebfilter = global_functions.uvmContext.appManager().instantiate("web-filter", secondRackId)
         assert (secondRackWebfilter != None)
         result = remote_control.is_online()
         assert (result == 0)
@@ -267,7 +266,7 @@ class PolicyManagerTests(NGFWTestCase):
     def test_040_localCaptivePortalToSecondRack(self):
         global defaultRackCaptivePortal
         remote_control.run_command("rm -f /tmp/policy_test_040*")
-        defaultRackCaptivePortal = uvmContext.appManager().instantiate("captive-portal", default_policy_id)
+        defaultRackCaptivePortal = global_functions.uvmContext.appManager().instantiate("captive-portal", default_policy_id)
         assert (defaultRackCaptivePortal != None)
         defaultRackCaptivePortalData = defaultRackCaptivePortal.getSettings()
         # turn default capture rule on and basic login
@@ -277,13 +276,13 @@ class PolicyManagerTests(NGFWTestCase):
         defaultRackCaptivePortal.setSettings(defaultRackCaptivePortalData)
         
         # Create local directory user 'test20'
-        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+        global_functions.uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         # check host table and remove username for host IP
-        userHost = uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
+        userHost = global_functions.uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
         userHost['username'] = ""
         userHost['usernameCaptivePortal'] = ""
-        uvmContext.hostTable().setHostTableEntry(remote_control.client_ip,userHost)
-        # userHost = uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
+        global_functions.uvmContext.hostTable().setHostTableEntry(remote_control.client_ip,userHost)
+        # userHost = global_functions.uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
         # print(userHost)
         nukeRules(self._app)
         appendRule(self._app, createPolicySingleConditionRule("USERNAME","[authenticated]", secondRackId))
@@ -304,9 +303,9 @@ class PolicyManagerTests(NGFWTestCase):
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://{captureIP}/capture/handler.py/authpost?username=test20&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid={appid}&host={captureIP}&uri=/"))
         assert (result == 0)
         # verify the username is assigned to the IP
-        userHost = uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
+        userHost = global_functions.uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
         assert (userHost['username'] == "test20")
-        userHost = uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
+        userHost = global_functions.uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
         # firewall on rack 2 is blocking all, we should not get the test.untangle.com page
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/policy_test_040a.out", log_file="/tmp/policy_test_040a.log", uri="http://www.google.com/"))
         search = remote_control.run_command("grep -q 'Hi!' /tmp/policy_test_040a.out")
@@ -321,20 +320,20 @@ class PolicyManagerTests(NGFWTestCase):
         search = remote_control.run_command("grep -q 'logged out' /tmp/policy_test_040b.out")
         assert (search == 0)
         # remove captive portal and test user
-        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
-        uvmContext.appManager().destroy( defaultRackCaptivePortal.getAppSettings()["id"] )
+        global_functions.uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        global_functions.uvmContext.appManager().destroy( defaultRackCaptivePortal.getAppSettings()["id"] )
         defaultRackCaptivePortal = None
 
     # remove apps from second rack
     def test_980_removeAppsFromSecondRack(self):
         global secondRackFirewall , secondRackWebfilter
-        uvmContext.appManager().destroy( secondRackFirewall.getAppSettings()["id"] )
-        uvmContext.appManager().destroy( secondRackWebfilter.getAppSettings()["id"] )
+        global_functions.uvmContext.appManager().destroy( secondRackFirewall.getAppSettings()["id"] )
+        global_functions.uvmContext.appManager().destroy( secondRackWebfilter.getAppSettings()["id"] )
 
     # remove apps from third rack
     def test_981_removeAppsFromThirdRack(self):
         global thirdRackFirewall 
-        uvmContext.appManager().destroy( thirdRackFirewall.getAppSettings()["id"] )
+        global_functions.uvmContext.appManager().destroy( thirdRackFirewall.getAppSettings()["id"] )
 
     # remove third rack
     def test_982_removeThirdRack(self):
@@ -357,7 +356,7 @@ class PolicyManagerTests(NGFWTestCase):
         global defaultRackCaptivePortal
 
         if defaultRackCaptivePortal != None:
-            uvmContext.appManager().destroy( defaultRackCaptivePortal.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( defaultRackCaptivePortal.getAppSettings()["id"] )
             defaultRackCaptivePortal = None
 
 
