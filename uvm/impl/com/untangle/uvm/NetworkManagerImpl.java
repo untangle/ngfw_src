@@ -3,71 +3,29 @@
  */
 package com.untangle.uvm;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Collections;
-import java.util.Comparator;
-import java.net.InetAddress;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Predicate;
-import java.util.Iterator;
-
-import org.apache.logging.log4j.Logger;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.RuleCondition;
+import com.untangle.uvm.network.*;
+import com.untangle.uvm.servlet.DownloadHandler;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.NetspaceManager;
-import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.HookManager;
-import com.untangle.uvm.ExecManagerResult;
-import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.network.InterfaceStatus;
-import com.untangle.uvm.network.DeviceStatus;
-import com.untangle.uvm.network.DeviceSettings;
-import com.untangle.uvm.network.BypassRule;
-import com.untangle.uvm.network.BypassRuleCondition;
-import com.untangle.uvm.network.StaticRoute;
-import com.untangle.uvm.network.NatRule;
-import com.untangle.uvm.network.NatRuleCondition;
-import com.untangle.uvm.network.PortForwardRule;
-import com.untangle.uvm.network.PortForwardRuleCondition;
-import com.untangle.uvm.network.FilterRule;
-import com.untangle.uvm.network.FilterRuleCondition;
-import com.untangle.uvm.network.QosSettings;
-import com.untangle.uvm.network.QosRule;
-import com.untangle.uvm.network.QosRuleCondition;
-import com.untangle.uvm.network.QosPriority;
-import com.untangle.uvm.network.DnsSettings;
-import com.untangle.uvm.network.DhcpStaticEntry;
-import com.untangle.uvm.network.DhcpRelay;
-import com.untangle.uvm.network.UpnpSettings;
-import com.untangle.uvm.network.UpnpRule;
-import com.untangle.uvm.network.UpnpRuleCondition;
-import com.untangle.uvm.network.NetflowSettings;
-import com.untangle.uvm.network.DynamicRoutingSettings;
-import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
-import com.untangle.uvm.network.DynamicRouteNetwork;
-import com.untangle.uvm.network.DynamicRouteOspfArea;
-import com.untangle.uvm.network.DynamicRouteOspfInterface;
-import com.untangle.uvm.app.GlobMatcher;
-import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.app.RuleCondition;
-import com.untangle.uvm.servlet.DownloadHandler;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
 
 /**
  * The Network Manager handles all the network configuration
@@ -3157,6 +3115,15 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Invalid parameters: " + name );
                 return;
             }
+            // Ensuring that filename can only be downloaded from under our path and is valid
+            if (name.startsWith("/")) name = name.substring(1);
+
+            Path basePath = Paths.get(PATH).toAbsolutePath().normalize();
+            Path resolvedPath = basePath.resolve(name).normalize();
+            if (!resolvedPath.startsWith(basePath) || !resolvedPath.toFile().exists()) {
+                logger.warn("Invalid parameters: {}", name );
+                return;
+            }
 
             FileInputStream fis = null;
             OutputStream out = null;
@@ -3167,7 +3134,7 @@ public class NetworkManagerImpl implements NetworkManager
 
                 byte[] buffer = new byte[1024];
                 int read;
-                // Ensure that filename can only be downloaded from under our path
+
                 fis = new FileInputStream(PATH + name);
                 out = resp.getOutputStream();
                 
