@@ -206,6 +206,9 @@ Ext.define('Ung.cmp.TagPicker', {
     },
 
     setValue: function (tags) {
+        if(!Array.isArray(tags)){
+            return;
+        }
         var me = this, value = [];
         Ext.Array.each(tags, function(tag) {
             // value.push(tag.name);
