@@ -345,6 +345,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },
         build: function(config){
             var comparators = Ext.clone(Ung.cmp.ConditionsEditor.comparators);
+            var me = this;
             var found;
             for(var key in config){
                 if(key == 'comparators'){
@@ -393,6 +394,9 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                             }
                         }
                     } );
+                    conditions.forEach(function (currItem){
+                        me.getWidgetDataAndField(currItem.type, currItem);
+                    });
                     config[key] = Ext.Array.toValueMap(conditions, 'name');
                     if( !config['conditionsOrder'] ){
                         config['conditionsOrder'] = conditionsOrder;
@@ -449,6 +453,255 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                 '!=', 'is NOT'.t()
             ]]
         }],
+
+        getWidgetDataAndField: function(type, currItem){
+            switch (type) {
+                case "userfield": {
+                    currItem["getData"] = function (field) {
+                        var data = [{
+                            firstName: '', lastName: null, uid: '[any]', displayName: 'Any User'
+                        }, {
+                            firstName: '', lastName: null, uid: '[authenticated]', displayName: 'Any Authenticated User'
+                        }, {
+                            firstName: '', lastName: null, uid: '[unauthenticated]', displayName: 'Any Unauthenticated/Unidentified User'
+                        }];
+
+                        if (field) {
+                            Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                                .then(function (app) {
+                                    if (Util.isDestroyed(field)) {
+                                        return;
+                                    }
+                                    if (app) {
+                                        Rpc.asyncData(app, 'getRuleConditonalUserEntries')
+                                            .then(function (result) {
+                                                if (Util.isDestroyed(field)) {
+                                                    return;
+                                                }
+                                                Ext.Array.each(data.reverse(), function (record) {
+                                                    result.list.unshift(record);
+                                                });
+                                                data = result.list;
+                                            }, function (ex) {
+                                                Util.handleException(ex);
+                                            });
+                                    }
+                                }, function (ex) {
+                                    Util.handleException(ex);
+                                });
+                        } else {
+                            try {
+                                var appData = Rpc.directData('rpc.appManager.app', 'directory-connector');
+                                if (appData) {
+                                    var result = Rpc.directData(appData, 'getRuleConditonalUserEntries');
+                                    Ext.Array.each(data.reverse(), function (record) {
+                                        result.list.unshift(record);
+                                    });
+                                    data = result.list;
+                                }
+                            } catch (ex) {
+                                Util.handleException(ex);
+                            }
+                        }
+
+                        return field ? data : { keyName: 'uid', data: data };
+                    };
+
+                    currItem["widgetCreator"] = function (widget, valueBind, condition) {
+                        widget.container.add({
+                            xtype: 'tagfield',
+                            flex: 1,
+                            emptyText: 'Select a user or specify a custom value ...',
+                            store: { data: [] },
+                            filterPickList: true,
+                            forceSelection: false,
+                            queryMode: 'local',
+                            selectOnFocus: false,
+                            growMax: 60,
+                            createNewOnEnter: true,
+                            createNewOnBlur: true,
+                            displayField: 'uid',
+                            valueField: 'uid',
+                            listConfig: {
+                                itemTpl: ['<div>{uid}</div>']
+                            },
+                            bind: {
+                                value: valueBind
+                            },
+                            listeners: {
+                                afterrender: function (field) {
+                                    var fetchedData = condition.getData(field);
+                                    field.getStore().loadData(fetchedData);
+                                }
+                            }
+                        });
+                    };
+                } 
+                break;
+            
+                case "directorygroupfield": {
+                    currItem["getData"] = function (field) {
+                        var data = [{
+                            SAMAccountName: '*', CN: 'Any Group'
+                        }];
+
+                        if (field) {
+                            Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                                .then(function (app) {
+                                    if (Util.isDestroyed(field)) {
+                                        return;
+                                    }
+                                    if (app) {
+                                        Rpc.asyncData(app, 'getRuleConditonalUserEntries')
+                                            .then(function (result) {
+                                                if (Util.isDestroyed(field)) {
+                                                    return;
+                                                }
+                                                Ext.Array.each(data.reverse(), function (record) {
+                                                    result.list.unshift(record);
+                                                });
+                                                data = result.list;
+                                            }, function (ex) {
+                                                Util.handleException(ex);
+                                            });
+                                    }
+                                }, function (ex) {
+                                    Util.handleException(ex);
+                                });
+                        } else {
+                            try {
+                                var appData = Rpc.directData('rpc.appManager.app', 'directory-connector');
+                                if (appData) {
+                                    var result = Rpc.directData(appData, 'getRuleConditionalGroupEntries');
+                                    Ext.Array.each(data.reverse(), function (record) {
+                                        result.list.unshift(record);
+                                    });
+                                    data = result.list;
+                                }
+                            } catch (ex) {
+                                Util.handleException(ex);
+                            }
+                        }
+
+                        return field ? data : { keyName: 'SAMAccountName', data: data };
+                    };
+
+                    currItem["widgetCreator"] = function (widget, valueBind, condition) {
+                        widget.container.add({
+                            xtype: 'tagfield',
+                            flex: 1,
+                            emptyText: 'Select a group or specify a custom value ...',
+                            store: { data: [] },
+                            filterPickList: true,
+                            forceSelection: false,
+                            queryMode: 'local',
+                            selectOnFocus: false,
+                            growMax: 60,
+                            createNewOnEnter: true,
+                            createNewOnBlur: true,
+                            displayField: 'CN',
+                            valueField: 'SAMAccountName',
+                            listConfig: {
+                                itemTpl: ['<div>{CN} <strong>[{SAMAccountName}]</strong></div>']
+                            },
+                            bind: {
+                                value: valueBind
+                            },
+                            listeners: {
+                                afterrender: function (field) {
+                                    var fetchedData = condition.getData(field);
+                                    field.getStore().loadData(fetchedData);
+                                }
+                            }
+                        });
+                    };
+                }
+                break;
+
+                case "directorydomainfield": {
+                    currItem["getData"] = function (field) {  
+                        var data = [{
+                            value: '*', description: 'Any Domain'
+                        }];
+
+                        if (field) {
+                            Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                                .then(function (app) {
+                                    if (Util.isDestroyed(field)) {
+                                        return;
+                                    }
+                                    if (app) {
+                                        Rpc.asyncData(app, 'getRuleConditonalUserEntries')
+                                            .then(function (result) {
+                                                if (Util.isDestroyed(field)) {
+                                                    return;
+                                                }
+                                                Ext.Array.each(data.reverse(), function (record) {
+                                                    result.list.unshift(record);
+                                                });
+                                                data = result.list;
+                                            }, function (ex) {
+                                                Util.handleException(ex);
+                                            });
+                                    }
+                                }, function (ex) {
+                                    Util.handleException(ex);
+                                });
+                        } else {
+                            try {
+                                var appData = Rpc.directData('rpc.appManager.app', 'directory-connector');
+                                if (appData) {
+                                    var result = Rpc.directData(appData, 'getRuleConditionalDomainEntries');
+                                    Ext.Array.each(data.reverse(), function (record) {
+                                        result.list.unshift(record);
+                                    });
+                                    data = result.list;
+                                }
+                            } catch (ex) {
+                                Util.handleException(ex);
+                            }
+                        }
+
+                        return field ? data : { keyName: 'value', data: data };
+
+                    };
+
+                    currItem["widgetCreator"] = function (widget, valueBind, condition){
+                        widget.container.add({
+                            xtype: 'tagfield',
+                            flex: 1,
+                            emptyText: 'Select a domain or specify a custom value ...',
+                            store: { data: [] },
+                            filterPickList: true,
+                            forceSelection: false,
+                            queryMode: 'local',
+                            selectOnFocus: false,
+                            growMax: 60,
+                            createNewOnEnter: true,
+                            createNewOnBlur: true,
+                            displayField: 'description',
+                            valueField: 'value',
+                            listConfig: {
+                                itemTpl: ['<div>{value} <strong>[{description}]</strong></div>']
+                            },
+                            bind: {
+                                value: valueBind
+                            },
+                            listeners: {
+                                afterrender: function (field) {
+                                    var fetchedData = condition.getData(field);
+                                    field.getStore().loadData(fetchedData);
+                                }
+                            }
+                        });
+                    };
+                }
+                break;
+
+                default:
+                    break;
+            }
+        },
 
         // If not specified, visible is treated as true.
         conditions: [{
@@ -525,7 +778,8 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'USERNAME',
             displayName: 'Username'.t(),
-            type: 'userfield'
+            type: 'userfield',
+            importValidation: true,
         },{
             name:'HOST_HOSTNAME',
             displayName: 'Host Hostname'.t(),
@@ -564,11 +818,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_HAS_NO_QUOTA',
             displayName: 'Host has no Quota'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'USER_HAS_NO_QUOTA',
             displayName: 'User has no Quota'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'CLIENT_HAS_NO_QUOTA',
             displayName: 'Client has no Quota'.t(),
@@ -582,11 +838,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_QUOTA_EXCEEDED',
             displayName: 'Host has exceeded Quota'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'USER_QUOTA_EXCEEDED',
             displayName: 'User has exceeded Quota'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'CLIENT_QUOTA_EXCEEDED',
             displayName: 'Client has exceeded Quota'.t(),
@@ -620,7 +878,8 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_ENTITLED',
             displayName: 'Host Entitled'.t(), 
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'HTTP_HOST',
             displayName: 'HTTP: Hostname'.t(),
@@ -747,7 +1006,8 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'WEB_FILTER_FLAGGED',
             displayName: 'Web Filter: Website is Flagged'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'WEB_FILTER_REQUEST_METHOD',
             displayName: 'Web Filter: Request Method'.t(),
@@ -786,19 +1046,23 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'DIRECTORY_CONNECTOR_GROUP',
             displayName: 'Directory Connector: User in Group'.t(),
-            type: 'directorygroupfield'
+            type: 'directorygroupfield',
+            importValidation: true,
         },{
             name:'DIRECTORY_CONNECTOR_DOMAIN',
             displayName: 'Directory Connector: User in Domain'.t(),
-            type: 'directorydomainfield'
+            type: 'directorydomainfield',
+            importValidation: true,
         },{
             name:'CLIENT_COUNTRY',
             displayName: 'Client Country'.t(),
-            type: 'countryfield'
+            type: 'countryfield',
+            importValidation: true,
         },{
             name:'SERVER_COUNTRY',
             displayName: 'Server Country'.t(),
-            type: 'countryfield'
+            type: 'countryfield',
+            importValidation: true,
         },{
             name:'THREAT_PREVENTION_SRC_REPUTATION',
             displayName: 'Threat Prevention: Client address reputation'.t(),
