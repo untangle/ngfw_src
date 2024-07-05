@@ -28,6 +28,8 @@ Ext.define('Ung.apps.webfilter.view.Rules', {
 
     importValidationJavaClass: true,
 
+    importValidationForComboBox: true,
+
     listProperty: 'settings.filterRules.list',
 
     emptyRow: {

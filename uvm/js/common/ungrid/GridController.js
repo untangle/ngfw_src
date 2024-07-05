@@ -641,6 +641,67 @@ Ext.define('Ung.cmp.GridController', {
         }
     },
 
+    dropdownFieldValidator: function(rows,keyName, valuesToCheck){
+        var availableFieldValues=[];
+        if(rows && rows.length <= 0){
+            return false;
+        }else{
+            for(var j=0; j<rows.length; j++){
+                availableFieldValues.push(rows[j][keyName]);
+            }
+        }
+        var isEntryValid = true;
+        valuesToCheck = valuesToCheck.split(",");
+        for(var i=0; i<valuesToCheck.length; i++){
+            var currValue = valuesToCheck[i].trim();
+            if(currValue && availableFieldValues.includes(currValue)){
+                    continue;
+            }else{
+                isEntryValid = false;
+                break;
+            }
+        }
+        return isEntryValid;
+    },
+
+    handledropDownFieldValidations: function(me,currentCondition, currentValue){
+        var fetchedConditionData = null;
+        var aredropDownValuesValid = true;
+        var errorMsgForConditions = null;
+
+        switch (currentCondition.type) {
+            case "userfield":
+            case "directorygroupfield":
+            case "directorydomainfield":
+                if(currentCondition.hasOwnProperty("getData")){
+                    fetchedConditionData = currentCondition.getData();
+                    aredropDownValuesValid = me.dropdownFieldValidator(fetchedConditionData.data, fetchedConditionData.keyName, currentValue);
+                    if(!aredropDownValuesValid){
+                        errorMsgForConditions = Ext.String.format('Invalid value for the dropdown field {0}'.t(), currentCondition.displayName);
+                    }
+                }else{
+                    errorMsgForConditions = Ext.String.format('No dropdown data available.');
+                }
+                break;
+            case "countryfield":
+                fetchedConditionData = Ext.getStore("countries");
+                if(fetchedConditionData && Ext.getStore("countries").getRange().length > 0){
+                    fetchedConditionData = Ext.Array.pluck(fetchedConditionData.getRange(), 'data');
+                    aredropDownValuesValid = me.dropdownFieldValidator(fetchedConditionData, "code", currentValue);
+                    if(!aredropDownValuesValid){
+                        errorMsgForConditions = Ext.String.format('Invalid value for the dropdown field {0}'.t(), currentCondition.displayName);
+                    }
+                }else{
+                    errorMsgForConditions = Ext.String.format('No dropdown data available.');
+                }
+                break;
+            default:
+                break;
+        }
+
+        return errorMsgForConditions;
+    },
+
     importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid, me){
         for (var fieldName in record) {
             if(!isNestedEditor && mappedObject[fieldName]){
@@ -740,13 +801,21 @@ Ext.define('Ung.cmp.GridController', {
                                                     errorMsgForConditions = Ext.String.format('Invalid value for the checkbox field {0}'.t(), currentCondition.displayName);
                                                     break;
                                                 }
-                                            }else if(currentCondition.type && currentCondition.type === 'boolean'){
+                                            }else if(currentCondition.type && currentCondition.type === 'boolean' && !currentCondition.onlyTrue){
                                                 var booleanOptionValues = ['true', 'false'];
                                                 if(!booleanOptionValues.includes(currentValue)){
                                                     errorMsgForConditions = Ext.String.format('Invalid value for the boolean field {0}'.t(), currentCondition.displayName);
                                                     break;
                                                 }
-                                            }else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                                            }else if(currentCondition.importValidation){
+                                                // import validation for the dropdown fields
+                                                var errorMsg = me.handledropDownFieldValidations(me,currentCondition, currentValue);
+                                                if(errorMsg){
+                                                    errorMsgForConditions = errorMsg;
+                                                    break;
+                                                }
+                                            }
+                                            else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
                                                 continue; // Skip validation if allowBlank is true and field value is empty
                                             }
 
