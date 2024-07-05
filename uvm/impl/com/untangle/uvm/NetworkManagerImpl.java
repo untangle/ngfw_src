@@ -5,7 +5,36 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.RuleCondition;
-import com.untangle.uvm.network.*;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.network.DeviceStatus;
+import com.untangle.uvm.network.DeviceSettings;
+import com.untangle.uvm.network.BypassRule;
+import com.untangle.uvm.network.BypassRuleCondition;
+import com.untangle.uvm.network.StaticRoute;
+import com.untangle.uvm.network.NatRule;
+import com.untangle.uvm.network.NatRuleCondition;
+import com.untangle.uvm.network.PortForwardRule;
+import com.untangle.uvm.network.PortForwardRuleCondition;
+import com.untangle.uvm.network.FilterRule;
+import com.untangle.uvm.network.FilterRuleCondition;
+import com.untangle.uvm.network.QosSettings;
+import com.untangle.uvm.network.QosRule;
+import com.untangle.uvm.network.QosRuleCondition;
+import com.untangle.uvm.network.QosPriority;
+import com.untangle.uvm.network.DnsSettings;
+import com.untangle.uvm.network.DhcpStaticEntry;
+import com.untangle.uvm.network.DhcpRelay;
+import com.untangle.uvm.network.UpnpSettings;
+import com.untangle.uvm.network.UpnpRule;
+import com.untangle.uvm.network.UpnpRuleCondition;
+import com.untangle.uvm.network.NetflowSettings;
+import com.untangle.uvm.network.DynamicRoutingSettings;
+import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
+import com.untangle.uvm.network.DynamicRouteNetwork;
+import com.untangle.uvm.network.DynamicRouteOspfArea;
+import com.untangle.uvm.network.DynamicRouteOspfInterface;
 import com.untangle.uvm.servlet.DownloadHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -3096,6 +3125,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         private static final String CHARACTER_ENCODING = "utf-8";
         private static final String PATH = "/tmp/network-tests/";
+        private static final String FORWARD_SLASH = "/";
+        private static final Path BASE_PATH = Paths.get(PATH).toAbsolutePath().normalize();
 
         /**
          * getName
@@ -3121,12 +3152,11 @@ public class NetworkManagerImpl implements NetworkManager
                 return;
             }
             // Ensuring that filename can only be downloaded from under our path and is valid
-            if (name.startsWith("/")) name = name.substring(1);
+            if (name.startsWith(FORWARD_SLASH)) name = name.substring(1);
 
-            Path basePath = Paths.get(PATH).toAbsolutePath().normalize();
-            Path resolvedPath = basePath.resolve(name).normalize();
-            if (!resolvedPath.startsWith(basePath) || !resolvedPath.toFile().exists()) {
-                logger.warn("Invalid parameters: {}", name );
+            Path resolvedPath = BASE_PATH.resolve(name).normalize();
+            if (!resolvedPath.startsWith(BASE_PATH) || !resolvedPath.toFile().exists()) {
+                logger.warn("Invalid parameter: {}, won't download the file", name );
                 return;
             }
 
