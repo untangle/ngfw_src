@@ -44,6 +44,8 @@ Ext.define('Ung.config.system.view.Shield', {
 
         importValidationJavaClass: true,
 
+        importValidationForComboBox: true,
+
         emptyRow: {
             ruleId: -1,
             enabled: true,
