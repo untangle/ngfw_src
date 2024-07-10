@@ -1028,8 +1028,6 @@ class ReportsTests(NGFWTestCase):
         
         subprocess.call(global_functions.build_wget_command(output_file=csv_tmp, post_data=post_data, uri="http://localhost/admin/download"), shell=True)
         result = subprocess.check_output('wc -l /tmp/test_50_export_report_events.csv', shell=True)
-        print("           ")
-        print(result)
         print("Result of wc on %s : %s" % (csv_tmp,str(result)))
         assert(int.from_bytes(result,byteorder='little') > 3)
 
