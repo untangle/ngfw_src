@@ -45,6 +45,7 @@ import com.untangle.uvm.app.HostnameLookup;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ObjectMatcher;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import org.apache.commons.codec.binary.Base64;
@@ -1298,21 +1299,23 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 String arg5 = req.getParameter("arg5");
                 String arg6 = req.getParameter("arg6");
 
-                if ( "".equals(arg2) || arg2 == null )
+                if ( arg2 == null || "".equals(arg2))
                     throw new RuntimeException("Invalid arguments");
 
                 String name = arg1;
-                ReportEntry query = (ReportEntry) UvmContextFactory.context().getSerializer().fromJSON( arg2 );
+                ReportEntry query = null;
+                query = ObjectMatcher.parseJson(arg2,ReportEntry.class);
                 SqlCondition[] conditions;
                 String columnListStr = arg4;
 
                 Date startDate = getDate(arg5);
                 Date endDate = getDate(arg6);
 
-                if ( "".equals(arg3) || "[]".equals(arg3) || arg3 == null )
+                if ( arg3 == null || "".equals(arg3) || "[]".equals(arg3) )
                     conditions = null;
-                else
-                    conditions = (SqlCondition[]) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg3") );
+                else{
+                    conditions = ObjectMatcher.parseJsonArray(arg3, SqlCondition[].class);
+                }
 
                 if (name == null || query == null || columnListStr == null) {
                     logger.warn("Invalid parameters: " + name + " , " + query + " , " + columnListStr);

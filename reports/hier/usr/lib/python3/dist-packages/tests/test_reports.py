@@ -16,6 +16,8 @@ import sys
 import unittest
 import pytest
 import datetime
+import urllib.parse
+import json
 
 from io import BytesIO as BytesIO
 from datetime import datetime
@@ -938,6 +940,61 @@ class ReportsTests(NGFWTestCase):
         global_functions.uvmContext.eventManager().setSettings( syslogSettings )
             
         assert(found_count == num_string_find)
+
+    def test_045_report_csv_vulnerability(self):
+        """
+        Test report CSV to only allow valid bean i.e ReportEntry
+        """
+        #invalid bean argument
+        arg2_invalid = {"javaClass": "com.untangle.uvm.LocalDirectoryImpl", "users": {"javaClass": "java.util.LinkedList", "list": [{"firstName": "khush", "lastName": "te9999jjt", "password": "", "passwordShaHash": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", "javaClass": "com.untangle.uvm.LocalDirectoryUser", "expirationTime": 0, "passwordBase64Hash": "dGVzdA==", "passwordMd5Hash": "098f6bcd4621d373cade4e832627b4f6", "mfaEnabled": False, "email": "te@gmail.com", "twofactorSecretKey": "", "username": "test", "localEmpty": False, "localExpires": {"javaClass": "java.util.Date", "time": 1720107932503}, "localForever": True, "_id": "extModel916-1"}, {"username": "khush\" Injection:", "firstName": "khush", "lastName": "khush", "email": "khush@gmail.com", "password": "", "passwordBase64Hash": "YW1tYW1h", "twofactorSecretKey": "", "localExpires": {"javaClass": "java.util.Date", "time": 1720107817551}, "localForever": True, "localEmpty": True, "mfaEnabled": False, "expirationTime": 0, "javaClass": "com.untangle.uvm.LocalDirectoryUser", "markedForDelete": False, "markedForNew": True, "_id": "Ung.model.Rule-2"}]}}
+        #valid bean argument
+        arg2_valid = {"javaClass": "com.untangle.app.reports.ReportEntry", "displayOrder": 1010, "description": "Shows all scanned web requests.", "units": None, "orderByColumn": None, "title": "All Web Events", "colors": None, "enabled": True, "defaultColumns": ["time_stamp", "c_client_addr", "s_server_addr", "s_server_port", "username", "hostname", "host", "uri", "web_filter_blocked", "web_filter_flagged", "web_filter_reason", "web_filter_category"], "pieNumSlices": None, "seriesRenderer": None, "timeDataDynamicAggregationFunction": None, "pieStyle": None, "pieSumColumn": None, "timeDataDynamicAllowNull": None, "orderDesc": None, "table": "http_events", "approximation": None, "timeDataInterval": None, "timeStyle": None, "timeDataDynamicValue": None, "readOnly": True, "timeDataDynamicLimit": None, "timeDataDynamicColumn": None, "pieGroupColumn": None, "timeDataColumns": None, "textColumns": None, "category": "Web Filter", "conditions": [], "uniqueId": "web-filter-SRSZBBKXLN", "textString": None, "type": "EVENT_LIST", "localizedTitle": "All Web Events", "localizedDescription": "Shows all scanned web requests.", "slug": "all-web-events", "url": "web-filter/all-web-events", "icon": "fa-list-ul", "_id": "Ung.model.Report-390"}
+        arg3 = []
+        arg4 = "time_stamp,load_1,mem_free,disk_free"
+        arg5 = "1720463400000"
+        arg6 = "-1"
+
+        # Build the curl command for invalid arg2
+        curl_command_invalid = global_functions.build_curl_command(
+            uri="http://localhost/reports/csv",
+            user_agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0",
+            extra_arguments=f"--data-raw 'type=eventLogExport&arg1=System-Server_Status_Events-09.07.2024-00%3A00-09.07.2024-18%3A08&arg2={urllib.parse.quote(json.dumps(arg2_invalid))}&arg3={urllib.parse.quote(json.dumps(arg3))}&arg4={arg4}&arg5={arg5}&arg6={arg6}'",
+            verbose=True
+        )
+
+        # Build the curl command for valid arg2
+        curl_command_valid = global_functions.build_curl_command(
+            uri="http://localhost/reports/csv",
+            user_agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0",
+            extra_arguments=f"--data-raw 'type=eventLogExport&arg1=System-Server_Status_Events-09.07.2024-00%3A00-09.07.2024-18%3A08&arg2={urllib.parse.quote(json.dumps(arg2_valid))}&arg3={urllib.parse.quote(json.dumps(arg3))}&arg4={arg4}&arg5={arg5}&arg6={arg6}'",
+            verbose=True
+        )
+
+         # Execute curl commands and capture the output
+        try:
+            output_invalid = subprocess.check_output(curl_command_invalid, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            output_invalid = e.output
+
+        try:
+            output_valid = subprocess.check_output(curl_command_valid, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            output_valid = e.output
+
+        # Check for specific error message in outputs
+        error_message = "Internal Server Error - java.lang.RuntimeException: org.jabsorb.serializer.UnmarshallException: Failed to parse JSON bean has no matches"
+
+        # Test for invalid arg2
+        if error_message in output_invalid.decode('utf-8'):
+            print("Passed: Invalid jsonObject is not acceptable")
+        else:
+            assert False, "Invalid jsonObject should not be acceptable"
+
+        # Test for valid arg2
+        if error_message not in output_valid.decode('utf-8'):
+            print("Passed:: Valid jsonObject not forming any exception")
+        else:
+            assert False, "Valid jsonObject should not produce any error message"
 
     def test_050_export_report_events(self):
         """
