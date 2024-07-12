@@ -198,6 +198,11 @@ Ext.define('Ung.cmp.Grid', {
         }else{
             viewConfig.importValidationForComboBox = false;
         }
+        if(this.importValidatorParams !== undefined){
+            viewConfig.importValidatorParams = this.importValidatorParams;
+        }else{
+            viewConfig.importValidatorParams = null;
+        }
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
         }
