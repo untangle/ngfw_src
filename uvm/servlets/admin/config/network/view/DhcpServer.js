@@ -273,6 +273,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                         }
                     }],
 
+                editorXtype: 'ung.cmp.networkdhcpserverrecordeditor',
                 editorFields: [
                     Field.enableRule(),
                     Field.description,
