@@ -760,17 +760,9 @@ Ext.define('Ung.cmp.GridController', {
                     
                     // Currently, custom validator is tailored exclusively for the WG App.
                     // To extend its functionality to other apps, ensure custom validators across each app retrieve stored values during import operations.
-                    if(!validationErrorMsg && grid.viewConfig.importValidationJavaClass){
-                        if (fieldConfig.validator) {
-                            var validatorParams = grid.viewConfig.importValidatorParams;
-                            if(validatorParams && Object.keys(validatorParams).length > 0){
-                                validationErrorMsg = fieldConfig.validator(fieldValue, record[validatorParams[fieldName]]);
-                            }else{
-                                validationErrorMsg = fieldConfig.validator(fieldValue, this);
-                            }
-                        }
-                        if(validationErrorMsg === true){
-                            validationErrorMsg = null;
+                    if(grid.viewConfig.importValidationJavaClass){
+                        if (fieldConfig.validator && fieldConfig.validator(fieldValue, this) != true) {
+                            validationErrorMsg = fieldConfig.validator(fieldValue, this);
                         }
                     }
                     
