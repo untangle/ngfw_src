@@ -5,7 +5,6 @@ import subprocess
 
 import unittest
 import pytest
-from tests.global_functions import uvmContext
 
 from tests.common import NGFWTestCase
 import runtests.remote_control as remote_control
@@ -113,7 +112,7 @@ class TunnelVpnTests(NGFWTestCase):
         """
         Verify valid license
         """
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_create_vpn_tunnel(self):
         """
@@ -237,11 +236,11 @@ class TunnelVpnTests(NGFWTestCase):
 
         # Create trigger rule for SessionEvent to Tag host
 
-        settings = uvmContext.eventManager().getSettings()
+        settings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
         new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.client_ip+"*")
         settings['triggerRules']['list'] = [ new_rule ]
-        uvmContext.eventManager().setSettings( settings )
+        global_functions.uvmContext.eventManager().setSettings( settings )
 
         time.sleep(4)
 
@@ -275,7 +274,7 @@ class TunnelVpnTests(NGFWTestCase):
         assert True is global_functions.is_vpn_routing(route_table=f"tunnel.{TUNNEL_ID}"), "vpn routing"
 
         # Set original event settings
-        uvmContext.eventManager().setSettings( orig_settings )
+        global_functions.uvmContext.eventManager().setSettings( orig_settings )
 
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
