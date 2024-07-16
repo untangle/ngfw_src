@@ -36,8 +36,10 @@ import com.untangle.uvm.network.DynamicRouteNetwork;
 import com.untangle.uvm.network.DynamicRouteOspfArea;
 import com.untangle.uvm.network.DynamicRouteOspfInterface;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.util.ObjectMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jabsorb.serializer.UnmarshallException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -652,12 +654,17 @@ public class NetworkManagerImpl implements NetworkManager
         String output = UvmContextFactory.context().execManager().execOutput(deviceStatusScript + argStr);
         List<DeviceStatus> entryList = null;
         try {
-            entryList = (List<DeviceStatus>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
-        } catch (Exception e) {
-            logger.warn("Unable to parse device status: ", e);
-            logger.warn("Unable to parse device status: " + output);
-            return null;
-        }
+            //expected Java class type
+            Class<List<DeviceStatus>> ListOfDeviceStatusClass = (Class<List<DeviceStatus>>) (Class<?>) List.class;
+            entryList = ObjectMatcher.parseJson(output, ListOfDeviceStatusClass); 
+            } catch (JSONException | UnmarshallException e) {
+                logger.warn("Unable to parse device status: ", e);
+                logger.warn("Unable to parse device status: " + output);
+                return null;
+            } catch (Exception e) {
+                logger.error("Unexpected exception while getting device status: ", e);
+                return null; 
+            }
         return entryList;
     }
     

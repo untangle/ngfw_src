@@ -16,10 +16,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Level;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
+import org.json.JSONException;
 
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.ExecManagerResultReader;
+import com.untangle.uvm.util.ObjectMatcher;
 
 /**
  * ExecManagerImpl is a simple manager for all exec() calls.
@@ -189,7 +191,7 @@ public class ExecManagerImpl implements ExecManager
             long t0 = System.currentTimeMillis();
             String line = in.readLine();
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            ExecManagerResult result = (ExecManagerResult) serializer.fromJSON(line);
+            ExecManagerResult result  = ObjectMatcher.parseJson(line, ExecManagerResult.class); 
             long t1 = System.currentTimeMillis();
 
             if (result == null) {
@@ -212,7 +214,7 @@ public class ExecManagerImpl implements ExecManager
             logger.warn("Exception during ut-exec-launcher", exn);
             initDaemon();
             return new ExecManagerResult(-1, exn.toString());
-        } catch (UnmarshallException exn) {
+        } catch (JSONException | UnmarshallException exn) {
             logger.warn("Exception during ut-exec-launcher", exn);
             initDaemon();
             return new ExecManagerResult(-1, exn.toString());
