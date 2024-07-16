@@ -3,7 +3,7 @@
 import pytest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
+import tests.global_functions as global_functions
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 
@@ -28,7 +28,7 @@ class LiveSupportTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
 test_registry.register_module("live-support", LiveSupportTests)
 
