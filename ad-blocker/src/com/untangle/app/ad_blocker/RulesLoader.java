@@ -18,6 +18,7 @@ import org.jabsorb.JSONSerializer;
 
 import com.untangle.app.ad_blocker.cookies.CookieElement;
 import com.untangle.uvm.app.GenericRule;
+import com.untangle.uvm.util.ObjectMatcher;
 
 /**
  * A utility class to parse, create, and load the ad-blocker rules from the source files
@@ -134,8 +135,7 @@ public class RulesLoader
                 serializer.setFixupDuplicates(false);
                 serializer.setMarshallNullAttributes(false);
                 serializer.registerDefaultSerializers();
-
-                CookieElement cookieElement = (CookieElement) serializer.fromJSON(line);
+                CookieElement cookieElement = ObjectMatcher.parseJson(line, CookieElement.class); 
                 String cookie = cookieElement.getPattern();
                 /* ignore / at end if present */
                 if (cookie.charAt(cookie.length() - 1) == '/')
