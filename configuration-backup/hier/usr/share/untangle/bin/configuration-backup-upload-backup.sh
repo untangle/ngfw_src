@@ -51,7 +51,7 @@ function err() {
 }
 
 function doHelp() {
-    echo "$0 -t <timeout> -u <URL> -k <uid> -f <file>"
+    echo "$0 -t <timeout> -u <URL> <uid> -f <file>"
     echo "Options:"
     echo "    -h       help"
     echo "    -v       verbose"
@@ -76,8 +76,8 @@ function callCurl() {
   md5=($(md5sum $1))
   version=($(cat /usr/share/untangle/lib/untangle-libuvm-api/VERSION))
   debug "Backup file MD5: $md5"
-  echo curl "$URL" -k -F uid="$SERVER_UID" -F uploadedfile=@$1 -F md5="$md5" -F version="$version" --dump-header $2 --max-time $TIMEOUT
-  curl "$URL" -k -F uid="$SERVER_UID" -F uploadedfile=@$1 -F md5="$md5" -F version="$version" --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
+  echo curl "$URL" -F uid="$SERVER_UID" -F uploadedfile=@$1 -F md5="$md5" -F version="$version" --dump-header $2 --max-time $TIMEOUT
+  curl "$URL" -F uid="$SERVER_UID" -F uploadedfile=@$1 -F md5="$md5" -F version="$version" --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
   return $?
 }
 
