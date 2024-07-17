@@ -10,7 +10,6 @@ import unittest
 import runtests
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import tests.global_functions as global_functions
 import tests.ipaddr as ipaddr
@@ -101,19 +100,19 @@ class VirusBlockerBaseTests(NGFWTestCase):
         except Exception as e:
             canRelay = False
 
-        if (uvmContext.appManager().isInstantiated(cls.appNameSSLInspector())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.appNameSSLInspector())):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.appNameSSLInspector())
             else:
-                appSSL = uvmContext.appManager().app(cls.appNameSSLInspector())
+                appSSL = global_functions.uvmContext.appManager().app(cls.appNameSSLInspector())
         else:
-            appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
+            appSSL = global_functions.uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
 
         appSSLData = appSSL.getSettings()
         # Enable cloud connection
-        system_settings = uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['cloudEnabled'] = True
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
 
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -121,7 +120,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     # test that client can http download zip
     def test_012_httpNonVirusNotBlocked(self):
@@ -483,5 +482,5 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def final_extra_tear_down(cls):
         global appSSL
         if appSSL != None:
-            uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
             appSSL = None
