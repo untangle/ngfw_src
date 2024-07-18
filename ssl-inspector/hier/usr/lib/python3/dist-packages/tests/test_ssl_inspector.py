@@ -7,7 +7,6 @@ import sys
 import unittest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -111,9 +110,9 @@ class SslInspectorTests(NGFWTestCase):
         global_functions.get_latest_client_test_pkg("web")
 
         appData = cls._app.getSettings()
-        if (uvmContext.appManager().isInstantiated(cls.appWeb())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.appWeb())):
             raise Exception('app %s already instantiated' % cls.appWeb())
-        appWeb = uvmContext.appManager().instantiate(cls.appWeb(), default_policy_id)
+        appWeb = global_functions.uvmContext.appManager().instantiate(cls.appWeb(), default_policy_id)
         appWebData = appWeb.getSettings()
 
         appData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
@@ -124,7 +123,7 @@ class SslInspectorTests(NGFWTestCase):
         assert (result == 0)
             
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_012_checkServerCertificate(self):
         result = remote_control.run_command('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi "untangle"' % (testedServerName, testedServerName))
@@ -335,7 +334,7 @@ class SslInspectorTests(NGFWTestCase):
         global appWeb
 
         if appWeb != None:
-            uvmContext.appManager().destroy( appWeb.getAppSettings()["id"])
+            global_functions.uvmContext.appManager().destroy( appWeb.getAppSettings()["id"])
             appWeb = None
 
 test_registry.register_module("ssl-inspector", SslInspectorTests)
