@@ -5,7 +5,6 @@ import pytest
 import runtests
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -113,7 +112,7 @@ class WanFailoverTests(NGFWTestCase):
     @classmethod
     def initial_extra_setup(cls):
         global indexOfWans, appData, orig_netsettings
-        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
         appData = cls._app.getSettings()
         indexOfWans = global_functions.get_wan_tuples()
@@ -123,7 +122,7 @@ class WanFailoverTests(NGFWTestCase):
         assert (result == 0)
     
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_ping_test_wan_online(self):
         nuke_rules()
@@ -186,7 +185,7 @@ class WanFailoverTests(NGFWTestCase):
             raise unittest.SkipTest("Need at least two WANS for test_035_addArpFailTestForWans")
         nuke_rules()
         orig_offline_count = offline_wan_count()
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         # Add a fake gateway for each of the interfaces
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
@@ -195,13 +194,13 @@ class WanFailoverTests(NGFWTestCase):
             set_interface_field( wanIndex, netsettings, 'v4AutoGatewayOverride', '192.168.244.' + str(wanIndex))
             build_wan_test(wanIndex, "arp")
 
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
             
         wait_for_wan_offline()
 
         offline_count = offline_wan_count()
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (offline_count > orig_offline_count)
         result = remote_control.is_online()
@@ -231,7 +230,7 @@ class WanFailoverTests(NGFWTestCase):
 
         nuke_rules()
         orig_offline_count = offline_wan_count()
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         # Add a fake DNS for each of the interfaces
         for wanIndexTup in indexOfWans:
             wanIndex = wanIndexTup[0]
@@ -241,7 +240,7 @@ class WanFailoverTests(NGFWTestCase):
             set_interface_field( wanIndex, netsettings, 'v4AutoDns1Override', '192.168.244.' + str(wanIndex))
             set_interface_field( wanIndex, netsettings, 'v4AutoDns2Override', '192.168.244.' + str(wanIndex))
 
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         for wanIndexTup in indexOfWans:
             build_wan_test(wanIndex, "dns")
@@ -249,7 +248,7 @@ class WanFailoverTests(NGFWTestCase):
         wait_for_wan_offline()
         offline_count = offline_wan_count()
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (offline_count > orig_offline_count)
 
