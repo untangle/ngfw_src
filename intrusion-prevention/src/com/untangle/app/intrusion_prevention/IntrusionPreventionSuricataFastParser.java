@@ -20,10 +20,12 @@ import org.apache.logging.log4j.LogManager;
 
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
+import org.json.JSONException;
 
 import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMap;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapSignature;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionLogEvent;
+import com.untangle.uvm.util.ObjectMatcher;
 
 /**
  * Process Suricata's fast file log format and add entries IPS event log table.
@@ -119,11 +121,11 @@ public class IntrusionPreventionSuricataFastParser
                 serializer.setMarshallNullAttributes(false);
 
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-                newIntrusionPreventionEventMap = (IntrusionPreventionEventMap) serializer.fromJSON(jsonString.toString());
+                newIntrusionPreventionEventMap = ObjectMatcher.parseJson(jsonString.toString(), IntrusionPreventionEventMap.class); 
             } catch (IOException e) {
                 logger.warn("Unable to process event map: ",e);
-            } catch (UnmarshallException e) {
-                logger.warn("UnmarshallException: ",e);
+            } catch (JSONException | UnmarshallException e) {
+                logger.warn("Unable to parse event map: ",e);
                 for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
                       logger.warn("Exception cause: ", cause);
                 }

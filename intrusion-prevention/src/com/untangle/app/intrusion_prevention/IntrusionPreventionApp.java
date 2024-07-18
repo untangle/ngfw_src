@@ -44,6 +44,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ObjectMatcher;
 import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -355,7 +356,7 @@ public class IntrusionPreventionApp extends AppBase
 
                         JSONArray defaultRules = defaults.getJSONObject(key).getJSONArray("list");
                         for(int i = 0; i < defaultRules.length(); i++){
-                            IntrusionPreventionRule defaultRule = (IntrusionPreventionRule) serializer.fromJSON(defaultRules.getString(i));
+                            IntrusionPreventionRule defaultRule = ObjectMatcher.parseJson(defaultRules.getString(i), IntrusionPreventionRule.class); 
 
                             boolean found = false;
                             for(int j = 0; j < rules.size(); j++){
