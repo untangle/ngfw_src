@@ -203,6 +203,11 @@ Ext.define('Ung.cmp.Grid', {
         }else{
             viewConfig.importValidatorParams = null;
         }
+        if(this.importValidationForFieldSet !== undefined){
+            viewConfig.importValidationForFieldSet = this.importValidationForFieldSet;
+        }else{
+            viewConfig.importValidationForFieldSet = false;
+        }
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
         }
