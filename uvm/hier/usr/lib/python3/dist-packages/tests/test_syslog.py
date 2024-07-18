@@ -2,7 +2,6 @@ import copy
 import pytest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import tests.global_functions as global_functions
 import runtests.test_registry as test_registry
 import runtests.remote_control as remote_control
@@ -25,21 +24,21 @@ class SysLogTests(NGFWTestCase):
         return "syslog"
     
     def test_050_disable_syslog(self):
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
         syslogSettings["syslogEnabled"] = False
-        uvmContext.eventManager().setSettings( syslogSettings )
-        syslogUpdatedSettings = uvmContext.eventManager().getSettings()
+        global_functions.uvmContext.eventManager().setSettings( syslogSettings )
+        syslogUpdatedSettings = global_functions.uvmContext.eventManager().getSettings()
         if "syslogServers" in syslogSettings.keys() and syslogSettings['syslogServers']:
             assert (len(syslogUpdatedSettings['syslogServers']['list']) == 0)
         else:
           #No Logservers configured
           pass
-        uvmContext.eventManager().setSettings(orig_settings)
+        global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
     def test_050_enable_syslog(self):
         #covering scenario of setup where default syslog is enabled and configured
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
         syslogSettings["syslogEnabled"] = True
         syslogSettings["syslogPort"] = 514
@@ -50,8 +49,8 @@ class SysLogTests(NGFWTestCase):
         for rule in syslogSettings['syslogRules']['list']:
             if "syslogServers" in  rule.keys():
                rule.pop("syslogServers")
-        uvmContext.eventManager().setSettings(syslogSettings)
-        syslogUpdatedSettings = uvmContext.eventManager().getSettings()
+        global_functions.uvmContext.eventManager().setSettings(syslogSettings)
+        syslogUpdatedSettings = global_functions.uvmContext.eventManager().getSettings()
         assert (len(syslogUpdatedSettings['syslogServers']['list']) == 1)
         #check for description field populated in case of setup where syslog server is enabled
         assert("Default Syslog Server" == syslogUpdatedSettings['syslogServers']['list'][0]['description'])
@@ -59,33 +58,33 @@ class SysLogTests(NGFWTestCase):
         if "syslogServers" in syslogUpdatedSettings['syslogRules']['list'][0].keys() and syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']:
            syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'].clear()
            syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'].append(2)
-        uvmContext.eventManager().setSettings(syslogUpdatedSettings)
-        syslogUpdatedSettings = uvmContext.eventManager().getSettings()
+        global_functions.uvmContext.eventManager().setSettings(syslogUpdatedSettings)
+        syslogUpdatedSettings = global_functions.uvmContext.eventManager().getSettings()
         assert (len(syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list']) == 1)
         #server ID should be updated to 2 for the syslogRule
         print(syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'])
         assert (syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'][0] == 2)
-        uvmContext.eventManager().setSettings(orig_settings)
+        global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
     def test_050_enable_syslog_withouthostnameset(self):
         #covering scenario of setup where default syslog is enabled and sysloghost not set configured
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
         syslogSettings["syslogEnabled"] = True
         syslogSettings["syslogPort"] = 514
         syslogSettings["syslogProtocol"] = "UDP"
         #Removed sysLogHost, initially sysloghostname is not set in backend, in UI its mandatory
         syslogSettings.pop("syslogHost", None)
-        uvmContext.eventManager().setSettings(syslogSettings)
-        syslogUpdatedSettings = uvmContext.eventManager().getSettings()
+        global_functions.uvmContext.eventManager().setSettings(syslogSettings)
+        syslogUpdatedSettings = global_functions.uvmContext.eventManager().getSettings()
         assert(len(syslogSettings['syslogRules']['list'][0]['syslogServers']['list']) == 0)
         assert (len(syslogUpdatedSettings['syslogServers']['list']) == 0)
-        uvmContext.eventManager().setSettings(orig_settings)
+        global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
 
     def test_050_multiple_syslogservers(self):
         initial_logservers = 0
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
         syslogSettings["syslogEnabled"] = True
         if "syslogServers" not in syslogSettings.keys():
@@ -95,15 +94,15 @@ class SysLogTests(NGFWTestCase):
         syslogSettings['syslogServers']['list'].append(SYSLOG_SERVER1)
         syslogSettings['syslogServers']['list'].append(SYSLOG_SERVER2)
         syslogSettings['syslogServers']['list'].append(SYSLOG_SERVER3)
-        uvmContext.eventManager().setSettings(syslogSettings)
-        syslogUpdatedSettings = uvmContext.eventManager().getSettings()
+        global_functions.uvmContext.eventManager().setSettings(syslogSettings)
+        syslogUpdatedSettings = global_functions.uvmContext.eventManager().getSettings()
         assert (len(syslogUpdatedSettings['syslogServers']['list']) == initial_logservers + 3)
-        uvmContext.eventManager().setSettings(orig_settings)
+        global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
 
     def test_050_delete_syslogservers(self):
         initial_logservers = 0
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
         syslogSettings["syslogEnabled"] = True
         #Default setup list will not be present. UI payload will contain server list, need to generate for unittest
@@ -115,8 +114,8 @@ class SysLogTests(NGFWTestCase):
         syslogSettings['syslogServers']['list'].append(SYSLOG_SERVER1)
         syslogSettings['syslogServers']['list'].append(SYSLOG_SERVER2)
         syslogSettings['syslogServers']['list'].append(SYSLOG_SERVER3)
-        uvmContext.eventManager().setSettings(syslogSettings)
-        syslogUpdatedSettings = uvmContext.eventManager().getSettings()
+        global_functions.uvmContext.eventManager().setSettings(syslogSettings)
+        syslogUpdatedSettings = global_functions.uvmContext.eventManager().getSettings()
         assert (len(syslogUpdatedSettings['syslogServers']['list']) == initial_logservers +3)
         key = 'host'
         # Fetch Added SyslogServers
@@ -129,9 +128,9 @@ class SysLogTests(NGFWTestCase):
         for server in syslog_list:
            syslogUpdatedSettings['syslogServers']['list'].append(server)
         syslogUpdatedSettings['syslogServers']['list'].append(SYSLOG_SERVER4)
-        uvmContext.eventManager().setSettings(syslogUpdatedSettings)
+        global_functions.uvmContext.eventManager().setSettings(syslogUpdatedSettings)
         assert (len(syslogUpdatedSettings['syslogServers']['list']) == initial_logservers + 2)
-        uvmContext.eventManager().setSettings(orig_settings)
+        global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
 
 
