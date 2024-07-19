@@ -3,59 +3,45 @@
  */
 package com.untangle.uvm;
 
-import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.IPMatcher;
+import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.event.AlertEvent;
-import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.EventRule;
-import com.untangle.uvm.event.SyslogRule;
-import com.untangle.uvm.event.TriggerRule;
-import com.untangle.uvm.event.SyslogServer;
 import com.untangle.uvm.event.EventRuleCondition;
-import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.Reporting;
-import com.untangle.uvm.app.IPMatcher;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SyslogManagerImpl;
-import com.untangle.uvm.util.GlobUtil;
+import com.untangle.uvm.event.EventSettings;
+import com.untangle.uvm.event.SyslogRule;
+import com.untangle.uvm.event.SyslogServer;
+import com.untangle.uvm.event.TriggerRule;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.StringUtil;
-
-import com.untangle.uvm.AdminUserSettings;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONString;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-
-import java.lang.Class;
-import java.lang.reflect.Method;
-
 import java.sql.Timestamp;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.LinkedTransferQueue;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
-import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.commons.io.IOUtils;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONString;
+import java.util.concurrent.LinkedTransferQueue;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Event prcessor
@@ -292,30 +278,30 @@ public class EventManagerImpl implements EventManager
     private void buildClassesToProcess(){
         LinkedList<String> classes = new LinkedList<>();
 
-        Boolean allClasses = false;
+        boolean allClasses = false;
         for(EventRule rule : Stream.of(settings.getAlertRules(), settings.getTriggerRules())
                             .flatMap(Collection::stream)
                             .collect(Collectors.toList()) ){
             if(rule.getEnabled()){
                 allClasses = buildClassesToProcessRules(rule, classes);
             }
-            if(allClasses == true){
+            if(allClasses){
                 break;
             }
         }
 
         // NOTE: Make sure syslog processing comes last.
-        if(settings.getSyslogEnabled() && allClasses == false){
-            for(EventRule rule : settings.getSyslogRules()){
-                if(rule.getEnabled()){
+        if(!allClasses){
+            for(SyslogRule rule : settings.getSyslogRules()){
+                if(rule.getEnabled() && !rule.getSyslogServers().isEmpty()){
                     allClasses = buildClassesToProcessRules(rule, classes);
                 }
-                if(allClasses == true){
+                if(allClasses){
                     break;
                 }
             }
         }
-        if(allClasses == true){
+        if(allClasses){
             classes.clear();
         }
 
