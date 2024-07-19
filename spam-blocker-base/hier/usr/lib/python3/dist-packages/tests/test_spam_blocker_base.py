@@ -5,7 +5,6 @@ import re
 import unittest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -94,11 +93,11 @@ class SpamBlockerBaseTests(NGFWTestCase):
         global appData, appSP, appDataSP, appSSL, appSSLData, canRelay
 
         appData = cls._app.getSettings()
-        appSP = uvmContext.appManager().app(cls.appNameSpamCase())
+        appSP = global_functions.uvmContext.appManager().app(cls.appNameSpamCase())
         appDataSP = appSP.getSmtpSettings()
-        if uvmContext.appManager().isInstantiated(cls.appNameSSLInspector()):
+        if global_functions.uvmContext.appManager().isInstantiated(cls.appNameSSLInspector()):
             raise Exception('app %s already instantiated' % cls.appNameSSLInspector())
-        appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
+        appSSL = global_functions.uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
         # appSSL.start() # leave app off. app doesn't auto-start
         appSSLData = appSSL.getSettings()
         try:
@@ -120,7 +119,7 @@ class SpamBlockerBaseTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.shortName()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.shortName()))
 
     def test_020_smtpTest(self):
         if (not self.canRelay):
@@ -321,5 +320,5 @@ class SpamBlockerBaseTests(NGFWTestCase):
     def final_extra_tear_down(cls):
         global appSSL
         if appSSL != None:
-            uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
             appSSL = None

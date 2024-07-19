@@ -7,7 +7,6 @@ import unittest
 import sys
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -106,7 +105,7 @@ class ThreatpreventionTests(NGFWTestCase):
         assert (result == 0)
             
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     @pytest.mark.failure_behind_pihole
     def test_020_basic_block(self):
@@ -176,7 +175,7 @@ class ThreatpreventionTests(NGFWTestCase):
         assert( found )
         
     def test_033_block_by_mac_address(self):
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         self.rules_clear()
         self.rule_add("DST_PORT","53",action="pass")  # allow DNS otherwise bridged configs fail
         self.rule_add("SRC_MAC",entry['macAddress'])
