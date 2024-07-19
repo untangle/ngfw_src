@@ -45,6 +45,8 @@ Ext.define('Ung.config.events.view.Alerts', {
 
         importValidationJavaClass: true,
         importValidationForAlertEvents: true,
+        importValidationForFieldSet: true,
+        importValidationForComboBox: true,
 
         columns: [
             Column.ruleId,

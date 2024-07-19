@@ -532,13 +532,13 @@ Ext.define('Ung.cmp.GridController', {
         return isEntryExists;
     },
 
-    checkBoxGroupStoreValidator:function(fieldConfig, valuesToCheck){
+    checkBoxGroupStoreValidator:function(isAlertEvent, fieldConfig, valuesToCheck){
         var availableFieldValues = [];
         if(fieldConfig.values && fieldConfig.values.length <= 0){
             return false;
         }else{
             for(var j=0; j<fieldConfig.values.length; j++){
-                availableFieldValues.push(fieldConfig.values[j][0]);
+                availableFieldValues.push(isAlertEvent ? fieldConfig.values[j] : fieldConfig.values[j][0]);
             }
         }
         var isEntryValid = true;
@@ -704,9 +704,7 @@ Ext.define('Ung.cmp.GridController', {
 
     importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid, me){
         for (var fieldName in record) {
-            if(!isNestedEditor && mappedObject[fieldName]){
-                continue;
-            }else if(isNestedEditor && !nestedObject[fieldName]){
+            if((!isNestedEditor && mappedObject[fieldName]) || (isNestedEditor && !nestedObject[fieldName])){
                 continue;
             }
             if (record.hasOwnProperty(fieldName)) {
@@ -715,6 +713,10 @@ Ext.define('Ung.cmp.GridController', {
 
                 if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
                     var validationErrorMsg = null;
+                    var types = ["textfield", "numberfield"];
+                    if((!fieldConfig.hasOwnProperty("allowBlank") || fieldConfig.allowBlank) && (fieldValue === null || fieldValue === undefined) && types.includes(fieldConfig.xtype)){
+                        continue;
+                    }
 
                     if(fieldConfig.xtype && (fieldConfig.xtype === 'checkbox' || fieldConfig.xtype === 'checkcolumn')){
                         var boolOptions = [true, false];
@@ -728,6 +730,10 @@ Ext.define('Ung.cmp.GridController', {
                         if(!isValidValue){
                             validationErrorMsg = Ext.String.format('Invalid value for the dropdown field {0}'.t(), fieldName);
                         }
+                    }
+
+                    if ((fieldConfig.xtype && fieldConfig.xtype === 'numberfield') && fieldValue !== 0 && fieldValue !== '0' && !Number(fieldValue)) {
+                        validationErrorMsg = Ext.String.format('This is not a valid number.'.t());
                     }
 
                     if(fieldConfig.hasOwnProperty("minValue")){
@@ -783,129 +789,152 @@ Ext.define('Ung.cmp.GridController', {
 
                 // check allowblank and vtype validation for conditions applied
 
-                if(fieldConfig && fieldConfig.conditionsOrder){
-                    if(fieldConfig && fieldConfig.conditions){
-                        var errorMsgForConditions = null;
-                        var currentValue = null;
-                        for (var i=0; i < fieldConfig.conditionsOrder.length; i++){
-                            var conditionName = fieldConfig.conditionsOrder[i];
-                            if(Object.entries(fieldConfig.conditions).length > 0){
-                                var currentCondition = fieldConfig.conditions[conditionName];
-                                if(currentCondition && fieldValue && fieldValue.list){
-                                    for(var j=0; j < fieldValue.list.length; j++){
-                                        var currentRow = fieldValue.list[j];
-                                        currentValue = currentRow.value;
-                                        if(!currentRow.conditionType || (currentRow.conditionType && !fieldConfig.conditionsOrder.includes(currentRow.conditionType))){
-                                            errorMsgForConditions = Ext.String.format('Invalid Row Condition Type {0}.'.t(),currentRow.conditionType);
-                                            break; 
-                                        }
-                                        if(currentRow.conditionType && currentRow.conditionType === conditionName){
-                                            if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
-                                                errorMsgForConditions = Ext.String.format('This field is required.'.t());
-                                                break; 
-                                            }else if(grid.viewConfig.importValidationForComboBox && currentCondition.type && currentCondition.type === 'checkboxgroup'){
-                                                var areValuesValid = me.checkBoxGroupStoreValidator(currentCondition, currentValue);
-                                                if(!areValuesValid){
-                                                    errorMsgForConditions = Ext.String.format('Invalid value for the checkbox field {0}'.t(), currentCondition.displayName);
-                                                    break;
-                                                }
-                                            }else if(currentCondition.type && currentCondition.type === 'boolean' && !currentCondition.onlyTrue){
-                                                var booleanOptionValues = ['true', 'false'];
-                                                if(!booleanOptionValues.includes(currentValue)){
-                                                    errorMsgForConditions = Ext.String.format('Invalid value for the boolean field {0}'.t(), currentCondition.displayName);
-                                                    break;
-                                                }
-                                            }else if(currentCondition.importValidation){
-                                                // import validation for the dropdown fields
-                                                var errorMsg = me.handledropDownFieldValidations(me,currentCondition, currentValue);
-                                                if(errorMsg){
-                                                    errorMsgForConditions = errorMsg;
-                                                    break;
-                                                }
-                                            }
-                                            else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
-                                                continue; // Skip validation if allowBlank is true and field value is empty
-                                            }
+                if (!grid.viewConfig.importValidationForAlertEvents && fieldConfig && fieldConfig.conditions) {
+                    var errorMsgForConditions = null;
+                    var currentValue = null;
+                    for (var j = 0; j < fieldValue.list.length; j++) {
+                        var currentRow = fieldValue.list[j];
+                        if (!currentRow.conditionType || (currentRow.conditionType && !fieldConfig.conditions[currentRow.conditionType])) {
+                            errorMsgForConditions = Ext.String.format('Invalid Row Condition Type {0}.'.t(), currentRow.conditionType);
+                            break;
+                        }
+                        var currentCondition = fieldConfig.conditions[currentRow.conditionType];
+                        currentValue = currentRow.value;
+                        if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                            errorMsgForConditions = Ext.String.format('This field is required.'.t());
+                            break;
+                        } else if (grid.viewConfig.importValidationForComboBox && currentCondition.type && currentCondition.type === 'checkboxgroup') {
+                            var areValuesValid = me.checkBoxGroupStoreValidator(false, currentCondition, currentValue);
+                            if (!areValuesValid) {
+                                errorMsgForConditions = Ext.String.format('Invalid value for the checkbox field {0}'.t(), currentCondition.displayName);
+                                break;
+                            }
+                        } else if (currentCondition.type && currentCondition.type === 'boolean' && !currentCondition.onlyTrue) {
+                            var booleanOptionValues = ['true', 'false'];
+                            if (!booleanOptionValues.includes(currentValue)) {
+                                errorMsgForConditions = Ext.String.format('Invalid value for the boolean field {0}'.t(), currentCondition.displayName);
+                                break;
+                            }
+                        } else if (currentCondition.importValidation) {
+                            // import validation for the dropdown fields
+                            var errorMsg = me.handledropDownFieldValidations(me, currentCondition, currentValue);
+                            if (errorMsg) {
+                                errorMsgForConditions = errorMsg;
+                                break;
+                            }
+                        }
+                        else if (currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
+                            continue; // Skip validation if allowBlank is true and field value is empty
+                        }
 
-                                            if (currentCondition.vtype) {
-                                                var currVtype = currentCondition.vtype;
-                                                if(currentValue){
-                                                    if (!Ext.form.field.VTypes[currVtype](currentValue)) {
-                                                        errorMsgForConditions = Ext.form.field.VTypes[currVtype + 'Text'];
-                                                        break;
-                                                    }
-                                                }
-                                            }
+                        if (currentCondition.vtype) {
+                            var currVtype = currentCondition.vtype;
+                            if (currentValue) {
+                                if (!Ext.form.field.VTypes[currVtype](currentValue)) {
+                                    errorMsgForConditions = Ext.form.field.VTypes[currVtype + 'Text'];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (errorMsgForConditions !== null) {
+                        errorObj.isValidRecord = false;
+                        validationErrors.push({ fieldName: fieldName, fieldValue: currentValue, fieldErrorDesc: errorMsgForConditions });
+                        break; // Stop validation for this record if any field fails
+                    }
+                } else if (grid.viewConfig.importValidationForAlertEvents && fieldConfig && fieldConfig.conditions) {
+                    var classFieldConditions = {};
+                    var appVm = this.getView().up("config-events");
+                    if (appVm) {
+                        appVm = appVm.getViewModel();
+                        for (var listIndex = 0; listIndex < fieldValue.list.length; listIndex++) {
+                            if (fieldValue.list[listIndex] && fieldValue.list[listIndex].field === "class") {
+                                var currCls = fieldValue.list[listIndex].fieldValue;
+                                currCls = currCls.split("*");
+                                if (currCls.length === 0) {
+                                    currCls = currCls[0];
+                                } else {
+                                    currCls = currCls[1];
+                                }
+                                if (appVm.get("classFields")) {
+                                    classFieldConditions = appVm.get("classFields")[currCls];
+                                }
+                            }
+                        }
+                    } else {
+                        errorObj.isValidRecord = false;
+                        validationErrors.push({ fieldName: fieldName, fieldValue: null, fieldErrorDesc: Ext.String.format('No Classes found to load the config.'.t()) });
+                        break; // Stop validation for this record if any field fails
+                    }
+
+                    // check allowblank and vtype validation for conditions applied for events
+                    if (classFieldConditions && Object.keys(classFieldConditions).length > 0 && fieldValue && fieldValue.list) {
+                        var errorMsgForCurrCondn = null;
+                        var currentValueObj = null;
+                        for (var k = 0; k < fieldValue.list.length; k++) {
+                            currentValueObj = fieldValue.list[k];
+                            if (currentValueObj.field !== "class") {
+                                var currentCondn = me.getFieldConditions(classFieldConditions.conditions[currentValueObj.field]);
+                                if (!currentValueObj.field || (currentValueObj.field && !fieldConfig.conditions[currentValueObj.field])) {
+                                    errorMsgForCurrCondn = Ext.String.format('Invalid Row Condition Type {0}.'.t(), currentValueObj.field);
+                                    break;
+                                }else if (currentCondn.hasOwnProperty("allowBlank") && !currentCondn.allowBlank && Ext.isEmpty(currentValueObj.fieldValue)) {
+                                    errorMsgForCurrCondn = Ext.String.format('This field is required.'.t());
+                                    break;
+                                }else if (currentCondn.type && currentCondn.type === 'boolean') {
+                                    var booleanOptions = ["true","false"];
+                                    if ((!currentValueObj.fieldValue && currentValueObj.fieldValue !== false) || !booleanOptions.includes(currentValueObj.fieldValue.toString().toLowerCase())) {
+                                        errorMsgForCurrCondn = Ext.String.format('Invalid value for the boolean field {0}'.t(), currentCondn.displayName);
+                                        break;
+                                    }
+                                }else if (currentCondn.type && currentCondn.type === 'numberfield') {
+                                    // to check whether the number is valid number or some other value
+                                    if(!currentValueObj.fieldValue || !Number(currentValueObj.fieldValue)){
+                                        errorMsgForCurrCondn = Ext.String.format('This is not a valid number.'.t());
+                                        break;
+                                    }
+                                    if(currentCondn.hasOwnProperty("minValue")){
+                                        if(parseFloat(currentValueObj.fieldValue) < currentCondn.minValue){
+                                            errorMsgForCurrCondn = Ext.String.format('The minimum value for this field is {0}.'.t(), currentCondn.minValue);
+                                            break;
+                                        }
+                                    }
+                                    if(currentCondn.hasOwnProperty("maxValue")){
+                                        if(parseFloat(currentValueObj.fieldValue) > currentCondn.maxValue){
+                                            errorMsgForCurrCondn = Ext.String.format('The maximum value for this field is {0}.'.t(), currentCondn.maxValue);
+                                            break;
+                                        }
+                                    }
+                                }else if (currentCondn.type && currentCondn.type === 'select') {
+                                    var areSelectValuesValid = me.checkBoxGroupStoreValidator(true, currentCondn, currentValueObj.fieldValue);
+                                    if (!areSelectValuesValid) {
+                                        errorMsgForCurrCondn = Ext.String.format('Invalid value for the dropdown field {0}'.t(), currentValueObj.displayName);
+                                        break;
+                                    }
+                                }else if ((!currentCondn.hasOwnProperty("allowBlank") || currentCondn.allowBlank) && Ext.isEmpty(currentValueObj.fieldValue)) {
+                                    continue; // Skip validation if allowBlank is true and field value is empty
+                                }
+                                if (currentCondn.vtype) {
+                                    var currCondnVtype = currentCondn.vtype;
+                                    if (currentValueObj.fieldValue) {
+                                        if (!Ext.form.field.VTypes[currCondnVtype](currentValueObj.fieldValue)) {
+                                            errorMsgForCurrCondn = Ext.form.field.VTypes[currCondnVtype + 'Text'];
                                             break;
                                         }
                                     }
                                 }
                             }
-                            if(errorMsgForConditions){
-                                break;
-                            }
                         }
-
-                        if (errorMsgForConditions !== null) {
-                            errorObj.isValidRecord = false;
-                            validationErrors.push({fieldName:fieldName, fieldValue:currentValue, fieldErrorDesc:errorMsgForConditions}); 
-                            break; // Stop validation for this record if any field fails
-                        }
-                    }
-                }else if(grid.viewConfig.importValidationForAlertEvents && fieldConfig && !fieldConfig.conditionsOrder && fieldConfig.conditions){
-                    var classFieldConditions = {};
-                    var appVm = this.getView().up("config-events");
-                    if(appVm){
-                        appVm = appVm.getViewModel();
-                        for(var listIndex = 0; listIndex < fieldValue.list.length; listIndex++){
-                            if(fieldValue.list[listIndex] && fieldValue.list[listIndex].field === "class"){
-                                var currCls = fieldValue.list[listIndex].fieldValue;
-                                currCls = currCls.split("*");
-                                if(currCls.length === 0){
-                                    currCls = currCls[0];
-                                }else{
-                                    currCls = currCls[1];
-                                }
-                                if(appVm.get("classFields")){
-                                    classFieldConditions = appVm.get("classFields")[currCls];
-                                }
-                            }
-                        }
-                    }
-                    
-                    // check allowblank and vtype validation for conditions applied for events
-                    if(Object.keys(classFieldConditions).length > 0 && fieldConfig && fieldConfig.conditions && fieldValue && fieldValue.list){
-                        var errorMsgForCurrCondn = null;
-                        var currentValueObj = null;
-                        for (var k=0; k < fieldValue.list.length; k++){
-                            currentValueObj = fieldValue.list[k];
-                            if(currentValueObj.field !== "class"){
-                                var currentCondn = me.getFieldConditions(classFieldConditions.conditions[currentValueObj.field]);
-                                if(currentCondn && Object.keys(currentCondn).length > 0 && fieldValue && fieldValue.list){
-                                    if (currentCondn.hasOwnProperty("allowBlank") && !currentCondn.allowBlank && Ext.isEmpty(currentValueObj.fieldValue)) {
-                                        errorMsgForCurrCondn = Ext.String.format('This field is required.'.t());
-                                        break; 
-                                    } else if ((!currentCondn.hasOwnProperty("allowBlank") || currentCondn.allowBlank) && Ext.isEmpty(currentValueObj.fieldValue)) {
-                                        continue; // Skip validation if allowBlank is true and field value is empty
-                                    }
-                                    if (currentCondn.vtype) {
-                                        var currCondnVtype = currentCondn.vtype;
-                                        if(currentValueObj.fieldValue){
-                                            if (!Ext.form.field.VTypes[currCondnVtype](currentValueObj.fieldValue)) {
-                                                errorMsgForCurrCondn = Ext.form.field.VTypes[currCondnVtype + 'Text'];
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
                         if (errorMsgForCurrCondn !== null) {
                             errorObj.isValidRecord = false;
-                            validationErrors.push({fieldName:currentValueObj.field, fieldValue:currentValueObj.fieldValue, fieldErrorDesc:errorMsgForCurrCondn}); 
+                            validationErrors.push({ fieldName: currentValueObj.field, fieldValue: currentValueObj.fieldValue, fieldErrorDesc: errorMsgForCurrCondn });
                             break; // Stop validation for this record if any field fails
                         }
+                    }else {
+                        errorObj.isValidRecord = false;
+                        validationErrors.push({ fieldName: fieldName, fieldValue: null, fieldErrorDesc: Ext.String.format('No Classes found to load the config.'.t()) });
+                        break; // Stop validation for this record if any field fails
                     }
                 }
             }
@@ -1010,8 +1039,60 @@ Ext.define('Ung.cmp.GridController', {
             }
         }
     },
+
+    /** 
+     * The component here is a container which contains nested items i.e. fields inside it.
+     * This function is used to go into all the available nested fields and check if it is required field.
+    */
+    getNestedFieldIfPresent: function(component, me, fieldName){
+        if((component.xtype === 'fieldset' || component.xtype === 'container') && component.items && component.items.length > 0){
+            for(var currItemIdx = 0; currItemIdx < component.items.length; currItemIdx++){
+                if(component.items[currItemIdx].xtype === 'fieldset' || component.items[currItemIdx].xtype === 'container'){
+                    var nestedResult = me.getNestedFieldIfPresent(component.items[currItemIdx], me, fieldName);
+                    if(nestedResult){
+                        return nestedResult;
+                    }
+                } else if (component.items[currItemIdx].bind) {
+                    var reqFieldConfig = me.getFieldNameFromBind(component.items[currItemIdx], fieldName);
+                    if (reqFieldConfig) {
+                        return reqFieldConfig;
+                    }
+                }
+            }
+        }
+    },
+
+    /** 
+     * This function is used to extract the name of the field from current fieldConfig and check
+     * if that is the field which we want
+    */
+    getFieldNameFromBind: function (fieldConfig, fieldName) { 
+        // Extract the field name from bind property in various formats
+        var bindValue = fieldConfig.bind.value || fieldConfig.bind;
+        if (typeof bindValue === 'string') {
+            // If bindValue is a string, check if it's in the specified format
+            var fieldNameFromBind = bindValue.split('.')[1].split('}')[0];
+            if (fieldNameFromBind === fieldName) {
+                return fieldConfig;
+            }
+        } else if (typeof bindValue === 'object') {
+            // If bindValue is an object, check each key for the specified format
+            for (var key in bindValue) {
+                if (bindValue.hasOwnProperty(key) && key === 'value') {
+                    var value = bindValue[key];
+                    if (typeof value === 'string' && value.includes('{record.')) {
+                        var fieldNameFromBindValue = value.split('.')[1].split('}')[0];
+                        if (fieldNameFromBindValue === fieldName) {
+                            return fieldConfig;
+                        }
+                    }
+                }
+            }
+        }
+     },
     
     getFieldConfig: function(fieldName) {
+        var me = this;
         // Retrieve the field configuration from editorFields array based on field name extracted from bind property
         if(this.getView().editorFields !== null){
             // generating the editorFieldsConfig Array for normal fields and fields with fieldcontainer type
@@ -1027,33 +1108,23 @@ Ext.define('Ung.cmp.GridController', {
                 }
             });
 
-            return editorFieldsConfig.find(function(fieldConfig) {
-                if (fieldConfig.bind) {
-                    // Extract the field name from bind property in various formats
-                    var bindValue = fieldConfig.bind.value || fieldConfig.bind;
-                    if (typeof bindValue === 'string') {
-                        // If bindValue is a string, check if it's in the specified format
-                        var fieldNameFromBind = bindValue.split('.')[1].split('}')[0];
-                        if (fieldNameFromBind === fieldName) {
-                            return fieldConfig;
-                        }
-                    } else if (typeof bindValue === 'object') {
-                        // If bindValue is an object, check each key for the specified format
-                        for (var key in bindValue) {
-                            if (bindValue.hasOwnProperty(key) && key === 'value') {
-                                var value = bindValue[key];
-                                if (typeof value === 'string' && value.includes('{record.')) {
-                                    var fieldNameFromBindValue = value.split('.')[1].split('}')[0];
-                                    if (fieldNameFromBindValue === fieldName) {
-                                        return fieldConfig;
-                                    }
-                                }
-                            }
-                        }
+            for(var configIndex = 0; configIndex < editorFieldsConfig.length; configIndex++){
+                var fieldConfig = editorFieldsConfig[configIndex];
+                // If the type is fieldset then it is a container which has nested fields inside it
+                // This function iterates through all the nested fields and check if that is the required field config.
+                if(fieldConfig.xtype === 'fieldset'){
+                    var element = me.getNestedFieldIfPresent(fieldConfig, me, fieldName);
+                    if(element){
+                        return element;
+                    }
+                }else if(fieldConfig.bind) {
+                    // This is used for all other fields except the fieldset type
+                    var reqConfig = me.getFieldNameFromBind(fieldConfig, fieldName);
+                    if(reqConfig){
+                        return reqConfig;
                     }
                 }
-                return false;
-            });
+            }
         }else if(this.getView().config && this.getView().config.columns){
             var editorConfig = null;
             editorConfig = this.getView().config.columns.find(function (fieldConfig){
