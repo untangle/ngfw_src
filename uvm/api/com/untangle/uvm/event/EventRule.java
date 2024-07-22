@@ -67,7 +67,7 @@ public class EventRule implements JSONString, Serializable
     
     public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, String description )
     {
-        this( enabled, conditions, log, description, null, null, null, null );
+        this( enabled, conditions, log, description, false, null, 60, null );
     }
 
     public List<EventRuleCondition> getConditions() { return this.conditions; }
