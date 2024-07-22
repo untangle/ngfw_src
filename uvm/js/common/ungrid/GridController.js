@@ -876,7 +876,7 @@ Ext.define('Ung.cmp.GridController', {
                             currentValueObj = fieldValue.list[k];
                             if (currentValueObj.field !== "class") {
                                 var currentCondn = me.getFieldConditions(classFieldConditions.conditions[currentValueObj.field]);
-                                if (!currentValueObj.field || (currentValueObj.field && !fieldConfig.conditions[currentValueObj.field])) {
+                                if (!currentValueObj.field || (currentValueObj.field && !currentCondn)) {
                                     errorMsgForCurrCondn = Ext.String.format('Invalid Row Condition Type {0}.'.t(), currentValueObj.field);
                                     break;
                                 }else if (currentCondn.hasOwnProperty("allowBlank") && !currentCondn.allowBlank && Ext.isEmpty(currentValueObj.fieldValue)) {

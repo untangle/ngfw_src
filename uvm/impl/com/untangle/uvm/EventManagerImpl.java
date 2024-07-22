@@ -456,6 +456,16 @@ public class EventManagerImpl implements EventManager
                 settings.getAlertRules().add( eventRule );
             }
 
+            // set the alertrules FieldValues from null to correct values
+            for (EventRule er : settings.getAlertRules()) {
+                if(er.getThresholdTimeframeSec() == null){
+                    er.setThresholdTimeframeSec(60);
+                }
+                if(er.getThresholdEnabled() == null){
+                    er.setThresholdEnabled(false);
+                }
+            }
+
             settings.setVersion(SETTINGS_CURRENT_VERSION);
         }
         this.setSettings( settings );
