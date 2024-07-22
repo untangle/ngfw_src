@@ -22,6 +22,7 @@ Ext.define('Ung.apps.virusblocker.view.PassSites', {
     recordActions: ['edit', 'copy', 'delete'],
     copyAppendField: 'description',
     emptyText: 'No Pass Sites defined'.t(),
+    importValidationJavaClass: true,
 
     listProperty: 'settings.passSites.list',
     emptyRow: {
