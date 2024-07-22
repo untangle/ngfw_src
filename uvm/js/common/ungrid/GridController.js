@@ -718,6 +718,11 @@ Ext.define('Ung.cmp.GridController', {
                         continue;
                     }
 
+                    var fieldTypes = ["textfield"];
+                    if((!fieldConfig.hasOwnProperty("allowBlank") || fieldConfig.allowBlank) && typeof fieldConfig === 'object' && fieldConfig.hidden && fieldConfig.disabled && fieldTypes.includes(fieldConfig.xtype)){
+                        continue;
+                    }
+
                     if(fieldConfig.xtype && (fieldConfig.xtype === 'checkbox' || fieldConfig.xtype === 'checkcolumn')){
                         var boolOptions = [true, false];
                         if(!boolOptions.includes(fieldValue)){

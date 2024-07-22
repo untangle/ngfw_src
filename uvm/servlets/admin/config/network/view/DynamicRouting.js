@@ -290,6 +290,7 @@ Ext.define('Ung.config.network.view.DynamicRouting', {
                     emptyText: 'No BGP Networks defined'.t(),
 
                     importValidationJavaClass: true,
+                    importValidationForComboBox: true,
 
                     listProperty: 'settings.dynamicRoutingSettings.bgpNetworks.list',
 
@@ -374,6 +375,7 @@ Ext.define('Ung.config.network.view.DynamicRouting', {
                     emptyText: 'No OSPF Networks defined'.t(),
 
                     importValidationJavaClass: true,
+                    importValidationForComboBox: true,
 
                     listProperty: 'settings.dynamicRoutingSettings.ospfNetworks.list',
 
@@ -457,6 +459,7 @@ Ext.define('Ung.config.network.view.DynamicRouting', {
                     emptyText: 'No OSPF Areas defined'.t(),
 
                     importValidationJavaClass: true,
+                    importValidationForComboBox: true,
 
                     listProperty: 'settings.dynamicRoutingSettings.ospfAreas.list',
 
@@ -605,6 +608,7 @@ Ext.define('Ung.config.network.view.DynamicRouting', {
                     emptyText: 'No OSPF Interfaces defined'.t(),
 
                     importValidationJavaClass: true,
+                    importValidationForComboBox: true,
 
                     listProperty: 'settings.dynamicRoutingSettings.ospfInterfaces.list',
 
