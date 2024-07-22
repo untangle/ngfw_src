@@ -80,6 +80,8 @@ class IntrusionPreventionTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global app, appSettings, app_id
         cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
+        if os.path.exists('/tmp/backup'):
+            cls.restore_original_files()
         app = IntrusionPreventionTests._app
         appSettings = IntrusionPreventionTests._appSettings
         app_id = cls.get_app_id()
