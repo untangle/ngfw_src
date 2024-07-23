@@ -1026,6 +1026,7 @@ Ext.define('Ung.config.network.Interface', {
                 }]
             },{
                 xtype: 'container',
+                itemId: 'intfdhcpserver',
                 flex: 1,
                 padding: 10,
                 scrollable: 'y',

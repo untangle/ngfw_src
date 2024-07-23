@@ -53,7 +53,7 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     validateRange: function () {
-        var rangeEnd = this.getView().up('container').down('[itemId=rangeEnd]');
+        var rangeEnd = this.getView().down('container[itemId=intfdhcpserver]').down('[itemId=rangeEnd]');
         if(rangeEnd.getValue() !== "" ) rangeEnd.isValid();
     },
 
