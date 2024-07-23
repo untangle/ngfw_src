@@ -8,11 +8,13 @@ import java.util.Date;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to store certificate details for display in the user interface
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class CertificateInformation implements JSONString, Serializable
 {
     private String fileName;

@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.GenericRule;
+import com.untangle.uvm.util.ValidSerializable;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ import org.json.JSONString;
  * Settings for the Threat Prevention application.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ThreatPreventionSettings implements Serializable, JSONString
 {
     private final Logger logger = LogManager.getLogger(getClass());

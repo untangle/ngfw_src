@@ -7,11 +7,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Wizard settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WizardSettings implements Serializable, JSONString
 {
     private boolean wizardComplete = false;

@@ -9,11 +9,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Dns settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DnsSettings implements Serializable, JSONString
 {
     private List<DnsStaticEntry> staticEntries = new LinkedList<>();

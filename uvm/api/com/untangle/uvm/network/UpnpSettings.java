@@ -9,11 +9,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * QoS settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class UpnpSettings implements Serializable, JSONString
 {
     private boolean upnpEnabled = false;

@@ -17,12 +17,14 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * A log event and message.
  * This is the base log event for most all events that untangle apps log to the database
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public abstract class LogEvent implements Serializable, JSONString
 {
     protected static final Logger logger = LogManager.getLogger(LogEvent.class);

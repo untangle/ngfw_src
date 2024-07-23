@@ -6,6 +6,7 @@ package com.untangle.app.smtp.quarantine.store;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Information about a given Inbox, as maintained outside of the Inbox itself (i.e. for lookup and reporting purposes). <br>
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Assumes all addresses have been lower-cased
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public final class InboxSummary implements Serializable
 {
     private String address;

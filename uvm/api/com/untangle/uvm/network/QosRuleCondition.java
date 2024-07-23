@@ -4,6 +4,7 @@
 package com.untangle.uvm.network;
 
 import com.untangle.uvm.app.RuleCondition;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This is a matching criteria for a Qos Rule
@@ -12,6 +13,7 @@ import com.untangle.uvm.app.RuleCondition;
  * A QosRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class QosRuleCondition extends RuleCondition implements java.io.Serializable, org.json.JSONString
 {
     public QosRuleCondition( )

@@ -3,11 +3,13 @@
  */
 
 package com.untangle.uvm.app;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Generic rule 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class GenericRule extends BaseRule implements java.io.Serializable, org.json.JSONString
 {
     String string = null;

@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.ValidSerializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -16,6 +17,7 @@ import org.json.JSONString;
  * This is not a settings object.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class InterfaceMetrics implements Serializable, JSONString
 {
     private Integer portId;

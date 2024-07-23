@@ -4,12 +4,14 @@
 package com.untangle.app.directory_connector;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Lightweight class to encapsulate an entry (user)
  * in the Address Book service.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public final class UserEntry implements Serializable, Comparable<UserEntry>
 {
     public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";

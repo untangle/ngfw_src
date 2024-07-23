@@ -5,12 +5,14 @@ package com.untangle.app.bandwidth_control;
 
 import java.util.List;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
     
 /**
  * The Bandwidth Control settings object
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class BandwidthControlSettings implements java.io.Serializable, JSONString
 {
     private Integer settingsVersion = 5; /* current version is 5 */

@@ -6,11 +6,13 @@ package com.untangle.app.wan_failover;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for a given WAN Test
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WanTestSettings implements Serializable, JSONString
 {
     private static final int BUCKET_SIZE_MIN = 10;

@@ -8,11 +8,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * wan balancer setting object
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WanBalancerSettings implements Serializable, JSONString
 {
     private int version = 1;

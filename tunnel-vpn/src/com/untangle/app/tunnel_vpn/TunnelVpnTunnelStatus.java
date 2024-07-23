@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class for managing the status of a VPN tunnel
@@ -16,6 +17,7 @@ import org.json.JSONString;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class TunnelVpnTunnelStatus implements JSONString, Serializable
 {
     private InetAddress serverAddress;

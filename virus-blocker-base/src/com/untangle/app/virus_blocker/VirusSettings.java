@@ -10,11 +10,13 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.GenericRule;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the Virus Blockers
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class VirusSettings implements Serializable, JSONString
 {
     private boolean allowFtpResume = true;

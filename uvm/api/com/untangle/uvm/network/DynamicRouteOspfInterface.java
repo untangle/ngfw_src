@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -15,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
  * Only ospf uses the area field.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DynamicRouteOspfInterface implements JSONString, Serializable
 {
     private final Logger logger = LogManager.getLogger(getClass());

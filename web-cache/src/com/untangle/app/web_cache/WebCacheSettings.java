@@ -7,6 +7,7 @@ package com.untangle.app.web_cache;
 import java.util.HashSet;
 import java.util.LinkedList;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
@@ -16,6 +17,7 @@ import org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WebCacheSettings implements java.io.Serializable, JSONString
 {
     private LinkedList<WebCacheRule> ruleList = null;

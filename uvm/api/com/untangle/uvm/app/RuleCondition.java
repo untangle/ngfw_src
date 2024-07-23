@@ -24,6 +24,7 @@ import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.app.IntMatcher;
 import com.untangle.uvm.app.IntfMatcher;
 import com.untangle.uvm.app.UserMatcher;
+import com.untangle.uvm.util.ValidSerializable;
 import com.untangle.uvm.app.GroupMatcher;
 import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.app.ProtocolMatcher;
@@ -39,6 +40,7 @@ import com.untangle.uvm.app.AppBase;
  * A Rule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class RuleCondition implements JSONString, Serializable
 {
     protected final Logger logger = LogManager.getLogger(getClass());

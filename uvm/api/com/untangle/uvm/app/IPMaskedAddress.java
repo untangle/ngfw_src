@@ -11,12 +11,14 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 import org.apache.logging.log4j.Logger;
+import com.untangle.uvm.util.ValidSerializable;
 import org.apache.logging.log4j.LogManager;
 
 /**
  * The class <code>IPMaskedAddress</code> represents a masked IP address.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IPMaskedAddress implements Serializable
 {
     private static final Logger logger = LogManager.getLogger(IPMaskedAddress.class);

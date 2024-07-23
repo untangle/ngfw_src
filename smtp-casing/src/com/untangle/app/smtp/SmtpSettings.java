@@ -11,11 +11,13 @@ import java.util.LinkedList;
 import java.util.List;
 import com.untangle.app.smtp.quarantine.QuarantineSettings;
 import com.untangle.app.smtp.safelist.SafelistSettings;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Mail casing settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SmtpSettings implements Serializable, JSONString
 {
     private boolean smtpEnabled = true;

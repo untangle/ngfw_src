@@ -7,11 +7,13 @@ package com.untangle.app.spam_blocker;
 import java.io.Serializable;
 import java.net.InetAddress;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Grey List Key Implementation
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class GreyListKey implements Serializable, JSONString
 {
     public InetAddress client;

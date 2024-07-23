@@ -10,11 +10,13 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.event.AlertRule;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the Reports App.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ReportsSettings implements Serializable, JSONString
 {
     private Integer version = 2;

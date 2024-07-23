@@ -6,6 +6,7 @@ package com.untangle.app.openvpn;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * A group for OpenVPN clients
@@ -14,6 +15,7 @@ import java.util.LinkedList;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class OpenVpnGroup implements java.io.Serializable, org.json.JSONString
 {
     private int groupId;

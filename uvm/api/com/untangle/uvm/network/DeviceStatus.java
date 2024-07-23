@@ -7,12 +7,14 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This object represents the current status/config of an device.
  * This is not a settings object.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DeviceStatus implements Serializable, JSONString
 {
     private String deviceName;

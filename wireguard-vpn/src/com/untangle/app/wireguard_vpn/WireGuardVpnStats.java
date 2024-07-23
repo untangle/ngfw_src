@@ -9,6 +9,7 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to manage a tunnel status event
@@ -17,6 +18,7 @@ import com.untangle.uvm.util.I18nUtil;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WireGuardVpnStats extends LogEvent implements Serializable
 {
     private InetAddress peerAddress;

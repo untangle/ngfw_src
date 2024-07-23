@@ -14,12 +14,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This is a host table entry
  * It stores the address, and a table of all the known information about this host (attachments)
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class HostTableEntry implements Serializable, JSONString
 {
     private static final int LICENSE_TRAFFIC_AGE_MAX_TIME = 60 * 60 * 1000; /* 60 minutes */

@@ -4,6 +4,7 @@
 package com.untangle.app.smtp.quarantine;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Representation of a mail quarantined within a given {@link com.untangle.app.smtp.quarantine.InboxIndex inbox}. <br>
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * visible to you because of classloader issues).
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public final class InboxRecord implements Serializable
 {
 

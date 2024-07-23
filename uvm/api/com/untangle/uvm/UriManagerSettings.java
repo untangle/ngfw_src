@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.LinkedList;
 
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
  * Uri Manager Settings
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class UriManagerSettings implements Serializable, JSONString
 {
     private Integer version = 5;

@@ -5,6 +5,7 @@ package com.untangle.app.directory_connector;
 
 import java.io.Serializable;
 import java.util.Set;
+import com.untangle.uvm.util.ValidSerializable;
 import java.util.Collections;
 
 /**
@@ -13,6 +14,7 @@ import java.util.Collections;
  *
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public final class GroupEntry implements Serializable, Comparable<GroupEntry>
 {
 

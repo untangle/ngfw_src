@@ -8,11 +8,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Inbox index.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public final class InboxIndex implements Serializable, Iterable<InboxRecord>
 {
     private String m_address;

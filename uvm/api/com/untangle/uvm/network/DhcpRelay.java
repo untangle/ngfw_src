@@ -11,11 +11,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Dns static entry.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DhcpRelay implements Serializable, JSONString
 {
     // !! default values

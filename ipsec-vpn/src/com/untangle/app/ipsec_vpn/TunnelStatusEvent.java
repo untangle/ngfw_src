@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This class is used to periodically log IPsec tunnel status events which
@@ -17,6 +18,7 @@ import com.untangle.uvm.util.I18nUtil;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class TunnelStatusEvent extends LogEvent implements Serializable
 {
     private String tunnelName;

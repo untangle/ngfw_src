@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to manage the details of web cache events which are logged to the
@@ -17,6 +18,7 @@ import com.untangle.uvm.util.I18nUtil;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WebCacheEvent extends LogEvent implements Serializable
 {
     private long hitCount;

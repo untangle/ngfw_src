@@ -11,6 +11,7 @@ import org.json.JSONString;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.uvm.util.ValidSerializable;
 import com.untangle.uvm.vnet.AppSession;
 
 /**
@@ -23,6 +24,7 @@ import com.untangle.uvm.vnet.AppSession;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SslInspectorRule implements JSONString, Serializable
 {
     private final Logger logger = LogManager.getLogger(getClass());

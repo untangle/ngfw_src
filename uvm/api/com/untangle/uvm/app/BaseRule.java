@@ -3,11 +3,13 @@
  */
 
 package com.untangle.uvm.app;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to manage a base rule
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class BaseRule implements java.io.Serializable, org.json.JSONString
 {
     private Integer id = null;

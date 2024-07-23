@@ -5,6 +5,7 @@
 package com.untangle.app.captive_portal;
 
 import com.untangle.uvm.app.IPMatcher;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This class represents a Passed Address and is used to keep a list of allowed
@@ -16,6 +17,7 @@ import com.untangle.uvm.app.IPMatcher;
  */
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class PassedAddress implements java.io.Serializable, org.json.JSONString
 {
     private boolean enabled = true;

@@ -6,11 +6,13 @@ package com.untangle.app.configuration_backup;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the ConfigurationBackup app.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ConfigurationBackupSettings implements Serializable, JSONString
 {
     private int hourInDay;

@@ -10,11 +10,13 @@ import java.util.Arrays;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * The immutable properties of a App
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class AppProperties implements Serializable, JSONString, Comparable<AppProperties>
 {
     private String name = null;

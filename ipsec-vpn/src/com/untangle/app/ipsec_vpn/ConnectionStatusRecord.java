@@ -7,6 +7,7 @@ package com.untangle.app.ipsec_vpn;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This record is used in several different ways, and for each use only some of
@@ -29,6 +30,7 @@ import org.json.JSONString;
 // THIS IS FOR ECLIPSE - @formatter:onn
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ConnectionStatusRecord implements JSONString, Serializable
 {
     private String id;

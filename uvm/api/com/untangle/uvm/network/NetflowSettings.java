@@ -10,11 +10,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * NetFlow settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class NetflowSettings implements Serializable, JSONString
 {
     private final Logger logger = LogManager.getLogger(this.getClass());

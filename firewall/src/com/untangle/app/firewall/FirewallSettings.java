@@ -9,11 +9,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the Firewall app.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class FirewallSettings implements Serializable, JSONString
 {
     private Integer version = Integer.valueOf(1);

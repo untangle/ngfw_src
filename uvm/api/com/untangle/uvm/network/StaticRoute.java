@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This in the implementation of a Static Route
@@ -21,6 +22,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
  * A destination can be an interface or local IP
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class StaticRoute implements JSONString, Serializable
 {
     private final Logger logger = LogManager.getLogger(getClass());

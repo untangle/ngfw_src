@@ -8,11 +8,13 @@ import java.util.LinkedList;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Uvm administrator settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class AdminSettings implements Serializable, JSONString
 {
     private LinkedList<AdminUserSettings> users = new LinkedList<>();

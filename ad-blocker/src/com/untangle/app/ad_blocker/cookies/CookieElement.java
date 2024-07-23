@@ -6,11 +6,13 @@ package com.untangle.app.ad_blocker.cookies;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * A class representing a cookie and all its elements
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class CookieElement implements Serializable, JSONString
 {
     private String type;

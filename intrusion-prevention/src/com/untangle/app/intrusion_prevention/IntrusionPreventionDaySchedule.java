@@ -5,12 +5,14 @@ package com.untangle.app.intrusion_prevention;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import java.io.Serializable;
 
 /**
     Class to hold the manual schedule for intrusion prevention
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IntrusionPreventionDaySchedule implements Serializable, JSONString
 {
     private Integer hour = -1;

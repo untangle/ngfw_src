@@ -6,6 +6,7 @@ package com.untangle.app.web_cache;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
@@ -15,6 +16,7 @@ import org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WebCacheStatistics implements java.io.Serializable, JSONString
 {
     private AtomicLong hitCount = new AtomicLong();

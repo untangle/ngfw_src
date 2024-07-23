@@ -7,11 +7,13 @@ package com.untangle.app.virus_blocker;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Stores results returned from the cloud scanner
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class VirusCloudResult implements Serializable, JSONString
 {
     String itemCategory = null;

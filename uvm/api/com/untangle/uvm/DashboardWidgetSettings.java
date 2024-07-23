@@ -7,12 +7,14 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 
 /**
  * Dashboard widget settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DashboardWidgetSettings implements Serializable, JSONString
 {
     public static enum Size {

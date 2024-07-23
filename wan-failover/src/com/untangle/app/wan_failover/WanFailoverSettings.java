@@ -9,11 +9,13 @@ import java.util.LinkedList;
 import java.util.List;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Stores the settings for the Wan Failover application
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WanFailoverSettings implements Serializable, JSONString
 {
     private List<WanTestSettings> tests;

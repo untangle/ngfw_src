@@ -6,6 +6,7 @@ package com.untangle.app.wan_failover;
 
 import java.io.Serializable;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * 
@@ -13,6 +14,7 @@ import org.json.JSONString;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WanStatus implements Serializable, JSONString
 {
     private Integer interfaceId;

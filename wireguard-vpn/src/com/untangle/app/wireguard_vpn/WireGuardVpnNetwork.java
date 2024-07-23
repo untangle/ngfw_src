@@ -8,6 +8,7 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This class is used when storing a list of IPMaskedAddress objects
@@ -15,6 +16,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
  */
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WireGuardVpnNetwork implements JSONString, Serializable
 {
     private int id;

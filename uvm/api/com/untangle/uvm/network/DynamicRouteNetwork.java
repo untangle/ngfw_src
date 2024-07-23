@@ -13,12 +13,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Dynamic route class used for BGP and ospf. 
  * Only ospf uses the area field.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DynamicRouteNetwork implements JSONString, Serializable
 {
     private final Logger logger = LogManager.getLogger(getClass());

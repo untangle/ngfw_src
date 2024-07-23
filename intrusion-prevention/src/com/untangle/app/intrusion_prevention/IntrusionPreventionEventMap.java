@@ -8,11 +8,13 @@ import java.util.LinkedList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * IntrusionPrevention event signature mapping
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IntrusionPreventionEventMap implements Serializable
 {
     private Set<IntrusionPreventionEventMapSignature> signatures = new HashSet<>();

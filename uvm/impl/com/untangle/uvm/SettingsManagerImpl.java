@@ -42,6 +42,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.util.IOUtil;
+import com.untangle.uvm.util.ObjectMatcher;
+import com.untangle.uvm.util.ValidSerializable;
 import com.untangle.uvm.app.HostnameLookup;
 import javax.servlet.http.HttpServletRequest;
 
@@ -423,8 +425,17 @@ public class SettingsManagerImpl implements SettingsManager
             if(clz == JSONObject.class) {                
                 return (T) new JSONObject(jsonString.toString());
             }
-
-            return (T) serializer.fromJSON(jsonString.toString());
+            
+            // This condition checks that only classes present under ngfw_src and in the java and javax libraries
+            // can be loaded and saved to handle serialization while setting the changes, to mitigate serialization vulnerabilities.
+            if (clz.isAnnotationPresent(ValidSerializable.class)||
+            ((clz.getName().startsWith("java.")) || 
+            (clz.getName().startsWith("javax.")))) {
+                return (T) serializer.fromJSON(jsonString.toString());
+            }    
+            else{
+                throw new SecurityException("Attempt to deserialize unauthorized class: " + clz.getName());
+            }         
         } catch (IOException e) {
             logger.warn("IOException: ",e);
             throw new SettingsException("Unable to the settings: '" + is + "'", e);

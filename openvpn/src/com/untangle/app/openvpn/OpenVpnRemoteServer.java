@@ -3,6 +3,7 @@
  */
 
 package com.untangle.app.openvpn;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to represent an OpenVPN remote server
@@ -11,6 +12,7 @@ package com.untangle.app.openvpn;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class OpenVpnRemoteServer implements java.io.Serializable, org.json.JSONString
 {
     private boolean enabled = true;

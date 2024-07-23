@@ -4,11 +4,13 @@
 package com.untangle.app.smtp.quarantine;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * ...name says it all...
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class InboxAlreadyRemappedException extends Exception implements Serializable
 {
 

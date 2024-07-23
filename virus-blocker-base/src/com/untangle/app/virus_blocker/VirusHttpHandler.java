@@ -25,6 +25,7 @@ import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.GlobUtil;
+import com.untangle.uvm.util.ValidSerializable;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppSession;
@@ -717,6 +718,7 @@ class VirusHttpHandler extends HttpEventHandler
      * Virus URL Cache Key
      */
     @SuppressWarnings("serial")
+    @ValidSerializable
     private class VirusUrlCacheKey implements Serializable
     {
         protected String host;
@@ -762,6 +764,7 @@ class VirusHttpHandler extends HttpEventHandler
      * Virus URL Cache Entry
      */
     @SuppressWarnings("serial")
+    @ValidSerializable
     private class VirusUrlCacheEntry implements Serializable
     {
         protected String virusName;

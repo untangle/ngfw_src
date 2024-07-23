@@ -12,11 +12,13 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Interface settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class InterfaceSettings implements Serializable, JSONString
 {
     private static final Logger logger = LogManager.getLogger( InterfaceSettings.class );

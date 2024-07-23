@@ -14,11 +14,13 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * A tag is just a generic string that you can append to various objects (hosts, sessions, devices, users) that expired at a certain time.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class Tag implements Serializable, JSONString
 {
     private static final Logger logger = LogManager.getLogger(Tag.class);

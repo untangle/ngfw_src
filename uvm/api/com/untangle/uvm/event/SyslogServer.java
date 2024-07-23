@@ -5,6 +5,7 @@ package com.untangle.uvm.event;
 import java.util.LinkedList;
 import java.io.Serializable;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
@@ -14,6 +15,7 @@ import org.json.JSONObject;
  * based on configured SyslogRules
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SyslogServer implements Serializable, JSONString {
     private int serverId = -1;
     private boolean enabled = false;

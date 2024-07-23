@@ -4,11 +4,13 @@
 package com.untangle.app.http;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Holds information about redirects.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class BlockDetails extends RedirectDetails implements Serializable
 {
 

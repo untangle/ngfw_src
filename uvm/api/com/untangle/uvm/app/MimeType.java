@@ -5,11 +5,13 @@
 package com.untangle.uvm.app;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * An immutable holder for an RFC 1049 Mime type.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class MimeType implements Serializable
 {
     private final String mimeType;

@@ -4,11 +4,13 @@
 package com.untangle.app.smtp;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class used to hold an email address
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class EmailAddressRule implements Serializable
 {
     private String addr;

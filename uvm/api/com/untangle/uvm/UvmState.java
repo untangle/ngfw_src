@@ -8,12 +8,14 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Run state of the system.
  *
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class UvmState implements Serializable, org.json.JSONString
 {
 

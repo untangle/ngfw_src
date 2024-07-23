@@ -4,11 +4,13 @@
 package com.untangle.app.smtp.quarantine;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Exception for no such inbox.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class NoSuchInboxException extends Exception implements Serializable
 {
 

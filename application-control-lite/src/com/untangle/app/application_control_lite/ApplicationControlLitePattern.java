@@ -2,11 +2,13 @@
  * $Id$
  */
 package com.untangle.app.application_control_lite;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Rule/Signature (regex pattern) for application control lite patterns
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ApplicationControlLitePattern implements java.io.Serializable, org.json.JSONString
 {
     private Long id;

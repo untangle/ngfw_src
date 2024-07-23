@@ -4,11 +4,13 @@
 package com.untangle.app.intrusion_prevention;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * IntrusionPrevention signature information for event logging
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IntrusionPreventionEventMapSignature implements Serializable
 {
 

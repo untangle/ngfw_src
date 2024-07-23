@@ -7,11 +7,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * App Settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class AppSettings implements Serializable, JSONString, Comparable<AppSettings>
 {
     private Long id = null;

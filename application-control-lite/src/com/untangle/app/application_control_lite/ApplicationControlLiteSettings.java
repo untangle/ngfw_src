@@ -4,11 +4,13 @@
 package com.untangle.app.application_control_lite;
 
 import java.util.LinkedList;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the ApplicationControlLite app
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ApplicationControlLiteSettings implements java.io.Serializable, org.json.JSONString
 {
     private int version = 1;

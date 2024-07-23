@@ -9,6 +9,7 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * OpenVPN client status event
@@ -17,6 +18,7 @@ import com.untangle.uvm.util.I18nUtil;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class OpenVpnEvent extends LogEvent implements Serializable, org.json.JSONString
 {
     public enum EventType

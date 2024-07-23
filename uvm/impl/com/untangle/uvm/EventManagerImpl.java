@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
-
+import com.untangle.uvm.util.ValidSerializable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -1797,6 +1797,7 @@ public class EventManagerImpl implements EventManager
      * Class for event template variables.
      */
     @SuppressWarnings("serial")
+    @ValidSerializable
     public class EventTemplateVariable implements Serializable, JSONString
     {
         private static final char NAME_PREFIX_SUFFIX = '%';

@@ -9,11 +9,13 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Mapping of hostname to IP address.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ReportsHostnameMapEntry implements Serializable, JSONString
 {
     private IPMaskedAddress address;

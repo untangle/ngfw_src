@@ -5,6 +5,7 @@ package com.untangle.app.intrusion_prevention;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import java.io.Serializable;
 
 /**
@@ -14,6 +15,7 @@ import java.io.Serializable;
  * Signatures from distributions like Emerging Threats are not stored in settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IntrusionPreventionSignature implements Serializable, JSONString
 {
     private String signature = "";

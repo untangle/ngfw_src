@@ -9,11 +9,13 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * System settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SystemSettings implements Serializable, JSONString
 {
     private int version = 4;

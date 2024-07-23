@@ -12,11 +12,13 @@ import java.util.LinkedList;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Dynamic Routing settings
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DynamicRoutingSettings implements Serializable, JSONString
 {
     private final Logger logger = LogManager.getLogger(this.getClass());

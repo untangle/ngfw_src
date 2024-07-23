@@ -8,11 +8,13 @@ import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Dhcp static entry.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DhcpStaticEntry implements Serializable, JSONString
 {
     private String macAddress;

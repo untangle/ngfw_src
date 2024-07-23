@@ -10,11 +10,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the TunnelVpn app.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class TunnelVpnSettings implements Serializable, JSONString
 {
     private Integer version = Integer.valueOf(1);

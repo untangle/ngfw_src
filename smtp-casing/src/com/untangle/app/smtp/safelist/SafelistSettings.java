@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 
 /**
@@ -14,6 +15,7 @@ import org.json.JSONString;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SafelistSettings implements Serializable, JSONString
 {
     private String recipient;

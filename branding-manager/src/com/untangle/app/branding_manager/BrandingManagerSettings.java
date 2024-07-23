@@ -6,6 +6,7 @@ package com.untangle.app.branding_manager;
 import java.io.Serializable;
 
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -13,6 +14,7 @@ import org.json.JSONString;
  * Contains properties that a vendor may use to rebrand the product.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class BrandingManagerSettings implements Serializable, JSONString
 {
     private static final String DEFAULT_COMPANY_NAME   = "Arista";

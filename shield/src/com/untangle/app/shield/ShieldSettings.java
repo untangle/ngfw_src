@@ -9,11 +9,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the Shield App.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ShieldSettings implements Serializable, JSONString
 {
     private Integer version = null; /* default is set in initializeSettings() */

@@ -7,11 +7,13 @@ package com.untangle.app.spam_blocker;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Spam control: Definition of spam control settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SpamSmtpConfig implements Serializable, JSONString
 {
     public static final int DEFAULT_MESSAGE_SIZE_LIMIT = 1 << 20;

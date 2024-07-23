@@ -6,6 +6,7 @@ package com.untangle.app.ipsec_vpn;
 
 import java.util.LinkedList;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
@@ -15,6 +16,7 @@ import org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IpsecVpnSettings implements java.io.Serializable, JSONString
 {
     public static enum AuthenticationType

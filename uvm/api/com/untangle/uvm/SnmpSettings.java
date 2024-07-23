@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * For those not familiar with SNMP, here is a bit of an explanation
@@ -46,6 +47,7 @@ import org.json.JSONString;
  * set.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SnmpSettings implements Serializable, JSONString
 {
     /**

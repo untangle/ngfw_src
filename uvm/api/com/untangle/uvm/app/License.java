@@ -7,12 +7,14 @@ package com.untangle.uvm.app;
 import java.io.Serializable;
 
 import org.apache.logging.log4j.Logger;
+import com.untangle.uvm.util.ValidSerializable;
 import org.apache.logging.log4j.LogManager;
 
 /**
  * The License class
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class License implements Serializable
 {
     private final Logger logger = LogManager.getLogger(License.class);

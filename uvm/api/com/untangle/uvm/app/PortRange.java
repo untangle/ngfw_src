@@ -5,11 +5,13 @@
 package com.untangle.uvm.app;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Port ranges are immutable.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class PortRange implements Serializable
 {
 

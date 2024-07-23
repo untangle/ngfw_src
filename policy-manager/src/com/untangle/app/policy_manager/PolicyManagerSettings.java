@@ -9,11 +9,13 @@ import java.util.LinkedList;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Policy Manager Settings
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class PolicyManagerSettings implements Serializable, JSONString
 {
     private List<PolicyRule> rules = new LinkedList<>(); 

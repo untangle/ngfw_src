@@ -7,11 +7,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * UVM mail settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class MailSettings implements Serializable, JSONString
 {
     public enum SendMethod { RELAY, DIRECT, CUSTOM } 

@@ -5,6 +5,7 @@
 package com.untangle.app.openvpn;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to store option/value pairs used create client and server configuration
@@ -15,6 +16,7 @@ import java.io.Serializable;
  */
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class OpenVpnConfigItem implements Serializable, org.json.JSONString
 {
     private String optionName;

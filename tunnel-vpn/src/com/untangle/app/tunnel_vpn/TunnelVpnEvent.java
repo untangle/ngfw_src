@@ -9,11 +9,13 @@ import java.net.InetAddress;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * TunnelVPN tunnel connection event
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class TunnelVpnEvent extends LogEvent implements Serializable, org.json.JSONString
 {
     public enum EventType

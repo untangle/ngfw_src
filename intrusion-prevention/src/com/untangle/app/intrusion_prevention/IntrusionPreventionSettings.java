@@ -4,6 +4,7 @@
 package com.untangle.app.intrusion_prevention;
 
 import com.untangle.uvm.network.BypassRule;
+import com.untangle.uvm.util.ValidSerializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -16,6 +17,7 @@ import java.util.LinkedList;
  * Settings for Intrusion Prevenion.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IntrusionPreventionSettings implements Serializable, JSONString
 {
     private Integer version = 3;

@@ -9,12 +9,14 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 
 /**
  * Dashboard settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DashboardSettings implements Serializable, JSONString
 {
     private Integer version;

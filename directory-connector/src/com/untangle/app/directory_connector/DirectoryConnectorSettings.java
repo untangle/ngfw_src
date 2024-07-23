@@ -5,11 +5,13 @@ package com.untangle.app.directory_connector;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the Directory Connector
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DirectoryConnectorSettings implements java.io.Serializable, JSONString
 {
     private int version = 3;

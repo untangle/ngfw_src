@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.Load;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This in the implementation of a Event Rule
@@ -23,6 +24,7 @@ import com.untangle.uvm.util.Load;
  * to do if the matchers match (log, email, etc)
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class EventRule implements JSONString, Serializable
 {
     private static final Logger logger = LogManager.getLogger( EventRule.class );

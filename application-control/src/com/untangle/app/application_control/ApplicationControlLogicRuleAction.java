@@ -7,6 +7,7 @@ package com.untangle.app.application_control;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -17,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ApplicationControlLogicRuleAction implements Serializable, JSONString
 {
     private final Logger logger = LogManager.getLogger(getClass());

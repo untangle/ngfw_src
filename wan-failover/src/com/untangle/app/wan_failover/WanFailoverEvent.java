@@ -6,6 +6,7 @@ package com.untangle.app.wan_failover;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 import java.io.Serializable;
 import org.json.JSONString;
 
@@ -13,6 +14,7 @@ import org.json.JSONString;
  * Log event for a WAN state change (disconnect/reconnect)
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WanFailoverEvent extends LogEvent implements Serializable, JSONString
 {
     public static enum Action { CONNECTED, DISCONNECTED };

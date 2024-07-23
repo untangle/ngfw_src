@@ -6,11 +6,13 @@ package com.untangle.app.http;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * HTTP method, RFC 2616 section 5.1.1.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class HttpMethod implements Serializable
 {
     

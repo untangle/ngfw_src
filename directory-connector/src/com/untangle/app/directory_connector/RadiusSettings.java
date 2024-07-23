@@ -5,11 +5,13 @@ package com.untangle.app.directory_connector;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for Radius
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class RadiusSettings implements java.io.Serializable, JSONString
 {
     private boolean isEnabled = false;

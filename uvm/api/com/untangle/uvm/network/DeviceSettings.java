@@ -7,11 +7,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Device settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DeviceSettings implements Serializable, JSONString
 {
     private String deviceName;

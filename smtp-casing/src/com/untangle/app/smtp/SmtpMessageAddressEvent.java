@@ -8,11 +8,13 @@ import java.io.Serializable;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Log e-mail message info.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SmtpMessageAddressEvent extends LogEvent implements Serializable
 {
     private Long messageId; /* msg_id */

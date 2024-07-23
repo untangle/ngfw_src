@@ -4,12 +4,14 @@
 package com.untangle.app.http;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Http casing settings.
  *
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class HttpSettings implements Serializable
 {
     public static final int MIN_URI_LENGTH = 1024;

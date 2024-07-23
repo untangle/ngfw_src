@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This class is used to hold the settings for GRE networks. Yes, it probably
@@ -20,6 +21,7 @@ import org.json.JSONString;
  */
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IpsecVpnNetwork implements JSONString, Serializable
 {
     private int id;

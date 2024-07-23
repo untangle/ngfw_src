@@ -10,11 +10,13 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * The settings for an individual report entry (graph)
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class EmailTemplate implements JSONString, Serializable
 {
     private static final Logger logger = LogManager.getLogger( EmailTemplate.class );

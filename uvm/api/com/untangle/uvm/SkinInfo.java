@@ -5,11 +5,13 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Skin informations
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SkinInfo implements Serializable, org.json.JSONString
 {
     private String name = null;

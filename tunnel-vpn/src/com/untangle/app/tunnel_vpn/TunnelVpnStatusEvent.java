@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to manage a tunnel status event
@@ -16,6 +17,7 @@ import com.untangle.uvm.util.I18nUtil;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class TunnelVpnStatusEvent extends LogEvent implements Serializable
 {
     private String tunnelName;

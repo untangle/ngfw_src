@@ -12,11 +12,13 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the open vpn app.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class OpenVpnSettings implements java.io.Serializable, JSONString
 {
 

@@ -8,11 +8,13 @@ import java.io.Serializable;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Prioritize event for the bandwidth control.  
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class PrioritizeEvent extends LogEvent implements Serializable
 {
     private SessionEvent sessionEvent;

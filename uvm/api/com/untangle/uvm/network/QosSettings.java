@@ -9,11 +9,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * QoS settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class QosSettings implements Serializable, JSONString
 {
     private String queueDiscipline = "fq_codel";

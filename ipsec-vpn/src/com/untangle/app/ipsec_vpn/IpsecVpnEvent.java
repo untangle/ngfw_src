@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This class defines the event record used to record IPsec connection status
@@ -18,6 +19,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IpsecVpnEvent extends LogEvent implements Serializable, org.json.JSONString
 {
     public enum EventType

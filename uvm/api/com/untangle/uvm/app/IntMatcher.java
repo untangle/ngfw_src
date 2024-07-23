@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
+import com.untangle.uvm.util.ValidSerializable;
 import org.apache.logging.log4j.LogManager;
 
 // THIS IS FOR ECLIPSE - @formatter:off
@@ -29,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 // THIS IS FOR ECLIPSE - @formatter:on
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IntMatcher implements java.io.Serializable
 {
     private static final String MARKER_ANY = "any";

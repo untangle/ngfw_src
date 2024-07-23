@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import java.io.Serializable;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
@@ -17,6 +18,7 @@ import org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ApplicationControlStatistics implements Serializable, JSONString
 {
     // counters for sessions, allowed, flagged, and blocked

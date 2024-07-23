@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.vnet.AppSession;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This in the implementation of an Threat Prevention Action Rule
@@ -23,6 +24,7 @@ import com.untangle.uvm.vnet.AppSession;
  * and what to do if the matchers match (block, log, etc)
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ThreatPreventionRule implements JSONString, Serializable
 {
     private final Logger logger = LogManager.getLogger(getClass());

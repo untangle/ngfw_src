@@ -7,6 +7,7 @@ package com.untangle.app.ssl_inspector;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This class is used to store the details of a trusted certificate that has
@@ -16,6 +17,7 @@ import org.json.JSONString;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class TrustedCertificate implements JSONString, Serializable
 {
     private String certAlias = null;

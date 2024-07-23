@@ -4,11 +4,13 @@
 package com.untangle.app.smtp.safelist;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Manage safelist count.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SafelistCount implements Serializable
 {
 

@@ -4,6 +4,7 @@
 package com.untangle.app.openvpn;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * A list of network exports for remote clients
@@ -12,6 +13,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class OpenVpnExport implements java.io.Serializable, org.json.JSONString
 {
     private boolean enabled = true;

@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.Crypt;
 
@@ -14,6 +15,7 @@ import org.apache.commons.codec.digest.Crypt;
  * Uvm administrator user settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class AdminUserSettings implements Serializable, JSONString
 {
     private String username;

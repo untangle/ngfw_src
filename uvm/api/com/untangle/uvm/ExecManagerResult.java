@@ -6,11 +6,13 @@ package com.untangle.uvm;
 
 import java.io.Serializable;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to store the results from functions in the ExecManager
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ExecManagerResult implements Serializable, JSONString
 {
     Integer result;

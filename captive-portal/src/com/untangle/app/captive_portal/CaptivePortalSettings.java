@@ -7,6 +7,7 @@ package com.untangle.app.captive_portal;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This is the implementation of the captive portal settings.
@@ -16,6 +17,7 @@ import java.util.List;
  */
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class CaptivePortalSettings implements Serializable, org.json.JSONString
 {
     public static enum AuthenticationType

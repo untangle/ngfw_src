@@ -5,12 +5,14 @@ package com.untangle.app.policy_manager;
 
 import java.io.Serializable;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
  * Policy Settings
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class PolicySettings implements Serializable, JSONString
 {
     private Integer policyId;

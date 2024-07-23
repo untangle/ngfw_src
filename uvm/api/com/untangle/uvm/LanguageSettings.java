@@ -6,10 +6,12 @@ package com.untangle.uvm;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 /**
  * Uvm language settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class LanguageSettings implements Serializable, JSONString
 {
     private String language = "en";

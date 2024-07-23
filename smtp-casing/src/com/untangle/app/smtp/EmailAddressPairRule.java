@@ -4,11 +4,13 @@
 package com.untangle.app.smtp;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class used to associate two email addresses
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class EmailAddressPairRule implements Serializable
 {
     private String addr1;

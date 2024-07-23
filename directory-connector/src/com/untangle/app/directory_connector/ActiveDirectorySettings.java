@@ -5,6 +5,7 @@ package com.untangle.app.directory_connector;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -12,6 +13,7 @@ import java.util.LinkedList;
  * Settings for the Active Directory (really a bunch of LDAP settings).
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ActiveDirectorySettings implements java.io.Serializable, JSONString
 {
     private boolean isEnabled = false;

@@ -13,11 +13,13 @@ import org.json.JSONString;
 
 import java.net.InetAddress;
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the WireGuardVpn app.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WireGuardVpnTunnel implements Serializable, JSONString
 {
     private Integer id;

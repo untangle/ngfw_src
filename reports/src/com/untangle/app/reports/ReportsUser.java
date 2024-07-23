@@ -12,6 +12,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.Crypt;
 
 import com.untangle.uvm.PasswordUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 import org.json.JSONString;
 import org.json.JSONObject;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
  * ReportsUser settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ReportsUser implements Serializable, JSONString
 {
     private String emailAddress;

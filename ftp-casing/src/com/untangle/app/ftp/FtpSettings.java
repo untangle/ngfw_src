@@ -5,12 +5,14 @@ package com.untangle.app.ftp;
 
 import java.io.Serializable;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
  * Ftp casing settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class FtpSettings implements Serializable, JSONString
 {
     private boolean enabled = true;

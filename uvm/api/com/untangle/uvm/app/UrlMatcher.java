@@ -10,12 +10,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
+import com.untangle.uvm.util.ValidSerializable;
 import org.apache.logging.log4j.LogManager;
 
 /**
  * This class manages the "matching" of URLs.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class UrlMatcher implements java.io.Serializable
 {
     private final Logger logger = LogManager.getLogger(getClass());

@@ -5,12 +5,14 @@ package com.untangle.app.intrusion_prevention;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import java.io.Serializable;
 
 /**
  * Intrusion prevention rule
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class IntrusionPreventionVariable implements Serializable, JSONString
 {
     private String name = "";

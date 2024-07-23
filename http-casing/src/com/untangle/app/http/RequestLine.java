@@ -15,12 +15,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.UriUtil;
+import com.untangle.uvm.util.ValidSerializable;
 import com.untangle.uvm.app.SessionEvent;
 
 /**
  * Holds a RFC 2616 request-line.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class RequestLine implements Serializable
 {
     private HttpMethod method;

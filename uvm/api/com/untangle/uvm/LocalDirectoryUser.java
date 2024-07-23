@@ -5,12 +5,14 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Lightweight class to encapsulate an entry (user) for the Local Directory
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public final class LocalDirectoryUser implements Serializable, Comparable<LocalDirectoryUser> {
     private String username;
 

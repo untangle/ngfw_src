@@ -184,7 +184,7 @@ class JavaCompiler
     debug "javac classpath: #{cp}"
     info "[javac -d] #{dstdir}"
 
-    javac = [JavacCommand, "-g", "-classpath", cp, "-Xlint", "-d", dstdir, "@" + files.path]
+    javac = [JavacCommand, "-g", "-classpath", cp, "-Xlint", "-proc:none", "-d", dstdir, "@" + files.path]
     raise "javac failed" unless Kernel.system(*javac)
   end
 

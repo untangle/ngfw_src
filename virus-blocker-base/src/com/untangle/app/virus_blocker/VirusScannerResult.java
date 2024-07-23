@@ -7,6 +7,7 @@ package com.untangle.app.virus_blocker;
 import java.io.Serializable;
 
 import com.untangle.app.smtp.TemplateValues;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Virus scan result. This class also implements TemplateValues. There is only
@@ -14,6 +15,7 @@ import com.untangle.app.smtp.TemplateValues;
  * replaced with the name of the virus which was found.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class VirusScannerResult implements Serializable, TemplateValues
 {
     private static final String VIRUS_NAME_KEY = "VirusReport:VIRUS_NAME";

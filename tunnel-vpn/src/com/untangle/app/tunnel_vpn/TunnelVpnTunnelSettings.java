@@ -7,6 +7,7 @@ package com.untangle.app.tunnel_vpn;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Manages the settings for a tunnel
@@ -15,6 +16,7 @@ import org.json.JSONString;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class TunnelVpnTunnelSettings implements JSONString, Serializable
 {
     private Integer tunnelId = null;

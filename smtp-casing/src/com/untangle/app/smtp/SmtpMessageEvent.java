@@ -16,11 +16,13 @@ import javax.mail.internet.MimeUtility;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.app.SessionEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Log e-mail message info.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SmtpMessageEvent extends LogEvent implements Serializable
 {
     // How big a varchar() do we get for default String fields.

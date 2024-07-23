@@ -18,6 +18,7 @@ import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.HookManager;
 import com.untangle.uvm.Tag;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 import com.untangle.uvm.vnet.AppSession;
 
 
@@ -30,6 +31,7 @@ import com.untangle.uvm.vnet.AppSession;
  *   GIVE_USER_QUOTA
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class BandwidthControlRuleAction implements JSONString, Serializable
 {
     public static final int END_OF_HOUR = -1;

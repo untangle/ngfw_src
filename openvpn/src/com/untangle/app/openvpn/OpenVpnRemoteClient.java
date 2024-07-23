@@ -5,6 +5,7 @@
 package com.untangle.app.openvpn;
 
 import java.util.LinkedList;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to represent an OpenVPN remote client
@@ -13,6 +14,7 @@ import java.util.LinkedList;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class OpenVpnRemoteClient implements java.io.Serializable, org.json.JSONString
 {
     private boolean enabled = true;

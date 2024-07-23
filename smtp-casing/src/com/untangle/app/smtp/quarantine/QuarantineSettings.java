@@ -9,11 +9,13 @@ import java.util.List;
 
 import com.untangle.app.smtp.EmailAddressPairRule;
 import com.untangle.app.smtp.EmailAddressRule;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Settings for the quarantine stuff
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class QuarantineSettings implements Serializable
 {
     public static final long HOUR = 1000L * 60L * 60L; // millisecs per hour

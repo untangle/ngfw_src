@@ -4,12 +4,14 @@
 package com.untangle.app.smtp.quarantine;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Generic "something went wrong" exception. <b>Not</b> the fault of the user or the data - the back-end is simply
  * hosed.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class QuarantineUserActionFailedException extends Exception implements Serializable
 {
     /**

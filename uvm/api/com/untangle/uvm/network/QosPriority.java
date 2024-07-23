@@ -7,11 +7,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * QoS settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class QosPriority implements Serializable, JSONString
 {
     int priorityId;

@@ -11,12 +11,14 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.UserLicenseMessage;
+import com.untangle.uvm.util.ValidSerializable;
 import com.untangle.uvm.app.License;
 
 /**
  * License setttings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class LicenseSettings implements Serializable, JSONString
 {
     private Integer settingsVersion = 1;

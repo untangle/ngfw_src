@@ -4,6 +4,7 @@
 package com.untangle.uvm.network;
 
 import com.untangle.uvm.app.RuleCondition;
+import com.untangle.uvm.util.ValidSerializable;
 
 
 /**
@@ -13,6 +14,7 @@ import com.untangle.uvm.app.RuleCondition;
  * A BypassRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class BypassRuleCondition extends RuleCondition implements java.io.Serializable, org.json.JSONString
 {
     public BypassRuleCondition( )

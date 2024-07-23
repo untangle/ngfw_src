@@ -4,12 +4,14 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Language informations: code & name.
  *
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class LocaleInfo implements Serializable {
     private String languageCode;
     private String languageName;

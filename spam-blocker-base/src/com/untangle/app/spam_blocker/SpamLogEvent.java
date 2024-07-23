@@ -15,11 +15,13 @@ import com.untangle.app.smtp.AddressKind;
 import com.untangle.app.smtp.SmtpMessageEvent;
 import com.untangle.app.smtp.SmtpMessageAddressEvent;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Event for Spam events.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SpamLogEvent extends LogEvent implements Serializable, JSONString
 {
     private Long messageId;

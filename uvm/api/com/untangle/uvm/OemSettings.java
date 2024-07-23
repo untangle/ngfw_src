@@ -7,11 +7,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Uvm administrator settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class OemSettings implements Serializable, JSONString
 {
     private String oemName;

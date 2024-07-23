@@ -13,11 +13,13 @@ import com.untangle.uvm.network.PortForwardRule;
 import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.StaticRoute;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Network settings.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class NetworkSettings implements Serializable, JSONString
 {
     public static final String PUBLIC_URL_EXTERNAL_IP = "external";

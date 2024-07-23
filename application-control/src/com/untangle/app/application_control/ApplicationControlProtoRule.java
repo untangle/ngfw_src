@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to represent a protocol rule
@@ -15,6 +16,7 @@ import org.json.JSONString;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ApplicationControlProtoRule implements Serializable, JSONString
 {
     private int id;

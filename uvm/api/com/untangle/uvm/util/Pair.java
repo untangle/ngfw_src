@@ -15,6 +15,7 @@ package com.untangle.uvm.util;
  * </code>
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class Pair<A,B> implements java.io.Serializable
 {
     public final A a;

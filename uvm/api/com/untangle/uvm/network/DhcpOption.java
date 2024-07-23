@@ -7,11 +7,13 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Dns static entry.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class DhcpOption implements Serializable, JSONString
 {
     private boolean enabled;

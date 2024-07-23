@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.json.JSONObject;
 
 /**
@@ -18,6 +19,7 @@ import org.json.JSONObject;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SslInspectorSettings implements Serializable, JSONString
 {
     private Integer version;

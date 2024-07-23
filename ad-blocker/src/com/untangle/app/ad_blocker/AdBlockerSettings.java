@@ -8,11 +8,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.uvm.app.GenericRule;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * The settings for Ad Blocker
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class AdBlockerSettings implements java.io.Serializable, org.json.JSONString
 {
     private List<GenericRule> blockingRules = new LinkedList<>();

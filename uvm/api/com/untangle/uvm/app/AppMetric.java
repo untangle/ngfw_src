@@ -6,11 +6,13 @@ package com.untangle.uvm.app;
 
 import java.io.Serializable;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Class to manage an application metric
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class AppMetric implements Serializable, JSONString
 {
     public enum Type { COUNTER, AVG_TIME };

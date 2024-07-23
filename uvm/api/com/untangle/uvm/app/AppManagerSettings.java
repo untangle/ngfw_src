@@ -8,12 +8,14 @@ import java.util.LinkedList;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * The App Manager Settings
  * This stores most of the settings related to the apps
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class AppManagerSettings implements Serializable, JSONString
 {
     private long nextAppId = 1;

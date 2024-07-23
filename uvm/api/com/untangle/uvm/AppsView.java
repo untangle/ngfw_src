@@ -12,6 +12,7 @@ import org.json.JSONString;
 
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.License;
+import com.untangle.uvm.util.ValidSerializable;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppMetric;
 
@@ -24,6 +25,7 @@ import com.untangle.uvm.app.AppMetric;
  * Names, and license state.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class AppsView implements Serializable, JSONString
 {
     private int policyId;

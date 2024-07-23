@@ -11,11 +11,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Summary of a mail within the Quarantine.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public final class MailSummary implements Serializable
 {
 

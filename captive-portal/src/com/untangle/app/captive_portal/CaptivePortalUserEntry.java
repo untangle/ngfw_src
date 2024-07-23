@@ -6,6 +6,7 @@ package com.untangle.app.captive_portal;
 
 import java.io.Serializable;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This is the implementation of a captive portal user entry used to track
@@ -15,6 +16,7 @@ import org.json.JSONString;
  */
 
 @SuppressWarnings("serial")
+@ValidSerializable
 public class CaptivePortalUserEntry implements Serializable, JSONString
 {
     private String userAddress;

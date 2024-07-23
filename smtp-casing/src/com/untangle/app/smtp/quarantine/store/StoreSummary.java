@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * POJO representing the state of the Store. Used by the {@link com.untangle.app.smtp.quarantine.store.MasterTable
@@ -20,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Assumes all addresses have been lower-cased
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class StoreSummary implements Serializable
 {
     private final HashMap<String, InboxSummary> map;

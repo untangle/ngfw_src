@@ -14,12 +14,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This is a host table entry
  * It stores the username, and a table of all the known information about this host (attachments)
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class UserTableEntry implements Serializable, JSONString
 {
     private static final Logger logger = LogManager.getLogger(UserTableEntry.class);

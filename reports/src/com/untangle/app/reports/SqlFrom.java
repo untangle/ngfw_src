@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.velocity.util.StringUtils;
@@ -17,6 +18,7 @@ import org.apache.velocity.util.StringUtils;
  * A SQL from target to retrieve data.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SqlFrom implements Serializable, JSONString
 {
     private static final Logger logger = LogManager.getLogger(SqlCondition.class);

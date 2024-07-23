@@ -4,11 +4,13 @@
 package com.untangle.app.http;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Holds information about why a page was blocked.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class RedirectDetails implements Serializable
 {
     private static final int MAX_LEN = 40;

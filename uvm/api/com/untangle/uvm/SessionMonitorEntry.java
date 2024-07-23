@@ -13,11 +13,13 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.Tag;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This class represents a conntrack entry
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class SessionMonitorEntry implements Serializable, JSONString
 {
     private String protocol;

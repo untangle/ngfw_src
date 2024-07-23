@@ -4,11 +4,13 @@
 package com.untangle.app.smtp.safelist;
 
 import java.io.Serializable;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * Exception to show safelist address.
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class NoSuchSafelistException extends Exception implements Serializable
 {
 

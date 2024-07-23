@@ -24,11 +24,13 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * The settings for an individual report entry (graph)
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class ReportEntry implements Serializable, JSONString
 {
     private static final Logger logger = LogManager.getLogger(ReportEntry.class);

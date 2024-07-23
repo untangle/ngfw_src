@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+import com.untangle.uvm.util.ValidSerializable;
 
 /**
  * This is the implementation of a web cache rule which are used to specify
@@ -17,6 +18,7 @@ import org.json.JSONString;
  * 
  */
 @SuppressWarnings("serial")
+@ValidSerializable
 public class WebCacheRule implements JSONString, Serializable
 {
     private int id;
