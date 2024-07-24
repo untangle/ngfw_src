@@ -29,11 +29,6 @@ OAUTH_PROVIDERS = {
         "method": "googleLogin",
         "uri": "https://accounts.google.com/o/oauth2/v2/auth?client_id=365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.GoogleState.$"
     },
-    "FACEBOOK": {
-        "platform": "1840471182948119",
-        "method": "facebookLogin",
-        "uri": "https://www.facebook.com/v2.9/dialog/oauth?client_id=1840471182948119&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.FacebookState.$"
-    },
     "MICROSOFT": {
         "platform": "f8285e96-b240-4036-8ea5-f37cf6b981bb",
         "method": "microsoftLogin",
@@ -486,7 +481,6 @@ def generate_page(req,captureSettings,args,extra='',page=None,template_name=None
         target = f"{schema}{req.hostname}{port}/capture/handler.py/index?nonce={args['NONCE']}&method={args['METHOD']}&appid={args['APPID']}&host={args['HOST']}&uri={args['URI']}"
 
         page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE"))
-        page = replace_marker(page,'$.FacebookState.$', urllib.parse.quote(target + "&authmode=FACEBOOK"))
         page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT"))
 
         page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.untangle.com/callback.php"))

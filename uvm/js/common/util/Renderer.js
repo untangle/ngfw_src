@@ -1227,7 +1227,6 @@ Ext.define('Ung.util.Renderer', {
         ACTIVE_DIRECTORY: 'Active Directory'.t(),
         RADIUS: 'RADIUS'.t(),
         GOOGLE: 'Google Account'.t(),
-        FACEBOOK: 'Facebook Account'.t(),
         MICROSOFT: 'Microsoft Account'.t(),
         CUSTOM: 'Custom'.t(),
         default: 'Unknown'.t()

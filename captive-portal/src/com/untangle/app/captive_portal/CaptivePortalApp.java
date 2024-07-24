@@ -29,6 +29,7 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.OAuthDomain;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.app.captive_portal.CaptivePortalSettings.AuthenticationType;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
@@ -320,6 +321,10 @@ public class CaptivePortalApp extends AppBase
      */
     private void saveAppSettings(CaptivePortalSettings argSettings)
     {
+        //Modify settings to ANY_OAUTH in case Facebook is set
+        if (AuthenticationType.FACEBOOK.equals(argSettings.getAuthenticationType())) {
+            argSettings.setAuthenticationType(AuthenticationType.ANY_OAUTH);
+        }
         // set a unique id for each capture rule
         int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
         for (CaptureRule rule : argSettings.getCaptureRules())
@@ -530,6 +535,9 @@ public class CaptivePortalApp extends AppBase
             // to the common apply function
             if (readSettings.getSecretKey() == null) {
                 initializeCookieKey(readSettings);
+            }
+            //Save Settings
+            if (readSettings.getSecretKey() == null || AuthenticationType.FACEBOOK.equals(readSettings.getAuthenticationType())) {
                 saveAppSettings(readSettings);
             }
             applyAppSettings(readSettings);

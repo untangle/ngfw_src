@@ -80,7 +80,6 @@ Ext.define('Ung.apps.captive-portal.view.UserAuthentication', {
                 { boxLabel: '<strong>' + 'Active Directory'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ACTIVE_DIRECTORY' },
                 { boxLabel: '<strong>' + 'Any Directory Connector'.t() + '</strong> (' + 'requires'.t() + ' Directory Connector)', inputValue: 'ANY_DIRCON' },
                 { boxLabel: '<strong>' + 'Google Account'.t() + '</strong> (OAuth Provider, requires SSL Inspector)', inputValue: 'GOOGLE' },
-                { boxLabel: '<strong>' + 'Facebook Account'.t() + '</strong> (OAuth Provider)', inputValue: 'FACEBOOK' },
                 { boxLabel: '<strong>' + 'Microsoft Account'.t() + '</strong> (OAuth Provider)', inputValue: 'MICROSOFT' },
                 { boxLabel: '<strong>' + 'Any OAuth Provider'.t() + '</strong> (' + 'uses OAuth provider selection page'.t() + ')', inputValue: 'ANY_OAUTH' },
             ]
