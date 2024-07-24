@@ -6,7 +6,6 @@ import unittest
 import pytest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -46,14 +45,14 @@ class ShieldTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_shieldDetectsNmap(self):
         # enable logging of blocked settings
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['logBlockedSessions'] = True
         netsettings['logBypassedSessions'] = True
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         settings = app.getSettings()
         settings['shieldEnabled'] = True
@@ -72,10 +71,10 @@ class ShieldTests(NGFWTestCase):
 
     def test_021_shieldOffNmap(self):
         # enable logging of blocked settings
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['logBlockedSessions'] = True
         netsettings['logBypassedSessions'] = True
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         settings = app.getSettings()
         settings['shieldEnabled'] = False
