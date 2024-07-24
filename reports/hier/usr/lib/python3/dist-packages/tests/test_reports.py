@@ -1297,6 +1297,7 @@ class ReportsTests(NGFWTestCase):
     def test_110_verify_report_users(self):
         # Test report only user can login and report servlet displays 
         # add report user with test_email_address
+        original_settings = self._app.getSettings()
         settings = copy.deepcopy(original_settings)
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()

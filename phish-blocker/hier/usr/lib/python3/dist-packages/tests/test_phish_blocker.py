@@ -8,7 +8,6 @@ import unittest
 import pytest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -75,16 +74,16 @@ class PhishBlockerTests(NGFWTestCase):
         cls.module_name()
 
         appData = cls._app.getSettings()
-        appSP = uvmContext.appManager().app(cls.appNameSpamCase())
+        appSP = global_functions.uvmContext.appManager().app(cls.appNameSpamCase())
         appDataSP = appSP.getSmtpSettings()
 
-        if (uvmContext.appManager().isInstantiated(cls.appNameSSLInspector())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.appNameSSLInspector())):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.appNameSSLInspector())
             else:
-                appSSL = uvmContext.appManager().app(cls.appNameSSLInspector())
+                appSSL = global_functions.uvmContext.appManager().app(cls.appNameSSLInspector())
         else:
-            appSSL = uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
+            appSSL = global_functions.uvmContext.appManager().instantiate(cls.appNameSSLInspector(), default_policy_id)
 
         try:
             canRelay = global_functions.send_test_email(mailhost=smtpServerHost)
@@ -116,7 +115,7 @@ class PhishBlockerTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     # this one works when run individually (with -k
     # test_020_smtpQuarantinedPhishBlockerTest), and also when only
@@ -277,7 +276,7 @@ class PhishBlockerTests(NGFWTestCase):
     def final_extra_tear_down(cls):
         global appSSL
         if appSSL != None:
-            uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( appSSL.getAppSettings()["id"] )
             appSSL = None
 
 test_registry.register_module("phish-blocker", PhishBlockerTests)
