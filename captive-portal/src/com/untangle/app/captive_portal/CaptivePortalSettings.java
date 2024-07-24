@@ -15,12 +15,16 @@ import java.util.List;
  * 
  */
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"deprecation", "serial"})
 public class CaptivePortalSettings implements Serializable, org.json.JSONString
 {
     public static enum AuthenticationType
     {
-        NONE, LOCAL_DIRECTORY, RADIUS, ACTIVE_DIRECTORY, ANY_DIRCON, GOOGLE, FACEBOOK, MICROSOFT, ANY_OAUTH, CUSTOM, ANY
+        NONE, LOCAL_DIRECTORY, RADIUS, ACTIVE_DIRECTORY, ANY_DIRCON, GOOGLE,
+        /**
+        * @deprecated Use {@link AuthenticationType#ANY_OAUTH} instead.
+        */
+       @Deprecated(forRemoval = true, since = "18") FACEBOOK, MICROSOFT, ANY_OAUTH, CUSTOM, ANY
     };
 
     public static enum PageType

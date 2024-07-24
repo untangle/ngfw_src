@@ -1153,6 +1153,79 @@ class CaptivePortalTests(NGFWTestCase):
         assert redirect is not None, f"found redirect"
         assert "https://accounts.google.com/o/oauth2/v2/auth" in redirect, "found google redirect"
 
+    def test_102_auth_oauth_facebook(self):
+        """
+        Facebook oauth
+        """
+        appData = copy.deepcopy(appData_original)
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
+        appData["authenticationType"] = "FACEBOOK"
+        appData['pageType'] = "BASIC_MESSAGE"
+        self._app.setSettings(appData)
+
+        # Attempt to browse target
+        # We're expecting to get an HTTP redirect and then curl to follow that redirect
+        curl_result = remote_control.run_command(
+            global_functions.build_curl_command(
+                verbose=True
+            ),
+            stdout=True)
+
+        welcome_found = False
+        redirect = None
+        for result in curl_result.split("\n"):
+            if "< Location:" in result:
+                # Exract redirect uri
+                redirect = result.split(":",1)[1].strip()
+            if appData["basicLoginPageWelcome"] in result:
+                welcome_found = True
+
+        assert welcome_found is True, "basic message page found"
+        assert redirect is not None, f"found redirect"
+
+        parsed_redirect = util.url.parse_url(redirect)
+
+        # Parse the form to get the html-generated input fields and form action
+        browser = mechanicalsoup.StatefulBrowser()
+        browser.open_fake_page(page_text=curl_result, soup_config={'features': 'lxml'})
+        form = browser.select_form()
+
+        # Build redirect url from the welcome redirect but use the action from the redirected form
+        form_path = form.form.attrs["action"]
+        redirect_uri = util.url.Url(scheme=parsed_redirect.scheme, host=parsed_redirect.host, port=parsed_redirect.port, path=form_path)
+
+        # Build arguments
+        form_arguments = {}
+        for input in form.form.select("input"):
+            form_arguments[input['name']] = input['value']
+
+        # Simulate clicking the Continue button which should redirect us to auth page
+        curl_result = remote_control.run_command(
+            global_functions.build_curl_command(
+                    verbose=True,
+                    request="POST",
+                    form=form_arguments,
+                    uri=redirect_uri,
+            ),
+            stdout=True)
+
+        browser.open_fake_page(page_text=curl_result, soup_config={'features': 'lxml'})
+        form = browser.select_form()
+
+        oauth_links = []
+        for anchor in form.form.select("a"):
+            href = anchor["href"]
+            if href in oauth_links:
+                continue
+            if "https://accounts.google.com/o/oauth2/v2/auth" in href:
+                oauth_links.append(href)
+            if "https://login.microsoftonline.com/common/oauth2/v2.0/authorize" in href:
+                oauth_links.append(href)
+
+        print(len(oauth_links))
+        assert len(oauth_links) == 2, "found appropriate any oauth links"
+
     def test_103_auth_oauth_microsoft(self):
         """
         Facebok oauth
@@ -1222,7 +1295,7 @@ class CaptivePortalTests(NGFWTestCase):
 
     def test_111_auth_oauth_any(self):
         """
-        Google oauth
+        ANY_OAUTH oauth
         """
         appData = copy.deepcopy(appData_original)
         appData['captureRules']['list'] = []
@@ -1287,13 +1360,11 @@ class CaptivePortalTests(NGFWTestCase):
                 continue
             if "https://accounts.google.com/o/oauth2/v2/auth" in href:
                 oauth_links.append(href)
-            if "https://www.facebook.com/v2.9/dialog/oauth" in href:
-                oauth_links.append(href)
             if "https://login.microsoftonline.com/common/oauth2/v2.0/authorize" in href:
                 oauth_links.append(href)
 
         print(len(oauth_links))
-        assert len(oauth_links) == 3, "found appropriate any oauth links"
+        assert len(oauth_links) == 2, "found appropriate any oauth links"
 
     @classmethod
     def final_extra_tear_down(cls):
