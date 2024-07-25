@@ -740,13 +740,12 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             name:"PROTOCOL",
             displayName: "Protocol".t(),
             type: 'checkboxgroup',
-            values: Util.getProtocolList(false)
+            values: Util.getProtocolList(false),
         },{
             name:"SRC_INTF",
             displayName: "Source Interface".t(),
             type: 'checkboxgroup',
             values: Util.getInterfaceList(true, true),
-            allowBlank: false,
         },{
             name:"SRC_ADDR",
             displayName: "Source Address".t(),
@@ -953,31 +952,38 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'APPLICATION_CONTROL_APPLICATION',
             displayName: 'Application Control: Application'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_CATEGORY', 
             displayName: 'Application Control: Application Category'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_PROTOCHAIN',
             displayName: 'Application Control: ProtoChain'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_DETAIL',
             displayName: 'Application Control: Detail'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_CONFIDENCE',
             displayName: 'Application Control: Confidence'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_PRODUCTIVITY',
             displayName: 'Application Control: Productivity'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_RISK',
             displayName: 'Application Control: Risk'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'PROTOCOL_CONTROL_SIGNATURE',
             displayName: 'Application Control Lite: Signature'.t(),
@@ -1068,24 +1074,28 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             displayName: 'Threat Prevention: Client address reputation'.t(),
             type: 'checkboxgroup',
             // Also, tips
-            values: Ung.common.threatprevention.references.reputatationConditionValues()
+            values: Ung.common.threatprevention.references.reputatationConditionValues(),
+            //allowBlank: false
         },{
             name:'THREAT_PREVENTION_DST_REPUTATION',
             displayName: 'Threat Prevention: Server address reputation'.t(),
             type: 'checkboxgroup',
-            values: Ung.common.threatprevention.references.reputatationConditionValues()
+            values: Ung.common.threatprevention.references.reputatationConditionValues(),
+            //allowBlank: false
         },{
             name:'THREAT_PREVENTION_SRC_CATEGORIES',
             displayName: 'Threat Prevention: Client address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
-            values: Ung.common.threatprevention.references.threatsConditionValues()
+            values: Ung.common.threatprevention.references.threatsConditionValues(),
+            //allowBlank: false
         },{
             name:'THREAT_PREVENTION_DST_CATEGORIES',
             displayName: 'Threat Prevention: Server address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
-            values: Ung.common.threatprevention.references.threatsConditionValues()
+            values: Ung.common.threatprevention.references.threatsConditionValues(),
+            //allowBlank: false
         },{
             name:'SSL_INSPECTOR_SNI_HOSTNAME',
             displayName: 'SSL Inspector: SNI Host Name'.t(),
