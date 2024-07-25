@@ -532,7 +532,7 @@ Ext.define('Ung.cmp.GridController', {
         return isEntryExists;
     },
 
-    checkBoxGroupStoreValidator:function(isAlertEvent, fieldConfig, valuesToCheck){
+    checkBoxGroupStoreValidator:function(isAlertEvent, fieldConfig, valuesToCheck, allowNullValues){
         var availableFieldValues = [];
         if(fieldConfig.values && fieldConfig.values.length <= 0){
             return false;
@@ -542,6 +542,9 @@ Ext.define('Ung.cmp.GridController', {
             }
         }
         var isEntryValid = true;
+        if(allowNullValues && !valuesToCheck.trim("")){
+            return isEntryValid;
+        }
         valuesToCheck = valuesToCheck.split(",");
         for(var i=0; i<valuesToCheck.length; i++){
             var currValue = valuesToCheck[i].trim();
@@ -702,7 +705,7 @@ Ext.define('Ung.cmp.GridController', {
         return errorMsgForConditions;
     },
 
-    importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid, me){
+    importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid, me, areNestedFields){
         for (var fieldName in record) {
             if((!isNestedEditor && mappedObject[fieldName]) || (isNestedEditor && !nestedObject[fieldName])){
                 continue;
@@ -710,6 +713,11 @@ Ext.define('Ung.cmp.GridController', {
             if (record.hasOwnProperty(fieldName)) {
                 var fieldValue = fieldValueFn(fieldName);
                 var fieldConfig = fieldConfigFn(fieldName);
+                var nestedFieldsFunction = grid.viewConfig.nestedFieldsArr;
+
+                if(areNestedFields && nestedFieldsFunction.nestedFieldCondn && nestedFieldsFunction.nestedFieldCondn.hasOwnProperty(fieldName) && nestedFieldsFunction.nestedFieldCondn[fieldName](record[nestedFieldsFunction.toCompareField]) && fieldValue === null){
+                    continue;
+                }
 
                 if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
                     var validationErrorMsg = null;
@@ -755,7 +763,9 @@ Ext.define('Ung.cmp.GridController', {
 
                     if (fieldConfig.hasOwnProperty("allowBlank") && !fieldConfig.allowBlank && (!fieldConfig.bind || (fieldConfig.bind && !fieldConfig.bind.disabled)) && Ext.isEmpty(fieldValue)) {
                         validationErrorMsg = Ext.String.format('This field is required.'.t()); 
-                    } else if (fieldConfig.allowBlank && Ext.isEmpty(fieldValue)) {
+                    }else if(fieldConfig.hasOwnProperty("allowOnlyWhitespace") && !fieldConfig.allowOnlyWhitespace && Ext.isEmpty(fieldValue)){
+                        validationErrorMsg = Ext.String.format('This field is required.'.t());
+                    } else if ((fieldConfig.allowBlank || fieldConfig.allowOnlyWhitespace) && Ext.isEmpty(fieldValue)) {
                         continue; // Skip validation if allowBlank is true and field value is empty
                     }
 
@@ -809,7 +819,7 @@ Ext.define('Ung.cmp.GridController', {
                             errorMsgForConditions = Ext.String.format('This field is required.'.t());
                             break;
                         } else if (grid.viewConfig.importValidationForComboBox && currentCondition.type && currentCondition.type === 'checkboxgroup') {
-                            var areValuesValid = me.checkBoxGroupStoreValidator(false, currentCondition, currentValue);
+                            var areValuesValid = me.checkBoxGroupStoreValidator(false, currentCondition, currentValue, true);
                             if (!areValuesValid) {
                                 errorMsgForConditions = Ext.String.format('Invalid value for the checkbox field {0}'.t(), currentCondition.displayName);
                                 break;
@@ -996,6 +1006,25 @@ Ext.define('Ung.cmp.GridController', {
                         }
                     }
                 }
+
+                if(errorObj.isValidRecord && grid.viewConfig.nestedFieldsArr.fields && grid.viewConfig.nestedFieldsArr.fields.length > 0){
+                    for(var k=0; k<grid.viewConfig.nestedFieldsArr.fields.length; k++){
+                        var currNestedField = grid.viewConfig.nestedFieldsArr.fields[k];
+                        if(errorObj.isValidRecord && record.hasOwnProperty(currNestedField)){
+                            this.importHandlerValidator(record[currNestedField],
+                                function(fieldNm){
+                                    return record[currNestedField][fieldNm];
+                                },
+                                function(fieldNm){
+                                    return me.getFieldConfig(fieldNm);
+                                },
+                                false, mappedObject, validationErrors, errorObj, {}, grid, me, true);
+                        }else{
+                            break;
+                        }
+                    }
+                }
+
                 if (errorObj.isValidRecord) {
                     validData.push(record);
                 }

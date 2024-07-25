@@ -208,6 +208,12 @@ Ext.define('Ung.cmp.Grid', {
         }else{
             viewConfig.importValidationForFieldSet = false;
         }
+        if(this.nestedFieldsArr !== undefined){
+            viewConfig.nestedFieldsArr = this.nestedFieldsArr;
+        }else{
+            viewConfig.nestedFieldsArr = {};
+        }
+
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
         }
