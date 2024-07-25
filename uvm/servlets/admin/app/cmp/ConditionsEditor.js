@@ -1075,27 +1075,23 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.threatprevention.references.reputatationConditionValues(),
-            //allowBlank: false
         },{
             name:'THREAT_PREVENTION_DST_REPUTATION',
             displayName: 'Threat Prevention: Server address reputation'.t(),
             type: 'checkboxgroup',
             values: Ung.common.threatprevention.references.reputatationConditionValues(),
-            //allowBlank: false
         },{
             name:'THREAT_PREVENTION_SRC_CATEGORIES',
             displayName: 'Threat Prevention: Client address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.threatprevention.references.threatsConditionValues(),
-            //allowBlank: false
         },{
             name:'THREAT_PREVENTION_DST_CATEGORIES',
             displayName: 'Threat Prevention: Server address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
             values: Ung.common.threatprevention.references.threatsConditionValues(),
-            //allowBlank: false
         },{
             name:'SSL_INSPECTOR_SNI_HOSTNAME',
             displayName: 'SSL Inspector: SNI Host Name'.t(),
