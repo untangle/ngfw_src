@@ -27,6 +27,13 @@ Ext.define('Ung.apps.sslinspector.view.Rules', {
     listProperty: 'settings.ignoreRules.list',
 
     emptyText: 'No Rules defined'.t(),
+    
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+    nestedFieldsArr: {
+        fields: ["action"],
+        extraConfig: { flag: { xtype: "checkbox" } }
+    },
 
     emptyRow: {
         ruleId: 0,
