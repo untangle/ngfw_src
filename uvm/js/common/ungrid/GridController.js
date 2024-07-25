@@ -719,6 +719,10 @@ Ext.define('Ung.cmp.GridController', {
                     continue;
                 }
 
+                if(areNestedFields && !fieldConfig && nestedFieldsFunction.extraConfig && nestedFieldsFunction.extraConfig.hasOwnProperty(fieldName)){
+                    fieldConfig = nestedFieldsFunction.extraConfig[fieldName];
+                }
+
                 if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
                     var validationErrorMsg = null;
                     var types = ["textfield", "numberfield"];
