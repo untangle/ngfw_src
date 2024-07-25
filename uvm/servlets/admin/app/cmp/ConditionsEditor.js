@@ -1074,24 +1074,24 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             displayName: 'Threat Prevention: Client address reputation'.t(),
             type: 'checkboxgroup',
             // Also, tips
-            values: Ung.common.threatprevention.references.reputatationConditionValues(),
+            values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
             name:'THREAT_PREVENTION_DST_REPUTATION',
             displayName: 'Threat Prevention: Server address reputation'.t(),
             type: 'checkboxgroup',
-            values: Ung.common.threatprevention.references.reputatationConditionValues(),
+            values: Ung.common.threatprevention.references.reputatationConditionValues()
         },{
             name:'THREAT_PREVENTION_SRC_CATEGORIES',
             displayName: 'Threat Prevention: Client address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
-            values: Ung.common.threatprevention.references.threatsConditionValues(),
+            values: Ung.common.threatprevention.references.threatsConditionValues()
         },{
             name:'THREAT_PREVENTION_DST_CATEGORIES',
             displayName: 'Threat Prevention: Server address category'.t(),
             type: 'checkboxgroup',
             // Also, tips
-            values: Ung.common.threatprevention.references.threatsConditionValues(),
+            values: Ung.common.threatprevention.references.threatsConditionValues()
         },{
             name:'SSL_INSPECTOR_SNI_HOSTNAME',
             displayName: 'SSL Inspector: SNI Host Name'.t(),
