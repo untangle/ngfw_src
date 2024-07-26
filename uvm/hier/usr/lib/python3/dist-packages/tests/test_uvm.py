@@ -181,6 +181,39 @@ class UvmTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
+    @pytest.mark.slow
+    def test_011_validate_serial_number(self):
+        """
+        Ensure valid serial number is returned if present
+        """
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+        file_path = '/tmp/product_serial'
+        device_serial_number = 'CTW23050243'
+        with open(file_path, "w") as f:
+            f.write(device_serial_number)
+
+        initial_serial_number  = global_functions.uvmContext.getServerSerialNumber()
+        subprocess.call("mount /tmp/product_serial /sys/devices/virtual/dmi/id/product_serial -o rw,bind", shell=True, stderr=subprocess.STDOUT)
+        ## Restart uvm
+        global_functions.restart_uvm()
+        updated_serial_number  = global_functions.uvmContext.getServerSerialNumber()
+        ## verify serial number is updated to CTW23050243
+        assert(device_serial_number == updated_serial_number)
+        #unmounting the /tmp/product_serial
+        subprocess.call("umount -v /sys/devices/virtual/dmi/id/product_serial", shell=True, stderr=subprocess.STDOUT)
+        ##Reverting back to initial serial number
+        with open(file_path, "w") as f:
+            f.write(initial_serial_number)
+        subprocess.call("mount /tmp/product_serial /sys/devices/virtual/dmi/id/product_serial -o rw,bind", shell=True, stderr=subprocess.STDOUT)
+        global_functions.restart_uvm()
+        ## verify serial number is updated to initial vlue
+        assert (initial_serial_number == global_functions.uvmContext.getServerSerialNumber())
+        #unmounting the /tmp/product_serial
+        subprocess.call("umount -v /sys/devices/virtual/dmi/id/product_serial", shell=True, stderr=subprocess.STDOUT)
+        ## removing file /tmp/product_serial
+        subprocess.call("rm -f /tmp/product_serial", shell=True, stderr=subprocess.STDOUT)
+
     def test_012_help_links(self):
         helpLinkFile = "/tmp/helpLinks.json"
         subprocess.call(global_functions.build_wget_command(uri="http://test.untangle.com/test/help_links.json", output_file=helpLinkFile), shell=True)
@@ -1135,38 +1168,6 @@ class UvmTests(NGFWTestCase):
         # verify pruned no of license files to <=5
         assert len(license_files) <= 5
 
-    @pytest.mark.slow
-    def test_011_validate_serial_number(self):
-        """
-        Ensure valid serial number is returned if present
-        """
-        if runtests.quick_tests_only:
-            raise unittest.SkipTest('Skipping a time consuming test')
-        file_path = '/tmp/product_serial'
-        device_serial_number = 'CTW23050243'
-        with open(file_path, "w") as f:
-            f.write(device_serial_number)
-
-        initial_serial_number  = global_functions.uvmContext.getServerSerialNumber()
-        subprocess.call("mount /tmp/product_serial /sys/devices/virtual/dmi/id/product_serial -o rw,bind", shell=True, stderr=subprocess.STDOUT)
-        ## Restart uvm
-        global_functions.restart_uvm()
-        updated_serial_number  = global_functions.uvmContext.getServerSerialNumber()
-        ## verify serial number is updated to CTW23050243
-        assert(device_serial_number == updated_serial_number)
-        #unmounting the /tmp/product_serial
-        subprocess.call("umount -v /sys/devices/virtual/dmi/id/product_serial", shell=True, stderr=subprocess.STDOUT)
-        ##Reverting back to initial serial number
-        with open(file_path, "w") as f:
-            f.write(initial_serial_number)
-        subprocess.call("mount /tmp/product_serial /sys/devices/virtual/dmi/id/product_serial -o rw,bind", shell=True, stderr=subprocess.STDOUT)
-        global_functions.restart_uvm()
-        ## verify serial number is updated to initial vlue
-        assert (initial_serial_number == global_functions.uvmContext.getServerSerialNumber())
-        #unmounting the /tmp/product_serial
-        subprocess.call("umount -v /sys/devices/virtual/dmi/id/product_serial", shell=True, stderr=subprocess.STDOUT)
-        ## removing file /tmp/product_serial
-        subprocess.call("rm -f /tmp/product_serial", shell=True, stderr=subprocess.STDOUT)
 
     @pytest.mark.slow
     def test_304_email_cleaner(self):
