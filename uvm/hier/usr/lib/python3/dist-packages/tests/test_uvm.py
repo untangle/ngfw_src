@@ -188,6 +188,11 @@ class UvmTests(NGFWTestCase):
         """
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
+        
+        # Skip if VMware instance
+        if (global_functions.is_vm_instance()):
+            raise unittest.SkipTest('Skipping serial number check on VM')
+        
         file_path = '/tmp/product_serial'
         device_serial_number = 'CTW23050243'
         with open(file_path, "w") as f:
