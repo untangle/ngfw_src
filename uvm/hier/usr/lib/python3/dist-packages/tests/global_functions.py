@@ -1122,6 +1122,20 @@ def is_bridged(wan_ip):
         return True
     return False
 
+def is_vm_instance():
+    # Check if this is a VMware instance
+    hostname_ip = "0.0.0.0"
+    is_vm = True
+    try:
+        vm_result = subprocess.check_output("lscpu | grep VMware", shell=True).decode('utf-8')
+        if ("VMware" not in vm_result):
+            is_vm = False
+    except subprocess.CalledProcessError:
+        is_vm = True
+    else:
+        found = True
+    return is_vm
+
 def cidr_to_netmask(cidr):
     """
     From a cidr notation string, return network/netmask.
