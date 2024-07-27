@@ -126,7 +126,7 @@ class SslInspectorTests(NGFWTestCase):
         assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_012_checkServerCertificate(self):
-        result = remote_control.run_command('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi "arista"' % (testedServerName, testedServerName))
+        result = remote_control.run_command('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi -e "arista" -e "untangle"' % (testedServerName, testedServerName))
         assert (result == 0)
 
     def test_015_checkWebFilterBlockInspected(self):
