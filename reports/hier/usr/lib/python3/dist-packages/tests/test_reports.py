@@ -943,6 +943,88 @@ class ReportsTests(NGFWTestCase):
             
         assert(found_count == num_string_find)
 
+    # Test Case to Verify the Java Unmarshalling Vulnerability (NGFW-14707)
+    # This vulnerability includes the following two Proofs of Concept (POCs):
+    # 1. Adding a New User to the Local Directory by Abusing Java Unmarshalling
+    #    - Previously, the ability to update beans also impacted the radius server.
+    # 2. Stored XSS by Abusing LanguageManagerImpl and Forcing the Application to Download a Language Pack over HTTP
+    # 
+    # After applying the fix, the /reports/csv API call should no longer accept invalid beans.
+    def test_041_report_csv_vulnerability_via_report_user(self):
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=False))  # password = passwd
+        print(test_email_address)
+        self._app.setSettings(settings)
+        adminURL = global_functions.get_http_url()
+        # Login to reports through report user
+        url_login = adminURL + 'auth/login?url=/reports&realm=Reports&username=' + test_email_address + "&password=passwd"
+        # Send POST request to login and obtain cookies for report user
+        response_login = requests.post(url_login)
+        if response_login.status_code == 200:            
+            # Initialize a variable to store the session cookie value for subsequent reports/csv call
+            session_cookie_value = None
+            # fetch the session cookie for subsequent reports/csv call
+            for cookie in response_login.cookies:
+                if cookie.name == 'session-fc43ad1f':
+                    session_cookie_value = f"{cookie.name}={cookie.value}"
+                    break
+            # Extract auth cookie from previous request headers to authenticate subsequent reports/csv call
+            auth_cookie = response_login.request.headers.get('Cookie')
+
+        #invalid bean argument with LocalDirectoryImpl
+        invalid_arg2_with_localDirectory_bean = {"javaClass": "com.untangle.uvm.LocalDirectoryImpl", "users": {"javaClass": "java.util.LinkedList", "list": [{"firstName": "khush", "lastName": "te9999jjt", "password": "", "passwordShaHash": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", "javaClass": "com.untangle.uvm.LocalDirectoryUser", "expirationTime": 0, "passwordBase64Hash": "dGVzdA==", "passwordMd5Hash": "098f6bcd4621d373cade4e832627b4f6", "mfaEnabled": False, "email": "te@gmail.com", "twofactorSecretKey": "", "username": "test", "localEmpty": False, "localExpires": {"javaClass": "java.util.Date", "time": 1720107932503}, "localForever": True, "_id": "extModel916-1"}, {"username": "khush\" Injection:", "firstName": "khush", "lastName": "khush", "email": "khush@gmail.com", "password": "", "passwordBase64Hash": "YW1tYW1h", "twofactorSecretKey": "", "localExpires": {"javaClass": "java.util.Date", "time": 1720107817551}, "localForever": True, "localEmpty": True, "mfaEnabled": False, "expirationTime": 0, "javaClass": "com.untangle.uvm.LocalDirectoryUser", "markedForDelete": False, "markedForNew": True, "_id": "Ung.model.Rule-2"}]}}
+        #invalid bean argument with LanguageManagerImpl
+        invalid_arg2_with_languageManager_bean = {"javaClass":"com.untangle.uvm.LanguageManagerImpl","languageSettings":{"overrideDateFmt": "","overrideTimestampFmt": "","lastSynchronized": 1720230150449,"overrideDecimalSep": "","javaClass": "com.untangle.uvm.LanguageSettings","language": "de","regionalFormats": "default","overrideThousandSep": "","source": "official"}}
+        #valid bean argument
+        arg2_valid_bean = {"javaClass": "com.untangle.app.reports.ReportEntry", "displayOrder": 1010, "description": "Shows all scanned web requests.", "units": None, "orderByColumn": None, "title": "All Web Events", "colors": None, "enabled": True, "defaultColumns": ["time_stamp", "c_client_addr", "s_server_addr", "s_server_port", "username", "hostname", "host", "uri", "web_filter_blocked", "web_filter_flagged", "web_filter_reason", "web_filter_category"], "pieNumSlices": None, "seriesRenderer": None, "timeDataDynamicAggregationFunction": None, "pieStyle": None, "pieSumColumn": None, "timeDataDynamicAllowNull": None, "orderDesc": None, "table": "http_events", "approximation": None, "timeDataInterval": None, "timeStyle": None, "timeDataDynamicValue": None, "readOnly": True, "timeDataDynamicLimit": None, "timeDataDynamicColumn": None, "pieGroupColumn": None, "timeDataColumns": None, "textColumns": None, "category": "Web Filter", "conditions": [], "uniqueId": "web-filter-SRSZBBKXLN", "textString": None, "type": "EVENT_LIST", "localizedTitle": "All Web Events", "localizedDescription": "Shows all scanned web requests.", "slug": "all-web-events", "url": "web-filter/all-web-events", "icon": "fa-list-ul", "_id": "Ung.model.Report-390"}
+
+        #/report/csv call
+        url = adminURL+'reports/csv'
+
+        #forming authentication header for subsequent reports/csv call
+        headers = {'Cookie': f'{session_cookie_value}; {auth_cookie}',}
+
+        #Argument with invalid bean LocalDirectoryImpl to verify POC 1
+        poc1_data = {'type': 'eventLogExport','arg1': 'System-Server_Status_Events-25.07.2024-00:00-25.07.2024-15:42','arg2': json.dumps(invalid_arg2_with_localDirectory_bean),'arg3': '[]','arg4': 'time_stamp,load_1,mem_free,disk_free','arg5': '1721845800000','arg6': '-1'}
+        #Argument with invalid bean LanguageManagerImpl to verify POC 2
+        poc2_data = {'type': 'eventLogExport','arg1': 'System-Server_Status_Events-25.07.2024-00:00-25.07.2024-15:42','arg2': json.dumps(invalid_arg2_with_languageManager_bean),'arg3': '[]','arg4': 'time_stamp,load_1,mem_free,disk_free','arg5': '1721845800000','arg6': '-1'}
+        #Argument contains valid bean 
+        valid_data = {'type': 'eventLogExport','arg1': 'System-Server_Status_Events-25.07.2024-00:00-25.07.2024-15:42','arg2': json.dumps(arg2_valid_bean),'arg3': '[]','arg4': 'time_stamp,load_1,mem_free,disk_free','arg5': '1721845800000','arg6': '-1'}
+        
+        
+        #request report/csv to verify POC1
+        poc1_request_response = requests.post(url, headers=headers, data=poc1_data, verify=False)
+
+        #request report/csv to verify POC2
+        poc2_request_response = requests.post(url, headers=headers, data=poc2_data, verify=False)
+
+        #request report/csv with valid argument 
+        valid_request_response = requests.post(url, headers=headers, data=valid_data, verify=False)
+
+        error_message = "Internal Server Error - java.lang.RuntimeException: org.jabsorb.serializer.UnmarshallException: Failed to parse JSON bean has no matches"
+
+        # Test POC1
+        if error_message in poc1_request_response.text:
+            print("Passed: Invalid jsonObject is not acceptable")
+        else:
+            assert False, "Invalid jsonObject should not be acceptable"
+
+        # Test POC2
+        if error_message in poc2_request_response.text:
+            print("Passed: Invalid jsonObject is not acceptable")
+        else:
+            assert False, "Invalid jsonObject should not be acceptable"
+
+        # Test valid arg2
+        if error_message not in valid_request_response.text:
+            print("Passed:: Valid jsonObject not forming any exception")
+        else:
+            assert False, "Valid jsonObject should not produce any error message"
+
+      
     def test_045_report_csv_vulnerability(self):
         """
         Test report CSV to only allow valid bean i.e ReportEntry
