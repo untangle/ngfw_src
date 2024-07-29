@@ -260,6 +260,17 @@ Ext.define('Ung.util.Util', {
         location.reload();
     },
 
+    isServerConnectionLost: function (exception) {
+        return exception.code == 550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
+        /* handle connection lost (this happens on windows only for some reason) */
+        (exception.name == 'JSONRpcClientException' && exception.fileName != null && exception.fileName.indexOf('jsonrpc') != -1) ||
+        /* special text for "method not found" and "Service Temporarily Unavailable" */
+        (exception.message && exception.message.indexOf('method not found') != -1) ||
+        (exception.message && exception.message.indexOf('Service Unavailable') != -1) ||
+        (exception.message && exception.message.indexOf('Service Temporarily Unavailable') != -1) ||
+        (exception.message && exception.message.indexOf('This application is not currently available') != -1);
+    },
+
     handleException: function (exception) {
         if (Util.ignoreExceptions)
             return;
@@ -309,14 +320,7 @@ Ext.define('Ung.util.Util', {
         }
 
         /* handle connection lost */
-        if( exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
-            /* handle connection lost (this happens on windows only for some reason) */
-            (exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) ||
-            /* special text for "method not found" and "Service Temporarily Unavailable" */
-            (exception.message && exception.message.indexOf("method not found") != -1) ||
-            (exception.message && exception.message.indexOf("Service Unavailable") != -1) ||
-            (exception.message && exception.message.indexOf("Service Temporarily Unavailable") != -1) ||
-            (exception.message && exception.message.indexOf("This application is not currently available") != -1)) {
+        if( Util.isServerConnectionLost(exception)) {
             message  = "The connection to the server has been lost.".t() + "<br/>";
             message += "Press OK to return to the login page.".t() + "<br/>";
             Util.ignoreExceptions = true;
