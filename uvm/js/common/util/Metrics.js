@@ -23,6 +23,7 @@ Ext.define('Ung.util.Metrics', {
     },
 
     run: function () {
+        var me = this;
         var data = [];
         Rpc.asyncData('rpc.metricManager.getMetricsAndStats')
         .then( function(result){
@@ -44,6 +45,9 @@ Ext.define('Ung.util.Metrics', {
 
             Ext.getStore('metrics').loadData(data);
         },function(ex){
+            if (Util.isServerConnectionLost(ex)) {
+                me.stop();
+            }
             Util.handleException(ex);
         });
     }
