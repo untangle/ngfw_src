@@ -430,6 +430,7 @@ Ext.define('Ung.cmp.GridController', {
         this.importDialog = this.getView().add({
             xtype: 'window',
             title: 'Import Settings'.t(),
+            renderTo: Ext.getBody(),
             modal: true,
             layout: 'fit',
             width: 450,
@@ -712,7 +713,8 @@ Ext.define('Ung.cmp.GridController', {
             }
             if (record.hasOwnProperty(fieldName)) {
                 var fieldValue = fieldValueFn(fieldName);
-                var fieldConfig = fieldConfigFn(fieldName);
+                var extraColConfig = grid.viewConfig.extraColumnConfig;
+                var fieldConfig = extraColConfig && Object.keys(extraColConfig).length > 0 && extraColConfig[fieldName] ? extraColConfig[fieldName] :  fieldConfigFn(fieldName);
                 var nestedFieldsFunction = grid.viewConfig.nestedFieldsArr;
 
                 if(areNestedFields && nestedFieldsFunction.nestedFieldCondn && nestedFieldsFunction.nestedFieldCondn.hasOwnProperty(fieldName) && nestedFieldsFunction.nestedFieldCondn[fieldName](record[nestedFieldsFunction.toCompareField]) && fieldValue === null){
