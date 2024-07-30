@@ -324,6 +324,18 @@ Ext.define('Ung.config.events.MainController', {
                 store.getNewRecords().length > 0 ||
                 store.getRemovedRecords().length > 0)) {
             vm.set('syslogRuleGridDisabled', true);
+            // Check if modified records only have reserved boolean modified 
+            // and accordingly set skipDetectGridChanges flag
+            var isGridPropertyChanged;
+            store.getModifiedRecords().forEach(function(modifiedRecord) {
+                if(modifiedRecord.modified) {
+                    var keys = Object.keys(modifiedRecord.modified);
+                    if(!(keys.length == 1 && keys[0] == 'reserved')) {
+                        isGridPropertyChanged = true;
+                    }
+                }
+            });
+            store.skipDetectGridChanges = !isGridPropertyChanged;
         } else {
             vm.set('syslogRuleGridDisabled', false);
         }
