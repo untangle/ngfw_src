@@ -28,6 +28,18 @@ Ext.define('Ung.apps.applicationcontrol.view.Rules', {
 
     emptyText: 'No Rules defined'.t(),
 
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+
+    nestedFieldsArr: {
+        fields: ['action'],
+        extraConfig: { flag: { xtype: 'checkbox' } }
+    },
+
+    extraColumnConfig: {
+        id: { allowBlank: false, xtype: 'numberfield' },
+    },
+
     emptyRow: {
         enabled: true,
         description: '',

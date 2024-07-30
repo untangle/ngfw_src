@@ -213,6 +213,11 @@ Ext.define('Ung.cmp.Grid', {
         }else{
             viewConfig.nestedFieldsArr = {};
         }
+        if(this.extraColumnConfig !== undefined){
+            viewConfig.extraColumnConfig = this.extraColumnConfig;
+        }else{
+            viewConfig.extraColumnConfig = null;
+        }
 
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
