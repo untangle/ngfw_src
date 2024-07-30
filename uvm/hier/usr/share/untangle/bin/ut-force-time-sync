@@ -1,11 +1,14 @@
 #!/bin/bash
 
+#kill all the current ntpd process
+pkill -9 ntpd
+
 # stop the daemon first
 systemctl stop ntp	
 
-# force time sync now
+# force time sync with time.nist.gov server
 echo "Syncing time..."
-ntpd -q -g
+ntpd -q -g time.nist.gov
 CODE=$?
 
 # start the daemon
