@@ -28,6 +28,7 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
         type: 'vbox'
     },
 
+    // tbar can be removed when all users have upgraded to v17.2 and no user is having page type - custom
     tbar: [{
         xtype: 'tbtext',
         padding: '8 5',
