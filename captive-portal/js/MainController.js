@@ -107,6 +107,7 @@ Ext.define('Ung.apps.captive-portal.MainController', {
             return;
         }
 
+        // Below custom page condition can be removed when all users have upgraded to v17.2 and no user is having page type - custom
         var custfile = this.getViewModel().get('settings.customFilename');
         var pagetype = vm.get('settings.pageType');
 
