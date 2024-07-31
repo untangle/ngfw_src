@@ -330,7 +330,7 @@ Ext.define('Ung.config.events.MainController', {
             store.getModifiedRecords().forEach(function(modifiedRecord) {
                 if(modifiedRecord.modified) {
                     var keys = Object.keys(modifiedRecord.modified);
-                    if(!(keys.length == 1 && keys[0] == 'reserved')) {
+                    if(!(keys.length === 1 && keys[0] === 'reserved')) {
                         isGridPropertyChanged = true;
                     }
                 }
