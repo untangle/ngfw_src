@@ -1143,7 +1143,12 @@ class NetworkTests(NGFWTestCase):
             pingResult = remote_control.run_command("ping -c 1 %s" % str(vrrpIP))
             if pingResult == 0:
                 break
-        isMaster = global_functions.uvmContext.networkManager().isVrrpMaster(interfaceId)
+        #Fix for ATS server, recheck if isVrrpMaster is taking time
+        for x in range(4):
+            isMaster = global_functions.uvmContext.networkManager().isVrrpMaster(interfaceId)
+            if isMaster:
+                print("VRRP master is enabled after {} iterations".format(str(x)))
+                break
         onlineResults = remote_control.is_online()
 
         # Return to default network state
