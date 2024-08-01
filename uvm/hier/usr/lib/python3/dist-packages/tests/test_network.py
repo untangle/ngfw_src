@@ -2718,6 +2718,86 @@ class NetworkTests(NGFWTestCase):
         mac_address_vendor_map = global_functions.uvmContext.networkManager().lookupMacVendorList(mac_address_list)
         assert(len(mac_address_vendor_map) > 0)
 
+    def test_720_dnsmasq_source(self):
+        """
+        Verify that DNS resolver addresses are properly "pinned" to their interfaces
+        """
+        tcpdump_timeout = 5
+
+        # Public DNS resolvers from https://www.lifewire.com/free-and-public-dns-servers-2626062
+        public_dns_resolvers = ["8.8.8.8", "8.8.4.4", "9.9.9.9", "149.112.112.112"]
+        dns_addresses = ["www.google.com", "www.microsoft.com", "www.apple.com", "www.facebook.com"]
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+
+        # Get enabled WAN interfaces, static, Ethernet
+        wan_interfaces = []
+        for interface in netsettings["interfaces"]["list"]:
+            if interface["isWan"] is not True:
+                continue
+            if interface.get("configType") == 'DISABLED':
+                continue
+            if interface.get("v4ConfigType") != 'STATIC':
+                continue
+            if interface["v4ConfigType"] == "PPPOE":
+                continue
+            wan_interfaces.append(interface)
+
+        # Don't continue if we have too little, too many interfaces
+        if len(wan_interfaces) < 2:
+            raise unittest.SkipTest("less than 2 WAN interfaces found")
+
+        if len(wan_interfaces) > len(public_dns_resolvers):
+            raise unittest.SkipTest("more WAN interfaces than defined DNS resolvers")
+
+        # Update DNS resolvers from public list
+        # maintain map of symbolic dev and the associated public DNS resolver
+        dev_resolver_map = {}
+        public_dns_resolver_index = 0
+        for wan_interface in wan_interfaces:
+            wan_interface["v4StaticDns1"] = public_dns_resolvers[public_dns_resolver_index]
+            dev_resolver_map[wan_interface["symbolicDev"]] = public_dns_resolvers[public_dns_resolver_index]
+            public_dns_resolver_index += 1
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
+        print(dev_resolver_map)
+
+        # Creae a forked timeout process to run tcpdump on DNS port.
+        output_file_name = f"/tmp/{self.__class__.__name__}_{sys._getframe().f_code.co_name}"
+        command=f"rm -f {output_file_name} ; timeout {tcpdump_timeout}s tcpdump -i any -n --direction out port 53 > {output_file_name} &"
+        print(f"command={command}")
+        subprocess.call(command, shell=True, stderr=sys.stdout.buffer)
+
+        # Perform lookups from client
+        for dns_address in dns_addresses:
+            remote_control.run_command(f"dig {dns_address}")
+
+        # The lookups will be quick so just do a full wait for the forked process to complete
+        time.sleep(tcpdump_timeout)
+
+        # Read tcpdump
+        with open(output_file_name, "r") as f:
+            lines = f.readlines()
+            f.close()
+
+        invalid_dns = False
+        # Analyze tcpdump for our WAN interfaces to verify DNS resolvers are going where we expect.
+        # In the following example, expecting eth2 to be using 8.8.8.8.
+        # 12:25:24.719264 eth2  Out IP arista.domain.com.4028 > 8.8.8.8.domain: 60147+ [1au] A? www.notlikely.com. (58)
+        tcpdump_match_re = re.compile('^[^\s]+\s+([^\s]+)\s+Out\s+IP\s+([^\s]+)\s+>\s+([^\:]+).+')
+        for line in lines:
+            matches = tcpdump_match_re.match(line)
+            if matches is not None:
+                dev = matches.group(1)
+                resolver = matches.group(3)
+                resolver = resolver[0:resolver.rfind(".")]
+                if dev in dev_resolver_map:
+                    print(f"dev={dev}, resolver={resolver}")
+                    if dev_resolver_map[dev] != resolver:
+                        print(f"found incorrect dns resolver on device")
+                        invalid_dns = True
+
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert invalid_dns is False, "dns resolvers properly pinned to devices"
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings
