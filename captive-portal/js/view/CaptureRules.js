@@ -42,6 +42,13 @@ Ext.define('Ung.apps.captive-portal.view.CaptureRules', {
 
     bind: '{captureRules}',
 
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+
+    extraColumnConfig: {
+        id: { xtype: 'numberfield' },
+    },
+
     columns: [
         Column.ruleId,
         Column.enabled,

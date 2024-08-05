@@ -29,6 +29,14 @@ Ext.define('Ung.apps.captive-portal.view.PassedHosts', {
             description: '',
             javaClass: 'com.untangle.app.captive_portal.PassedAddress'
         },
+
+        importValidationJavaClass: true,
+
+        extraColumnConfig: {
+            enabled: { xtype: 'checkcolumn' },
+            log: { xtype: 'checkcolumn' },
+        },
+
         columns: [
             Column.enabled,{
                 xtype: 'checkcolumn',
