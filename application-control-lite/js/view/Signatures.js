@@ -29,6 +29,13 @@ Ext.define('Ung.apps.applicationcontrollite.view.Signatures', {
 
     emptyText: 'No Signatures Defined'.t(),
 
+    extraColumnConfig: {
+        block: { allowBlank: false, xtype: 'checkbox' },
+        alert: { allowBlank: false, xtype: 'checkbox' },
+        log: { allowBlank: false, xtype: 'checkbox' },
+        id: { xtype: 'numberfield' },
+    },
+
     columns: [{
         header: 'Protocol'.t(),
         width: Renderer.messageWidth,
