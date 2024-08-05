@@ -738,7 +738,7 @@ Ext.define('Ung.cmp.GridController', {
                     }
 
                     if(fieldConfig.xtype && (fieldConfig.xtype === 'checkbox' || fieldConfig.xtype === 'checkcolumn')){
-                        var boolOptions = [true, false];
+                        var boolOptions = [null, true, false];
                         if(!boolOptions.includes(fieldValue)){
                             validationErrorMsg = Ext.String.format('Invalid value for the boolean field {0}'.t(), fieldName);
                         }
