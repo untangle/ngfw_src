@@ -32,6 +32,19 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
             javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
+        importValidationJavaClass: true,
+
+        extraColumnConfig: {
+            blocked: { xtype: 'checkbox' },
+            flagged: { xtype: 'checkbox' },
+            name: { xtype: 'textfield' },
+            description: { xtype: 'textfield' },
+            readOnly: { xtype: 'checkbox' },
+            id: { xtype: 'numberfield' },
+            category: { xtype: 'textfield' },
+            enabled: { allowBlank: false, xtype: 'checkbox' },
+        },
+
         columns: [{
             header: 'Site'.t(),
             width: Renderer.messagwWidth,
@@ -100,6 +113,17 @@ Ext.define('Ung.apps.ad-blocker.view.PassLists', {
             enabled: true,
             description: '',
             javaClass: 'com.untangle.uvm.app.GenericRule'
+        },
+
+        extraColumnConfig: {
+            blocked: { xtype: 'checkbox' },
+            flagged: { xtype: 'checkbox' },
+            name: { xtype: 'textfield' },
+            description: { xtype: 'textfield' },
+            readOnly: { xtype: 'checkbox' },
+            id: { xtype: 'numberfield' },
+            category: { xtype: 'textfield' },
+            enabled: { allowBlank: false, xtype: 'checkbox' },
         },
 
         columns: [{
