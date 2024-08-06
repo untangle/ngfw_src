@@ -2758,6 +2758,7 @@ class NetworkTests(NGFWTestCase):
             dev_resolver_map[wan_interface["symbolicDev"]] = public_dns_resolvers[public_dns_resolver_index]
             public_dns_resolver_index += 1
         global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
+        time.sleep(10)
         print(dev_resolver_map)
 
         # Creae a forked timeout process to run tcpdump on DNS port.
