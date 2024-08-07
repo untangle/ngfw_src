@@ -302,8 +302,8 @@ class OpenVpnTests(NGFWTestCase):
         appData = self._app.getSettings()
         appData["serverEnabled"]=True
         appData["remoteServers"]["list"][0]["authUserPass"]=True
-        appData["remoteServers"]["list"][0]["authUsername"]=ovpnlocaluser
-        appData["remoteServers"]["list"][0]["authPassword"]=ovpnPasswd
+        appData["remoteServers"]["list"][0]["authUsername"]="ovpnlocaluser"
+        appData["remoteServers"]["list"][0]["authPassword"]="passwd"
         #enable user/password authentication, set to local directory
         appData['authUserPass']=True
         appData["authenticationType"]="LOCAL_DIRECTORY"
