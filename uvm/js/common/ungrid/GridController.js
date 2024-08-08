@@ -298,6 +298,7 @@ Ext.define('Ung.cmp.GridController', {
         
         return {
             xtype: 'ungrid',
+            anchor: '100%',
             scrollable: true,
             withValidation: false,
             width: 418,
