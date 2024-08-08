@@ -56,6 +56,10 @@ Ext.define('Ung.apps.threatprevention.view.Rules', {
         }
     }],
 
+    extraColumnConfig: {
+        ruleId: { xtype: 'numberfield' },
+    },
+
     // todo: continue this stuff
     editorFields: [
         Field.enableRule(),
