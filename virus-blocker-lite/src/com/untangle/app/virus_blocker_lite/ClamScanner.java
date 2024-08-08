@@ -67,20 +67,31 @@ public class ClamScanner implements VirusScanner
     public VirusScannerResult scanFile(File scanfile, AppSession session)
     {
         VirusBlockerState virusState = (VirusBlockerState) session.attachment();
-
+        logger.info("Inside scanFile");
         // if we have a good MD5 hash then spin up the cloud checker
         // this is effectively feedback as we never check the response
+        VirusCloudScanner cloudScanner = null;
         if (app.getSettings().getEnableCloudScan() && virusState.fileHash != null) {
-            VirusCloudScanner cloudScanner = new VirusCloudScanner(virusState);
+            logger.info("Initiating cloudScanner");
+            cloudScanner = new VirusCloudScanner(virusState);
             cloudScanner.start();
         }
 
         VirusScannerResult result = VirusScannerResult.CLEAN;
+        logger.info("enableLocalScan: {}", app.getSettings().getEnableLocalScan());
         if (app.getSettings().getEnableLocalScan()) {
+            logger.info("Initiating localScan");
             ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
             result = scan.doScan(timeout);
         }
 
+        if(cloudScanner != null && cloudScanner.isAlive()) {
+            try {
+                cloudScanner.join();
+            } catch (InterruptedException e) {
+                logger.error("Error while join thread: ", e);
+            }
+        }
         // if we found an infection then pass along the feedback
         if (app.getSettings().getEnableCloudScan() && !result.isClean()) {
             VirusCloudFeedback feedback = new VirusCloudFeedback(virusState, "CLAM", result.getVirusName(), "U", scanfile.length(), session, null);

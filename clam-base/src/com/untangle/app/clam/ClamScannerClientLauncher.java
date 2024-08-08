@@ -64,6 +64,7 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
     {
         ClamClient clientTmp = createClient(); // create scanner
 
+        clogger.info("Initiating localScan: clamClient");
         clientTmp.startScan(); // start scanning
 
         // wait for result or stop scanning if too much time has passed
@@ -91,6 +92,7 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
         cContext = new VirusClientContext(msgFile, VirusClientSocket.CLAMD_DEFHOST, VirusClientSocket.CLAMD_DEFPORT);
         client = new ClamClient(cContext);
         Thread thread = UvmContextFactory.context().newThread(client);
+        clogger.info("Setting localScan Thread: {}", thread);
         client.setThread(thread);
         return client;
     }
