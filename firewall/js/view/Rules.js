@@ -44,6 +44,10 @@ Ext.define('Ung.apps.firewall.view.Rules', {
 
     bind: '{rules}',
 
+    extraColumnConfig: {
+        ruleId: { xtype: 'numberfield' },
+    },
+
     columns: [
         Column.ruleId,
         Column.enabled,
