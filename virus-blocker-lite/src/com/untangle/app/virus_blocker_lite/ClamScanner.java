@@ -84,19 +84,15 @@ public class ClamScanner implements VirusScanner
             ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
             result = scan.doScan(timeout);
         }
+        logger.info("Result: {}", result.toString());
 
-        if(cloudScanner != null && cloudScanner.isAlive()) {
-            try {
-                cloudScanner.join();
-            } catch (InterruptedException e) {
-                logger.error("Error while join thread: ", e);
-            }
-        }
         // if we found an infection then pass along the feedback
         if (app.getSettings().getEnableCloudScan() && !result.isClean()) {
             VirusCloudFeedback feedback = new VirusCloudFeedback(virusState, "CLAM", result.getVirusName(), "U", scanfile.length(), session, null);
             feedback.start();
         }
+
+        logger.info("Result 2: {}", result.toString());
 
         return (result);
     }
