@@ -27,6 +27,17 @@ Ext.define('Ung.apps.threatprevention.view.PassSites', {
 
     bind: '{passSites}',
 
+    extraColumnConfig: {
+        blocked: { xtype: 'checkbox' },
+        flagged: { xtype: 'checkbox' },
+        name: { xtype: 'textfield' },
+        description: { xtype: 'textfield' },
+        readOnly: { xtype: 'checkbox' },
+        id: { xtype: 'numberfield' },
+        category: { xtype: 'textfield' },
+        enabled: { allowBlank: false, xtype: 'checkbox' },
+    },
+
     columns: [{
         header: 'Site'.t(),
         width: Renderer.uriWidth,
