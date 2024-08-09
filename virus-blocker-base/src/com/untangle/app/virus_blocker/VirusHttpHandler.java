@@ -152,21 +152,21 @@ class VirusHttpHandler extends HttpEventHandler
         if (requestLineToken != null) state.uri = requestLineToken.getRequestUri().normalize().getPath();
         else state.uri = "";
 
-        if (!ignoredHost(state.host)) {
-            String virusName = lookupCache(state.host, state.uri);
-            if (virusName != null) {
-                // increment both scan and block count
-                app.incrementScanCount();
-                app.incrementBlockCount();
-
-                blockRequest(session, app.generateResponse(new VirusBlockDetails(state.host, state.uri, null, app.getName()), session, state.uri, requestHeader));
-
-                RequestLine requestLine = getRequestLine(session).getRequestLine();
-                app.logEvent(new VirusHttpEvent(requestLine, session.sessionEvent(), false, virusName, app.getName()));
-
-                return requestHeader;
-            }
-        }
+//        if (!ignoredHost(state.host)) {
+//            String virusName = lookupCache(state.host, state.uri);
+//            if (virusName != null) {
+//                // increment both scan and block count
+//                app.incrementScanCount();
+//                app.incrementBlockCount();
+//
+//                blockRequest(session, app.generateResponse(new VirusBlockDetails(state.host, state.uri, null, app.getName()), session, state.uri, requestHeader));
+//
+//                RequestLine requestLine = getRequestLine(session).getRequestLine();
+//                app.logEvent(new VirusHttpEvent(requestLine, session.sessionEvent(), false, virusName, app.getName()));
+//
+//                return requestHeader;
+//            }
+//        }
 
         releaseRequest(session);
         return requestHeader;
@@ -335,6 +335,8 @@ class VirusHttpHandler extends HttpEventHandler
             logger.error("Virus scan failed: null");
             result = VirusScannerResult.ERROR;
         }
+
+        logger.info("Result: {}", result.toString());
 
         RequestLine requestLine = getResponseRequest(session).getRequestLine();
         app.logEvent(new VirusHttpEvent(requestLine, session.sessionEvent(), result.isClean(), result.getVirusName(), app.getName()));

@@ -62,24 +62,31 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
      */
     public VirusScannerResult doScan(long timeout)
     {
-        ClamClient clientTmp = createClient(); // create scanner
+        try{
+            clogger.info("In doScan");
+            ClamClient clientTmp = createClient(); // create scanner
 
-        clientTmp.startScan(); // start scanning
+            clogger.info("Initiating localScan: clamClient");
+            clientTmp.startScan(); // start scanning
 
-        // wait for result or stop scanning if too much time has passed
-        if ( timeout > 0 ) {
-            // time remains; let client continue
-            clogger.debug("clamc: " + clientTmp + ", wait: " + timeout);
-            clientTmp.checkProgress(timeout);
-        } else {
-            // no time remains; stop client (should never occur)
-            clogger.warn("clamc: " + clientTmp + ", stop (timed out)");
-            clientTmp.stopScan();
+            // wait for result or stop scanning if too much time has passed
+            if ( timeout > 0 ) {
+                // time remains; let client continue
+                clogger.debug("clamc: " + clientTmp + ", wait: " + timeout);
+                clientTmp.checkProgress(timeout);
+            } else {
+                // no time remains; stop client (should never occur)
+                clogger.warn("clamc: " + clientTmp + ", stop (timed out)");
+                clientTmp.stopScan();
+            }
+
+            VirusScannerResult result = getResult(); // get result
+            clogger.debug("clamc: " + result);
+            return result;
+        } catch (Exception e) {
+            clogger.error("Error: ", e);
         }
-
-        VirusScannerResult result = getResult(); // get result
-        clogger.debug("clamc: " + result);
-        return result;
+        return null ;
     }
 
     /**
@@ -91,6 +98,7 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher
         cContext = new VirusClientContext(msgFile, VirusClientSocket.CLAMD_DEFHOST, VirusClientSocket.CLAMD_DEFPORT);
         client = new ClamClient(cContext);
         Thread thread = UvmContextFactory.context().newThread(client);
+        clogger.info("Setting localScan Thread: {}", thread);
         client.setThread(thread);
         return client;
     }
