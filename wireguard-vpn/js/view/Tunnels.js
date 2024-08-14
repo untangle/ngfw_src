@@ -371,11 +371,7 @@ function isIPAddressUnderNWRange(value, component) {
 
 function peerIpAddrValidator(value, field, component, grid) {
     var uniqueError = Util.isUnique(value, 'tunnel', field, component, grid);
-    var rangeError = isIPAddressUnderNWRange(value, component);
-    
-    if (rangeError !== true) {
-        return rangeError;
-    } else if (uniqueError !== true) {
+    if (uniqueError !== true) {
         return uniqueError;
     } else {
         return true;
