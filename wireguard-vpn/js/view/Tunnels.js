@@ -242,7 +242,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 if(remoteNetworks.trim().length<=0){
                     return true;
                 }
-                if(component.getId().indexOf('textfield') !== -1 && component === undefined){
+                if(component === undefined){
                     peerNetworkIp  = this.up("app-wireguard-vpn").getViewModel().get("settings").addressPool;
                 }else{
                     peerNetworkIp  = component.getView().up().up().getViewModel()._data.settings.addressPool;
