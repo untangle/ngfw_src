@@ -1208,8 +1208,12 @@ Ext.define('Ung.util.Util', {
             });
 
             if(index !== null) return "Address pool conflict".t();
-
-            if(context.dirty && context.ui === "default") {
+            //NGFW-14533
+            // validation as per fields should be:
+            // Peer IP Address Field : Address should not be conflicts with any existing network registrations
+            // Local Network Address : Address should not be conflicts with existing address present in list and with Peer IP Address.        
+            // Added additional check  (context.xtype === "textarea" ) to verify import, remote networks field 
+            if((context.dirty && context.ui === "default") || context.xtype === "textarea" ) {
                 var ntwkSpace=null;
                 if(currentIpDirtyCheck){
                     ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', currentFieldIp.trim());   
