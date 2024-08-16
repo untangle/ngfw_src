@@ -869,8 +869,8 @@ class NetworkTests(NGFWTestCase):
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
         assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (outbound) in active and passive modes with a firewall block all rule (firewall should pass related sessions without special rules)
     @pytest.mark.failure_in_podman
@@ -897,8 +897,8 @@ class NetworkTests(NGFWTestCase):
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
         assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (outbound) in active and passive modes with bypass
     @pytest.mark.failure_in_podman
@@ -915,8 +915,8 @@ class NetworkTests(NGFWTestCase):
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
         assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (outbound) in active and passive modes with bypass with a block all rule in forward filter rules. It should pass RELATED session automatically
     @pytest.mark.failure_in_podman
@@ -936,8 +936,8 @@ class NetworkTests(NGFWTestCase):
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
         assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (inbound) in active and passive modes (untangle-vm should add port forwards for RELATED session)
     def test_074_ftp_modes_incoming(self):
@@ -958,8 +958,8 @@ class NetworkTests(NGFWTestCase):
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
         assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (inbound) in active and passive modes with bypass (nf_nat_ftp should add port forwards for RELATED session, nat filters should allow RELATED)
     def test_075_ftp_modes_incoming_bypassed(self):
@@ -982,8 +982,8 @@ class NetworkTests(NGFWTestCase):
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
         assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test static route that routing test.untangle.com to 127.0.0.1 makes it unreachable
     def test_080_routes(self):
