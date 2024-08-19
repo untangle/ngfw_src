@@ -523,7 +523,13 @@ Ext.define('Ung.cmp.GridController', {
     comboStoreValidator:function(fieldConfig, valueToCheck, toTakeDirectValues){
         var isEntryExists = false;
         if(fieldConfig.store){
-            isEntryExists = this.checkIfValueExists(fieldConfig.store, valueToCheck, fieldConfig);
+            var currStore = [];
+            if(typeof fieldConfig.store === 'string'){
+                currStore = Ext.Array.pluck(Ext.getStore(fieldConfig.store).getRange(),"data");
+            }else{
+                currStore = fieldConfig.store;
+            }
+            isEntryExists = this.checkIfValueExists(currStore, valueToCheck, fieldConfig);
         }else if(fieldConfig.bind){
             var fieldName = this.getFieldName(fieldConfig.bind);     
             if(fieldName){
