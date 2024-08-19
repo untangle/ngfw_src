@@ -520,14 +520,14 @@ Ext.define('Ung.cmp.GridController', {
         return fieldName;
     },
 
-    comboStoreValidator:function(fieldConfig, valueToCheck){
+    comboStoreValidator:function(fieldConfig, valueToCheck, toTakeDirectValues){
         var isEntryExists = false;
         if(fieldConfig.store){
             isEntryExists = this.checkIfValueExists(fieldConfig.store, valueToCheck, fieldConfig);
         }else if(fieldConfig.bind){
             var fieldName = this.getFieldName(fieldConfig.bind);     
             if(fieldName){
-                var store = Ext.Array.pluck(this.getViewModel().get(fieldName).getRange(),"data");
+                var store = toTakeDirectValues ? this.getViewModel().get(fieldName) : Ext.Array.pluck(this.getViewModel().get(fieldName).getRange(),"data");
                 isEntryExists = this.checkIfValueExists(store, valueToCheck, fieldConfig);
             }
         }
@@ -707,7 +707,22 @@ Ext.define('Ung.cmp.GridController', {
         return errorMsgForConditions;
     },
 
-    importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid, me, areNestedFields){
+    getConfigForEmailTemplates: function (){
+        var configData = [];
+
+        var configDataRows = this.getViewModel().get("reportEntries.config.data");
+        if(configDataRows.length > 0){
+            Ext.Array.forEach(configDataRows, function(currElement){
+                if(currElement.uniqueId){
+                    configData.push(currElement.uniqueId);
+                }
+            });
+        }
+
+        return configData;
+    },
+
+    importHandlerValidator: function(record, fieldValueFn, fieldConfigFn, isNestedEditor, mappedObject, validationErrors, errorObj, nestedObject, grid, me, newData, areNestedFields){
         for (var fieldName in record) {
             if((!isNestedEditor && mappedObject[fieldName]) || (isNestedEditor && !nestedObject[fieldName])){
                 continue;
@@ -717,6 +732,7 @@ Ext.define('Ung.cmp.GridController', {
                 var extraColConfig = grid.viewConfig.extraColumnConfig;
                 var fieldConfig = extraColConfig && Object.keys(extraColConfig).length > 0 && extraColConfig[fieldName] ? extraColConfig[fieldName] :  fieldConfigFn(fieldName);
                 var nestedFieldsFunction = grid.viewConfig.nestedFieldsArr;
+                var importDirectComboValues = grid.viewConfig.importDirectComboValues;
 
                 if(areNestedFields && nestedFieldsFunction.nestedFieldCondn && nestedFieldsFunction.nestedFieldCondn.hasOwnProperty(fieldName) && nestedFieldsFunction.nestedFieldCondn[fieldName](record[nestedFieldsFunction.toCompareField]) && fieldValue === null){
                     continue;
@@ -738,6 +754,76 @@ Ext.define('Ung.cmp.GridController', {
                         continue;
                     }
 
+                    // this field comes from other grid rows. So to check if this id row is present in that grid.
+                    // if not then show an error
+                    if(fieldConfig.xtype && fieldConfig.xtype === 'custom-combo'){
+                        var otherGridData = fieldConfig.getData ? fieldConfig.getData(this) : null;
+                        var fieldValueList = fieldValue.list;
+                        if(fieldValueList.length <= 0){
+                            continue;
+                        }
+                        if(otherGridData){
+                            for(var currIx = 0; currIx < fieldValueList.length; currIx++){
+                                if(!me.checkIfValueExists(otherGridData, fieldValueList[currIx], { valueField : fieldConfig.compareToField })){
+                                    validationErrorMsg = Ext.String.format('No Email Template present with this id.'.t());
+                                    errorObj.isValidRecord = false;
+                                    validationErrors.push({fieldName:fieldName, fieldValue:fieldValueList[currIx], fieldErrorDesc:validationErrorMsg});
+                                    break;
+                                }
+                            }
+                            if(!errorObj.isValidRecord){
+                                break;
+                            }
+                        }
+                    }
+
+                    if(grid.viewConfig.checkIfAlreadyPresent[fieldName]){
+                        var savedRows = Ext.Array.pluck(this.getViewModel().get(grid.viewConfig.checkIfAlreadyPresent[fieldName]).getRange(),"data");
+                        // checking if we already have any row field saved with the same field value
+                        for(var rowIdx = 0; rowIdx < savedRows.length; rowIdx++){
+                            if(savedRows[rowIdx][fieldName] === fieldValue){
+                                validationErrorMsg = Ext.String.format('Another Email Template has this title.'.t());
+                                break;
+                            }
+                        }
+                        if(!validationErrorMsg){
+                            // check if in the importing file we have this fieldvalue to any other row field
+                            var count = 0;
+                            for(var rowIndex = 0; rowIndex < newData.length; rowIndex++){
+                                if(newData[rowIndex][fieldName] === fieldValue){
+                                    count++;
+                                }
+                                if(count >= 2){
+                                    validationErrorMsg = Ext.String.format('Another Email Template has this title.'.t());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if(fieldConfig.xtype && fieldConfig.xtype === 'unreporttemplateselect'){
+                        var configData = me.getConfigForEmailTemplates();
+                        var rowValues = fieldValue.list;
+                        if((rowValues.length === 0) || (rowValues.length === 1 && rowValues[0] === '_recommended')){
+                            continue;
+                        }else{
+                            var currIndex = 0;
+                            if(fieldConfig.group === 'app' || fieldConfig.group === 'config'){
+                                for(currIndex = 0; currIndex < rowValues.length; currIndex++){
+                                    if(!configData.includes(rowValues[currIndex])){
+                                        validationErrorMsg = Ext.String.format('Invalid value for this field is {0}.'.t(), rowValues[currIndex] );
+                                        errorObj.isValidRecord = false;
+                                        validationErrors.push({fieldName:fieldName, fieldValue:rowValues[currIndex], fieldErrorDesc:validationErrorMsg});
+                                        break;
+                                    }
+                                }
+                                if(!errorObj.isValidRecord){
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                     if(fieldConfig.xtype && (fieldConfig.xtype === 'checkbox' || fieldConfig.xtype === 'checkcolumn')){
                         var boolOptions = [null, true, false];
                         if(!boolOptions.includes(fieldValue)){
@@ -746,7 +832,7 @@ Ext.define('Ung.cmp.GridController', {
                     }
 
                     if(grid.viewConfig.importValidationForComboBox && fieldConfig.xtype && (fieldConfig.xtype === 'combo' || fieldConfig.xtype === 'combobox') && !fieldConfig.editable){
-                        var isValidValue = me.comboStoreValidator(fieldConfig, fieldValue);
+                        var isValidValue = me.comboStoreValidator(fieldConfig, fieldValue, importDirectComboValues.includes(fieldName));
                         if(!isValidValue){
                             validationErrorMsg = Ext.String.format('Invalid value for the dropdown field {0}'.t(), fieldName);
                         }
@@ -984,7 +1070,7 @@ Ext.define('Ung.cmp.GridController', {
                 function(fieldNm){
                     return me.getFieldConfig(fieldNm);
                 },
-                false, mappedObject, validationErrors, errorObj, {}, grid, me);
+                false, mappedObject, validationErrors, errorObj, {}, grid, me, newData);
                 if(errorObj.isValidRecord){
                     for(var fieldName in record){
                         if(!errorObj.isValidRecord){
@@ -1008,7 +1094,7 @@ Ext.define('Ung.cmp.GridController', {
                                 function(fieldNm){
                                     return mappedObject[fieldName][fieldNm];
                                 },
-                                true,mappedObject, validationErrors, errorObj, mappedObject[fieldName], grid, me);
+                                true,mappedObject, validationErrors, errorObj, mappedObject[fieldName], grid, me, newData);
                             }
                         }
                     }
@@ -1025,7 +1111,7 @@ Ext.define('Ung.cmp.GridController', {
                                 function(fieldNm){
                                     return me.getFieldConfig(fieldNm);
                                 },
-                                false, mappedObject, validationErrors, errorObj, {}, grid, me, true);
+                                false, mappedObject, validationErrors, errorObj, {}, grid, me, newData, true);
                         }else{
                             break;
                         }
@@ -1140,7 +1226,7 @@ Ext.define('Ung.cmp.GridController', {
             // as fieldContainer again has items in it which we need to take as well.
             var editorFieldsConfig = [];
             this.getView().editorFields.forEach(function(currObj){
-                if(currObj.xtype === "fieldcontainer" && currObj.items){
+                if((currObj.xtype === "fieldcontainer" || currObj.xtype === "container") && currObj.items){
                     currObj.items.forEach(function(currItem){
                        editorFieldsConfig.push(currItem); 
                     });

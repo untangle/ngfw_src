@@ -218,6 +218,16 @@ Ext.define('Ung.cmp.Grid', {
         }else{
             viewConfig.extraColumnConfig = null;
         }
+        if(this.importDirectComboValues !== undefined){
+            viewConfig.importDirectComboValues = this.importDirectComboValues;
+        }else{
+            viewConfig.importDirectComboValues = [];
+        }
+        if(this.checkIfAlreadyPresent !== undefined){
+            viewConfig.checkIfAlreadyPresent = this.checkIfAlreadyPresent;
+        }else{
+            viewConfig.checkIfAlreadyPresent = {};
+        }
 
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
