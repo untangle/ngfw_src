@@ -39,6 +39,17 @@ Ext.define('Ung.apps.reports.view.EmailTemplates', {
     emptyText: 'No Email Templates Defined'.t(),
     
     listProperty: 'settings.emailTemplates.list',
+
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+    importDirectComboValues: ["interval", "intervalWeekStart" ],
+    checkIfAlreadyPresent: {"title" : "emailTemplates"},
+
+    extraColumnConfig: {
+        readOnly: { xtype: 'checkbox' },
+        templateId: { xtype: 'numberfield' },
+    },
+
     columns: [{
         header: 'Id'.t(),
         width: Renderer.idWidth,

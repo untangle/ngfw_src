@@ -43,6 +43,13 @@ Ext.define('Ung.apps.reports.view.Users', {
         }
     },
 
+    extraColumnConfig: {
+        emailTemplateIds: { xtype: 'custom-combo', getData : function(me){
+            return Ext.Array.pluck(me.getViewModel().get("emailTemplates").getRange(),"data");    
+        }, compareToField : 'templateId'},
+        onlineAccess: { xtype: 'checkbox' },
+    },
+
     bind: '{users}',
 
     emptyText: 'No Names Defined'.t(),
