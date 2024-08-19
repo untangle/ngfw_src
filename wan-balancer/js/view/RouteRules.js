@@ -39,6 +39,13 @@ Ext.define('Ung.apps.wan-balancer.view.RouteRules', {
         javaClass: 'com.untangle.app.wan_balancer.RouteRule'
     },
 
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+
+    extraColumnConfig: {
+        ruleId: { xtype: 'numberfield' },
+    },
+
     bind: '{routeRules}',
 
     emptyText: 'No Route Rules defined'.t(),
