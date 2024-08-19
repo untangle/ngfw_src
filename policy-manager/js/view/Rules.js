@@ -40,6 +40,13 @@ Ext.define('Ung.apps.policymanager.view.Rules', {
         javaClass: 'com.untangle.app.policy_manager.PolicyRule'
     },
 
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+
+    extraColumnConfig: {
+        ruleId: { xtype: 'numberfield' },
+    },
+
     bind: '{rules}',
 
     columns: [
