@@ -228,6 +228,11 @@ Ext.define('Ung.cmp.Grid', {
         }else{
             viewConfig.checkIfAlreadyPresent = {};
         }
+        if(this.extraValueCheckForCombo !== undefined){
+            viewConfig.extraValueCheckForCombo = this.extraValueCheckForCombo;
+        }else{
+            viewConfig.extraValueCheckForCombo = {};
+        }
 
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
