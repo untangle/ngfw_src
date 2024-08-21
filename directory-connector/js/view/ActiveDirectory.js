@@ -114,7 +114,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     width: Renderer.portWidth,
                     dataIndex: 'LDAPPort',
                     editor: {
-                        xtype: 'textfield',
+                        xtype: 'numberfield',
                         bind: '{record.LDAPPort}'
                     }
                 }, {
@@ -214,9 +214,9 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     emptyText: '[no host]'.t(),
                     allowBlank: false
                 },{
-                    xtype: 'textfield',
+                    xtype: 'numberfield',
                     fieldLabel: 'Port'.t(),
-                    bind: '{record.LDAPPort}',
+                    bind: '{record.LDAPPort}', 
                     emptyText: '[no port]'.t(),
                     allowBlank: false
                 },{
