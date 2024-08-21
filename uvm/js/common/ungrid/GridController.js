@@ -496,7 +496,7 @@ Ext.define('Ung.cmp.GridController', {
     checkIfValueExists: function(array, valueToCheck, fieldConfig){
         return array.some(function(entry) {
             if(typeof entry === 'object' && Array.isArray(entry)){
-                return entry[0] === valueToCheck;
+                return entry[0].toString() === valueToCheck.toString();
             }else{
                 return entry[fieldConfig.valueField] === valueToCheck;
             }
@@ -750,6 +750,11 @@ Ext.define('Ung.cmp.GridController', {
 
                 if (fieldConfig !== undefined && (fieldConfig.validator || fieldConfig.vtype || !fieldConfig.allowBlank)) {
                     var validationErrorMsg = null;
+
+                    if(grid.viewConfig.extraValueCheckForCombo[fieldName] && fieldValue === grid.viewConfig.extraValueCheckForCombo[fieldName]){
+                        continue;
+                    }
+                    
                     var types = ["textfield", "numberfield"];
                     if((!fieldConfig.hasOwnProperty("allowBlank") || fieldConfig.allowBlank) && (fieldValue === null || fieldValue === undefined) && types.includes(fieldConfig.xtype)){
                         continue;
