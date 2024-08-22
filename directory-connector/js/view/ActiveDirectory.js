@@ -115,7 +115,9 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     dataIndex: 'LDAPPort',
                     editor: {
                         xtype: 'numberfield',
-                        bind: '{record.LDAPPort}'
+                        bind: '{record.LDAPPort}',
+                        minValue: 0,
+                        maxValue: 65535,
                     }
                 }, {
                     xtype: 'checkcolumn',
@@ -218,7 +220,9 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     fieldLabel: 'Port'.t(),
                     bind: '{record.LDAPPort}', 
                     emptyText: '[no port]'.t(),
-                    allowBlank: false
+                    allowBlank: false,
+                    minValue: 0,
+                    maxValue: 65535,
                 },{
                     xtype: 'checkbox',
                     fieldLabel: 'Secure'.t(),
