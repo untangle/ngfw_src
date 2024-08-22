@@ -13,13 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.AuthenticationException;
-import javax.naming.CommunicationException;
-import javax.naming.Context;
-import javax.naming.NameAlreadyBoundException;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.ServiceUnavailableException;
+import javax.naming.*;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttributes;
@@ -457,7 +451,7 @@ abstract class LdapAdapter
 
             while(null != (cause = result.getCause())  && (result != cause) ) {
                 result = cause;
-            }   
+            }
 
             throw new CommunicationException( result.getMessage() + ": " + ex.getMessage() );
         }
@@ -489,7 +483,7 @@ abstract class LdapAdapter
     //========================================
 
     /**
-     * Convienence methods to convert the communication and authentication excpetions
+     * Convienence methods to convert the specific excpetions
      * to the more generic "ServiceUnavailableException".
      * 
      * @param ex
@@ -504,6 +498,72 @@ abstract class LdapAdapter
         }
         if(ex instanceof AuthenticationException) {
             return new ServiceUnavailableException("Authentication Failure: " + ex);
+        }
+        if(ex instanceof AuthenticationNotSupportedException) {
+            return new ServiceUnavailableException("Authentication Not Supported: " + ex);
+        }
+        if(ex instanceof CannotProceedException) {
+            return new ServiceUnavailableException("Operation Can Not Proceed: " + ex);
+        }
+        if(ex instanceof ConfigurationException) {
+            return new ServiceUnavailableException("Configuration Failure: " + ex);
+        }
+        if(ex instanceof ContextNotEmptyException) {
+            return new ServiceUnavailableException("Non Empty Context Can Not Be Destroyed: " + ex);
+        }
+        if(ex instanceof InsufficientResourcesException) {
+            return new ServiceUnavailableException("Resource Not Available: " + ex);
+        }
+        if(ex instanceof InterruptedNamingException) {
+            return new ServiceUnavailableException("Naming Operation Interrupted:: " + ex);
+        }
+        if (ex instanceof InvalidNameException) {
+        return new ServiceUnavailableException("Invalid Name Syntax: " + ex);
+        }
+        if (ex instanceof LimitExceededException) {
+            return new ServiceUnavailableException("Limit Exceeded: " + ex);
+        }
+        if (ex instanceof LinkException) {
+            return new ServiceUnavailableException("Link Resolution Failure: " + ex);
+        }
+        if (ex instanceof LinkLoopException) {
+            return new ServiceUnavailableException("Link Loop Detected: " + ex);
+        }
+        if (ex instanceof MalformedLinkException) {
+            return new ServiceUnavailableException("Malformed Link Encountered: " + ex);
+        }
+        if (ex instanceof NameAlreadyBoundException) {
+            return new ServiceUnavailableException("Name Already Bound: " + ex);
+        }
+        if (ex instanceof NameNotFoundException) {
+            return new ServiceUnavailableException("Name Not Found: " + ex);
+        }
+        if (ex instanceof NamingSecurityException) {
+            return new ServiceUnavailableException("Naming Security Violation: " + ex);
+        }
+        if (ex instanceof NoInitialContextException) {
+            return new ServiceUnavailableException("No Initial Context Available: " + ex);
+        }
+        if (ex instanceof NoPermissionException) {
+            return new ServiceUnavailableException("No Permission: " + ex);
+        }
+        if (ex instanceof NotContextException) {
+            return new ServiceUnavailableException("Not a Context: " + ex);
+        }
+        if (ex instanceof OperationNotSupportedException) {
+            return new ServiceUnavailableException("Operation Not Supported: " + ex);
+        }
+        if (ex instanceof PartialResultException) {
+            return new ServiceUnavailableException("Partial Result Returned: " + ex);
+        }
+        if (ex instanceof ReferralException) {
+            return new ServiceUnavailableException("Referral Error: " + ex);
+        }
+        if (ex instanceof SizeLimitExceededException) {
+            return new ServiceUnavailableException("Size Limit Exceeded: " + ex);
+        }
+        if (ex instanceof TimeLimitExceededException) {
+            return new ServiceUnavailableException("Time Limit Exceeded: " + ex);
         }
         return ex;
     }
@@ -968,12 +1028,15 @@ abstract class LdapAdapter
     /**
      * Returns the DirContext
      * @return DirContext object
-     * @throws ServiceUnavailableException
+     * @throws NamingException if there is an issue with the naming service.
+     * @throws ServiceUnavailableException if the server is not available or cannot be reached.
      */
-    private DirContext getSuperuserDirContext() throws ServiceUnavailableException {
+    private DirContext getSuperuserDirContext() throws ServiceUnavailableException,NamingException {
         DirContext ctx = null;
         try {
             ctx = checkoutSuperuserContext();
+        } catch (NamingException e) {
+            throw convertToServiceUnavailableException(e);
         } catch (Exception e) {
             throw new ServiceUnavailableException(e.getMessage());
         }

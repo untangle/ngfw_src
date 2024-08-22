@@ -496,9 +496,9 @@ public class GroupManager
             logger.info("Renewing AD Group Cache...");
             long startTime = System.currentTimeMillis();
 
-            List<String> domains = null;
+            Map<String, String> domains = null;
             try {
-                domains = app.getActiveDirectoryManager().getDomains();
+                domains = app.getActiveDirectoryManager().getDomainMap();
             } catch ( Exception ex ) {
                 logger.warn("Unable to retrieve the domains", ex);
                 return;
@@ -508,9 +508,12 @@ public class GroupManager
             Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(domains.size());
             Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(domains.size());
             Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<>();
-            for( String domain : domains){
+            for (Map.Entry<String, String> entry : domains.entrySet()) {
+                String ldapHost = entry.getKey(); 
+                String domain = entry.getValue(); 
+            
                 List<GroupEntry> groupList = null;
-                ActiveDirectoryLdapAdapter adAdapter = app.getActiveDirectoryManager().getAdapter(domain);
+                ActiveDirectoryLdapAdapter adAdapter = app.getActiveDirectoryManager().getAdapter(domain, ldapHost);
 
                 int numGroups = 10;
                 Map<String,Map<String,Boolean>> groupsUsersMap = new ConcurrentHashMap<>(numGroups);

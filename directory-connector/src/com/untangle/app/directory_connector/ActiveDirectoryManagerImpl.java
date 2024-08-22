@@ -4,8 +4,10 @@
 package com.untangle.app.directory_connector;
 
 import java.util.List;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import javax.naming.ServiceUnavailableException;
 import org.apache.logging.log4j.Logger;
@@ -125,11 +127,36 @@ public class ActiveDirectoryManagerImpl
     }
 
     /**
-     * [getAdapter description]
-     * @param  domain [description]
-     * @return        [description]
+     * Retrieves a mapping of LDAP hosts to domains from the settings of active directory adapters.
+     * @return A map where the keys are LDAP hostnames and the values are corresponding domains.
      */
-    public ActiveDirectoryLdapAdapter getAdapter(String domain){
+    public Map<String, String> getDomainMap() {
+        Map<String, String> domainMap = new HashMap<>();
+
+        for (ActiveDirectoryLdapAdapter adAdapter : this.adAdapters) {
+            if (adAdapter == null) {
+                continue;
+            }
+            if (!adAdapter.getSettings().getEnabled()) {
+                continue;
+            }
+            
+            String ldapHost = adAdapter.getSettings().getLDAPHost();
+            String domain = adAdapter.getSettings().getDomain();
+            
+            domainMap.put(ldapHost, domain);
+        }
+        
+        return domainMap;
+    }
+
+    /**
+     * Returns the adapter that matches the specified conditions.
+     * @param domain   The domain to be matched with the adapter.
+     * @param ldapHost The hostname to be matched with the adapter.
+     * @return         The ActiveDirectoryLdapAdapter that matches the conditions, or null if no match is found.
+     */
+    public ActiveDirectoryLdapAdapter getAdapter(String domain, String ldapHost){
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
                 continue;
@@ -137,7 +164,10 @@ public class ActiveDirectoryManagerImpl
             if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
-            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
+            if(domain != null && !adAdapter.getSettings().getLDAPHost().equals(ldapHost)){
+                continue;
+            }
+            if(!adAdapter.getSettings().getDomain().equals(domain) ){
                 continue;
             }
             return adAdapter;
@@ -221,6 +251,7 @@ public class ActiveDirectoryManagerImpl
         WARN_QUERY_NO_USERS,
         FAIL_EMPTY_SETTINGS,
         FAIL_QUERY,
+        AUTH_QUERY_FAIL,
         FAIL_QUERY_NONE,
         FAIL_QUERY_REFERRAL
     }
@@ -267,6 +298,8 @@ public class ActiveDirectoryManagerImpl
                     statusResult = STATUS_RESULTS.FAIL_QUERY_NONE;
                 }else if(e.toString().contains("DSID-0310082F")){
                     statusResult = STATUS_RESULTS.FAIL_QUERY_REFERRAL;
+                }else if(e.toString().contains("error code 49 - 80090308")){
+                    statusResult = STATUS_RESULTS.AUTH_QUERY_FAIL;
                 }else{
                     statusResult = STATUS_RESULTS.FAIL_QUERY;
                 }
