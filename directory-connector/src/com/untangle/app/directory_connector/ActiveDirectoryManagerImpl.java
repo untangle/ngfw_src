@@ -5,6 +5,8 @@ package com.untangle.app.directory_connector;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -127,52 +129,18 @@ public class ActiveDirectoryManagerImpl
     }
 
     /**
-     * Retrieves a mapping of LDAP hosts to domains from the settings of active directory adapters.
-     * @return A map where the keys are LDAP hostnames and the values are corresponding domains.
+     * Retrieves the List of enabled and non-null/non-empty ActiveDirectoryLdapAdapter.
+     * @return List of enabled ActiveDirectoryLdapAdapter
      */
-    public Map<String, String> getDomainMap() {
-        Map<String, String> domainMap = new HashMap<>();
-
-        for (ActiveDirectoryLdapAdapter adAdapter : this.adAdapters) {
-            if (adAdapter == null) {
-                continue;
-            }
-            if (!adAdapter.getSettings().getEnabled()) {
-                continue;
-            }
-            
-            String ldapHost = adAdapter.getSettings().getLDAPHost();
-            String domain = adAdapter.getSettings().getDomain();
-            
-            domainMap.put(ldapHost, domain);
-        }
-        
-        return domainMap;
-    }
-
-    /**
-     * Returns the adapter that matches the specified conditions.
-     * @param domain   The domain to be matched with the adapter.
-     * @param ldapHost The hostname to be matched with the adapter.
-     * @return         The ActiveDirectoryLdapAdapter that matches the conditions, or null if no match is found.
-     */
-    public ActiveDirectoryLdapAdapter getAdapter(String domain, String ldapHost){
-        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
-            if(adAdapter == null){
-                continue;
-            }
-            if(!adAdapter.getSettings().getEnabled()){
-                continue;
-            }
-            if(domain != null && !adAdapter.getSettings().getLDAPHost().equals(ldapHost)){
-                continue;
-            }
-            if(!adAdapter.getSettings().getDomain().equals(domain) ){
-                continue;
-            }
-            return adAdapter;
-        }
-        return null;
+    public List<ActiveDirectoryLdapAdapter> getAdapters() {
+        return this.adAdapters.stream()
+                .filter(adAdapter -> adAdapter != null
+                        && adAdapter.getSettings().getLDAPHost() != null
+                        && !adAdapter.getSettings().getLDAPHost().isEmpty()
+                        && adAdapter.getSettings().getDomain() != null
+                        && !adAdapter.getSettings().getDomain().isEmpty()
+                        && adAdapter.getSettings().getEnabled())
+                .collect(Collectors.toCollection(LinkedList::new)); 
     }
 
     /**
@@ -231,6 +199,9 @@ public class ActiveDirectoryManagerImpl
             if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
+            if(domain == "" || adAdapter.getSettings().getLDAPHost() == "" || adAdapter.getSettings().getLDAPHost() == null){
+                continue;
+            }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
                 continue;
             }
@@ -243,8 +214,8 @@ public class ActiveDirectoryManagerImpl
         }
 
         Collections.sort(groupList);
-        return groupList;
-    }
+    return groupList;
+}
 
     public static enum STATUS_RESULTS{
         PASS,
@@ -298,7 +269,7 @@ public class ActiveDirectoryManagerImpl
                     statusResult = STATUS_RESULTS.FAIL_QUERY_NONE;
                 }else if(e.toString().contains("DSID-0310082F")){
                     statusResult = STATUS_RESULTS.FAIL_QUERY_REFERRAL;
-                }else if(e.toString().contains("error code 49 - 80090308")){
+                }else if(e.toString().contains("49 - 80090308")){
                     statusResult = STATUS_RESULTS.AUTH_QUERY_FAIL;
                 }else{
                     statusResult = STATUS_RESULTS.FAIL_QUERY;
@@ -411,7 +382,7 @@ public class ActiveDirectoryManagerImpl
         throws ServiceUnavailableException
     {
         JSONArray result = new JSONArray();
-
+    
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
                 continue;
@@ -419,7 +390,10 @@ public class ActiveDirectoryManagerImpl
             if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
-
+            
+            if(domain == "" || adAdapter.getSettings().getLDAPHost() == "" || adAdapter.getSettings().getLDAPHost() == null){
+                continue;
+            }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
                 continue;
             }

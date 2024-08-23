@@ -496,24 +496,21 @@ public class GroupManager
             logger.info("Renewing AD Group Cache...");
             long startTime = System.currentTimeMillis();
 
-            Map<String, String> domains = null;
+            List<ActiveDirectoryLdapAdapter> adAdapters = null;
             try {
-                domains = app.getActiveDirectoryManager().getDomainMap();
+                adAdapters = app.getActiveDirectoryManager().getAdapters();
             } catch ( Exception ex ) {
                 logger.warn("Unable to retrieve the domains", ex);
                 return;
             }
 
-            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(domains.size());
-            Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(domains.size());
-            Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(domains.size());
+            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(adAdapters.size());
+            Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(adAdapters.size());
+            Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(adAdapters.size());
             Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<>();
-            for (Map.Entry<String, String> entry : domains.entrySet()) {
-                String ldapHost = entry.getKey(); 
-                String domain = entry.getValue(); 
-            
+            for (ActiveDirectoryLdapAdapter adAdapter : adAdapters) {
+                
                 List<GroupEntry> groupList = null;
-                ActiveDirectoryLdapAdapter adAdapter = app.getActiveDirectoryManager().getAdapter(domain, ldapHost);
 
                 int numGroups = 10;
                 Map<String,Map<String,Boolean>> groupsUsersMap = new ConcurrentHashMap<>(numGroups);
@@ -656,6 +653,7 @@ public class GroupManager
                 /**
                  * Update the global caches that are used.
                  */
+                String domain = adAdapter.getSettings().getDomain();
                 domainsGroupsUsersCache.put(domain, groupsUsersMap);
                 domainsGroupsChildrenCache.put(domain, groupsChildrenMap);
                 domainsUsersCache.put(domain, domainUsersMap);
