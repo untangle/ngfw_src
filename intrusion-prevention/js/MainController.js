@@ -1450,20 +1450,14 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesGridController', {
     },
 
     exportData: function(){
-        var grid = this.getView(),
-            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass,
-            vm = grid.up('app-intrusion-prevention').getController().getViewModel();
+        var grid = this.getView();
 
         Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
 
-        var downloadForm = document.getElementById('downloadForm');
-        downloadForm["type"].value = "IntrusionPreventionSettings";
-        downloadForm["arg1"].value = "export";
-        downloadForm["arg2"].value = vm.get('instance.id');
-        downloadForm["arg3"].value = gridName.trim().replace(/ /g, '_');
-        downloadForm["arg4"].value = Ext.encode({variables: grid.up('app-intrusion-prevention').getController().getChangedDataRecords('variables')});
-        downloadForm.submit();
-
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm.gridName.value = grid.getXType();
+        exportForm.gridData.value = this.getExportData(false);
+        exportForm.submit();
         Ext.MessageBox.hide();
     },
 
