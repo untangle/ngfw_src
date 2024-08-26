@@ -204,7 +204,7 @@ public class ActiveDirectoryManagerImpl
             if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
-            if(domain == StringUtils.EMPTY || StringUtils.isNotEmpty(adAdapter.getSettings().getLDAPHost())){
+            if(domain == StringUtils.EMPTY || StringUtils.isEmpty(adAdapter.getSettings().getLDAPHost())){
                 continue;
             }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
