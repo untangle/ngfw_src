@@ -4,12 +4,11 @@
 package com.untangle.app.directory_connector;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.LinkedList;
 import java.util.Collections;
-import java.util.HashMap;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.ServiceUnavailableException;
 import org.apache.logging.log4j.Logger;
@@ -129,18 +128,24 @@ public class ActiveDirectoryManagerImpl
     }
 
     /**
-     * Retrieves the List of enabled and non-null/non-empty ActiveDirectoryLdapAdapter.
+     * Retrieves the List of enabled and active ActiveDirectoryLdapAdapter.
      * @return List of enabled ActiveDirectoryLdapAdapter
      */
     public List<ActiveDirectoryLdapAdapter> getAdapters() {
         return this.adAdapters.stream()
-                .filter(adAdapter -> adAdapter != null
-                        && adAdapter.getSettings().getLDAPHost() != null
-                        && !adAdapter.getSettings().getLDAPHost().isEmpty()
-                        && adAdapter.getSettings().getDomain() != null
-                        && !adAdapter.getSettings().getDomain().isEmpty()
-                        && adAdapter.getSettings().getEnabled())
-                .collect(Collectors.toCollection(LinkedList::new)); 
+                .filter(adAdapter -> {
+                    try {
+                        return adAdapter != null
+                                && StringUtils.isNotEmpty(adAdapter.getSettings().getLDAPHost())
+                                && StringUtils.isNotEmpty(adAdapter.getSettings().getDomain())
+                                && adAdapter.getSettings().getEnabled()
+                                && adAdapter.listAll() != null; 
+                    } catch (ServiceUnavailableException e) {
+                        logger.warn("Unable to query Active Directory Groups.",e);
+                        return false;
+                    }
+                })
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**
@@ -199,7 +204,7 @@ public class ActiveDirectoryManagerImpl
             if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
-            if(domain == "" || adAdapter.getSettings().getLDAPHost() == "" || adAdapter.getSettings().getLDAPHost() == null){
+            if(domain == StringUtils.EMPTY || StringUtils.isNotEmpty(adAdapter.getSettings().getLDAPHost())){
                 continue;
             }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
@@ -391,7 +396,7 @@ public class ActiveDirectoryManagerImpl
                 continue;
             }
             
-            if(domain == "" || adAdapter.getSettings().getLDAPHost() == "" || adAdapter.getSettings().getLDAPHost() == null){
+            if(domain ==  StringUtils.EMPTY ||  StringUtils.isEmpty(adAdapter.getSettings().getLDAPHost())){
                 continue;
             }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){

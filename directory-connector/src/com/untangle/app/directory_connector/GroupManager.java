@@ -503,10 +503,10 @@ public class GroupManager
                 logger.warn("Unable to retrieve the domains", ex);
                 return;
             }
-
-            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(adAdapters.size());
-            Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(adAdapters.size());
-            Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(adAdapters.size());
+            int adapterSize = adAdapters.size();
+            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(adapterSize);
+            Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(adapterSize);
+            Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(adapterSize);
             Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<>();
             for (ActiveDirectoryLdapAdapter adAdapter : adAdapters) {
                 
