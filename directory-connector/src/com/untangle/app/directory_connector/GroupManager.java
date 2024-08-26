@@ -496,21 +496,21 @@ public class GroupManager
             logger.info("Renewing AD Group Cache...");
             long startTime = System.currentTimeMillis();
 
-            List<String> domains = null;
+            List<ActiveDirectoryLdapAdapter> adAdapters = null;
             try {
-                domains = app.getActiveDirectoryManager().getDomains();
+                adAdapters = app.getActiveDirectoryManager().getAdapters();
             } catch ( Exception ex ) {
                 logger.warn("Unable to retrieve the domains", ex);
                 return;
             }
-
-            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(domains.size());
-            Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(domains.size());
-            Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(domains.size());
+            int adapterSize = adAdapters.size();
+            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(adapterSize);
+            Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(adapterSize);
+            Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(adapterSize);
             Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<>();
-            for( String domain : domains){
+            for (ActiveDirectoryLdapAdapter adAdapter : adAdapters) {
+                
                 List<GroupEntry> groupList = null;
-                ActiveDirectoryLdapAdapter adAdapter = app.getActiveDirectoryManager().getAdapter(domain);
 
                 int numGroups = 10;
                 Map<String,Map<String,Boolean>> groupsUsersMap = new ConcurrentHashMap<>(numGroups);
@@ -653,6 +653,7 @@ public class GroupManager
                 /**
                  * Update the global caches that are used.
                  */
+                String domain = adAdapter.getSettings().getDomain();
                 domainsGroupsUsersCache.put(domain, groupsUsersMap);
                 domainsGroupsChildrenCache.put(domain, groupsChildrenMap);
                 domainsUsersCache.put(domain, domainUsersMap);

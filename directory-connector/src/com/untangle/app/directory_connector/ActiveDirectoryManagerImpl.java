@@ -4,8 +4,11 @@
 package com.untangle.app.directory_connector;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.LinkedList;
 import java.util.Collections;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.ServiceUnavailableException;
 import org.apache.logging.log4j.Logger;
@@ -125,24 +128,24 @@ public class ActiveDirectoryManagerImpl
     }
 
     /**
-     * [getAdapter description]
-     * @param  domain [description]
-     * @return        [description]
+     * Retrieves the List of enabled and active ActiveDirectoryLdapAdapter.
+     * @return List of enabled ActiveDirectoryLdapAdapter
      */
-    public ActiveDirectoryLdapAdapter getAdapter(String domain){
-        for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
-            if(adAdapter == null){
-                continue;
-            }
-            if(!adAdapter.getSettings().getEnabled()){
-                continue;
-            }
-            if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
-                continue;
-            }
-            return adAdapter;
-        }
-        return null;
+    public List<ActiveDirectoryLdapAdapter> getAdapters() {
+        return this.adAdapters.stream()
+                .filter(adAdapter -> {
+                    try {
+                        return adAdapter != null
+                                && StringUtils.isNotEmpty(adAdapter.getSettings().getLDAPHost())
+                                && StringUtils.isNotEmpty(adAdapter.getSettings().getDomain())
+                                && adAdapter.getSettings().getEnabled()
+                                && adAdapter.listAll() != null; 
+                    } catch (ServiceUnavailableException e) {
+                        logger.warn("Unable to query Active Directory Groups.",e);
+                        return false;
+                    }
+                })
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**
@@ -201,6 +204,9 @@ public class ActiveDirectoryManagerImpl
             if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
+            if(domain == StringUtils.EMPTY || StringUtils.isEmpty(adAdapter.getSettings().getLDAPHost())){
+                continue;
+            }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
                 continue;
             }
@@ -221,6 +227,7 @@ public class ActiveDirectoryManagerImpl
         WARN_QUERY_NO_USERS,
         FAIL_EMPTY_SETTINGS,
         FAIL_QUERY,
+        AUTH_QUERY_FAIL,
         FAIL_QUERY_NONE,
         FAIL_QUERY_REFERRAL
     }
@@ -267,6 +274,8 @@ public class ActiveDirectoryManagerImpl
                     statusResult = STATUS_RESULTS.FAIL_QUERY_NONE;
                 }else if(e.toString().contains("DSID-0310082F")){
                     statusResult = STATUS_RESULTS.FAIL_QUERY_REFERRAL;
+                }else if(e.toString().contains("49 - 80090308")){
+                    statusResult = STATUS_RESULTS.AUTH_QUERY_FAIL;
                 }else{
                     statusResult = STATUS_RESULTS.FAIL_QUERY;
                 }
@@ -378,7 +387,7 @@ public class ActiveDirectoryManagerImpl
         throws ServiceUnavailableException
     {
         JSONArray result = new JSONArray();
-
+    
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
                 continue;
@@ -386,7 +395,10 @@ public class ActiveDirectoryManagerImpl
             if(!adAdapter.getSettings().getEnabled()){
                 continue;
             }
-
+            
+            if(domain ==  StringUtils.EMPTY ||  StringUtils.isEmpty(adAdapter.getSettings().getLDAPHost())){
+                continue;
+            }
             if(domain != null && !adAdapter.getSettings().getDomain().equals(domain)){
                 continue;
             }

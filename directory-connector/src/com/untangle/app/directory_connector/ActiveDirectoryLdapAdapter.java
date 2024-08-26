@@ -681,8 +681,8 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
      * @param searchFilter
      *      Optional filter.
      * @return Result of query.
-     * @throws NamingException if 
-     * @throws ServiceUnavailableException if server not available.
+     * @throws NamingException if there is an issue with the naming service.
+     * @throws ServiceUnavailableException if the server is not available.
      */
     private SearchResult queryFirstAsSuperuser(List<String> searchBases, String searchFilter)
         throws NamingException, ServiceUnavailableException
@@ -691,6 +691,8 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter
         DirContext ctx = null;
         try {
             ctx = checkoutSuperuserContext();
+        } catch (NamingException e) {
+            throw convertToServiceUnavailableException(e);
         } catch (Exception e) {
             throw new ServiceUnavailableException(e.getMessage());
         }
