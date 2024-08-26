@@ -219,8 +219,8 @@ public class ActiveDirectoryManagerImpl
         }
 
         Collections.sort(groupList);
-    return groupList;
-}
+        return groupList;
+    }
 
     public static enum STATUS_RESULTS{
         PASS,
