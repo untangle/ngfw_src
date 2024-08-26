@@ -90,6 +90,13 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 value: '{settings.dnsServer}'
             }
         },{
+            xtype: 'textfield',
+            fieldLabel: 'DNS Search Domain'.t(),
+            bind: {
+                value: '{settings.dnsSearchDomain}'
+            },
+            emptyText: '[no domain]'.t()
+        },{
             xtype: 'fieldcontainer',
             layout: 'hbox',
             items: [{
