@@ -350,11 +350,11 @@ public class WireGuardVpnApp extends AppBase
                 }
             }
 
-            // 16.3.2 - add in nat rules by default
-            if (readSettings.getVersion() <= 3) {
-                createNatRules();
+            // 17.3 - add dns search domain by default
+            if(readSettings.getVersion() <= 4) {
+                readSettings.setDnsSearchDomain(this.defaultDnsSerachDomain);
                 writeFlag = true;
-                readSettings.setVersion(4);
+                readSettings.setVersion(5);
             }
 
             if (writeFlag == true) {
