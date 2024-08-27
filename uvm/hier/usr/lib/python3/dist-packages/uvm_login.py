@@ -18,7 +18,7 @@ import threading
 
 from mod_python import apache, Session, util
 from functools import reduce
-
+from uvm.login_tools import get_logger
 
 def authenhandler(req):
     if req.notes.get('authorized', 'false') == 'true':
@@ -109,7 +109,7 @@ def headerparserhandler(req):
 
     if None == username and is_local_process_uid_authorized(req):
         username = 'localadmin'
-        log_login(req, username, True, None)
+        log_login(req, username, True, "I")
         save_session_user(sess, realm, username)
 
     # if sess.has_key('apache_realms'):
@@ -270,10 +270,12 @@ def login_redirect(req, realm, token=None):
     util.redirect(req, redirect_url)
 
 
-def delete_session_user(sess, realm):
+def delete_session_user(sess, realm, req):
     if 'apache_realms' in sess:
         apache_realms = sess['apache_realms']
         if realm in apache_realms:
+            logger = get_logger(req, realm, apache_realms[realm]['username'], None)
+            logger.logout_success("O")
             del apache_realms[realm]
 
 

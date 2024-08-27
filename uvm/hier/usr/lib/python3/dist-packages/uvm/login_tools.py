@@ -108,6 +108,7 @@ class Totp:
 
         totp = pyotp.TOTP(secret)
         if totp.verify(totp_code, valid_window=1):
+            logger.log_success("I")
             return True
 
         logger.log_failure("T")
@@ -144,12 +145,19 @@ class UVMLoginLogger:
                                 False,
                                 reason)
 
-    def log_success(self):
+    def log_success(self, reason):
         if self._should_log:
             uvm_login.log_login(self._request,
                                 self._username,
                                 True,
-                                None)
+                                reason)
+
+    def logout_success(self, reason):
+        if self._should_log:
+            uvm_login.log_login(self._request,
+                                self._username,
+                                True,
+                                reason)
 
 class StderrLoginLogger:
     """
@@ -170,10 +178,11 @@ class StderrLoginLogger:
     def set_username(self, username):
         self._username = username
 
-    def log_success(self):
+    def log_success(self, reason):
         if self._should_log:
             print(f"Successful login  of user: {self._username}"
                   f" on realm: {self._realm}",
+                  f"reason: {reason}",
                   file=sys.stderr)
 
     def log_failure(self, reason):
@@ -184,15 +193,25 @@ class StderrLoginLogger:
                 f"reason: {reason}",
                 file=sys.stderr)
 
+    def logout_success(self, reason):
+        if self._should_log:
+            print(f"Successful logut  of user: {self._username}"
+                    f" on realm: {self._realm}",
+                    f"reason: {reason}",
+                    file=sys.stderr)
+
 class NullLogger:
     """
     Logger that doesn't do anything (for when you want an empty logger
     to pass around).
     """
-    def log_success(self):
+    def log_success(self, reason):
         pass
 
     def log_failure(self, reason):
+        pass
+    
+    def log_success(self, reason):
         pass
 
 
@@ -283,6 +302,7 @@ def reports_valid_login(req, realm, username, password, totp=None, logger=Stderr
             if Totp.enabled(req):
                 return Totp.validate(totp, logger)
             else:
+                logger.log_success("I")
                 return True
         else:
             return False
@@ -307,6 +327,7 @@ def admin_valid_login(req, realm, username, password, totp=None, logger=StderrLo
             if Totp.enabled(req):
                 return Totp.validate(totp, logger)
             else:
+                logger.log_success("I")
                 return True
         else:
             return False
@@ -330,7 +351,6 @@ def check_password(user_dict, password, logger):
     pw_hash_shadow = user_dict.get('passwordHashShadow')
     if pw_hash_shadow:
         if pw_hash_shadow == crypt.crypt(password, pw_hash_shadow):
-            logger.log_success()
             return True
         else:
             logger.log_failure("P")
@@ -342,7 +362,6 @@ def check_password(user_dict, password, logger):
         salt = pw_hash[len(pw_hash) - 8:]
         b = password.encode('utf-8') + salt
         if raw_pw == hashlib.md5(b).digest():
-            logger.log_success()
             return True
         else:
             logger.log_failure("P")

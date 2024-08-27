@@ -54,7 +54,7 @@ Ext.define('Ung.util.Converter', {
     ipaddr: function (v) { return v || ''; },
 
     httpMethod: function (v) { return Map.httpMethods[v] || v; },
-    loginFailureReason: function (v) { return Map.loginFailureReasons[v] || ''; },
+    loginReason: function (v) { return Map.loginReasons[v] || ''; },
 
     priority: function (v) { return Map.httpMethods[v] || v; },
     emailAction: function (v) { return Map.emailActions[v] || 'unknown action'.t(); },
