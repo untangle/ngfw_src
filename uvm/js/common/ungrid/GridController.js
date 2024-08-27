@@ -527,7 +527,7 @@ Ext.define('Ung.cmp.GridController', {
             if(typeof fieldConfig.store === 'string'){
                 currStore = Ext.Array.pluck(Ext.getStore(fieldConfig.store).getRange(),"data");
             }else{
-                currStore = fieldConfig.store;
+                currStore = fieldConfig.store.data ? Ext.Array.pluck(fieldConfig.store.getRange(),"data") : fieldConfig.store;
             }
             isEntryExists = this.checkIfValueExists(currStore, valueToCheck, fieldConfig);
         }else if(fieldConfig.bind){
@@ -545,8 +545,9 @@ Ext.define('Ung.cmp.GridController', {
         if(fieldConfig.values && fieldConfig.values.length <= 0){
             return false;
         }else{
-            for(var j=0; j<fieldConfig.values.length; j++){
-                availableFieldValues.push(isAlertEvent ? fieldConfig.values[j] : fieldConfig.values[j][0]);
+            var fieldValues = fieldConfig.values ? fieldConfig.values : ( fieldConfig.store.data ? Ext.Array.pluck(fieldConfig.store.getRange(),"data") : []);
+            for(var j=0; j<fieldValues.length; j++){
+                availableFieldValues.push(isAlertEvent ? fieldValues[j] : (fieldValues[j][0] ? fieldValues[j][0] : fieldValues[j][fieldConfig.storeValue]));
             }
         }
         var isEntryValid = true;
@@ -913,11 +914,12 @@ Ext.define('Ung.cmp.GridController', {
                     var currentValue = null;
                     for (var j = 0; j < fieldValue.list.length; j++) {
                         var currentRow = fieldValue.list[j];
-                        if (!currentRow.conditionType || (currentRow.conditionType && !fieldConfig.conditions[currentRow.conditionType])) {
-                            errorMsgForConditions = Ext.String.format('Invalid Row Condition Type {0}.'.t(), currentRow.conditionType);
+                        var conditionType = currentRow.conditionType || currentRow.type;
+                        if (!conditionType || (conditionType && !fieldConfig.conditions[conditionType])) {
+                            errorMsgForConditions = Ext.String.format('Invalid Row Condition Type {0}.'.t(), conditionType);
                             break;
                         }
-                        var currentCondition = fieldConfig.conditions[currentRow.conditionType];
+                        var currentCondition = fieldConfig.conditions[conditionType];
                         currentValue = currentRow.value;
                         if (currentCondition.hasOwnProperty("allowBlank") && !currentCondition.allowBlank && Ext.isEmpty(currentValue)) {
                             errorMsgForConditions = Ext.String.format('This field is required.'.t());

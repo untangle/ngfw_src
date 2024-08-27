@@ -44,6 +44,10 @@ Ext.define('Ung.apps.intrusionprevention.view.BypassRules', {
         description: ''
     },
 
+    importValidationJavaClass: true,
+
+    importValidationForComboBox: true,
+
     bind: '{bypassRules}',
 
     columns: [
