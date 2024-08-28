@@ -253,8 +253,8 @@ public class ConfigurationBackupApp extends AppBase
                                     "-t",TIMEOUT_SEC,
                                     "-f",backupFile.getAbsoluteFile().toString()};
 
-        logger.info("Backing up " + backupFile.getAbsoluteFile() + " to " + backupUri);
-        logger.info("Backup command: " + Arrays.toString(cmd));
+        logger.info("Backing up {} to {}", backupFile.getAbsoluteFile(), backupUri);
+        logger.info("Backup command: {}", Arrays.toString(cmd));
 
         Integer exitCode = 0;
         try {
@@ -266,7 +266,7 @@ public class ConfigurationBackupApp extends AppBase
         }
 
         if(exitCode != 0) {
-            logger.error("Backup returned non-zero error code (" + exitCode + ")");
+            logger.error("Backup returned non-zero error code ({})", exitCode);
 
             String reason = null;
             switch(exitCode) {
@@ -291,7 +291,7 @@ public class ConfigurationBackupApp extends AppBase
             default:
                 reason = "Unknown error";
             }
-            logger.info("Backup failed: " + reason);
+            logger.error("Backup failed: {}", reason);
             this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("My Account")) );
         }
         else {
