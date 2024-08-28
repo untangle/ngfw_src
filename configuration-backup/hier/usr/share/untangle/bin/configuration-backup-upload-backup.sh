@@ -51,9 +51,13 @@ function err() {
 }
 
 function doHelp() {
-    echo "$0 -t <timeout> -u <URL> <uid> -f <file>"
+    echo "$0 -t <timeout> -u <URL> -k <uid> -f <file> -t <timeout> -v"
     echo "Options:"
     echo "    -h       help"
+    echo "    -f       backup file"
+    echo "    -u       upload URL"
+    echo "    -k       machine UID"
+    echo "    -t       timeout"
     echo "    -v       verbose"
     echo 
 }
@@ -141,6 +145,13 @@ if [ $CURL_RET -eq 28 ]; then
   exit 5
 fi
 
+if [ $CURL_RET -eq 60 ]; then
+  # NGFW-14790, address 0.0.0.0 returns 60.
+  err "CURL returned 60 when contacting the URL $URL"
+  rm -f $HEADER_FILE
+  exit 4
+fi
+
 
 # Get the HTTP status code from the CURL header file
 RETURN_CODE=`getHTTPStatus $HEADER_FILE`
@@ -150,16 +161,19 @@ debug "HTTP status code $RETURN_CODE"
 debug "Remove header file $HEADER_FILE"
 rm -f $HEADER_FILE
 
-if [ ! -z "$RETURN_CODE" ] ; then
-    # Evaluate HTTP status code
-    if [ $RETURN_CODE -eq 401 ];then
-        err "Remote server at URL $URL returned 401"
-        exit 3
-    fi
-    if [ $RETURN_CODE -eq 403 ];then
-        err "Remote server at URL $URL returned 403"
-        exit 3
-    fi
+if [ -z "$RETURN_CODE" ]; then
+    err "Failed to get HTTP status code for remote server at URL $URL"
+    exit 4
+fi
+
+# Evaluate HTTP status code
+if [ $RETURN_CODE -eq 401 ];then
+    err "Remote server at URL $URL returned 401"
+    exit 3
+fi
+if [ $RETURN_CODE -eq 403 ];then
+    err "Remote server at URL $URL returned 403"
+    exit 3
 fi
 
 if [ $RETURN_CODE -gt 200 ]
