@@ -142,7 +142,7 @@ class AlertTests(NGFWTestCase):
 
         # trigger configuration backup
         app_conf_backup.sendBackup()
-        time.sleep(4)
+        time.sleep(10)
 
         # verify configuration backup failure event log
         events = global_functions.get_events('Events','Alert Events',None,10)
