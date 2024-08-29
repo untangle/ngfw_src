@@ -91,7 +91,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             }
         },{
             xtype: 'textfield',
-            fieldLabel: 'DNS Search Domain'.t(),
+            fieldLabel: 'DNS Search Domains'.t(),
             bind: {
                 value: '{settings.dnsSearchDomain}'
             },
