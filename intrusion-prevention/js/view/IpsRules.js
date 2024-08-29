@@ -62,6 +62,8 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
 
     importValidationForComboBox: true,
 
+    skipConditionsCheck: true,
+
     columns: [{
         xtype:'checkcolumn',
         header: "Enabled".t(),

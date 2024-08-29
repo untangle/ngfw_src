@@ -909,7 +909,7 @@ Ext.define('Ung.cmp.GridController', {
 
                 // check allowblank and vtype validation for conditions applied
 
-                if (!grid.viewConfig.importValidationForAlertEvents && fieldConfig && fieldConfig.conditions) {
+                if (!grid.viewConfig.importValidationForAlertEvents && !grid.viewConfig.skipConditionsCheck && fieldConfig && fieldConfig.conditions) {
                     var errorMsgForConditions = null;
                     var currentValue = null;
                     for (var j = 0; j < fieldValue.list.length; j++) {
