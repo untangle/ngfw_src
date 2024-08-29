@@ -65,6 +65,7 @@ public class WireGuardVpnApp extends AppBase
     private final WireguardVpnPreHookCallback wireguardVpnPreHookCallback;
 
     private InetAddress localDnsResolver = null;
+    private String defaultDnsSerachDomain = null;
     private List<InterfaceStatus> lanStatuses = null;
     private Hashtable<InterfaceStatus, WireGuardVpnNetwork> settingsLink = null;
 
@@ -97,6 +98,7 @@ public class WireGuardVpnApp extends AppBase
 
         this.lanStatuses = UvmContextFactory.context().networkManager().getLocalInterfaceStatuses();
         this.localDnsResolver = UvmContextFactory.context().networkManager().getFirstDnsResolverAddress();
+        this.defaultDnsSerachDomain = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName();
     }
 
     /**
@@ -348,11 +350,11 @@ public class WireGuardVpnApp extends AppBase
                 }
             }
 
-            // 16.3.2 - add in nat rules by default
-            if (readSettings.getVersion() <= 3) {
-                createNatRules();
+            // 17.3 - add dns search domain by default
+            if(readSettings.getVersion() <= 4) {
+                readSettings.setDnsSearchDomain(this.defaultDnsSerachDomain);
                 writeFlag = true;
-                readSettings.setVersion(4);
+                readSettings.setVersion(5);
             }
 
             if (writeFlag == true) {
@@ -483,8 +485,11 @@ public class WireGuardVpnApp extends AppBase
             logger.warn(dnsAddress);
             settings.setDnsServer(dnsAddress);
         }
-
-
+        String defaultSearchDomain = this.defaultDnsSerachDomain;
+        if(defaultSearchDomain != null){
+            logger.warn(defaultSearchDomain);
+            settings.setDnsSearchDomain(defaultSearchDomain);
+        }
         settings.setNetworks(buildNetworkList(lanStatuses));
 
         IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4, 1);

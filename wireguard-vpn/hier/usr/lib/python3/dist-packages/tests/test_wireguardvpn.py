@@ -48,7 +48,6 @@ WG_ROAMING = overrides.get("WG_ROAMING", default={
     "enabled": True,
     "peerAddress": "172.16.1.1",
     "endpointDynamic": True,
-    "privateKey": "",
     "endpointAddress": "",
     "pingConnectionEvents": False,
     "endpointPort": 51820,
@@ -56,7 +55,8 @@ WG_ROAMING = overrides.get("WG_ROAMING", default={
     "pingUnreachableEvents": False,
     "serverAddress": "192.168.1.101",
     "adminPassword": "passwd",
-    "privateKey": ""
+    "privateKey": "yDvO4Rhb972rtRDdG7QVfTKjr8+Q8hhvrTuaxbW9UmA=",
+    "publicKey": "vuVHr0Y5zPeWiYdUklBvryYXqH6NnuHwvl40GRzFVBw="
   })
 
 # NON Roaming Configuration
@@ -468,5 +468,44 @@ class WireGuardVpnTests(NGFWTestCase):
         roaming_wg_app_data["tunnels"]["list"] = []
         roaming_wg_app.setSettings(roaming_wg_app_data)
 
+    def test_040_verify_search_domain_updated_in_remote_config(self):
+        """
+        Check Search Domains updated in remote client config file
+        """
+
+        # get app settings and deepcopy it
+        appSettings = self._app.getSettings()
+        newAppSettings = copy.deepcopy( appSettings )
+
+        # Create roaming client tunnel and set new tunnel in settings.
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress']))
+        self._app.setSettings(newAppSettings)
+
+        # Check if default search domain (i.e. NGFW domain name) is included in remote client config
+        domainName = global_functions.uvmContext.networkManager().getNetworkSettings()['domainName']
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey']).split("\n")
+
+        count = 0
+        for line in remoteConfig:
+            if(line.startswith("DNS") and domainName in line):
+                count += 1
+                break
+        if(count == 1): assert(True)
+        else: assert(False)
+
+        # Set search domain value to blank and check if its reflected in remote client config
+        newAppSettings["dnsSearchDomain"] = ""
+        self._app.setSettings(newAppSettings)
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey']).split("\n")
+
+        count = 0
+        for line in remoteConfig:
+            if(line.startswith("DNS") and "," in line):
+                count += 1
+                break
+        if(count == 0): assert(True)
+        else: assert(False)
+
+        self._app.setSettings(appSettings)
 
 test_registry.register_module("wireguard-vpn", WireGuardVpnTests)
