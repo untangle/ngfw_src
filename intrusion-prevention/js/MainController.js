@@ -773,34 +773,6 @@ Ext.define('Ung.apps.intrusionprevention.cmp.RuleGridController', {
     // }
     //
 
-    isRecordRestrictedForExport: function(grid, record){
-        var restrict = grid.restrictedRecords;
-
-        if( restrict ){
-            var value = record[restrict.keyMatch];
-            if(typeof(restrict.valueMatch) == 'object' &&
-                restrict.valueMatch.test( value )){
-                return true;
-            }else if(restrict.valueMatch == value){
-                return true;
-            }
-        }
-        return false;
-    },
-
-    getExportData: function () {
-        var me = this;
-        var grid = me.getView();
-        var data = Ext.Array.pluck(grid.getStore().getRange(), 'data');
-        var exportRows = []; 
-        data.forEach(function (record) {
-            if(!me.isRecordRestrictedForExport(grid, record)){
-                exportRows.push(record);
-            }
-        });
-        return Ext.encode(exportRows);
-    },
-
 });
 
 Ext.define('Ung.apps.intrusionprevention.cmp.RulesRecordEditor', {
