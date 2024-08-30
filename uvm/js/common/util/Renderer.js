@@ -1246,17 +1246,20 @@ Ext.define('Ung.util.Renderer', {
         return ( value in Renderer.configurationBackupSuccessMap ) ? Renderer.configurationBackupSuccessMap[value] : Renderer.configurationBackupSuccessMap['default'];
     },
 
-    loginFailureReasonMap : {
+    loginReasonMap : {
         U:'invalid username'.t(),
         P: 'invalid password'.t(),
+        T: 'invalid TOTP'.t(),
+        I: 'logged in successfully'.t(),
+        O: 'logged out successfully'.t(),
         default: ''
 
     },
-    loginFailureReason: function( value ){
+    loginReason: function( value ){
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return ( value in Renderer.loginFailureReasonMap ) ? Renderer.loginFailureReasonMap[value] : Renderer.loginFailureReasonMap['default'];
+        return ( value in Renderer.loginReasonMap ) ? Renderer.loginReasonMap[value] : Renderer.loginReasonMap['default'];
     },
 
     loginSuccess: function( value ){

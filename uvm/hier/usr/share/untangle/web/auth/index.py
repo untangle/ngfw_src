@@ -117,7 +117,7 @@ def logout(req, url=None, realm='Administrator'):
     sess = Session.Session(req, lock=0)
     sess.lock()
     sess.set_timeout(uvm_login.SESSION_TIMEOUT)
-    uvm_login.delete_session_user(sess, realm)
+    uvm_login.delete_session_user(sess, realm, req)
     sess.save()
     sess.unlock()
 
