@@ -55,17 +55,16 @@ class EmailTests(NGFWTestCase):
         assert (restartedMailSettings['sendMethod'] == 'DIRECT')
     def test_100_blocked_queue(self):
         """
-        Non-blocking flush on network settings change
+        Non-blocking flush on network settings change with DIRECT method
 
         This non-standard test works as follows:
         1. Get a new uvm context with a 10 second timeout instead of 240 (non-standard)
         2. Wipe out exim spool directory and restart exim to ensure a "fresh" system condition.
-        3. Configure mail sender as relay.
-        4. Break relay by setting relay.untangle.com to an unreachable IP address by modifying host name (non-standard)
-        5. Create a new email alert for "plenty of disk space"
-        6. Wait for event to be generated
-        7, Wait for exim to try its first delivery attempt.
-        8. Perform network settings change and verify it doesn't take 10 seconds.
+        3. Configure mail sender as direct.
+        4. Create a new email alert for "plenty of disk space"
+        5. Wait for event to be generated
+        6. Wait for exim to try its first delivery attempt.
+        7. Perform network settings change and verify it doesn't take 10 seconds.
 
         When restarting networking, we attempt to flush mail queue since
         network settings may materially change settings that didn't work previously like WAN.
@@ -74,10 +73,6 @@ class EmailTests(NGFWTestCase):
         Make sure we don't block for more than an acceptable amount of time. 
         """
         alert_description = "TEST Free disk space is actually fine"
-        hosts_filename = "/etc/hosts.dnsmasq"
-        orig_hosts_filename = "/tmp/hosts.dnsmasq"
-        relay_domain_name = "relay.untangle.com"
-
         exim_spool_directory = "/var/spool/exim4"
         exim_service = "exim4"
         exim_log_filename = "/var/log/exim4/mainlog"
@@ -94,23 +89,29 @@ class EmailTests(NGFWTestCase):
         subprocess.call(f"killall {exim_service} 2>/dev/null", shell=True)
         shutil.rmtree(f"{exim_spool_directory}/")
         subprocess.call(f"systemctl start {exim_service}", shell=True)
-
-        # Test in relay mode with the relay server non-reachable
+        # add administrator
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
+        # Test in direct mode
         mail_settings = copy.deepcopy(EmailTests.original_mail_settings)
         mail_settings["fromAddress"] = tester_email_address
-        mail_settings["sendMethod"] = "RELAY"
+        mail_settings["sendMethod"] = "DIRECT"
+        mail_settings["smtpHost"] = "invalid.smtp.server" 
+        mail_settings["smtpPort"] = 1234
         local_uvm_context.mailSender().setSettings(mail_settings)
-        
-        # Normally we'd set static DNS override in network settings, but since the problem
-        # is with network settings...manually update the hosts file
-        shutil.copyfile(hosts_filename, orig_hosts_filename)
-        with open(hosts_filename, "a", encoding="ascii") as hosts_file:
-            hosts_file.write(f"192.168.0.99\t{relay_domain_name}.\n\n")
-        subprocess.call(f"systemctl restart dnsmasq", shell=True)
-        print(subprocess.check_output(f"host {relay_domain_name}", shell=True))
-
         last_exim_log_line = subprocess.check_output(f"wc -l {exim_log_filename} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
         print(f"last_exim_log_line={last_exim_log_line}")
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
+        orig_adminsettings = copy.deepcopy(adminsettings)
+        adminsettings['users']['list'].append({
+            "description": "System Administrator",
+            "emailSummaries": True,
+            "emailAlerts": True,
+            "emailAddress": "admin_test@example.com",
+            "javaClass": "com.untangle.uvm.AdminUserSettings",
+            "username": "admin_test"
+        })
+        
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         original_event_settings = local_uvm_context.eventManager().getSettings()
         event_settings = copy.deepcopy(original_event_settings)
@@ -170,7 +171,8 @@ class EmailTests(NGFWTestCase):
                 time.sleep(1)
 
         local_uvm_context.eventManager().setSettings(original_event_settings)
-
+        # restore admin settings
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
         print(f"found_delivery_attempt={found_delivery_attempt}")
 
         elapsed_time = None
@@ -188,8 +190,6 @@ class EmailTests(NGFWTestCase):
         # ?? verify exim still running properly
 
         # Restore system
-        # Restore hosts
-        shutil.copyfile(orig_hosts_filename, hosts_filename)
         # re-wipe out exim spool directory
         subprocess.call(f"systemctl stop {exim_service}", shell=True)
         subprocess.call(f"killall {exim_service} 2>/dev/null", shell=True)
