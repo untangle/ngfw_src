@@ -1390,9 +1390,9 @@ public class CaptivePortalApp extends AppBase
              * expect so clean up any existing custom page that may already
              * exist and extract the file into our custom directory
              */
-            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
-            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
-            UvmContextFactory.context().execManager().exec("unzip -o " + CAPTURE_TEMPORARY_UPLOAD + " -d " + customPath);
+            UvmContextFactory.context().execManager().execSafe(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().execSafe(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().execSafe("unzip -o " + CAPTURE_TEMPORARY_UPLOAD + " -d " + customPath);
 
             tempFile.delete();
             logger.debug("Custom zip uploaded to: " + customPath);
@@ -1431,8 +1431,8 @@ public class CaptivePortalApp extends AppBase
             String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + argument);
 
             // use our existing remove and create scripts to wipe any existing custom page
-            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
-            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().execSafe(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().execSafe(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
 
             logger.debug("Custom zip removed from: " + customPath);
             return new ExecManagerResult(0, "The custom captive portal page has been removed");
