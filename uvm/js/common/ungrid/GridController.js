@@ -761,8 +761,8 @@ Ext.define('Ung.cmp.GridController', {
                         continue;
                     }
 
-                    var fieldTypes = ["textfield"];
-                    if((!fieldConfig.hasOwnProperty("allowBlank") || fieldConfig.allowBlank) && typeof fieldConfig === 'object' && fieldConfig.hidden && fieldConfig.disabled && fieldTypes.includes(fieldConfig.xtype)){
+                    var fieldTypes = ["textfield", "textarea"];
+                    if((!fieldConfig.hasOwnProperty("allowBlank") || fieldConfig.allowBlank) && ((typeof fieldConfig === 'object' && fieldConfig.hidden && fieldConfig.disabled && fieldTypes.includes(fieldConfig.xtype)) || fieldValue === "")){
                         continue;
                     }
 
