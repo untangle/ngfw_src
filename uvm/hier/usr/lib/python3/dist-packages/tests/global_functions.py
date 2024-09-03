@@ -83,7 +83,7 @@ def get_broadcast_address(interface):
         return None
     return subprocess.check_output("ip addr | grep " + interface + "  | grep inet | awk '{printf $4}'", shell=True).decode("utf-8")
 
-def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):
+def get_public_ip_address(base_URL=TEST_SERVER_HOST,url_path="cgi-bin/myipaddress.py", extra_options="",localcall=False):
     if base_URL.startswith("http") is False:
         # Add schema
         base_URL = f"http://{base_URL}"
@@ -94,11 +94,11 @@ def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=F
         time.sleep(1)
         if localcall:
             try:
-                result = subprocess.check_output(build_wget_command(output_file="-", uri=f"{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
+                result = subprocess.check_output(build_wget_command(output_file="-", uri=f"{base_URL}/{url_path}", all_parameters=True, extra_arguments=extra_options), shell=True)
             except:
                 pass
         else:
-            result = remote_control.run_command(build_wget_command(output_file="-", uri=f"{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), stdout=True)
+            result = remote_control.run_command(build_wget_command(output_file="-", uri=f"{base_URL}/{url_path}", all_parameters=True, extra_arguments=extra_options), stdout=True)
     if type(result) is bytes:
         result = result.decode("utf-8")
     result = result.rstrip()
