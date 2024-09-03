@@ -72,6 +72,7 @@ Ext.define('Ung.apps.ipsecvpn.view.GreNetworksGrid', {
         },
 
     importValidationJavaClass: true,
+    importValidationForComboBox: true,
 
     bind: '{networkList}',
 

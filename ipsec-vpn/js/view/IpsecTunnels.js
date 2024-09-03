@@ -63,6 +63,7 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         },
 
     importValidationJavaClass: true,
+    importValidationForComboBox: true,
 
     bind: '{tunnelList}',
 
