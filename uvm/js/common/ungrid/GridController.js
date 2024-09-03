@@ -1148,22 +1148,18 @@ Ext.define('Ung.cmp.GridController', {
         if (importMode === 'replace' && validData.length > 0) {
             grid.getStore().removeAll();
         }
-        if (importMode === 'append') {
-            Ext.Array.insert(existingData, existingData.length, validData);
-            validData = existingData;
-        }
-        if (importMode === 'prepend') {
-            Ext.Array.insert(existingData, 0, validData);
-            validData = existingData;
-        }
+
+        validData.forEach(function(currRow){
+            currRow['markedForNew'] = true;
+        });
     
         if(validData.length > 0){
-            grid.getStore().loadData(validData);
+            if(importMode === 'append' || importMode === 'replace'){
+                grid.getStore().add(validData);
+            }else if(importMode === 'prepend'){
+                grid.getStore().insert(0, validData);
+            }
         }
-
-        grid.getStore().each(function(record){
-            record.set('markedForNew', true);
-        });
 
         if(validationErrors.length > 0){
             vm.getStore("errorStore").loadData(validationErrors);
