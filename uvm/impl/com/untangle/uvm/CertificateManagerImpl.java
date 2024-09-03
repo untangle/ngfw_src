@@ -214,7 +214,7 @@ public class CertificateManagerImpl implements CertificateManager
             fileStream.close();
             ExecManagerResult result;
             // call the external utility to parse the uploaded file
-            String certData = UvmContextFactory.context().execManager().execOutput(CERTIFICATE_PARSER_SCRIPT + " " + CERTIFICATE_PARSER_FILE + " " + argument);
+            String certData = UvmContextFactory.context().execManager().execOutputSafe(CERTIFICATE_PARSER_SCRIPT + " " + CERTIFICATE_PARSER_FILE + " " + argument);
             if (certData != null && certData.contains("errorData")) {
                 JSONObject jsonCertData = new JSONObject(certData);
                 //errorData is present, fetch the value
@@ -289,7 +289,7 @@ public class CertificateManagerImpl implements CertificateManager
                 argList[1] = req.getParameter("arg2"); // cert subject
                 argList[2] = req.getParameter("arg3"); // alt names
                 String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-                UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+                UvmContextFactory.context().execManager().execSafe(CERTIFICATE_GENERATOR_SCRIPT + argString);
 
                 try {
                     File certFile = new File(EXTERNAL_REQUEST_FILE);
@@ -588,7 +588,7 @@ public class CertificateManagerImpl implements CertificateManager
         argList[0] = baseName;
         argList[1] = certSubject;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-        UvmContextFactory.context().execManager().exec(ROOT_CA_CREATOR_SCRIPT + argString);
+        UvmContextFactory.context().execManager().execSafe(ROOT_CA_CREATOR_SCRIPT + argString);
 
         // Symlink generated certs to the CERT_STORE_PATH (ROOT_KEY_FILE and ROOT_CERT_FILE)
         symlinkRootCerts(CERT_STORE_PATH, CERT_STORE_PATH + baseName + "/", false);
@@ -622,7 +622,7 @@ public class CertificateManagerImpl implements CertificateManager
         argList[2] = altNames;
         argList[3] = baseName;
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execSafe(CERTIFICATE_GENERATOR_SCRIPT + argString);
         if (result.getResult() != 0) return (false);
         return (true);
     }

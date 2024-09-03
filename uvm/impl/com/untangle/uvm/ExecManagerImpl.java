@@ -145,6 +145,18 @@ public class ExecManagerImpl implements ExecManager
     }
 
     /**
+     * Executes only safe command and returns the result object
+     *
+     * @param cmd
+     *        The String command to execute and optionally the rate limit flag
+     * @return The execution result object
+     */
+    public synchronized ExecManagerResult execSafe(String cmd)
+    {
+        return exec(cmd, false, true);
+    }
+
+    /**
      * Executes a command and returns the result object
      * 
      * @param cmd
@@ -165,7 +177,7 @@ public class ExecManagerImpl implements ExecManager
         cmd = cmd.replace("\n", "");
         cmd = cmd.replace("\r", "");
 
-        if (cmd.contains(";") || cmd.contains("&&") || cmd.contains("|") || cmd.contains(">")) {
+        if (cmd.contains(";") || cmd.contains("&&") || cmd.contains("|") || cmd.contains(">") || cmd.contains("$(")) {
             if(safe){
                 logger.log(this.level, "Suspicious command (" + cmd + "), blocked");
                 return new ExecManagerResult();

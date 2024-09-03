@@ -222,7 +222,7 @@ public class TunnelVpnManager
             throw new RuntimeException("Failed to find available tunnel ID");
         }
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(IMPORT_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execSafe(IMPORT_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
 
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -264,7 +264,7 @@ public class TunnelVpnManager
             throw new RuntimeException("Failed to find available tunnel ID");
         }
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(VALIDATE_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execSafe(VALIDATE_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
 
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
