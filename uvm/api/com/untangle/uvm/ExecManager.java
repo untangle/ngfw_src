@@ -18,6 +18,11 @@ public interface ExecManager
      */
     ExecManagerResult exec( String cmd, boolean rateLimit );
 
+    /**
+     * Execute the specified command if safe and return the result
+     */
+    ExecManagerResult execSafe( String cmd );
+
     void setLevel( Level level );
     
     /**
