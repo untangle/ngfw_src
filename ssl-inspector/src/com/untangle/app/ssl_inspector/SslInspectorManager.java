@@ -38,11 +38,13 @@ import java.io.File;
 
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.vnet.AppTCPSession;
+import com.untangle.app.http.HttpUtility;
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
 
 /**
  * This is where we manage all of the low level objects used to talk SSL
@@ -538,7 +540,7 @@ for more data when a full packet has not yet been received.
      */
     public String extractSNIhostname(ByteBuffer data) throws Exception
     {
-       return HttpUtility.extractSNIhostname(data, APP_NAME);
+       return HttpUtility.extractSniHostname(data, APP_NAME);
     }
 
     /**

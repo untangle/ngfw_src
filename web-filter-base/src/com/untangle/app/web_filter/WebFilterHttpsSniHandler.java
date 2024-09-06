@@ -16,6 +16,7 @@ import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.RequestLine;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HttpRequestEvent;
+import com.untangle.app.http.HttpUtility;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -157,7 +158,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
         // scan the buffer for the SNI hostname
         try {
-            domain = HttpUtility.extractSNIhostname(buff.duplicate(), APP_NAME);
+            domain = HttpUtility.extractSniHostname(buff.duplicate(), APP_NAME);
         }
 
         // on underflow exception we stuff the partial packet into a buffer

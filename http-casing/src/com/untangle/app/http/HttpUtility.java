@@ -1,16 +1,21 @@
-
-/*
- * Utility class for Eextract host name
+/**
+ * $Id: $
  */
+package com.untangle.app.http;
 
-import java.lang.System.Logger;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.util.logging.LogManager;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
+/**
+ * Utility class for Extract host name
+ */
 public class HttpUtility {
 
     // these are used while extracting the SNI from the SSL ClientHello packet
@@ -23,6 +28,9 @@ public class HttpUtility {
     
     private static final Logger logger = LogManager.getLogger(HttpUtility.class);
 
+    /**
+     * private constructor
+     */
     private HttpUtility(){}
 
     /**
@@ -34,34 +42,37 @@ public class HttpUtility {
         return INSTANCE;
     }
 
-    
     /**
      * Function for extracting the SNI hostname from the client request.
-     * 
      * @param data
-     *        The raw data received from the client
+     * @param appName
      * @return The SNI hostname extracted from the client request, or null
-     * @throw Exception
+     * @throws Exception
      */
-    public static String extractSniHostname(ByteBuffer data, String appName){
+    public static String extractSniHostname(ByteBuffer data, String appName) throws Exception{
         int counter = 0;
-        int pos;
+        int pos=0;
         
         if("CaptivePortal".equals(appName) || "SSLInspector".equals(appName)){
-            extractSniForCaptiveAndSSL(data, pos, counter, appName);
+            return extractSniForCaptiveAndSSL(data, pos, counter, appName);
         }
         if("WebFilter".equals(appName) || "ThreadPrevention".equals(appName)){
-            extractSniForWebAndThreadPrevention(data, pos, counter, appName);
+            return extractSniForWebAndThreadPrevention(data, pos, counter, appName);
         }
+        return null;
         
     }
     
     /**
-     * 
+     * Function for extracting the SNI hostname from the client request of captive protal and SSL Inspector apps.
      * @param data
-     * @return
+     * @param pos
+     * @param counter
+     * @param appName
+     * @return hostName
+     * @throws Exception
      */
-    public static String extractSniForCaptiveAndSSL(ByteBuffer data, int pos, int counter, String appName){
+    public static String extractSniForCaptiveAndSSL(ByteBuffer data, int pos, int counter, String appName) throws Exception{
 
         // we use the first byte of the message to determine the protocol
         int recordType = Math.abs(data.get());
@@ -100,13 +111,16 @@ public class HttpUtility {
         int messageLength = data.getShort();
         int clientVersion = data.getShort();
         int clientTime = data.getInt();
-
-        // skip over the fixed size client random data 
-        if (data.remaining() < 28) throw new BufferUnderflowException();
-        pos = data.position();
-        data.position(pos + 28);
         
-        tlsHandshakeSections(data, pos, recordLength);
+        setDataPositions(data, pos);
+
+        // if position equals recordLength plus five we know this is the end
+        // of the packet and thus there are no extensions - will normally
+        // be equal but we include the greater than just to be safe
+        if (data.position() >= (recordLength + 5)){
+            logger.debug("No extensions found in TLS handshake message");
+            return (null);
+        }
 
         // get the total size of extension data block
         int extensionLength = Math.abs(data.getShort());
@@ -146,12 +160,21 @@ public class HttpUtility {
             // the list length and name type info we directly accessed above
             if (data.remaining() < 5 && "SSLInspector".equals(appName)) throw new BufferUnderflowException();
 
-            extractAndNormalizeHostname(data, nameLength);
+            return extractedSNIHostname(data, nameLength);
         }
         return null;
     }
 
-   public static String extractSniForWebAndThreadPrevention(ByteBuffer data, int pos, int counter, String appName){
+    /**
+     * function for extracting the SNI hostname from the client request of captive web filter and thread prevention apps.
+     * @param data
+     * @param pos
+     * @param counter
+     * @param appName
+     * @return hostName
+     * @throws Exception
+     */
+   public static String extractSniForWebAndThreadPrevention(ByteBuffer data, int pos, int counter, String appName) throws Exception{
          
         logger.debug("Searching for SNI in " + data.toString());
 
@@ -179,7 +202,15 @@ public class HttpUtility {
         int clientVersion = data.getShort();
         int clientTime = data.getInt();
 
-        tlsHandshakeSections(data, pos, recLength);
+        setDataPositions(data, pos);
+
+        // if position equals recordLength plus five we know this is the end
+        // of the packet and thus there are no extensions - will normally
+        // be equal but we include the greater than just to be safe
+        if (data.position() >= (recLength + 5)){
+            logger.debug("No extensions found in TLS handshake message");
+            return (null);
+        }
 
         // get the total size of extension data block
         int extensionLength = Math.abs(data.getShort());
@@ -218,13 +249,19 @@ public class HttpUtility {
             // the list length and name type info we directly accessed above
             if (data.remaining() < 5) throw new BufferUnderflowException();
             
-            extractAndNormalizeHostname(data, nameLength);
+            return extractedSNIHostname(data, nameLength);
         }
         return null;
 
     }
     
-    public static String tlsHandshakeSections(ByteBuffer data, int pos, int recordLength){
+   /**
+    * Set data positions
+    * @param data
+    * @param pos
+    * @throws Exception
+    */
+    public static void setDataPositions(ByteBuffer data, int pos) throws Exception{
         // skip over the fixed size client random data 
         if (data.remaining() < 28) throw new BufferUnderflowException();
         pos = data.position();
@@ -253,18 +290,15 @@ public class HttpUtility {
             pos = data.position();
             data.position(pos + compLength);
         }
-
-        // if position equals recordLength plus five we know this is the end
-        // of the packet and thus there are no extensions - will normally
-        // be equal but we include the greater than just to be safe
-        if (data.position() >= (recordLength + 5)){
-            logger.debug("No extensions found in TLS handshake message");
-            return (null);
-        }
         
     }
-
-    public static String extractAndNormalizeHostname(ByteBuffer data, int nameLength){
+    /**
+     * Extracth hostName based on nameLength
+     * @param data
+     * @param nameLength
+     * @return hostName
+     */
+    public static String extractedSNIHostname(ByteBuffer data, int nameLength){
             data.position(data.position() + 5);
             byte[] hostData = new byte[nameLength];
             data.get(hostData, 0, nameLength);
@@ -272,5 +306,4 @@ public class HttpUtility {
             logger.debug("Extracted SNI hostname = " + hostName);
             return hostName.toLowerCase();
     }
-
 }

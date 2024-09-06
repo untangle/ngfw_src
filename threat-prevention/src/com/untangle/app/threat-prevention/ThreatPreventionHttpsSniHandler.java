@@ -25,6 +25,7 @@ import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import com.untangle.app.http.HttpUtility;
 
 /**
  * Extracts the SNI information from HTTPS ClientHello messages and does block
@@ -153,7 +154,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 
         // scan the buffer for the SNI hostname
         try {
-            domain = HttpUtility.extractSNIhostname(buff.duplicate(), APP_NAME);
+            domain = HttpUtility.extractSniHostname(buff.duplicate(), APP_NAME);
         }
 
         // on underflow exception we stuff the partial packet into a buffer

@@ -21,6 +21,7 @@ import java.security.cert.X509Certificate;
 import java.security.KeyStore;
 
 import com.untangle.app.http.HeaderToken;
+import com.untangle.app.http.HttpUtility;
 import com.untangle.app.http.StatusLine;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppSession;
@@ -163,7 +164,7 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname == null){
             try{
-                sniHostname = HttpUtility.extractSNIhostname(data.duplicate(), APP_NAME);
+                sniHostname = HttpUtility.extractSniHostname(data.duplicate(), APP_NAME);
             }catch (Exception exn) {
                 // The client is almost certainly sending us a bad TLS packet.
                 session.release();
