@@ -35,7 +35,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class WebFilterHttpsSniHandler extends AbstractEventHandler
 {
-    public static final String APP_NAME = "WebFilter";
+    public static final String WEB_FILTER = "WebFilter";
     private final Logger logger = LogManager.getLogger(getClass());
     private WebFilterBase app;
 
@@ -158,7 +158,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
 
         // scan the buffer for the SNI hostname
         try {
-            domain = HttpUtility.extractSniHostname(buff.duplicate(), APP_NAME);
+            domain = HttpUtility.extractSniHostname(buff.duplicate(), WEB_FILTER);
         }
 
         // on underflow exception we stuff the partial packet into a buffer

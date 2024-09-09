@@ -45,7 +45,7 @@ import org.apache.logging.log4j.LogManager;
 public class CaptivePortalSSLEngine
 {
 
-    public static final String APP_NAME = "CaptivePortal";
+    public static final String CAPTIVE_PORTAL = "CaptivePortal";
     private final Logger logger = LogManager.getLogger(getClass());
     private final CaptivePortalApp captureApp;
     private AppTCPSession session;
@@ -164,7 +164,7 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname == null){
             try{
-                sniHostname = HttpUtility.extractSniHostname(data.duplicate(), APP_NAME);
+                sniHostname = HttpUtility.extractSniHostname(data.duplicate(), CAPTIVE_PORTAL);
             }catch (Exception exn) {
                 // The client is almost certainly sending us a bad TLS packet.
                 session.release();

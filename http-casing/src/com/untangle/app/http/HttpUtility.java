@@ -24,6 +24,11 @@ public class HttpUtility {
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
 
+    public static final String CAPTIVE_PORTAL = "CaptivePortal";
+    public static final String SSL_INSPECTOR = "SSLInspector";
+    public static final String THREAD_PREVENTION = "ThreadPrevention";
+    public static final String WEB_FILTER = "WebFilter";
+
     private static final HttpUtility INSTANCE = new HttpUtility();
     
     private static final Logger logger = LogManager.getLogger(HttpUtility.class);
@@ -53,14 +58,13 @@ public class HttpUtility {
         int counter = 0;
         int pos=0;
         
-        if("CaptivePortal".equals(appName) || "SSLInspector".equals(appName)){
+        if(CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName)){
             return extractSniForCaptiveAndSSL(data, pos, counter, appName);
         }
-        if("WebFilter".equals(appName) || "ThreadPrevention".equals(appName)){
+        if(WEB_FILTER.equals(appName) || THREAD_PREVENTION.equals(appName)){
             return extractSniForWebAndThreatPrevention(data, pos, counter, appName);
         }
         return null;
-        
     }
     
     /**
@@ -121,48 +125,7 @@ public class HttpUtility {
             logger.debug("No extensions found in TLS handshake message");
             return (null);
         }
-
-        // get the total size of extension data block
-        int extensionLength = Math.abs(data.getShort());
-
-         // walk through all of the extensions looking for SNI signature
-         while (counter < extensionLength) {
-            if (data.remaining() < 2 && "SSLInspector".equals(appName)) throw new BufferUnderflowException();
-            int extType = Math.abs(data.getShort());
-            int extSize = Math.abs(data.getShort());
-
-            // if not server name extension adjust the offset to the next
-            // extension record and continue
-            if (extType != SERVER_NAME) {
-                if (data.remaining() < extSize && "SSLInspector".equals(appName)) throw new BufferUnderflowException();
-                data.position(data.position() + extSize);
-                counter += (extSize + 4);
-                continue;
-            }
-
-            // we read the name list info by passing the offset location so we
-            // don't modify the position which makes it easier to skip over the
-            // whole extension if we bail out during name extraction
-            if (data.remaining() < 6 && "SSLInspector".equals(appName)) throw new BufferUnderflowException();
-            int listLength = Math.abs(data.getShort(data.position()));
-            int nameType = Math.abs(data.get(data.position() + 2));
-            int nameLength = Math.abs(data.getShort(data.position() + 3));
-
-            // if we find a name type we don't understand we just abandon
-            // processing the rest of the extension
-            if (nameType != HOST_NAME) {
-                if (data.remaining() < extSize && "SSLInspector".equals(appName)) throw new BufferUnderflowException();
-                data.position(data.position() + extSize);
-                counter += (extSize + 4);
-                continue;
-            }
-            // found a valid host name so adjust the position to skip over
-            // the list length and name type info we directly accessed above
-            if (data.remaining() < 5 && "SSLInspector".equals(appName)) throw new BufferUnderflowException();
-
-            return extractedSNIHostname(data, nameLength);
-        }
-        return null;
+        return extractSniHostNameFromExtensions(data, counter, appName);
     }
 
     /**
@@ -211,51 +174,10 @@ public class HttpUtility {
             logger.debug("No extensions found in TLS handshake message");
             return (null);
         }
-
-        // get the total size of extension data block
-        int extensionLength = Math.abs(data.getShort());
-
-        while (counter < extensionLength) {
-            if (data.remaining() < 2) throw new BufferUnderflowException();
-            int extType = Math.abs(data.getShort());
-            int extSize = Math.abs(data.getShort());
-
-            // if not server name extension adjust the offset to the next
-            // extension record and continue
-            if (extType != SERVER_NAME) {
-                if (data.remaining() < extSize) throw new BufferUnderflowException();
-                data.position(data.position() + extSize);
-                counter += (extSize + 4);
-                continue;
-            }
-
-            // we read the name list info by passing the offset location so we
-            // don't modify the position which makes it easier to skip over the
-            // whole extension if we bail out during name extraction
-            if (data.remaining() < 6) throw new BufferUnderflowException();
-            int listLength = Math.abs(data.getShort(data.position()));
-            int nameType = Math.abs(data.get(data.position() + 2));
-            int nameLength = Math.abs(data.getShort(data.position() + 3));
-
-            // if we find a name type we don't understand we just abandon
-            // processing the rest of the extension
-            if (nameType != HOST_NAME) {
-                if (data.remaining() < extSize) throw new BufferUnderflowException();
-                data.position(data.position() + extSize);
-                counter += (extSize + 4);
-                continue;
-            }
-            // found a valid host name so adjust the position to skip over
-            // the list length and name type info we directly accessed above
-            if (data.remaining() < 5) throw new BufferUnderflowException();
-            
-            return extractedSNIHostname(data, nameLength);
-        }
-        return null;
-
+        return extractSniHostNameFromExtensions(data, counter, appName);
     }
     
-   /**
+    /**
     * Set data positions
     * @param data
     * @param pos
@@ -292,6 +214,59 @@ public class HttpUtility {
         }
         
     }
+    
+    /**
+     * Process all extensions to find the SNI signature.
+     * @param data
+     * @param counter
+     * @param appName
+     * @return The extracted SNI hostname, or null if not found.
+     */
+    public static String extractSniHostNameFromExtensions(ByteBuffer data, int counter, String appName){
+
+        // get the total size of extension data block
+        int extensionLength = Math.abs(data.getShort());
+
+         // walk through all of the extensions looking for SNI signature
+         while (counter < extensionLength) {
+            if (data.remaining() < 2 && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+            int extType = Math.abs(data.getShort());
+            int extSize = Math.abs(data.getShort());
+
+            // if not server name extension adjust the offset to the next
+            // extension record and continue
+            if (extType != SERVER_NAME) {
+                if (data.remaining() < extSize && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+                data.position(data.position() + extSize);
+                counter += (extSize + 4);
+                continue;
+            }
+
+            // we read the name list info by passing the offset location so we
+            // don't modify the position which makes it easier to skip over the
+            // whole extension if we bail out during name extraction
+            if (data.remaining() < 6 && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+            int listLength = Math.abs(data.getShort(data.position()));
+            int nameType = Math.abs(data.get(data.position() + 2));
+            int nameLength = Math.abs(data.getShort(data.position() + 3));
+
+            // if we find a name type we don't understand we just abandon
+            // processing the rest of the extension
+            if (nameType != HOST_NAME) {
+                if (data.remaining() < extSize && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+                data.position(data.position() + extSize);
+                counter += (extSize + 4);
+                continue;
+            }
+            // found a valid host name so adjust the position to skip over
+            // the list length and name type info we directly accessed above
+            if (data.remaining() < 5 && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+
+            return extractedSNIHostname(data, nameLength);
+        }
+        return null;
+    }
+
     /**
      * Extracth hostName based on nameLength
      * @param data
