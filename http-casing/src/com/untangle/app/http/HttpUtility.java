@@ -57,7 +57,7 @@ public class HttpUtility {
             return extractSniForCaptiveAndSSL(data, pos, counter, appName);
         }
         if("WebFilter".equals(appName) || "ThreadPrevention".equals(appName)){
-            return extractSniForWebAndThreadPrevention(data, pos, counter, appName);
+            return extractSniForWebAndThreatPrevention(data, pos, counter, appName);
         }
         return null;
         
@@ -174,7 +174,7 @@ public class HttpUtility {
      * @return hostName
      * @throws Exception
      */
-   public static String extractSniForWebAndThreadPrevention(ByteBuffer data, int pos, int counter, String appName) throws Exception{
+   public static String extractSniForWebAndThreatPrevention(ByteBuffer data, int pos, int counter, String appName) throws Exception{
          
         logger.debug("Searching for SNI in " + data.toString());
 

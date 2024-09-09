@@ -36,7 +36,7 @@ import com.untangle.app.http.HttpUtility;
  */
 public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 {
-    public static final String APP_NAME = "ThreadPrevention";
+    public static final String APP_NAME = "ThreatPrevention";
     private final Logger logger = LogManager.getLogger(getClass());
     private ThreatPreventionApp app;
 
