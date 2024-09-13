@@ -26,7 +26,6 @@ import com.untangle.uvm.UvmContextFactory;
 public class IpsecVpnManager
 {
     private final Logger logger = LogManager.getLogger(getClass());
-    private final IpsecVpnScriptWriter scriptWriter = new IpsecVpnScriptWriter();
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -143,9 +142,6 @@ public class IpsecVpnManager
         try {
             writeConfigFiles(settings, ipsecCertFile);
             configure();
-            //scriptWriter.write_IPSEC_script(settings);
-            //scriptWriter.write_XAUTH_script(settings);
-            //scriptWriter.write_GRE_script(settings);
         }
 
         catch (Exception e) {
