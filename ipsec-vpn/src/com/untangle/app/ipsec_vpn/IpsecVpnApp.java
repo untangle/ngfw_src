@@ -34,7 +34,6 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppBase;
-import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.HostTableEntry;
@@ -48,6 +47,8 @@ import com.untangle.uvm.HostTableEntry;
 
 public class IpsecVpnApp extends AppBase
 {
+
+    private static final String FILE_EXTENSION_JS = ".js";
     private final static String GRAB_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-logfile";
     private final static String GRAB_VIRTUAL_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
     private final static String GRAB_POLICY_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-policy";
@@ -69,10 +70,11 @@ public class IpsecVpnApp extends AppBase
     private static final String NETSPACE_XAUTH = "Xauth";
 
     private static final Logger logger = LogManager.getLogger(IpsecVpnApp.class);
+    private static final String R_N_DELIMITER = "\\r?\\n";
     private final VirtualUserTable virtualUserTable = new VirtualUserTable();
     private final Integer policyId = getAppSettings().getPolicyId();
     private final PipelineConnector[] connectors = new PipelineConnector[0];
-    private final IpsecVpnManager manager = new IpsecVpnManager();
+    private final IpsecVpnManager manager;
 
     private final IpsecVpnHookCallback ipsecVpnHookCallback;
     private final PreNetworkSettingsHookCallback netSetPreHook;
@@ -110,6 +112,7 @@ public class IpsecVpnApp extends AppBase
 
         logger.debug("IpsecVpnApp()");
 
+        this.manager = new IpsecVpnManager(this);
         this.ipsecVpnHookCallback = new IpsecVpnHookCallback();
         this.netSetPreHook = new PreNetworkSettingsHookCallback();
         this.netSetPostHook = new PostNetworkSettingsHookCallback();
@@ -216,6 +219,15 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
+     * Return the settings filename
+     * @return String of filename
+     */
+    public String getSettingsFilename()
+    {
+        return System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + this.getAppSettings().getId().toString() + FILE_EXTENSION_JS;
+    }
+
+    /**
      * Set and apply new application settings.
      * 
      * @param newSettings
@@ -248,10 +260,9 @@ public class IpsecVpnApp extends AppBase
         }
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = getAppSettings().getId().toString();
 
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + appID + ".js", newSettings);
+            settingsManager.save(getSettingsFilename(), newSettings);
         } catch (Exception exn) {
             logger.error("Failed to save settings: ", exn);
             return;
@@ -364,9 +375,8 @@ public class IpsecVpnApp extends AppBase
     {
         logger.debug("postInit()");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = getAppSettings().getId().toString();
         IpsecVpnSettings readSettings = null;
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + appID + ".js";
+        String settingsFilename = getSettingsFilename();
 
         try {
             readSettings = settingsManager.load(IpsecVpnSettings.class, settingsFilename);
@@ -494,6 +504,7 @@ public class IpsecVpnApp extends AppBase
 
         UvmContextFactory.context().daemonManager().decrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().decrementUsageCount("ipsec");
+        manager.configure();
     }
 
     /**
@@ -505,42 +516,39 @@ public class IpsecVpnApp extends AppBase
         manager.generateConfig(this.settings, activeCertificate);
         updateBlingers();
 
-        ExecManagerResult result;
-        String script;
-
         /**
          * Need to run iptables rules, they may already be there, but they might
          * not be so this is safe to run anytime and it will insert the rules if
          * not present
          */
-        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/710-ipsec");
-        result = UvmContextFactory.context().execManager().exec(script);
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(script + ": " + result.getResult());
-            for (String line : lines)
-                logger.info(script + ": " + line);
-        } catch (Exception e) {
-        }
+        executeScripts();
+    }
 
-        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/711-xauth");
-        result = UvmContextFactory.context().execManager().exec(script);
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(script + ": " + result.getResult());
-            for (String line : lines)
-                logger.info(script + ": " + line);
-        } catch (Exception e) {
-        }
+    /**
+     * Executes ipsec related scripts
+     */
+    private static void executeScripts() {
+        executeScript(System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/710-ipsec");
+        executeScript(System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/711-xauth");
+        executeScript(System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/712-gre");
+    }
 
-        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/712-gre");
+    /**
+     * Executes the input script
+     * @param script to execute
+     */
+    private static void executeScript(String script) {
+        ExecManagerResult result;
         result = UvmContextFactory.context().execManager().exec(script);
         try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(script + ": " + result.getResult());
-            for (String line : lines)
-                logger.info(script + ": " + line);
+            if (logger.isInfoEnabled()) {
+                String[] lines = result.getOutput().split(R_N_DELIMITER);
+                logger.info("{}: {}", script, result.getResult());
+                for (String line : lines)
+                    logger.info("{}: {}", script, line);
+            }
         } catch (Exception e) {
+            logger.error(e);
         }
     }
 
