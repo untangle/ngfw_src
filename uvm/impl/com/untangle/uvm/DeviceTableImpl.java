@@ -190,56 +190,56 @@ public class DeviceTableImpl implements DeviceTable
     /**
      * Lookup the hardware vendors for the MAC addresses
      *
-     * @param macAddress The MAC address List String
-     * @return The hardware vendor for the given mac addresses, or null
+     * @param macAddresses The MAC address List String
+     * @return The hardware vendor for the given mac addresses, or null 
      */
-    public JSONArray lookupMacVendor(String macAddress)
+    public JSONArray lookupMacVendor(String macAddresses)
     {
-        logger.warn("lookupMacVendor:" + macAddress);
-        if (macAddress == null) return null;
-
+        logger.warn("lookupMacVendor:" + macAddresses);
+        if (macAddresses == null  ||  macAddresses.isEmpty()  && macAddresses.isBlank()) return null;
+        String[] macAddressList = macAddresses.split(",");
         try {
-            // forms the body to fetch the vendors
-            String body = "[" + macAddress + "]";
-            logger.info("Cloud MAC lookup = " + macAddress);
-            // forming the URL
-            URL myurl = new URL(UvmContextFactory.context().uriManager().getUri(CLOUD_LOOKUP_URL));
-            HttpURLConnection mycon;
+            if (macAddressList != null) {
+                JSONArray macAdressList = new JSONArray(macAddressList);
+                logger.info("Cloud MAC lookup = " + macAdressList);
+                
+                String body = macAdressList.toString();
+                
+                            // forming the URL
+                URL myurl = new URL(UvmContextFactory.context().uriManager().getUri(CLOUD_LOOKUP_URL));
+                HttpURLConnection mycon;
             if(myurl.getProtocol().equals("https")){
-                mycon = (HttpsURLConnection) myurl.openConnection();
+                    mycon = (HttpsURLConnection) myurl.openConnection();
             }else{
-                mycon = (HttpURLConnection) myurl.openConnection();
+                    mycon = (HttpURLConnection) myurl.openConnection();
+                }
+                mycon.setRequestMethod("POST");
+                mycon.setConnectTimeout(5000); // 5 seconds
+                mycon.setReadTimeout(5000); // 5 seconds
+                mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
+                mycon.setRequestProperty("Content-Type", "application/json");
+                mycon.setRequestProperty("User-Agent", "Untangle NGFW Device Table");
+                mycon.setRequestProperty("AuthRequest", CLOUD_LOOKUP_KEY);
+                mycon.setDoOutput(true);
+                mycon.setDoInput(true);
+
+                DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
+                output.writeBytes(body);
+                output.close();
+
+                DataInputStream input = new DataInputStream(mycon.getInputStream());
+                StringBuilder builder = new StringBuilder(256);
+
+                for (int c = input.read(); c != -1; c = input.read()) {
+                    builder.append((char) c);
+                }
+
+                input.close();
+                mycon.disconnect();
+
+                String cloudString = builder.toString();
+                return new JSONArray(cloudString);
             }
-            mycon.setRequestMethod("POST");
-            mycon.setConnectTimeout(5000); // 5 seconds
-            mycon.setReadTimeout(5000); // 5 seconds
-            mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
-            mycon.setRequestProperty("Content-Type", "application/json");
-            mycon.setRequestProperty("User-Agent", "Untangle NGFW Device Table");
-            mycon.setRequestProperty("AuthRequest", CLOUD_LOOKUP_KEY);
-            mycon.setDoOutput(true);
-            mycon.setDoInput(true);
-
-            DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
-            output.writeBytes(body);
-            output.close();
-
-            DataInputStream input = new DataInputStream(mycon.getInputStream());
-            StringBuilder builder = new StringBuilder(256);
-
-            for (int c = input.read(); c != -1; c = input.read()) {
-                builder.append((char) c);
-            }
-
-            input.close();
-            mycon.disconnect();
-
-            String cloudString = builder.toString();
-            if ((cloudString.indexOf('{') < 0) || (cloudString.indexOf('}') < 0)) cloudString = "{}";
-            logger.info("Cloud MAC reply = CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage() + " DATA: + " + cloudString);
-
-            JSONArray macVendorArray = new JSONArray(cloudString);
-            return macVendorArray;
         }
 
         catch (Exception exn) {

@@ -2755,6 +2755,84 @@ server=dynupdate.no-ip.com
         mac_address_vendor_map = global_functions.uvmContext.networkManager().lookupMacVendorList(mac_address_list)
         assert(len(mac_address_vendor_map) > 0)
 
+    def test_706_lookup_vendor_for_mac_address_list(self):
+        """
+        Verify we can get vendors for the mac addresses.
+        """
+        # MAC address list in string format
+        mac_address_list_string = "f0:35:75:af:2e:72,84:47:09:02:41:e6,00:23:81:52:e4:1e,5c:61:99:42:44:5e,48:25:67:01:e4:e9"
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(mac_address_list_string)
+
+        # Check if result is None
+        self.assertIsNotNone(mac_address_vendor_map, "The result should not be None.")
+        self.assertIsInstance(mac_address_vendor_map, list, "The result should be a list.")
+
+        # Verify the output contains expected fields
+        for entry in mac_address_vendor_map:
+            self.assertIsInstance(entry, dict, "Each entry should be a dictionary.")
+            self.assertIn('MAC', entry, "Each entry should contain 'MAC'.")
+            self.assertIn('Organization', entry, "Each entry should contain 'Organization'.")
+
+    def test_707_lookup_vendor_for_single_mac_address(self):
+        """
+        Verify we can get the vendor for a single MAC address.
+        """
+        # Single MAC address
+        mac_address_string = "f0:35:75:af:2e:72"
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(mac_address_string)
+
+        # Check if result is None
+        self.assertIsNotNone(mac_address_vendor_map, "The result should not be None.")
+        self.assertIsInstance(mac_address_vendor_map, list, "The result should be a list.")
+
+        # Check that the list has exactly one entry
+        self.assertEqual(len(mac_address_vendor_map), 1, "The result should contain exactly one entry.")
+
+        # Verify the single entry in the list contains the expected fields
+        entry = mac_address_vendor_map[0]
+        self.assertIsInstance(entry, dict, "The entry should be a dictionary.")
+        self.assertIn('MAC', entry, "The entry should contain 'MAC'.")
+        self.assertIn('Organization', entry, "The entry should contain 'Organization'.")
+
+    def test_708_lookup_vendor_for_empty_mac_address(self):
+        """
+        Verify behavior for an empty MAC address.
+        """
+        # Empty MAC address
+        empty_mac_address = ""
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(empty_mac_address)
+
+        # Check if result is None
+        self.assertIsNone(mac_address_vendor_map, "The result should be None for an empty MAC address.")
+    
+    def test_709_lookup_vendor_for_null_mac_address(self):
+        """
+        Verify behavior for a null MAC address.
+        """
+        # Null MAC address
+        null_mac_address = None
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(null_mac_address)
+
+        # Check if result is None
+        self.assertIsNone(mac_address_vendor_map, "The result should be None for a null MAC address.")
+
+    def test_710_lookup_vendor_for_invalid_mac_address(self):
+        """
+        Verify behavior for an invalid MAC address.
+        """
+        # Invalid MAC address
+        invalid_mac_address = "0:1A:B:3C:"
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(invalid_mac_address)
+
+        # Check if the result contains an 'Organization' field with value 'Unknown'
+        self.assertEqual(mac_address_vendor_map, [{'Organization': 'Unknown', 'MAC': '0:1A:B:3C:'}],
+                        "The result should have an 'Organization' field with value 'Unknown' for an invalid MAC address.")
+
     def test_720_dnsmasq_source(self):
         """
         Verify that DNS resolver addresses are properly "pinned" to their interfaces
