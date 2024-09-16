@@ -208,10 +208,10 @@ public class DeviceTableImpl implements DeviceTable
                             // forming the URL
                 URL myurl = new URL(UvmContextFactory.context().uriManager().getUri(CLOUD_LOOKUP_URL));
                 HttpURLConnection mycon;
-            if(myurl.getProtocol().equals("https")){
-                    mycon = (HttpsURLConnection) myurl.openConnection();
-            }else{
-                    mycon = (HttpURLConnection) myurl.openConnection();
+                if(myurl.getProtocol().equals("https")){
+                        mycon = (HttpsURLConnection) myurl.openConnection();
+                }else{
+                        mycon = (HttpURLConnection) myurl.openConnection();
                 }
                 mycon.setRequestMethod("POST");
                 mycon.setConnectTimeout(5000); // 5 seconds
