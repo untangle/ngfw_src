@@ -205,7 +205,7 @@ public class DeviceTableImpl implements DeviceTable
                 
                 String body = macAdressList.toString();
                 
-                            // forming the URL
+                // forming the URL
                 URL myurl = new URL(UvmContextFactory.context().uriManager().getUri(CLOUD_LOOKUP_URL));
                 HttpURLConnection mycon;
                 if(myurl.getProtocol().equals("https")){
