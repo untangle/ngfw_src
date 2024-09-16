@@ -36,7 +36,6 @@ import com.untangle.app.http.HttpUtility;
  */
 public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 {
-    public static final String THREAD_PREVENTION = "ThreadPrevention";
     private final Logger logger = LogManager.getLogger(getClass());
     private ThreatPreventionApp app;
 
@@ -154,7 +153,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 
         // scan the buffer for the SNI hostname
         try {
-            domain = HttpUtility.extractSniHostname(buff.duplicate(), THREAD_PREVENTION);
+            domain = HttpUtility.extractSniHostname(buff.duplicate(), this.app.getAppSettings().getAppName());
         }
 
         // on underflow exception we stuff the partial packet into a buffer

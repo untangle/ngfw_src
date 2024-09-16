@@ -54,7 +54,6 @@ import org.apache.logging.log4j.LogManager;
  */
 class SslInspectorManager
 {
-    public static final String SSL_INSPECTOR = "SSLInspector";
     private static String keyStorePath = "/var/cache/untangle-ssl";
     private static String keyStorePass = "password";
 
@@ -540,7 +539,7 @@ for more data when a full packet has not yet been received.
      */
     public String extractSNIhostname(ByteBuffer data) throws Exception
     {
-       return HttpUtility.extractSniHostname(data, SSL_INSPECTOR);
+       return HttpUtility.extractSniHostname(data, this.app.getAppSettings().getAppName());
     }
 
     /**

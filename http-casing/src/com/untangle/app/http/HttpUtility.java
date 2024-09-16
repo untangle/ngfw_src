@@ -24,10 +24,10 @@ public class HttpUtility {
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
 
-    public static final String CAPTIVE_PORTAL = "CaptivePortal";
-    public static final String SSL_INSPECTOR = "SSLInspector";
-    public static final String THREAD_PREVENTION = "ThreadPrevention";
-    public static final String WEB_FILTER = "WebFilter";
+    public static final String CAPTIVE_PORTAL = "captive-portal";
+    public static final String SSL_INSPECTOR = "ssl-inspector";
+    public static final String THREAD_PREVENTION = "threat-prevention";
+    public static final String WEB_FILTER = "web-filter";
 
     private static final HttpUtility INSTANCE = new HttpUtility();
     
@@ -57,7 +57,6 @@ public class HttpUtility {
     public static String extractSniHostname(ByteBuffer data, String appName) throws Exception{
         int counter = 0;
         int pos=0;
-        
         if(CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName)){
             return extractSniForCaptiveAndSSL(data, pos, counter, appName);
         }
