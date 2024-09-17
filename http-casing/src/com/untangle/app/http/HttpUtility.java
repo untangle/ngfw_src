@@ -57,32 +57,14 @@ public class HttpUtility {
     public static String extractSniHostname(ByteBuffer data, String appName) throws Exception{
         int counter = 0;
         int pos=0;
-        if(CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName)){
-            return extractSniForCaptiveAndSSL(data, pos, counter, appName);
-        }
-        if(WEB_FILTER.equals(appName) || THREAD_PREVENTION.equals(appName)){
-            return extractSniForWebAndThreatPrevention(data, pos, counter, appName);
-        }
-        return null;
-    }
-    
-    /**
-     * Function for extracting the SNI hostname from the client request of captive protal and SSL Inspector apps.
-     * @param data
-     * @param pos
-     * @param counter
-     * @param appName
-     * @return hostName
-     * @throws Exception
-     */
-    public static String extractSniForCaptiveAndSSL(ByteBuffer data, int pos, int counter, String appName) throws Exception{
 
+        logger.debug("Searching for SNI in " + data.toString());
         // we use the first byte of the message to determine the protocol
         int recordType = Math.abs(data.get());
 
         // First check for an SSLv2 hello which Appendix E.2 of RFC 5246
         // says must always set the high bit of the length field
-        if ((recordType & 0x80) == 0x80) {
+        if ((recordType & 0x80) == 0x80 && (CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName))) {
             // skip over the next byte of the length word
             data.position(data.position() + 1);
 
@@ -92,7 +74,6 @@ public class HttpUtility {
             // if not a valid ClientHello we throw an exception since
             // they may be blocking just this kind of invalid traffic
             if (legacyType != CLIENT_HELLO) throw new Exception("Packet contains an invalid SSL handshake");
-
             // looks like a valid handshake message but the protocol does
             // not support SNI so we just return null
             logger.debug("No SNI available because SSLv2Hello was detected");
@@ -100,15 +81,32 @@ public class HttpUtility {
         }
 
         // not SSLv2Hello so proceed with TLS based on the table describe above
-        if (recordType != TLS_HANDSHAKE) throw new Exception("Packet does not contain TLS Handshake");
-       
+        if (recordType != TLS_HANDSHAKE) {
+            //we are doing different handling for sniHostname 
+            if(CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName)){
+                throw new Exception("Packet contains an invalid SSL handshake");
+            }
+            else{
+                // In web filter and threat prevention, there we grab the cached certificate for the server
+                logger.debug("First byte is not TLS Handshake signature");
+                return (null);
+            }
+        }
+               
         int sslVersion = data.getShort();
         int recordLength = Math.abs(data.getShort());
 
         // make sure we have a ClientHello message
         int shakeType = Math.abs(data.get());
-        if (shakeType != CLIENT_HELLO) throw new Exception("Packet does not contain TLS ClientHello");
-
+        if (shakeType != CLIENT_HELLO){
+            if(CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName)){
+                throw new Exception("Packet does not contain TLS ClientHello");
+            }
+            else {
+                logger.debug("Handshake type is not ClientHello");
+                return (null);
+            }     
+        }    
         // extract all the handshake data so we can get to the extensions
         int messageExtra = data.get();
         int messageLength = data.getShort();
@@ -121,55 +119,6 @@ public class HttpUtility {
         // of the packet and thus there are no extensions - will normally
         // be equal but we include the greater than just to be safe
         if (data.position() >= (recordLength + 5)){
-            logger.debug("No extensions found in TLS handshake message");
-            return (null);
-        }
-        return extractSniHostNameFromExtensions(data, counter, appName);
-    }
-
-    /**
-     * function for extracting the SNI hostname from the client request of captive web filter and thread prevention apps.
-     * @param data
-     * @param pos
-     * @param counter
-     * @param appName
-     * @return hostName
-     * @throws Exception
-     */
-   public static String extractSniForWebAndThreatPrevention(ByteBuffer data, int pos, int counter, String appName) throws Exception{
-         
-        logger.debug("Searching for SNI in " + data.toString());
-
-        // make sure we have a TLS handshake message
-        int recordType = Math.abs(data.get());
-
-        if (recordType != TLS_HANDSHAKE) {
-            logger.debug("First byte is not TLS Handshake signature");
-            return (null);
-        }
-        int sslVersion = data.getShort();
-        int recLength = Math.abs(data.getShort());
-
-        // make sure we have a ClientHello message
-        int shakeType = Math.abs(data.get());
-
-        if (shakeType != CLIENT_HELLO) {
-            logger.debug("Handshake type is not ClientHello");
-            return (null);
-        }
-
-        // extract all the handshake data so we can get to the extensions
-        int messHilen = data.get();
-        int messLolen = data.getShort();
-        int clientVersion = data.getShort();
-        int clientTime = data.getInt();
-
-        setDataPositions(data, pos);
-
-        // if position equals recordLength plus five we know this is the end
-        // of the packet and thus there are no extensions - will normally
-        // be equal but we include the greater than just to be safe
-        if (data.position() >= (recLength + 5)){
             logger.debug("No extensions found in TLS handshake message");
             return (null);
         }
