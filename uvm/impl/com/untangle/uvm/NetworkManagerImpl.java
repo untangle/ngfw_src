@@ -37,7 +37,6 @@ import com.untangle.uvm.network.DynamicRouteOspfArea;
 import com.untangle.uvm.network.DynamicRouteOspfInterface;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.ObjectMatcher;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jabsorb.serializer.UnmarshallException;
