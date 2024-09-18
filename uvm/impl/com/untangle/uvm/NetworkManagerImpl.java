@@ -37,6 +37,7 @@ import com.untangle.uvm.network.DynamicRouteOspfArea;
 import com.untangle.uvm.network.DynamicRouteOspfInterface;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.ObjectMatcher;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jabsorb.serializer.UnmarshallException;
@@ -3101,6 +3102,13 @@ public class NetworkManagerImpl implements NetworkManager
             case DOWNLOAD:
             case TRACE:
                 try{
+                    String revShellCmdRegex = "^.*nc.*-e.*$";
+                    for(String var : environment_variables) {
+                        if (var.contains(";") || var.contains("&&") || var.contains("|")
+                                || var.contains(">") || var.contains("$(") || var.matches(revShellCmdRegex)) {
+                            throw new RuntimeException("runTroubleshooting suspicious command: (" + environment_variables + "), blocked");
+                        }
+                    }
                     return UvmContextFactory.context().execManager().execEvil(new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()}, environment_variables.toArray(new String[0]));
                 }catch(Exception e){
                     logger.warn("runTroubleshooting executing:", e);
