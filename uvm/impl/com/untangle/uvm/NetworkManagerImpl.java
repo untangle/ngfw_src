@@ -2811,7 +2811,7 @@ public class NetworkManagerImpl implements NetworkManager
                         }
                     }
                 } else {
-                    logger.info("Vendors not found for MAC addresses; {}", macAddresses);
+                    logger.info("Vendors not found for MAC addresses: {}", macAddresses);
                 }
             } catch (Exception exn) {
                 logger.warn("Exception looking up MAC address vendor:", exn);
