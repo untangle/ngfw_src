@@ -3101,10 +3101,9 @@ public class NetworkManagerImpl implements NetworkManager
             case DOWNLOAD:
             case TRACE:
                 try{
-                    String revShellCmdRegex = "^.*nc.*-e.*$";
                     for(String var : environment_variables) {
-                        if (var.contains(";") || var.contains("&&") || var.contains("|")
-                                || var.contains(">") || var.contains("$(") || var.matches(revShellCmdRegex)) {
+                        if (var.contains(";") || var.contains("&") || var.contains("|")
+                                || var.contains(">") || var.contains("$(")) {
                             throw new RuntimeException("runTroubleshooting suspicious command: (" + environment_variables + "), blocked");
                         }
                     }
