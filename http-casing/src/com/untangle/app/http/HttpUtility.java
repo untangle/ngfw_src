@@ -24,11 +24,6 @@ public class HttpUtility {
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
 
-    public static final String CAPTIVE_PORTAL = "captive-portal";
-    public static final String SSL_INSPECTOR = "ssl-inspector";
-    public static final String THREAD_PREVENTION = "threat-prevention";
-    public static final String WEB_FILTER = "web-filter";
-
     private static final HttpUtility INSTANCE = new HttpUtility();
     
     private static final Logger logger = LogManager.getLogger(HttpUtility.class);
@@ -50,11 +45,10 @@ public class HttpUtility {
     /**
      * Function for extracting the SNI hostname from the client request.
      * @param data
-     * @param appName
      * @return The SNI hostname extracted from the client request, or null
      * @throws Exception
      */
-    public static String extractSniHostname(ByteBuffer data, String appName) throws Exception{
+    public static String extractSniHostname(ByteBuffer data) throws Exception{
         int counter = 0;
         int pos=0;
 
@@ -64,7 +58,7 @@ public class HttpUtility {
 
         // First check for an SSLv2 hello which Appendix E.2 of RFC 5246
         // says must always set the high bit of the length field
-        if ((recordType & 0x80) == 0x80 && (CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName))) {
+        if ((recordType & 0x80) == 0x80) {
             // skip over the next byte of the length word
             data.position(data.position() + 1);
 
@@ -81,32 +75,15 @@ public class HttpUtility {
         }
 
         // not SSLv2Hello so proceed with TLS based on the table describe above
-        if (recordType != TLS_HANDSHAKE) {
-            //we are doing different handling for sniHostname 
-            if(CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName)){
-                throw new Exception("Packet contains an invalid SSL handshake");
-            }
-            else{
-                // In web filter and threat prevention, there we grab the cached certificate for the server
-                logger.debug("First byte is not TLS Handshake signature");
-                return (null);
-            }
-        }
+        if (recordType != TLS_HANDSHAKE) throw new Exception("Packet contains an invalid SSL handshake");
                
         int sslVersion = data.getShort();
         int recordLength = Math.abs(data.getShort());
 
         // make sure we have a ClientHello message
         int shakeType = Math.abs(data.get());
-        if (shakeType != CLIENT_HELLO){
-            if(CAPTIVE_PORTAL.equals(appName) || SSL_INSPECTOR.equals(appName)){
-                throw new Exception("Packet does not contain TLS ClientHello");
-            }
-            else {
-                logger.debug("Handshake type is not ClientHello");
-                return (null);
-            }     
-        }    
+        if (shakeType != CLIENT_HELLO) throw new Exception("Packet does not contain TLS ClientHello");    
+           
         // extract all the handshake data so we can get to the extensions
         int messageExtra = data.get();
         int messageLength = data.getShort();
@@ -122,7 +99,7 @@ public class HttpUtility {
             logger.debug("No extensions found in TLS handshake message");
             return (null);
         }
-        return extractSniHostNameFromExtensions(data, counter, appName);
+        return extractSniHostNameFromExtensions(data, counter);
     }
     
     /**
@@ -167,24 +144,23 @@ public class HttpUtility {
      * Process all extensions to find the SNI signature.
      * @param data
      * @param counter
-     * @param appName
      * @return The extracted SNI hostname, or null if not found.
      */
-    public static String extractSniHostNameFromExtensions(ByteBuffer data, int counter, String appName){
+    public static String extractSniHostNameFromExtensions(ByteBuffer data, int counter){
 
         // get the total size of extension data block
         int extensionLength = Math.abs(data.getShort());
 
          // walk through all of the extensions looking for SNI signature
          while (counter < extensionLength) {
-            if (data.remaining() < 2 && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+            if (data.remaining() < 2) throw new BufferUnderflowException();
             int extType = Math.abs(data.getShort());
             int extSize = Math.abs(data.getShort());
 
             // if not server name extension adjust the offset to the next
             // extension record and continue
             if (extType != SERVER_NAME) {
-                if (data.remaining() < extSize && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+                if (data.remaining() < extSize) throw new BufferUnderflowException();
                 data.position(data.position() + extSize);
                 counter += (extSize + 4);
                 continue;
@@ -193,7 +169,7 @@ public class HttpUtility {
             // we read the name list info by passing the offset location so we
             // don't modify the position which makes it easier to skip over the
             // whole extension if we bail out during name extraction
-            if (data.remaining() < 6 && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+            if (data.remaining() < 6) throw new BufferUnderflowException();
             int listLength = Math.abs(data.getShort(data.position()));
             int nameType = Math.abs(data.get(data.position() + 2));
             int nameLength = Math.abs(data.getShort(data.position() + 3));
@@ -201,14 +177,14 @@ public class HttpUtility {
             // if we find a name type we don't understand we just abandon
             // processing the rest of the extension
             if (nameType != HOST_NAME) {
-                if (data.remaining() < extSize && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+                if (data.remaining() < extSize) throw new BufferUnderflowException();
                 data.position(data.position() + extSize);
                 counter += (extSize + 4);
                 continue;
             }
             // found a valid host name so adjust the position to skip over
             // the list length and name type info we directly accessed above
-            if (data.remaining() < 5 && !CAPTIVE_PORTAL.equals(appName)) throw new BufferUnderflowException();
+            if (data.remaining() < 5) throw new BufferUnderflowException();
 
             return extractedSNIHostname(data, nameLength);
         }

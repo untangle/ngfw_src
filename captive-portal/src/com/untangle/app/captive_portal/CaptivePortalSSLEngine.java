@@ -150,6 +150,7 @@ public class CaptivePortalSSLEngine
      *        The TCP session
      * @param data
      *        The raw data received from clients
+     * 
      * @return True for success, otherwise false
      * @throws Exception
      */
@@ -163,7 +164,7 @@ public class CaptivePortalSSLEngine
 
         if (sniHostname == null){
             try{
-                sniHostname = HttpUtility.extractSniHostname(data.duplicate(), this.captureApp.getAppSettings().getAppName());
+                sniHostname = HttpUtility.extractSniHostname(data.duplicate());
             }catch (Exception exn) {
                 // The client is almost certainly sending us a bad TLS packet.
                 session.release();
