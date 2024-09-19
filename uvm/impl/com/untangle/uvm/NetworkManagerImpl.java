@@ -2796,7 +2796,7 @@ public class NetworkManagerImpl implements NetworkManager
         if (!missingMacAddressList.isEmpty()) {
             try {
                 String macAddresses = String.join(COMMA, missingMacAddressList);
-                logger.info("Cloud MAC lookup = " + macAddresses);
+                logger.info("Cloud MAC lookup: {}", macAddresses);
                 // fetch the vendors for the mac addresses
                 JSONArray macAddrVendorArr = UvmContextFactory.context().deviceTable().lookupMacVendor(macAddresses);
                 if (macAddrVendorArr != null) {
@@ -2805,13 +2805,13 @@ public class NetworkManagerImpl implements NetworkManager
                         if (macAddrVendor.has(MAC) && macAddrVendor.has(ORGANIZATION)) {
                             String macAddr = macAddrVendor.getString(MAC), vendorName = macAddrVendor.getString(ORGANIZATION);
                             if (logger.isDebugEnabled())
-                                logger.debug("Cloud MAC lookup= " + macAddr + " Cloud Vendor lookup= " + vendorName);
+                                logger.debug("Cloud MAC lookup: {} ,Cloud Vendor lookup: {}", macAddr, vendorName);
                             // add the fetched mac address with vendor in our cache
                             cachedMacAddrVendorList.put(macAddr, vendorName);
                         }
                     }
                 } else {
-                    logger.info("Vendors not found for MAC addresses=" + macAddresses);
+                    logger.info("Vendors not found for MAC addresses: {}", macAddresses);
                 }
             } catch (Exception exn) {
                 logger.warn("Exception looking up MAC address vendor:", exn);
