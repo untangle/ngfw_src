@@ -3062,9 +3062,11 @@ public class NetworkManagerImpl implements NetworkManager
             case DYNAMIC_ROUTING_OSPF:
             case ROUTING_TABLE:
             case QOS:
-            case DHCP_LEASES:
+            case DHCP_LEASES: {
+                if(argument != null && argument.contains("&")) throw new RuntimeException("runTroubleshooting suspicious argument: (" + argument + "), blocked");
+                
                 return UvmContextFactory.context().execManager().execOutputSafe(statusScript + " get_" + command.toString().toLowerCase() + " " + argument);
-
+            }
             default:
                 throw new RuntimeException("getStatus unknown command: " + command);
         }
@@ -3101,6 +3103,12 @@ public class NetworkManagerImpl implements NetworkManager
             case DOWNLOAD:
             case TRACE:
                 try{
+                    for(String var : environment_variables) {
+                        if (var.contains(";") || var.contains("&") || var.contains("|")
+                                || var.contains(">") || var.contains("$(")) {
+                            throw new RuntimeException("runTroubleshooting suspicious command: (" + environment_variables + "), blocked");
+                        }
+                    }
                     return UvmContextFactory.context().execManager().execEvil(new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()}, environment_variables.toArray(new String[0]));
                 }catch(Exception e){
                     logger.warn("runTroubleshooting executing:", e);

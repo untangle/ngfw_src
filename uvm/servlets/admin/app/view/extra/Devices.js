@@ -89,7 +89,8 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             name: 'httpUserAgent',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.userAgentEncode
         }, {
             name: 'lastSessionTime',
             sortType: 'asTimestamp',
