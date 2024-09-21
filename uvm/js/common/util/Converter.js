@@ -120,5 +120,17 @@ Ext.define('Ung.util.Converter', {
     // },
 
     // not implemented, see old Renderer
-    webRule: function () {}
+    webRule: function () {},
+
+    /**
+     * This function is used to convert the httpUserAgent string 
+     * to html encoded string for rendering on UI
+     */
+    userAgentEncode: function(value) {
+        // Decode any already-encoded characters
+        var decodedValue = Ext.String.htmlDecode(value);
+
+        // Encode the decoded value to ensure proper encoding
+        return Ext.String.htmlEncode(decodedValue);
+    }
 });
