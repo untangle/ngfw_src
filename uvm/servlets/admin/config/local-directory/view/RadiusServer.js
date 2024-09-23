@@ -39,6 +39,7 @@ Ext.define('Ung.config.local-directory.view.RadiusServer', {
         }, {
             xtype: 'textfield',
             fieldLabel: 'RADIUS password'.t(),
+            inputType: 'password',
             labelWidth: 120,
             width: '100%',
             allowBlank: false,

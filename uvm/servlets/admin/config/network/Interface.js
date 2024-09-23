@@ -896,6 +896,7 @@ Ext.define('Ung.config.network.Interface', {
                     disabled: '{!(intf.wirelessEncryption !== "NONE" && intf.wirelessEncryption !== null)}'
                 },
                 fieldLabel: 'Password'.t(),
+                inputType: 'password',
                 allowBlank: false,
                 maxLength: 63,
                 minLength: 8,
