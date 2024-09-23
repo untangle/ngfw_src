@@ -189,6 +189,7 @@ Ext.define('Ung.apps.reports.view.Data', {
         }, {
             xtype: 'textfield',
             fieldLabel: 'Password'.t(),
+            inputType: 'password',
             width: 300,
             bind: '{settings.dbPassword}',
             allowBlank: false,

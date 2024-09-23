@@ -52,6 +52,7 @@ Ext.define('Ung.Setup.Wireless', {
         }, {
             xtype: 'textfield',
             fieldLabel: 'Password'.t(),
+            inputType: 'password',
             width: 350,
             maxLength: 63,
             minLength: 8,

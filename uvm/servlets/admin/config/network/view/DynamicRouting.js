@@ -759,6 +759,7 @@ Ext.define('Ung.config.network.view.DynamicRouting', {
                     },{
                         xtype: 'textfield',
                         fieldLabel: 'Password'.t(),
+                        inputType: 'password',
                         disabled: true,
                         hidden: true,
                         allowBlank: false,

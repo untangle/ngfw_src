@@ -1343,12 +1343,14 @@ Ext.define('Ung.cmp.GridController', {
                 },
                 items: [{
                     fieldLabel: 'Password'.t(),
+                    inputType: 'password',
                     name: 'pass1',
                     enableKeyEvents: true,
                     // minLength: 3,
                     // minLengthText: Ext.String.format('The password is shorter than the minimum {0} characters.'.t(), 3),
                 }, {
                     fieldLabel: 'Confirm Password'.t(),
+                    inputType: 'password',
                     name: 'pass2',
                     enableKeyEvents: true
                 }],

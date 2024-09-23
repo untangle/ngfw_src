@@ -103,6 +103,7 @@ Ext.define('Ung.apps.directoryconnector.view.Radius', {
                 xtype:'textfield',
                 name: 'radiusTestPassword',
                 fieldLabel: 'Password'.t(),
+                inputType: 'password',
                 _neverDirty: true
             },{
                 xtype: 'button',
