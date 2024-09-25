@@ -65,7 +65,8 @@ Ext.define('Ung.view.extra.Devices', {
         fields:[{
             name: 'macAddress',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         }, {
             name: 'macVendor',
             type: 'string',
@@ -77,20 +78,23 @@ Ext.define('Ung.view.extra.Devices', {
         }, {
             name: 'hostnameLastKnown',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         }, {
             name: 'hostname',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         }, {
             name: 'username',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         }, {
             name: 'httpUserAgent',
             type: 'string',
             sortType: 'asUnString',
-            convert: Converter.userAgentEncode
+            convert: Converter.stringHtmlEncode
         }, {
             name: 'lastSessionTime',
             sortType: 'asTimestamp',
