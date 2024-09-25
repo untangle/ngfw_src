@@ -123,10 +123,10 @@ Ext.define('Ung.util.Converter', {
     webRule: function () {},
 
     /**
-     * This function is used to convert the httpUserAgent string 
-     * to html encoded string for rendering on UI
+     * This function is used to convert the field value string 
+     * to html encoded string for preventing XSS or command injection
      */
-    userAgentEncode: function(value) {
+    stringHtmlEncode: function(value) {
         // Decode any already-encoded characters
         var decodedValue = Ext.String.htmlDecode(value);
 
