@@ -9,21 +9,17 @@ Ext.define('Ung.config.administration.view.Google', {
     scrollable: true,
 
     items:[{
-        xtype: 'fieldset',
+            xtype: 'fieldset',
         title: 'Google Drive Connector'.t(),
         items: [{
-            xtype: 'container',     // Remove this item and uncomment below code once Google connector issue is resolved
-            margin: '5 0 15 0',
-            html: '<p style="text-align: center; margin: 0; line-height: 2; font-size: 12px; color: black;"><i class="fa fa-info-circle fa-lg" style="color: dodgerblue"></i><br/>' + 'This feature is temporarily unavailable'.t() + '</p>'
-        }, {
             xtype: 'fieldset',
             name: 'fieldsetDriveDisabled',
             collapsible: false,
             border: 0,
             hidden: true,
-            // bind: {
-            //     hidden: '{googleDriveIsConfigured == true}',
-            // },
+             bind: {
+                 hidden: '{googleDriveIsConfigured == true}',
+             },
             items: [{
                 xtype: 'component',
                 html: 'The Google Drive is unconfigured.'.t(),
@@ -43,9 +39,9 @@ Ext.define('Ung.config.administration.view.Google', {
             border: 0,
             collapsible: false,
             hidden: true,
-            // bind: {
-            //     hidden: '{googleDriveIsConfigured == false}',
-            // },
+             bind: {
+                 hidden: '{googleDriveIsConfigured == false}',
+             },
             items: [{
                 xtype: 'component',
                 html: 'The Google Drive is configured.'.t(),
