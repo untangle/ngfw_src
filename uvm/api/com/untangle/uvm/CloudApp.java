@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.uvm;
 
 import org.json.JSONObject;
@@ -5,7 +8,12 @@ import org.json.JSONString;
 
 import java.io.Serial;
 
+
+/**
+ * Abstract class for cloud app configuration
+ */
 public abstract class CloudApp implements java.io.Serializable, JSONString {
+
     @Serial
     private static final long serialVersionUID = 1L;
     private String clientId;
