@@ -8,13 +8,24 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.LinkedList;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import com.untangle.uvm.UvmContextFactory;
+import org.json.JSONObject;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * GoogleManagerImpl provides the API implementation of all RADIUS related functionality
@@ -23,7 +34,8 @@ public class GoogleManagerImpl implements GoogleManager
 {
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
     private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
-    
+    public String GOOGLE_OAUTH_TOKEN_URL = "https://oauth2.googleapis.com/token";
+
     private final Logger logger = LogManager.getLogger(getClass());
 
     /**
@@ -182,6 +194,44 @@ public class GoogleManagerImpl implements GoogleManager
         String redirectUrl = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh redirectUrl " + GOOGLE_DRIVE_PATH);
 
         return new GoogleCloudApp(appId, clientId, clientSecret, scopes, redirectUrl);
+    }
+
+    /**
+     * Calls google OAuth2 token API to get access token against the input authorization code
+     * @param code auth code
+     * @return JSON response containing access token
+     * @throws Exception
+     */
+    public JSONObject exchangeCodeForToken(String code) throws Exception
+    {
+        logger.info("Auth code:{}", code);
+        GoogleCloudApp cloudApp = getGoogleCloudApp();
+        try(CloseableHttpClient httpClient = HttpClients.custom().build()) {
+            HttpClientContext context = HttpClientContext.create();
+
+            URIBuilder builder = new URIBuilder(UvmContextFactory.context().uriManager().getUri(GOOGLE_OAUTH_TOKEN_URL));
+            String url = builder.build().toString();
+
+            LinkedList<NameValuePair> bodyParams = new LinkedList<>();
+            bodyParams.add(new BasicNameValuePair("code", code));
+            bodyParams.add(new BasicNameValuePair("client_id", cloudApp.getClientId()));
+            bodyParams.add(new BasicNameValuePair("client_secret", cloudApp.getClientSecret()));
+            bodyParams.add(new BasicNameValuePair("redirect_uri", cloudApp.getRedirectUrl()));
+            bodyParams.add(new BasicNameValuePair("grant_type", "authorization_code"));
+            UrlEncodedFormEntity body = new UrlEncodedFormEntity(bodyParams);
+
+            HttpPost post = new HttpPost(url);
+            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            post.setEntity(body);
+
+            String responseBody = httpClient.execute(post, context, response -> EntityUtils.toString(response.getEntity(), UTF_8));
+
+            logger.info("Received access token");
+            return new JSONObject(responseBody);
+        } catch (Exception e) {
+            logger.warn("Failed to get access token Exception: ", e);
+            throw e;
+        }
     }
 
     /**
