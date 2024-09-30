@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -308,16 +309,15 @@ public class ConfigurationBackupApp extends AppBase
      */
     private void uploadBackupToGoogleDrive( File backupFile )
     {
-        String directory = null;
         String[] cmd;
-        if ( settings.getGoogleDriveDirectory() == null || "".equals(settings.getGoogleDriveDirectory()) )
+        if (StringUtils.isEmpty(settings.getGoogleDriveDirectory()) )
             cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
                                backupFile.getAbsoluteFile().toString()};
         else
             cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
                                "-d",settings.getGoogleDriveDirectory(),
                                backupFile.getAbsoluteFile().toString()};
-        Integer exitCode = 0;
+        int exitCode = 0;
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
             exitCode = reader.waitFor();
@@ -327,14 +327,14 @@ public class ConfigurationBackupApp extends AppBase
         }
 
         if(exitCode != 0) {
-            logger.error("Backup returned non-zero error code (" + exitCode + ")");
+            logger.error("Backup returned non-zero error code ({})", exitCode);
 
             String reason = null;
             switch(exitCode) {
             default:
-                reason = "Unknown error";
+                reason = "Unknown error. Make sure your google drive is correctly configured";
             }
-            logger.info("Backup failed: " + reason);
+            logger.warn("Backup failed: {}", reason);
             this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive")) );
         }
         else {

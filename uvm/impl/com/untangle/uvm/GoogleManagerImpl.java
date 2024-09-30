@@ -5,12 +5,11 @@ package com.untangle.uvm;
 
 import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -100,38 +99,7 @@ public class GoogleManagerImpl implements GoogleManager
 
         this.settings = settings;
 
-        if ( isGoogleDriveConnected() ) {
-            String credentialsJson = "{\"client_id\":\"661509598543-1p2n8foedn1n0t7t767q9sgd0accml07.apps.googleusercontent.com\",\"client_secret\":\"eJDmfgIrqJvFvk5ZoH05CJz-\",\"refresh_token\":\"";
-            credentialsJson += settings.getDriveRefreshToken();
-            credentialsJson += "\"}";
-
-            BufferedWriter bw = null;
-            FileWriter fw = null;
-            try {
-                UvmContextFactory.context().execManager().execOutput("mkdir -p " + GOOGLE_DRIVE_PATH + ".gd/");
-                fw = new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json"));
-                bw = new BufferedWriter(fw);
-                bw.write(credentialsJson);
-                bw.close();
-            } catch (Exception ex) {
-                logger.warn("Error writing credentials.json.", ex);
-            }finally{
-                if(fw != null){
-                    try{
-                        fw.close();
-                    }catch(IOException ex){
-                        logger.error("Unable to close file", ex);
-                    }
-                }
-                if(bw != null){
-                    try{
-                        bw.close();
-                    }catch(IOException ex){
-                        logger.error("Unable to close file", ex);
-                    }
-                }
-            }
-        } else {
+        if ( !isGoogleDriveConnected() ) {
             try {
                 File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
                 if ( creds.exists() )
@@ -153,11 +121,8 @@ public class GoogleManagerImpl implements GoogleManager
 
         if ( token == null )
             return false;
-        token = token.replaceAll("\\s+","");
-        if ( "".equals( token ))
-            return false;
-
-        return true;
+        token = token.replaceAll("\\s+", StringUtils.EMPTY);
+        return !token.isEmpty();
     }
 
     /**
@@ -206,6 +171,20 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
+     * Returns spp configuration of the google drive connector app
+     * @return GoogleCloudApp instance
+     */
+    public GoogleCloudApp getGoogleCloudApp() {
+        String appId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh appId " + GOOGLE_DRIVE_PATH);
+        String clientId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh clientId " + GOOGLE_DRIVE_PATH);
+        String clientSecret = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh clientSecret " + GOOGLE_DRIVE_PATH);
+        String scopes = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh scopes " + GOOGLE_DRIVE_PATH);
+        String redirectUrl = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh redirectUrl " + GOOGLE_DRIVE_PATH);
+
+        return new GoogleCloudApp(appId, clientId, clientSecret, scopes, redirectUrl);
+    }
+
+    /**
      * This launches the google drive command line app and provides the code
      * The google drive app will then fetch and save the refreshToken for future use.
      *
@@ -239,7 +218,7 @@ public class GoogleManagerImpl implements GoogleManager
             if ( refreshToken == null )
                 continue;
             refreshToken = refreshToken.replaceAll("\\s+","");
-            if ( "".equals(refreshToken) )
+            if (refreshToken.isEmpty())
                 continue;
             break;
         }
@@ -247,9 +226,9 @@ public class GoogleManagerImpl implements GoogleManager
         /**
          * save the settings with the refresh token
          */
-        if ( refreshToken != null && !"".equals(refreshToken) ) {
-            refreshToken = refreshToken.replaceAll("\\s+","");
-            logger.info("Refresh Token: " + refreshToken);
+        if ( StringUtils.isNotEmpty(refreshToken)) {
+            refreshToken = refreshToken.replaceAll("\\s+",StringUtils.EMPTY);
+            logger.info("Refresh Token: {}", refreshToken);
         
             GoogleSettings googleSettings = getSettings();
             googleSettings.setDriveRefreshToken( refreshToken );
