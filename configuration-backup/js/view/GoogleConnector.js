@@ -11,18 +11,14 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
     items: [{
         title: 'Google Connector'.t(),
         items:[{
-            xtype: 'container',     // Remove this item and uncomment below code once Google connector issue is resolved
-            margin: '5 0 15 0',
-            html: '<p style="text-align: center; margin: 0; line-height: 2; font-size: 12px; color: black;"><i class="fa fa-info-circle fa-lg" style="color: dodgerblue"></i><br/>' + 'This feature is temporarily unavailable'.t() + '</p>'
-        }, {
             xtype: 'fieldset',
             collapsible: false,
             hidden: true,
             disabled: true,
-            // bind: {
-            //     hidden: '{googleDriveIsConfigured == true}',
-            //     disabled: '{googleDriveIsConfigured == true}'
-            // },
+             bind: {
+                 hidden: '{googleDriveIsConfigured == true}',
+                 disabled: '{googleDriveIsConfigured == true}'
+             },
             items: [{
                 xtype: 'component',
                 html: 'The Google Connector must be configured in order to backup to Google Drive.'.t(),
@@ -41,10 +37,10 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
             collapsible: false,
             hidden: true,
             disabled: true,
-            // bind: {
-            //     hidden: '{googleDriveIsConfigured == false}',
-            //     disabled: '{googleDriveIsConfigured == false}'
-            // },
+             bind: {
+                 hidden: '{googleDriveIsConfigured == false}',
+                 disabled: '{googleDriveIsConfigured == false}'
+             },
             items: [{
                 xtype: 'component',
                 html: 'The Google Connector is configured.'.t(),
