@@ -85,6 +85,12 @@ class UriAnalyzer():
 
         "https://wiki.edge.arista.com/get.php",
         "https://edge.arista.com/feedback",
+        "https://oauth2.googleapis.com/token",
+        "https://www.googleapis.com/auth/drive.file",
+        "https://auth-relay.untangle.com/oauth2.php",
+        'http://192.168.56.187/admin/index.do#service/configuration-backup/google-connector',
+        'https://apis.google.com/js/api.js',
+        'https://accounts.google.com/gsi/client',
 
         # From test_network.py
         "http://1.2.3.4/test/testPage1.html",

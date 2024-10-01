@@ -117,7 +117,32 @@ Ext.define('Ung.controller.Global', {
             },
             'users': { before: 'detectChanges', action: 'onUsers' },
             'expert': 'setExpertMode',
-            'noexpert': 'setNoExpertMode'
+            'noexpert': 'setNoExpertMode',
+            'service/configuration-backup/google-connector:params': {
+                action : 'handleGoogleConnector',
+                conditions: {
+                    ':params' : "(.*)"
+                }
+            }
+        }
+    },
+
+    handleGoogleConnector: function() {
+        console.log('Inside handleGoogleConnector');
+        // Extract the query parameters
+        console.log(window.location.href);
+        
+        if (window.location.hash && window.location.hash.includes('?code=')) {
+            
+            // Redirect to the original URL without the query params
+            var code = window.location.hash.split('?code=')[1],
+                originalUrl = window.location.href.split('?code=')[0];
+
+            console.log('Received code:', code);
+            localStorage.setItem('code', code);
+            window.location.replace(originalUrl);
+        } else {
+            console.log('No code found in query params.');
         }
     },
 

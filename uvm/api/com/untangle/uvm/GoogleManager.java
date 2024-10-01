@@ -15,9 +15,9 @@ public interface GoogleManager
     public boolean isGoogleDriveConnected();
     public String getAuthorizationUrl( String windowProtocol, String windowLocation );
 
-    GoogleCloudApp getGoogleCloudApp();
+    public GoogleCloudApp getGoogleCloudApp();
 
-    JSONObject exchangeCodeForToken(String code) throws Exception;
+    public JSONObject exchangeCodeForToken(String code) throws Exception;
 
     public String provideDriveCode(String code );
     public void disconnectGoogleDrive();

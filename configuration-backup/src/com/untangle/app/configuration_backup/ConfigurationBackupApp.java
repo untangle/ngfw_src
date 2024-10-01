@@ -125,6 +125,14 @@ public class ConfigurationBackupApp extends AppBase
     }
 
     /**
+     * get GoogleManager
+     * @return GoogleManager
+     */
+    public GoogleManager getGoogleManager() {
+        return UvmContextFactory.context().googleManager();
+    }
+
+    /**
      * Perform backup
      */
     public void sendBackup()

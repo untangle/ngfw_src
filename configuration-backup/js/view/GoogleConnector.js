@@ -67,8 +67,13 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                     hidden: '{settings.googleDriveEnabled == false}',
                     disabled: '{settings.googleDriveEnabled == false}'
                 },
+                layout: {
+                    type: 'hbox'
+                },
                 items: [{
                     xtype: "textfield",
+                    margin: '10',
+                    readOnly: true,
                     regex: /^[\w\. \/]+$/,
                     regexText: "The field can have only alphanumerics, spaces, or periods.".t(),
                     fieldLabel: "Google Drive Directory".t(),
@@ -78,6 +83,13 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                         tag: 'div',
                         'data-qtip': "The destination directory in google drive.".t()
                     }
+                }, {
+                    xtype: 'button',
+                    text: 'Select Directory',
+                    itemId: 'selectDirButton',
+                    margin: '10',
+                    // handler: 'handleSelectDirectory',
+                    handler: 'loadExternalScripts'
                 }]
             }]
         }]
