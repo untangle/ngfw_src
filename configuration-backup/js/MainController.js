@@ -9,7 +9,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
     CLIENT_ID: 'myclientid',
     CLIENT_SECRET: 'myclientsecrete',
     API_KEY: 'myapikey',
-    APP_ID: '337848699130',
+    APP_ID: 'myappid',
     REDIRECT_URI: 'https://auth-relay.untangle.com/oauth2.php',
     // },
 
