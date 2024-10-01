@@ -186,6 +186,7 @@ public class GoogleManagerImpl implements GoogleManager
      * Returns spp configuration of the google drive connector app
      * @return GoogleCloudApp instance
      */
+    @Override
     public GoogleCloudApp getGoogleCloudApp() {
         String appId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh appId " + GOOGLE_DRIVE_PATH);
         String clientId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh clientId " + GOOGLE_DRIVE_PATH);
@@ -202,6 +203,7 @@ public class GoogleManagerImpl implements GoogleManager
      * @return JSON response containing access token
      * @throws Exception
      */
+    @Override
     public JSONObject exchangeCodeForToken(String code) throws Exception
     {
         logger.info("Auth code:{}", code);
