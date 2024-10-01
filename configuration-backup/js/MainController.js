@@ -6,9 +6,9 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
     // Configuration for Google API
     // config: {
     SCOPES: 'https://www.googleapis.com/auth/drive.file',
-    CLIENT_ID: '337848699130-lbu31dqfpd4l0rqp78nio7fp7nuagvmr.apps.googleusercontent.com',
-    CLIENT_SECRET: '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',
-    API_KEY: 'AIzaSyBB_xnIoR-hnGJKoxADvtqFlh6GumFbmDw',
+    CLIENT_ID: 'myclientid',
+    CLIENT_SECRET: 'myclientsecrete',
+    API_KEY: 'myapikey',
     APP_ID: '337848699130',
     REDIRECT_URI: 'https://auth-relay.untangle.com/oauth2.php',
     // },
