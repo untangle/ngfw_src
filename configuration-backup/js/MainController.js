@@ -4,14 +4,12 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
 
 
     // Configuration for Google API
-    // config: {
     SCOPES: 'https://www.googleapis.com/auth/drive.file',
-    CLIENT_ID: 'myclientid',
-    CLIENT_SECRET: 'myclientsecrete',
-    API_KEY: 'myapikey',
-    APP_ID: 'myappid',
+    CLIENT_ID: 'myClientId',
+    CLIENT_SECRET: 'myClientSecret',
+    API_KEY: 'myAPIkey',
+    APP_ID: 'myAPIId',
     REDIRECT_URI: 'https://auth-relay.untangle.com/oauth2.php',
-    // },
 
     // Internal variables
     accessCode: null,
@@ -19,6 +17,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
     accessToken: null,
     pickerInited: false,
     gisInited: false,
+    callmethod: false,
 
     requires: [
         'Ung.cmp.GoogleDrive'
@@ -51,17 +50,13 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         Ext.Loader.loadScript({
             url: 'https://accounts.google.com/gsi/client',
             onLoad: function () {
-                me.handleSelectDirectory();
+                if(!me.callmethod) me.handleSelectDirectory();
             },
             onError: function () {
                 Ext.Msg.alert('Error', 'Failed to load Google Identity Services');
             }
         });
         console.log("External Scripts Loading");
-        // this.wait(2000).then(function() {
-        //     console.log("This runs after 2 seconds");
-        //     me.handleSelectDirectory();
-        // });
         
     },
 
@@ -70,100 +65,141 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
     },
 
     handleSelectDirectory: function() {
-        var me = this;
-        this.getAccessCode();
+        var me = this,
+            clientId = this.CLIENT_ID,
+            redirectUri = this.REDIRECT_URI,
+            scope = this.SCOPES,
+            state = encodeURIComponent('http://192.168.56.177/admin/index.do#/gdrive/picker'),
+
+        // Manually construct the authorization URL
+            authUrl = Ext.String.format('https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={0}&redirect_uri={1}&scope={2}&state={3}',clientId,redirectUri,scope,state),
+
+            popupWindow = window.open(authUrl, 'Google OAuth2 Login', 'width=500,height=600');
+
+        // Check if the popup was blocked
+        if (!popupWindow || popupWindow.closed || typeof popupWindow.closed === 'undefined') {
+            Ext.Msg.alert('Error', 'Popup was blocked. Please allow popups for this site or click the link below.');
+            return;
+        }
+
+        // Track if the popup has been closed
+        var pollTimer = setInterval(function() {
+            if (popupWindow.closed) {
+                // clearInterval(pollTimer);
+                // me.handlePopupClose();
+            }
+        }, 1000); // Check every second
+
+        // Listen for messages from the popup
+        window.addEventListener('message', function(event) {
+            // Verify the origin of the message
+            console.log(event.origin);
+            // if (event.origin !== me.REDIRECT_URI) {
+            //     return; // Ignore messages from unknown origins
+            // }
+
+            var authCode = event.data; // Assuming the code is sent as the message
+            if (authCode) {
+                // Close the popup window
+                popupWindow.close();
+                clearInterval(pollTimer);
+                // Handle the authorization code
+                me.exchangeCodeForToken(authCode);
+            }
+        }, false);
+    },
+
+    handlePopupClose: function() {
+        console.log('Popup was closed without completing authentication.');
+        Ext.Msg.alert('Notice', 'Authentication was cancelled. Please try again.');
     },
 
     /**
      * Handle the Code Client click to get access token
      */
-    clickCodeClient: function (code) {
+    exchangeCodeForToken: function (code) {
         var me = this,
             v = this.getView();
 
-        console.log(v.appManager.getGoogleManager());
+        console.log('Authorization code:', code);
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager.getGoogleManager(), 'exchangeCodeForToken', code)
         ]).then(function(result){
             console.log(result);
-            // me.accessToken = result;
+            me.accessToken = result[0].access_token;
         }, function(ex) {
             Util.handleException(ex);
         });
 
-        // me.createPicker();
-    },
+        me.callmethod = true;
+        this.loadExternalScripts();
+        this.wait(2000).then(function() {
+            console.log("This runs after 2 seconds");
 
-    /**
-     * Initialize Code Client and retrieve access token
-     */
-    getAccessCode: function () {
-        var me = this;
-        console.log("In getAccessToken");
-        new Promise(function (resolve, reject) {
-            var codeClient = google.accounts.oauth2.initCodeClient({
-                client_id: me.CLIENT_ID,
-                scope: me.SCOPES,
-                redirect_uri: me.REDIRECT_URI,
-                state: 'http://192.168.56.187/admin/index.do#service/configuration-backup/google-connector',
-                ux_mode: 'redirect'
-            });
-            console.log(codeClient);
-
-            // Trigger the authorization flow
-            codeClient.requestCode();
-        }).catch(function (error) {
-            console.error('Error retrieving access token:', error);
-            Ext.Msg.alert('Error', 'Failed to retrieve access token.');
+            me.onApiLoad();
         });
     },
 
-    /**
-     * Create and display the Google Picker
-     */
-    // createPicker: function () {
-    //     var me = this;
+    onPickerApiLoad: function() {
+        var me = this;
+        // The API is loaded, now create the DocsView and Picker
+        console.log(me.accessToken);
+        var view = new google.picker.View(google.picker.ViewId.FOLDERS);
+        var docsView = new google.picker.DocsView()
+          .setIncludeFolders(true) 
+          .setMimeTypes('application/vnd.google-apps.folder')
+          .setSelectFolderEnabled(true);
+    
+        var picker = new google.picker.PickerBuilder()
+            .enableFeature(google.picker.Feature.NAV_HIDDEN)
+            .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+            .setDeveloperKey(me.API_KEY)
+            .setAppId(me.APP_ID)
+            .setOAuthToken(me.accessToken)
+            .addView(docsView)
+            // .addView(google.picker.ViewId.DOCS)
+            .setCallback(me.pickerCallback.bind(me))
+            .build();
+        picker.setVisible(true);
+    },
 
-    //     var docsView = new google.picker.DocsView()
-    //         .setIncludeFolders(true)
-    //         .setMimeTypes('application/vnd.google-apps.folder')
-    //         .setSelectFolderEnabled(true);
+    pickerCallback: function(data) {
+        if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+            var fileId = data[google.picker.Response.DOCUMENTS][0][google.picker.Document.ID];
+            Ext.Msg.alert('File Selected', 'File ID: ' + fileId);
+        }
+    },
 
-    //     var picker = new google.picker.PickerBuilder()
-    //         .enableFeature(google.picker.Feature.NAV_HIDDEN)
-    //         .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
-    //         .setDeveloperKey(this.API_KEY)
-    //         .setAppId(this.APP_ID)
-    //         .setOAuthToken(this.accessToken)
-    //         .addView(docsView)
-    //         .setCallback(this.pickerCallback.bind(this))
-    //         .build();
-    //     picker.setVisible(true);
-    // },
+    onApiLoad: function() {
+        var me = this;
 
-    /**
-     * Callback for Picker actions
-     */
-    // pickerCallback: async function (data) {
-    //     if (data.action === google.picker.Action.PICKED) {
-    //         var content = 'Picker response:\n' + JSON.stringify(data, null, 2) + '\n';
-    //         var document = data[google.picker.Response.DOCUMENTS][0];
-    //         var fileId = document[google.picker.Document.ID];
-    //         console.log(fileId);
+        // gapi.load('auth', {'callback': function() { me.onAuthApiLoad(); }});
+        gapi.load('picker', {'callback': function() { me.onPickerApiLoad(); }});
+    },
 
-    //         try {
-    //             var res = await gapi.client.drive.files.get({
-    //                 'fileId': fileId,
-    //                 'fields': '*',
-    //             });
-    //             content += 'Drive API response for first document:\n' + JSON.stringify(res.result, null, 2) + '\n';
-    //             this.down('#content').update(content);
-    //         } catch (error) {
-    //             console.error('Error fetching file details:', error);
-    //             Ext.Msg.alert('Error', 'Failed to fetch file details.');
-    //         }
-    //     }
-    // },
+    onAuthApiLoad: function() {
+        var me = this;
+
+        gapi.auth2.init({
+            client_id: '', // Replace with your OAuth client ID
+            scope: 'https://www.googleapis.com/auth/drive.file'
+        }).then(function() {
+            me.signIn();
+        });
+    },
+
+    signIn: function() {
+        var me = this;
+        var GoogleAuth = gapi.auth2.getAuthInstance();
+
+        GoogleAuth.signIn().then(function(user) {
+            me.accessToken = user.getAuthResponse().access_token;
+            // gapi.load('picker', {'callback': function() { me.createPicker(); }});
+        }).catch(function(error) {
+            Ext.Msg.alert('Sign In Error', error.error);
+        });
+    },
+
 
     backupNow: function (btn) {
         Ext.MessageBox.wait('Backing up... This may take a few minutes.'.t(), 'Please wait'.t());

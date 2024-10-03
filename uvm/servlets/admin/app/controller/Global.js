@@ -118,7 +118,7 @@ Ext.define('Ung.controller.Global', {
             'users': { before: 'detectChanges', action: 'onUsers' },
             'expert': 'setExpertMode',
             'noexpert': 'setNoExpertMode',
-            'service/configuration-backup/google-connector:params': {
+            '/gdrive/picker:params': {
                 action : 'handleGoogleConnector',
                 conditions: {
                     ':params' : "(.*)"
@@ -139,8 +139,12 @@ Ext.define('Ung.controller.Global', {
                 originalUrl = window.location.href.split('?code=')[0];
 
             console.log('Received code:', code);
-            localStorage.setItem('code', code);
-            window.location.replace(originalUrl);
+            // localStorage.setItem('code', code);
+            // window.location.replace(originalUrl);
+            if (code) {
+                // Send the authorization code back to the parent window
+                window.opener.postMessage(code, '*'); // Use '*' to allow any origin or specify your origin
+            }
         } else {
             console.log('No code found in query params.');
         }
