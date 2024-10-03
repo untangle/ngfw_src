@@ -91,6 +91,7 @@ class UriAnalyzer():
         'http://192.168.56.187/admin/index.do#service/configuration-backup/google-connector',
         'https://apis.google.com/js/api.js',
         'https://accounts.google.com/gsi/client',
+        'https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={0}&redirect_uri={1}&scope={2}&state={3}',
 
         # From test_network.py
         "http://1.2.3.4/test/testPage1.html",

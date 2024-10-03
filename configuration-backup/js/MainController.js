@@ -4,14 +4,14 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
 
 
     // Configuration for Google API
-    SCOPES: 'https://www.googleapis.com/auth/drive.file',
-    CLIENT_ID: 'myClientId',
-    CLIENT_SECRET: 'myClientSecret',
-    API_KEY: 'myAPIkey',
-    APP_ID: 'myAPIId',
-    REDIRECT_URI: 'https://auth-relay.untangle.com/oauth2.php',
+    API_KEY: 'AIzaSyBB_xnIoR-hnGJKoxADvtqFlh6GumFbmDw',
 
     // Internal variables
+    clientId: null,
+    appId: null,
+    scopes: null,
+    redirectUrl: null,
+
     accessCode: null,
     tokenClient: null,
     accessToken: null,
@@ -29,50 +29,79 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         }
     },
 
-    /**
-     * Dynamically load external Google APIs using Ext.Loader
-     */
-    loadExternalScripts: function () {
+    handleSelectDirectory: function() {
         var me = this;
+        me.loadMultipleScripts( ['https://apis.google.com/js/api.js','https://accounts.google.com/gsi/client'] )
+        .then(function() {
+            // Code here will run after all scripts are loaded
+            console.log('All scripts loaded successfully');
+            me.setClientConfig();
+        }).catch(function(error) {
+            // Handle the error if any script fails
+            console.error('Script loading failed: ', error);
+        });
+    },
 
-        // Load gapi.js first
-        Ext.Loader.loadScript({
-            url: 'https://apis.google.com/js/api.js',
-            onLoad: function () {
-                // me.gapiLoaded();
-            },
-            onError: function () {
-                Ext.Msg.alert('Error', 'Failed to load gapi.js');
-            }
+    loadScriptPromise: function(url) {
+        return new Ext.Promise(function(resolve, reject) {
+            Ext.Loader.loadScript({
+                url: url,
+                onLoad: function() {
+                    console.log('Loaded script: ' + url);
+                    resolve(); // Resolve the promise if loaded
+                },
+                onError: function() {
+                    console.error('Failed to load script: ' + url);
+                    reject('Failed to load script: ' + url); // Reject the promise if it fails
+                }
+            });
+        });
+    },
+
+    loadMultipleScripts: function(scripts) {
+        var promises = [],
+            me = this;
+        Ext.Array.each(scripts, function(script) {
+            promises.push(me.loadScriptPromise(script));
         });
 
-        // Load Google Identity Services after gapi.js
-        Ext.Loader.loadScript({
-            url: 'https://accounts.google.com/gsi/client',
-            onLoad: function () {
-                if(!me.callmethod) me.handleSelectDirectory();
-            },
-            onError: function () {
-                Ext.Msg.alert('Error', 'Failed to load Google Identity Services');
+        // Return a single promise that resolves when all scripts are loaded
+        return Ext.Promise.all(promises);
+    },
+
+    setClientConfig: function() {
+        var me = this,
+            v = this.getView();
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise(v.appManager.getGoogleManager(), 'getGoogleCloudApp')
+        ]).then(function(result){
+            console.log(result);
+            if(result[0] && result[0].clientId) {
+                me.clientId = result[0].clientId;
+                me.appId = result[0].appId;
+                me.redirectUrl = result[0].redirectUrl;
+                me.scopes = result[0].scopes;
             }
+            if(!me.callmethod) me.getAuthCode();
+        }, function(ex) {
+            Util.handleException(ex);
         });
-        console.log("External Scripts Loading");
-        
     },
 
     wait: function(ms) {
         return new Promise(function(resolve) {setTimeout(resolve, ms);});
     },
 
-    handleSelectDirectory: function() {
+    getAuthCode: function() {
         var me = this,
-            clientId = this.CLIENT_ID,
-            redirectUri = this.REDIRECT_URI,
-            scope = this.SCOPES,
-            state = encodeURIComponent('http://192.168.56.177/admin/index.do#/gdrive/picker'),
+            clientId = this.clientId,
+            redirectUri = this.redirectUrl,
+            scopes = this.scopes,
+            state = encodeURIComponent(window.location.protocol + "//" + window.location.host + '/admin/index.do#/gdrive/picker'),
+            // state = encodeURIComponent('https://192.168.56.177/admin/index.do#/gdrive/picker'),
 
         // Manually construct the authorization URL
-            authUrl = Ext.String.format('https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={0}&redirect_uri={1}&scope={2}&state={3}',clientId,redirectUri,scope,state),
+            authUrl = Ext.String.format('https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={0}&redirect_uri={1}&scope={2}&state={3}', clientId, redirectUri, scopes, state),
 
             popupWindow = window.open(authUrl, 'Google OAuth2 Login', 'width=500,height=600');
 
@@ -85,8 +114,8 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         // Track if the popup has been closed
         var pollTimer = setInterval(function() {
             if (popupWindow.closed) {
-                // clearInterval(pollTimer);
-                // me.handlePopupClose();
+                clearInterval(pollTimer);
+                me.handlePopupClose();
             }
         }, 1000); // Check every second
 
@@ -94,7 +123,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         window.addEventListener('message', function(event) {
             // Verify the origin of the message
             console.log(event.origin);
-            // if (event.origin !== me.REDIRECT_URI) {
+            // if (event.origin !== me.redirectUrl) {
             //     return; // Ignore messages from unknown origins
             // }
 
@@ -127,16 +156,9 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         ]).then(function(result){
             console.log(result);
             me.accessToken = result[0].access_token;
+            me.loadPickerAPI();
         }, function(ex) {
             Util.handleException(ex);
-        });
-
-        me.callmethod = true;
-        this.loadExternalScripts();
-        this.wait(2000).then(function() {
-            console.log("This runs after 2 seconds");
-
-            me.onApiLoad();
         });
     },
 
@@ -144,7 +166,6 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         var me = this;
         // The API is loaded, now create the DocsView and Picker
         console.log(me.accessToken);
-        var view = new google.picker.View(google.picker.ViewId.FOLDERS);
         var docsView = new google.picker.DocsView()
           .setIncludeFolders(true) 
           .setMimeTypes('application/vnd.google-apps.folder')
@@ -154,7 +175,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             .enableFeature(google.picker.Feature.NAV_HIDDEN)
             .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
             .setDeveloperKey(me.API_KEY)
-            .setAppId(me.APP_ID)
+            .setAppId(me.appId)
             .setOAuthToken(me.accessToken)
             .addView(docsView)
             // .addView(google.picker.ViewId.DOCS)
@@ -170,36 +191,10 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         }
     },
 
-    onApiLoad: function() {
+    loadPickerAPI: function() {
         var me = this;
-
-        // gapi.load('auth', {'callback': function() { me.onAuthApiLoad(); }});
         gapi.load('picker', {'callback': function() { me.onPickerApiLoad(); }});
     },
-
-    onAuthApiLoad: function() {
-        var me = this;
-
-        gapi.auth2.init({
-            client_id: '', // Replace with your OAuth client ID
-            scope: 'https://www.googleapis.com/auth/drive.file'
-        }).then(function() {
-            me.signIn();
-        });
-    },
-
-    signIn: function() {
-        var me = this;
-        var GoogleAuth = gapi.auth2.getAuthInstance();
-
-        GoogleAuth.signIn().then(function(user) {
-            me.accessToken = user.getAuthResponse().access_token;
-            // gapi.load('picker', {'callback': function() { me.createPicker(); }});
-        }).catch(function(error) {
-            Ext.Msg.alert('Sign In Error', error.error);
-        });
-    },
-
 
     backupNow: function (btn) {
         Ext.MessageBox.wait('Backing up... This may take a few minutes.'.t(), 'Please wait'.t());
@@ -214,11 +209,6 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
     },
 
     getSettings: function () {
-        if(localStorage.getItem('code')) {
-            this.accessCode = localStorage.getItem('code');
-            localStorage.removeItem('code');
-            this.clickCodeClient(this.accessCode);
-        }
         var v = this.getView(), vm = this.getViewModel();
 
         v.setLoading(true);
