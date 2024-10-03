@@ -43,7 +43,7 @@ if ip addr show dev lo | grep -q '172.217.4.110' ; then
     ip addr del 172.217.4.110/32 dev lo
     
     # Check if the file exists
-    if ls /etc/untangle/post-network-hook.d/010-brightcloud-fix &> /dev/null; then
+    if [ -f /etc/untangle/post-network-hook.d/010-brightcloud-fix ]; then
         rm -rf /etc/untangle/post-network-hook.d/010-brightcloud-fix
     fi
 fi
