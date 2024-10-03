@@ -16,3 +16,7 @@ GTAGS
 core
 .DS_Store
 .sass-cache
+.idea
+*.iml
+downloads/output/*
+rake.log

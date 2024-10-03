@@ -123,6 +123,12 @@ Ext.define('Ung.controller.Global', {
                 conditions: {
                     ':params' : "(.*)"
                 }
+            },
+            '/gdrive/picker/relay.html:params': {
+                action : 'handleGooglePickerRelay',
+                conditions: {
+                    ':params' : "(.*)"
+                }
             }
         }
     },
@@ -148,6 +154,14 @@ Ext.define('Ung.controller.Global', {
         } else {
             console.log('No code found in query params.');
         }
+    },
+
+    handleGooglePickerRelay: function() {
+        console.log('Inside handleGooglePickerRelay');
+        window.addEventListener('message', function(event) {
+                    // Pass messages between the picker iframe and your app
+                    window.parent.postMessage(event.data, event.origin);
+                });
     },
 
     detectChanges: function () {

@@ -56,19 +56,19 @@
             "id": "target_address",
             "type":"promptString",
             "description": "IP of NGFW",
-            "default": ""
+            "default": "192.168.1.30"
         },
         {
             "id": "test_client_address",
             "type":"promptString",
             "description": "IP of test client",
-            "default": ""
+            "default": "192.168.56.100"
         },
         {
             "id": "tests",
             "type":"promptString",
             "description": "Tests to run (runtests arguments like -t <suite> amd/or -T <tests> comma separated",
-            "default": "-t uvm -T test_010_client_is_online"
+            "default": "-t network -T test_148_invert_iptables_command,test_150_filter_rules_blocked_event_log,test_151_filter_rules_blocked_src_comma,test_152_filter_rules_blocked_src_comma_many,test_153_filter_rules_blocked_src_mac_comma,test_154_filter_rules_blocked_client_tagged"
         }
     ]
 }

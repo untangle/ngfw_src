@@ -177,6 +177,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             .setDeveloperKey(me.API_KEY)
             .setAppId(me.appId)
             .setOAuthToken(me.accessToken)
+            .setRelayUrl(window.location.host + '/gdrive/picker/relay.html')
             .addView(docsView)
             // .addView(google.picker.ViewId.DOCS)
             .setCallback(me.pickerCallback.bind(me))
