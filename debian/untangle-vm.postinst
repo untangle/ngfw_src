@@ -41,7 +41,11 @@ rm -rf /var/lib/uvm/work
 if ip addr show dev lo | grep -q '172.217.4.110' ; then
     # If it exists, delete the IP address
     ip addr del 172.217.4.110/32 dev lo
-    rm -rf /etc/untangle/post-network-hook.d/010-brightcloud-fix
+    
+    # Check if the file exists
+    if ls /etc/untangle/post-network-hook.d/010-brightcloud-fix &> /dev/null; then
+        rm -rf /etc/untangle/post-network-hook.d/010-brightcloud-fix
+    fi
 fi
 
 # set up uvm to start at boot
