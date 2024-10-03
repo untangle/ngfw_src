@@ -38,7 +38,6 @@ done
 rm -rf /var/lib/uvm/work
 
 # Check if the IP address 172.217.4.110/32 exists on the loopback interface
-echo "CHECKING IP"
 if ip addr show dev lo | grep -q '172.217.4.110' ; then
     # If it exists, delete the IP address
     ip addr del 172.217.4.110/32 dev lo
