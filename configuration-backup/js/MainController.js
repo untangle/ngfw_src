@@ -98,7 +98,6 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             redirectUri = this.redirectUrl,
             scopes = this.scopes,
             state = encodeURIComponent(window.location.protocol + "//" + window.location.host + '/admin/index.do#/gdrive/picker'),
-            // state = encodeURIComponent('https://192.168.56.177/admin/index.do#/gdrive/picker'),
 
         // Manually construct the authorization URL
             authUrl = Ext.String.format('https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={0}&redirect_uri={1}&scope={2}&state={3}', clientId, redirectUri, scopes, state),
@@ -177,7 +176,6 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             .setDeveloperKey(me.API_KEY)
             .setAppId(me.appId)
             .setOAuthToken(me.accessToken)
-            .setRelayUrl(window.location.host + '/gdrive/picker/relay.html')
             .addView(docsView)
             // .addView(google.picker.ViewId.DOCS)
             .setCallback(me.pickerCallback.bind(me))

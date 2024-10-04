@@ -26,6 +26,7 @@ public class GoogleCloudApp extends CloudApp {
     /**
      * Parameterized constructor
      * @param appId
+     * @param apiKey
      * @param clientId
      * @param clientSecret
      * @param scopes
