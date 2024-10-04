@@ -21,6 +21,12 @@ appId()
     get_json_value "app_id" "$1.gd/credentials.json"
 }
 
+apiKey()
+{
+    shift
+    get_json_value "api_key" "$1.gd/credentials.json"
+}
+
 clientId()
 {
     shift

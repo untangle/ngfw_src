@@ -14,6 +14,8 @@ public class GoogleCloudApp extends CloudApp {
 
     private String appId;
 
+    private String apiKey;
+
     /**
      * Default constructor
      */
@@ -29,9 +31,10 @@ public class GoogleCloudApp extends CloudApp {
      * @param scopes
      * @param redirectUrl
      */
-    public GoogleCloudApp(String appId, String clientId, String clientSecret, String scopes, String redirectUrl) {
+    public GoogleCloudApp(String appId, String apiKey, String clientId, String clientSecret, String scopes, String redirectUrl) {
         super(clientId, clientSecret, scopes, redirectUrl);
         this.appId = appId;
+        this.apiKey = apiKey;
     }
 
     /**
@@ -48,5 +51,21 @@ public class GoogleCloudApp extends CloudApp {
      */
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    /**
+     * Get apiKey
+     * @return
+     */
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    /**
+     * Set apiKey
+     * @param apiKey
+     */
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

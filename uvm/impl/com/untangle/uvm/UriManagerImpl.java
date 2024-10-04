@@ -328,10 +328,6 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://wiki.edge.arista.com/get.php");
         uriTranslations.add(uriTranslation);
 
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://oauth2.googleapis.com/token");
-        uriTranslations.add(uriTranslation);
-
         settings.setUriTranslations(uriTranslations);
 
         mergeOverrideSettings(settings);

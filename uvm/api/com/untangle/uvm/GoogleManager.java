@@ -17,8 +17,6 @@ public interface GoogleManager
 
     public GoogleCloudApp getGoogleCloudApp();
 
-    public JSONObject exchangeCodeForToken(String code) throws Exception;
-
     public String provideDriveCode(String code );
     public void disconnectGoogleDrive();
     public void migrateConfiguration( String refreshToken );
