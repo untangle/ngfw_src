@@ -89,7 +89,6 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                     itemId: 'selectDirButton',
                     margin: '10',
                     handler: 'handleSelectDirectory',
-                    // handler: 'loadExternalScripts'
                 }]
             }]
         }]

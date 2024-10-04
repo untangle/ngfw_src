@@ -2,23 +2,6 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-configuration-backup',
 
-
-    // Configuration for Google API
-    API_KEY: 'AIzaSyBB_xnIoR-hnGJKoxADvtqFlh6GumFbmDw',
-
-    // Internal variables
-    clientId: null,
-    appId: null,
-    scopes: null,
-    redirectUrl: null,
-
-    accessCode: null,
-    tokenClient: null,
-    accessToken: null,
-    pickerInited: false,
-    gisInited: false,
-    callmethod: false,
-
     requires: [
         'Ung.cmp.GoogleDrive'
     ],
@@ -30,169 +13,82 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
     },
 
     handleSelectDirectory: function() {
-        var me = this;
-        me.loadMultipleScripts( ['https://apis.google.com/js/api.js','https://accounts.google.com/gsi/client'] )
-        .then(function() {
-            // Code here will run after all scripts are loaded
-            console.log('All scripts loaded successfully');
-            me.setClientConfig();
-        }).catch(function(error) {
-            // Handle the error if any script fails
-            console.error('Script loading failed: ', error);
-        });
-    },
-
-    loadScriptPromise: function(url) {
-        return new Ext.Promise(function(resolve, reject) {
-            Ext.Loader.loadScript({
-                url: url,
-                onLoad: function() {
-                    console.log('Loaded script: ' + url);
-                    resolve(); // Resolve the promise if loaded
-                },
-                onError: function() {
-                    console.error('Failed to load script: ' + url);
-                    reject('Failed to load script: ' + url); // Reject the promise if it fails
-                }
-            });
-        });
-    },
-
-    loadMultipleScripts: function(scripts) {
-        var promises = [],
-            me = this;
-        Ext.Array.each(scripts, function(script) {
-            promises.push(me.loadScriptPromise(script));
-        });
-
-        // Return a single promise that resolves when all scripts are loaded
-        return Ext.Promise.all(promises);
-    },
-
-    setClientConfig: function() {
         var me = this,
-            v = this.getView();
+            v = this.getView(),
+            messageData = null;
         Ext.Deferred.sequence([
             Rpc.asyncPromise(v.appManager.getGoogleManager(), 'getGoogleCloudApp')
         ]).then(function(result){
-            console.log(result);
             if(result[0] && result[0].clientId) {
-                me.clientId = result[0].clientId;
-                me.appId = result[0].appId;
-                me.redirectUrl = result[0].redirectUrl;
-                me.scopes = result[0].scopes;
+                messageData = {
+                    action: 'openPicker',  // Specify the action type
+                    clientId: result[0].clientId,
+                    appId: result[0].appId,
+                    redirectUrl: result[0].redirectUrl,
+                    scopes: result[0].scopes,
+                    apiKey: result[0].apiKey,
+                    origin: window.location.protocol + "//" + window.location.host
+                };
             }
-            if(!me.callmethod) me.getAuthCode();
+            me.openIframe(messageData);
         }, function(ex) {
             Util.handleException(ex);
         });
     },
 
-    wait: function(ms) {
-        return new Promise(function(resolve) {setTimeout(resolve, ms);});
-    },
-
-    getAuthCode: function() {
+    openIframe: function(messageData) {
         var me = this,
-            clientId = this.clientId,
-            redirectUri = this.redirectUrl,
-            scopes = this.scopes,
-            state = encodeURIComponent(window.location.protocol + "//" + window.location.host + '/admin/index.do#/gdrive/picker'),
+            fileName = null,
+            vm = me.getViewModel(),
+        myIframeUrl = 'https://1edb-2401-4900-1c45-c16e-ffbb-75d4-53f7-96cd.ngrok-free.app';
+        iframeWindow = Ext.create('Ext.window.Window', {
+            title: 'Dynamic iFrame Content',
+            width: 800,
+            height: 600,
+            layout: 'fit',
+            listeners: {
+                afterrender: function(window) {
+                    // Dynamically create an iframe element when the window is rendered
+                    var iframe = document.createElement('iframe');
+                    iframe.src = myIframeUrl + '/iframe';  // Set the URL here
+                    iframe.width = '100%';
+                    iframe.height = '100%';
+                    iframe.allowFullscreen = true;
+                    
+                    // Append the iframe to the window's body
+                    window.body.dom.appendChild(iframe);
 
-        // Manually construct the authorization URL
-            authUrl = Ext.String.format('https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={0}&redirect_uri={1}&scope={2}&state={3}', clientId, redirectUri, scopes, state),
-
-            popupWindow = window.open(authUrl, 'Google OAuth2 Login', 'width=500,height=600');
-
-        // Check if the popup was blocked
-        if (!popupWindow || popupWindow.closed || typeof popupWindow.closed === 'undefined') {
-            Ext.Msg.alert('Error', 'Popup was blocked. Please allow popups for this site or click the link below.');
-            return;
-        }
-
-        // Track if the popup has been closed
-        var pollTimer = setInterval(function() {
-            if (popupWindow.closed) {
-                clearInterval(pollTimer);
-                me.handlePopupClose();
+                    // Once the iframe has loaded, send a message to it
+                    iframe.onload = function() {                        
+                        // Use postMessage to send data to the iframe
+                        iframe.contentWindow.postMessage(messageData, myIframeUrl + '/iframe');  // Make sure the origin matches the iframe's URL
+                    };
+                }
             }
-        }, 1000); // Check every second
-
-        // Listen for messages from the popup
-        window.addEventListener('message', function(event) {
-            // Verify the origin of the message
-            console.log(event.origin);
-            // if (event.origin !== me.redirectUrl) {
-            //     return; // Ignore messages from unknown origins
-            // }
-
-            var authCode = event.data; // Assuming the code is sent as the message
-            if (authCode) {
-                // Close the popup window
-                popupWindow.close();
-                clearInterval(pollTimer);
-                // Handle the authorization code
-                me.exchangeCodeForToken(authCode);
-            }
-        }, false);
-    },
-
-    handlePopupClose: function() {
-        console.log('Popup was closed without completing authentication.');
-        Ext.Msg.alert('Notice', 'Authentication was cancelled. Please try again.');
-    },
-
-    /**
-     * Handle the Code Client click to get access token
-     */
-    exchangeCodeForToken: function (code) {
-        var me = this,
-            v = this.getView();
-
-        console.log('Authorization code:', code);
-        Ext.Deferred.sequence([
-            Rpc.asyncPromise(v.appManager.getGoogleManager(), 'exchangeCodeForToken', code)
-        ]).then(function(result){
-            console.log(result);
-            me.accessToken = result[0].access_token;
-            me.loadPickerAPI();
-        }, function(ex) {
-            Util.handleException(ex);
         });
-    },
+        
+        // Show the window
+        iframeWindow.show();
 
-    onPickerApiLoad: function() {
-        var me = this;
-        // The API is loaded, now create the DocsView and Picker
-        console.log(me.accessToken);
-        var docsView = new google.picker.DocsView()
-          .setIncludeFolders(true) 
-          .setMimeTypes('application/vnd.google-apps.folder')
-          .setSelectFolderEnabled(true);
+        // Create a promise to track when DOMContentLoaded is completed
+        new Promise(function(resolve, reject) {
+            window.addEventListener('message', function(event) {
+                if (event.origin === myIframeUrl) {
+                    if (event.data.action === 'fileSelected') {
+                        fileName = event.data.fileName;
+                        resolve();
+                    }
+                }
+            }, false);
+        }).then(function() {
+            if(fileName) {
+                vm.set('settings.googleDriveDirectory', fileName);
+                vm.set('settings.googleDriveDirectorySelected', true);
+            }
     
-        var picker = new google.picker.PickerBuilder()
-            .enableFeature(google.picker.Feature.NAV_HIDDEN)
-            .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
-            .setDeveloperKey(me.API_KEY)
-            .setAppId(me.appId)
-            .setOAuthToken(me.accessToken)
-            .addView(docsView)
-            // .addView(google.picker.ViewId.DOCS)
-            .setCallback(me.pickerCallback.bind(me))
-            .build();
-        picker.setVisible(true);
-    },
-
-    pickerCallback: function(data) {
-        if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
-            var fileId = data[google.picker.Response.DOCUMENTS][0][google.picker.Document.ID];
-            Ext.Msg.alert('File Selected', 'File ID: ' + fileId);
-        }
-    },
-
-    loadPickerAPI: function() {
-        var me = this;
-        gapi.load('picker', {'callback': function() { me.onPickerApiLoad(); }});
+            // iframeWindow.close();
+            // iframeWindow = null;
+        });
     },
 
     backupNow: function (btn) {
