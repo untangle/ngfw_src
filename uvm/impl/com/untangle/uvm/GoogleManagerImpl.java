@@ -21,6 +21,7 @@ public class GoogleManagerImpl implements GoogleManager
 {
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
     private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
+    public String RELAY_SERVER_URL = "https://auth-relay.untangle.com";
 
     private final Logger logger = LogManager.getLogger(getClass());
 
@@ -181,7 +182,7 @@ public class GoogleManagerImpl implements GoogleManager
         String redirectUrl = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh redirectUrl " + GOOGLE_DRIVE_PATH);
 
         // intentionally not exposing client_secret
-        return new GoogleCloudApp(appId, apiKey, clientId, null, scopes, redirectUrl);
+        return new GoogleCloudApp(appId, apiKey, clientId, null, scopes, redirectUrl, RELAY_SERVER_URL);
     }
 
     /**

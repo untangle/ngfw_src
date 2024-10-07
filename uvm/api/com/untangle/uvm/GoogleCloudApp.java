@@ -16,6 +16,8 @@ public class GoogleCloudApp extends CloudApp {
 
     private String apiKey;
 
+    private String relayServerUrl;
+
     /**
      * Default constructor
      */
@@ -31,11 +33,13 @@ public class GoogleCloudApp extends CloudApp {
      * @param clientSecret
      * @param scopes
      * @param redirectUrl
+     * @param relayServerUrl
      */
-    public GoogleCloudApp(String appId, String apiKey, String clientId, String clientSecret, String scopes, String redirectUrl) {
+    public GoogleCloudApp(String appId, String apiKey, String clientId, String clientSecret, String scopes, String redirectUrl, String relayServerUrl) {
         super(clientId, clientSecret, scopes, redirectUrl);
         this.appId = appId;
         this.apiKey = apiKey;
+        this.relayServerUrl = relayServerUrl;
     }
 
     /**
@@ -68,5 +72,21 @@ public class GoogleCloudApp extends CloudApp {
      */
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    /**
+     * Get relay server
+     * @return
+     */
+    public String getRelayServerUrl() {
+        return relayServerUrl;
+    }
+
+    /**
+     * Set relay server
+     * @param relayServerUrl
+     */
+    public void setRelayServerUrl(String relayServerUrl) {
+        this.relayServerUrl = relayServerUrl;
     }
 }
