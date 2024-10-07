@@ -85,7 +85,6 @@ class UriAnalyzer():
 
         "https://wiki.edge.arista.com/get.php",
         "https://edge.arista.com/feedback",
-        'https://1edb-2401-4900-1c45-c16e-ffbb-75d4-53f7-96cd.ngrok-free.app/iframe',
 
         # From test_network.py
         "http://1.2.3.4/test/testPage1.html",

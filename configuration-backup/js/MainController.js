@@ -21,12 +21,12 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         ]).then(function(result){
             if(result[0] && result[0].clientId) {
                 messageData = {
-                    action: 'openPicker',  // Specify the action type
+                    action: 'openPicker',
                     clientId: result[0].clientId,
                     appId: result[0].appId,
-                    redirectUrl: result[0].redirectUrl,
                     scopes: result[0].scopes,
                     apiKey: result[0].apiKey,
+                    relayServerUrl: result[0].relayServerUrl,
                     origin: window.location.protocol + "//" + window.location.host
                 };
             }
@@ -40,9 +40,8 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         var me = this,
             fileName = null,
             vm = me.getViewModel(),
-        myIframeUrl = 'https://1edb-2401-4900-1c45-c16e-ffbb-75d4-53f7-96cd.ngrok-free.app';
         iframeWindow = Ext.create('Ext.window.Window', {
-            title: 'Dynamic iFrame Content',
+            title: 'Google Picker Window',
             width: 800,
             height: 600,
             layout: 'fit',
@@ -50,32 +49,34 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
                 afterrender: function(window) {
                     // Dynamically create an iframe element when the window is rendered
                     var iframe = document.createElement('iframe');
-                    iframe.src = myIframeUrl + '/iframe';  // Set the URL here
+                    iframe.src = messageData.relayServerUrl + "/google-picker.php";
                     iframe.width = '100%';
                     iframe.height = '100%';
                     iframe.allowFullscreen = true;
                     
-                    // Append the iframe to the window's body
                     window.body.dom.appendChild(iframe);
 
-                    // Once the iframe has loaded, send a message to it
+                    // Once the iframe has loaded, send a messageData to it
                     iframe.onload = function() {                        
-                        // Use postMessage to send data to the iframe
-                        iframe.contentWindow.postMessage(messageData, myIframeUrl + '/iframe');  // Make sure the origin matches the iframe's URL
+                        iframe.contentWindow.postMessage(messageData, messageData.relayServerUrl + "/google-picker.php");
                     };
                 }
             }
         });
         
-        // Show the window
         iframeWindow.show();
 
-        // Create a promise to track when DOMContentLoaded is completed
+        // Create a promise to track eventListener
         new Promise(function(resolve, reject) {
             window.addEventListener('message', function(event) {
-                if (event.origin === myIframeUrl) {
+                if (event.origin === messageData.relayServerUrl) {
                     if (event.data.action === 'fileSelected') {
                         fileName = event.data.fileName;
+                        resolve();
+                    } else if (event.data.action === 'cancel') {
+                        resolve();
+                    } else if (event.data.action === 'requiredValuesBlank') {
+                        Ext.Msg.alert('Error', Ext.String.format("The following values are blank: {0}. Contact Application Developer.".t(), event.data.blankValues));
                         resolve();
                     }
                 }
@@ -86,8 +87,8 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
                 vm.set('settings.googleDriveDirectorySelected', true);
             }
     
-            // iframeWindow.close();
-            // iframeWindow = null;
+            iframeWindow.close();
+            iframeWindow = null;
         });
     },
 
@@ -119,6 +120,8 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(vm.get('policyId')); });
 
             vm.set('panel.saveDisabled', false);
+            if(!vm.get('settings.googleDriveDirectorySelected'))
+                vm.set('settings.googleDriveDirectory', '');
             v.setLoading(false);
         },function(ex){
             if(!Util.isDestroyed(v, vm)){
