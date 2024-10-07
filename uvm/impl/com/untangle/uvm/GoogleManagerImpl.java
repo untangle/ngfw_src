@@ -5,17 +5,27 @@ package com.untangle.uvm;
 
 import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.LinkedList;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import com.untangle.uvm.UvmContextFactory;
+import org.json.JSONObject;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * GoogleManagerImpl provides the API implementation of all RADIUS related functionality
@@ -24,7 +34,8 @@ public class GoogleManagerImpl implements GoogleManager
 {
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
     private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
-    
+    public String GOOGLE_OAUTH_TOKEN_URL = "https://oauth2.googleapis.com/token";
+
     private final Logger logger = LogManager.getLogger(getClass());
 
     /**
@@ -100,38 +111,7 @@ public class GoogleManagerImpl implements GoogleManager
 
         this.settings = settings;
 
-        if ( isGoogleDriveConnected() ) {
-            String credentialsJson = "{\"client_id\":\"661509598543-1p2n8foedn1n0t7t767q9sgd0accml07.apps.googleusercontent.com\",\"client_secret\":\"eJDmfgIrqJvFvk5ZoH05CJz-\",\"refresh_token\":\"";
-            credentialsJson += settings.getDriveRefreshToken();
-            credentialsJson += "\"}";
-
-            BufferedWriter bw = null;
-            FileWriter fw = null;
-            try {
-                UvmContextFactory.context().execManager().execOutput("mkdir -p " + GOOGLE_DRIVE_PATH + ".gd/");
-                fw = new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json"));
-                bw = new BufferedWriter(fw);
-                bw.write(credentialsJson);
-                bw.close();
-            } catch (Exception ex) {
-                logger.warn("Error writing credentials.json.", ex);
-            }finally{
-                if(fw != null){
-                    try{
-                        fw.close();
-                    }catch(IOException ex){
-                        logger.error("Unable to close file", ex);
-                    }
-                }
-                if(bw != null){
-                    try{
-                        bw.close();
-                    }catch(IOException ex){
-                        logger.error("Unable to close file", ex);
-                    }
-                }
-            }
-        } else {
+        if ( !isGoogleDriveConnected() ) {
             try {
                 File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
                 if ( creds.exists() )
@@ -153,11 +133,8 @@ public class GoogleManagerImpl implements GoogleManager
 
         if ( token == null )
             return false;
-        token = token.replaceAll("\\s+","");
-        if ( "".equals( token ))
-            return false;
-
-        return true;
+        token = token.replaceAll("\\s+", StringUtils.EMPTY);
+        return !token.isEmpty();
     }
 
     /**
@@ -206,6 +183,60 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
+     * Returns spp configuration of the google drive connector app
+     * @return GoogleCloudApp instance
+     */
+    @Override
+    public GoogleCloudApp getGoogleCloudApp() {
+        String appId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh appId " + GOOGLE_DRIVE_PATH);
+        String clientId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh clientId " + GOOGLE_DRIVE_PATH);
+        String clientSecret = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh clientSecret " + GOOGLE_DRIVE_PATH);
+        String scopes = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh scopes " + GOOGLE_DRIVE_PATH);
+        String redirectUrl = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh redirectUrl " + GOOGLE_DRIVE_PATH);
+
+        return new GoogleCloudApp(appId, clientId, clientSecret, scopes, redirectUrl);
+    }
+
+    /**
+     * Calls google OAuth2 token API to get access token against the input authorization code
+     * @param code auth code
+     * @return JSON response containing access token
+     * @throws Exception
+     */
+    @Override
+    public JSONObject exchangeCodeForToken(String code) throws Exception
+    {
+        logger.info("Auth code:{}", code);
+        GoogleCloudApp cloudApp = getGoogleCloudApp();
+        try(CloseableHttpClient httpClient = HttpClients.custom().build()) {
+            HttpClientContext context = HttpClientContext.create();
+
+            URIBuilder builder = new URIBuilder(UvmContextFactory.context().uriManager().getUri(GOOGLE_OAUTH_TOKEN_URL));
+            String url = builder.build().toString();
+
+            LinkedList<NameValuePair> bodyParams = new LinkedList<>();
+            bodyParams.add(new BasicNameValuePair("code", code));
+            bodyParams.add(new BasicNameValuePair("client_id", cloudApp.getClientId()));
+            bodyParams.add(new BasicNameValuePair("client_secret", cloudApp.getClientSecret()));
+            bodyParams.add(new BasicNameValuePair("redirect_uri", cloudApp.getRedirectUrl()));
+            bodyParams.add(new BasicNameValuePair("grant_type", "authorization_code"));
+            UrlEncodedFormEntity body = new UrlEncodedFormEntity(bodyParams);
+
+            HttpPost post = new HttpPost(url);
+            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            post.setEntity(body);
+
+            String responseBody = httpClient.execute(post, context, response -> EntityUtils.toString(response.getEntity(), UTF_8));
+
+            logger.info("Received access token");
+            return new JSONObject(responseBody);
+        } catch (Exception e) {
+            logger.warn("Failed to get access token Exception: ", e);
+            throw e;
+        }
+    }
+
+    /**
      * This launches the google drive command line app and provides the code
      * The google drive app will then fetch and save the refreshToken for future use.
      *
@@ -239,7 +270,7 @@ public class GoogleManagerImpl implements GoogleManager
             if ( refreshToken == null )
                 continue;
             refreshToken = refreshToken.replaceAll("\\s+","");
-            if ( "".equals(refreshToken) )
+            if (refreshToken.isEmpty())
                 continue;
             break;
         }
@@ -247,9 +278,9 @@ public class GoogleManagerImpl implements GoogleManager
         /**
          * save the settings with the refresh token
          */
-        if ( refreshToken != null && !"".equals(refreshToken) ) {
-            refreshToken = refreshToken.replaceAll("\\s+","");
-            logger.info("Refresh Token: " + refreshToken);
+        if ( StringUtils.isNotEmpty(refreshToken)) {
+            refreshToken = refreshToken.replaceAll("\\s+",StringUtils.EMPTY);
+            logger.info("Refresh Token: {}", refreshToken);
         
             GoogleSettings googleSettings = getSettings();
             googleSettings.setDriveRefreshToken( refreshToken );
