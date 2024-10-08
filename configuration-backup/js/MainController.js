@@ -40,15 +40,16 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         var me = this,
             fileName = null,
             vm = me.getViewModel(),
+            iframe,
         iframeWindow = Ext.create('Ext.window.Window', {
-            title: 'Google Picker Window',
+            title: 'Select Directory'.t(),
             width: 800,
-            height: 600,
+            height: 520,
             layout: 'fit',
             listeners: {
                 afterrender: function(window) {
                     // Dynamically create an iframe element when the window is rendered
-                    var iframe = document.createElement('iframe');
+                    iframe = document.createElement('iframe');
                     iframe.src = messageData.relayServerUrl + "/google-picker.php";
                     iframe.width = '100%';
                     iframe.height = '100%';
@@ -65,19 +66,47 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         });
         
         iframeWindow.show();
+        iframeWindow.setVisible(false);
+
+        setTimeout(function() {
+            if (iframeWindow) {
+                Ext.Msg.alert('Timeout'.t(), "Google drive directory selection timed out.".t());
+                iframeWindow.close();
+                iframeWindow = null;
+            }
+        }, 5*60000);
 
         // Create a promise to track eventListener
         new Promise(function(resolve, reject) {
             window.addEventListener('message', function(event) {
                 if (event.origin === messageData.relayServerUrl) {
-                    if (event.data.action === 'fileSelected') {
-                        fileName = event.data.fileName;
-                        resolve();
-                    } else if (event.data.action === 'cancel') {
-                        resolve();
-                    } else if (event.data.action === 'requiredValuesBlank') {
-                        Ext.Msg.alert('Error', Ext.String.format("The following values are blank: {0}. Contact Application Developer.".t(), event.data.blankValues));
-                        resolve();
+                    switch (event.data.action) {
+                        case 'requiredValuesBlank':
+                            Ext.Msg.alert('Error'.t(), Ext.String.format("The following values are blank: {0}. Contact Application Developer.".t(), event.data.blankValues));
+                            resolve();
+                            break;
+                        case 'popUpBloked':
+                            Ext.Msg.alert('Error'.t(), 'Popups are blocked. Please enable popups for this site from browser settings.'.t());
+                            resolve();
+                            break;
+                        case 'createPicker':
+                            if(iframeWindow) iframeWindow.setVisible(true);
+                            break;
+                        case 'nestedFile':
+                            if(iframeWindow) iframeWindow.setVisible(false);
+                            Ext.Msg.alert( 'Warning'.t(), 'Nested directory selection is not allowed, please select top level directory.'.t(),
+                                function(btn) {
+                                    iframe.contentWindow.postMessage({ action: 'reselectDirectory' }, messageData.relayServerUrl + "/google-picker.php");
+                                }
+                            );
+                            break;
+                        case 'fileSelected':
+                            fileName = event.data.fileName;
+                            resolve();
+                            break;
+                        case 'cancel':
+                            resolve();
+                            break;                            
                     }
                 }
             }, false);
@@ -86,9 +115,10 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
                 vm.set('settings.googleDriveDirectory', fileName);
                 vm.set('settings.googleDriveDirectorySelected', true);
             }
-    
-            iframeWindow.close();
-            iframeWindow = null;
+            if(iframeWindow) {
+                iframeWindow.close();
+                iframeWindow = null;
+            }            
         });
     },
 

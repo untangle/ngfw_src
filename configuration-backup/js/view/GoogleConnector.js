@@ -85,7 +85,7 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                     }
                 }, {
                     xtype: 'button',
-                    text: 'Select Directory',
+                    text: 'Select Directory'.t(),
                     itemId: 'selectDirButton',
                     margin: '10',
                     handler: 'handleSelectDirectory',
