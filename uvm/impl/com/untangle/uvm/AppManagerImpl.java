@@ -1105,7 +1105,7 @@ public class AppManagerImpl implements AppManager
                     logger.info("Stopping  : " + name + " [" + id + "]");
 
                     long startTime = System.currentTimeMillis();
-                    ((AppBase) app).stopIfRunning();
+                    ((AppBase) app).stopIfRunning(false);
                     long endTime = System.currentTimeMillis();
 
                     logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
@@ -1156,7 +1156,7 @@ public class AppManagerImpl implements AppManager
                         logger.info("Stopping  : " + name + " [" + id + "] because of invalid license");
 
                         long startTime = System.currentTimeMillis();
-                        ((AppBase) app).stopIfRunning();
+                        ((AppBase) app).stopIfRunning(true);
                         long endTime = System.currentTimeMillis();
 
                         logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");

@@ -268,14 +268,14 @@ public abstract class AppBase implements App
     /**
      * Stop the application if it's running
      */
-    public void stopIfRunning()
+    public void stopIfRunning(boolean saveNewTargetState)
     {
         UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
 
         switch (currentState)
         {
         case RUNNING:
-            stop(false);
+            stop(saveNewTargetState);
             break;
         case LOADED:
             break;
