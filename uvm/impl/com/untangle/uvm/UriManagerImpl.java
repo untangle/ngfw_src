@@ -328,6 +328,10 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://wiki.edge.arista.com/get.php");
         uriTranslations.add(uriTranslation);
 
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://auth-relay.untangle.com");
+        uriTranslations.add(uriTranslation);
+
         settings.setUriTranslations(uriTranslations);
 
         mergeOverrideSettings(settings);
