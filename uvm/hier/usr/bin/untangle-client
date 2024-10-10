@@ -1,5 +1,10 @@
 #! /bin/dash
 
+#Releasing the lock hold by another process before launching the script
+if [ -L /home/kiosk/.config/chromium/SingletonLock ]; then
+    rm /home/kiosk/.config/chromium/SingletonLock
+fi
+
 url='http://localhost/'
 wh=$(xdpyinfo | awk '/dimensions:/ { gsub(/x/, ",", $2) ; print $2 }')
 
