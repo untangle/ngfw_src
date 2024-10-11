@@ -275,6 +275,8 @@ public class GoogleManagerImpl implements GoogleManager
         
             GoogleSettings googleSettings = getSettings();
             googleSettings.setDriveRefreshToken( refreshToken );
+            // reset the root directory value in order to be selected again as per new token (new user)
+            googleSettings.setGoogleDriveRootDirectory(null);
             setSettings( googleSettings );
         } else {
             logger.warn("Unable to parse refreshToken");
