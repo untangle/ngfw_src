@@ -141,6 +141,25 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
+     * Returns app specific google drive path
+     * This directory path = GOOGLE_DRIVE_ROOT_DIRECTORY + File.separator + appDirectory
+     * returns null if google drive root directory is not available
+     * returns only GOOGLE_DRIVE_ROOT_DIRECTORY if appDirectory is blank
+     * @param appDirectory app specific subdirectory under the root directory where files are stored
+     * @return
+     */
+    @Override
+    public String getAppSpecificGoogleDrivePath(String appDirectory) {
+        if (StringUtils.isEmpty(this.settings.getGoogleDriveRootDirectory())) {
+            return null;
+        }
+        if (StringUtils.isBlank(appDirectory)) {
+            return this.settings.getGoogleDriveRootDirectory();
+        }
+        return this.settings.getGoogleDriveRootDirectory() + File.separator + appDirectory;
+    }
+
+    /**
      * This returns the URL that the user should visit and click allow for the google connector app to be authorized.
      * Once the user clicks the allow button, they will be redirected to Untangle with the redirect_url. The untangle redirect_url
      * will redirect them to their local server gdrive servlet (the IP is passed in the state variable).

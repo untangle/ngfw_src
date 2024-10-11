@@ -13,7 +13,10 @@ public interface GoogleManager
     GoogleSettings getSettings();
     void setSettings(GoogleSettings settings);
     public boolean isGoogleDriveConnected();
-    public String getAuthorizationUrl( String windowProtocol, String windowLocation );
+
+    String getAppSpecificGoogleDrivePath(String appDirectory);
+
+    public String getAuthorizationUrl(String windowProtocol, String windowLocation );
 
     public GoogleCloudApp getGoogleCloudApp();
 

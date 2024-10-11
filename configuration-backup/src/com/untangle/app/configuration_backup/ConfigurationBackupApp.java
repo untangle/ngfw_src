@@ -318,12 +318,13 @@ public class ConfigurationBackupApp extends AppBase
     private void uploadBackupToGoogleDrive( File backupFile )
     {
         String[] cmd;
-        if (StringUtils.isEmpty(settings.getGoogleDriveDirectory()) )
+        String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
+        if (StringUtils.isEmpty(appGoogleDrivePath))
             cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
                                backupFile.getAbsoluteFile().toString()};
         else
             cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
-                               "-d",settings.getGoogleDriveDirectory(),
+                               "-d", appGoogleDrivePath,
                                backupFile.getAbsoluteFile().toString()};
         int exitCode = 0;
         String output = null;

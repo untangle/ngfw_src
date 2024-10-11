@@ -16,9 +16,7 @@ public class ConfigurationBackupSettings implements Serializable, JSONString
     private int hourInDay;
     private int minuteInHour;
     private boolean googleDriveEnabled = true;
-    private String  googleDriveDirectory = "Configuration Backups";
-    // Indicates whether googleDriveDirectory is selected by the user i.e. directory access is granted to the drive connector google cloud app by the user
-    private boolean  googleDriveDirectorySelected;
+    private String googleDriveDirectory = "Configuration Backups";
     
     public ConfigurationBackupSettings() { }
 
@@ -33,14 +31,6 @@ public class ConfigurationBackupSettings implements Serializable, JSONString
 
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
-
-    public boolean isGoogleDriveDirectorySelected() {
-        return googleDriveDirectorySelected;
-    }
-
-    public void setGoogleDriveDirectorySelected(boolean googleDriveDirectorySelected) {
-        this.googleDriveDirectorySelected = googleDriveDirectorySelected;
-    }
 
     /**
      * Convert settings to JSON string.
