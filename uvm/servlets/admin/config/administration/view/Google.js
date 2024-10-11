@@ -59,6 +59,32 @@ Ext.define('Ung.config.administration.view.Google', {
                 margin: '10 0 10 0',
                 iconCls: "fa fa-ban",
                 handler: 'googleDriveDisconnect'
+            },
+            {
+                xtype: 'fieldset',
+                layout: {
+                    type: 'hbox'
+                },
+                items: [{
+                    xtype: "textfield",
+                    margin: '10',
+                    readOnly: true,
+                    regex: /^[\w\. \/]+$/,
+                    regexText: "The field can have only alphanumerics, spaces, or periods.".t(),
+                    fieldLabel: "Google Drive Directory".t(),
+                    labelWidth: 200,
+                    bind: '{googleSettings.googleDriveRootDirectory}',
+                    autoEl: {
+                        tag: 'div',
+                        'data-qtip': "The destination directory in google drive.".t()
+                    }
+                }, {
+                    xtype: 'button',
+                    text: 'Select Directory'.t(),
+                    itemId: 'selectDirButton',
+                    margin: '10',
+                    handler: 'handleSelectDirectory',
+                }]
             }]
         }]
     }]

@@ -19,7 +19,8 @@ Ext.define('Ung.apps.reports.MainController', {
         Ext.Deferred.sequence([
             Rpc.directPromise('rpc.isExpertMode'),
             Rpc.asyncPromise(v.appManager, 'getSettings'),
-            Rpc.asyncPromise(v.appManager, 'getFixedReportQueueSize')
+            Rpc.asyncPromise(v.appManager, 'getFixedReportQueueSize'),
+            Rpc.asyncPromise('rpc.UvmContext.googleManager.getAppSpecificGoogleDrivePath', null)
         ]).then(function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
@@ -27,6 +28,7 @@ Ext.define('Ung.apps.reports.MainController', {
             vm.set('isExpertMode', result[0]);
             vm.set('settings', result[1]);
             vm.set('reportQueueSize', result[2]);
+            vm.set('rootDirectory', result[3]);
 
             vm.set('panel.saveDisabled', false);
             vm.set('dbRetentionInDays', vm.get('settings').dbRetention > 0);

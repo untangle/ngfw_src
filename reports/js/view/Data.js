@@ -80,6 +80,14 @@ Ext.define('Ung.apps.reports.view.Data', {
                  style: { color: '{googleDriveConfigured ? "green" : "red"}'}
              }
          }, {
+            xtype: 'component',
+            hidden: true,
+            bind: {
+                hidden: '{rootDirectory}',
+                html: 'The Root directory is unconfigured.',
+                style: { color: "red" }
+            }
+        }, {
              xtype: 'button',
              text: 'Configure Google Drive'.t(),
              margin: '10 0 15 0',
@@ -90,7 +98,7 @@ Ext.define('Ung.apps.reports.view.Data', {
              disabled: true,
              bind: {
                  value: '{settings.googleDriveUploadData}',
-                 disabled: '{!googleDriveConfigured}'
+                 disabled: '{!googleDriveConfigured || !rootDirectory}'
              },
              listeners: {
                  render: function(obj) {
@@ -103,7 +111,7 @@ Ext.define('Ung.apps.reports.view.Data', {
              disabled: true,
              bind: {
                  value: '{settings.googleDriveUploadCsv}',
-                 disabled: '{!googleDriveConfigured}'
+                 disabled: '{!googleDriveConfigured || !rootDirectory}'
              },
              listeners: {
                  render: function(obj) {
@@ -111,22 +119,39 @@ Ext.define('Ung.apps.reports.view.Data', {
                  }
              }
          }, {
-             xtype: 'textfield',
-             regex: /^[\w\. \/]+$/,
-             regexText: 'The field can have only alphanumerics, spaces, or periods.'.t(),
-             fieldLabel: 'Google Drive Directory'.t(),
-             labelWidth: 150,
-             disabled: true,
-             bind: {
-                 value: '{settings.googleDriveDirectory}',
-                 disabled: '{!googleDriveConfigured}'
-             },
-             listeners: {
-                 render: function(obj) {
-                     obj.getEl().set({'data-qtip': 'The destination directory in google drive.'.t()});
-                 }
-             }
-         }
+            xtype: 'fieldset',
+            disabled: true,
+            hidden: true,
+            bind: {
+                disabled: '{!googleDriveConfigured || !rootDirectory}',
+                hidden: '{!googleDriveConfigured || !rootDirectory}'
+            },
+            layout: {
+                type: 'hbox'
+            },
+            items: [{
+                xtype: 'displayfield',
+                margin: '10 0 10 10',
+                fieldLabel: 'Google Drive Directory',
+                labelWidth: 150,
+                renderer: function() {
+                    var tablPanelVm = this.up('tabpanel').getViewModel(); 
+                    return tablPanelVm.get('rootDirectory') + '/';
+                }
+            },{
+                xtype: 'textfield',
+                margin: '10 10 10 0',
+                regex: /^[\w\. \/]+$/,
+                regexText: "The field can have only alphanumerics, spaces, or periods.".t(),
+                bind: '{settings.googleDriveDirectory}',
+                width: 200,
+                emptyText: 'Enter folder name',
+                autoEl: {
+                    tag: 'div',
+                    'data-qtip': "The destination directory in google drive.".t()
+                }
+            }]
+        }
     ]
     }, {
         title: 'Import / Restore Data Backup Files'.t(),

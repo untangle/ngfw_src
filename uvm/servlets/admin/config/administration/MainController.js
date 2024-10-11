@@ -88,6 +88,7 @@ Ext.define('Ung.config.administration.MainController', {
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.getSettings'),
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
+            Rpc.asyncPromise('rpc.UvmContext.googleManager.getSettings'),
         ], this)
         .then(function(result) {
             if(Util.isDestroyed(v, vm)){
@@ -96,6 +97,7 @@ Ext.define('Ung.config.administration.MainController', {
             vm.set({
                 adminSettings: result[0],
                 systemSettings: result[1],
+                googleSettings: result[2]
             });
 
             vm.set('panel.saveDisabled', false);
@@ -252,7 +254,8 @@ Ext.define('Ung.config.administration.MainController', {
 
         Ext.Deferred.sequence([
             Rpc.asyncPromise('rpc.adminManager.setSettings', vm.get('adminSettings')),
-            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings'))
+            Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
+            Rpc.asyncPromise('rpc.UvmContext.googleManager.setSettings', vm.get('googleSettings')),
         ], this)
         .then(function() {
             // add 3 seconds timeout to avoid exception
@@ -960,7 +963,7 @@ Ext.define('Ung.config.administration.MainController', {
                 this.started = false;
             },
             run: Ext.bind(function () {
-                var me = this, v = this.getView();
+                var me = this, v = this.getView(), vm = this.getViewModel();
                 if(!me || !v.rendered) {
                     return;
                 }
@@ -974,12 +977,15 @@ Ext.define('Ung.config.administration.MainController', {
                     return;
                 }
 
-                Rpc.asyncData('rpc.UvmContext.googleManager.isGoogleDriveConnected')
-                .then(function(result){
-                    if(Util.isDestroyed(me, v)){
+                Ext.Deferred.sequence([
+                    Rpc.asyncPromise('rpc.UvmContext.googleManager.isGoogleDriveConnected'),
+                    Rpc.asyncPromise('rpc.UvmContext.googleManager.getSettings'),
+                ], this)
+                .then(function(result) {
+                    if(Util.isDestroyed(v, vm)){
                         return;
                     }
-                    var isConnected = result;
+                    var isConnected = result[0];
 
                     v.down('[name=fieldsetDriveEnabled]').setVisible(isConnected);
                     v.down('[name=fieldsetDriveDisabled]').setVisible(!isConnected);
@@ -988,7 +994,10 @@ Ext.define('Ung.config.administration.MainController', {
                         me.refreshGoogleTask.stop();
                         return;
                     }
-                }, function(ex){
+                    vm.set({
+                        googleSettings: result[1]
+                    });
+                }, function(ex) {
                     Util.handleException(ex);
                 });
 
@@ -998,6 +1007,8 @@ Ext.define('Ung.config.administration.MainController', {
 
     // googleDriveConfigure is a button handler to attempt and configure the google drive connector
     googleDriveConfigure: function(){
+        // Disconnect existing connection first
+        Rpc.directData('rpc.UvmContext.googleManager.disconnectGoogleDrive');
         this.refreshGoogleTask.start();
         window.open(Rpc.directData('rpc.UvmContext.googleManager.getAuthorizationUrl', window.location.protocol, window.location.host));
     },
@@ -1008,6 +1019,114 @@ Ext.define('Ung.config.administration.MainController', {
         Rpc.directData('rpc.UvmContext.googleManager.disconnectGoogleDrive');
         me.refreshGoogleTask.run();
         vm.set('settings.googleSettings.authenticationEnabled', false);
+    },
+
+    handleSelectDirectory: function() {
+        var me = this,
+            messageData = null;
+        Ext.Deferred.sequence([
+            Rpc.asyncPromise('rpc.UvmContext.googleManager.getGoogleCloudApp')
+        ]).then(function(result){
+            if(result[0] && result[0].clientId) {
+                messageData = {
+                    action: 'openPicker',
+                    clientId: result[0].clientId,
+                    appId: result[0].appId,
+                    scopes: result[0].scopes,
+                    apiKey: result[0].apiKey,
+                    relayServerUrl: result[0].relayServerUrl,
+                    origin: window.location.protocol + "//" + window.location.host
+                };
+            }
+            me.openIframe(messageData);
+        }, function(ex) {
+            Util.handleException(ex);
+        });
+    },
+
+    openIframe: function(messageData) {
+        var me = this,
+            fileName = null,
+            vm = me.getViewModel(),
+            iframe,
+        iframeWindow = Ext.create('Ext.window.Window', {
+            title: 'Select Directory'.t(),
+            width: 800,
+            height: 520,
+            layout: 'fit',
+            listeners: {
+                afterrender: function(window) {
+                    // Dynamically create an iframe element when the window is rendered
+                    iframe = document.createElement('iframe');
+                    iframe.src = messageData.relayServerUrl + "/google-picker.php";
+                    iframe.width = '100%';
+                    iframe.height = '100%';
+                    iframe.allowFullscreen = true;
+                    
+                    window.body.dom.appendChild(iframe);
+
+                    // Once the iframe has loaded, send a messageData to it
+                    iframe.onload = function() {                        
+                        iframe.contentWindow.postMessage(messageData, messageData.relayServerUrl + "/google-picker.php");
+                    };
+                }
+            }
+        });
+        
+        iframeWindow.show();
+        iframeWindow.setVisible(false);
+
+        setTimeout(function() {
+            if (iframeWindow) {
+                Ext.Msg.alert('Timeout'.t(), "Google drive directory selection timed out.".t());
+                iframeWindow.close();
+                iframeWindow = null;
+            }
+        }, 5*60000);
+
+        // Create a promise to track eventListener
+        new Promise(function(resolve, reject) {
+            window.addEventListener('message', function(event) {
+                if (event.origin === messageData.relayServerUrl) {
+                    switch (event.data.action) {
+                        case 'requiredValuesBlank':
+                            Ext.Msg.alert('Error'.t(), Ext.String.format("The following values are blank: {0}. Contact Application Developer.".t(), event.data.blankValues));
+                            resolve();
+                            break;
+                        case 'popUpBloked':
+                            Ext.Msg.alert('Error'.t(), 'Popups are blocked. Please enable popups for this site from browser settings.'.t());
+                            resolve();
+                            break;
+                        case 'createPicker':
+                            if(iframeWindow) iframeWindow.setVisible(true);
+                            break;
+                        case 'nestedFile':
+                            if(iframeWindow) iframeWindow.setVisible(false);
+                            Ext.Msg.alert( 'Warning'.t(), 'Nested directory selection is not allowed, please select top level directory.'.t(),
+                                function(btn) {
+                                    iframe.contentWindow.postMessage({ action: 'reselectDirectory' }, messageData.relayServerUrl + "/google-picker.php");
+                                }
+                            );
+                            break;
+                        case 'fileSelected':
+                            fileName = event.data.fileName;
+                            resolve();
+                            break;
+                        case 'cancel':
+                            resolve();
+                            break;                            
+                    }
+                }
+            }, false);
+        }).then(function() {
+            if(fileName) {
+                vm.set('googleSettings.googleDriveRootDirectory', fileName);
+            }
+            if(iframeWindow) {
+                iframeWindow.close();
+                iframeWindow = null;
+            }            
+        });
     }
 });
 /**
