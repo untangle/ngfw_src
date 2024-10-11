@@ -326,21 +326,23 @@ public class ConfigurationBackupApp extends AppBase
                                "-d",settings.getGoogleDriveDirectory(),
                                backupFile.getAbsoluteFile().toString()};
         int exitCode = 0;
+        String output = null;
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
             exitCode = reader.waitFor();
+            output = reader.readFromOutput();
         } catch (Exception e) {
             exitCode = 99;
             logger.warn("Exception running backup",e);
         }
 
         if(exitCode != 0) {
-            logger.error("Backup returned non-zero error code ({})", exitCode);
+            logger.error("Backup returned non-zero error code ({}):{}", exitCode, output);
 
             String reason = null;
             switch(exitCode) {
             default:
-                reason = "Unknown error. Make sure your google drive is correctly configured";
+                reason = "Unknown error. Make sure your google drive is correctly configured. Error: " + output;
             }
             logger.warn("Backup failed: {}", reason);
             this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive")) );

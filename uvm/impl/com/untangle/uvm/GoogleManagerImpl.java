@@ -98,7 +98,20 @@ public class GoogleManagerImpl implements GoogleManager
 
         this.settings = settings;
 
-        if ( !isGoogleDriveConnected() ) {
+        if (isGoogleDriveConnected()) {
+            // Set refresh token in credentials.json
+            if (StringUtils.isNotEmpty(this.settings.getDriveRefreshToken())) {
+                ExecManagerResultReader reader;
+                try {
+                    reader = UvmContextFactory.context().execManager().execEvil("sed -i 's/\"refresh_token\": *\"[^\"]*\"/\"refresh_token\":\"" + settings.getDriveRefreshToken() + "\"/g' " + GOOGLE_DRIVE_PATH + ".gd/credentials.json");
+                    reader.waitFor();
+                } catch (IOException e) {
+                    logger.warn("Exception updating refresh token", e);
+                }
+            } else {
+                logger.info("Drive is connected but refresh token in settings object is empty");
+            }
+        } else {
             try {
                 File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
                 if ( creds.exists() )
@@ -110,18 +123,21 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
-     * Determine if Google drive is connection.
+     * Determine if google drive is connected by checking access token's validity. 'drive about' returns 400 bad request if token is invalid
      *
      * @return true if Google drive is configured, false otherwise.
      */
     public boolean isGoogleDriveConnected()
     {
-        String token = settings.getDriveRefreshToken();
-
-        if ( token == null )
-            return false;
-        token = token.replaceAll("\\s+", StringUtils.EMPTY);
-        return !token.isEmpty();
+        int exitCode = 0;
+        ExecManagerResultReader reader = null;
+        try {
+            reader = UvmContextFactory.context().execManager().execEvil("/usr/bin/drive about " +  GOOGLE_DRIVE_PATH);
+            exitCode = reader.waitFor();
+        } catch (IOException e) {
+            logger.warn("Exception checking connectivity to google drive",e);
+        }
+        return exitCode == 0;
     }
 
     /**
