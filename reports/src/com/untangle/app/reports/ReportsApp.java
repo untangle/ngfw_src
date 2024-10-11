@@ -25,6 +25,8 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.untangle.uvm.GoogleManager;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.commons.fileupload.FileItem;
@@ -72,6 +74,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
     private static final File HOURLY_CRON_FILE = new File("/etc/cron.hourly/reports-cron");
+    private static final String LINE_BREAK = "\n";
 
     protected static EventWriterImpl eventWriter = null;
     protected static EventReaderImpl eventReader = null;
@@ -221,6 +224,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
          */
         writeCronFile();
         writeHourlyCron();
+    }
+
+    /**
+     * get GoogleManager
+     * @return GoogleManager
+     */
+    public GoogleManager getGoogleManager() {
+        return UvmContextFactory.context().googleManager();
     }
 
     /**
@@ -834,32 +845,22 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private void writeCronFile()
     {
         // write the cron file for nightly runs
-        String cronStr = "#!/bin/sh" + "\n" + REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + "\n";
+        String cronStr = "#!/bin/sh" + LINE_BREAK + REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + LINE_BREAK;
 
         // We only need to write this file if the database has daily retention set
         if ( settings.getDbRetention() > 0) {
-            cronStr += REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " | logger -t uvmreports" + "\n";
+            cronStr += REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " | logger -t uvmreports" + LINE_BREAK;
         }
         
-        cronStr += REPORTS_VACUUM_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" + REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " | logger -t uvmreports" + "\n";
+        cronStr += REPORTS_VACUUM_TABLES_SCRIPT + " | logger -t uvmreports" + LINE_BREAK + REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " | logger -t uvmreports" + LINE_BREAK;
 
+        String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
+        String dir = StringUtils.isNotEmpty(appGoogleDrivePath) ? " -d \"" + appGoogleDrivePath + "\"" : StringUtils.EMPTY;
         if ( settings.getGoogleDriveUploadData() ) {
-            String dir = settings.getGoogleDriveDirectory();
-            if ( dir != null )
-                dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
-            else
-                dir = "";
-            
-            cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
+            cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + LINE_BREAK;
         }
         if ( settings.getGoogleDriveUploadCsv() ) {
-            String dir = settings.getGoogleDriveDirectory();
-            if ( dir != null )
-                dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
-            else
-                dir = "";
-            
-            cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
+            cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + LINE_BREAK;
         }
 
         
@@ -867,7 +868,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         try {
             out = new BufferedWriter(new FileWriter(CRON_FILE));
             out.write(cronStr, 0, cronStr.length());
-            out.write("\n");
+            out.write(LINE_BREAK);
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
             return;
@@ -892,14 +893,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
         //Currently we only need to write this file if the database has hourly retention set
         if(settings.getDbRetentionHourly() > 0) {
-            String cronStr = "#!/bin/sh" + "\n" +
-            REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " -h " + settings.getDbRetentionHourly() + " 0 | logger -t uvmreports" + "\n";
+            String cronStr = "#!/bin/sh" + LINE_BREAK +
+            REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " -h " + settings.getDbRetentionHourly() + " 0 | logger -t uvmreports" + LINE_BREAK;
 
             BufferedWriter out = null;
             try {
                 out = new BufferedWriter(new FileWriter(HOURLY_CRON_FILE));
                 out.write(cronStr, 0, cronStr.length());
-                out.write("\n");
+                out.write(LINE_BREAK);
             } catch (IOException ex) {
                 logger.error("Unable to write file", ex);
                 return;
@@ -1211,7 +1212,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 resp.setHeader("Content-Type","text/csv");
                 resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
                 // Write the header
-                resp.getWriter().write(columnListStr + "\n");
+                resp.getWriter().write(columnListStr + LINE_BREAK);
                 resp.getWriter().flush();
 
                 ResultSet resultSet = resultSetReader.getResultSet();
@@ -1253,7 +1254,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                         resp.getWriter().write(oStr);
                         writtenColumnCount++;
                     }
-                    resp.getWriter().write("\n");
+                    resp.getWriter().write(LINE_BREAK);
                 }
             } catch (Exception e) {
                 logger.warn("Failed to export CSV.",e);
