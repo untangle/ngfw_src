@@ -292,7 +292,8 @@ public class GoogleManagerImpl implements GoogleManager
     {
         GoogleSettings googleSettings = getSettings();
         removeGoogleDriveCredentials();
-        googleSettings.setDriveRefreshToken( null );
+        googleSettings.setDriveRefreshToken(null);
+        googleSettings.setGoogleDriveRootDirectory(null);
         setSettings( googleSettings );
     }
 
