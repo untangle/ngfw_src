@@ -79,6 +79,19 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
+     * Removes google drive credentials.json
+     */
+    private void removeGoogleDriveCredentials() {
+        try {
+            File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
+            if ( creds.exists() )
+                creds.delete();
+        } catch (Exception ex) {
+            logger.warn("Error deleting credentials.json.", ex);
+        }
+    }
+
+    /**
      * Configure Google authenticator settings.
      *
      * @param settings  Google authenticator settings.
@@ -112,13 +125,7 @@ public class GoogleManagerImpl implements GoogleManager
                 logger.info("Drive is connected but refresh token in settings object is empty");
             }
         } else {
-            try {
-                File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
-                if ( creds.exists() )
-                    creds.delete();
-            } catch (Exception ex) {
-                logger.warn("Error deleting credentials.json.", ex);
-            }
+            removeGoogleDriveCredentials();
         }
     }
 
@@ -284,6 +291,7 @@ public class GoogleManagerImpl implements GoogleManager
     public void disconnectGoogleDrive()
     {
         GoogleSettings googleSettings = getSettings();
+        removeGoogleDriveCredentials();
         googleSettings.setDriveRefreshToken( null );
         setSettings( googleSettings );
     }
