@@ -84,7 +84,7 @@ Ext.define('Ung.apps.reports.view.Data', {
             hidden: true,
             bind: {
                 hidden: '{rootDirectory}',
-                html: 'The Root directory is unconfigured.',
+                html: 'The Google Drive directory is unconfigured.'.t(),
                 style: { color: "red" }
             }
         }, {

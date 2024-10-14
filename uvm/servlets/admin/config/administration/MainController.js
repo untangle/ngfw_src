@@ -986,17 +986,16 @@ Ext.define('Ung.config.administration.MainController', {
                         return;
                     }
                     var isConnected = result[0];
+                    var googleSettings = result[1];
 
                     v.down('[name=fieldsetDriveEnabled]').setVisible(isConnected);
                     v.down('[name=fieldsetDriveDisabled]').setVisible(!isConnected);
 
-                    if ( isConnected ){
+                    if ( isConnected && googleSettings.driveRefreshToken != vm.get('googleSettings.driveRefreshToken')){
+                        vm.set({ googleSettings: googleSettings });
                         me.refreshGoogleTask.stop();
                         return;
                     }
-                    vm.set({
-                        googleSettings: result[1]
-                    });
                 }, function(ex) {
                     Util.handleException(ex);
                 });
@@ -1007,8 +1006,6 @@ Ext.define('Ung.config.administration.MainController', {
 
     // googleDriveConfigure is a button handler to attempt and configure the google drive connector
     googleDriveConfigure: function(){
-        // Disconnect existing connection first
-        Rpc.directData('rpc.UvmContext.googleManager.disconnectGoogleDrive');
         this.refreshGoogleTask.start();
         window.open(Rpc.directData('rpc.UvmContext.googleManager.getAuthorizationUrl', window.location.protocol, window.location.host));
     },

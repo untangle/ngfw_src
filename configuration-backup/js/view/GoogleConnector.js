@@ -47,13 +47,13 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
             },
             items: [{
                 xtype: 'component',
-                html: 'The Root directory must be configured in order to backup to Google Drive.'.t(),
+                html: 'The Google Drive directory must be configured in order to backup to Google Drive.'.t(),
                 margin: '10 0 0 0',
                 style: {color:'red'},
                 cls: 'warning'
             }, {
                 xtype: "button",
-                text: 'Configure Root Directory'.t(),
+                text: 'Configure Google Directory'.t(),
                 iconCls: "fa fa-check-circle",
                 margin: '10 0 10 0',
                 bind:{
@@ -122,7 +122,7 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                 },
                 {
                     xtype: 'button',
-                    text: 'Configure Root Directory'.t(),
+                    text: 'Configure Google Directory'.t(),
                     itemId: 'selectDirButton',
                     margin: '10',
                     bind:{
