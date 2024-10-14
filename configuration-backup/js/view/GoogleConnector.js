@@ -26,14 +26,6 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                 margin: '10 0 0 0',
                 style: {color:'red'},
                 cls: 'warning'
-            }, {
-                xtype: "button",
-                text: 'Configure Google Drive'.t(),
-                iconCls: "fa fa-check-circle",
-                margin: '10 0 10 0',
-                bind:{
-                    handler: '{googleDriveConfigure}'
-                }
             }]
         },{
             xtype: 'fieldset',
@@ -47,19 +39,35 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
             },
             items: [{
                 xtype: 'component',
-                html: 'The Google Drive directory must be configured in order to backup to Google Drive.'.t(),
+                html: 'The Google Drive directory must be selected in order to backup to Google Drive.'.t(),
                 margin: '10 0 0 0',
                 style: {color:'red'},
                 cls: 'warning'
-            }, {
-                xtype: "button",
-                text: 'Configure Google Directory'.t(),
-                iconCls: "fa fa-check-circle",
-                margin: '10 0 10 0',
-                bind:{
-                    handler: '{googleDriveConfigure}'
-                }
             }]
+        },{
+            xtype: 'fieldset',
+            collapsible: false,
+            border: 0,
+            hidden: true,
+            disabled: true,
+            bind: {
+                hidden: '{googleDriveIsConfigured == false || !rootDirectory}',
+                disabled: '{googleDriveIsConfigured == false || !rootDirectory}'
+            },
+            items: [{
+                xtype: 'component',
+                html: 'The Google Connector is configured.'.t(),
+                margin: '10 0 0 0',
+                style: {color:'green'}
+            }]
+        },{
+            xtype: "button",
+            text: 'Configure Google Drive'.t(),
+            iconCls: "fa fa-check-circle",
+            margin: '0 0 10 10',
+            bind:{
+                handler: '{googleDriveConfigure}'
+            }
         },{
             xtype: 'fieldset',
             collapsible: false,
@@ -70,10 +78,6 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                  disabled: '{googleDriveIsConfigured == false || !rootDirectory}'
              },
             items: [{
-                xtype: 'component',
-                html: 'The Google Connector is configured.'.t(),
-                style: {color:'green'}
-            }, {
                 xtype: "checkbox",
                 bind: '{settings.googleDriveEnabled}',
                 fieldLabel: 'Enable upload to Google Drive'.t(),
@@ -104,8 +108,8 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                     fieldLabel: 'Google Drive Directory',
                     labelWidth: 150,
                     renderer: function() {
-                        var tablPanelVm = this.up('tabpanel').getViewModel(); 
-                        return tablPanelVm.get('rootDirectory') + '/';
+                        var rootDirectory = Rpc.directData('rpc.UvmContext.googleManager.getAppSpecificGoogleDrivePath', null);
+                        return Ext.String.format('<strong><span class="cond-val"> {0}</span></strong>', rootDirectory + " /");
                     }
                 },{
                     xtype: 'textfield',
@@ -118,15 +122,6 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                     autoEl: {
                         tag: 'div',
                         'data-qtip': "The destination directory in google drive.".t()
-                    }
-                },
-                {
-                    xtype: 'button',
-                    text: 'Configure Google Directory'.t(),
-                    itemId: 'selectDirButton',
-                    margin: '10',
-                    bind:{
-                        handler: '{googleDriveConfigure}'
                     }
                 }]
             }]

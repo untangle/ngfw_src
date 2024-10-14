@@ -84,7 +84,7 @@ Ext.define('Ung.apps.reports.view.Data', {
             hidden: true,
             bind: {
                 hidden: '{rootDirectory}',
-                html: 'The Google Drive directory is unconfigured.'.t(),
+                html: 'The Google Drive directory is not selected.'.t(),
                 style: { color: "red" }
             }
         }, {
@@ -135,8 +135,8 @@ Ext.define('Ung.apps.reports.view.Data', {
                 fieldLabel: 'Google Drive Directory',
                 labelWidth: 150,
                 renderer: function() {
-                    var tablPanelVm = this.up('tabpanel').getViewModel(); 
-                    return tablPanelVm.get('rootDirectory') + '/';
+                    var rootDirectory = Rpc.directData('rpc.UvmContext.googleManager.getAppSpecificGoogleDrivePath', null);
+                    return Ext.String.format('<strong><span class="cond-val"> {0}</span></strong>', rootDirectory + " /");
                 }
             },{
                 xtype: 'textfield',
