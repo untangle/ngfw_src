@@ -36,6 +36,7 @@ public abstract class AppBase implements App
     private final Logger logger = LogManager.getLogger(AppBase.class);
 
     private String eventTag = "";
+    private static final String LICENSE_NOT_FOUND = "No License Found";
 
     /**
      * These are the (generic) settings for this app The app usually stores more
@@ -137,7 +138,6 @@ public abstract class AppBase implements App
     {
         return currentState;
     }
-
     /**
      * Initialization the application
      */
@@ -263,29 +263,6 @@ public abstract class AppBase implements App
         uninstall();
 
         destroy(true);
-    }
-
-    /**
-     * Stop the application if it's running
-     */
-    public void stopIfRunning()
-    {
-        UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
-
-        switch (currentState)
-        {
-        case RUNNING:
-            stop(false);
-            break;
-        case LOADED:
-            break;
-        case INITIALIZED:
-            break;
-        default:
-            break;
-        }
-
-        UvmContextFactory.context().loggingManager().setLoggingUvm();
     }
 
     /**
@@ -1061,6 +1038,86 @@ public abstract class AppBase implements App
         } else {
             return parentApp;
         }
+    }
+
+
+    // /**
+    //  * Load the class
+    //  * 
+    //  * @param licenseStatus
+    //  *        The license status
+    //  */
+    // public void stopIfRunning(String licenseStatus)
+    // {
+    //     UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
+
+    //     switch (currentState)
+    //     {
+    //     case RUNNING:
+    //         try {
+    //             if (("No License Found".equals(licenseStatus))) {
+    //             //Update target state
+    //             changeState(this.getTargetState1(), false);
+    //             // stop(false);
+    //             }
+    //         } catch(Exception e ) {
+    //             logger.info("ExceptionIgnore" +  e);
+    //         }
+    //             break;
+    //     case LOADED:
+    //         break;
+    //     case INITIALIZED:
+    //     try {
+    //         if (("No License Found".equals(licenseStatus))) {
+    //         //Update target state
+    //         changeState(this.getAppSettings().getTargetState(), false);
+    //         // stop(false);
+    //         }
+    //     } catch(Exception e ) {
+    //         logger.info("ExceptionIgnore" +  e);
+    //     }
+    //         break;
+    //     default:
+    //         break;
+    //     }
+
+    //     UvmContextFactory.context().loggingManager().setLoggingUvm();
+    // }
+
+    /**
+     * Load the class
+     * 
+     * @param licenseStatus
+     *        The license status
+     *
+     */
+    public void stopIfRunning(String licenseStatus)
+    {
+        UvmContextFactory.context().loggingManager().setLoggingApp(appSettings.getId());
+
+        switch (currentState)
+        {
+        case RUNNING:
+            if ((LICENSE_NOT_FOUND.equals(licenseStatus))) {
+                //Update Current state to Target State Mismatch is present in this scenato
+                changeState(this.getAppSettings().getTargetState(), false);
+            } else {
+                stop(false);
+            }
+            break;
+        case LOADED:
+            break;
+        case INITIALIZED:
+            if ((LICENSE_NOT_FOUND.equals(licenseStatus))) {
+                //Update Current state to Target State Mismatch is present in this scenato
+                changeState(this.getAppSettings().getTargetState(), false);
+            }
+            break;
+        default:
+            break;
+        }
+
+        UvmContextFactory.context().loggingManager().setLoggingUvm();
     }
 
     /**

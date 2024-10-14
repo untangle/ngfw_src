@@ -26,6 +26,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppManagerSettings;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.PolicyManager;
+import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
@@ -198,6 +199,7 @@ public class AppManagerImpl implements AppManager
             this._setSettings(this.settings);
         } catch (Exception e) {
             //roll back changes
+            logger.info("exception saveTargetState(): already in state " + e);
             if (originalState != null) {
                 for (AppSettings appSettings : this.settings.getApps()) {
                     if (appSettings.getId() == app.getAppSettings().getId()) {
@@ -1105,10 +1107,8 @@ public class AppManagerImpl implements AppManager
                     logger.info("Stopping  : " + name + " [" + id + "]");
 
                     long startTime = System.currentTimeMillis();
-                    ((AppBase) app).stopIfRunning();
+                    ((AppBase) app).stopIfRunning(name);
                     long endTime = System.currentTimeMillis();
-
-                    logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
 
                     loadedAppsMap.remove(app.getAppSettings().getId());
                 }
@@ -1155,11 +1155,13 @@ public class AppManagerImpl implements AppManager
 
                         logger.info("Stopping  : " + name + " [" + id + "] because of invalid license");
 
+                        License license = UvmContextFactory.context().licenseManager().getLicense(name, true);
                         long startTime = System.currentTimeMillis();
-                        ((AppBase) app).stopIfRunning();
+                        ((AppBase) app).stopIfRunning(license.getStatus());
                         long endTime = System.currentTimeMillis();
 
                         logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
+
                     }
                 }
             };
