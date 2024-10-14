@@ -51,7 +51,7 @@ Ext.define('Ung.config.administration.view.Google', {
                 xtype: "button",
                 text: 'Reconfigure Google Drive'.t(),
                 iconCls: "fa fa-refresh",
-                margin: '10 0 10 0',
+                margin: '10 10 10 0',
                 handler: 'googleDriveConfigure'
             }, {
                 xtype: "button",
@@ -69,7 +69,7 @@ Ext.define('Ung.config.administration.view.Google', {
                     xtype: "textfield",
                     margin: '10',
                     readOnly: true,
-                    emptyText: "No Directory selected".t(),
+                    emptyText: "No Directory Selected".t(),
                     regex: /^[\w\. \/]+$/,
                     regexText: "The field can have only alphanumerics, spaces, or periods.".t(),
                     fieldLabel: "Google Drive Directory".t(),

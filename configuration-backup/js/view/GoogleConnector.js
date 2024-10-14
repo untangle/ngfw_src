@@ -11,60 +11,26 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
     items: [{
         title: 'Google Connector'.t(),
         items:[{
-            xtype: 'fieldset',
-            collapsible: false,
-            border: 0,
-            hidden: true,
-            disabled: true,
+            xtype: 'component',
+            margin: '10 0 0 10',
             bind: {
-                hidden: '{googleDriveIsConfigured == true}',
-                disabled: '{googleDriveIsConfigured == true}'
-            },
-            items: [{
-                xtype: 'component',
-                html: 'The Google Connector must be configured in order to backup to Google Drive.'.t(),
-                margin: '10 0 0 0',
-                style: {color:'red'},
-                cls: 'warning'
-            }]
+                html: '{driveConfiguredText}',
+                style: { color: '{googleDriveIsConfigured ? "green" : "red"}'}
+            }
         },{
-            xtype: 'fieldset',
-            collapsible: false,
-            border: 0,
+            xtype: 'component',
             hidden: true,
-            disabled: true,
+            margin: '0 0 0 10',
             bind: {
-                hidden: '{googleDriveIsConfigured == false || rootDirectory}',
-                disabled: '{googleDriveIsConfigured == false || rootDirectory}'
-            },
-            items: [{
-                xtype: 'component',
-                html: 'The Google Drive directory must be selected in order to backup to Google Drive.'.t(),
-                margin: '10 0 0 0',
-                style: {color:'red'},
-                cls: 'warning'
-            }]
-        },{
-            xtype: 'fieldset',
-            collapsible: false,
-            border: 0,
-            hidden: true,
-            disabled: true,
-            bind: {
-                hidden: '{googleDriveIsConfigured == false || !rootDirectory}',
-                disabled: '{googleDriveIsConfigured == false || !rootDirectory}'
-            },
-            items: [{
-                xtype: 'component',
-                html: 'The Google Connector is configured.'.t(),
-                margin: '10 0 0 0',
-                style: {color:'green'}
-            }]
+                hidden: '{rootDirectory}',
+                html: 'The Google Drive directory is not selected.'.t(),
+                style: { color: "red" }
+            }
         },{
             xtype: "button",
             text: 'Configure Google Drive'.t(),
             iconCls: "fa fa-check-circle",
-            margin: '0 0 10 10',
+            margin: '10 0 10 10',
             bind:{
                 handler: '{googleDriveConfigure}'
             }
