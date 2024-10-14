@@ -22,7 +22,7 @@ Ext.define('Ung.config.administration.view.Google', {
              },
             items: [{
                 xtype: 'component',
-                html: 'The Google Drive is unconfigured.'.t(),
+                html: 'The Google Connector is unconfigured.'.t(),
                 margin: '10 0 0 0',
                 style: {color:'red'},
                 cls: 'warning'
@@ -44,7 +44,7 @@ Ext.define('Ung.config.administration.view.Google', {
              },
             items: [{
                 xtype: 'component',
-                html: 'The Google Drive is configured.'.t(),
+                html: 'The Google Connector is configured.'.t(),
                 margin: '10 0 0 0',
                 style: {color:'green'}
             }, {
