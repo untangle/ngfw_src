@@ -69,6 +69,7 @@ Ext.define('Ung.config.administration.view.Google', {
                     xtype: "textfield",
                     margin: '10',
                     readOnly: true,
+                    emptyText: "No Directory selected".t(),
                     regex: /^[\w\. \/]+$/,
                     regexText: "The field can have only alphanumerics, spaces, or periods.".t(),
                     fieldLabel: "Google Drive Directory".t(),
