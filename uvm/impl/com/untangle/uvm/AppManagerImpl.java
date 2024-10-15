@@ -26,6 +26,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppManagerSettings;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.PolicyManager;
+import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
@@ -1150,6 +1151,16 @@ public class AppManagerImpl implements AppManager
                 {
                     String name = app.getAppProperties().getName();
                     Long id = app.getAppSettings().getId();
+
+                    boolean isLicenseValid = UvmContextFactory.context().licenseManager().isLicenseValid(name);
+                    boolean isStateInconsistent = !((AppBase) app).getRunState().equals(((AppBase) app).getAppSettings().getTargetState());
+
+                    if(isLicenseValid && isStateInconsistent) {
+                        if(app.getAppSettings().getTargetState().equals(AppState.RUNNING)){
+                            ((AppBase) app).syncStateForValidLicense();
+                        }
+
+                    }
 
                     if (!UvmContextFactory.context().licenseManager().isLicenseValid(name)) {
 

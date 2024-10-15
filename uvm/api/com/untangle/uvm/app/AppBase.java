@@ -871,6 +871,13 @@ public abstract class AppBase implements App
     }
 
     /**
+     * Synch runState with targetState for Valid license
+     */
+    public void syncStateForValidLicense(){
+        start(false);
+    }
+    
+    /**
      * Start the application
      * 
      * @param saveNewTargetState
