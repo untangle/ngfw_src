@@ -38,6 +38,7 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
             var googleDrive = new Ung.cmp.GoogleDrive();
             vm.set( 'googleDriveIsConfigured', googleDrive.isConfigured() );
             vm.set( 'googleDriveConfigure', function(){ googleDrive.configure(vm.get('policyId')); });
+            vm.set( 'rootDirectory', googleDrive.getRootDirectory() );
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);

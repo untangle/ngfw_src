@@ -11,41 +11,39 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
     items: [{
         title: 'Google Connector'.t(),
         items:[{
+            xtype: 'component',
+            margin: '10 0 0 10',
+            bind: {
+                html: '{driveConfiguredText}',
+                style: { color: '{googleDriveIsConfigured ? "green" : "red"}'}
+            }
+        },{
+            xtype: 'component',
+            hidden: true,
+            margin: '0 0 0 10',
+            bind: {
+                hidden: '{rootDirectory}',
+                html: 'The Google Drive directory is not selected.'.t(),
+                style: { color: "red" }
+            }
+        },{
+            xtype: "button",
+            text: 'Configure Google Drive'.t(),
+            iconCls: "fa fa-check-circle",
+            margin: '10 0 10 10',
+            bind:{
+                handler: '{googleDriveConfigure}'
+            }
+        },{
             xtype: 'fieldset',
             collapsible: false,
             hidden: true,
             disabled: true,
              bind: {
-                 hidden: '{googleDriveIsConfigured == true}',
-                 disabled: '{googleDriveIsConfigured == true}'
+                 hidden: '{googleDriveIsConfigured == false || !rootDirectory}',
+                 disabled: '{googleDriveIsConfigured == false || !rootDirectory}'
              },
             items: [{
-                xtype: 'component',
-                html: 'The Google Connector must be configured in order to backup to Google Drive.'.t(),
-                style: {color:'red'},
-                cls: 'warning'
-            }, {
-                xtype: "button",
-                margin: '5 0 0 0',
-                text: 'Configure Google Drive'.t(),
-                bind:{
-                    handler: '{googleDriveConfigure}'
-                }
-            }]
-        } ,{
-            xtype: 'fieldset',
-            collapsible: false,
-            hidden: true,
-            disabled: true,
-             bind: {
-                 hidden: '{googleDriveIsConfigured == false}',
-                 disabled: '{googleDriveIsConfigured == false}'
-             },
-            items: [{
-                xtype: 'component',
-                html: 'The Google Connector is configured.'.t(),
-                style: {color:'green'}
-            }, {
                 xtype: "checkbox",
                 bind: '{settings.googleDriveEnabled}',
                 fieldLabel: 'Enable upload to Google Drive'.t(),
@@ -67,13 +65,26 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                     hidden: '{settings.googleDriveEnabled == false}',
                     disabled: '{settings.googleDriveEnabled == false}'
                 },
+                layout: {
+                    type: 'hbox'
+                },
                 items: [{
-                    xtype: "textfield",
+                    xtype: 'displayfield',
+                    margin: '10 0 10 10',
+                    fieldLabel: 'Google Drive Directory',
+                    labelWidth: 150,
+                    renderer: function() {
+                        var rootDirectory = Rpc.directData('rpc.UvmContext.googleManager.getAppSpecificGoogleDrivePath', null);
+                        return Ext.String.format('<strong><span class="cond-val"> {0}</span></strong>', rootDirectory + " /");
+                    }
+                },{
+                    xtype: 'textfield',
+                    margin: '10 10 10 0',
                     regex: /^[\w\. \/]+$/,
                     regexText: "The field can have only alphanumerics, spaces, or periods.".t(),
-                    fieldLabel: "Google Drive Directory".t(),
-                    labelWidth: 200,
                     bind: '{settings.googleDriveDirectory}',
+                    width: 200,
+                    emptyText: 'Enter folder name',
                     autoEl: {
                         tag: 'div',
                         'data-qtip': "The destination directory in google drive.".t()

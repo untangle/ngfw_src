@@ -9,6 +9,7 @@ Ext.define('Ung.config.administration.MainModel', {
 
         adminSettings: null,
         systemSettings: null,
+        googleSettings: null,
 
         serverCertificates: null,
         rootCertificateInformation: null,
