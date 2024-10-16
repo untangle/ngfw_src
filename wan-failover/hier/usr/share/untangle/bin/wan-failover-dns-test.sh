@@ -12,7 +12,7 @@ if [ -z "$DNS_SERVER" ] || [ "${DNS_SERVER}x" = "0.0.0.0x" ] ; then
     if [ -z "${DNS_SERVER}" ] && [ -f /etc/dnsmasq.d/dhcp-upstream-dns-servers ]; then
         DNS_SERVER=`awk '/^.*server=.*uplink.'${WAN_FAILOVER_NETD_INTERFACE_ID}'/ { sub( /^.*server=/, "" ) ; print $1 ; next ; exit }' /etc/dnsmasq.d/dhcp-upstream-dns-servers | head -n 1`
     fi
-    # extract DNS server from this pppoe dnsmasq file 
+    # extract DNS server from pppoe dnsmasq file 
     if [ -z "${DNS_SERVER}" ] && [ -f /etc/dnsmasq.d/pppoe-upstream-dns-servers ]; then
         DNS_SERVER=`awk '/^.*server=.*uplink.'${WAN_FAILOVER_NETD_INTERFACE_ID}'/ { sub( /^.*server=/, "" ) ; print $1 ; next ; exit }' /etc/dnsmasq.d/pppoe-upstream-dns-servers | head -n 1`
     fi
