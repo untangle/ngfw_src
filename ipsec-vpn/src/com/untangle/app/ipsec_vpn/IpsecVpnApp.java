@@ -422,7 +422,6 @@ public class IpsecVpnApp extends AppBase
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
-        UvmContextFactory.context().daemonManager().incrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().incrementUsageCount("ipsec");
 
         reconfigure();

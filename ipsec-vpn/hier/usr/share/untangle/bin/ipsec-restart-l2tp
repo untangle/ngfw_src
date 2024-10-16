@@ -3,10 +3,13 @@
 # Restart the xlt2pd daemon when VPN is Enabled
 # Stop if Disabled
 
-if (sys.argv[1] == "VPN_ENABLED"):
+if [ "$1" = "VPN_ENABLED" ]; then
     systemctl reset-failed xl2tpd 2>&1 1>> /dev/null
     systemctl restart xl2tpd 2>&1 1>> /dev/null
-else:
+
+else
     systemctl stop xl2tpd 2>&1 1>> /dev/null
+
+fi 
 
 exit 0
