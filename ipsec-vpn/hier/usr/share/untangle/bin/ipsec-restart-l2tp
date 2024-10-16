@@ -1,0 +1,12 @@
+#!/bin/dash
+
+# Restart the xlt2pd daemon when VPN is Enabled
+# Stop if Disabled
+
+if (sys.argv[1] == "VPN_ENABLED"):
+    systemctl reset-failed xl2tpd 2>&1 1>> /dev/null
+    systemctl restart xl2tpd 2>&1 1>> /dev/null
+else:
+    systemctl stop xl2tpd 2>&1 1>> /dev/null
+
+exit 0
