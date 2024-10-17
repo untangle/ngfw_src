@@ -1,5 +1,6 @@
 """wan_failover tests"""
 import time
+import copy
 import unittest
 import pytest
 import runtests
@@ -89,6 +90,30 @@ def build_wan_test(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL=
     settings = wf_app.getSettings()
     settings["tests"]["list"].append(rule)
     wf_app.setSettings(settings)
+
+
+def build_wan_test_payload(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2, wf_app=None):
+    """
+    Build test and add to web failover settings
+    """
+    name = "test1 " + str(testType) + " " + str(matchInterface)
+    testInterval *= 1000  # convert from secs to millisecs
+    testTimeout *= 1000  # convert from secs to millisecs
+    rule = {
+        "delayMilliseconds": testInterval,
+        "description": name,
+        "enabled": True,
+        "failureThreshold": 3,
+        "httpUrl": httpURL,
+        "interfaceId": matchInterface,
+        "javaClass": "com.untangle.app.wan_failover.WanTestSettings",
+        "pingHostname": pingHost,
+        "testHistorySize": 4,
+        "timeoutMilliseconds": testTimeout,
+        "type": testType
+    }
+    return rule
+
 
 def nuke_rules():
     appData = app.getSettings()
@@ -359,6 +384,37 @@ class WanFailoverTests(NGFWTestCase):
         # Check to see if the faceplate counters have incremented. 
         post_count = global_functions.get_app_metric_value(app,"changed")
         assert(pre_count < post_count)
+
+    @pytest.mark.slow
+    def test_075_single_wan_offline_message(self):
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+        if (len(indexOfWans) < 2):
+            raise unittest.SkipTest("Need at least two WANS for test_075_single_wan_offline_message")
+        netsettings = copy.deepcopy(global_functions.uvmContext.networkManager().getNetworkSettings())
+
+        #Disconnecting single wan and verifying message is in proper format
+        wan_interface_ids  = [i for i, d in enumerate(netsettings.get("interfaces").get("list")) if d.get("isWan")]
+
+        #Disconnect the last wan interface in list
+        netsettings.get("interfaces").get("list")[wan_interface_ids[1]]['configType'] = 'DISABLED'
+        netsettings.get("interfaces").get("list")[wan_interface_ids[1]]['v4ConfigType'] = 'AUTO'
+
+        #interface id  used in wan failover test
+        interface_id =  netsettings.get("interfaces").get("list")[wan_interface_ids[1]]["interfaceId"]
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        #Run wan fail over on disconnected wan
+        payload = build_wan_test_payload(interface_id, "ping", pingHost="8.8.8.8")
+        result = self._app.runTest(payload)
+
+        #Verify the message is in proper format
+        assert ("Wan interface is not connected or reachable." in result)
+
+        # Reverting back original settings
+
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
 
 
 test_registry.register_module("wan-failover", WanFailoverTests)

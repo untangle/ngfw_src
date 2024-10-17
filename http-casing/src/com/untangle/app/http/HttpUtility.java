@@ -156,7 +156,7 @@ public class HttpUtility {
             if (data.remaining() < 2) throw new BufferUnderflowException();
             int extType = Math.abs(data.getShort());
             int extSize = Math.abs(data.getShort());
-
+ 
             // if not server name extension adjust the offset to the next
             // extension record and continue
             if (extType != SERVER_NAME) {
