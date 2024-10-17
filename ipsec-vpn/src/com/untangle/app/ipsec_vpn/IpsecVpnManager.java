@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.app.AppSettings.AppState;
+import com.untangle.uvm.vnet.AppSession;
 
 /**
  * This class uses the application settings to dynamically generate the
@@ -36,6 +38,7 @@ public class IpsecVpnManager
     private static final String XAUTH_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-xauth-updown";
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
     private static final String VTI_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-vti-updown";
+
 
     private static final String IPSEC_APP = "/sbin/ipsec";
 
@@ -67,6 +70,9 @@ public class IpsecVpnManager
                                               "aes256-sha1-modp2048,aes256-sha1-modp1536,aes256-sha1-modp1024";
 
     public static final String ACTIVE_WAN_ADDRESS = "active_wan_address";
+
+    
+
     private InetAddress activeWanAddress = null;
     private IpsecVpnApp app;
 
@@ -148,9 +154,16 @@ public class IpsecVpnManager
             logger.error("IpsecVpnManager.generateConfig()", e);
         }
 
-        // call the ipsec reload script
-        UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT);
+        IpsecVpnApp ipsecVpn = (IpsecVpnApp) UvmContextFactory.context().appManager().app("ipsec-vpn");
+        boolean isAppEnabled = false;
 
+        if (ipsecVpn != null && ipsecVpn.getAppSettings() != null) {
+            isAppEnabled = ipsecVpn.getAppSettings().getTargetState().equals(AppState.RUNNING);
+        }
+
+        // call the ipsec reload script
+        UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT + " " + isAppEnabled + " " + settings.getVpnflag());
+        
         /*
          * For every active tunnel configured to be always connected we call
          * ipsec route. This will install the kernel policy to automatically
