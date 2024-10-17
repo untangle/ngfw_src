@@ -156,15 +156,20 @@ public class IpsecVpnManager
         catch (Exception e) {
             logger.error("IpsecVpnManager.generateConfig()", e);
         }
-        
+
         // call the ipsec reload script
         UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT);
 
         String vpnState = settings.getVpnflag() ? VPN_ENABLED : VPN_DISABLED;
 
-        boolean isAppEnabled = ((IpsecVpnApp) UvmContextFactory.context().appManager().app("ipsec-vpn")).getAppSettings().getTargetState().equals(AppState.RUNNING);
+        IpsecVpnApp ipsecVpn = (IpsecVpnApp) UvmContextFactory.context().appManager().app("ipsec-vpn");
+        boolean isAppEnabled = false;
 
-        //xl2tpd should start when the IPsec app is running and the VPN flag is enabled
+        if (ipsecVpn != null && ipsecVpn.getAppSettings() != null) {
+            isAppEnabled = ipsecVpn.getAppSettings().getTargetState().equals(AppState.RUNNING);
+        }
+        
+        //xl2tpd should start when the IPsec app is running and the VPN flag is enabled.
         if(isAppEnabled){
             UvmContextFactory.context().execManager().exec(RESTART_L2TP_SCRIPT + " " + vpnState) ;
         }
