@@ -424,7 +424,12 @@ public class IpsecVpnApp extends AppBase
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().incrementUsageCount("ipsec");
-
+        // Fix for NGFW-14844 there should be waiting time between 
+        // charon daemon restart and STRONGSWAN_CONF_FILE rewrite
+        try {
+            Thread.sleep(2000);
+        } catch (Exception e) {
+        }
         reconfigure();
     }
 
