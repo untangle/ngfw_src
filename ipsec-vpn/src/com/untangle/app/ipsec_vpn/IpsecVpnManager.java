@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.app.AppSettings.AppState;
+import com.untangle.uvm.vnet.AppSession;
 
 /**
  * This class uses the application settings to dynamically generate the
@@ -154,12 +156,18 @@ public class IpsecVpnManager
         catch (Exception e) {
             logger.error("IpsecVpnManager.generateConfig()", e);
         }
-
+        
         // call the ipsec reload script
         UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT);
 
         String vpnState = settings.getVpnflag() ? VPN_ENABLED : VPN_DISABLED;
-        UvmContextFactory.context().execManager().exec(RESTART_L2TP_SCRIPT + " " + vpnState) ;
+
+        boolean isAppEnabled = ((IpsecVpnApp) UvmContextFactory.context().appManager().app("ipsec-vpn")).getAppSettings().getTargetState().equals(AppState.RUNNING);
+
+        //xl2tpd should start when the IPsec app is running and the VPN flag is enabled
+        if(isAppEnabled){
+            UvmContextFactory.context().execManager().exec(RESTART_L2TP_SCRIPT + " " + vpnState) ;
+        }
 
         /*
          * For every active tunnel configured to be always connected we call
