@@ -11,6 +11,9 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +59,7 @@ public class IpsecVpnApp extends AppBase
     private final static String GRAB_TUNNEL_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-status";
     private final static String APP_STARTUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-app-startup";
 
+    private final static String CHARON_DAEMON_PATH = "/usr/lib/ipsec/charon";
     private final static String STRONGSWAN_STROKE_CONFIG = "/etc/strongswan.d/charon/stroke.conf";
     private final static String STRONGSWAN_STROKE_TIMEOUT = "15000";
 
@@ -423,13 +427,38 @@ public class IpsecVpnApp extends AppBase
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("ipsec");
-        // Fix for NGFW-14844 there should be waiting time between 
-        // charon daemon restart and STRONGSWAN_CONF_FILE rewrite
-        try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-        }
+
+        // Fix for NGFW-14844, wait for charon to restart and then rewrite STRONGSWAN_CONF_FILE
+        waitForCharonStart();
         reconfigure();
+    }
+
+    /**
+     * Method to wait for charon daemon to start.
+     * Terminates wait after Timeout.
+     */
+    private void waitForCharonStart() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Runnable task = () -> {
+            String processes = IpsecVpnApp.execManager().execOutput("ps aux | grep charon");
+            logger.debug("ps aux | grep charon : {}", processes);
+            if (processes.contains(CHARON_DAEMON_PATH)) {
+                scheduler.shutdown();
+            }
+        };
+
+        try {
+            // Schedule the process check to run every 1 second
+            scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+            // Terminate on timeout
+            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+                logger.warn("Resuming without charon start.");
+            }
+        } catch (Exception e) {
+            logger.error("Exception in waitForCharonStart: ", e);
+            scheduler.shutdownNow();
+        }
     }
 
     /**
