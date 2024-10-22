@@ -449,7 +449,8 @@ class WireGuardVpnMonitor implements Runnable
      */
     private void addHostTableEntry(WireGuardVpnTunnel tunnel, Boolean createIfNecessary)
     {
-        if (tunnel != null && tunnel.getPeerAddress() != null) {
+        boolean isMappingEnabled = app.getSettings().isMapTunnelDescUser();
+        if (isMappingEnabled && tunnel != null && tunnel.getPeerAddress() != null) {
             HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(tunnel.getPeerAddress(), createIfNecessary);
                 entry.setHostnameWireGuardVpn(tunnel.getDescription());
                 //Update username when Tunnel connection is established
