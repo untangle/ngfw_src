@@ -113,6 +113,7 @@ Ext.define('Ung.config.network.MainController', {
 
             me.setPortForwardWarnings();
             me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
+            me.setUpnpVisible();         // update upnpVisible flag on load settings
 
             vm.set('companyName', result[3]);
             vm.set('dnsTestHost', result[4].dnsTestHost);
@@ -1178,6 +1179,17 @@ Ext.define('Ung.config.network.MainController', {
     networkTestRender: function (view) {
         view.down('form').insert(0, view.commandFields);
     },
+
+    setUpnpVisible: function() {
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            upnpVisisble = Rpc.directData('rpc.isExpertMode') || vm.get('settings.upnpSettings.upnpEnabled'),
+            upnpTabpanel = v.down('panel[itemId=upnp]');
+
+        if(upnpTabpanel) upnpTabpanel.setHidden(!upnpVisisble);
+        vm.set('settings.upnpSettings.upnpVisible', upnpVisisble);
+    },
+
     runTest: function (btn) {
         var v = btn.up('networktest'),
             vm = v.getViewModel(),
