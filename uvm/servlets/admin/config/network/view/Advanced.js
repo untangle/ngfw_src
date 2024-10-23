@@ -543,12 +543,37 @@ Ext.define('Ung.config.network.view.Advanced', {
             title: 'UPnP'.t(),
             itemId: 'upnp',
             scrollable: true,
+            tabConfig: {
+                hidden: true,
+                bind: {
+                    hidden: '{!settings.upnpSettings.upnpVisible}'
+                }
+            },
+
+            tbar: [{
+                xtype: 'tbtext',
+                padding: '8 5',
+                style: { fontSize: '12px' },
+                hidden: Rpc.directData('rpc.isExpertMode'),
+                html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Warning: Disabling UPnP will remove this feature.'.t()
+            }],
 
             items:[{
                 xtype: 'checkbox',
                 fieldLabel: 'UPnP Enabled'.t(),
                 labelAlign: 'right',
-                bind: '{settings.upnpSettings.upnpEnabled}'
+                bind: '{settings.upnpSettings.upnpEnabled}',
+                listeners: {
+                    change: function (checkbox, newValue) {
+                        var upnpTab = this.up('panel[itemId=upnp]'),
+                            configPanel = this.up('tabpanel[itemId=configCard]'),
+                            vm = configPanel.getViewModel(),
+                            upnpVisible = Rpc.directData('rpc.isExpertMode') || newValue;
+
+                        upnpTab.setHidden(!upnpVisible);
+                        vm.set('settings.upnpSettings.upnpVisible', upnpVisible);
+                    }
+                }
             }, {
                 xtype: 'checkbox',
                 fieldLabel: 'Secure Mode'.t(),
