@@ -101,6 +101,10 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             xtype: 'checkbox',
             boxLabel: 'Close connection for blocked HTTPS sessions without redirecting to block page'.t(),
             bind: '{settings.closeHttpsBlockEnabled}'
+        }, {
+            xtype: 'checkbox',
+            boxLabel: 'Block Encrypted Client Hello (ECH)'.t(),
+            bind: '{settings.blockECH}'
         }]
     }, {
         xtype: 'fieldset',

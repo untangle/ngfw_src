@@ -44,6 +44,7 @@ public class WebFilterSettings implements Serializable, JSONString
     private Boolean passReferers = true;
     private Boolean restrictGoogleApps = false;
     private String restrictGoogleAppsDomain = "";
+    private Boolean blockECH = false;
 
     private Boolean customBlockPageEnabled = false;
     private String customBlockPageUrl = "";
@@ -153,6 +154,9 @@ public class WebFilterSettings implements Serializable, JSONString
     public Boolean getCloseHttpsBlockEnabled() { return closeHttpsBlockEnabled; }
     public void setCloseHttpsBlockEnabled( Boolean closeHttpsBlockEnabled ) { this.closeHttpsBlockEnabled = closeHttpsBlockEnabled; }
 
+    public Boolean getBlockECH() { return blockECH; }
+    public void setBlockECH( Boolean blockECH ) { this.blockECH = blockECH; }
+    
     public GenericRule getCategory(Integer id)
     {
         for (GenericRule cat : getCategories()) {
