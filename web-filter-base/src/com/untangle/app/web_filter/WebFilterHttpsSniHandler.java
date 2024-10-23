@@ -155,9 +155,11 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         logger.debug("HANDLE_CHUNK = " + buff.toString());
         app.incrementScanCount();
 
+        boolean isEchBlocked = app.getSettings().getBlockECH();
+
         // scan the buffer for the SNI hostname
         try {
-            domain = HttpUtility.extractSniHostname(buff.duplicate());
+            domain = HttpUtility.extractSniHostname(buff.duplicate(), isEchBlocked);
         }
 
         // on underflow exception we stuff the partial packet into a buffer
