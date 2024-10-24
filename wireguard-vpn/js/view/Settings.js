@@ -9,7 +9,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     padding: '8 5',
 
     defaults: {
-        labelWidth: 175
+        labelWidth: 200
     },
 
     items: [{
@@ -25,7 +25,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 value: '{settings.listenPort}'
             },
             allowBlank: false,
-            labelWidth: 175,
+            labelWidth: 200,
             padding: '8 5 5 0',
             listeners: {
                 change: function(field, newValue, oldValue) {
@@ -59,7 +59,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 value: '{settings.mtu}'
             },
             allowBlank: false,
-            labelWidth: 175,
+            labelWidth: 200,
             padding: '8 5 5 0',
             listeners: {
                 change: function(field, newValue, oldValue) {
@@ -73,13 +73,23 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             margin: '18 0 5 5'
         }],
     }, {
+        xtype: "checkbox",
+        bind: '{settings.mapTunnelDescUser}',
+        fieldLabel: 'Set authenticated username as tunnel description'.t(),
+        padding: '8 5 5 0',
+        autoEl: {
+            tag: 'div',
+            'data-qtip': "If enabled, tunnel description will be set as authenticated user".t()
+        },
+        checked: false
+    }, {
         xtype: 'fieldset',
         title: 'Remote Client Configuration'.t(),
         layout: {
             type: 'vbox'
         },
         defaults: {
-            labelWidth: 165,
+            labelWidth: 190,
             padding: "0 0 10 0"
         },
         items:[{
@@ -95,7 +105,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             items: [{
                 xtype: 'label',
                 text: 'Local Networks:'.t(),
-                width: 170
+                width: 195
             },{
                 xtype: 'ungrid',
                 itemId: 'localNetworkGrid',
@@ -165,7 +175,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             type: 'vbox'
         },
         defaults: {
-            labelWidth: 165
+            labelWidth: 190
         },
         items:[{
             fieldLabel: 'Assignment'.t(),
@@ -184,7 +194,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             xtype: 'fieldcontainer',
             layout: 'hbox',
             defaults: {
-                labelWidth: 165
+                labelWidth: 190
             },
             items: [{
                     fieldLabel: 'Network Space'.t(),
