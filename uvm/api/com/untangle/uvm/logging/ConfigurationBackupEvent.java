@@ -1,9 +1,8 @@
 /**
  * $Id$
  */
-package com.untangle.app.configuration_backup;
+package com.untangle.uvm.logging;
 
-import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
