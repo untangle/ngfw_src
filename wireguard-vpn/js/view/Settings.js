@@ -75,11 +75,11 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     }, {
         xtype: "checkbox",
         bind: '{settings.mapTunnelDescUser}',
-        fieldLabel: 'Map tunnel description to users'.t(),
+        fieldLabel: 'Set authenticated username as tunnel description'.t(),
         padding: '8 5 5 0',
         autoEl: {
             tag: 'div',
-            'data-qtip': "If enabled tunnel description will be mapped to users table".t()
+            'data-qtip': "If enabled, tunnel description will be set as authenticated user".t()
         },
         checked: false
     }, {
