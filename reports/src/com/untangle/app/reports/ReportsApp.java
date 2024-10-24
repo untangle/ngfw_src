@@ -789,7 +789,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      * Return default reports application settings.
      *
      * @return
-     *  ReportSettings object containing default values.`
+     *  ReportSettings object containing default values.
      */
     private ReportsSettings defaultSettings()
     {
