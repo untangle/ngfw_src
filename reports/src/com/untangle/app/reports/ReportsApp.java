@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.GoogleManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +39,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.StringEscaperUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.ConfigurationBackupEvent;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
@@ -67,7 +70,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private static final String REPORTS_VACUUM_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-vacuum-yesterdays-tables.sh";
     private static final String REPORTS_GOOGLE_DATA_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-data.sh";
     private static final String REPORTS_GOOGLE_CSV_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-csv.sh";
-    private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-reports.py";
+    private static final String REPORTS_LOG_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-log-data.py";
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
     private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
     private static final String REPORTS_DB_DRIVER_FILE = System.getProperty("uvm.conf.dir") + "/database-driver";
@@ -629,6 +632,15 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             conversion_13_0_0();
         }
 
+        /*
+         * Update daily cron file for 17.3 version
+         */
+        if ( settings.getVersion() == null || settings.getVersion() < 6 ) {
+            logger.info("Modifying daily cron file");
+            writeCronFile();
+            settings.setVersion(6);
+        }
+
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified()){
@@ -777,12 +789,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      * Return default reports application settings.
      *
      * @return
-     *  ReportSettings object containing default values.
+     *  ReportSettings object containing default values.`
      */
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
-        settings.setVersion( 5 );
+        settings.setVersion( 6 );
         settings.setEmailTemplates( defaultEmailTemplates() );
         settings.setReportsUsers( defaultReportsUsers( null ) );
 
@@ -839,31 +851,107 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return ReportsApp.dbDriver;
     }
 
+    /**
+     * Logs reports data
+     */
+    public void logReportsData()
+    {
+        executeCommand(new String[] {REPORTS_GENERATE_TABLES_SCRIPT, "|", "logger", "-t", "uvmreports"});
+
+        // We only need to execute this script if the database has daily retention set
+        if ( settings.getDbRetention() > 0) {
+            executeCommand(new String[] {REPORTS_CLEAN_TABLES_SCRIPT, "-d", ReportsApp.dbDriver, String.valueOf(settings.getDbRetention()), "|", "logger", "-t", "uvmreports"});
+        }
+        executeCommand(new String[] {REPORTS_VACUUM_TABLES_SCRIPT, "|", "logger", "-t", "uvmreports"});
+        executeCommand(new String[] {REPORTS_GENERATE_FIXED_REPORTS_SCRIPT, "|", "logger", "-t", "uvmreports"});
+
+        /**
+         * If google drive is enabled and licensed and configured
+         * upload to google drive
+         */
+        GoogleManager googleManager = UvmContextFactory.context().googleManager();
+        if ( googleManager != null && googleManager.isGoogleDriveConnected()) {
+            uploadBackupToGoogleDrive();
+        }
+    }
+
+    /**
+     * Upload the backup to Google drive.
+     */
+    private void uploadBackupToGoogleDrive()
+    {
+        String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
+        String[] cmd;
+        if ( settings.getGoogleDriveUploadData() ) {
+            cmd = StringUtils.isNotEmpty(appGoogleDrivePath)
+                    ? new String[] {REPORTS_GOOGLE_DATA_BACKUP_SCRIPT, "-d", appGoogleDrivePath}
+                    : new String[] {REPORTS_GOOGLE_DATA_BACKUP_SCRIPT};
+            executeGoogleDriveCommand(cmd);
+        }
+        if ( settings.getGoogleDriveUploadCsv() ) {
+            cmd = StringUtils.isNotEmpty(appGoogleDrivePath)
+                    ? new String[] {REPORTS_GOOGLE_CSV_BACKUP_SCRIPT, "-d", appGoogleDrivePath}
+                    : new String[] {REPORTS_GOOGLE_CSV_BACKUP_SCRIPT};
+            executeGoogleDriveCommand(cmd);
+        }
+    }
+
+    /**
+     * Executes the input command
+     * @param cmd
+     * @return
+     */
+    private ExecManagerResultReader executeCommand(String[] cmd) {
+        ExecManagerResultReader reader = null;
+        try {
+            reader = UvmContextFactory.context().execManager().execEvil(cmd);
+            reader.waitFor();
+        } catch (Exception e) {
+            logger.warn("Exception occurred while running command",e);
+        }
+        return reader;
+    }
+
+    /**
+     * Executes the input command to upload files to google drive and logs the event
+     * @param cmd
+     */
+    private void executeGoogleDriveCommand(String[] cmd) {
+        Integer exitCode = 99;
+        String output = StringUtils.EMPTY;
+        ExecManagerResultReader reader = executeCommand(cmd);
+        if (reader == null) {
+            logger.warn("Exception occurred while running command={}", Arrays.toString(cmd));
+        } else {
+            exitCode = reader.getResult();
+            output = reader.readFromOutput();
+        }
+        if(exitCode != 0) {
+            logger.error("Execution returned non-zero error code ({}):{}", exitCode, output);
+
+            String reason = null;
+            switch(exitCode) {
+                default:
+                    reason = "Error: " + output;
+            }
+            logger.warn("Command={} execution failed: {}", cmd, reason);
+            this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive")) );
+        }
+        else {
+            logger.info("Command={} executed successfully", Arrays.toString(cmd));
+            this.logEvent( new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("Google Drive")) );
+        }
+        // log output of drive upload
+        executeCommand(new String[] { "logger", "-t", "uvmreports", "\"" + output.replace("\"", "\\\"").replace("`", StringUtils.EMPTY) + "\""});
+    }
+
     /** 
      * Write reports application cronjob file.
      */
     private void writeCronFile()
     {
         // write the cron file for nightly runs
-        String cronStr = "#!/bin/sh" + LINE_BREAK + REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + LINE_BREAK;
-
-        // We only need to write this file if the database has daily retention set
-        if ( settings.getDbRetention() > 0) {
-            cronStr += REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " | logger -t uvmreports" + LINE_BREAK;
-        }
-        
-        cronStr += REPORTS_VACUUM_TABLES_SCRIPT + " | logger -t uvmreports" + LINE_BREAK + REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " | logger -t uvmreports" + LINE_BREAK;
-
-        String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
-        String dir = StringUtils.isNotEmpty(appGoogleDrivePath) ? " -d \"" + appGoogleDrivePath + "\"" : StringUtils.EMPTY;
-        if ( settings.getGoogleDriveUploadData() ) {
-            cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + LINE_BREAK;
-        }
-        if ( settings.getGoogleDriveUploadCsv() ) {
-            cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + LINE_BREAK;
-        }
-
-        
+        String cronStr = "#!/bin/sh" + LINE_BREAK + REPORTS_LOG_DATA_SCRIPT;
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(CRON_FILE));
