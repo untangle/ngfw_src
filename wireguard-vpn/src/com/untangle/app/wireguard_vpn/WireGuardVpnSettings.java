@@ -24,6 +24,7 @@ public class WireGuardVpnSettings implements Serializable, JSONString
     private Integer keepaliveInterval = 25;
     private Integer listenPort = 51820;
     private Integer mtu = 1500;
+    private boolean mapTunnelDescUser = false;
     private IPMaskedAddress addressPool;
     private String privateKey = "";
     private String publicKey = "";
@@ -45,6 +46,9 @@ public class WireGuardVpnSettings implements Serializable, JSONString
 
     public Integer getMtu() { return mtu; }
     public void setMtu( Integer newValue ) { this.mtu = newValue; }
+
+    public boolean isMapTunnelDescUser() { return mapTunnelDescUser; }
+    public void setMapTunnelDescUser(boolean mapTunnelDescUser) { this.mapTunnelDescUser = mapTunnelDescUser; }
 
     public IPMaskedAddress getAddressPool() { return addressPool; }
     public void setAddressPool( IPMaskedAddress newValue ) { this.addressPool = newValue; }
