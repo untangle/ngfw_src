@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
+import com.untangle.uvm.logging.ConfigurationBackupEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.GoogleManager;
 import com.untangle.uvm.ExecManagerResultReader;
-import com.untangle.uvm.app.DirectoryConnector;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
