@@ -161,16 +161,8 @@ public class HttpUtility {
             if (data.remaining() < 2) throw new BufferUnderflowException();
 
             int extType = data.getShort() & 0xFFFF;
-            logger.warn(" **** extension TYPE **** " + extType + " " + isEchBlocked);
-
-            if((isEchBlocked) && (extType == 65037)){
-                //Math.abs(data.getShort());
-                logger.info("Inside block Printing extension TYPE 65037 " + extType);
-                return ECH_BLOCKED;
-            }
-
             int extSize = Math.abs(data.getShort());
-
+            
             // if not server name extension adjust the offset to the next
             // extension record and continue
             if (extType != SERVER_NAME) {
@@ -199,11 +191,19 @@ public class HttpUtility {
             // found a valid host name so adjust the position to skip over
             // the list length and name type info we directly accessed above
             if (data.remaining() < 5) throw new BufferUnderflowException();
+
             hostName = extractedSNIHostname(data, nameLength);
             logger.info(" Hostname " + hostName);
-            return hostName;
+
+            if(isEchBlocked && hostName != null){
+                return hostName; 
+            }
+            else if(isEchBlocked && (extType == 65037)){
+                logger.info("Inside block Printing extension TYPE 65037 " + extType);
+                return ECH_BLOCKED;
+            }
         }
-        return null;
+        return hostName;
     }
 
     /**
