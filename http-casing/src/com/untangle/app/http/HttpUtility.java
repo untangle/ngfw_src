@@ -199,7 +199,6 @@ public class HttpUtility {
                 return hostName; 
             }
             else if(isEchBlocked && (extType == 65037)){
-                logger.info("Inside block Printing extension TYPE 65037 " + extType);
                 return ECH_BLOCKED;
             }
         }
