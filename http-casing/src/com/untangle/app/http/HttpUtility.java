@@ -28,6 +28,7 @@ public class HttpUtility {
     
     private static final Logger logger = LogManager.getLogger(HttpUtility.class);
 
+    public static final String ECH_BLOCKED = "ech-blocked"; 
     /**
      * private constructor
      */
@@ -45,10 +46,11 @@ public class HttpUtility {
     /**
      * Function for extracting the SNI hostname from the client request.
      * @param data
+     * @param isEchBlock
      * @return The SNI hostname extracted from the client request, or null
      * @throws Exception
      */
-    public static String extractSniHostname(ByteBuffer data) throws Exception{
+    public static String extractSniHostname(ByteBuffer data, boolean isEchBlock) throws Exception{
         int counter = 0;
         int pos=0;
 
@@ -99,7 +101,7 @@ public class HttpUtility {
             logger.debug("No extensions found in TLS handshake message");
             return (null);
         }
-        return extractSniHostNameFromExtensions(data, counter);
+        return extractSniHostNameFromExtensions(data, counter, isEchBlock);
     }
     
     /**
@@ -144,17 +146,20 @@ public class HttpUtility {
      * Process all extensions to find the SNI signature.
      * @param data
      * @param counter
+     * @param isEchBlock
      * @return The extracted SNI hostname, or null if not found.
      */
-    public static String extractSniHostNameFromExtensions(ByteBuffer data, int counter){
+    public static String extractSniHostNameFromExtensions(ByteBuffer data, int counter, boolean isEchBlock){
 
         // get the total size of extension data block
         int extensionLength = Math.abs(data.getShort());
+        String hostName =  null;
+        boolean blockByEch = false;
 
          // walk through all of the extensions looking for SNI signature
          while (counter < extensionLength) {
             if (data.remaining() < 2) throw new BufferUnderflowException();
-            int extType = Math.abs(data.getShort());
+            int extType = data.getShort() & 0xFFFF;
             int extSize = Math.abs(data.getShort());
 
             // if not server name extension adjust the offset to the next
@@ -185,10 +190,16 @@ public class HttpUtility {
             // found a valid host name so adjust the position to skip over
             // the list length and name type info we directly accessed above
             if (data.remaining() < 5) throw new BufferUnderflowException();
-
-            return extractedSNIHostname(data, nameLength);
+            hostName = extractedSNIHostname(data, nameLength);
+            //if get extenion type as 65037 then iterate until to retrieve the hostname
+            if(isEchBlock && (extType == 65037)){
+                blockByEch = true;
+            }
         }
-        return null;
+        if(blockByEch && hostName == null){
+            return ECH_BLOCKED; 
+        }
+        return hostName;
     }
 
     /**
