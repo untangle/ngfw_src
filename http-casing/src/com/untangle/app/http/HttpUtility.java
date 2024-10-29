@@ -162,6 +162,10 @@ public class HttpUtility {
             int extType = data.getShort() & 0xFFFF;
             int extSize = Math.abs(data.getShort());
 
+            if(isEchBlock && (extType == 65037)){
+                blockByEch = true;
+            }
+
             // if not server name extension adjust the offset to the next
             // extension record and continue
             if (extType != SERVER_NAME) {
@@ -191,15 +195,10 @@ public class HttpUtility {
             // the list length and name type info we directly accessed above
             if (data.remaining() < 5) throw new BufferUnderflowException();
             hostName = extractedSNIHostname(data, nameLength);
-            //if get extenion type as 65037 then iterate until to retrieve the hostname
-            if(isEchBlock && (extType == 65037)){
-                blockByEch = true;
-            }
+            // if ECH is not enabled or found valid host name then skip over
+            if(!isEchBlock || hostName != null) return hostName;
         }
-        if(blockByEch && hostName == null){
-            return ECH_BLOCKED; 
-        }
-        return hostName;
+        return blockByEch && hostName == null ? ECH_BLOCKED : hostName;
     }
 
     /**
