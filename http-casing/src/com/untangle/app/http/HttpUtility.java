@@ -155,6 +155,7 @@ public class HttpUtility {
         // get the total size of extension data block
         int extensionLength = Math.abs(data.getShort());
         String hostName = null;
+        boolean blockByEch = false;
 
          // walk through all of the extensions looking for SNI signature
          while (counter < extensionLength) {
@@ -195,12 +196,12 @@ public class HttpUtility {
             hostName = extractedSNIHostname(data, nameLength);
             logger.info(" Hostname " + hostName);
 
-            if(isEchBlocked && hostName != null){
-                return hostName; 
+            if(isEchBlocked && (extType == 65037)){
+                blockByEch = true;
             }
-            else if(isEchBlocked && (extType == 65037)){
-                return ECH_BLOCKED;
-            }
+        }
+        if(blockByEch && hostName == null){
+            return ECH_BLOCKED; 
         }
         return hostName;
     }
