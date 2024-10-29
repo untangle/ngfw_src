@@ -1021,6 +1021,7 @@ class UvmTests(NGFWTestCase):
 
     def test_160_change_community_language(self):
         """Check if changing community language converts the GUI"""
+        raise unittest.SkipTest("Community languages no longer supported NGFW-14374.")
         #set language to Russian
         language_settings_community = global_functions.uvmContext.languageManager().getLanguageSettings()
         language_settings_community_orig = copy.deepcopy(language_settings_community)
