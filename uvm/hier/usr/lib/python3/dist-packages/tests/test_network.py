@@ -1645,6 +1645,7 @@ server=dynupdate.no-ip.com
 
     # UPnP - Disabled
     def test_170_upnp_disabled(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
@@ -1658,6 +1659,7 @@ server=dynupdate.no-ip.com
 
     # UPnP - Enabled
     def test_171_upnp_enabled_defaults(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
@@ -1669,6 +1671,7 @@ server=dynupdate.no-ip.com
 
     # UPnP - Secure mode enabled
     def test_172_upnp_secure_mode_enabled(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
@@ -1683,6 +1686,7 @@ server=dynupdate.no-ip.com
 
     # UPnP - Secure mode disabled
     def test_173_upnp_secure_mode_disabled(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
@@ -1697,6 +1701,7 @@ server=dynupdate.no-ip.com
 
     # UPnP - Enabled, Deny rule
     def test_174_upnp_rules_deny_all(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
