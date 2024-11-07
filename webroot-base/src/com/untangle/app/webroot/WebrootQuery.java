@@ -98,7 +98,7 @@ public class WebrootQuery
     public static final String BCTI_API_DAEMON_REQUEST_URLINFO_SUFFIX = "\"],\"a1cat\":1, \"reputation\":1}}\r\n";
 
     public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_LIST_KEY="cats";
-    public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_ID_KEY="catid";
+    public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_CATEGORY_ID_KEY="cat";
     public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_A1CAT_KEY="a1cat";
 
     public static final String BCTI_API_DAEMON_RESPONSE_URLINFO_URL_KEY="url";
