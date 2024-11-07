@@ -38,6 +38,8 @@ import com.untangle.uvm.network.InterfaceSettings;
  */
 public class OpenVpnManager
 {
+    private static final String LINE_BREAK = "\n";
+    private static final String SPACE = " ";
     private final Logger logger = LogManager.getLogger(this.getClass());
     private final OpenVpnAppImpl app;
 
@@ -212,7 +214,7 @@ public class OpenVpnManager
         String cmdStr;
         ExecManagerResult result;
 
-        cmdStr = GENERATE_ZIP_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"";
+        cmdStr = GENERATE_ZIP_SCRIPT + SPACE + "\"" + client.getName() + "\"" + SPACE + "\"" + settings.getSiteName() + "\"";
         logger.debug("Executing: " + cmdStr);
         result = UvmContextFactory.context().execManager().exec(cmdStr);
         try {
@@ -239,7 +241,7 @@ public class OpenVpnManager
         String cmdStr;
         ExecManagerResult result;
 
-        cmdStr = GENERATE_EXE_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"";
+        cmdStr = GENERATE_EXE_SCRIPT + SPACE + "\"" + client.getName() + "\"" + SPACE + "\"" + settings.getSiteName() + "\"";
         logger.debug("Executing: " + cmdStr);
         result = UvmContextFactory.context().execManager().exec(cmdStr);
         try {
@@ -266,7 +268,7 @@ public class OpenVpnManager
         String cmdStr;
         ExecManagerResult result;
 
-        cmdStr = GENERATE_OVPN_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"";
+        cmdStr = GENERATE_OVPN_SCRIPT + SPACE + "\"" + client.getName() + "\"" + SPACE + "\"" + settings.getSiteName() + "\"";
         logger.debug("Executing: " + cmdStr);
         result = UvmContextFactory.context().execManager().exec(cmdStr);
         try {
@@ -315,7 +317,7 @@ public class OpenVpnManager
 
         JSONArray wanNetworkConfigs = createWanConfigList(client.getName(), settings.getSiteName(), wanInfoMap);
 
-        cmdStr = GENERATE_ONC_SCRIPT + " " + "\"" + client.getName() + "\"" + " " + "\"" + settings.getSiteName() + "\"" + " " + "\'" + wanNetworkConfigs + "\'";
+        cmdStr = GENERATE_ONC_SCRIPT + SPACE + "\"" + client.getName() + "\"" + SPACE + "\"" + settings.getSiteName() + "\"" + SPACE + "\'" + wanNetworkConfigs + "\'";
         logger.debug("Executing: " + cmdStr);
         result = UvmContextFactory.context().execManager().exec(cmdStr);
         try {
@@ -403,38 +405,36 @@ public class OpenVpnManager
 
         for (OpenVpnConfigItem item : settings.getServerConfiguration()) {
             // ignore any default global config item when there is a custom global config item with the same option name
-            if ((item.getReadOnly() == true) && (findCustomConfigItem(settings.getServerConfiguration(), item.getOptionName()) != null)) {
-                logger.debug("FOUND server custom IGNORING default: " + item.getOptionName());
+            if ((item.getReadOnly()) && (findCustomConfigItem(settings.getServerConfiguration(), item.getOptionName()) != null)) {
+                logger.debug("FOUND server custom IGNORING default: {}", item.getOptionName());
                 continue;
             }
 
             cfgstr = item.generateConfigString();
             if (cfgstr != null) {
                 logger.debug("ADDING server config: " + cfgstr);
-                sb.append(cfgstr + "\n");
+                sb.append(cfgstr).append(LINE_BREAK);
             }
         }
 
         // set mfa client timeout on server, multiply by 3600 to get it in seconds (user inputs hours)
         if (settings.getTotpClientPrompt()) {
-            sb.append("reneg-sec" + " " + settings.getMfaClientTimeout()*3600 + "\n");
+            sb.append("reneg-sec" + SPACE).append(settings.getMfaClientTimeout() * 3600).append(LINE_BREAK);
         }
 
         if (settings.getAuthUserPass()) {
-            sb.append("script-security 3" + "\n");
-            sb.append("plugin /usr/lib/openvpn/auth_script.so /usr/bin/sudo -E " + AUTH_USER_PASS_SCRIPT + "\n");
+            sb.append("script-security 3" + LINE_BREAK);
+            sb.append("plugin /usr/lib/openvpn/auth_script.so /usr/bin/sudo -E " + AUTH_USER_PASS_SCRIPT + LINE_BREAK);
         }
 
-        sb.append("proto" + " " + settings.getProtocol() + "\n");
-        sb.append("port" + " " + settings.getPort() + "\n");
-        sb.append("cipher" + " " + settings.getCipher() + "\n");
+        buildCommonConfiguration(settings, sb);
 
-        if (settings.getClientToClient()) sb.append("client-to-client" + "\n");
+        if (settings.getClientToClient()) sb.append("client-to-client" + LINE_BREAK);
 
-        sb.append("server" + " " + settings.getAddressSpace().getMaskedAddress().getHostAddress() + " " + settings.getAddressSpace().getNetmask().getHostAddress() + "\n");
+        sb.append("server" + SPACE).append(settings.getAddressSpace().getMaskedAddress().getHostAddress()).append(SPACE).append(settings.getAddressSpace().getNetmask().getHostAddress()).append(LINE_BREAK);
 
         /* Allow management from localhost */
-        sb.append("management 127.0.0.1 " + Integer.toString(OpenVpnSettings.MANAGEMENT_PORT) + "\n");
+        sb.append("management 127.0.0.1 ").append(OpenVpnSettings.MANAGEMENT_PORT).append(LINE_BREAK);
 
         writeExports(sb, settings);
 
@@ -479,7 +479,7 @@ public class OpenVpnManager
             }
         }
 
-        sb.append("\n");
+        sb.append(LINE_BREAK);
     }
 
     /**
@@ -508,19 +508,19 @@ public class OpenVpnManager
          */
         for (OpenVpnConfigItem item : settings.getClientConfiguration()) {
             // ignore any default global config item when there is a custom global config item with the same option name
-            if ((item.getReadOnly() == true) && (findCustomConfigItem(settings.getClientConfiguration(), item.getOptionName()) != null)) {
+            if ((item.getReadOnly()) && (findCustomConfigItem(settings.getClientConfiguration(), item.getOptionName()) != null)) {
                 logger.debug("FOUND global custom IGNORING default: " + item.getOptionName());
                 continue;
             }
 
             // ignore global config items that exist in the client group config
-            if ((item.getReadOnly() == true) && (findAnyConfigItem(group.getGroupConfigItems(), item.getOptionName()) != null)) {
+            if ((item.getReadOnly()) && (findAnyConfigItem(group.getGroupConfigItems(), item.getOptionName()) != null)) {
                 logger.debug("FOUND group custom IGNORING default: " + item.getOptionName());
                 continue;
             }
 
             // ignore global config items that exist in the unique client config
-            if ((item.getReadOnly() == true) && (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null)) {
+            if ((item.getReadOnly()) && (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null)) {
                 logger.debug("FOUND client custom IGNORING default: " + item.getOptionName());
                 continue;
             }
@@ -528,7 +528,7 @@ public class OpenVpnManager
             cfgstr = item.generateConfigString();
             if (cfgstr != null) {
                 logger.debug("ADDING global config: " + cfgstr);
-                sb.append(cfgstr + "\n");
+                sb.append(cfgstr).append(LINE_BREAK);
             }
         }
 
@@ -543,7 +543,7 @@ public class OpenVpnManager
             cfgstr = item.generateConfigString();
             if (cfgstr != null) {
                 logger.debug("ADDING group config: " + cfgstr);
-                sb.append(cfgstr + "\n");
+                sb.append(cfgstr).append(LINE_BREAK);
             }
         }
 
@@ -552,31 +552,29 @@ public class OpenVpnManager
             cfgstr = item.generateConfigString();
             if (cfgstr != null) {
                 logger.debug("ADDING client config: " + cfgstr);
-                sb.append(cfgstr + "\n");
+                sb.append(cfgstr).append(LINE_BREAK);
             }
         }
 
         if (settings.getAuthUserPass()) {
-            sb.append("auth-user-pass" + "\n");
+            sb.append("auth-user-pass" + LINE_BREAK);
         }
 
         // If this is a site-to-site connection, we don't want to include MFA information no matter what
         if (settings.getTotpClientPrompt() && !siteToSite) {
-            sb.append("static-challenge \"TOTP Code \" 1" + "\n");
+            sb.append("static-challenge \"TOTP Code \" 1" + LINE_BREAK);
             // mfa timeout - multiply by 3600 to get in seconds (user inputs in hours)
-            sb.append("reneg-sec" + " " + settings.getMfaClientTimeout()*3600 + "\n");
+            sb.append("reneg-sec" + SPACE).append(settings.getMfaClientTimeout() * 3600).append(LINE_BREAK);
         }
 
-        sb.append("proto" + " " + settings.getProtocol() + "\n");
-        sb.append("port" + " " + settings.getPort() + "\n");
-        sb.append("cipher" + " " + settings.getCipher() + "\n");
+        buildCommonConfiguration(settings, sb);
 
         String name = client.getName();
         String siteName = settings.getSiteName();
 
-        sb.append("cert" + " " + KEY_DIR + "/" + siteName + "-" + name + ".crt" + "\n");
-        sb.append("key" + " " + KEY_DIR + "/" + siteName + "-" + name + ".key" + "\n");
-        sb.append("ca" + " " + KEY_DIR + "/" + siteName + "-" + name + "-ca.crt" + "\n");
+        sb.append("cert" + SPACE + KEY_DIR + "/").append(siteName).append("-").append(name).append(".crt").append(LINE_BREAK);
+        sb.append("key" + SPACE + KEY_DIR + "/").append(siteName).append("-").append(name).append(".key").append(LINE_BREAK);
+        sb.append("ca" + SPACE + KEY_DIR + "/").append(siteName).append("-").append(name).append("-ca.crt").append(LINE_BREAK);
 
         String publicAddress = UvmContextFactory.context().networkManager().getPublicUrl();
 
@@ -587,7 +585,7 @@ public class OpenVpnManager
         publicAddress = publicAddress.split(":")[0];
         publicAddress = publicAddress.trim();
 
-        sb.append("remote" + " " + publicAddress + " " + settings.getPort() + " # public address \n");
+        sb.append("remote" + SPACE).append(publicAddress).append(SPACE).append(settings.getPort()).append(" # public address \n");
 
         /**
          * Also write the static IP of any static WANs This will be used as a
@@ -596,13 +594,25 @@ public class OpenVpnManager
          */
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         for (InterfaceSettings interfaceSettings : networkSettings.getInterfaces()) {
-            if (interfaceSettings.getIsWan() && interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC) sb.append("remote" + " " + interfaceSettings.getV4StaticAddress().getHostAddress() + " " + settings.getPort() + " # static WAN " + interfaceSettings.getInterfaceId() + "\n");
+            if (interfaceSettings.getIsWan() && interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC) sb.append("remote" + SPACE).append(interfaceSettings.getV4StaticAddress().getHostAddress()).append(SPACE).append(settings.getPort()).append(" # static WAN ").append(interfaceSettings.getInterfaceId()).append(LINE_BREAK);
         }
 
         File dir = new File(CLIENT_CONF_FILE_DIR);
         if (!dir.exists()) dir.mkdirs();
 
         writeFile(CLIENT_CONF_FILE_BASE + name + "." + extension, sb);
+    }
+
+    /**
+     * Appends configuration from settings to input string builder
+     * @param settings
+     * @param sb
+     */
+    private void buildCommonConfiguration(OpenVpnSettings settings, StringBuilder sb) {
+        sb.append("proto" + SPACE).append(settings.getProtocol()).append(LINE_BREAK);
+        sb.append("port" + SPACE).append(settings.getPort()).append(LINE_BREAK);
+        sb.append("data-ciphers" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
+        sb.append("data-ciphers-fallback" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
     }
 
     /**
@@ -631,7 +641,7 @@ public class OpenVpnManager
             StringBuilder sb = new StringBuilder();
 
             if (group.getFullTunnel()) {
-                sb.append("push" + " " + "\"redirect-gateway def1\"" + "\n");
+                sb.append("push" + SPACE + "\"redirect-gateway def1\"" + LINE_BREAK);
             }
 
             /**
@@ -644,15 +654,15 @@ public class OpenVpnManager
                  * custom
                  */
                 if (group.getPushDnsSelf()) {
-                    sb.append("push" + " " + "\"dhcp-option DNS " + dnsAddress + "\"" + "\n");
+                    sb.append("push" + SPACE + "\"dhcp-option DNS " + dnsAddress + "\"" + LINE_BREAK);
                 } else {
                     InetAddress dns1 = group.getPushDns1();
-                    if (dns1 != null) sb.append("push" + " " + "\"dhcp-option DNS " + dns1.getHostAddress() + "\"" + "\n");
+                    if (dns1 != null) sb.append("push" + SPACE + "\"dhcp-option DNS " + dns1.getHostAddress() + "\"" + LINE_BREAK);
                     InetAddress dns2 = group.getPushDns2();
-                    if (dns2 != null) sb.append("push" + " " + "\"dhcp-option DNS " + dns2.getHostAddress() + "\"" + "\n");
+                    if (dns2 != null) sb.append("push" + SPACE + "\"dhcp-option DNS " + dns2.getHostAddress() + "\"" + LINE_BREAK);
                 }
                 String dnsDomain = group.getPushDnsDomain();
-                if (dnsDomain != null && !"".equals(dnsDomain.trim())) sb.append("push" + " " + "\"dhcp-option DOMAIN " + dnsDomain + "\"" + "\n");
+                if (dnsDomain != null && !"".equals(dnsDomain.trim())) sb.append("push" + SPACE + "\"dhcp-option DOMAIN " + dnsDomain + "\"" + LINE_BREAK);
             }
 
             if (client.getExport() && client.getExportNetwork() != null) {
@@ -767,17 +777,17 @@ public class OpenVpnManager
 
                     // look for 'dev tun' and change to 'dev tunx'
                     if (line.startsWith("dev ")) {
-                        cfgWriter.write("dev tun" + Integer.toString(count) + "\n");
+                        cfgWriter.write("dev tun" + Integer.toString(count) + LINE_BREAK);
                         continue;
                     }
 
                     // no special handling so write the line as-is
-                    cfgWriter.write(line + "\n");
+                    cfgWriter.write(line + LINE_BREAK);
                 }
 
                 // if user+pass auth is enabled add the auth-user-pass option
                 if (server.getAuthUserPass()) {
-                    cfgWriter.write("auth-user-pass " + name + ".auth" + "\n");
+                    cfgWriter.write("auth-user-pass " + name + ".auth" + LINE_BREAK);
                 }
 
                 cfgReader.close();
@@ -787,8 +797,8 @@ public class OpenVpnManager
                 if (server.getAuthUserPass()) {
                     File authFile = new File("/etc/openvpn/" + name + ".auth");
                     authWriter = new BufferedWriter(new FileWriter(authFile));
-                    authWriter.write(server.getAuthUsername() + "\n");
-                    authWriter.write(server.getAuthPassword() + "\n");
+                    authWriter.write(server.getAuthUsername() + LINE_BREAK);
+                    authWriter.write(server.getAuthPassword() + LINE_BREAK);
                 }
 
                 count += 1;
@@ -847,14 +857,14 @@ public class OpenVpnManager
         String value = "\"route ";
         if (netmask != null) {
             value += address.getHostAddress();
-            value += " " + netmask.getHostAddress();
+            value += SPACE + netmask.getHostAddress();
         } else {
             value += address.getHostAddress();
         }
 
         value += "\"";
 
-        sb.append("push" + " " + value + "\n");
+        sb.append("push" + SPACE + value + LINE_BREAK);
     }
 
     /**
@@ -911,12 +921,12 @@ public class OpenVpnManager
         if (netmask != null) {
             IPMaskedAddress maddr = new IPMaskedAddress(address, netmask);
             value += maddr.getMaskedAddress().getHostAddress();
-            value += " " + netmask.getHostAddress();
+            value += SPACE + netmask.getHostAddress();
         } else {
             value += address;
         }
 
-        sb.append(type + " " + value + "\n");
+        sb.append(type + SPACE + value + LINE_BREAK);
     }
 
     /**
@@ -1051,71 +1061,71 @@ public class OpenVpnManager
 
             iptablesScript = new FileWriter(IPTABLES_SCRIPT, false);
 
-            iptablesScript.write("#!/bin/dash" + "\n");
-            iptablesScript.write("## Auto Generated on " + new Date() + "\n");
-            iptablesScript.write("## DO NOT EDIT. Changes will be overwritten." + "\n");
+            iptablesScript.write("#!/bin/dash" + LINE_BREAK);
+            iptablesScript.write("## Auto Generated on " + new Date() + LINE_BREAK);
+            iptablesScript.write("## DO NOT EDIT. Changes will be overwritten." + LINE_BREAK);
             iptablesScript.write("\n\n");
 
-            iptablesScript.write("if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + "\n");
-            iptablesScript.write("\n");
+            iptablesScript.write("if [ -z \"$IPTABLES\" ] ; then IPTABLES=iptables ; fi" + LINE_BREAK);
+            iptablesScript.write(LINE_BREAK);
 
-            iptablesScript.write("ADDR=\"`ip addr show tun0 2>/dev/null| awk '/^ *inet.*scope global/ { interface = $2 ; sub( \"/.*\", \"\", interface ) ; print interface ; exit }'`\"" + "\n");
-            iptablesScript.write("\n");
+            iptablesScript.write("ADDR=\"`ip addr show tun0 2>/dev/null| awk '/^ *inet.*scope global/ { interface = $2 ; sub( \"/.*\", \"\", interface ) ; print interface ; exit }'`\"" + LINE_BREAK);
+            iptablesScript.write(LINE_BREAK);
 
-            iptablesScript.write("# delete old mark rules (if they exist) (tun0-tun10) " + "\n");
-            iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices + 10) + "` ; do" + "\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -D mark-src-intf -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + "\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -D mark-dst-intf -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\" >/dev/null 2>&1" + "\n");
-            iptablesScript.write("done" + "\n");
-            iptablesScript.write("\n");
+            iptablesScript.write("# delete old mark rules (if they exist) (tun0-tun10) " + LINE_BREAK);
+            iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices + 10) + "` ; do" + LINE_BREAK);
+            iptablesScript.write("    ${IPTABLES} -t mangle -D mark-src-intf -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\" >/dev/null 2>&1" + LINE_BREAK);
+            iptablesScript.write("    ${IPTABLES} -t mangle -D mark-dst-intf -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\" >/dev/null 2>&1" + LINE_BREAK);
+            iptablesScript.write("done" + LINE_BREAK);
+            iptablesScript.write(LINE_BREAK);
 
-            iptablesScript.write("# delete old global NAT rule" + "\n");
-            iptablesScript.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\" >/dev/null 2>&1" + "\n");
+            iptablesScript.write("# delete old global NAT rule" + LINE_BREAK);
+            iptablesScript.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\" >/dev/null 2>&1" + LINE_BREAK);
 
             for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
                 if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan()) {
-                    iptablesScript.write("# delete old WAN NAT rule" + "\n");
-                    iptablesScript.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fa) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\" >/dev/null 2>&1" + "\n");
+                    iptablesScript.write("# delete old WAN NAT rule" + LINE_BREAK);
+                    iptablesScript.write("${IPTABLES} -t nat -D nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fa) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\" >/dev/null 2>&1" + LINE_BREAK);
                 }
             }
 
-            iptablesScript.write("# delete old Handle admin from tun0 (openvpn server)" + "\n");
-            iptablesScript.write("if [ ! -z \"$ADDR\" ] ; then " + "\n");
+            iptablesScript.write("# delete old Handle admin from tun0 (openvpn server)" + LINE_BREAK);
+            iptablesScript.write("if [ ! -z \"$ADDR\" ] ; then " + LINE_BREAK);
             iptablesScript.write("\t${IPTABLES} -t nat -D port-forward-rules -p tcp -d $ADDR --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send to apache\" >/dev/null 2>&1 \n");
             iptablesScript.write("\t${IPTABLES} -t nat -D port-forward-rules -p tcp -d $ADDR --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send to apache\" >/dev/null 2>&1 \n");
-            iptablesScript.write("fi" + "\n");
-            iptablesScript.write("\n");
+            iptablesScript.write("fi" + LINE_BREAK);
+            iptablesScript.write(LINE_BREAK);
 
-            iptablesScript.write("# delete old nat-reverse-filter rule" + "\n");
+            iptablesScript.write("# delete old nat-reverse-filter rule" + LINE_BREAK);
             iptablesScript.write("${IPTABLES} -t filter -D nat-reverse-filter -m mark --mark 0xfa/0xff -j RETURN -m comment --comment \"Allow OpenVPN\" >/dev/null 2>&1 \n");
-            iptablesScript.write("\n");
+            iptablesScript.write(LINE_BREAK);
 
-            iptablesScript.write("# mark traffic to/from openvpn interface" + "\n");
-            iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices - 1) + "` ; do" + "\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -I mark-src-intf 3 -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + "\n");
-            iptablesScript.write("    ${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\"" + "\n");
-            iptablesScript.write("done" + "\n");
-            iptablesScript.write("\n");
+            iptablesScript.write("# mark traffic to/from openvpn interface" + LINE_BREAK);
+            iptablesScript.write("for i in `seq 0 " + (maxNumTunDevices - 1) + "` ; do" + LINE_BREAK);
+            iptablesScript.write("    ${IPTABLES} -t mangle -I mark-src-intf 3 -i tun$i -j MARK --set-mark 0xfa/0xff -m comment --comment \"Set src interface mark for openvpn\"" + LINE_BREAK);
+            iptablesScript.write("    ${IPTABLES} -t mangle -I mark-dst-intf 3 -o tun$i -j MARK --set-mark 0xfa00/0xff00 -m comment --comment \"Set dst interface mark for openvpn\"" + LINE_BREAK);
+            iptablesScript.write("done" + LINE_BREAK);
+            iptablesScript.write(LINE_BREAK);
 
-            iptablesScript.write("# Handle admin from tun0 (openvpn server)" + "\n");
-            iptablesScript.write("if [ ! -z \"$ADDR\" ] ; then " + "\n");
+            iptablesScript.write("# Handle admin from tun0 (openvpn server)" + LINE_BREAK);
+            iptablesScript.write("if [ ! -z \"$ADDR\" ] ; then " + LINE_BREAK);
             iptablesScript.write("\t${IPTABLES} -t nat -I port-forward-rules -p tcp -d $ADDR --destination-port " + httpsPort + " -j REDIRECT --to-ports 443 -m comment --comment \"Send to apache\" \n");
             iptablesScript.write("\t${IPTABLES} -t nat -I port-forward-rules -p tcp -d $ADDR --destination-port " + httpPort + " -j REDIRECT --to-ports 80 -m comment --comment \"Send to apache\" \n");
-            iptablesScript.write("fi" + "\n");
-            iptablesScript.write("\n");
+            iptablesScript.write("fi" + LINE_BREAK);
+            iptablesScript.write(LINE_BREAK);
 
-            iptablesScript.write("# insert nat-reverse-filter rule to allow openvpn to penetrate NATd networks " + "\n");
+            iptablesScript.write("# insert nat-reverse-filter rule to allow openvpn to penetrate NATd networks " + LINE_BREAK);
             iptablesScript.write("${IPTABLES} -t filter -I nat-reverse-filter -m mark --mark 0xfa/0xff -j RETURN -m comment --comment \"Allow OpenVPN\" \n");
-            iptablesScript.write("\n");
+            iptablesScript.write(LINE_BREAK);
 
             if (settings.getServerEnabled() && settings.getNatOpenVpnTraffic()) {
-                iptablesScript.write("# NAT traffic from the server openvpn interface" + "\n");
-                iptablesScript.write("${IPTABLES} -t nat -A nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\"" + "\n");
+                iptablesScript.write("# NAT traffic from the server openvpn interface" + LINE_BREAK);
+                iptablesScript.write("${IPTABLES} -t nat -A nat-rules -m mark --mark 0xfa/0xff -j MASQUERADE -m comment --comment \"NAT openvpn traffic to the server\"" + LINE_BREAK);
             } else {
                 for (InterfaceSettings intfSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces()) {
                     if (intfSettings.getConfigType() == InterfaceSettings.ConfigType.ADDRESSED && intfSettings.getIsWan()) {
-                        iptablesScript.write("# Always NAT wan bound traffic" + "\n");
-                        iptablesScript.write("${IPTABLES} -t nat -A nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fa) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\"" + "\n");
+                        iptablesScript.write("# Always NAT wan bound traffic" + LINE_BREAK);
+                        iptablesScript.write("${IPTABLES} -t nat -A nat-rules -m mark --mark 0x" + Integer.toHexString((intfSettings.getInterfaceId() << 8) + 0x00fa) + "/0xffff " + "-j MASQUERADE -m comment --comment \"NAT WAN-bound openvpn traffic\"" + LINE_BREAK);
                     }
                 }
             }
