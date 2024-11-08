@@ -52,8 +52,8 @@ tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
 
-tunnel_local_ip = None
-tunnel_local_lan_ip = None
+local_host_ip = None
+local_host_lan_ip = None
 
 Remote_ngfw = overrides.get("Remote_ngfw", default={
         "serverAddress": IPSEC_HOST,
@@ -65,7 +65,7 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
     Create an ipsec tunnel settings entry.
     If the Local values are not defined, use the WAN address to search for them from IPSEC_CONFIGURED_HOST_IPS.
     """
-    global tunnel_local_ip, tunnel_local_lan_ip
+    global local_host_ip, local_host_lan_ip
     if ( local_ip is None or
          local_lan_ip is None or
          local_lan_range is None ):
@@ -79,8 +79,8 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
                     local_lan_ip = host_config[1]
                 if local_lan_range is None:
                     local_lan_range = host_config[2]
-                tunnel_local_ip = local_ip
-                tunnel_local_lan_ip = local_lan_ip
+                local_host_ip = local_ip
+                local_host_lan_ip = local_lan_ip
                 break
 
         if ( local_ip is None or
@@ -829,7 +829,7 @@ class IPsecTests(NGFWTestCase):
 
         
         remote_ipsec_settings = remote_app.getSettings()
-        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=tunnel_local_ip, remote_lan=tunnel_local_lan_ip)]
+        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=local_host_ip, remote_lan=local_host_lan_ip)]
         remote_app.setSettings(remote_ipsec_settings)
         time.sleep(10)
 
