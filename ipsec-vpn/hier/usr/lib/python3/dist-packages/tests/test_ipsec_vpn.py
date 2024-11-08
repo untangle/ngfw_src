@@ -73,7 +73,7 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
         wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         for host_config in IPSEC_CONFIGURED_HOST_IPS:
             if (wan_ip == host_config[0]):
-                local_ip, local_lan_ip, local_lan_range = getLocalIpConfiguration(wan_ip, host_config)
+                local_ip, local_lan_ip, local_lan_range = getLocalIpConfiguration(host_config)
                 tunnel_local_ip = local_ip
                 tunnel_local_lan_ip = local_lan_ip
                 break
@@ -114,14 +114,13 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
         "ikeVersion": 2
     }    
     
-def getLocalIpConfiguration(wan_ip, host_config, local_ip=None, local_lan_ip=None, local_lan_range=None):
-    if (wan_ip == host_config[0]):
-            if local_ip is None:
-                local_ip = host_config[0]
-            if local_lan_ip is None:
-                local_lan_ip = host_config[1]
-            if local_lan_range is None:
-                local_lan_range = host_config[2]
+def getLocalIpConfiguration(host_config, local_ip=None, local_lan_ip=None, local_lan_range=None):
+    if local_ip is None:
+        local_ip = host_config[0]
+    if local_lan_ip is None:
+        local_lan_ip = host_config[1]
+    if local_lan_range is None:
+        local_lan_range = host_config[2]
     return local_ip, local_lan_ip, local_lan_range
 
 def nukeIPSecTunnels(app):
