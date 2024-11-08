@@ -52,9 +52,13 @@ tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
 
+local_ip_for_tunnel = None
+local_lan_ip_for_tunnel = None
+local_lan_range_for_tunnel = None
+
 Remote_ngfw = overrides.get("Remote_ngfw", default={
-        "serverAddress": "192.168.1.17",
-        "adminPassword": "admin123"
+        "serverAddress": IPSEC_HOST,
+        "adminPassword": "passwd"
 })
 
 def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip=None, local_lan_ip=None, local_lan_range=None):
@@ -62,6 +66,7 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
     Create an ipsec tunnel settings entry.
     If the Local values are not defined, use the WAN address to search for them from IPSEC_CONFIGURED_HOST_IPS.
     """
+    global local_ip_for_tunnel, local_lan_ip_for_tunnel, local_lan_range_for_tunnel
     if ( local_ip is None or
          local_lan_ip is None or
          local_lan_range is None ):
@@ -69,12 +74,10 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
         wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         for host_config in IPSEC_CONFIGURED_HOST_IPS:
             if (wan_ip == host_config[0]):
-                if local_ip is None:
-                    local_ip = host_config[0]
-                if local_lan_ip is None:
-                    local_lan_ip = host_config[1]
-                if local_lan_range is None:
-                    local_lan_range = host_config[2]
+                local_ip, local_lan_ip, local_lan_range = getLocalIpDetails(wan_ip, host_config)
+                local_ip_for_tunnel = local_ip
+                local_lan_ip_for_tunnel = local_lan_ip
+                local_lan_range_for_tunnel = local_lan_range
                 break
 
         if ( local_ip is None or
@@ -113,6 +116,16 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
         "ikeVersion": 2
     }    
     
+def getLocalIpDetails(wan_ip, host_config, local_ip=None, local_lan_ip=None, local_lan_range=None):
+    if (wan_ip == host_config[0]):
+            if local_ip is None:
+                local_ip = host_config[0]
+            if local_lan_ip is None:
+                local_lan_ip = host_config[1]
+            if local_lan_range is None:
+                local_lan_range = host_config[2]
+    return local_ip, local_lan_ip, local_lan_range
+
 def nukeIPSecTunnels(app):
     ipsecSettings = app.getSettings()
     ipsecSettings["tunnels"]["list"] = []
@@ -808,7 +821,7 @@ class IPsecTests(NGFWTestCase):
 
         # Configure local tunnel with remote any
         ipsec_settings = self._app.getSettings()
-        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan="192.168.57.100/24" , local_ip="active_wan_address", local_lan_ip="192.168.2.1", local_lan_range="192.168.2.1/24")]
+        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan=IPSEC_HOST_LAN)]
         self._app.setSettings(ipsec_settings)
 
         # Configure IPSec on remote NGFW
@@ -821,8 +834,9 @@ class IPsecTests(NGFWTestCase):
             remote_app = remote_uvm_context.appManager().instantiate(appName, default_policy_id)
         remote_app.start()
 
+        
         remote_ipsec_settings = remote_app.getSettings()
-        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="192.168.1.6", remote_lan="192.168.2.1/24" , local_ip="active_wan_address", local_lan_ip="192.168.57.100", local_lan_range="192.168.57.100/24")]
+        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=local_ip_for_tunnel, remote_lan=local_lan_ip_for_tunnel)]
         remote_app.setSettings(remote_ipsec_settings)
         time.sleep(10)
 
