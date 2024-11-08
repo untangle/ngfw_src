@@ -834,7 +834,7 @@ class IPsecTests(NGFWTestCase):
         time.sleep(10)
 
         # Add pingAddress in local NGFW tunnel
-        ipsec_settings["tunnels"]["list"][0]["pingAddress"] = "192.168.57.100"
+        ipsec_settings["tunnels"]["list"][0]["pingAddress"] = IPSEC_HOST_LAN_IP
         self._app.setSettings(ipsec_settings)
         time.sleep(40)
 
