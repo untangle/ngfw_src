@@ -44,6 +44,7 @@ import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.event.AdminLoginEvent;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.FileDirectoryMetadata;
 import com.untangle.uvm.util.IOUtil;
@@ -82,7 +83,7 @@ public class SystemManagerImpl implements SystemManager
     // must update file in mods-enabled since it is a symlink to our own version
     private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/eap";
 
-    private final Logger logger = LogManager.getLogger(this.getClass());
+    private final java.util.logging.Logger logger = LogManager.getLogger(this.getClass());
 
     private SystemSettings settings;
 
@@ -1520,5 +1521,18 @@ can look deeper. - mahotz
 
         fw.flush();
         fw.close();
+    }
+
+    /**
+     * Send Disk check failure event log.
+     * 
+     * @param diskCheckErrors
+     *        String diskCheckErrors
+     */
+    public void logDiskCheckFailure( String diskCheckErrors )
+    {
+        logger.info("Logging CriticalAlertEvent for Disk Check Failure");
+        CriticalAlertEvent alert = new CriticalAlertEvent("DISK_CHECK_FAILURE", "Disk health checks failed", "Errors: " + diskCheckErrors);
+        UvmContextFactory.context().logEvent(alert);
     }
 }

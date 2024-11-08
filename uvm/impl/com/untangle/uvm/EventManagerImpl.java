@@ -48,7 +48,7 @@ import java.util.stream.Stream;
  */
 public class EventManagerImpl implements EventManager
 {
-    private static final Integer SETTINGS_CURRENT_VERSION = 4;
+    private static final Integer SETTINGS_CURRENT_VERSION = 5;
 
     private static final Logger logger = LogManager.getLogger(EventManagerImpl.class);
 
@@ -421,39 +421,36 @@ public class EventManagerImpl implements EventManager
     private void updateSettings(EventSettings settings){
         if(settings.getVersion() < SETTINGS_CURRENT_VERSION){
 
-            // Below code to add ConfigurationBackupEvent as deafult event can be removed after 17.2 release
-            boolean confBackUpFlag = false;
-            boolean successConditionFlag = false;
-            // search for the ConfigurationBackupEvent success rule
+            // Below code to add CriticalAlertEvent as deafult event can be removed after 17.4 release
+            boolean criticalFlag = false;
+            boolean diskCheckFailFlag = false;
+
+            // search for the CriticalAlertEvent DISK_CHECK_FAILURE rule
             for (EventRule er : settings.getAlertRules()) {
                 for(EventRuleCondition c : er.getConditions()) {
-                    if(c.getField().equals("class") && c.getFieldValue().equals("*ConfigurationBackupEvent*")){
-                        confBackUpFlag = true;
+                    if(c.getField().equals("class") && c.getFieldValue().equals("*CriticalAlertEvent*")){
+                        criticalFlag = true;
                     }
-                }
-                if(confBackUpFlag) {
-                    for(EventRuleCondition c : er.getConditions()) {
-                        if(c.getField().equals("success") && c.getFieldValue().equals("False")){
-                            successConditionFlag = true;
-                        }
+                    if(c.getField().equals("component") && c.getFieldValue().equals("DISK_CHECK_FAILURE")){
+                        diskCheckFailFlag = true;
                     }
                 }
             }
 
-            // if we didn't find the ConfigurationBackupEvent rule with success False create at top
-            if ((!confBackUpFlag) || (!successConditionFlag)) {
+            // if we didn't find the CriticalAlertEvent DISK_CHECK_FAILURE rule create at top
+            if ((!criticalFlag) || (!diskCheckFailFlag)) {
                 LinkedList<EventRuleCondition> conditions;
                 EventRuleCondition condition1;
                 EventRuleCondition condition2;
                 AlertRule eventRule;
 
                 conditions = new LinkedList<>();
-                condition1 = new EventRuleCondition( "class", "=", "*ConfigurationBackupEvent*" );
+                condition1 = new EventRuleCondition( "class", "=", "*CriticalAlertEvent*" );
                 conditions.add( condition1 );
-                condition2 = new EventRuleCondition( "success", "=", "False" );
+                condition2 = new EventRuleCondition( "component", "=", "DISK_CHECK_FAILURE" );
                 conditions.add( condition2 );
-                eventRule = new AlertRule( true, conditions, true, true, "Configuration backup failed", false, 0 );
-                settings.getAlertRules().add( eventRule );
+                eventRule = new AlertRule( true, conditions, true, true, "Disk health checks failed", false, 0 );
+                settings.getAlertRules().addFirst( eventRule );
             }
 
             // set the alertrules FieldValues from null to correct values
@@ -501,6 +498,14 @@ public class EventManagerImpl implements EventManager
         EventRuleCondition condition2;
         EventRuleCondition condition3;
         AlertRule eventRule;
+
+        conditions = new LinkedList<>();
+        condition1 = new EventRuleCondition( "class", "=", "*CriticalAlertEvent*" );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( "component", "=", "DISK_CHECK_FAILURE" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Disk health checks failed", false, 0 );
+        rules.add( eventRule );
 
         conditions = new LinkedList<>();
         condition1 = new EventRuleCondition( "class", "=", "*CriticalAlertEvent*" );

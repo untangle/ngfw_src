@@ -12,6 +12,8 @@ import tempfile
 import time
 import logging
 import platform
+from uvm import Uvm
+from uvm import disk_health
 
 # set noninteractive mode for all apt-get calls
 os.environ['DEBIAN_FRONTEND'] = 'noninteractive'
@@ -140,9 +142,18 @@ def check_dpkg():
         cmd_to_log(dpkg_config)
         return
 
+def check_disk_health():
+    health_status = disk_health.check_smart_health()
+    log(f"disk health status: {health_status}")
+    if "fail" in health_status:
+        Uvm().getUvmContext().systemManager().logDiskCheckFailure(str(health_status))
+        log("Aborting Upgrade\n")
+        sys.exit()
 
 log_date( os.path.basename( sys.argv[0]) )
 
+log("")
+check_disk_health()
 log("")
 
 check_dpkg()
