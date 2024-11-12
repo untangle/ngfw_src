@@ -149,7 +149,7 @@ def check_disk_health():
         if "fail" in health_status:
             Uvm().getUvmContext().systemManager().logDiskCheckFailure(str(health_status))
             log("Disk health check failed, Aborting Upgrade.\n")
-            sys.exit()
+            sys.exit(1)
     except Exception as e:
         log(f"Disk health check encountered an error {e}, proceeding with upgrade.")
 
