@@ -38,6 +38,7 @@ public abstract class DecisionEngine
 {
     private Map<String, String> i18nMap;
     Long i18nMapLastUpdated = 0L;
+    private static final String ECH_HOSTNAME = "encrypted_client_hello";
 
     private final Logger logger = LogManager.getLogger(getClass());
 
@@ -163,7 +164,7 @@ public abstract class DecisionEngine
             }
         }
         // If ECH request then directly block the request and raise event
-        if (host.equals("encrypted_client_hello")) {
+        if (host.equals(ECH_HOSTNAME)) {
                 WebFilterEvent hbe = new WebFilterEvent(requestLine.getRequestLine(), sess.sessionEvent(), Boolean.TRUE, Boolean.TRUE, Reason.BLOCK_ECH, bestCategory.getId(), 0, "ECH BLOCKED", app.getName());
                 if (logger.isDebugEnabled()) logger.debug("LOG: ECH block : " + requestLine.getRequestLine());
                 app.logEvent(hbe);

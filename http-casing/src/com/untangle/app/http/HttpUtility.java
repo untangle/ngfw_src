@@ -25,6 +25,7 @@ public class HttpUtility {
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
     private static int ENCRYPTED_CLIENT_HELLO = 0xfe0d;
+    public static final String ECH_BLOCKED= "encrypted_client_hello";
 
     private static final HttpUtility INSTANCE = new HttpUtility();
     
@@ -157,7 +158,7 @@ public class HttpUtility {
         boolean encryptedClientHelloFound = false;
         // if ECH check enbled check for ech extention 
         if(isEchBlocked){
-            encryptedClientHelloFound = checkEchExtention(extensionLength, data.duplicate(),counter);
+            encryptedClientHelloFound = checkEchExtension(extensionLength, data.duplicate(),counter);
         }
          // walk through all of the extensions looking for SNI signature
          while (counter < extensionLength) {
@@ -196,7 +197,7 @@ public class HttpUtility {
             String hostname = extractedSNIHostname(data, nameLength);
             //check for ech extention and encrypted hostname, if found return encrypted_client_hello
             if(encryptedClientHelloFound && StringUtils.isEmpty(hostname)){
-                return "encrypted_client_hello";
+                return ECH_BLOCKED;
             }
             return hostname;
         }
@@ -210,7 +211,7 @@ public class HttpUtility {
      * @param counter
      * @return encryptedClientHelloFound
      */
-    public static boolean checkEchExtention(int extensionLength, ByteBuffer data, int counter){
+    public static boolean checkEchExtension(int extensionLength, ByteBuffer data, int counter){
         while (counter < extensionLength) {
             if (data.remaining() < 2) throw new BufferUnderflowException();
 
