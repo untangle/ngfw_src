@@ -1532,7 +1532,7 @@ can look deeper. - mahotz
     public void logDiskCheckFailure( String diskCheckErrors )
     {
         logger.info("Logging CriticalAlertEvent for Disk Check Failure");
-        CriticalAlertEvent alert = new CriticalAlertEvent("DISK_CHECK_FAILURE", "Disk health checks failed", "Errors: " + diskCheckErrors);
+        CriticalAlertEvent alert = new CriticalAlertEvent("DISK_CHECK_FAILURE", "Disk health checks failed, Upgrade aborted", "Errors: " + diskCheckErrors);
         UvmContextFactory.context().logEvent(alert);
     }
 }
