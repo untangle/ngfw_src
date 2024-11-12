@@ -2384,43 +2384,6 @@ public class NetworkManagerImpl implements NetworkManager
         ruleSnmpConditions.add(ruleSnmpMatcher3);
         filterRuleSnmp.setConditions( ruleSnmpConditions );
 
-        FilterRule filterRuleUpnp = new FilterRule();
-        filterRuleUpnp.setReadOnly( true );
-        filterRuleUpnp.setEnabled( true );
-        filterRuleUpnp.setIpv6Enabled( true );
-        filterRuleUpnp.setDescription( "Allow UPnP (UDP/1900) on non-WANs" );
-        filterRuleUpnp.setBlocked( false );
-        conditions = new LinkedList<>();
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "1900" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "UDP" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
-        filterRuleUpnp.setConditions( conditions );
-
-        FilterRule filterRuleUpnpB = new FilterRule();
-        filterRuleUpnpB.setReadOnly( true );
-        filterRuleUpnpB.setEnabled( true );
-        filterRuleUpnpB.setIpv6Enabled( true );
-        filterRuleUpnpB.setDescription( "Allow UPnP (TCP/5000) on non-WANs" );
-        filterRuleUpnpB.setBlocked( false );
-        conditions = new LinkedList<>();
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "5000" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "TCP" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
-        filterRuleUpnpB.setConditions( conditions );
-
-        FilterRule filterRuleUpnpC = new FilterRule();
-        filterRuleUpnpC.setReadOnly( true );
-        filterRuleUpnpC.setEnabled( true );
-        filterRuleUpnpC.setIpv6Enabled( true );
-        filterRuleUpnpC.setDescription( "Allow UPnP (UDP/5351) on non-WANs" );
-        filterRuleUpnpC.setBlocked( false );
-        conditions = new LinkedList<>();
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "5351" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "UDP" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
-        filterRuleUpnpC.setConditions( conditions );
-
-
         FilterRule filterRuleBgp = new FilterRule();
         filterRuleBgp.setReadOnly( true );
         filterRuleBgp.setEnabled( true );
@@ -2567,9 +2530,6 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleDhcp );
         rules.add( filterRuleHttp );
         rules.add( filterRuleSnmp );
-        rules.add( filterRuleUpnp );
-        rules.add( filterRuleUpnpB );
-        rules.add( filterRuleUpnpC );
         rules.add(filterRuleBgp);
         rules.add(filterRuleOspf);
         rules.add( filterRuleAhEsp );
