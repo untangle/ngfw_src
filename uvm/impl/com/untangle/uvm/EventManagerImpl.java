@@ -1510,8 +1510,10 @@ public class EventManagerImpl implements EventManager
          * Report users
          */
         App reportsApp = UvmContextFactory.context().appManager().app("reports");
-        List<String> reportsEmailAddresses = ((Reporting) reportsApp).getAlertEmailAddresses();
-        alertRecipients.addAll(reportsEmailAddresses);
+        if(reportsApp == null) {
+            List<String> reportsEmailAddresses = ((Reporting) reportsApp).getAlertEmailAddresses();
+            alertRecipients.addAll(reportsEmailAddresses);
+        }
 
         for( String emailAddress : alertRecipients){
             try {

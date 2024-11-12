@@ -83,7 +83,7 @@ public class SystemManagerImpl implements SystemManager
     // must update file in mods-enabled since it is a symlink to our own version
     private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/eap";
 
-    private final java.util.logging.Logger logger = LogManager.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private SystemSettings settings;
 

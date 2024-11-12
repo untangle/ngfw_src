@@ -143,12 +143,15 @@ def check_dpkg():
         return
 
 def check_disk_health():
-    health_status = disk_health.check_smart_health()
-    log(f"disk health status: {health_status}")
-    if "fail" in health_status:
-        Uvm().getUvmContext().systemManager().logDiskCheckFailure(str(health_status))
-        log("Aborting Upgrade\n")
-        sys.exit()
+    try:
+        health_status = disk_health.check_smart_health()
+        log(f"disk health status: {health_status}")
+        if "fail" in health_status:
+            Uvm().getUvmContext().systemManager().logDiskCheckFailure(str(health_status))
+            log("Disk health check failed, Aborting Upgrade.\n")
+            sys.exit()
+    except:
+        log(f"Disk health check encountered an error, proceeding with upgrade.")
 
 log_date( os.path.basename( sys.argv[0]) )
 

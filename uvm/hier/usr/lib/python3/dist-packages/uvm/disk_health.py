@@ -1,8 +1,6 @@
-import json
 from psutil import disk_partitions
 from subprocess import run, CalledProcessError
 import re
-import logging
 from collections import defaultdict
 
 # Constants for Messages
@@ -14,16 +12,12 @@ SMART_FAIL_KEYWORD = "FAILED"
 SMART_RESULT = "SMART overall-health self-assessment test result:"
 SMART_ERROR = "Failed to run smartctl on"
 
-# Configure logging
-logging.basicConfig(filename="/var/log/diskcheck.log", level=logging.INFO, format="%(asctime)s - %(message)s")
-
 # Health status dictionary
 status = defaultdict(list)
 
 def update_status(level, msg):
-    """Update status dictionary and log the message."""
+    """Update status dictionary."""
     status[level].append(msg)
-    logging.info(f"{level.upper()}: {msg}")
 
 def get_root_disk():
     """Identify the root disk by finding the '/' mount point."""
@@ -58,6 +52,3 @@ def check_smart_health():
         run_smart_check(root_disk)
     return dict(status)  # Convert defaultdict back to dict for compatibility
 
-def check_disk_health():
-    """Main function to check disk health."""
-    return check_smart_health()
