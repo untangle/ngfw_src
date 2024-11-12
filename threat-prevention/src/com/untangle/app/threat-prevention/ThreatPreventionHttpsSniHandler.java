@@ -153,7 +153,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 
         // scan the buffer for the SNI hostname
         try {
-            domain = HttpUtility.extractSniHostname(buff.duplicate());
+            domain = HttpUtility.extractSniHostname(buff.duplicate(), false);
         }
 
         // on underflow exception we stuff the partial packet into a buffer
