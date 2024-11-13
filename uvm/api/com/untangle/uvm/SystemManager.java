@@ -83,4 +83,6 @@ public interface SystemManager
     void activateRadiusCertificate();
 
     Long getLogDirectorySize();
+
+    void logDiskCheckFailure( String diskCheckErrors );
 }

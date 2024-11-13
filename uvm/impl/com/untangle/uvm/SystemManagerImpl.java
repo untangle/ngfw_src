@@ -44,6 +44,7 @@ import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.event.AdminLoginEvent;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.FileDirectoryMetadata;
 import com.untangle.uvm.util.IOUtil;
@@ -1520,5 +1521,18 @@ can look deeper. - mahotz
 
         fw.flush();
         fw.close();
+    }
+
+    /**
+     * Send Disk check failure event log.
+     * 
+     * @param diskCheckErrors
+     *        String diskCheckErrors
+     */
+    public void logDiskCheckFailure( String diskCheckErrors )
+    {
+        logger.warn("Logging CriticalAlertEvent for Disk Check Failure. Errors: {}", diskCheckErrors);
+        CriticalAlertEvent alert = new CriticalAlertEvent("DISK_CHECK_FAILURE", "Disk health checks failed, Upgrade aborted", "Errors: " + diskCheckErrors);
+        UvmContextFactory.context().logEvent(alert);
     }
 }
