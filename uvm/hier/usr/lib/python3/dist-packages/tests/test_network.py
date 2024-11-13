@@ -2718,7 +2718,14 @@ server=dynupdate.no-ip.com
         unreachable_entry = {}
         unreachable_entry['usernameDirectoryConnector'] = 'unrechable_host'
         
-        unreachable_entry['address'] = global_functions.get_broadcast_address(interface_name)
+        ip_address = global_functions.get_broadcast_address(interface_name)
+        #Cover the PPPOE case where broadcast address is recieved as x.x.x.x/xx instead of x.x.x.x
+        if "/" in ip_address and ip_address.split("/")[1].isdigit():
+        #Broadcast address of pppoe interface is reachable,  modifying last ip segment to 255
+            unreachable_entry['address'] = ".".join(ip_address.split("/")[0].split(".")[:-1] + ["255"])
+        else:
+            unreachable_entry['address'] = ip_address
+
         global_functions.uvmContext.hostTable().setHostTableEntry( unreachable_entry['address'], unreachable_entry )
 
         client_entry = {}
