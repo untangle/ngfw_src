@@ -1114,6 +1114,17 @@ def is_in_office_network(wan_ip):
             return True
     return False
 
+def is_device_pppoe():
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+
+    # Get enabled WAN interfaces, static, Ethernet
+    pppoe_status = False
+    for interface in netsettings["interfaces"]["list"]:
+        if interface["v4ConfigType"] == "PPPOE":
+            pppoe_status = True
+            break
+    return pppoe_status
+
 def is_bridged(wan_ip):
     result = remote_control.run_command("ip -o -f inet addr show",stdout=True)
     match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,3} brd', result)
