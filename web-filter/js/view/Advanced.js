@@ -103,6 +103,7 @@ Ext.define('Ung.apps.webfilter.view.Advanced', {
             bind: '{settings.closeHttpsBlockEnabled}'
         }, {
             xtype: 'checkbox',
+            hidden: true,
             boxLabel: 'Block Encrypted Client Hello (ECH)'.t(),
             bind: '{settings.blockECH}'
         }]
