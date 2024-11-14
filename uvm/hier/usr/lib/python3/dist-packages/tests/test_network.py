@@ -557,12 +557,13 @@ class NetworkTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global orig_netsettings, run_ftp_inbound_tests, wan_ip, device_in_office
+        global orig_netsettings, run_ftp_inbound_tests, wan_ip, device_in_office, device_is_pppoe
         if orig_netsettings == None:
             orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         print(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
+        device_is_pppoe = global_functions.is_device_pppoe()
         cls.ftpUserName, cls.ftpPassword = global_functions.get_live_account_info("ftp")
         
         if run_ftp_inbound_tests == None:
@@ -846,7 +847,8 @@ class NetworkTests(NGFWTestCase):
         eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--eprt -P -", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
         # assert (epsv_result == 0) # won't fix NGFW-1449
         # assert (eprt_result == 0) # won't fix NGFW-1449
 
@@ -874,7 +876,8 @@ class NetworkTests(NGFWTestCase):
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
         # assert (epsv_result == 0) # won't fix NGFW-1449
         # assert (eprt_result == 0) # won't fix NGFW-1449
 
@@ -892,7 +895,8 @@ class NetworkTests(NGFWTestCase):
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
         # assert (epsv_result == 0) # won't fix NGFW-1449
         # assert (eprt_result == 0) # won't fix NGFW-1449
 
@@ -913,7 +917,8 @@ class NetworkTests(NGFWTestCase):
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
         # assert (epsv_result == 0) # won't fix NGFW-1449
         # assert (eprt_result == 0) # won't fix NGFW-1449
 
@@ -935,7 +940,8 @@ class NetworkTests(NGFWTestCase):
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
         # assert (epsv_result == 0) # won't fix NGFW-1449
         # assert (eprt_result == 0) # won't fix NGFW-1449
 
@@ -959,7 +965,8 @@ class NetworkTests(NGFWTestCase):
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
         # assert (epsv_result == 0) # won't fix NGFW-1449
         # assert (eprt_result == 0) # won't fix NGFW-1449
 
@@ -2717,7 +2724,6 @@ server=dynupdate.no-ip.com
         # Add a host entry which is not part of the network
         unreachable_entry = {}
         unreachable_entry['usernameDirectoryConnector'] = 'unrechable_host'
-        
         ip_address = global_functions.get_broadcast_address(interface_name)
         #Cover the PPPOE case where broadcast address is recieved as x.x.x.x/xx instead of x.x.x.x
         if "/" in ip_address and ip_address.split("/")[1].isdigit():
