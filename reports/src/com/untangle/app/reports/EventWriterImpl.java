@@ -143,6 +143,13 @@ public class EventWriterImpl implements Runnable
                 logger.warn("Invalid value: " + System.getProperty( "reports.max_queue_len" ),e);
             }
         }
+        if ((temp = System.getProperty("reports.queue_drain_threshold")) != null) {
+            try {
+                LOW_WATER_MARK = Integer.parseInt(temp);
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "reports.queue_drain_threshold" ),e);
+            }
+        }
         if ((temp = System.getProperty("reports.events_per_cycle")) != null) {
             try {
                 MAX_EVENTS_PER_CYCLE = Integer.parseInt(temp);
@@ -423,17 +430,17 @@ public class EventWriterImpl implements Runnable
      */
     public Boolean partitionTableExists(String wantTableName)
     {
-        Connection conn = app.getDbConnection();
-        if(conn == null){
-            return null;
-        }
-
+        Connection conn = null;
         try {
             if ( ( cacheTableLastCheck == 0 ) ||
                 (System.currentTimeMillis() > (cacheTableLastCheck + cacheTableInterval))){
                 /*
                  * Cache has expired, rebuild
                  */
+                conn = app.getDbConnection();
+                if(conn == null){
+                    return null;
+                }
                 cacheTableLastCheck = System.currentTimeMillis();
                 logger.warn("partitionTableExists: refresh cache");
                 cacheTables = new HashSet<>();
@@ -464,8 +471,12 @@ public class EventWriterImpl implements Runnable
             logger.warn("Failed to retrieve table names", e);
             return null;
         } finally {
-            try { conn.close(); } catch (Exception e) {
-                logger.warn("Close Exception",e);
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception e) {
+                    logger.warn("Close Exception", e);
+                }
             }
         }
 
@@ -486,22 +497,6 @@ public class EventWriterImpl implements Runnable
          */
         Map<String,Integer> countMap = new HashMap<>(); // Map from Event type to count of this type of event
         Map<String,Long> timeMap     = new HashMap<>();    // Map from Event type to culumalite time to write these events
-        if (logger.isInfoEnabled()) {
-            for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
-                LogEvent event = i.next();
-
-                /**
-                 * Update the stats
-                 */
-                String eventTypeName = event.getClass().getSimpleName();
-                Integer currentCount = countMap.get(eventTypeName);
-                if (currentCount == null)
-                    currentCount = 1;
-                else
-                    currentCount = currentCount+1;
-                countMap.put(eventTypeName, currentCount);
-            }
-        }
 
         /**
          * Calculate the write delay
@@ -517,9 +512,20 @@ public class EventWriterImpl implements Runnable
 
         HashMap<String,PreparedStatement> statementCache = new LinkedHashMap<>();
         
-        logger.debug("Compiling PreparedStatement(s)... (event count: " + logQueue.size() + ")");
+        logger.debug("Compiling PreparedStatement(s)... (event count: " + count + ")");
+        boolean logLevelInfo = logger.isInfoEnabled();
         for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
             LogEvent event = i.next();
+
+            if (logLevelInfo) {
+                String eventTypeName = event.getClass().getSimpleName();
+                Integer currentCount = countMap.get(eventTypeName);
+                if (currentCount == null)
+                    currentCount = 1;
+                else
+                    currentCount = currentCount + 1;
+                countMap.put(eventTypeName, currentCount);
+            }
             
             try {
                 event.compileStatements( this.dbConnection, statementCache );
@@ -540,7 +546,7 @@ public class EventWriterImpl implements Runnable
         logger.debug("Compiling PreparedStatement(s)... Complete");
 
         int statementCount = statementCache.size();
-        logger.debug("Executing PreparedStatement(s)... (statement count: " + statementCache.size() + ")");
+        logger.debug("Executing PreparedStatement(s)... (statement count: " + statementCount + ")");
         java.util.Set<Map.Entry<String,PreparedStatement>> entries = statementCache.entrySet();
 
         /**

@@ -220,7 +220,7 @@ public class ReportsManagerImpl implements ReportsManager
             if ( ! app.isLicenseValid() ) {
                 continue;
             }
-            org.json.JSONObject json = new org.json.JSONObject();
+            JSONObject json = new JSONObject();
 
             try {
                 json.put("displayName", appProperties.getDisplayName());
@@ -246,7 +246,7 @@ public class ReportsManagerImpl implements ReportsManager
         ArrayList<JSONObject> currentApplications = new ArrayList<>();
 
         for ( AppProperties appProperties : this.appPropertiesList ) {
-            org.json.JSONObject json = new org.json.JSONObject();
+            JSONObject json = new JSONObject();
 
             try {
                 json.put("displayName", appProperties.getDisplayName());
@@ -654,9 +654,9 @@ public class ReportsManagerImpl implements ReportsManager
      * @return
      *  ArrayList containing JSONObject of event result.
      */
-    public ArrayList<org.json.JSONObject> getEvents(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
+    public ArrayList<JSONObject> getEvents(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
-        ArrayList<org.json.JSONObject> results = null;
+        ArrayList<JSONObject> results = null;
         if (entry == null) {
             logger.warn("Invalid arguments");
             return results;
@@ -822,7 +822,7 @@ public class ReportsManagerImpl implements ReportsManager
         ArrayList<JSONObject> interfacesInfo = new ArrayList<>();
         for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ){
             try {
-                JSONObject json = new org.json.JSONObject();
+                JSONObject json = new JSONObject();
                 json.put("interfaceId", interfaceSettings.getInterfaceId());
                 json.put("name", interfaceSettings.getName() );
                 interfacesInfo.add(json);
@@ -832,7 +832,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
         for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getVirtualInterfaces() ){
             try {
-                JSONObject json = new org.json.JSONObject();
+                JSONObject json = new JSONObject();
                 json.put("interfaceId", interfaceSettings.getInterfaceId());
                 json.put("name", interfaceSettings.getName() );
                 interfacesInfo.add(json);
@@ -1111,11 +1111,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     private HashMap<String,String> getColumnMetaData( String tableName )
     {
-        Connection conn = app.getDbConnection();
-        if ( conn == null ) {
-            return null;
-        }
-
+        Connection conn = null;
         try {
             HashMap<String,String> results = cacheColumnsResults.get( tableName );
             if ( results != null ) {
@@ -1123,6 +1119,10 @@ public class ReportsManagerImpl implements ReportsManager
             }
             results = new HashMap<>();
 
+            conn = app.getDbConnection();
+            if ( conn == null ) {
+                return null;
+            }
             ResultSet rs;
             if (ReportsApp.dbDriver.equals("sqlite"))
                 rs = conn.getMetaData().getColumns( null, null, tableName, null );
@@ -1143,8 +1143,12 @@ public class ReportsManagerImpl implements ReportsManager
             logger.warn("Failed to fetch column meta data", e);
             return null;
         } finally {
-            try { conn.close(); } catch (Exception e) {
-                logger.warn("Close Exception",e);
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception e) {
+                    logger.warn("Close Exception", e);
+                }
             }
         }
     }
