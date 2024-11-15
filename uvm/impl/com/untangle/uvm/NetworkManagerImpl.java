@@ -56,6 +56,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -1735,10 +1736,20 @@ public class NetworkManagerImpl implements NetworkManager
             networkSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
         networkSettings.setHostName( networkSettings.getHostName().replaceAll("\\..*","") );
         
+        List<InterfaceSettings> interfacesSettings =  networkSettings.getInterfaces();
+        Optional<InterfaceSettings> interfaceToMove = interfacesSettings.stream()
+                                                                        .filter(i-> i.getInterfaceId() == -1).findFirst();
+        
+        // If an interface with id == -1 is found, move it to the end
+        if (interfaceToMove.isPresent()) {
+            interfacesSettings.remove(interfaceToMove.get());  // Remove the interface from its current position
+            interfacesSettings.add(interfaceToMove.get());  // Add it to the last position
+        }
+        
         /**
          * Handle VLAN interfaces
          */
-        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+        for ( InterfaceSettings intf : interfacesSettings ) {
             if (!intf.getIsVlanInterface())
                 continue;
             if ( intf.getVlanTag() == null )
@@ -1751,7 +1762,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
 
             InterfaceSettings parent = null;
-            for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
+            for ( InterfaceSettings intf2 : interfacesSettings ) {
                 if ( intf.getVlanParent() == intf2.getInterfaceId() )
                     parent = intf2;
             }
@@ -1768,7 +1779,7 @@ public class NetworkManagerImpl implements NetworkManager
          * Handle PPPoE interfaces
          */
         int pppCount = 0;
-        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+        for ( InterfaceSettings intf : interfacesSettings ) {
             if ( !InterfaceSettings.ConfigType.DISABLED.equals( intf.getConfigType() ) &&
                  InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
                 // save the old system dev (usuallyy physdev or sometimse vlan dev as root dev)
