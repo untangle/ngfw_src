@@ -68,6 +68,7 @@ else
     GC_MIN_CYCLE=10
     REPORTS_MAX_QUEUE_LEN=50000
 fi
+REPORTS_QUEUE_DRAIN_THRESHOLD=`echo $REPORTS_MAX_QUEUE_LEN | awk '{printf int($1 / 10)}'`
 
 if [ $ARCH = 'x86_64' ]; then
     SESSION_LIMIT=0
@@ -80,6 +81,7 @@ echo "    GC safety factor         -> ${GC_SAFETY_FACTOR}"
 echo "    GC minimum cycle         -> ${GC_MIN_CYCLE}"
 echo "    Session limit            -> ${SESSION_LIMIT}"
 echo "    Reports queue limit      -> ${REPORTS_MAX_QUEUE_LEN}"
+echo "    Reports queue drain threshold      -> ${REPORTS_QUEUE_DRAIN_THRESHOLD}"
 
 #
 # Apply the settings
@@ -92,5 +94,6 @@ gc_safety_factor="$GC_SAFETY_FACTOR"
 gc_min_cycle="$GC_MIN_CYCLE"
 session_limit="$SESSION_LIMIT"
 reports_max_queue_len="$REPORTS_MAX_QUEUE_LEN"
+reports_queue_drain_threshold="$REPORTS_QUEUE_DRAIN_THRESHOLD"
 EOF
 
