@@ -169,6 +169,32 @@ Ext.define('Ung.config.upgrade.MainController', {
         }, 100);
     },
 
+    onUpgradeNowClick: function() {
+        var me = this;
+
+        Rpc.asyncData('rpc.systemManager.checkDiskHealth')
+        .then(function(result) {
+            if(result.includes("'fail'")) {
+                Ext.Msg.show({
+                    title: 'Warning'.t(),
+                    message: 'Drive health check failed. Disk issues could cause upgrade failures or data loss.<br>Are you sure you want to proceed with upgrade ?'.t(),
+                    buttons: Ext.Msg.OKCANCEL,
+                    icon: Ext.Msg.QUESTION,
+                    fn: function (btn) {
+                        if (btn === 'ok') {
+                            me.setSkipDiskCheckFlag(true);
+                        } 
+                    }
+                });
+            }
+            me.downloadUpgrades();
+        });
+    },
+
+    setSkipDiskCheckFlag: function(skipDiskCheck){
+        Rpc.directData('rpc.systemManager.setSkipDiskCheck', skipDiskCheck);
+    },
+
     downloadUpgrades: function() {
         var me = this;
         Ext.MessageBox.progress("Downloading Upgrade...".t(), ".");
@@ -186,6 +212,7 @@ Ext.define('Ung.config.upgrade.MainController', {
                 me.upgrade();
             } else {
                 Ext.MessageBox.alert("Warning".t(), "Downloading upgrades failed.".t());
+                me.setSkipDiskCheckFlag(false);
             }
         });
         me.getDownloadStatus();

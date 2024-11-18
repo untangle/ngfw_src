@@ -97,6 +97,7 @@ public class SystemManagerImpl implements SystemManager
     private String SettingsFileName = "";
 
     private boolean isUpgrading = false;
+    private boolean skipDiskCheck = false;
 
     private List<FileDirectoryMetadata> logFiles;
 
@@ -410,6 +411,22 @@ can look deeper. - mahotz
     }
 
     /**
+     * Get skip disk health check flag
+     * @return skipDiskCheck flag
+     */
+    public boolean isSkipDiskCheck() { 
+        return skipDiskCheck; 
+    }
+
+    /**
+     * Set skip disk health check flag
+     * @param skipDiskCheck
+     */
+    public void setSkipDiskCheck(boolean skipDiskCheck) { 
+        this.skipDiskCheck = skipDiskCheck; 
+    }
+
+    /**
      * Get the calendar
      * 
      * @return The calendar
@@ -581,6 +598,18 @@ can look deeper. - mahotz
      * 
      * @return True for success, false for failure
      */
+    public String checkDiskHealth()
+    {
+        String result;
+        result = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-system-mgr-helpers.sh diskHealthCheck");
+        return result;
+    }
+
+    /**
+     * Download upgrades
+     * 
+     * @return True for success, false for failure
+     */
     public boolean downloadUpgrades()
     {
         LinkedList<String> downloadUrls = new LinkedList<>();
@@ -697,6 +726,7 @@ can look deeper. - mahotz
         } catch (Exception e) {
             logger.warn("Upgrade exception:", e);
         }
+        this.setSkipDiskCheck(false);
         this.setIsUpgrading(false);
         /*
          * probably will never return as the upgrade usually kills the

@@ -49,6 +49,10 @@ public interface SystemManager
 
     void setDate(long timestamp);
 
+    boolean isSkipDiskCheck();
+
+    void setSkipDiskCheck(boolean skipDiskCheck);
+
     /**
      * returns the current Calendar
      * when the timezone is changed all calendars must be recreated.
@@ -63,6 +67,8 @@ public interface SystemManager
     void setTimeSource();
 
     boolean getIsUpgrading();
+
+    String checkDiskHealth();
 
     boolean downloadUpgrades();
 

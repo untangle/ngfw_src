@@ -52,3 +52,5 @@ def check_smart_health():
         run_smart_check(root_disk)
     return dict(status)  # Convert defaultdict back to dict for compatibility
 
+if __name__ == "__main__":
+    print(check_smart_health())
