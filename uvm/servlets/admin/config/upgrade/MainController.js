@@ -183,11 +183,13 @@ Ext.define('Ung.config.upgrade.MainController', {
                     fn: function (btn) {
                         if (btn === 'ok') {
                             me.setSkipDiskCheckFlag(true);
+                            me.downloadUpgrades();
                         } 
                     }
                 });
+            } else {
+                me.downloadUpgrades();
             }
-            me.downloadUpgrades();
         });
     },
 

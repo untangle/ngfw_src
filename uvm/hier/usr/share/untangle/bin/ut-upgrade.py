@@ -150,7 +150,7 @@ def check_disk_health():
             return
         skip_health_check = system_manager.isSkipDiskCheck()
         if skip_health_check:
-            log("Skip drive health checks is enabled. Proceeding with upgrade.")
+            log("Skipping drive health checks. Proceeding with upgrade.")
             return
         
         health_status = disk_health.check_smart_health()
@@ -184,8 +184,6 @@ r = check_upgrade();
 if r != 0:
     log("apt-get -s dist-upgrade returned an error (%i). Abort." % r)
     sys.exit(1)
-
-sys.exit()
 
 upgrade()
 

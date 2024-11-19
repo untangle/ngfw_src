@@ -600,9 +600,7 @@ can look deeper. - mahotz
      */
     public String checkDiskHealth()
     {
-        String result;
-        result = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-system-mgr-helpers.sh diskHealthCheck");
-        return result;
+        return UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-system-mgr-helpers.sh diskHealthCheck");
     }
 
     /**
