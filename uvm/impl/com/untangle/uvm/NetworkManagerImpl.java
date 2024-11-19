@@ -62,6 +62,7 @@ import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.Iterator;
 
 /**
@@ -1737,14 +1738,16 @@ public class NetworkManagerImpl implements NetworkManager
         networkSettings.setHostName( networkSettings.getHostName().replaceAll("\\..*","") );
         
         List<InterfaceSettings> interfacesSettings =  networkSettings.getInterfaces();
-        Optional<InterfaceSettings> interfaceToMove = interfacesSettings.stream()
-                                                                        .filter(i-> i.getInterfaceId() == -1).findFirst();
+        List<InterfaceSettings> interfacesToMove = interfacesSettings.stream()
+                                                                        .filter(i-> i.getInterfaceId() == -1).collect(Collectors.toList());
         
-        // If an interface with id == -1 is found, move it to the end
-        if (interfaceToMove.isPresent()) {
-            interfacesSettings.remove(interfaceToMove.get());  // Remove the interface from its current position
-            interfacesSettings.add(interfaceToMove.get());  // Add it to the last position
-        }
+        // For each interface with id == -1, remove it and add it to the end
+        if(!interfacesToMove.isEmpty()){
+            for (InterfaceSettings interfaceToMove : interfacesToMove) {
+                interfacesSettings.remove(interfaceToMove);  // Remove the interface from its current position
+                interfacesSettings.add(interfaceToMove);  // Add it to the last position
+            }
+        }  
         
         /**
          * Handle VLAN interfaces
