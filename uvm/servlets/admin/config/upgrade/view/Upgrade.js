@@ -44,7 +44,7 @@ Ext.define('Ung.config.upgrade.view.Upgrade', {
             hidden: true,
             text: "Upgrade Now".t(),
             iconCls: 'fa fa-play',
-            handler: 'downloadUpgrades'
+            handler: 'onUpgradeNowClick'
         }, {
             title: 'Automatic Upgrade'.t(),
             items: [{

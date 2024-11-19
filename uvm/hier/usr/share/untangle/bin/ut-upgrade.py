@@ -144,10 +144,19 @@ def check_dpkg():
 
 def check_disk_health():
     try:
+        system_manager = Uvm().getUvmContext().systemManager()
+        if not system_manager:
+            log("System Manager is not available. Proceeding with upgrade.")
+            return
+        skip_health_check = system_manager.isSkipDiskCheck()
+        if skip_health_check:
+            log("Skipping drive health checks. Proceeding with upgrade.")
+            return
+        
         health_status = disk_health.check_smart_health()
         log(f"disk health status: {health_status}")
         if "fail" in health_status:
-            Uvm().getUvmContext().systemManager().logDiskCheckFailure(str(health_status))
+            system_manager.logDiskCheckFailure(str(health_status))
             log("Disk health check failed, Aborting Upgrade.\n")
             sys.exit(1)
     except Exception as e:

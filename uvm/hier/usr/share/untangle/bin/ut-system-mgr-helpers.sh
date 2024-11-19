@@ -13,5 +13,9 @@ upgradesAvailable()
     apt-get -s dist-upgrade | grep -q '^Inst'
 }
 
+diskHealthCheck()
+{
+    python3 /usr/lib/python3/dist-packages/uvm/disk_health.py
+}
 
 $1 "$@"
