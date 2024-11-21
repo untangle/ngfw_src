@@ -61,6 +61,17 @@ Ext.define('Ung.apps.ad-blocker.view.AdFilters', {
             javaClass: 'com.untangle.uvm.app.GenericRule'
         },
 
+        extraColumnConfig: {
+            blocked: { allowBlank: false, xtype: 'checkbox' },
+            flagged: { allowBlank: false, xtype: 'checkbox' },
+            name: { xtype: 'textfield' },
+            description: { xtype: 'textfield' },
+            readOnly: { xtype: 'checkbox' },
+            id: { xtype: 'numberfield' },
+            category: { xtype: 'textfield' },
+            enabled: { allowBlank: false, xtype: 'checkbox' },
+        },
+
         columns: [
             Column.enabled, {
                 header: 'Rule'.t(),

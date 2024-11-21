@@ -9,7 +9,8 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A SQL condition (clause) for limiting results of a ReportEntry
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class SqlCondition implements Serializable, JSONString
 {
-    private static final Logger logger = Logger.getLogger(SqlCondition.class);
+    private static final Logger logger = LogManager.getLogger(SqlCondition.class);
 
     private String column;
     private String value;

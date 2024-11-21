@@ -15,14 +15,17 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
+import org.json.JSONException;
 
 import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMap;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionEventMapSignature;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionLogEvent;
+import com.untangle.uvm.util.ObjectMatcher;
 
 /**
  * Process Suricata's fast file log format and add entries IPS event log table.
@@ -46,7 +49,7 @@ import com.untangle.app.intrusion_prevention.IntrusionPreventionLogEvent;
  */
 public class IntrusionPreventionSuricataFastParser
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public static final String FAST_LOG_FILE = "/var/log/suricata/fast.log";
     public static final String EVENT_MAP = "/etc/suricata/intrusion-prevention.event.map.conf";
@@ -118,11 +121,11 @@ public class IntrusionPreventionSuricataFastParser
                 serializer.setMarshallNullAttributes(false);
 
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-                newIntrusionPreventionEventMap = (IntrusionPreventionEventMap) serializer.fromJSON(jsonString.toString());
+                newIntrusionPreventionEventMap = ObjectMatcher.parseJson(jsonString.toString(), IntrusionPreventionEventMap.class); 
             } catch (IOException e) {
                 logger.warn("Unable to process event map: ",e);
-            } catch (UnmarshallException e) {
-                logger.warn("UnmarshallException: ",e);
+            } catch (JSONException | UnmarshallException e) {
+                logger.warn("Unable to parse event map: ",e);
                 for ( Throwable cause = e.getCause() ; cause != null ; cause = cause.getCause() ) {
                       logger.warn("Exception cause: ", cause);
                 }

@@ -9,8 +9,9 @@ import java.util.List;
 
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.app.smtp.BeginMIMEToken;
@@ -46,7 +47,7 @@ public class SmtpTransactionHandler
         DROP, PASS, TEMPORARILY_REJECT
     };
 
-    private static final Logger logger = Logger.getLogger(SmtpEventHandler.class);
+    private static final Logger logger = LogManager.getLogger(SmtpEventHandler.class);
 
     private static final String RESP_TXT_354 = "Start mail input; end with <CRLF>.<CRLF>";
 

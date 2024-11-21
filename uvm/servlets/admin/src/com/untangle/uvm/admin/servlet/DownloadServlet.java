@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.servlet.DownloadHandler;
@@ -21,7 +22,7 @@ import com.untangle.uvm.servlet.DownloadHandler;
 @SuppressWarnings({ "serial", "unchecked" })
 public class DownloadServlet extends HttpServlet
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final String CHARACTER_ENCODING = "utf-8";
     

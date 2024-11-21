@@ -53,7 +53,8 @@ class SuricataSignature:
             "gid": "1",
             "classtype": "uncategoried",
             "msg": "",
-            "metadata": None
+            "metadata": None,
+            "flow": None
         }
 
         in_quote = False
@@ -180,13 +181,27 @@ class SuricataSignature:
             return
 
         if self.options[key] is None:
+            # add a non-existant option
             self.options[key] = value
             new_options_raw = self.options_raw + " " + key + ":" + value + ";"
         else:
-            find = key+":"+self.options[key]+";"
+            # replace in existing
+
+            # Signatures are inconsistent and can have leading/trailing whitespace on value
+            find = key+":\s*"+self.options[key]+"\s*;"
             self.options[key] = value
 
-            new_options_raw = self.options_raw.replace(find, key + ":" + value + ";")
+            new_options_raw = re.sub(find, key + ":" + value + ";", self.options_raw)
+
+        if self.options_raw != new_options_raw:
+            self.options_raw = new_options_raw
+
+    def remove_option(self, key):
+        """
+        Remove option entirely
+        """
+        find = key+":\s*"+self.options[key]+"\s*;"
+        new_options_raw = re.sub(find, "", self.options_raw)
 
         if self.options_raw != new_options_raw:
             self.options_raw = new_options_raw
@@ -245,7 +260,6 @@ class SuricataSignature:
         Get signature id
         """
         return self.signature_id
-
 
     def update_signature_id(self):
         """
@@ -322,6 +336,26 @@ class SuricataSignature:
                 fields.append(key + ' ' + metadata[key])
             metadata = ",".join(fields)
         self.set_options("metadata", metadata)
+
+    def remove_flow_established(self):
+        """
+        Research indidcates flow:established is a form of premature optimization
+        where suricata ignores the TCP three-way handshake, making the assumption there is
+        no valid data during this phase.  This does not seem to be the case at all, so expend
+        a little more processing to review the entire TCP sequence.
+        """
+        flow_value = self.get_options("flow")
+        if flow_value is not None:
+            # flow_values = flow_value.split(",")
+            flow_values = [x.strip() for x in flow_value.split(',')]
+
+            if "established" in flow_values:
+                flow_values.remove("established")
+                if len(flow_values) == 0:
+                    self.remove_option("flow")
+                else:
+                    flow_value = ",".join(flow_values)
+                    self.set_options("flow", flow_value)
 
     def get_rule(self):
         """

@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -22,7 +23,7 @@ import org.json.JSONString;
 public class HostTableEntry implements Serializable, JSONString
 {
     private static final int LICENSE_TRAFFIC_AGE_MAX_TIME = 60 * 60 * 1000; /* 60 minutes */
-    private static final Logger logger = Logger.getLogger(HostTableEntry.class);
+    private static final Logger logger = LogManager.getLogger(HostTableEntry.class);
 
     private InetAddress address = null;
     private String      macAddress = null;
@@ -39,6 +40,7 @@ public class HostTableEntry implements Serializable, JSONString
     private String hostnameDevice = null;
     private String hostnameDeviceLastKnown = null;
     private String hostnameOpenVpn = null;
+    private String hostnameWireGuardVpn = null;
     private String hostnameReports = null;
     private String hostnameDirectoryConnector = null;
 
@@ -47,6 +49,7 @@ public class HostTableEntry implements Serializable, JSONString
     private String usernameCaptivePortal = null;
     private String usernameIpsecVpn = null;
     private String usernameOpenVpn = null;
+    private String usernameWireGuardVpn = null;
     private String usernameDirectoryConnector = null;
     private String usernameDevice = null;
     
@@ -240,6 +243,16 @@ public class HostTableEntry implements Serializable, JSONString
         updateAccessTime();
     }
 
+    public String getHostnameWireGuardVpn() { return this.hostnameWireGuardVpn; }
+    public void setHostnameWireGuardVpn( String newValue )
+    {
+        if ( Objects.equals( newValue, this.hostnameWireGuardVpn ) )
+            return;
+        updateEvent( "hostnameWireGuardVpn", this.hostnameWireGuardVpn, newValue );
+        this.hostnameWireGuardVpn = newValue;
+        updateAccessTime();
+    }
+
     public String getHostnameReports() { return this.hostnameReports; }
     public void setHostnameReports( String newValue )
     {
@@ -327,6 +340,18 @@ public class HostTableEntry implements Serializable, JSONString
             return;
         updateEvent( "usernameOpenVpn", this.usernameOpenVpn, newValue );
         this.usernameOpenVpn = newValue;
+        updateAccessTime();
+    }
+
+    public String getUsernameWireGuardVpn() { return this.usernameWireGuardVpn; }
+    public void setUsernameWireGuardVpn( String newValue )
+    {
+        newValue = (newValue == null ? null : newValue.toLowerCase());
+
+        if ( Objects.equals( newValue, this.usernameWireGuardVpn ) )
+            return;
+        updateEvent( "usernameWireGuardVpn", this.usernameWireGuardVpn, newValue );
+        this.usernameWireGuardVpn = newValue;
         updateAccessTime();
     }
 
@@ -494,6 +519,9 @@ public class HostTableEntry implements Serializable, JSONString
         s = getHostnameOpenVpn();
         if (s != null && s.length() != 0)
             return s;
+        s = getHostnameWireGuardVpn();
+        if (s != null && s.length() != 0)
+            return s;
         s = getHostnameDeviceLastKnown();
         if (s != null && s.length() != 0)
             return s;
@@ -525,6 +553,9 @@ public class HostTableEntry implements Serializable, JSONString
         s = getHostnameOpenVpn();
         if (s != null && s.length() != 0)
             return "OpenVPN";
+        s = getHostnameWireGuardVpn();
+        if (s != null && s.length() != 0)
+            return "WireGuardVPN";
         s = getHostnameDeviceLastKnown();
         if (s != null && s.length() != 0)
             return "Device Last Known";
@@ -543,6 +574,8 @@ public class HostTableEntry implements Serializable, JSONString
             return getUsernameIpsecVpn();
         if (getUsernameOpenVpn() != null)
             return getUsernameOpenVpn();
+        if (getUsernameWireGuardVpn() != null)
+            return getUsernameWireGuardVpn();
         if (getUsernameDirectoryConnector() != null)
             return getUsernameDirectoryConnector();
         if (getUsernameDevice() != null)
@@ -561,6 +594,8 @@ public class HostTableEntry implements Serializable, JSONString
             return "IPsec VPN (L2TP)";
         if (getUsernameOpenVpn() != null)
             return "OpenVPN";
+        if (getUsernameWireGuardVpn() != null)
+            return "WireGuardVPN";
         if (getUsernameDirectoryConnector() != null)
             return "Directory Connector";
         if (getUsernameDevice() != null)

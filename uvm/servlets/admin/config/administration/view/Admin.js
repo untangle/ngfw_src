@@ -24,6 +24,8 @@ Ext.define('Ung.config.administration.view.Admin', {
 
         emptyText: 'No Admin Accounts defined'.t(),
 
+        importValidationJavaClass: true,
+
         emptyRow: {
             javaClass: 'com.untangle.uvm.AdminUserSettings',
             username: '',
@@ -90,8 +92,15 @@ Ext.define('Ung.config.administration.view.Admin', {
             allowBlank: false,
             emptyText: '[enter username]'.t(),
             blankText: 'The username cannot be blank.'.t(),
-            validator: function(value) {
-                var store = this.up('grid').getStore();
+            validator: function(value, component) {
+                if(component === undefined) 
+                    component = this;
+                var store = null;
+                if(this["up"]){
+                    store = this.up('grid').getStore();
+                }else{
+                    store = getGridStore("config-administration-admin");
+                }
                 var index = store.findBy(function(record){
                     return record.get('username') === value;
                 });
@@ -169,3 +178,10 @@ Ext.define('Ung.config.administration.view.Admin', {
     }]
 
 });
+
+function getGridStore(component) {
+    var gridComponenet = Ext.ComponentQuery.query(component);
+    if(gridComponenet[0] && gridComponenet[0].items && gridComponenet[0].items.items[0]){
+        return  gridComponenet[0].items.items[0].getStore();
+    }
+}

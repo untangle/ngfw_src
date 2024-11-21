@@ -11,12 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
-import org.apache.http.client.utils.URIBuilder;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
+import org.apache.hc.core5.net.URIBuilder;
 
 /**
  * The Manager for system-based url translations
@@ -33,7 +31,7 @@ public class UriManagerImpl implements UriManager
     private Map<String,String> UriMap = new HashMap<>();
     private Map<String,UriTranslation> HostUriTranslations = new HashMap<>();
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     /**
      * Constructor
@@ -328,6 +326,10 @@ public class UriManagerImpl implements UriManager
 
         uriTranslation = new UriTranslation();
         uriTranslation.setUri("https://wiki.edge.arista.com/get.php");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://auth-relay.untangle.com");
         uriTranslations.add(uriTranslation);
 
         settings.setUriTranslations(uriTranslations);

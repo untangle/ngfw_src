@@ -4,14 +4,15 @@
 
 package com.untangle.uvm.app;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  The UserLicense message class
  */
 public class UserLicenseMessage 
 {
-    private final Logger logger = Logger.getLogger(UserLicenseMessage.class);
+    private final Logger logger = LogManager.getLogger(UserLicenseMessage.class);
 
     /* enum for UserLicense message type */
     public enum UserLicenseMessageType {

@@ -11,12 +11,17 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -32,7 +37,6 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.app.AppBase;
-import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.HostTableEntry;
@@ -46,6 +50,8 @@ import com.untangle.uvm.HostTableEntry;
 
 public class IpsecVpnApp extends AppBase
 {
+
+    private static final String FILE_EXTENSION_JS = ".js";
     private final static String GRAB_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-logfile";
     private final static String GRAB_VIRTUAL_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/l2tpd-logfile";
     private final static String GRAB_POLICY_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-policy";
@@ -53,6 +59,7 @@ public class IpsecVpnApp extends AppBase
     private final static String GRAB_TUNNEL_STATUS_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-tunnel-status";
     private final static String APP_STARTUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-app-startup";
 
+    private final static String CHARON_DAEMON_PATH = "/usr/lib/ipsec/charon";
     private final static String STRONGSWAN_STROKE_CONFIG = "/etc/strongswan.d/charon/stroke.conf";
     private final static String STRONGSWAN_STROKE_TIMEOUT = "15000";
 
@@ -66,11 +73,12 @@ public class IpsecVpnApp extends AppBase
     private static final String NETSPACE_GRE = "GRE";
     private static final String NETSPACE_XAUTH = "Xauth";
 
-    private static final Logger logger = Logger.getLogger(IpsecVpnApp.class);
+    private static final Logger logger = LogManager.getLogger(IpsecVpnApp.class);
+    private static final String R_N_DELIMITER = "\\r?\\n";
     private final VirtualUserTable virtualUserTable = new VirtualUserTable();
     private final Integer policyId = getAppSettings().getPolicyId();
     private final PipelineConnector[] connectors = new PipelineConnector[0];
-    private final IpsecVpnManager manager = new IpsecVpnManager();
+    private final IpsecVpnManager manager;
 
     private final IpsecVpnHookCallback ipsecVpnHookCallback;
     private final PreNetworkSettingsHookCallback netSetPreHook;
@@ -108,6 +116,7 @@ public class IpsecVpnApp extends AppBase
 
         logger.debug("IpsecVpnApp()");
 
+        this.manager = new IpsecVpnManager(this);
         this.ipsecVpnHookCallback = new IpsecVpnHookCallback();
         this.netSetPreHook = new PreNetworkSettingsHookCallback();
         this.netSetPostHook = new PostNetworkSettingsHookCallback();
@@ -214,6 +223,15 @@ public class IpsecVpnApp extends AppBase
     }
 
     /**
+     * Return the settings filename
+     * @return String of filename
+     */
+    public String getSettingsFilename()
+    {
+        return System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + this.getAppSettings().getId().toString() + FILE_EXTENSION_JS;
+    }
+
+    /**
      * Set and apply new application settings.
      * 
      * @param newSettings
@@ -246,10 +264,9 @@ public class IpsecVpnApp extends AppBase
         }
 
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = getAppSettings().getId().toString();
 
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + appID + ".js", newSettings);
+            settingsManager.save(getSettingsFilename(), newSettings);
         } catch (Exception exn) {
             logger.error("Failed to save settings: ", exn);
             return;
@@ -362,9 +379,8 @@ public class IpsecVpnApp extends AppBase
     {
         logger.debug("postInit()");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = getAppSettings().getId().toString();
         IpsecVpnSettings readSettings = null;
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/ipsec-vpn/settings_" + appID + ".js";
+        String settingsFilename = getSettingsFilename();
 
         try {
             readSettings = settingsManager.load(IpsecVpnSettings.class, settingsFilename);
@@ -401,7 +417,7 @@ public class IpsecVpnApp extends AppBase
 
         if (IpsecVpnApp.execManager == null) {
             IpsecVpnApp.execManager = UvmContextFactory.context().createExecManager();
-            IpsecVpnApp.execManager.setLevel(org.apache.log4j.Level.DEBUG);
+            IpsecVpnApp.execManager.setLevel(Level.DEBUG);
             IpsecVpnApp.execManager.exec(APP_STARTUP_SCRIPT);
         }
 
@@ -410,10 +426,39 @@ public class IpsecVpnApp extends AppBase
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.UVM_SETTINGS_CHANGE, this.ipsecVpnHookCallback);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.WAN_FAILOVER_CHANGE, this.wanFailoverHookCallback);
 
-        UvmContextFactory.context().daemonManager().incrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().incrementUsageCount("ipsec");
 
+        // Fix for NGFW-14844, wait for charon to restart and then rewrite STRONGSWAN_CONF_FILE
+        waitForCharonStart();
         reconfigure();
+    }
+
+    /**
+     * Method to wait for charon daemon to start.
+     * Terminates wait after Timeout.
+     */
+    private void waitForCharonStart() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Runnable task = () -> {
+            String processes = IpsecVpnApp.execManager().execOutput("ps aux | grep charon");
+            logger.debug("ps aux | grep charon : {}", processes);
+            if (processes.contains(CHARON_DAEMON_PATH)) {
+                scheduler.shutdown();
+            }
+        };
+
+        try {
+            // Schedule the process check to run every 1 second
+            scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+            // Terminate on timeout
+            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+                logger.warn("Resuming without charon start.");
+            }
+        } catch (Exception e) {
+            logger.error("Exception in waitForCharonStart: ", e);
+            scheduler.shutdownNow();
+        }
     }
 
     /**
@@ -492,6 +537,7 @@ public class IpsecVpnApp extends AppBase
 
         UvmContextFactory.context().daemonManager().decrementUsageCount("xl2tpd");
         UvmContextFactory.context().daemonManager().decrementUsageCount("ipsec");
+        manager.configure();
     }
 
     /**
@@ -503,42 +549,39 @@ public class IpsecVpnApp extends AppBase
         manager.generateConfig(this.settings, activeCertificate);
         updateBlingers();
 
-        ExecManagerResult result;
-        String script;
-
         /**
          * Need to run iptables rules, they may already be there, but they might
          * not be so this is safe to run anytime and it will insert the rules if
          * not present
          */
-        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/710-ipsec");
-        result = UvmContextFactory.context().execManager().exec(script);
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(script + ": " + result.getResult());
-            for (String line : lines)
-                logger.info(script + ": " + line);
-        } catch (Exception e) {
-        }
+        executeScripts();
+    }
 
-        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/711-xauth");
-        result = UvmContextFactory.context().execManager().exec(script);
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(script + ": " + result.getResult());
-            for (String line : lines)
-                logger.info(script + ": " + line);
-        } catch (Exception e) {
-        }
+    /**
+     * Executes ipsec related scripts
+     */
+    private static void executeScripts() {
+        executeScript(System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/710-ipsec");
+        executeScript(System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/711-xauth");
+        executeScript(System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/712-gre");
+    }
 
-        script = (System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/712-gre");
+    /**
+     * Executes the input script
+     * @param script to execute
+     */
+    private static void executeScript(String script) {
+        ExecManagerResult result;
         result = UvmContextFactory.context().execManager().exec(script);
         try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(script + ": " + result.getResult());
-            for (String line : lines)
-                logger.info(script + ": " + line);
+            if (logger.isInfoEnabled()) {
+                String[] lines = result.getOutput().split(R_N_DELIMITER);
+                logger.info("{}: {}", script, result.getResult());
+                for (String line : lines)
+                    logger.info("{}: {}", script, line);
+            }
         } catch (Exception e) {
+            logger.error(e);
         }
     }
 

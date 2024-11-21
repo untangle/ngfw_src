@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.GlobUtil;
 
@@ -33,7 +34,7 @@ public class DomainMatcher
         MatcherCache.put(MARKER_NONE, new DomainMatcher(MARKER_NONE));
     }
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * This stores the string representation of this matcher

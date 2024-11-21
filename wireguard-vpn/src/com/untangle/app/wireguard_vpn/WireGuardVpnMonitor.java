@@ -19,8 +19,10 @@ import org.json.JSONObject;
 import org.json.JSONString;
 import org.json.JSONArray;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
+import com.untangle.uvm.HostTableEntry;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 
@@ -63,7 +65,7 @@ class WireGuardVpnMonitor implements Runnable
     private static final long THREAD_JOIN_TIME_MSEC = 1000; // milliseconds delay to allow thread join when shutting down
     private static final long TUNNEL_ACTIVITY_TIMEOUT = 60; // seconds to wait before considering a tunnel down
 
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
     private final WireGuardVpnApp app;
 
     private Hashtable<String, TunnelWatcher> watchTable = new Hashtable<>();
@@ -247,6 +249,10 @@ class WireGuardVpnMonitor implements Runnable
 
             // entry has not been touched in a while so remove from the table
             logger.debug("Removing stale watchTable entry for " + watcher.publicKey);
+            //Removing hosttable entry for tunnel, as entry is removed above
+            WireGuardVpnTunnel tunnel = findTunnelByPublicKey(key);
+            removeHostTableEntry(tunnel);
+
             watchTable.remove(key);
         }
     }
@@ -290,6 +296,9 @@ class WireGuardVpnMonitor implements Runnable
             watcher.lastUpdateTime = Instant.now().getEpochSecond();
             watcher.lastRxBytes = inValue;
             watcher.lastTxBytes = outValue;
+            //Adding description field in Username and Hostname of HostTableEntry table
+            addHostTableEntry(tunnel, true);
+
             return;
         }
 
@@ -327,7 +336,17 @@ class WireGuardVpnMonitor implements Runnable
 
         WireGuardVpnStats event = new WireGuardVpnStats(tunnel.getDescription(), tunnel.getPeerAddress(), inBytes, outBytes);
         app.logEvent(event);
+        /* For roaming clients there are no connection events, hence we are updating HostTable entry here as in case of successful tunnel connection bytes will be transferred/recieved,
+         * Incase of reconnects This will ensure HostTable entry is updated, code in HostTable first checks the value if it is same, then update is skipped.
+         *
+         *
+         *
+         */
+        if (tunnel.getEndpointDynamic()) {
+            addHostTableEntry(tunnel, false);
+        }
         logger.debug("GrabTunnelStatistics(logEvent) " + event.toString());
+
     }
 
     /**
@@ -369,6 +388,9 @@ class WireGuardVpnMonitor implements Runnable
                 WireGuardVpnEvent event = new WireGuardVpnEvent(tunnel.getDescription(), WireGuardVpnEvent.EventType.UNREACHABLE);
                 app.logEvent(event);
                 logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
+                //Removing HostTable entry during Unreachable event
+                removeHostTableEntry(tunnel);
+
             }
 
             // if connection events are not enabled just return
@@ -382,6 +404,8 @@ class WireGuardVpnMonitor implements Runnable
             WireGuardVpnEvent event = new WireGuardVpnEvent(tunnel.getDescription(), WireGuardVpnEvent.EventType.DISCONNECT);
             app.logEvent(event);
             logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
+            //Removing HostTable entry during Disconnect event
+            removeHostTableEntry(tunnel);
             return;
         }
 
@@ -391,8 +415,52 @@ class WireGuardVpnMonitor implements Runnable
         // set the virtual state flag and log a connect event
         watcher.virtualStateFlag = true;
         WireGuardVpnEvent event = new WireGuardVpnEvent(tunnel.getDescription(), WireGuardVpnEvent.EventType.CONNECT);
+        //Updating HostTable entry during connect event
+        addHostTableEntry(tunnel, false);
         app.logEvent(event);
         logger.debug("logEvent(wireguard_vpn_events) " + event.toSummaryString());
+    }
+
+    /**
+     * Function to add or update HostTable entry for particular Wireguard Peer Address.
+     *
+     * @param tunnel
+     *        The tunnel's information to be deleted from HostTableEntry
+     *
+     */
+    private void removeHostTableEntry(WireGuardVpnTunnel tunnel)
+    {
+        if (tunnel != null && tunnel.getPeerAddress() != null) {
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(tunnel.getPeerAddress(), false);
+            if (entry != null) {
+                //Update username when Tunnel connection is Disconnected or Unreachable
+                entry.setUsernameWireGuardVpn(null);
+            }
+        }
+    }
+
+    /**
+     * Function to remove HostTable entry for particular Wireguard Peer Address.
+     *
+     * @param tunnel
+     *        The tunnel's information to be added to HostTableEntry
+     * @param createIfNecessary
+     *        True to create if it doesn't exist
+     */
+    private void addHostTableEntry(WireGuardVpnTunnel tunnel, Boolean createIfNecessary)
+    {
+        boolean isMappingEnabled = app.getSettings().isMapTunnelDescUser();
+        if (isMappingEnabled && tunnel != null && tunnel.getPeerAddress() != null) {
+            HostTableEntry entry = UvmContextFactory.context().hostTable().getHostTableEntry(tunnel.getPeerAddress(), createIfNecessary);
+                entry.setHostnameWireGuardVpn(tunnel.getDescription());
+                //Update username when Tunnel connection is established
+                if (!createIfNecessary) {
+                    entry.setUsernameWireGuardVpn(tunnel.getDescription());
+                } else {
+                    entry.setUsernameWireGuardVpn(null);
+                }
+
+        }
     }
 
     /**

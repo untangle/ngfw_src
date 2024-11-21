@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.*;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A utility class to Pattern objects from regex strings
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
 public class PatternFactory
 {
     private static Map<String,Pattern> _cachedPatterns = new HashMap<>();
-    private static final Logger logger = Logger.getLogger(PatternFactory.class);
+    private static final Logger logger = LogManager.getLogger(PatternFactory.class);
 
     /**
      * There is a bug in the java regex compiler that makes it so the pattern

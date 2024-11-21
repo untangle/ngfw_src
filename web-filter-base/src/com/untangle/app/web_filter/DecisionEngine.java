@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AppTCPSession;
@@ -38,7 +39,7 @@ public abstract class DecisionEngine
     private Map<String, String> i18nMap;
     Long i18nMapLastUpdated = 0L;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * This regex matches any URL that is IP based - http://1.2.3.4/
@@ -551,7 +552,7 @@ public abstract class DecisionEngine
                 host = clientIp.getHostAddress();
             }
         }
-        String term = SearchEngine.getQueryTerm(clientIp, host, uri.toString(), header);
+        String term = SearchEngine.getQueryTerm(clientIp, host, uri.toString(), header, requestLine);
 
         if(isItemUnblocked(term, clientIp)) {
             if (logger.isDebugEnabled()) logger.debug("LOG: " + term + " in unblock list for " + clientIp);

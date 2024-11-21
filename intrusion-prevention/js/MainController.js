@@ -621,35 +621,6 @@ Ext.define('Ung.apps.intrusionprevention.MainController', {
             "url": "http://"
         },
 
-        referenceRenderer: function( value, metaData, record, rowIdx, colIdx, store ){
-            var references = [];
-            var optionReferences = record.getOption('reference');
-            if(optionReferences != null){
-                if(!Array.isArray(optionReferences)){
-                    optionReferences = [optionReferences];
-                }
-                optionReferences.forEach(function(reference){
-                    if(typeof(reference) != 'string'){
-                        return false;
-                    }
-                    reference = reference.split(',', 2);
-                    if(Ung.apps.intrusionprevention.MainController.referencesMap[reference[0]]){
-                        reference[1].split(',').forEach( function(target){
-                            target = target.trim(target);
-                            if((target.charAt(0) == '"') &&
-                                (target.charAt(target.length - 1) == '"')){
-                                target = target.substr(1,target.length - 2);
-                            }
-                            var url = Ung.apps.intrusionprevention.MainController.referencesMap[reference[0]] + target;
-                            references.push('<a href="'+ url + '" class="fa fa-search fa-black" style="text-decoration: none; color:black" target="_reference"></a>');
-                        });
-                    }
-                });
-            }
-            metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
-            return references.join("");
-        },
-
         signatureRenderer: function(value, metaData, record, rowIdx, colIdx, store){
             if(record.build){
                 metaData.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( record.build() ) + '"';
@@ -1479,20 +1450,14 @@ Ext.define('Ung.apps.intrusionprevention.cmp.VariablesGridController', {
     },
 
     exportData: function(){
-        var grid = this.getView(),
-            gridName = (grid.name !== null) ? grid.name : grid.recordJavaClass,
-            vm = grid.up('app-intrusion-prevention').getController().getViewModel();
+        var grid = this.getView();
 
         Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
 
-        var downloadForm = document.getElementById('downloadForm');
-        downloadForm["type"].value = "IntrusionPreventionSettings";
-        downloadForm["arg1"].value = "export";
-        downloadForm["arg2"].value = vm.get('instance.id');
-        downloadForm["arg3"].value = gridName.trim().replace(/ /g, '_');
-        downloadForm["arg4"].value = Ext.encode({variables: grid.up('app-intrusion-prevention').getController().getChangedDataRecords('variables')});
-        downloadForm.submit();
-
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm.gridName.value = grid.getXType();
+        exportForm.gridData.value = this.getExportData(false);
+        exportForm.submit();
         Ext.MessageBox.hide();
     },
 
@@ -2199,5 +2164,52 @@ Ext.define ('Ung.apps.intrusionprevention.model.Condition', {
         reader: {
             type: 'json'
         }
+    }
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.BypassRulesController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.unintrusionbypassrulesgrid',
+
+    warnSrcAddrIsLan: function() {
+        var vm = this.getViewModel();
+
+        vm.set('warnBypassRuleSrcAddrIsLan', false);
+        var lanIpAddrs = Util.getLanIpAddrs(),
+            bypassRules = Ext.Array.pluck(this.getView().getStore().getRange(), 'data');    
+
+        if(bypassRules) {
+            bypassRules.forEach(function(rule) {
+                if(rule) {
+                    rule.conditions.list.forEach(function(condition) {
+                        if(condition.conditionType == "SRC_ADDR" && lanIpAddrs.includes(condition.value)) {
+                            vm.set('warnBypassRuleSrcAddrIsLan', true);
+                        }
+                    });
+                }
+            });
+        }
+    },
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.BypassRulesRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unintrusionbypassrulesrecordeditor',
+
+    controller: 'unintrusionbypassrulesrecordeditorcontroller',
+});
+
+Ext.define('Ung.apps.intrusionprevention.cmp.BypassRulesRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unintrusionbypassrulesrecordeditorcontroller',
+
+    onApply: function () {
+        var view = this.getView();
+        if(view.up('[srcAddrIsLanCheck=true]')) {
+            var controller = view.up('[srcAddrIsLanCheck=true]').getController();
+            this.callParent();
+            controller.warnSrcAddrIsLan();
+        } else
+            this.callParent();
     }
 });

@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.TimeZone;
@@ -32,7 +34,8 @@ import java.util.zip.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -41,6 +44,7 @@ import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.event.AdminLoginEvent;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.FileDirectoryMetadata;
 import com.untangle.uvm.util.IOUtil;
@@ -79,7 +83,7 @@ public class SystemManagerImpl implements SystemManager
     // must update file in mods-enabled since it is a symlink to our own version
     private final static String FREERADIUS_EAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/eap";
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private SystemSettings settings;
 
@@ -93,6 +97,7 @@ public class SystemManagerImpl implements SystemManager
     private String SettingsFileName = "";
 
     private boolean isUpgrading = false;
+    private boolean skipDiskCheck = false;
 
     private List<FileDirectoryMetadata> logFiles;
 
@@ -406,6 +411,22 @@ can look deeper. - mahotz
     }
 
     /**
+     * Get skip disk health check flag
+     * @return skipDiskCheck flag
+     */
+    public boolean isSkipDiskCheck() { 
+        return skipDiskCheck; 
+    }
+
+    /**
+     * Set skip disk health check flag
+     * @param skipDiskCheck
+     */
+    public void setSkipDiskCheck(boolean skipDiskCheck) { 
+        this.skipDiskCheck = skipDiskCheck; 
+    }
+
+    /**
      * Get the calendar
      * 
      * @return The calendar
@@ -577,6 +598,16 @@ can look deeper. - mahotz
      * 
      * @return True for success, false for failure
      */
+    public String checkDiskHealth()
+    {
+        return UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-system-mgr-helpers.sh diskHealthCheck");
+    }
+
+    /**
+     * Download upgrades
+     * 
+     * @return True for success, false for failure
+     */
     public boolean downloadUpgrades()
     {
         LinkedList<String> downloadUrls = new LinkedList<>();
@@ -693,6 +724,7 @@ can look deeper. - mahotz
         } catch (Exception e) {
             logger.warn("Upgrade exception:", e);
         }
+        this.setSkipDiskCheck(false);
         this.setIsUpgrading(false);
         /*
          * probably will never return as the upgrade usually kills the
@@ -723,6 +755,66 @@ can look deeper. - mahotz
     public boolean upgradesAvailable()
     {
         return upgradesAvailable(true);
+    }
+
+    /**
+     * This test all the risks which might cause upgrade failure before actual upgrade starts
+     * 
+     * @return Set of risks which might cause upgrade failure before actual upgrade starts 
+     */
+    public Set<UpgradeFailures> canUpgrade() 
+    {
+        Set<UpgradeFailures> upgradeIssues = new HashSet<>();
+      
+        try {
+            UpgradeFailures failure = testDiskSpace();
+            if (failure != null) {
+                upgradeIssues.add(failure);
+            }
+        } catch (Exception e) {
+            logger.warn("Disk space check failed", e);
+        }
+        return upgradeIssues;
+    }
+
+    /**
+     * This test that disk free % is less than 75%
+     * 
+     * @return UpgradeFailures type of failure
+     */
+    private UpgradeFailures testDiskSpace() {
+        int percentUsed;
+        try {
+            percentUsed = getUsedDiskSpacePercentage();
+        } catch (Exception e) {
+            return UpgradeFailures.FAILED_TO_TEST;
+        }
+
+        if (percentUsed > 75) {
+            return UpgradeFailures.LOW_DISK;
+        } else {
+            return null; // No failures
+        }
+    }
+
+
+    /**
+     * This calculate the used disk space in percent
+     * 
+     * @return percentUsed  used disk space 
+     */
+    public int getUsedDiskSpacePercentage(){
+        int percentUsed;
+        try {
+            File rootFile = new File("/");
+            long totalSpace = rootFile.getTotalSpace();
+            long usedSpace = rootFile.getUsableSpace();
+            percentUsed =(int) ((1-((double) usedSpace / totalSpace) )* 100);
+        } catch (Exception e) {
+            logger.warn("Unable to determine free disk space", e);
+            throw e;
+        }
+        return percentUsed;
     }
 
     /**
@@ -1457,5 +1549,18 @@ can look deeper. - mahotz
 
         fw.flush();
         fw.close();
+    }
+
+    /**
+     * Send Disk check failure event log.
+     * 
+     * @param diskCheckErrors
+     *        String diskCheckErrors
+     */
+    public void logDiskCheckFailure( String diskCheckErrors )
+    {
+        logger.warn("Logging CriticalAlertEvent for Disk Check Failure. Errors: {}", diskCheckErrors);
+        CriticalAlertEvent alert = new CriticalAlertEvent("DISK_CHECK_FAILURE", "Disk health checks failed, Upgrade aborted", "Errors: " + diskCheckErrors);
+        UvmContextFactory.context().logEvent(alert);
     }
 }

@@ -63,6 +63,8 @@ Ext.define('Ung.apps.webfilter.view.SearchTerms', {
     copyAppendField: 'description',
 
     emptyText: 'No Search Terms defined'.t(),
+    
+    importValidationJavaClass: true,
 
     listProperty: 'settings.searchTerms.list',
     emptyRow: {

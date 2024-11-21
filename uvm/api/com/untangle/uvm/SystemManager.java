@@ -5,12 +5,21 @@ package com.untangle.uvm;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.Set;
 
 /**
  * the System Manager API
  */
 public interface SystemManager
 {
+    /**
+     * Upgrade issues enum
+     */    
+    public enum UpgradeFailures {
+        LOW_DISK,
+        FAILED_TO_TEST
+    }
+    
     SystemSettings getSettings();
 
     void setSettings(SystemSettings settings);
@@ -40,6 +49,10 @@ public interface SystemManager
 
     void setDate(long timestamp);
 
+    boolean isSkipDiskCheck();
+
+    void setSkipDiskCheck(boolean skipDiskCheck);
+
     /**
      * returns the current Calendar
      * when the timezone is changed all calendars must be recreated.
@@ -55,7 +68,13 @@ public interface SystemManager
 
     boolean getIsUpgrading();
 
+    String checkDiskHealth();
+
     boolean downloadUpgrades();
+
+    Set<UpgradeFailures> canUpgrade();
+
+    int getUsedDiskSpacePercentage();
 
     org.json.JSONObject getDownloadStatus();
 
@@ -70,4 +89,6 @@ public interface SystemManager
     void activateRadiusCertificate();
 
     Long getLogDirectorySize();
+
+    void logDiskCheckFailure( String diskCheckErrors );
 }

@@ -18,14 +18,8 @@ if "@PREFIX@" != '' and '@' not in '@PREFIX@':
 from uvm import login_tools
 import uvm_login
 
-def get_app_settings_item(a,b):
-    return None
-def get_uvm_settings_item(a,b):
-    return None
-
 try:
-    from uvm.settings_reader import get_app_settings_item
-    from uvm.settings_reader import get_uvm_settings_item
+    from uvm import settings_reader
 except ImportError:
     pass
 
@@ -60,11 +54,11 @@ def login(req, url=None, realm='Administrator', token=None):
     is_local = re.match('127\.', req.useragent_ip)
     if req.useragent_ip == '::1':
         is_local = True
-    if port == 80 and not get_uvm_settings_item('system','httpAdministrationAllowed') and not is_local:
+    if port == 80 and not settings_reader.get_uvm_settings_item('system','httpAdministrationAllowed') and not is_local:
         write_error_page(req, "Permission denied")
         return
 
-    if token != None and get_uvm_settings_item('system','cloudEnabled'):
+    if token != None and settings_reader.get_uvm_settings_item('system','cloudEnabled'):
         if login_tools.valid_token(token):
             sess = Session.Session(req, lock=0)
             sess.lock()
@@ -123,7 +117,7 @@ def logout(req, url=None, realm='Administrator'):
     sess = Session.Session(req, lock=0)
     sess.lock()
     sess.set_timeout(uvm_login.SESSION_TIMEOUT)
-    uvm_login.delete_session_user(sess, realm)
+    uvm_login.delete_session_user(sess, realm, req)
     sess.save()
     sess.unlock()
 

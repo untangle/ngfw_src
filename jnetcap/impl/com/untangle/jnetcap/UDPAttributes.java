@@ -5,12 +5,13 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /** Represents the attributes of the side (client side or server side) of a UDP session */
 public class UDPAttributes
 {
-    protected static final Logger logger = Logger.getLogger( UDPAttributes.class );
+    protected static final Logger logger = LogManager.getLogger( UDPAttributes.class );
 
     /**
      * The items with this bit are lockable, meaning once the lock flag is set

@@ -1017,6 +1017,25 @@ class CaptivePortalTests(NGFWTestCase):
         result = remote_control.run_command(global_functions.build_curl_command(output_file="/tmp/capture_test_072.out"))
         assert (result != 0)
 
+    @pytest.mark.failure_for_seb
+    def test_073_check_secure_redirect_enabled_with_tls1_2(self):
+        global app, appData
+
+        # Create Internal NIC capture rule with basic login page
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
+        appData['authenticationType']="NONE"
+        appData['pageType'] = "BASIC_MESSAGE"
+        appData['userTimeout'] = 3600  # default
+        appData['disableSecureRedirect'] = False
+        self._app.setSettings(appData)
+
+        # check that basic captive page is show when secure redirection is enabled
+        result = remote_control.run_command(global_functions.build_curl_command(extra_arguments='--tlsv1.2 --tls-max 1.2', output_file="/tmp/capture_test_071.out"))
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_071.out")
+        assert (search == 0)
+
     def test_080_check_captive_page_on_non_standard_port(self):
         # Test for captive page when HTTP is set to nonstandard port
         global app, appData
@@ -1149,7 +1168,7 @@ class CaptivePortalTests(NGFWTestCase):
         # We're expecting to get an HTTP redirect and then curl to follow that redirect
         curl_result = remote_control.run_command(
             global_functions.build_curl_command(
-                verbose=True,
+                verbose=True
             ),
             stdout=True)
 
@@ -1188,17 +1207,24 @@ class CaptivePortalTests(NGFWTestCase):
                     request="POST",
                     form=form_arguments,
                     uri=redirect_uri,
-                    output_file="/dev/null"
             ),
             stdout=True)
 
-        redirect = None
-        for result in curl_result.split("\n"):
-            if "< Location:" in result:
-                redirect = result.split(":",1)[1].strip()
+        browser.open_fake_page(page_text=curl_result, soup_config={'features': 'lxml'})
+        form = browser.select_form()
 
-        assert redirect is not None, f"found redirect"
-        assert "https://www.facebook.com/v2.9/dialog/oauth" in redirect, "found facebok redirect"
+        oauth_links = []
+        for anchor in form.form.select("a"):
+            href = anchor["href"]
+            if href in oauth_links:
+                continue
+            if "https://accounts.google.com/o/oauth2/v2/auth" in href:
+                oauth_links.append(href)
+            if "https://login.microsoftonline.com/common/oauth2/v2.0/authorize" in href:
+                oauth_links.append(href)
+
+        print(len(oauth_links))
+        assert len(oauth_links) == 2, "found appropriate any oauth links"
 
     def test_103_auth_oauth_microsoft(self):
         """
@@ -1269,7 +1295,7 @@ class CaptivePortalTests(NGFWTestCase):
 
     def test_111_auth_oauth_any(self):
         """
-        Google oauth
+        ANY_OAUTH oauth
         """
         appData = copy.deepcopy(appData_original)
         appData['captureRules']['list'] = []
@@ -1334,13 +1360,11 @@ class CaptivePortalTests(NGFWTestCase):
                 continue
             if "https://accounts.google.com/o/oauth2/v2/auth" in href:
                 oauth_links.append(href)
-            if "https://www.facebook.com/v2.9/dialog/oauth" in href:
-                oauth_links.append(href)
             if "https://login.microsoftonline.com/common/oauth2/v2.0/authorize" in href:
                 oauth_links.append(href)
 
         print(len(oauth_links))
-        assert len(oauth_links) == 3, "found appropriate any oauth links"
+        assert len(oauth_links) == 2, "found appropriate any oauth links"
 
     @classmethod
     def final_extra_tear_down(cls):

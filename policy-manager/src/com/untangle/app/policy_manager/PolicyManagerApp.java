@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import com.untangle.uvm.SessionMatcher;
@@ -24,7 +25,7 @@ import com.untangle.uvm.vnet.SessionAttachments;
 /** Implementation of the Policy Manager app */
 public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.PolicyManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
 
     private final Pulse cleanerPulse = new Pulse("policy-manager-session-cleaner", new SessionExpirationWorker(this), 60000);
@@ -464,7 +465,7 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
      */
     private static class ExpiredPolicyMatcher implements SessionMatcher
     {
-        private static final Logger logger = Logger.getLogger(ExpiredPolicyMatcher.class);
+        private static final Logger logger = LogManager.getLogger(ExpiredPolicyMatcher.class);
 
         /**
          * isMatch

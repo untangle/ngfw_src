@@ -9,19 +9,35 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
     padding: '8 5',
 
     defaults: {
-        labelWidth: 175
+        labelWidth: 200
     },
 
     items: [{
-        fieldLabel: 'Listen port'.t(),
-        xtype: 'textfield',
-        vtype: 'isSinglePortValid',
-        maxLength: 5,
-        enforceMaxLength :true,
-        bind: {
-            value: '{settings.listenPort}'
-        },
-        allowBlank: false
+        xtype: 'fieldcontainer',
+        layout: 'hbox',
+        items: [{
+            fieldLabel: 'Listen port'.t(),
+            xtype: 'textfield',
+            vtype: 'isSinglePortValid',
+            maxLength: 5,
+            enforceMaxLength :true,
+            bind: {
+                value: '{settings.listenPort}'
+            },
+            allowBlank: false,
+            labelWidth: 200,
+            padding: '8 5 5 0',
+            listeners: {
+                change: function(field, newValue, oldValue) {
+                    this.up('app-wireguard-vpn').getController().settingsChangeListener(field, newValue, 'listenPort');
+                }
+            }
+        },{
+            xtype: 'label',
+            cls: 'warningLabel',
+            hidden: true,
+            margin: '18 0 5 5'
+        }]
     },{
         fieldLabel: 'Keepalive interval'.t(),
         xtype: 'textfield',
@@ -33,13 +49,39 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
         regexText: 'Only accepts valid positive integer.'.t(),
         allowBlank: false
     },{
-        fieldLabel: 'MTU'.t(),
-        xtype: 'textfield',
-        vtype: 'mtu',
-        bind: {
-            value: '{settings.mtu}'
+        xtype: 'fieldcontainer',
+        layout: 'hbox',
+        items: [{
+            fieldLabel: 'MTU'.t(),
+            xtype: 'textfield',
+            vtype: 'mtu',
+            bind: {
+                value: '{settings.mtu}'
+            },
+            allowBlank: false,
+            labelWidth: 200,
+            padding: '8 5 5 0',
+            listeners: {
+                change: function(field, newValue, oldValue) {
+                    this.up('app-wireguard-vpn').getController().settingsChangeListener(field, newValue, 'mtu');
+                }
+            }
+        },{
+            xtype: 'label',
+            cls: 'warningLabel',
+            hidden: true,
+            margin: '18 0 5 5'
+        }],
+    }, {
+        xtype: "checkbox",
+        bind: '{settings.mapTunnelDescUser}',
+        fieldLabel: 'Set authenticated username as tunnel description'.t(),
+        padding: '8 5 5 0',
+        autoEl: {
+            tag: 'div',
+            'data-qtip': "If enabled, tunnel description will be set as authenticated user".t()
         },
-        allowBlank: false
+        checked: false
     }, {
         xtype: 'fieldset',
         title: 'Remote Client Configuration'.t(),
@@ -47,7 +89,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             type: 'vbox'
         },
         defaults: {
-            labelWidth: 165,
+            labelWidth: 190,
             padding: "0 0 10 0"
         },
         items:[{
@@ -58,12 +100,19 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 value: '{settings.dnsServer}'
             }
         },{
+            xtype: 'textfield',
+            fieldLabel: 'DNS Search Domains'.t(),
+            bind: {
+                value: '{settings.dnsSearchDomain}'
+            },
+            emptyText: '[no domain]'.t()
+        },{
             xtype: 'fieldcontainer',
             layout: 'hbox',
             items: [{
                 xtype: 'label',
                 text: 'Local Networks:'.t(),
-                width: 170
+                width: 195
             },{
                 xtype: 'ungrid',
                 itemId: 'localNetworkGrid',
@@ -133,7 +182,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             type: 'vbox'
         },
         defaults: {
-            labelWidth: 165
+            labelWidth: 190
         },
         items:[{
             fieldLabel: 'Assignment'.t(),
@@ -152,7 +201,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             xtype: 'fieldcontainer',
             layout: 'hbox',
             defaults: {
-                labelWidth: 165
+                labelWidth: 190
             },
             items: [{
                     fieldLabel: 'Network Space'.t(),
@@ -163,6 +212,11 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         value: '{settings.addressPool}',
                         disabled: '{settings.autoAddressAssignment}',
                         editable: '{!settings.autoAddressAssignment}'
+                    },
+                    listeners: {
+                        change: function(field, newValue, oldValue) {
+                            this.up('app-wireguard-vpn').getController().settingsChangeListener(field, newValue, 'addressPool');
+                        }
                     },
                     validator: function(value) {
                         try{
@@ -197,6 +251,11 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                     listeners: {
                         click: 'getNewAddressSpace'
                     }
+                },{
+                    xtype: 'label',
+                    cls: 'warningLabel',
+                    hidden: true,
+                    margin: '10 0 5 10'
                 }
             ]
         }]

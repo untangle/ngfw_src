@@ -8,7 +8,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -29,7 +30,7 @@ public class WanBalancerApp extends AppBase
 {
     private static final String WAN_METRIC_PREFIX = "wan_";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final EventHandler handler = new EventHandler(this);
 

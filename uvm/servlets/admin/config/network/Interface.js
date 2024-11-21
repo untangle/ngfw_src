@@ -896,6 +896,7 @@ Ext.define('Ung.config.network.Interface', {
                     disabled: '{!(intf.wirelessEncryption !== "NONE" && intf.wirelessEncryption !== null)}'
                 },
                 fieldLabel: 'Password'.t(),
+                inputType: 'password',
                 allowBlank: false,
                 maxLength: 63,
                 minLength: 8,
@@ -1026,6 +1027,7 @@ Ext.define('Ung.config.network.Interface', {
                 }]
             },{
                 xtype: 'container',
+                itemId: 'intfdhcpserver',
                 flex: 1,
                 padding: 10,
                 scrollable: 'y',

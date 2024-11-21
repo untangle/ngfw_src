@@ -10,7 +10,8 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.SettingsManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
@@ -25,7 +26,7 @@ public class HttpImpl extends AppBase
     private final PipelineConnector serverSideConnector = UvmContextFactory.context().pipelineFoundry().create( "http-server-side", this, null, serverSideHandler, Fitting.HTTP_TOKENS, Fitting.HTTP_STREAM, Affinity.SERVER, 1000, false, "http-client-side" );
     private final PipelineConnector[] connectors = new PipelineConnector[] { clientSideConnector, serverSideConnector };
 
-    private final Logger logger = Logger.getLogger(HttpImpl.class);
+    private final Logger logger = LogManager.getLogger(HttpImpl.class);
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     private HttpSettings settings;

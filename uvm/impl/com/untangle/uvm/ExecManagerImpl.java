@@ -11,14 +11,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Level;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
+import org.json.JSONException;
 
 import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.ExecManagerResultReader;
+import com.untangle.uvm.util.ObjectMatcher;
 
 /**
  * ExecManagerImpl is a simple manager for all exec() calls.
@@ -33,7 +36,7 @@ import com.untangle.uvm.ExecManagerResultReader;
  */
 public class ExecManagerImpl implements ExecManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private JSONSerializer serializer = null;
 
@@ -142,6 +145,18 @@ public class ExecManagerImpl implements ExecManager
     }
 
     /**
+     * Executes only safe command and returns the result object
+     *
+     * @param cmd
+     *        The String command to execute and optionally the rate limit flag
+     * @return The execution result object
+     */
+    public synchronized ExecManagerResult execSafe(String cmd)
+    {
+        return exec(cmd, false, true);
+    }
+
+    /**
      * Executes a command and returns the result object
      * 
      * @param cmd
@@ -162,7 +177,7 @@ public class ExecManagerImpl implements ExecManager
         cmd = cmd.replace("\n", "");
         cmd = cmd.replace("\r", "");
 
-        if (cmd.contains(";") || cmd.contains("&&") || cmd.contains("|") || cmd.contains(">")) {
+        if (cmd.contains(";") || cmd.contains("&&") || cmd.contains("|") || cmd.contains(">") || cmd.contains("$(")) {
             if(safe){
                 logger.log(this.level, "Suspicious command (" + cmd + "), blocked");
                 return new ExecManagerResult();
@@ -188,7 +203,7 @@ public class ExecManagerImpl implements ExecManager
             long t0 = System.currentTimeMillis();
             String line = in.readLine();
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            ExecManagerResult result = (ExecManagerResult) serializer.fromJSON(line);
+            ExecManagerResult result  = ObjectMatcher.parseJson(line, ExecManagerResult.class); 
             long t1 = System.currentTimeMillis();
 
             if (result == null) {
@@ -211,7 +226,7 @@ public class ExecManagerImpl implements ExecManager
             logger.warn("Exception during ut-exec-launcher", exn);
             initDaemon();
             return new ExecManagerResult(-1, exn.toString());
-        } catch (UnmarshallException exn) {
+        } catch (JSONException | UnmarshallException exn) {
             logger.warn("Exception during ut-exec-launcher", exn);
             initDaemon();
             return new ExecManagerResult(-1, exn.toString());

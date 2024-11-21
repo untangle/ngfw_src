@@ -10,11 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
-import com.untangle.uvm.UvmContextFactory;
-// import com.untangle.app.directory_connector.GroupEntry;
-// import com.untangle.app.directory_connector.UserEntry;
 import com.untangle.uvm.app.GroupMatcher;
 import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.util.Pulse;
@@ -31,7 +29,7 @@ public class GroupManager
 
     private static final int CACHE_COUNT_MAX = 4000;
 
-    private final Logger logger = Logger.getLogger( getClass());
+    private final Logger logger = LogManager.getLogger( getClass());
 
     /**
      * Mapping from users to the groups they are in.  Using a boolean because
@@ -498,21 +496,21 @@ public class GroupManager
             logger.info("Renewing AD Group Cache...");
             long startTime = System.currentTimeMillis();
 
-            List<String> domains = null;
+            List<ActiveDirectoryLdapAdapter> adAdapters = null;
             try {
-                domains = app.getActiveDirectoryManager().getDomains();
+                adAdapters = app.getActiveDirectoryManager().getAdapters();
             } catch ( Exception ex ) {
                 logger.warn("Unable to retrieve the domains", ex);
                 return;
             }
-
-            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(domains.size());
-            Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(domains.size());
-            Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(domains.size());
+            int adapterSize = adAdapters.size();
+            Map<String,Map<String,Map<String,Boolean>>> domainsGroupsUsersCache = new ConcurrentHashMap<>(adapterSize);
+            Map<String,Map<String,Set<String>>> domainsGroupsChildrenCache = new ConcurrentHashMap<>(adapterSize);
+            Map<String,Map<String,Boolean>> domainsUsersCache = new ConcurrentHashMap<>(adapterSize);
             Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<>();
-            for( String domain : domains){
+            for (ActiveDirectoryLdapAdapter adAdapter : adAdapters) {
+                
                 List<GroupEntry> groupList = null;
-                ActiveDirectoryLdapAdapter adAdapter = app.getActiveDirectoryManager().getAdapter(domain);
 
                 int numGroups = 10;
                 Map<String,Map<String,Boolean>> groupsUsersMap = new ConcurrentHashMap<>(numGroups);
@@ -524,7 +522,7 @@ public class GroupManager
                         groupList = adAdapter.listAllGroups(true, searchBase);
                     } catch ( Exception ex ) {
                         logger.warn("Unable to retrieve the group entries", ex);
-                        return;
+                        continue;
                     }
 
                     // Map<String,Boolean> domainUsersMap = new ConcurrentHashMap<String,Boolean>();
@@ -655,6 +653,7 @@ public class GroupManager
                 /**
                  * Update the global caches that are used.
                  */
+                String domain = adAdapter.getSettings().getDomain();
                 domainsGroupsUsersCache.put(domain, groupsUsersMap);
                 domainsGroupsChildrenCache.put(domain, groupsChildrenMap);
                 domainsUsersCache.put(domain, domainUsersMap);

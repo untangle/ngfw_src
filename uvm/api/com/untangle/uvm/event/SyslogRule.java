@@ -4,7 +4,7 @@
 package com.untangle.uvm.event;
 
 import java.util.List;
-
+import java.util.LinkedList;
 /**
  * This in the implementation of a Event Rule
  * 
@@ -15,6 +15,7 @@ import java.util.List;
 public class SyslogRule extends EventRule
 {
 	private Boolean syslog = false;
+    private LinkedList<Integer> syslogServers = null;
 
     /**
      * Initialize empty instance of EventRuleCondition.
@@ -70,5 +71,23 @@ public class SyslogRule extends EventRule
      * @param newValue boolean if true send remote syslog, otherwise false.
      */
     public void setSyslog( Boolean newValue ) { this.syslog = newValue; }
+
+
+     /**
+     * Return Syslog servers
+     * @return list of Syslogservers.
+     */
+    public LinkedList<Integer> getSyslogServers() {
+        return syslogServers;
+    }
+
+    /**
+     * add Syslog servers.
+     * @param syslogServers add list of Syslog servers.
+     */
+    public void setSyslogServers(LinkedList<Integer> syslogServers) {
+        this.syslogServers = syslogServers;
+    }
+
 
 }

@@ -3,7 +3,8 @@
  */
 package com.untangle.jvector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ListIterator;
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public class Vector
     protected final static int MVPOLLERR = 0x008;
     protected final static int MVPOLLHUP = 0x010;
 
-    protected static final Logger logger = Logger.getLogger( Vector.class );
+    protected static final Logger logger = LogManager.getLogger( Vector.class );
 
     private long vec_ptr = 0;
     private long list_ptr;

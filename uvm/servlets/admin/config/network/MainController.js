@@ -8,6 +8,22 @@ Ext.define('Ung.config.network.MainController', {
         '#interfaces': { beforerender: 'onInterfaces' },
         '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
         '#routes': { afterrender: 'refreshRoutes' },
+        '#dynamic_routing': {
+            activate: 'getDynamicRoutingOverview',
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#dynamic_routing #status':{
+            activate: 'getDynamicRoutingStatus'
+        },
+        '#dynamic_routing #bgp': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#dynamic_routing #ospf': {
+            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+        },
+        '#dynamic_routing #ospf #interfaces':{
+            activate: 'getOspfInterfaces'
+        },
         '#qos_statistics': { afterrender: 'refreshQosStatistics' },
         '#upnp_status': { afterrender: 'refreshUpnpStatus' },
         '#dhcpLeases': { afterrender: 'refreshDhcpLeases' },
@@ -28,22 +44,6 @@ Ext.define('Ung.config.network.MainController', {
             reconfigure: 'networkCardsGridReconfigure',
             select: 'networkCardsGridSelect'
         },
-        '#advanced #dynamic_routing': {
-            activate: 'getDynamicRoutingOverview',
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#advanced #dynamic_routing #status':{
-            activate: 'getDynamicRoutingStatus'
-        },
-        '#advanced #dynamic_routing #bgp': {
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#advanced #dynamic_routing #ospf': {
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#advanced #dynamic_routing #ospf #interfaces':{
-            activate: 'getOspfInterfaces'
-        },
         '#troubleshooting': {
             activate: Ung.controller.Global.onSubtabActivate,
         },
@@ -53,7 +53,7 @@ Ext.define('Ung.config.network.MainController', {
     },
 
     validateRange: function () {
-        var rangeEnd = this.getView().up('container').down('[itemId=rangeEnd]');
+        var rangeEnd = this.getView().down('container[itemId=intfdhcpserver]').down('[itemId=rangeEnd]');
         if(rangeEnd.getValue() !== "" ) rangeEnd.isValid();
     },
 
@@ -114,6 +114,7 @@ Ext.define('Ung.config.network.MainController', {
 
             me.setPortForwardWarnings();
             me.setInterfaceConditions(); // update dest/source interfaces conditions from grids
+            me.setUpnpVisible();         // update upnpVisible flag on load settings
 
             vm.set('companyName', result[3]);
             vm.set('dnsTestHost', result[4].dnsTestHost);
@@ -445,7 +446,8 @@ Ext.define('Ung.config.network.MainController', {
                 txpkts: null,
                 txbytes: null,
                 txerr: null,
-                txdrop: null
+                txdrop: null,
+                vendor: null
             };
 
 
@@ -494,6 +496,9 @@ Ext.define('Ung.config.network.MainController', {
             if(stat.v6Addr && typeof(stat.v6Addr) === 'object'){
                 stat.v6Addr = stat.v6Addr.join(', ');
             }
+            if(vm.get('interfacesGrid.selection') && vm.get('interfacesGrid.selection').data && vm.get('interfacesGrid.selection').data.vendor){
+                stat.vendor = vm.get('interfacesGrid.selection').data.vendor;
+            }
             vm.set('siStatus', stat);
             v.setLoading(false);
         });
@@ -517,6 +522,7 @@ Ext.define('Ung.config.network.MainController', {
                 return;
             }
             var connections = [];
+            var macAddressList = [];
             result.split("\n").forEach(function(row){
                 if(row.trim() == ""){
                     return;
@@ -530,11 +536,34 @@ Ext.define('Ung.config.network.MainController', {
                         macAddress = item;
                     }
                 });
+                if(macAddress != null){
+                    macAddressList.push(macAddress);
+                }
                 connections.push({
                     address: address,
-                    macAddress: macAddress
+                    macAddress: macAddress,
+                    vendor: null
                 });
             });
+            if(macAddressList.length > 0){
+                var list = { javaClass: 'java.util.LinkedList', list: macAddressList };
+                var lookUpResult = Rpc.directData('rpc.networkManager.lookupMacVendorList', list);
+                var macVendorArr = Object.entries(lookUpResult.map);
+                if(macVendorArr.length > 0){
+                    for(var i=0; i< macVendorArr.length; i++){
+                        var currMacVendor = macVendorArr[i];
+                        var macAddress = currMacVendor[0];
+                        var vendor = currMacVendor[1];
+                        for(var j=0;j<connections.length; j++){
+                            var currentConnection = connections[j];
+                            if(currentConnection.macAddress == macAddress){
+                                connections[j].vendor = vendor;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             vm.set('siArp', connections);
             v.setLoading(false);
         });
@@ -774,6 +803,34 @@ Ext.define('Ung.config.network.MainController', {
         staticDhcpGrid.getStore().add(newDhcpEntry);
     },
 
+    getExportData: function (useId) {
+        var grid = this.getView().down("[itemId=port-forward-rules]").down("ungrid");
+        var data = Ext.Array.pluck(grid.getStore().getRange(), 'data'); 
+        Ext.Array.forEach(data, function (rec, index) {
+            delete rec._id;
+            if (useId) {
+                rec.id = index + 1;
+            }
+            Ext.Array.forEach(rec.conditions.list,function(currentCondition){
+                currentCondition["value"] = currentCondition.value.toString();
+            }); 
+        });
+        return Ext.encode(data);
+    },
+
+    exportDataHandler: function () {
+        var grid = this.getView();
+
+        Ext.MessageBox.wait('Exporting Settings...'.t(), 'Please wait'.t());
+
+        var exportForm = document.getElementById('exportGridSettings');
+        exportForm.gridName.value = grid.getXType();
+        exportForm.gridData.value = this.getExportData(false);
+        exportForm.submit();
+        Ext.MessageBox.hide();
+    },
+
+
     getDynamicRoutingOverview: function(){
         var me = this,
             vm = this.getViewModel();
@@ -930,6 +987,9 @@ Ext.define('Ung.config.network.MainController', {
                 if(line.indexOf("Exiting:") > -1){
                     return;
                 }
+                if(line.indexOf("bgpd is not running") > -1){
+                    return;
+                }
                 var columns = line.split(" ");
                 var uptime = 0;
                 if(columns[8] != 'never'){
@@ -960,6 +1020,9 @@ Ext.define('Ung.config.network.MainController', {
                     return;
                 }
                 if(line.indexOf("Exiting:") > -1){
+                    return;
+                }
+                if(line.indexOf("ospfd is not running") > -1){
                     return;
                 }
                 var columns = line.split(" ");
@@ -1093,6 +1156,17 @@ Ext.define('Ung.config.network.MainController', {
                 });
             }
 
+            app = Rpc.directData('rpc.UvmContext.appManager').app('wireguard-vpn');
+            if(app){
+                var appState = app.getRunState();
+                if(appState == 'RUNNING'){
+                    interfaceData.push({
+                        dev: 'wg0',
+                        interface: 'wireguard'
+                    });
+                }
+            }
+
             vm.get('ospfDevices').loadData(interfaceData);
             view.setLoading(false);
             if(view.itemId && view.itemId == 'interfaces'){
@@ -1106,6 +1180,17 @@ Ext.define('Ung.config.network.MainController', {
     networkTestRender: function (view) {
         view.down('form').insert(0, view.commandFields);
     },
+
+    setUpnpVisible: function() {
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            upnpVisisble = Rpc.directData('rpc.isExpertMode') || vm.get('settings.upnpSettings.upnpEnabled'),
+            upnpTabpanel = v.down('panel[itemId=upnp]');
+
+        if(upnpTabpanel) upnpTabpanel.setHidden(!upnpVisisble);
+        vm.set('settings.upnpSettings.upnpVisible', upnpVisisble);
+    },
+
     runTest: function (btn) {
         var v = btn.up('networktest'),
             vm = v.getViewModel(),
@@ -1930,5 +2015,62 @@ Ext.define('Ung.config.network.cmp.OspfAreaRecordEditorController', {
             v.up('grid').getView().refresh();
         });
         v.close();
+    }
+});
+
+Ext.define('Ung.config.network.cmp.BypassRulesController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.unconfigbypassrulesgridcontroller',
+
+    control: {
+        '#bypass-rules-grid': { 
+            afterrender: 'afterByPassRulesRender',
+            itemclick: 'warnSrcAddrIsLan'
+        },
+    },
+
+    afterByPassRulesRender: function() {
+        this.warnSrcAddrIsLan(true);
+    },
+    warnSrcAddrIsLan: function(isAfterRendererCall) {
+        var vm = this.getViewModel();
+
+        vm.set('warnBypassRuleSrcAddrIsLan', false);
+        var lanIpAddrs = Util.getLanIpAddrs(),
+            bypassRules = isAfterRendererCall ? vm.get('settings.bypassRules.list') : Ext.Array.pluck(this.getView().getStore().getRange(), 'data');
+
+        if(bypassRules) {
+            bypassRules.forEach(function(rule) {
+                if(rule) {
+                    rule.conditions.list.forEach(function(condition) {
+                        if(condition.conditionType == "SRC_ADDR" && lanIpAddrs.includes(condition.value)) {
+                            vm.set('warnBypassRuleSrcAddrIsLan', true);
+                        }
+                    });
+                }
+            });
+        }
+    },
+});
+
+Ext.define('Ung.config.network.cmp.BypassRulesRecordEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unconfigbypassrulesrecordeditor',
+
+    controller: 'unconfigbypassrulesrecordeditorontroller'
+});
+
+Ext.define('Ung.config.network.cmp.BypassRulesRecordEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unconfigbypassrulesrecordeditorontroller',
+
+    onApply: function () {
+        var view = this.getView();
+        if(view.up('[srcAddrIsLanCheck=true]')) {
+            var controller = view.up('[srcAddrIsLanCheck=true]').getController();
+            this.callParent();
+            controller.warnSrcAddrIsLan();
+        } else
+            this.callParent();
     }
 });

@@ -24,7 +24,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.CommandWithEmailAddress;
 
@@ -35,7 +36,7 @@ public class MIMEUtil
 {
     public static final String MAIL_FORMAT_STR = "EEE, d MMM yyyy HH:mm:ss Z";
 
-    private static final Logger logger = Logger.getLogger(MIMEUtil.class);
+    private static final Logger logger = LogManager.getLogger(MIMEUtil.class);
 
     public static final byte[] MIME_SPECIALS = { (byte) '(', (byte) ')', (byte) '<', (byte) '>', (byte) '@',
             (byte) ',', (byte) ';', (byte) ':', (byte) '\\', (byte) '"', (byte) '/', (byte) '[', (byte) ']',
@@ -138,9 +139,9 @@ public class MIMEUtil
 
             }
         } catch (MessagingException e) {
-            Logger.getLogger(MIMEUtil.class).error(e);
+            LogManager.getLogger(MIMEUtil.class).error(e);
         } catch (IOException e) {
-            Logger.getLogger(MIMEUtil.class).error(e);
+            LogManager.getLogger(MIMEUtil.class).error(e);
         }
     }
 
@@ -305,7 +306,7 @@ public class MIMEUtil
                 return ret;
             }
         } catch (Exception shouldNotHappen) {
-            Logger.getLogger(CommandWithEmailAddress.class).error(shouldNotHappen);
+            LogManager.getLogger(CommandWithEmailAddress.class).error(shouldNotHappen);
         }
         return ensureBrackets(address.toString());
     }

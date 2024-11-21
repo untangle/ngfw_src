@@ -17,7 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -30,7 +31,7 @@ import com.untangle.uvm.logging.LogEvent;
 @SuppressWarnings("serial")
 public class ReportEntry implements Serializable, JSONString
 {
-    private static final Logger logger = Logger.getLogger(ReportEntry.class);
+    private static final Logger logger = LogManager.getLogger(ReportEntry.class);
 
     // Injections to find
     private static final List<Pattern> Injections;
@@ -52,6 +53,21 @@ public class ReportEntry implements Serializable, JSONString
         Injections.add(Pattern.compile("(?i).*from\\s+pg_.*"));
         // Always true
         Injections.add(Pattern.compile("(?i).*OR\\s+(['\\w]+)=\\1.*"));
+        // patterns for classical SQL injection 1=1 , 2=2 with ON, OR, AND 
+        Injections.add(Pattern.compile(".*\\bOR\\b.*\\b\\d+=\\d+\\b.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*'\\s*OR\\s*'\\d+'=\\d+\\s*--.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*\\bON\\b\\s*\\d+\\s*=\\s*\\d+.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*\\bAND\\b.*\\b\\d+=\\d+\\b.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*UNION.*SELECT.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*EXEC\\s+.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*INSERT\\s+INTO.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*DROP\\s+TABLE.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*\\bUPDATE\\b.*\\bSET\\b.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*\\bDELETE\\b.*\\bFROM\\b.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*\\bCREATE\\b.*\\bTABLE\\b.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*\\bALTER\\b.*\\bTABLE\\b.*", Pattern.CASE_INSENSITIVE));
+        // pattern for lo_prefix function tables
+        Injections.add(Pattern.compile(".*\\blo_\\w+\\b.*", Pattern.CASE_INSENSITIVE)); 
     };
 
 

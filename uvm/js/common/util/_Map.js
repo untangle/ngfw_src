@@ -399,6 +399,10 @@ Ext.define('Ung.util.Map', {
             col: { text: 'Out Bytes'.t(), filter: Rndr.filters.numeric, width: 100 },
             fld: { type: 'number' }
         },
+        operation: {
+            col: { text: 'Operation'.t(), width: 200, renderer: Rndr.operation },
+            fld: { type: 'string' }
+        },
         p2c_bytes: {
             col: { text: 'To-Client Bytes'.t(), filter: Rndr.filters.numeric, width: 80, align: 'right', renderer: Renderer.datasize },
             fld: { type: 'number' }
@@ -445,7 +449,7 @@ Ext.define('Ung.util.Map', {
         },
         reason_admin_logins: {
             col: { text: 'Reason'.t(), dataIndex: 'reason', width: 100, flex: 1 },
-            fld: { name: 'reason', type: 'string', convert: Converter.loginFailureReason }
+            fld: { name: 'reason', type: 'string', convert: Converter.loginReason }
         },
         receiver: {
             col: { text: 'Receiver'.t(), width: 100 },
@@ -1228,6 +1232,12 @@ Ext.define('Ung.util.Map', {
             'hostname',
             'differences' // custom non sql table field
         ],
+        system_operations: [
+            'time_stamp',
+            'operation',
+            'username',
+            'hostname'
+        ],
         critical_alerts: [
             'time_stamp',
             'component',
@@ -1858,10 +1868,12 @@ Ext.define('Ung.util.Map', {
         7: 'Limited Severely'.t()
     },
 
-    loginFailureReasons: {
+    loginReasons: {
         U: 'invalid username'.t(),
         P: 'invalid password'.t(),
-        T: 'invalid TOTP'.t()
+        T: 'invalid TOTP'.t(),
+        I: 'logged in successfully'.t(),
+        O: 'logged out successfully'.t()
     },
 
     icmps: {

@@ -7,7 +7,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.Response;
 import com.untangle.app.smtp.ResponseParser;
@@ -25,7 +26,7 @@ public class SmtpServerParserEventHandler extends AbstractEventHandler
 {
     protected static final String SHARED_STATE_KEY = "SMTP-shared-state";
 
-    private final Logger logger = Logger.getLogger(SmtpServerParserEventHandler.class);
+    private final Logger logger = LogManager.getLogger(SmtpServerParserEventHandler.class);
     
     /**
      * Initialize SmtpServerParserEventHandler.

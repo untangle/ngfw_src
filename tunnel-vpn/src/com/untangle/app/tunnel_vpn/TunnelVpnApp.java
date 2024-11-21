@@ -16,7 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.fileupload.FileItem;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -39,7 +40,7 @@ import com.untangle.uvm.network.InterfaceSettings;
  */
 public class TunnelVpnApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
@@ -118,20 +119,34 @@ public class TunnelVpnApp extends AppBase
 
         /**
          * Synchronize settings with NetworkSettings
-         * 1) Any tunnel interfaces that exists that aren't in network settings should be added
-         * 2) Any tunnel interfaces that exist in network settings but not in tunnel VPN
-         *    because they have been removed should be removed from network settins
+         * 1) Any tunnel interfaces that exists and that aren't in network settings should be added
+         * 2  Any tunnel interfaces that exists and updated by name should be updated in network settings
+         * 3) Any tunnel interfaces that exist in network settings but not in tunnel VPN
+         *    because they have been removed should be removed from network settings 
          */
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
 
         boolean networkSettingsChanged = false;
-        List<TunnelVpnTunnelSettings> missing = findTunnelsMissingFromNetworkSettings();
-        if (missing.size() > 0) {
-            for( TunnelVpnTunnelSettings tunnelSettings : missing ) {
-                /**
-                 * Set Network Settings (add new virtual interface)
-                 */
+        for( TunnelVpnTunnelSettings tunnelSettings : settings.getTunnels() ) {
+            /**
+             * Set Network Settings (add new virtual interface)
+            */
+            boolean exists = false;
+            
+            // Iterate through virtualInterfaces to check if the tunnelId is already present
+            for (InterfaceSettings virtualIntf : virtualInterfaces) {
+                if (virtualIntf.getInterfaceId()==tunnelSettings.getTunnelId()) {
+                    // Update the existing InterfaceSettings object
+                    virtualIntf.setName(tunnelSettings.getName());
+                    exists = true;
+                    logger.info("Updated existing virtual interface: " + tunnelSettings.getTunnelId() + " " + tunnelSettings.getName());
+                    break;
+                }
+            }
+            
+            // If the tunnelId was not found, add a new InterfaceSettings object
+            if (!exists){
                 InterfaceSettings virtualIntf = new InterfaceSettings(tunnelSettings.getTunnelId(),tunnelSettings.getName());
                 virtualIntf.setIsVirtualInterface(true);
                 virtualIntf.setIsWan(true);
@@ -444,27 +459,6 @@ public class TunnelVpnApp extends AppBase
         tunnelVpnMonitor.recycleTunnel(tunnelId);
     }
 
-    /**
-     * This finds all the tunnels that do not have corresponding virtual
-     * interfaces in the current network settings.
-     * 
-     * @return a list of the tunnels missing virtual interfaces (never null)
-     */
-    private List<TunnelVpnTunnelSettings> findTunnelsMissingFromNetworkSettings()
-    {
-        List<TunnelVpnTunnelSettings> missing = new LinkedList<>();
-
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        List<InterfaceSettings> virtualInterfaces = networkSettings.getVirtualInterfaces();
-
-        for(TunnelVpnTunnelSettings tunnelSettings : settings.getTunnels()) {
-            Optional<InterfaceSettings> is = virtualInterfaces.stream().filter(x -> x.getInterfaceId() == tunnelSettings.getTunnelId()).findFirst();
-            if(!is.isPresent()) {
-                missing.add(tunnelSettings);
-            }
-        }
-        return missing;
-    }
 
     /**
      * This finds all the tunnel virtual interfaces in the current network

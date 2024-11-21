@@ -3,6 +3,7 @@
  */
 package com.untangle.app.directory_connector;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,31 +14,55 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.naming.AuthenticationException;
+import javax.naming.AuthenticationNotSupportedException;
+import javax.naming.CannotProceedException;
 import javax.naming.CommunicationException;
+import javax.naming.ConfigurationException;
 import javax.naming.Context;
+import javax.naming.ContextNotEmptyException;
+import javax.naming.InsufficientResourcesException;
+import javax.naming.InterruptedNamingException;
+import javax.naming.InvalidNameException;
+import javax.naming.LimitExceededException;
+import javax.naming.LinkException;
+import javax.naming.LinkLoopException;
+import javax.naming.MalformedLinkException;
 import javax.naming.NameAlreadyBoundException;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.NamingSecurityException;
+import javax.naming.NoInitialContextException;
+import javax.naming.NoPermissionException;
+import javax.naming.NotContextException;
+import javax.naming.OperationNotSupportedException;
+import javax.naming.PartialResultException;
+import javax.naming.ReferralException;
 import javax.naming.ServiceUnavailableException;
+import javax.naming.SizeLimitExceededException;
+import javax.naming.TimeLimitExceededException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
 import java.security.cert.X509Certificate;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.LdapReferralException;
+import javax.naming.ldap.PagedResultsControl;
+import javax.naming.ldap.PagedResultsResponseControl;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.SSLContext;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.Pair;
-import com.untangle.app.directory_connector.GroupEntry;
-import com.untangle.app.directory_connector.ActiveDirectoryServer;
-import com.untangle.app.directory_connector.UserEntry;
 
 /**
  * Abstract base class for "Adapters" which call LDAP
@@ -46,9 +71,11 @@ import com.untangle.app.directory_connector.UserEntry;
  */
 abstract class LdapAdapter
 {
+    private static final int DEFAULT_PAGE_SIZE = 1000;
+    private static final String DN = "dn=";
     private TrustManager[] trustAllCerts = null;
 
-    private final Logger logger = Logger.getLogger(LdapAdapter.class);
+    private final Logger logger = LogManager.getLogger(LdapAdapter.class);
 
     /**
      * For subclasses to hold the settings.
@@ -435,7 +462,7 @@ abstract class LdapAdapter
                         "Port: \"" + settings.getLDAPPort() + "\", " +
                         "Superuser DN: \"" + getSuperuserDN() + "\", " +
                         "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
-                        " ; Error is: " + ex.toString());
+                        " ; Error is: " + ex);
             throw ex;
         }
         catch(CommunicationException ex) {
@@ -451,7 +478,7 @@ abstract class LdapAdapter
 
             while(null != (cause = result.getCause())  && (result != cause) ) {
                 result = cause;
-            }   
+            }
 
             throw new CommunicationException( result.getMessage() + ": " + ex.getMessage() );
         }
@@ -483,7 +510,7 @@ abstract class LdapAdapter
     //========================================
 
     /**
-     * Convienence methods to convert the communication and authentication excpetions
+     * Convienence methods to convert the specific excpetions
      * to the more generic "ServiceUnavailableException".
      * 
      * @param ex
@@ -494,10 +521,76 @@ abstract class LdapAdapter
     protected final NamingException convertToServiceUnavailableException(NamingException ex)
     {
         if(ex instanceof CommunicationException) {
-            return new ServiceUnavailableException("Communication Failure: " + ex.toString());
+            return new ServiceUnavailableException("Communication Failure: " + ex);
         }
         if(ex instanceof AuthenticationException) {
-            return new ServiceUnavailableException("Authentication Failure: " + ex.toString());
+            return new ServiceUnavailableException("Authentication Failure: " + ex);
+        }
+        if(ex instanceof AuthenticationNotSupportedException) {
+            return new ServiceUnavailableException("Authentication Not Supported: " + ex);
+        }
+        if(ex instanceof CannotProceedException) {
+            return new ServiceUnavailableException("Operation Can Not Proceed: " + ex);
+        }
+        if(ex instanceof ConfigurationException) {
+            return new ServiceUnavailableException("Configuration Failure: " + ex);
+        }
+        if(ex instanceof ContextNotEmptyException) {
+            return new ServiceUnavailableException("Non Empty Context Can Not Be Destroyed: " + ex);
+        }
+        if(ex instanceof InsufficientResourcesException) {
+            return new ServiceUnavailableException("Resource Not Available: " + ex);
+        }
+        if(ex instanceof InterruptedNamingException) {
+            return new ServiceUnavailableException("Naming Operation Interrupted:: " + ex);
+        }
+        if (ex instanceof InvalidNameException) {
+        return new ServiceUnavailableException("Invalid Name Syntax: " + ex);
+        }
+        if (ex instanceof LimitExceededException) {
+            return new ServiceUnavailableException("Limit Exceeded: " + ex);
+        }
+        if (ex instanceof LinkException) {
+            return new ServiceUnavailableException("Link Resolution Failure: " + ex);
+        }
+        if (ex instanceof LinkLoopException) {
+            return new ServiceUnavailableException("Link Loop Detected: " + ex);
+        }
+        if (ex instanceof MalformedLinkException) {
+            return new ServiceUnavailableException("Malformed Link Encountered: " + ex);
+        }
+        if (ex instanceof NameAlreadyBoundException) {
+            return new ServiceUnavailableException("Name Already Bound: " + ex);
+        }
+        if (ex instanceof NameNotFoundException) {
+            return new ServiceUnavailableException("Name Not Found: " + ex);
+        }
+        if (ex instanceof NamingSecurityException) {
+            return new ServiceUnavailableException("Naming Security Violation: " + ex);
+        }
+        if (ex instanceof NoInitialContextException) {
+            return new ServiceUnavailableException("No Initial Context Available: " + ex);
+        }
+        if (ex instanceof NoPermissionException) {
+            return new ServiceUnavailableException("No Permission: " + ex);
+        }
+        if (ex instanceof NotContextException) {
+            return new ServiceUnavailableException("Not a Context: " + ex);
+        }
+        if (ex instanceof OperationNotSupportedException) {
+            return new ServiceUnavailableException("Operation Not Supported: " + ex);
+        }
+        if (ex instanceof PartialResultException) {
+            return new ServiceUnavailableException("Partial Result Returned: " + ex);
+        }
+        if (ex instanceof ReferralException) {
+            return new ServiceUnavailableException("Referral Error: " + ex);
+        }
+        if (ex instanceof SizeLimitExceededException) {
+            return new ServiceUnavailableException("Size Limit Exceeded: " + ex);
+        }
+        if (ex instanceof TimeLimitExceededException) {
+            return new ServiceUnavailableException("Time Limit Exceeded: " + ex);
         }
         return ex;
     }
@@ -604,13 +697,13 @@ abstract class LdapAdapter
                 LdapAdapterSocketFactory.set( sslCtx.getSocketFactory() );
                 ldapEnv.put(Context.SECURITY_PROTOCOL, "ssl");
             }catch( Exception e ){
-                e.printStackTrace();
+                logger.error(e);
             }
         }
 
         ldapEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         ldapEnv.put(Context.REFERRAL, "throw");
-        ldapEnv.put(Context.PROVIDER_URL,  "ldap" + ( secure ? "s" : "") + "://" + host + ":" + Integer.toString(port));
+        ldapEnv.put(Context.PROVIDER_URL,  "ldap" + ( secure ? "s" : "") + "://" + host + ":" + port);
         ldapEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
         ldapEnv.put(Context.SECURITY_PRINCIPAL, dn);
         ldapEnv.put(Context.SECURITY_CREDENTIALS, pass);
@@ -618,7 +711,7 @@ abstract class LdapAdapter
         ldapEnv.put("com.sun.jndi.ldap.connect.timeout", "30000");
         ldapEnv.put("com.sun.jndi.ldap.read.timeout", "30000");
 
-        return new InitialDirContext(ldapEnv);
+        return new InitialLdapContext(ldapEnv, null);
     }
 
     /**
@@ -730,13 +823,11 @@ abstract class LdapAdapter
 
 
     /**
-     * Perform the given query (only attempts once as
-     * the context was passed-in), and return the specified attributes.
-     *
+     * Perform the given paginated query with DEFAULT_PAGE_SIZE as page size, and return the specified attributes.
      * @param searchBase the base of the search
      * @param searchFilter the query string
      * @param ctls the search controls specifying which attributes to return
-     * @param ctx the context to use for the query.
+     * @param dCtx the context to use for the query.
      *
      * @return all returned data
      * @throws ServiceUnavailableException
@@ -744,48 +835,119 @@ abstract class LdapAdapter
      * @throws NamingException
      *  A naming exception occurs.
      */
-    protected final List<Map<String, String[]>> query(String searchBase, String searchFilter, SearchControls ctls, DirContext ctx)
+    protected final List<Map<String, String[]>> query(String searchBase, String searchFilter, SearchControls ctls, DirContext dCtx)
         throws ServiceUnavailableException, NamingException
     {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Query: searchBase=" + searchBase + ", searchFilter=" + searchFilter +", LDAP server=" + dCtx.getEnvironment().get("java.naming.provider.url"));
+        }
         try {
-            NamingEnumeration<SearchResult> answer = ctx.search(searchBase, searchFilter, ctls);
-            List<Map<String, String[]>> ret = new ArrayList<>();
-            while (answer.hasMoreElements()) {
-                SearchResult sr = answer.next();
+            LdapContext ctx = (LdapContext) dCtx;
 
-                Attributes attrs = sr.getAttributes();
-                if (attrs != null) {
-                    Map<String, String[]> map = new HashMap<>();
+            // Activate paged results
+            byte[] cookie = null;
+            ctx.setRequestControls(new Control[]{
+                    new PagedResultsControl(DEFAULT_PAGE_SIZE, Control.NONCRITICAL) });
 
-                    NamingEnumeration<?> ae = null;
-                    for (ae = attrs.getAll(); ae.hasMore(); ) {
-                        Attribute attr = (Attribute)ae.next();
-                        String attrName = attr.getID();
-                        ArrayList<String> values = new ArrayList<>();
-                        NamingEnumeration<?> e = attr.getAll();
-                        while(e.hasMore()) {
-                            values.add(e.next().toString());
-                        }
-                        e.close();
-                        map.put(attrName, values.toArray(new String[values.size()]));
+            List<Map<String, String[]>> resultList = new ArrayList<>();
+
+            do {
+                /* perform the search */
+                NamingEnumeration<SearchResult> results =
+                        ctx.search(searchBase, searchFilter, ctls);
+
+                try {
+                    while (results != null && results.hasMore()) {
+                        Map<String, String[]> map = transformLdapObject(results.next());
+                        if (map != null) resultList.add(map);
                     }
-                    if(ae != null){
-                        ae.close();
+                }
+                catch (LdapReferralException ex) {
+                    // Logging this exception to trace level, not sure why this occurs at results.hasMore() at the end of the last page record. Continue to get next page
+                    logger.trace(ex);
+                }
+
+                cookie = getPaginationCookie(ctx);
+                // Re-activate paged results
+                ctx.setRequestControls(new Control[]{
+                        new PagedResultsControl(DEFAULT_PAGE_SIZE, cookie, Control.CRITICAL) });
+
+            } while (cookie != null);
+
+            ctx.close();
+            return resultList;
+        } catch (NamingException ex) {
+            throw convertToServiceUnavailableException(ex);
+        } catch (IOException ex) {
+            throw new ServiceUnavailableException("IOException: " + ex);
+        }
+    }
+
+    /**
+     * Transforms the LDAP object by extracting required data into a map
+     * @param sr SearchResult object
+     * @return a map containing the data from the LDAP object. Returns null if SearchResult does not have any attributes
+     * @throws NamingException exception
+     */
+    private Map<String, String[]> transformLdapObject(SearchResult sr) throws NamingException {
+        Attributes attrs = sr.getAttributes();
+        if (attrs != null) {
+            Map<String, String[]> map = new HashMap<>();
+
+            NamingEnumeration<?> ae = null;
+            for (ae = attrs.getAll(); ae.hasMore(); ) {
+                Attribute attr = (Attribute)ae.next();
+                String attrName = attr.getID();
+                ArrayList<String> values = new ArrayList<>();
+                NamingEnumeration<?> e = attr.getAll();
+                while(e.hasMore()) {
+                    values.add(e.next().toString());
+                }
+                e.close();
+                map.put(attrName, values.toArray(new String[0]));
+            }
+            if(ae != null){
+                ae.close();
+            }
+
+            try {
+                map.put(DN, new String[] { sr.getNameInNamespace()});
+            } catch ( UnsupportedOperationException e ) {
+                logger.warn( "Unable to determine fully qualified DN for a result", e);
+            }
+            return map;
+        }
+        return null;
+    }
+
+    /**
+     * Returns the pagination cookie from the server which allows server to maintain the pagination state
+     * @param ctx The LdapContext
+     * @return cookie byte array
+     * @throws NamingException
+     */
+    private byte[] getPaginationCookie(LdapContext ctx) throws NamingException {
+        int total;
+        byte[] cookie = null;
+        // Examine the paged results control response
+        Control[] controls = ctx.getResponseControls();
+        if (controls != null) {
+            for (Control control : controls) {
+                if (control instanceof PagedResultsResponseControl) {
+                    PagedResultsResponseControl prrc = (PagedResultsResponseControl)control;
+                    total = prrc.getResultSize();
+                    if (total != 0) {
+                        logger.debug("End of page (total : " + total + ")");
+                    } else {
+                        logger.debug("End of page (total : unknown)" + total);
                     }
-                    
-                    try {
-                        map.put( "dn=", new String[] { sr.getNameInNamespace()});
-                    } catch ( UnsupportedOperationException e ) {
-                        logger.warn( "Unable to determine fully qualified DN for a result", e);
-                    }
-                    ret.add(map);
+                    cookie = prrc.getCookie();
                 }
             }
-            answer.close();
-            return ret;
-        }catch(NamingException ex) {
-            throw convertToServiceUnavailableException(ex);
+        } else {
+            logger.debug("No controls were sent from the server");
         }
+        return cookie;
     }
 
     /**
@@ -869,12 +1031,7 @@ abstract class LdapAdapter
     private List<Map<String, String[]>> queryAsSuperuserImpl( String searchBase, String searchFilter, SearchControls ctls, boolean tryAgain)
         throws NamingException, ServiceUnavailableException
     {
-        DirContext ctx = null;
-        try {
-            ctx = checkoutSuperuserContext();
-        } catch (Exception e) {
-            throw new ServiceUnavailableException(e.getMessage());
-        }
+        DirContext ctx = getSuperuserDirContext();
         if( ctx == null ) {
             throw new ServiceUnavailableException("Unable to obtain context");
         }
@@ -893,6 +1050,24 @@ abstract class LdapAdapter
                 throw convertToServiceUnavailableException(ex);
             }
         }
+    }
+
+    /**
+     * Returns the DirContext
+     * @return DirContext object
+     * @throws NamingException if there is an issue with the naming service.
+     * @throws ServiceUnavailableException if the server is not available or cannot be reached.
+     */
+    private DirContext getSuperuserDirContext() throws ServiceUnavailableException,NamingException {
+        DirContext ctx = null;
+        try {
+            ctx = checkoutSuperuserContext();
+        } catch (NamingException e) {
+            throw convertToServiceUnavailableException(e);
+        } catch (Exception e) {
+            throw new ServiceUnavailableException(e.getMessage());
+        }
+        return ctx;
     }
 
     /**
@@ -915,12 +1090,7 @@ abstract class LdapAdapter
     private void createSubcontextAsSuperuserImpl(String dn, BasicAttributes attribs, boolean tryAgain)
         throws NameAlreadyBoundException, ServiceUnavailableException, NamingException
     {
-        DirContext ctx = null;
-        try {
-            ctx = checkoutSuperuserContext();
-        } catch (Exception e) {
-            throw new ServiceUnavailableException(e.getMessage());
-        }
+        DirContext ctx = getSuperuserDirContext();
 
         if(ctx == null) {
             throw new ServiceUnavailableException("Unable to obtain context");

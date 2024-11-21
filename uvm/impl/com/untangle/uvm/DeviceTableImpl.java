@@ -17,8 +17,12 @@ import java.net.URL;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.Pulse;
@@ -34,6 +38,13 @@ public class DeviceTableImpl implements DeviceTable
 {
     private static final String CLOUD_LOOKUP_URL = UvmContextFactory.context().uriManager().getUri("https://labs.untangle.com/Utility/v1/mac");
     private static final String CLOUD_LOOKUP_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
+    private static final String CONTENT_LENGTH = "Content-length";
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String CONTENT_TYPE_VALUE = "application/json";
+    private static final String AUTH_REQUEST = "AuthRequest";
+    private static final String USER_AGENT = "User-Agent";
+    private static final String USER_AGENT_VALUE = "Untangle NGFW Device Table";
+    private static final String HTTP_METHOD = "POST";
     private static final int HIGH_WATER_SIZE = 30000; /* absolute max */
     private static final int LOW_WATER_SIZE = 25000; /*
                                                       * max size to reduce to
@@ -45,7 +56,7 @@ public class DeviceTableImpl implements DeviceTable
                                                                         */
     private static final String DEVICES_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/devices.js";
 
-    private static final Logger logger = Logger.getLogger(DeviceTableImpl.class);
+    private static final Logger logger = LogManager.getLogger(DeviceTableImpl.class);    
 
     private ConcurrentHashMap<String, DeviceTableEntry> deviceTable;
 
@@ -185,61 +196,58 @@ public class DeviceTableImpl implements DeviceTable
     }
 
     /**
-     * Lookup the hardware vendor for a MAC address
+     * Lookup the hardware vendors for the MAC addresses
      *
-     * @param macAddress
-     *        The MAC address
-     * @return The hardware vendor, or null
+     * @param macAddresses The MAC address List String
+     * @return The hardware vendor for the given mac addresses, or null 
      */
-    public String lookupMacVendor(String macAddress)
+    public JSONArray lookupMacVendor(String macAddresses)
     {
-        logger.warn("lookupMacVendor:" + macAddress);
-        if (macAddress == null) return null;
-
+        logger.warn("lookupMacVendor: {}", macAddresses);
+        if (StringUtils.isBlank(macAddresses)) return null;
+        String[] macAddressList = macAddresses.split(",");
         try {
-            String body = "[\n\"" + macAddress + "\"\n]\n";
-            logger.info("Cloud MAC lookup = " + macAddress);
+            if (macAddressList != null) {
+                JSONArray macAdressList = new JSONArray(macAddressList);
+                logger.info("Cloud MAC lookup: {}", macAdressList);
+                
+                String body = macAdressList.toString();
+                
+                // forming the URL
+                URL myurl = new URL(UvmContextFactory.context().uriManager().getUri(CLOUD_LOOKUP_URL));
+                HttpURLConnection mycon;
+                if(myurl.getProtocol().equals("https")){
+                        mycon = (HttpsURLConnection) myurl.openConnection();
+                }else{
+                        mycon = (HttpURLConnection) myurl.openConnection();
+                }
+                mycon.setRequestMethod(HTTP_METHOD);
+                mycon.setConnectTimeout(5000); // 5 seconds
+                mycon.setReadTimeout(5000); // 5 seconds
+                mycon.setRequestProperty(CONTENT_LENGTH, String.valueOf(body.length()));
+                mycon.setRequestProperty(CONTENT_TYPE, CONTENT_TYPE_VALUE);
+                mycon.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
+                mycon.setRequestProperty(AUTH_REQUEST, CLOUD_LOOKUP_KEY);
+                mycon.setDoOutput(true);
+                mycon.setDoInput(true);
 
-            URL myurl = new URL(UvmContextFactory.context().uriManager().getUri(CLOUD_LOOKUP_URL));
-            HttpURLConnection mycon;
-            if(myurl.getProtocol().equals("https")){
-                mycon = (HttpsURLConnection) myurl.openConnection();
-            }else{
-                mycon = (HttpURLConnection) myurl.openConnection();
+                DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
+                output.writeBytes(body);
+                output.close();
+
+                DataInputStream input = new DataInputStream(mycon.getInputStream());
+                StringBuilder builder = new StringBuilder(256);
+
+                for (int c = input.read(); c != -1; c = input.read()) {
+                    builder.append((char) c);
+                }
+
+                input.close();
+                mycon.disconnect();
+
+                String cloudString = builder.toString();
+                return new JSONArray(cloudString);
             }
-            mycon.setRequestMethod("POST");
-
-            mycon.setConnectTimeout(5000); // 5 seconds
-            mycon.setReadTimeout(5000); // 5 seconds
-            mycon.setRequestProperty("Content-length", String.valueOf(body.length()));
-            mycon.setRequestProperty("Content-Type", "application/json");
-            mycon.setRequestProperty("User-Agent", "Untangle NGFW Device Table");
-            mycon.setRequestProperty("AuthRequest", CLOUD_LOOKUP_KEY);
-            mycon.setDoOutput(true);
-            mycon.setDoInput(true);
-
-            DataOutputStream output = new DataOutputStream(mycon.getOutputStream());
-            output.writeBytes(body);
-            output.close();
-
-            DataInputStream input = new DataInputStream(mycon.getInputStream());
-            StringBuilder builder = new StringBuilder(256);
-
-            for (int c = input.read(); c != -1; c = input.read()) {
-                if ((char) c == '[') continue;
-                if ((char) c == ']') continue;
-                builder.append((char) c);
-            }
-
-            input.close();
-            mycon.disconnect();
-
-            String cloudString = builder.toString();
-            if ((cloudString.indexOf('{') < 0) || (cloudString.indexOf('}') < 0)) cloudString = "{}";
-            logger.info("Cloud MAC reply = CODE:" + mycon.getResponseCode() + " MSG:" + mycon.getResponseMessage() + " DATA: + " + cloudString);
-
-            JSONObject cloudObject = new JSONObject(cloudString);
-            if (cloudObject.has("Organization")) return (cloudObject.getString("Organization"));
         }
 
         catch (Exception exn) {
@@ -264,24 +272,27 @@ public class DeviceTableImpl implements DeviceTable
         }
         lastSaveTime = System.currentTimeMillis();
 
-        /**
-         * If this is the first time we're saving. Lookup any unknown MAC
-         * vendors We only do this once so we don't flood the cloud server
-         */
-        if (lastSaveTime == 0) {
-            for (DeviceTableEntry entry : deviceTable.values()) {
+        try {
                 /**
-                 * If we don't know the MAC vendor, do a lookup in case we know
-                 * it now with an updated DB
-                 */
-                if (entry.getMacVendor() == null || entry.getMacVendor().equals("")) {
-                    String macVendor = lookupMacVendor(entry.getMacAddress());
-                    if (macVendor != null && !("".equals(macVendor))) entry.setMacVendor(macVendor);
+             * If this is the first time we're saving. Lookup any unknown MAC
+             * vendors We only do this once so we don't flood the cloud server
+             */
+            if (lastSaveTime == 0) {
+                for (DeviceTableEntry entry : deviceTable.values()) {
+                    /**
+                     * If we don't know the MAC vendor, do a lookup in case we know
+                     * it now with an updated DB
+                     */
+                    if (entry.getMacAddress()!= null && (entry.getMacVendor() == null || entry.getMacVendor().equals(""))) {
+                        JSONArray macAddressVendor = lookupMacVendor(entry.getMacAddress());
+                        if(macAddressVendor.length() > 0){
+                            JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
+                            if (macAddrVendor.has("MAC") && macAddrVendor.has("Organization") && macAddrVendor.getString("Organization") != null && macAddrVendor.getString("Organization") != "") entry.setMacVendor(macAddrVendor.getString("Organization"));
+                        }
+                    }
                 }
             }
-        }
 
-        try {
             Collection<DeviceTableEntry> entries = deviceTable.values();
             logger.info("Saving devices to file... (" + entries.size() + " entries)");
 
@@ -374,10 +385,18 @@ public class DeviceTableImpl implements DeviceTable
 
         newEntry.enableLogging(); // no on by default, make sure its on when going in the table
 
-        String macVendor = UvmContextFactory.context().deviceTable().lookupMacVendor(newEntry.getMacAddress());
-        if (macVendor != null && !("".equals(macVendor))) newEntry.setMacVendor(macVendor);
-
-        deviceTable.put(newEntry.getMacAddress(), newEntry);
+        try{
+            if (newEntry.getMacAddress()!= null) {
+                JSONArray macAddressVendor = lookupMacVendor(newEntry.getMacAddress());
+                if(macAddressVendor.length() > 0){
+                    JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
+                    if (macAddrVendor.has("MAC") && macAddrVendor.has("Organization") && macAddrVendor.getString("Organization") != null && macAddrVendor.getString("Organization") != "") newEntry.setMacVendor(macAddrVendor.getString("Organization"));
+                }
+            }
+            deviceTable.put(newEntry.getMacAddress(), newEntry);
+        } catch (Exception exn) {
+            logger.warn("Exception looking up MAC address vendor:", exn);
+        }
     }
 
     /**

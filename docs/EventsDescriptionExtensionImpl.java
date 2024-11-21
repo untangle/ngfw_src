@@ -13,7 +13,8 @@ import java.io.FileWriter;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -26,7 +27,7 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public class ExtensionImpl implements Runnable
 {
-    private static final Logger logger = Logger.getLogger( ExtensionImpl.class );
+    private static final Logger logger = LogManager.getLogger( ExtensionImpl.class );
 
     private static final String CLASS_EVENTS_JSON_FILE_NAME = "/tmp/classFields.json";
 
@@ -51,6 +52,7 @@ public class ExtensionImpl implements Runnable
         classDescriptions.put("QuotaEvent","These events are created by the [[Bandwidth Control]] and inserted or update the [[Database_Schema#quotas|quotas]] table when quotas are given or exceeded.");
         classDescriptions.put("PrioritizeEvent","These events are created by the [[Bandwidth Control]] and update the [[Database_Schema#sessions|session]] table when a session is prioritized.");
         classDescriptions.put("SettingsChangesEvent","These events are created by the base system and inserted to the [[Database_Schema#settings_changes|settings_changes]] table when settings are changed.");
+        classDescriptions.put("OperationsEvent","These events are created when certain operations are performed and inserted to the [[Database_Schema#system_operations|system_operations]] table when operations are completed.");
         classDescriptions.put("CriticalAlertEvent","These events are created by the base system and inserted to the [[Database_Schema#critical_alerts|critical_alerts]] table to record critical system alerts.");
         classDescriptions.put("LogEvent","These base class for all events.");
         classDescriptions.put("InterfaceStatEvent","These events are created by the base system and inserted to the [[Database_Schema#interface_stat_events|interface_stat_events]] table periodically with interface stats.");

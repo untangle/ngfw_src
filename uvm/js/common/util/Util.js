@@ -124,10 +124,10 @@ Ext.define('Ung.util.Util', {
     },
 
     bytesRenderer: function(bytes, perSecond) {
-        var units = (!perSecond) ? ['bytes'.t(), 'Kbytes'.t(), 'Mbytes'.t(), 'Gbytes'.t()] :
-            ['bytes/s'.t(), 'Kbytes/s'.t(), 'Mbytes/s'.t(), 'Gbytes/s'.t()];
+        var units = (!perSecond) ? ['bytes'.t(), 'Kbytes'.t(), 'Mbytes'.t(), 'Gbytes'.t(), 'Tbytes'.t(), 'Pbytes'.t(), 'Ebytes'.t(), 'Zbytes'.t(), 'Ybytes'.t()] :
+            ['bytes/s'.t(), 'Kbytes/s'.t(), 'Mbytes/s'.t(), 'Gbytes/s'.t(), 'Tbytes/s'.t(), 'Pbytes/s'.t(), 'Ebytes/s'.t(), 'Zbytes/s'.t(), 'Ybytes/s'.t()];
         var units_itr = 0;
-        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 3) {
+        while ((bytes >= 1000 || bytes <= -1000) && units_itr < 8) {
             bytes = bytes/1000;
             units_itr++;
         }
@@ -260,6 +260,17 @@ Ext.define('Ung.util.Util', {
         location.reload();
     },
 
+    isServerConnectionLost: function (exception) {
+        return exception.code == 550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
+        /* handle connection lost (this happens on windows only for some reason) */
+        (exception.name == 'JSONRpcClientException' && exception.fileName != null && exception.fileName.indexOf('jsonrpc') != -1) ||
+        /* special text for "method not found" and "Service Temporarily Unavailable" */
+        (exception.message && exception.message.indexOf('method not found') != -1) ||
+        (exception.message && exception.message.indexOf('Service Unavailable') != -1) ||
+        (exception.message && exception.message.indexOf('Service Temporarily Unavailable') != -1) ||
+        (exception.message && exception.message.indexOf('This application is not currently available') != -1);
+    },
+
     handleException: function (exception) {
         if (Util.ignoreExceptions)
             return;
@@ -309,14 +320,7 @@ Ext.define('Ung.util.Util', {
         }
 
         /* handle connection lost */
-        if( exception.code==550 || exception.code == 12029 || exception.code == 12019 || exception.code == 0 ||
-            /* handle connection lost (this happens on windows only for some reason) */
-            (exception.name == "JSONRpcClientException" && exception.fileName != null && exception.fileName.indexOf("jsonrpc") != -1) ||
-            /* special text for "method not found" and "Service Temporarily Unavailable" */
-            (exception.message && exception.message.indexOf("method not found") != -1) ||
-            (exception.message && exception.message.indexOf("Service Unavailable") != -1) ||
-            (exception.message && exception.message.indexOf("Service Temporarily Unavailable") != -1) ||
-            (exception.message && exception.message.indexOf("This application is not currently available") != -1)) {
+        if( Util.isServerConnectionLost(exception)) {
             message  = "The connection to the server has been lost.".t() + "<br/>";
             message += "Press OK to return to the login page.".t() + "<br/>";
             Util.ignoreExceptions = true;
@@ -445,6 +449,39 @@ Ext.define('Ung.util.Util', {
             interfaces.unshift(['any', 'Any'.t()]);
         }
         return interfaces;
+    },
+
+    /**
+     * Method to get list of LAN Interface IP's
+     * @return List of LAN IP's from network settings based on onlyTcpUdp flag value.
+     */
+    lanIpList: null,
+    lanIpLastUpdated: null,
+    lanIpMaxAge: 30 * 1000,
+    getLanIpAddrs: function() {
+        var currentTime = new Date().getTime();
+        
+        if (this.lanIpList === null ||
+            this.lanIpLastUpdated === null ||
+            ((this.lanIpLastUpdated + this.lanIpMaxAge) < currentTime)){
+                this.lanIpLastUpdated = currentTime;
+                var networkSettings = Rpc.directData('rpc.networkSettings'),
+                    data = [];
+
+                networkSettings.interfaces.list.forEach( function(intf){
+                    if(!intf.isWan && intf.v4StaticAddress) {
+                        data.push(intf.v4StaticAddress);
+                    }
+                });
+                networkSettings.virtualInterfaces.list.forEach( function(intf){
+                    if(!intf.isWan && intf.v4StaticAddress) {
+                        data.push(intf.v4StaticAddress);
+                    }
+                });
+                this.lanIpList = data;
+        }
+        var lanIps = Ext.clone(this.lanIpList);
+        return lanIps;
     },
 
     bytesToMBs: function(value) {
@@ -871,11 +908,27 @@ Ext.define('Ung.util.Util', {
         var broadcastAddr = networkInt.map(function(octet, index) { return (octet & netmaskInt[index]) | (~netmaskInt[index] & 255); }).join('.');
 
         // Convert IP addresses to decimals
-        var ipInt = Util.convertIPIntoDecimal(ip);
-        var broadcastAddress =  Util.convertIPIntoDecimal(broadcastAddr);
-        var networkAddress =  Util.convertIPIntoDecimal(network);
+        var ipInt = Util.convertIPIntoDecimalForEachOctet(ip);
+        var broadcastAddress =  Util.convertIPIntoDecimalForEachOctet(broadcastAddr);
+        var networkAddress =  Util.convertIPIntoDecimalForEachOctet(network);
 
         return ipInt > networkAddress && ipInt < broadcastAddress;
+    },
+
+    convertIPIntoDecimalForEachOctet: function(ip) {
+    
+        var octets = ip.split(".");
+    
+        var decimalValue = 0;
+        var powers = [16777216, 65536, 256, 1]; // Powers of 256
+    
+        for (var i = 0; i < 4; i++) {
+            var octet = parseInt(octets[i], 10);
+           
+            decimalValue += octet * powers[i];
+        }
+    
+        return decimalValue;
     },
 
     getUnusedPoolAddr: function(addressPool, store, field){
@@ -1111,19 +1164,17 @@ Ext.define('Ung.util.Util', {
      * To compare two IP addresses we need to convert into decimal values,
      * Maximum it can go upto 255 so we will be converting it based upon that
     */
-    convertIPIntoDecimal:function(ip){
-        if(ip === "" || ip <= 0){
-            return 0;
-        }
+    convertIPIntoDecimal: function (ip) {
+        if (!ip) return 0;
         var total = 0;
-        var ipValue = ip;
-        var totalElements = ipValue.split(".");
-        var power = 1;
-        for(var i=0;i<totalElements.length;i++){
-            total += (totalElements[i] * power);
-            power*= 256;
+        var ipElements = ip.split(".");
+
+        for (var i = 0; i < ipElements.length; i++) {
+            var octet = parseInt(ipElements[i], 10); // Parse each octet as an integer
+            total = total * 256 + octet;
         }
-        return total;
+
+        return total >>> 0; // Ensure the result is an unsigned 32-bit integer
     },
 
     /**
@@ -1157,8 +1208,12 @@ Ext.define('Ung.util.Util', {
             });
 
             if(index !== null) return "Address pool conflict".t();
-
-            if(context.dirty) {
+            //NGFW-14533
+            // validation as per fields should be:
+            // Peer IP Address Field : Address should not be conflicts with any existing network registrations
+            // Local Network Address : Address should not be conflicts with existing address present in list and with Peer IP Address.        
+            // Added additional check  (context.xtype === "textarea" ) to verify import, remote networks field 
+            if((context.dirty && context.ui === "default") || context.xtype === "textarea" ) {
                 var ntwkSpace=null;
                 if(currentIpDirtyCheck){
                     ntwkSpace = rpc.UvmContext.netspaceManager().isNetworkAvailable('wireguard-vpn', currentFieldIp.trim());   
@@ -1211,5 +1266,151 @@ Ext.define('Ung.util.Util', {
             ]];
         }
     },
+
+    /**
+     * Method to check if new value is not exists in current store
+     * @param value that has to check for uniqueness.
+     * @param form tab for which error has to be shown.
+     * @param field against which value has to be validated.
+     * @param component current object.
+     * @param query grid name to fetch the value of grid.
+     * @return boolean if value is validated else error for invalid value.
+     */
+    isUnique: function(value, form, field, component, query) {
+        var currentRecord ;
+        if(component.getId().indexOf('textfield') !== -1){
+        if(component.up('window')!=undefined)
+            currentRecord = component.up('window').getViewModel().data.record.get(field);
+        if (value === currentRecord) {
+            return true;
+        }
+        //Return true if editable field peerAddress in grid is not modified
+        if(!component.dirty && field === 'peerAddress') {
+            return true; 
+        }
+        }
+        var grid = Ext.ComponentQuery.query(query)[0];
+        var store = grid.getStore();
+
+        var isNameUnique = store.findBy(function(record) {
+            return record.get(field) === value;
+        }) === -1;
+        
+        return isNameUnique? true : Ext.String.format('A {0} with this {1} already exists.'.t(), form, field);
+    },
+
+    /**
+     * Method to get list of ip addresses and netmasks from remote networks seprated by comma
+     * @param remoteNetworks networks in CIDR format seprated by comma.
+     * @return List of objects containg Ip and subnetMask of individual network.
+     */
+    getParsedAddresses: function(remoteNetworks){
+        var parsedAddresses = [];
+        // Split remoteNetworks by commas to handle multiple networks
+        var addresses = remoteNetworks.split(',');
+        addresses.forEach(function (address) {
+            // Trim each address to remove leading/trailing spaces
+            address = address.trim();
+            // Split the address into IP and subnet mask
+            var parts = address.split('/');
+            var ip = parts[0];
+            var subnetMask = parseInt(parts[1], 10); // Specify radix as 10
+
+            parsedAddresses.push({
+                ip: ip,
+                subnetMask: subnetMask
+            });
+        });
+
+        return parsedAddresses;
+    },
+
+    /**
+     * Method to check if two IP ranges overlap
+     * @param address1 first object containg ip address and subnet mask.
+     * @param address2 second object containg ip address and subnet mask.
+     * @return boolean, true if both value overlap else false.
+     */
+    doRangesOverlap: function(address1, address2) {
+
+        // Extract network from addresses and subnet masks
+        var network1 = Util.convertIPIntoDecimalForEachOctet(address1.ip) & (0xFFFFFFFF << (32 - address1.subnetMask));
+        var network2 = Util.convertIPIntoDecimalForEachOctet(address2.ip) & (0xFFFFFFFF << (32 - address2.subnetMask));
     
+        // Check if the network addresses are the same and if they intersect
+        return network1 === network2;
+    },
+
+    /**
+     * Method to validate network intersection
+     * @param value that has to check for uniqueness.
+     * @param form tab for which error has to be shown.
+     * @param field against which value has to be validated.
+     * @param component current object.
+     * @param query grid name to fetch the value of grid.
+     * @return boolean if value is validated else error for invalid value.
+     */
+    isIpIntersects: function(value, form, field, component, query) {
+        var grid = Ext.ComponentQuery.query(query)[0];
+        var store = grid.getStore();
+    
+        var parsedAddresses;
+        // Array to store parsed new IP addresses with subnet masks
+        if(value !== null && value !== "")
+            parsedAddresses = Util.getParsedAddresses(value);
+       
+        // Fetch already stored values
+        var allStoredAddresses = [];
+
+        store.each(function(record) {
+            var fieldValue = record.get(field);
+            if (fieldValue != null) {
+                allStoredAddresses.push(Util.getParsedAddresses(fieldValue));
+            }
+        });
+        // For edit grid, check only for newly added values
+        if (component.getId().indexOf('textfield') !== -1 && component.bind !== null && component.bind.value.lastValue !== undefined) {
+
+            if(component.bind.value.lastValue !== null){
+                // Fetch previous value stored in grid
+                var currentStoredValueInGrid = component.bind.value.lastValue;
+                // Current parsed addresses with subnet masks in editor grid
+                var currentParsedAddresses = Util.getParsedAddresses(currentStoredValueInGrid);
+        
+                // Check for intersection between new IP ranges and already stored values in current record
+                var newlyAddedValue = parsedAddresses.filter(function(parsedAddress) {
+                    return !currentParsedAddresses.some(function(currentAddress) {
+                        return Util.doRangesOverlap(parsedAddress, currentAddress);
+                    });
+                });
+        
+                // Check for intersection between new IP ranges within the same record
+                if (parsedAddresses.some(function(parsedAddress, k) {
+                    return parsedAddresses.slice(k + 1).some(function(nextParsedAddress) {
+                        return Util.doRangesOverlap(parsedAddress, nextParsedAddress);
+                    });
+                })) {
+                    return Ext.String.format('The {0} values intersect with each other.'.t(), form);
+                }
+                parsedAddresses = newlyAddedValue;
+            }
+        }
+
+        // Check if parsedAddresses is defined and not empty
+        if (parsedAddresses && parsedAddresses.length > 0) {
+            // Check for intersection between new IP ranges and stored values
+            if (allStoredAddresses.some(function(storedAddressesArray) {
+                return storedAddressesArray.some(function(storedAddress) {
+                    return parsedAddresses.some(function(parsedAddress) {
+                        return Util.doRangesOverlap(storedAddress, parsedAddress);
+                    });
+                });
+            })) {
+                return Ext.String.format('The {0} values intersect with already stored values in {1} records.'.t(), field, form);
+            }
+        }
+    
+        // If no intersection found, return true
+        return true;
+    }
 });

@@ -12,7 +12,7 @@ import com.untangle.uvm.app.AppSettings;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.hc.core5.net.URIBuilder;
 
 /**
  * ReplacementGenerator for Virus.

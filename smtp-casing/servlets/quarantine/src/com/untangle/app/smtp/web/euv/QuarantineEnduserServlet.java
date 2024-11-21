@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.SmtpImpl;
 import com.untangle.app.smtp.quarantine.QuarantineSettings;
@@ -27,7 +28,7 @@ import com.untangle.uvm.UvmContextFactory;
 @SuppressWarnings("serial")
 public class QuarantineEnduserServlet extends HttpServlet
 {
-    private final Logger m_logger = Logger.getLogger(QuarantineEnduserServlet.class);
+    private final Logger m_logger = LogManager.getLogger(QuarantineEnduserServlet.class);
 
     private static QuarantineEnduserServlet s_instance;
     private SmtpImpl m_mailApp;

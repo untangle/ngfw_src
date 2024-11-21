@@ -7,7 +7,6 @@ import unittest
 import pytest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -43,40 +42,38 @@ WG_REMOTE = overrides.get("WG_REMOTE", default={
 # Roaming configuration
 WG_ROAMING = overrides.get("WG_ROAMING", default={
     "pingInterval": 5,
-    "endpointHostname": "192.168.1.103",
+    "endpointHostname": "192.168.1.100",
     "description": "RoamingTunnel",
-    "publicKey": "GX3VDBWvzCqEtBE3sRkSI0EAdWJ70qWFC4rgJxg+mwE=",
     "networks": "192.168.2.0/24",
     "enabled": True,
     "peerAddress": "172.16.1.1",
     "endpointDynamic": True,
-    "privateKey": "",
     "endpointAddress": "",
-    "pingConnectionEvents": True,
+    "pingConnectionEvents": False,
     "endpointPort": 51820,
-    "pingAddress": "192.168.2.1",
-    "pingUnreachableEvents": True,
-    "serverAddress": "192.168.1.100",
-    "adminPassword": "test1234",
-    "privateKey": ""
+    "pingAddress": "",
+    "pingUnreachableEvents": False,
+    "serverAddress": "192.168.1.101",
+    "adminPassword": "passwd",
+    "privateKey": "yDvO4Rhb972rtRDdG7QVfTKjr8+Q8hhvrTuaxbW9UmA=",
+    "publicKey": "vuVHr0Y5zPeWiYdUklBvryYXqH6NnuHwvl40GRzFVBw="
   })
 
 # NON Roaming Configuration
 WG_NON_ROAMING = overrides.get("WG_NON_ROAMING", default={
     "enabled": True,
     "description": "NonRoamingclient",
-    "publicKey": "x2TqU0B0DHFRWoLHl9fP+O7EdAXfsvptdFyvjX/Pc1M=",
     "endpointDynamic": False,
-    "endpointHostname": "192.168.1.100",
+    "endpointHostname": "192.168.1.101",
     "endpointPort": 51820,
     "peerAddress": "172.16.3.1",
     "networks": "192.168.56.0/24",
     "pingInterval": 5,
-    "pingConnectionEvents": True,
-    "pingUnreachableEvents": True,
-    "pingAddress": "192.168.56.111",
-    "serverAddress": "192.168.1.103",
-    "adminPassword": "test1234",
+    "pingConnectionEvents": False,
+    "pingUnreachableEvents": False,
+    "pingAddress": "",
+    "serverAddress": "192.168.1.100",
+    "adminPassword": "passwd",
     "privateKey": ""
                 })
 
@@ -152,7 +149,7 @@ class WireGuardVpnTests(NGFWTestCase):
         global appData, vpnHostResult, wanIP
 
         vpnHostResult = subprocess.call(["ping","-W","5","-c","1",WG_REMOTE["serverAddress"]],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        wanIP = uvmContext.networkManager().getFirstWanAddress()
+        wanIP = global_functions.uvmContext.networkManager().getFirstWanAddress()
 
     def test_010_client_is_online(self):
         """
@@ -165,7 +162,7 @@ class WireGuardVpnTests(NGFWTestCase):
         """
         Verify valid license
         """
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     @pytest.mark.failure_in_podman
     def test_020_create_wireguard_tunnel(self):
@@ -210,13 +207,13 @@ class WireGuardVpnTests(NGFWTestCase):
 
         self._app.setSettings(appData)
 
-        original_network_settings = uvmContext.networkManager().getNetworkSettings()
+        original_network_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
         # deepcopy WG network settings for manipulation
         new_network_settings = copy.deepcopy( original_network_settings )
 
         # Set network settings back to normal
-        uvmContext.networkManager().setNetworkSettings( new_network_settings )
+        global_functions.uvmContext.networkManager().setNetworkSettings( new_network_settings )
 
         # Get first network from remote networks list
         network = WG_REMOTE["networks"].split(",")[0].split('/')
@@ -233,7 +230,7 @@ class WireGuardVpnTests(NGFWTestCase):
         assert True is global_functions.is_vpn_routing(route_table=f"wireguard", expected_route=WG_REMOTE["networks"].split(",")[0]), "wireguard routing on wireguard table"
 
         # Set network settings back to normal
-        uvmContext.networkManager().setNetworkSettings( original_network_settings )
+        global_functions.uvmContext.networkManager().setNetworkSettings( original_network_settings )
 
 
     def test_031_network_settings_and_default_wireguard_networks(self):
@@ -253,7 +250,7 @@ class WireGuardVpnTests(NGFWTestCase):
 
         # Pull out the current WG settings and the current Network Settings
         wgSettings = self._app.getSettings()
-        origNetSettings = uvmContext.networkManager().getNetworkSettings()
+        origNetSettings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
         # deepcopy WG network settings for manipulation
         newNetSettings = copy.deepcopy( origNetSettings )
@@ -271,7 +268,7 @@ class WireGuardVpnTests(NGFWTestCase):
                 break
 
         # Set the settings to new config
-        uvmContext.networkManager().setNetworkSettings( newNetSettings )
+        global_functions.uvmContext.networkManager().setNetworkSettings( newNetSettings )
 
         # Query the WG settings to assert if that address made it in
         newWGSettings = self._app.getSettings()
@@ -280,7 +277,7 @@ class WireGuardVpnTests(NGFWTestCase):
         assert(testingAddressNet in newWGSettings['networks']['list'][0]['address'])
 
         # Set network settings back to normal
-        uvmContext.networkManager().setNetworkSettings( origNetSettings )
+        global_functions.uvmContext.networkManager().setNetworkSettings( origNetSettings )
 
         # Get the WG settings again to verify
         wgSettings = self._app.getSettings()
@@ -308,7 +305,7 @@ class WireGuardVpnTests(NGFWTestCase):
 
         # Pull out the current WG settings and the current Network Settings
         origWGSettings = self._app.getSettings()
-        origNetSettings = uvmContext.networkManager().getNetworkSettings()
+        origNetSettings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
         # Verify the WG settings don't already have this address stored
         assert(testingAddressNet not in origWGSettings['networks']['list'][0]['address'])
@@ -346,7 +343,7 @@ class WireGuardVpnTests(NGFWTestCase):
                 break
 
         # Set the settings to new config
-        uvmContext.networkManager().setNetworkSettings( newNetSettings )
+        global_functions.uvmContext.networkManager().setNetworkSettings( newNetSettings )
 
         # Test that the custom WG network exists in the latest WG networks list, and that the local networks are not
         wgSettings = self._app.getSettings()
@@ -359,7 +356,7 @@ class WireGuardVpnTests(NGFWTestCase):
         assert True is global_functions.is_vpn_running(interface=f"wg0",route_table=f"wireguard"), "wireguard interface and rule is running"
 
         # Set network settings back to normal
-        uvmContext.networkManager().setNetworkSettings( origNetSettings )
+        global_functions.uvmContext.networkManager().setNetworkSettings( origNetSettings )
 
         # Get the WG settings again to verify
         wgSettings = self._app.getSettings()
@@ -399,8 +396,29 @@ class WireGuardVpnTests(NGFWTestCase):
         assert global_functions.is_vpn_routing(route_table=f"wireguard", expected_route=WG_REMOTE["networks"].split(",")[0]) is False, "wireguard routing on wireguard table"
 
     @pytest.mark.failure_in_podman
+    @pytest.mark.slow
     def test_020_verify_wg_non_roaming_on_disconnect(self):
+        '''
+        Verify Following
+        1. Roaming Tunnels in NGFW, after disconnection don't generate events
+        2. If connection is successful then Tunnel Description  is stored as username and hostname in HostTableEntry
 
+        Test Prerequisites (Here Roaming NGFW is Wireguard VPN server, Non Roaming NGFW is Wireguard client)
+        1. Roaming NGFW with Wireguard uninstalled (Server, Roaming tunnel creation) and a client to run tests
+        2. Non Roaming NGFW (WireguardClient Connects to Roaming Tunnel)
+
+
+        WG_ROAMING contains information of Roaming NGFW with parameters from Non Roaming NGFW
+        Override Variables [endpointHostname, networks, peerAddress, endpointPort,endpointDynamic] from Non Roaming NGFW
+        Override Variables [serverAddress,adminPassword] from Roaming NGFW
+
+        WG_NON_ROAMING contains information of Remote NGFW which acts as client and connects to Roaming Tunnel with parameters from Roaming NGFW
+        Override Variables [endpointHostname, networks, peerAddress, endpointPort,endpointDynamic] from Roaming NGFW
+        Override Variables [serverAddress,adminPassword] from Non Roaming NGFW
+        '''
+
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
         WGNonRoamingHostResult = subprocess.call(["ping","-W","5","-c","1",WG_NON_ROAMING["serverAddress"]],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         WGRoamingHostResult = subprocess.call(["ping","-W","5","-c","1",WG_ROAMING["serverAddress"]],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (WGRoamingHostResult !=0):
@@ -409,35 +427,85 @@ class WireGuardVpnTests(NGFWTestCase):
             raise unittest.SkipTest("NonRoaming Wireguard NGFW Unreachable")
         remote_uvm_context = Uvm().getUvmContext(timeout=240, scheme="https", hostname=WG_NON_ROAMING["serverAddress"], username="admin", password=WG_NON_ROAMING["adminPassword"])
         remote_uid = remote_uvm_context.getServerUID()
-        local_uid = uvmContext.getServerUID()
+        local_uid = global_functions.uvmContext.getServerUID()
         assert(remote_uid != local_uid)
-        #Roaming tunnel setup on Local NGFW running tests
-        roaming_wg_app = uvmContext.appManager().app("wireguard-vpn")
+        roaming_wg_app = global_functions.uvmContext.appManager().app("wireguard-vpn")
         roaming_wg_app_data = roaming_wg_app.getSettings()
+        #set Non Roaming NGFW Tunnel public key in Roaming NGFW WG Tunnel publickey
+        non_roaming_wg_app = remote_uvm_context.appManager().app("wireguard-vpn")
+        non_roaming_wg_app_data =  non_roaming_wg_app.getSettings()
+        WG_ROAMING['publicKey'] = non_roaming_wg_app_data["publicKey"]
+        #Roaming tunnel setup on Local NGFW running tests
         roaming_wg_app_data["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], WG_ROAMING['endpointHostname'], WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],WG_ROAMING['networks'],WG_ROAMING['peerAddress'],WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress']))
         roaming_wg_app.setSettings(roaming_wg_app_data)
 
         #Non Roaming Wireguard client setup on Remote NGFW
         non_roaming_wg_app = remote_uvm_context.appManager().app("wireguard-vpn")
         non_roaming_wg_app_data =  non_roaming_wg_app.getSettings()
+        #set Roaming NGFW Tunnel public key in Non Roaming Tunnel NGFW publickey
+        WG_NON_ROAMING['publicKey'] = roaming_wg_app_data["publicKey"]
         non_roaming_wg_app_data["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_NON_ROAMING['enabled'],  WG_NON_ROAMING['description'], WG_NON_ROAMING['endpointHostname'], WG_NON_ROAMING['endpointDynamic'],WG_NON_ROAMING['endpointPort'],WG_NON_ROAMING['publicKey'],WG_NON_ROAMING['privateKey'],WG_NON_ROAMING['networks'],WG_NON_ROAMING['peerAddress'],WG_NON_ROAMING['pingUnreachableEvents'],WG_NON_ROAMING['pingInterval'],WG_NON_ROAMING['pingConnectionEvents'],WG_NON_ROAMING['pingAddress']))
         non_roaming_wg_app.setSettings(non_roaming_wg_app_data)
+
+        time.sleep(30)
+        #Verify host entry made in  HostTableEntry for WG_ROAMING['description'] Tunnel Description 
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( WG_ROAMING['peerAddress'] )
+        assert (WG_ROAMING['description'] == entry["hostnameWireGuardVpn"])
+        assert (WG_ROAMING['description'].lower() == entry["usernameWireGuardVpn"])
+        print(entry)
 
         #Deleting Non Roaming Wireguard client connection on Remote NGFW
         non_roaming_wg_app_data["tunnels"]["list"] = []
         non_roaming_wg_app.setSettings(non_roaming_wg_app_data)
-
         #Events should not pe present for roaming clients, waiting
-        time.sleep(10)
+        time.sleep(5)
 
         events = global_functions.get_events("WireGuard VPN",'Monitor Events',None,5)
-        found = global_functions.check_events( events.get('list'), 5,
-                                              "event_type", "UNREACHABLE" )
+        found = global_functions.check_events( events.get('list'), 5,"event_type", "UNREACHABLE" )
         assert (found == False)
 
         #Deleting Roaming Wireguard Tunnel connection on Remote NGFW
         roaming_wg_app_data["tunnels"]["list"] = []
         roaming_wg_app.setSettings(roaming_wg_app_data)
 
+    def test_040_verify_search_domain_updated_in_remote_config(self):
+        """
+        Check Search Domains updated in remote client config file
+        """
+
+        # get app settings and deepcopy it
+        appSettings = self._app.getSettings()
+        newAppSettings = copy.deepcopy( appSettings )
+
+        # Create roaming client tunnel and set new tunnel in settings.
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress']))
+        self._app.setSettings(newAppSettings)
+
+        # Check if default search domain (i.e. NGFW domain name) is included in remote client config
+        domainName = global_functions.uvmContext.networkManager().getNetworkSettings()['domainName']
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey']).split("\n")
+
+        count = 0
+        for line in remoteConfig:
+            if(line.startswith("DNS") and domainName in line):
+                count += 1
+                break
+        if(count == 1): assert(True)
+        else: assert(False)
+
+        # Set search domain value to blank and check if its reflected in remote client config
+        newAppSettings["dnsSearchDomain"] = ""
+        self._app.setSettings(newAppSettings)
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey']).split("\n")
+
+        count = 0
+        for line in remoteConfig:
+            if(line.startswith("DNS") and "," in line):
+                count += 1
+                break
+        if(count == 0): assert(True)
+        else: assert(False)
+
+        self._app.setSettings(appSettings)
 
 test_registry.register_module("wireguard-vpn", WireGuardVpnTests)

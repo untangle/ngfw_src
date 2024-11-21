@@ -4,7 +4,8 @@
 
 package com.untangle.app.wan_balancer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
@@ -18,7 +19,7 @@ class EventHandler extends AbstractEventHandler
 {
     private final WanBalancerApp app;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Constructor

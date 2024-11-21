@@ -12,7 +12,7 @@ TARBALL_FILE=""
 VERSION_FILE=""
 # To support multiple versions, separate with pipe character like:
 #ACCEPTED_PREVIOUS_VERSION="15.1|16.0"
-ACCEPTED_PREVIOUS_VERSION="17.0"
+ACCEPTED_PREVIOUS_VERSION="17.1"
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
@@ -158,7 +158,7 @@ function expandFile()
     echo $BACKUP_VERSION | grep -qE "$ACCEPTED_PREVIOUS_VERSION"
     PREV_VERSION_CHECK=$?
     if [ "$BACKUP_VERSION" != "$CURRENT_VERSION" ] && [ $PREV_VERSION_CHECK != 0 ] ; then
-        err "Backup file version not supported. ($BACKUP_VERSION)"
+        err "Backup file version $BACKUP_VERSION is not supported, supported version(s) = $ACCEPTED_PREVIOUS_VERSION and $CURRENT_VERSION" 
         return 1
     fi
 

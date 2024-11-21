@@ -5,7 +5,8 @@
 package com.untangle.app.application_control;
 
 import com.untangle.uvm.vnet.IPNewSessionRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Class to track the classification status of a network session.
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
 
 public class ApplicationControlStatus
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public enum StatusCode
     {

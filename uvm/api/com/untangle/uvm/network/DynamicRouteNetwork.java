@@ -9,7 +9,8 @@ import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 
@@ -20,7 +21,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class DynamicRouteNetwork implements JSONString, Serializable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     
     private Integer ruleId = null;
     private Boolean enabled = false;

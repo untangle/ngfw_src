@@ -209,6 +209,9 @@ class BandwidthControlTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global orig_network_settings, orig_network_settings_with_qos, orig_network_settings_without_qos, pre_down_speed_kbit, wan_limit_kbit, wan_limit_mbit,target_server
 
+        if orig_network_settings == None:
+            orig_network_settings = uvmContext.networkManager().getNetworkSettings()
+
         settings = cls._app.getSettings()
         settings["configured"] = True
         cls._app.setSettings(settings)        
@@ -222,13 +225,11 @@ class BandwidthControlTests(NGFWTestCase):
         else:
             cls._app_web_filter = uvmContext.appManager().instantiate(cls.appNameWF(), 1)
 
-        if orig_network_settings == None:
-            orig_network_settings = uvmContext.networkManager().getNetworkSettings()
-
         # disable QoS
         netsettings = copy.deepcopy( orig_network_settings )
         netsettings['qosSettings']['qosEnabled'] = False
         uvmContext.networkManager().setNetworkSettings( netsettings )
+
 
         # measure speed
         localTargetResult = subprocess.call(["ping","-c","1",target_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -648,6 +649,19 @@ class BandwidthControlTests(NGFWTestCase):
         
         assert((event != None))
 
+    def test_101_qos_enabled(self):
+        """
+        Verify if qosEnabled is disabled and if the app is started then qosEnabled is enabled
+        """
+        global networkSettings,appName, remote_app, test_var, appName
+        self._app.stop()
+        networkSettings = uvmContext.networkManager().getNetworkSettings()
+        networkSettings['qosSettings']['qosEnabled']=False
+        uvmContext.networkManager().setNetworkSettings(networkSettings)
+        self._app.start()
+        networkSettings = uvmContext.networkManager().getNetworkSettings()
+        assert(networkSettings['qosSettings']['qosEnabled'])
+
     @classmethod
     def final_extra_tear_down(cls):
         global orig_network_settings
@@ -657,6 +671,7 @@ class BandwidthControlTests(NGFWTestCase):
         if getattr(cls, "_app_web_filter", None) is not None:
             uvmContext.appManager().destroy( cls._app_web_filter.getAppSettings()["id"] )
             cls._app_web_filter = None
+
 
 
 test_registry.register_module("bandwidth-control", BandwidthControlTests)

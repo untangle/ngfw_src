@@ -45,6 +45,11 @@ Ext.define('Ung.config.events.view.Triggers', {
             enabled: true
         },
 
+        importValidationJavaClass: true,
+        importValidationForAlertEvents: true,
+        importValidationForFieldSet: true,
+        importValidationForComboBox: true,
+
         columns: [
             Column.ruleId,
             Column.enabled,

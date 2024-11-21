@@ -28,6 +28,10 @@ Ext.define('Ung.config.network.view.Routes', {
 
         emptyText: 'No Static Routes defined'.t(),
 
+        importValidationJavaClass: true,
+
+        importValidationForComboBox: true,
+
         listProperty: 'settings.staticRoutes.list',
 
         emptyRow: {

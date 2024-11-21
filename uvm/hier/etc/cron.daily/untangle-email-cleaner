@@ -1,0 +1,43 @@
+#! /bin/bash
+
+MAIL_JS=/usr/share/untangle/settings/untangle-vm/mail.js
+#2 hrs set as default
+MAIL_ELAPSED_SECS="${1:-7200}"
+if [ -f "$MAIL_JS" ]; then
+    FROM_ADDRESS=$(grep -Po 'fromAddress": "\K[^"]+' $MAIL_JS)
+    #Check if FROM_ADDRESS is set
+    if ! [ -z "$FROM_ADDRESS" ]; then
+
+        #-r represents recieving mail address
+        RECIPIENT_IDS=$(exiqgrep -o $MAIL_ELAPSED_SECS -i -r "$FROM_ADDRESS")
+        if ! [ -z "$RECIPIENT_IDS" ]; then
+            #This will ensure locked messages are deleted 
+            for r_id in $RECIPIENT_IDS; do
+                r_pid=`ps -ef | grep "exim4 -Mc $r_id" | grep -v "grep" | awk '{print $2}'`
+                # Check if process ids is empty (each message has parent and child process)
+                if ! [ -z "$r_pid" ]; then
+                    echo "$r_pid" | xargs kill -9
+                fi
+            done
+            # Deleting Recipient Messages from exim queue
+            echo "$RECIPIENT_IDS" | xargs exim -Mrm
+        fi
+        # -f represents from email address
+        FROM_IDS=$(exiqgrep -o $MAIL_ELAPSED_SECS -i -f "$FROM_ADDRESS")
+        if ! [ -z "$FROM_IDS" ]; then
+            #This will ensure locked messages are deleted
+            for f_id in $FROM_IDS; do
+                f_pid=`ps -ef | grep "exim4 -Mc $f_id" | grep -v "grep" | awk '{print $2}'`
+                # Check if process ids is empty (each message has parent and child process)
+                if ! [ -z "$f_pid" ]; then
+                    echo "$f_pid" | xargs kill -9
+                fi
+            done
+            # Deleting From Messages from exim queue
+            echo "$FROM_IDS" | xargs exim -Mrm
+        fi
+
+    fi
+fi
+
+exit 0

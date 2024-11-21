@@ -5,7 +5,8 @@ package com.untangle.uvm.event;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.Tag;
 import com.untangle.uvm.app.GlobMatcher;
@@ -21,7 +22,7 @@ import com.untangle.uvm.event.EventRule;
 @SuppressWarnings("serial")
 public class TriggerRule extends EventRule
 {
-    private static final Logger logger = Logger.getLogger( TriggerRule.class );
+    private static final Logger logger = LogManager.getLogger( TriggerRule.class );
 
     public static enum TriggerAction { TAG_HOST, TAG_DEVICE, TAG_USER, UNTAG_HOST, UNTAG_DEVICE, UNTAG_USER };
 

@@ -7,7 +7,8 @@ package com.untangle.app.application_control;
 import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Class used to represent the action associated with a logic rule
@@ -18,7 +19,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class ApplicationControlLogicRuleAction implements Serializable, JSONString
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public enum ActionType
     {

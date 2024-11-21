@@ -18,7 +18,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.servlet.UploadHandler;
 
@@ -30,7 +31,7 @@ public class SkinManagerImpl implements SkinManager
     private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
     private static final String DEFAULT_ADMIN_SKIN = "simple-gray";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private SkinSettings settings;
     private SkinInfo skinInfo;

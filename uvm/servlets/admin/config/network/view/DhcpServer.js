@@ -46,6 +46,8 @@ Ext.define('Ung.config.network.view.DhcpServer', {
 
                 emptyText: 'No Static Entries defined'.t(),
 
+                importValidationJavaClass: true,
+
                 listProperty: 'settings.staticDhcpEntries.list',
 
                 emptyRow: {
@@ -159,6 +161,12 @@ Ext.define('Ung.config.network.view.DhcpServer', {
 
                 emptyText: 'No Relays defined'.t(),
 
+                importValidationJavaClass: true,
+
+                importValidationForComboBox: true,
+
+                importValidatorParams: { "rangeStart": "rangeEnd", "rangeEnd": "rangeStart" },
+
                 listProperty: 'settings.dhcpRelays.list',
                 bind: '{dhcpRelays}',
 
@@ -179,188 +187,244 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                 },
 
                 columns: [
-                Column.enabled,
-                Column.description,
-                {
-                    header: 'Range Start'.t(),
-                    dataIndex: 'rangeStart',
-                    editor: {
-                        xtype: 'textfield',
-                        emptyText: '[start of range]'.t(),
-                        allowBlank: false,
-                        vtype: 'ipAddress'
-                    }
-                }, {
-                    header: 'Range End'.t(),
-                    dataIndex: 'rangeEnd',
-                    editor: {
-                        xtype: 'textfield',
-                        emptyText: '[end of range]'.t(),
-                        allowBlank: false,
-                        vtype: 'ipAddress'
-                    }
-                }, {
-                    header: 'Lease Duration'.t(),
-                    dataIndex: 'leaseDuration',
-                    width: 60,
-                    editor: {
-                        xtype: 'numberfield',
-                        allowBlank : true,
-                        allowDecimals: false,
-                        minValue: 1
-                    }
-                }, {
-                    header: 'Gateway Address'.t(),
-                    dataIndex: 'gateway',
-                    editor: {
-                        xtype: 'textfield',
-                        emptyText: '[dhcp gateway]'.t(),
-                        allowBlank: false,
-                        vtype: 'ipAddress'
-                    }
-                }, {
-                    header: 'Prefix'.t(),
-                    dataIndex: 'prefix',
-                    width: 50
-                }, {
-                    header: 'DNS Address'.t(),
-                    dataIndex: 'dns',
-                    editor: {
-                        xtype: 'textfield',
-                        emptyText: '[dns resolver]'.t(),
-                        allowBlank: false,
-                        vtype: 'ipAddress'
-                    }
-                }, {
-                    header: 'Options'.t(),
-                    dataIndex: 'options',
-                    flex: 1,
-                    renderer: function(value, meta) {
-                        if (! ("list" in value) ){
-                            return "";
+                    Column.enabled,
+                    Column.description,
+                    {
+                        header: 'Range Start'.t(),
+                        dataIndex: 'rangeStart',
+                        itemId: 'rangeStart',
+                        editor: {
+                            xtype: 'textfield',
+                            emptyText: '[start of range]'.t(),
+                            allowBlank: false,
+                            vtype: 'ipAddress',
+                            validator: function (value) {
+                                var rangeEnd = this.up().up().getSelection()[0].get('rangeEnd');
+                                if (rangeEnd && Util.convertIPIntoDecimal(value) >= Util.convertIPIntoDecimal(rangeEnd)) {
+                                    return 'Range Start can never be more than or equal to Range End'.t();
+                                }
+                                return true;
+                            }
+                        },
+                    }, {
+                        header: 'Range End'.t(),
+                        dataIndex: 'rangeEnd',
+                        itemId: "rangeEnd",
+                        editor: {
+                            xtype: 'textfield',
+                            emptyText: '[end of range]'.t(),
+                            allowBlank: false,
+                            vtype: 'ipAddress',
+                            validator: function (value) {
+                                var rangeStart = this.up().up().getSelection()[0].get('rangeStart');
+                                if (rangeStart && Util.convertIPIntoDecimal(value) <= Util.convertIPIntoDecimal(rangeStart)) {
+                                    return 'Range End can never be less than or equal to Range Start'.t();
+                                }
+                                return true;
+                            }
                         }
-                        var summary = [];
-                        for (var i = 0; i < value.list.length; i++){
-                            var option = value.list[i]; 
-                            summary.push(option.description + " - " + option.value);
+                    }, {
+                        header: 'Lease Duration'.t(),
+                        dataIndex: 'leaseDuration',
+                        width: 60,
+                        editor: {
+                            xtype: 'numberfield',
+                            allowBlank: true,
+                            allowDecimals: false,
+                            minValue: 1
                         }
-                        meta.tdAttr = 'data-qtip="' + summary.join(', ') + '"';
-                        return summary.join(', ');
-                    }
-                }],
+                    }, {
+                        header: 'Gateway Address'.t(),
+                        dataIndex: 'gateway',
+                        editor: {
+                            xtype: 'textfield',
+                            emptyText: '[dhcp gateway]'.t(),
+                            allowBlank: false,
+                            vtype: 'ipAddress'
+                        }
+                    }, {
+                        header: 'Prefix'.t(),
+                        dataIndex: 'prefix',
+                        width: 50
+                    }, {
+                        header: 'DNS Address'.t(),
+                        dataIndex: 'dns',
+                        editor: {
+                            xtype: 'textfield',
+                            emptyText: '[dns resolver]'.t(),
+                            allowBlank: false,
+                            vtype: 'ipAddress'
+                        }
+                    }, {
+                        header: 'Options'.t(),
+                        dataIndex: 'options',
+                        flex: 1,
+                        renderer: function (value, meta) {
+                            if (!("list" in value)) {
+                                return "";
+                            }
+                            var summary = [];
+                            for (var i = 0; i < value.list.length; i++) {
+                                var option = value.list[i];
+                                summary.push(option.description + " - " + option.value);
+                            }
+                            meta.tdAttr = 'data-qtip="' + summary.join(', ') + '"';
+                            return summary.join(', ');
+                        }
+                    }],
 
                 editorFields: [
                     Field.enableRule(),
                     Field.description,
-                {
-                    xtype: 'textfield',
-                    fieldLabel: 'Range Start'.t(),
-                    emptyText: '[enter address]'.t(),
-                    bind: '{record.rangeStart}',
-                    allowBlank: false,
-                    vtype: 'ipAddress',
-                },{
-                    xtype: 'textfield',
-                    fieldLabel: 'Range End'.t(),
-                    emptyText: '[enter address]'.t(),
-                    bind: '{record.rangeEnd}',
-                    allowBlank: false,
-                    vtype: 'ipAddress',
-                },{
-                    xtype: 'fieldcontainer',
-                    layout: 'column',
-                    width: '100%',
-                    items: [{
-                        xtype: 'numberfield',
-                        fieldLabel: 'Lease Duration'.t(),
-                        labelWidth: 180,
-                        width: 350,
-                        labelAlign: 'right',
-                        minValue: 1,
-                        bind: {
-                            value: '{record.leaseDuration}'
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: 'Range Start'.t(),
+                        emptyText: '[enter address]'.t(),
+                        bind: '{record.rangeStart}',
+                        allowBlank: false,
+                        vtype: 'ipAddress',
+                        itemId: 'rangeStartEditor',
+                        listeners: {
+                            change: function (me, newValue, oldValue, eOpts) {
+                                var rangeEnd = this.up().items.items.find(function (currItem) {
+                                    return currItem.getItemId() === 'rangeEndEditor';
+                                });
+                                rangeEnd.isValid();
+                            }
                         },
-                        allowBlank: false
-                    }, {
-                        xtype: 'displayfield',
-                        margin: '0 5',
-                        fieldStyle: {
-                            color: '#777',
-                            fontSize: 'smaller',
-                            minHeight: 'auto'
-                        },
-                        value: '(seconds)'.t()
-                    }]
-                },{
-                    xtype: 'textfield',
-                    fieldLabel: 'Gateway'.t(),
-                    emptyText: '[enter address]'.t(),
-                    bind: '{record.gateway}',
-                    allowBlank: false,
-                    vtype: 'ipAddress',
-                }, {
-                    xtype: 'combo',
-                    bind: '{record.prefix}',
-                    fieldLabel: 'Netmask'.t(),
-                    editable: false,
-                    store: Util.getV4NetmaskList(false),
-                    queryMode: 'local'
-                },{
-                    xtype: 'textfield',
-                    fieldLabel: 'DNS'.t(),
-                    emptyText: '[enter address]'.t(),
-                    bind: '{record.dns}',
-                    allowBlank: false,
-                    vtype: 'ipAddress',
-                }, {
-                    // DHCP options
-                    xtype: 'ungrid',
-                    title: 'DHCP Options'.t(),
-                    emptyText: 'No DHCP options defined'.t(),
-                    border: true,
-                    collapsible: false,
-                    titleCollapse: true,
-                    animCollapse: false,
-                    disabled: false,
-                    bind: {
-                        store: '{options}'
-                    },
-                    listProperty: 'options',
-                    tbar: ['@addInline'],
-                    recordActions: ['delete'],
-                    emptyRow: {
-                        enabled: true,
-                        value: '66,1.2.3.4',
-                        description: ''.t(),
-                        javaClass: 'com.untangle.uvm.network.DhcpOption'
-                    },
-                    columns: [{
-                        header: 'Enable'.t(),
-                        xtype: 'checkcolumn',
-                        dataIndex: 'enabled',
-                        align: 'center',
-                        width: Renderer.booleanWidth,
-                        resizable: false
-                    }, {
-                        header: 'Description'.t(),
-                        dataIndex: 'description',
-                        flex: 1,
-                        editor : {
-                            xtype: 'textfield',
-                            emptyText: '[enter description]'.t(),
-                            allowBlank:false
+                        validator: function (value, rangeEndValue) {
+                            if (value && (rangeEndValue || (this.up().items && this.up().items.items && this.up().items.items.length > 0))) {
+                                var rangeEnd = rangeEndValue ? rangeEndValue : this.up().items.items.find(function (currItem) {
+                                    return currItem.getItemId() === 'rangeEndEditor';
+                                }).getValue();
+                                if (rangeEnd && Util.convertIPIntoDecimal(value) >= Util.convertIPIntoDecimal(rangeEnd)) {
+                                    return 'Range Start can never be more than or equal to Range End'.t();
+                                }
+                            }
+                            return true;
                         }
                     }, {
-                        header: 'Value'.t(),
-                        dataIndex: 'value',
-                        width: 150,
-                        editor : {
-                            xtype: 'textfield',
-                            emptyText: '[enter value]'.t(),
+                        xtype: 'textfield',
+                        fieldLabel: 'Range End'.t(),
+                        emptyText: '[enter address]'.t(),
+                        bind: '{record.rangeEnd}',
+                        allowBlank: false,
+                        vtype: 'ipAddress',
+                        itemId: 'rangeEndEditor',
+                        listeners: {
+                            change: function (me, newValue, oldValue, eOpts) {
+                                var rangeStart = this.up().items.items.find(function (currItem) {
+                                    return currItem.getItemId() === 'rangeStartEditor';
+                                });
+                                rangeStart.isValid();
+                            }
+                        },
+                        validator: function (value, rangeStartValue) {
+                            if (value && (rangeStartValue || (this.up().items && this.up().items.items && this.up().items.items.length > 0))) {
+                                var rangeStart = rangeStartValue ? rangeStartValue : this.up().items.items.find(function (currItem) {
+                                    return currItem.getItemId() === 'rangeStartEditor';
+                                }).getValue();
+                                if (rangeStart && Util.convertIPIntoDecimal(value) <= Util.convertIPIntoDecimal(rangeStart)) {
+                                    return 'Range End can never be less than or equal to Range Start'.t();
+                                }
+                            }
+                            return true;
+                        }
+                    }, {
+                        xtype: 'fieldcontainer',
+                        layout: 'column',
+                        width: '100%',
+                        items: [{
+                            xtype: 'numberfield',
+                            fieldLabel: 'Lease Duration'.t(),
+                            labelWidth: 180,
+                            width: 350,
+                            labelAlign: 'right',
+                            minValue: 1,
+                            bind: {
+                                value: '{record.leaseDuration}'
+                            },
                             allowBlank: false
-                        }
-                    }],
-                }]
+                        }, {
+                            xtype: 'displayfield',
+                            margin: '0 5',
+                            fieldStyle: {
+                                color: '#777',
+                                fontSize: 'smaller',
+                                minHeight: 'auto'
+                            },
+                            value: '(seconds)'.t()
+                        }]
+                    }, {
+                        xtype: 'textfield',
+                        fieldLabel: 'Gateway'.t(),
+                        emptyText: '[enter address]'.t(),
+                        bind: '{record.gateway}',
+                        allowBlank: false,
+                        vtype: 'ipAddress',
+                    }, {
+                        xtype: 'combo',
+                        bind: '{record.prefix}',
+                        fieldLabel: 'Netmask'.t(),
+                        editable: false,
+                        store: Util.getV4NetmaskList(false),
+                        queryMode: 'local'
+                    }, {
+                        xtype: 'textfield',
+                        fieldLabel: 'DNS'.t(),
+                        emptyText: '[enter address]'.t(),
+                        bind: '{record.dns}',
+                        allowBlank: false,
+                        vtype: 'ipAddress',
+                    }, {
+                        // DHCP options
+                        xtype: 'ungrid',
+                        title: 'DHCP Options'.t(),
+                        emptyText: 'No DHCP options defined'.t(),
+                        border: true,
+                        collapsible: false,
+                        titleCollapse: true,
+                        animCollapse: false,
+                        disabled: false,
+                        bind: {
+                            store: '{options}'
+                        },
+                        listProperty: 'options',
+                        tbar: ['@addInline'],
+                        recordActions: ['delete'],
+                        emptyRow: {
+                            enabled: true,
+                            value: '66,1.2.3.4',
+                            description: ''.t(),
+                            javaClass: 'com.untangle.uvm.network.DhcpOption'
+                        },
+                        columns: [{
+                            header: 'Enable'.t(),
+                            xtype: 'checkcolumn',
+                            dataIndex: 'enabled',
+                            align: 'center',
+                            width: Renderer.booleanWidth,
+                            resizable: false
+                        }, {
+                            header: 'Description'.t(),
+                            dataIndex: 'description',
+                            flex: 1,
+                            editor: {
+                                xtype: 'textfield',
+                                emptyText: '[enter description]'.t(),
+                                allowBlank: false
+                            }
+                        }, {
+                            header: 'Value'.t(),
+                            dataIndex: 'value',
+                            width: 150,
+                            editor: {
+                                xtype: 'textfield',
+                                emptyText: '[enter value]'.t(),
+                                allowBlank: false
+                            }
+                        }],
+                    }]
             }]
         }]
     }]

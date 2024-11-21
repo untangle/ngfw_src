@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.fileupload.FileItem;
 
 import com.untangle.uvm.UriManager;
@@ -36,7 +37,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     private static final String DEFAULT_UNTANGLE_COMPANY_NAME = "Arista";
     private static final String DEFAULT_UNTANGLE_URL = "http://edge.arista.com/";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
     private BrandingManagerSettings settings = null;

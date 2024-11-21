@@ -345,6 +345,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },
         build: function(config){
             var comparators = Ext.clone(Ung.cmp.ConditionsEditor.comparators);
+            var me = this;
             var found;
             for(var key in config){
                 if(key == 'comparators'){
@@ -393,6 +394,9 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                             }
                         }
                     } );
+                    conditions.forEach(function (currItem){
+                        me.getWidgetDataAndField(currItem.type, currItem);
+                    });
                     config[key] = Ext.Array.toValueMap(conditions, 'name');
                     if( !config['conditionsOrder'] ){
                         config['conditionsOrder'] = conditionsOrder;
@@ -450,6 +454,255 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             ]]
         }],
 
+        getWidgetDataAndField: function(type, currItem){
+            switch (type) {
+                case "userfield": {
+                    currItem["getData"] = function (field) {
+                        var data = [{
+                            firstName: '', lastName: null, uid: '[any]', displayName: 'Any User'
+                        }, {
+                            firstName: '', lastName: null, uid: '[authenticated]', displayName: 'Any Authenticated User'
+                        }, {
+                            firstName: '', lastName: null, uid: '[unauthenticated]', displayName: 'Any Unauthenticated/Unidentified User'
+                        }];
+
+                        if (field) {
+                            Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                                .then(function (app) {
+                                    if (Util.isDestroyed(field)) {
+                                        return;
+                                    }
+                                    if (app) {
+                                        Rpc.asyncData(app, 'getRuleConditonalUserEntries')
+                                            .then(function (result) {
+                                                if (Util.isDestroyed(field)) {
+                                                    return;
+                                                }
+                                                Ext.Array.each(data.reverse(), function (record) {
+                                                    result.list.unshift(record);
+                                                });
+                                                data = result.list;
+                                            }, function (ex) {
+                                                Util.handleException(ex);
+                                            });
+                                    }
+                                }, function (ex) {
+                                    Util.handleException(ex);
+                                });
+                        } else {
+                            try {
+                                var appData = Rpc.directData('rpc.appManager.app', 'directory-connector');
+                                if (appData) {
+                                    var result = Rpc.directData(appData, 'getRuleConditonalUserEntries');
+                                    Ext.Array.each(data.reverse(), function (record) {
+                                        result.list.unshift(record);
+                                    });
+                                    data = result.list;
+                                }
+                            } catch (ex) {
+                                Util.handleException(ex);
+                            }
+                        }
+
+                        return field ? data : { keyName: 'uid', data: data };
+                    };
+
+                    currItem["widgetCreator"] = function (widget, valueBind, condition) {
+                        widget.container.add({
+                            xtype: 'tagfield',
+                            flex: 1,
+                            emptyText: 'Select a user or specify a custom value ...',
+                            store: { data: [] },
+                            filterPickList: true,
+                            forceSelection: false,
+                            queryMode: 'local',
+                            selectOnFocus: false,
+                            growMax: 60,
+                            createNewOnEnter: true,
+                            createNewOnBlur: true,
+                            displayField: 'uid',
+                            valueField: 'uid',
+                            listConfig: {
+                                itemTpl: ['<div>{uid}</div>']
+                            },
+                            bind: {
+                                value: valueBind
+                            },
+                            listeners: {
+                                afterrender: function (field) {
+                                    var fetchedData = condition.getData(field);
+                                    field.getStore().loadData(fetchedData);
+                                }
+                            }
+                        });
+                    };
+                } 
+                break;
+            
+                case "directorygroupfield": {
+                    currItem["getData"] = function (field) {
+                        var data = [{
+                            SAMAccountName: '*', CN: 'Any Group'
+                        }];
+
+                        if (field) {
+                            Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                                .then(function (app) {
+                                    if (Util.isDestroyed(field)) {
+                                        return;
+                                    }
+                                    if (app) {
+                                        Rpc.asyncData(app, 'getRuleConditonalUserEntries')
+                                            .then(function (result) {
+                                                if (Util.isDestroyed(field)) {
+                                                    return;
+                                                }
+                                                Ext.Array.each(data.reverse(), function (record) {
+                                                    result.list.unshift(record);
+                                                });
+                                                data = result.list;
+                                            }, function (ex) {
+                                                Util.handleException(ex);
+                                            });
+                                    }
+                                }, function (ex) {
+                                    Util.handleException(ex);
+                                });
+                        } else {
+                            try {
+                                var appData = Rpc.directData('rpc.appManager.app', 'directory-connector');
+                                if (appData) {
+                                    var result = Rpc.directData(appData, 'getRuleConditionalGroupEntries');
+                                    Ext.Array.each(data.reverse(), function (record) {
+                                        result.list.unshift(record);
+                                    });
+                                    data = result.list;
+                                }
+                            } catch (ex) {
+                                Util.handleException(ex);
+                            }
+                        }
+
+                        return field ? data : { keyName: 'SAMAccountName', data: data };
+                    };
+
+                    currItem["widgetCreator"] = function (widget, valueBind, condition) {
+                        widget.container.add({
+                            xtype: 'tagfield',
+                            flex: 1,
+                            emptyText: 'Select a group or specify a custom value ...',
+                            store: { data: [] },
+                            filterPickList: true,
+                            forceSelection: false,
+                            queryMode: 'local',
+                            selectOnFocus: false,
+                            growMax: 60,
+                            createNewOnEnter: true,
+                            createNewOnBlur: true,
+                            displayField: 'CN',
+                            valueField: 'SAMAccountName',
+                            listConfig: {
+                                itemTpl: ['<div>{CN} <strong>[{SAMAccountName}]</strong></div>']
+                            },
+                            bind: {
+                                value: valueBind
+                            },
+                            listeners: {
+                                afterrender: function (field) {
+                                    var fetchedData = condition.getData(field);
+                                    field.getStore().loadData(fetchedData);
+                                }
+                            }
+                        });
+                    };
+                }
+                break;
+
+                case "directorydomainfield": {
+                    currItem["getData"] = function (field) {  
+                        var data = [{
+                            value: '*', description: 'Any Domain'
+                        }];
+
+                        if (field) {
+                            Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                                .then(function (app) {
+                                    if (Util.isDestroyed(field)) {
+                                        return;
+                                    }
+                                    if (app) {
+                                        Rpc.asyncData(app, 'getRuleConditonalUserEntries')
+                                            .then(function (result) {
+                                                if (Util.isDestroyed(field)) {
+                                                    return;
+                                                }
+                                                Ext.Array.each(data.reverse(), function (record) {
+                                                    result.list.unshift(record);
+                                                });
+                                                data = result.list;
+                                            }, function (ex) {
+                                                Util.handleException(ex);
+                                            });
+                                    }
+                                }, function (ex) {
+                                    Util.handleException(ex);
+                                });
+                        } else {
+                            try {
+                                var appData = Rpc.directData('rpc.appManager.app', 'directory-connector');
+                                if (appData) {
+                                    var result = Rpc.directData(appData, 'getRuleConditionalDomainEntries');
+                                    Ext.Array.each(data.reverse(), function (record) {
+                                        result.list.unshift(record);
+                                    });
+                                    data = result.list;
+                                }
+                            } catch (ex) {
+                                Util.handleException(ex);
+                            }
+                        }
+
+                        return field ? data : { keyName: 'value', data: data };
+
+                    };
+
+                    currItem["widgetCreator"] = function (widget, valueBind, condition){
+                        widget.container.add({
+                            xtype: 'tagfield',
+                            flex: 1,
+                            emptyText: 'Select a domain or specify a custom value ...',
+                            store: { data: [] },
+                            filterPickList: true,
+                            forceSelection: false,
+                            queryMode: 'local',
+                            selectOnFocus: false,
+                            growMax: 60,
+                            createNewOnEnter: true,
+                            createNewOnBlur: true,
+                            displayField: 'description',
+                            valueField: 'value',
+                            listConfig: {
+                                itemTpl: ['<div>{value} <strong>[{description}]</strong></div>']
+                            },
+                            bind: {
+                                value: valueBind
+                            },
+                            listeners: {
+                                afterrender: function (field) {
+                                    var fetchedData = condition.getData(field);
+                                    field.getStore().loadData(fetchedData);
+                                }
+                            }
+                        });
+                    };
+                }
+                break;
+
+                default:
+                    break;
+            }
+        },
+
         // If not specified, visible is treated as true.
         conditions: [{
             name:"DST_LOCAL",
@@ -459,12 +712,14 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             name:"DST_ADDR",
             displayName: "Destination Address".t(),
             type: 'textfield',
-            vtype:"ipMatcher"
+            vtype:"ipMatcher",
+            allowBlank: false,
         },{
             name:"DST_PORT",
             displayName: "Destination Port".t(),
             type: 'textfield',
-            vtype:"portMatcher"
+            vtype:"portMatcher",
+            allowBlank: false
         },{
             name:"DST_INTF",
             displayName: "Destination Interface".t(),
@@ -473,16 +728,19 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:"SRC_MAC",
             displayName: "Client MAC Address".t(), 
-            type: 'textfield'
+            type: 'textfield',
+            vtype: 'macAddress',
+            allowBlank: false,
         },{
             name:'DST_MAC',
             displayName: 'Server MAC Address'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:"PROTOCOL",
             displayName: "Protocol".t(),
             type: 'checkboxgroup',
-            values: Util.getProtocolList(false)
+            values: Util.getProtocolList(false),
         },{
             name:"SRC_INTF",
             displayName: "Source Interface".t(),
@@ -492,33 +750,40 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             name:"SRC_ADDR",
             displayName: "Source Address".t(),
             type: 'textfield',
-            vtype:"ipMatcher"
+            vtype:"ipMatcher",
+            allowBlank: false,
         },{
             name:"SRC_PORT",
             displayName: "Source Port".t(),
             type: 'textfield',
             vtype:"portMatcher",
-            visible: Rpc.directData('rpc.isExpertMode')
+            visible: Rpc.directData('rpc.isExpertMode'),
+            allowBlank: false,
         },{
             name:"CLIENT_TAGGED",
             displayName: 'Client Tagged'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:"SERVER_TAGGED",
             displayName: 'Server Tagged'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'TAGGED',
             displayName: 'Tagged'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'USERNAME',
             displayName: 'Username'.t(),
-            type: 'userfield'
+            type: 'userfield',
+            importValidation: true,
         },{
             name:'HOST_HOSTNAME',
             displayName: 'Host Hostname'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'CLIENT_HOSTNAME',
             displayName: 'Client Hostname'.t(),
@@ -532,11 +797,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'CLIENT_MAC_VENDOR',
             displayName: 'Client MAC Vendor'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'SERVER_MAC_VENDOR',
             displayName: 'Server MAC Vendor'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'CLIENT_IN_PENALTY_BOX',
             displayName: 'Client in Penalty Box'.t(),
@@ -550,11 +817,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_HAS_NO_QUOTA',
             displayName: 'Host has no Quota'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'USER_HAS_NO_QUOTA',
             displayName: 'User has no Quota'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'CLIENT_HAS_NO_QUOTA',
             displayName: 'Client has no Quota'.t(),
@@ -568,11 +837,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_QUOTA_EXCEEDED',
             displayName: 'Host has exceeded Quota'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'USER_QUOTA_EXCEEDED',
             displayName: 'User has exceeded Quota'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'CLIENT_QUOTA_EXCEEDED',
             displayName: 'Client has exceeded Quota'.t(),
@@ -586,11 +857,13 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_QUOTA_ATTAINMENT',
             displayName: 'Host Quota Attainment'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'USER_QUOTA_ATTAINMENT',
             displayName: 'User Quota Attainment'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'CLIENT_QUOTA_ATTAINMENT',
             displayName: 'Client Quota Attainment'.t(),
@@ -604,59 +877,73 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'HOST_ENTITLED',
             displayName: 'Host Entitled'.t(), 
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'HTTP_HOST',
             displayName: 'HTTP: Hostname'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REFERER',
             displayName: 'HTTP: Referrer'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_URI', 
             displayName: 'HTTP: URI'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_URL',
             displayName: 'HTTP: URL'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_CONTENT_TYPE',
             displayName: 'HTTP: Content Type'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_CONTENT_LENGTH',
             displayName: 'HTTP: Content Length'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REQUEST_METHOD',
             displayName: 'HTTP: Request Method'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REQUEST_FILE_PATH',
             displayName: 'HTTP: Request File Path'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REQUEST_FILE_NAME',
             displayName: 'HTTP: Request File Name'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_REQUEST_FILE_EXTENSION',
             displayName: 'HTTP: Request File Extension'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_RESPONSE_FILE_NAME',
             displayName: 'HTTP: Response File Name'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_RESPONSE_FILE_EXTENSION',
             displayName: 'HTTP: Response File Extension'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_USER_AGENT',
             displayName: 'HTTP: Client User Agent'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'HTTP_USER_AGENT_OS',
             displayName: 'HTTP: Client User OS'.t(), 
@@ -665,99 +952,123 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'APPLICATION_CONTROL_APPLICATION',
             displayName: 'Application Control: Application'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_CATEGORY', 
             displayName: 'Application Control: Application Category'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_PROTOCHAIN',
             displayName: 'Application Control: ProtoChain'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_DETAIL',
             displayName: 'Application Control: Detail'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_CONFIDENCE',
             displayName: 'Application Control: Confidence'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_PRODUCTIVITY',
             displayName: 'Application Control: Productivity'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'APPLICATION_CONTROL_RISK',
             displayName: 'Application Control: Risk'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'PROTOCOL_CONTROL_SIGNATURE',
             displayName: 'Application Control Lite: Signature'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'PROTOCOL_CONTROL_CATEGORY',
             displayName: 'Application Control Lite: Category'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'PROTOCOL_CONTROL_DESCRIPTION',
             displayName: 'Application Control Lite: Description'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_CATEGORY',
             displayName: 'Web Filter: Category'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_CATEGORY_DESCRIPTION',
             displayName: 'Web Filter: Category Description'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_FLAGGED',
             displayName: 'Web Filter: Website is Flagged'.t(),
-            type: 'boolean'
+            type: 'boolean',
+            onlyTrue: true,
         },{
             name:'WEB_FILTER_REQUEST_METHOD',
             displayName: 'Web Filter: Request Method'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_REQUEST_FILE_PATH',
             displayName: 'Web Filter: Request File Path'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_REQUEST_FILE_NAME',
             displayName: 'Web Filter: Request File Name'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_REQUEST_FILE_EXTENSION',
             displayName: 'Web Filter: Request File Extension'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_RESPONSE_CONTENT_TYPE',
             displayName: 'Web Filter: Content Type'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_RESPONSE_FILE_NAME',
             displayName: 'Web Filter: Response File Name'.t(),
             type: 'textfield',
+            allowBlank: false,
         },{
             name:'WEB_FILTER_RESPONSE_FILE_EXTENSION',
             displayName: 'Web Filter: Response File Extension'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'DIRECTORY_CONNECTOR_GROUP',
             displayName: 'Directory Connector: User in Group'.t(),
-            type: 'directorygroupfield'
+            type: 'directorygroupfield',
+            importValidation: true,
         },{
             name:'DIRECTORY_CONNECTOR_DOMAIN',
             displayName: 'Directory Connector: User in Domain'.t(),
-            type: 'directorydomainfield'
+            type: 'directorydomainfield',
+            importValidation: true,
         },{
             name:'CLIENT_COUNTRY',
             displayName: 'Client Country'.t(),
-            type: 'countryfield'
+            type: 'countryfield',
+            importValidation: true,
         },{
             name:'SERVER_COUNTRY',
             displayName: 'Server Country'.t(),
-            type: 'countryfield'
+            type: 'countryfield',
+            importValidation: true,
         },{
             name:'THREAT_PREVENTION_SRC_REPUTATION',
             displayName: 'Threat Prevention: Client address reputation'.t(),
@@ -784,15 +1095,18 @@ Ext.define('Ung.cmp.ConditionsEditor', {
         },{
             name:'SSL_INSPECTOR_SNI_HOSTNAME',
             displayName: 'SSL Inspector: SNI Host Name'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'SSL_INSPECTOR_SUBJECT_DN',
             displayName: 'SSL Inspector: Certificate Subject'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         },{
             name:'SSL_INSPECTOR_ISSUER_DN',
             displayName: 'SSL Inspector: Certificate Issuer'.t(),
-            type: 'textfield'
+            type: 'textfield',
+            allowBlank: false,
         }]
     }
 });

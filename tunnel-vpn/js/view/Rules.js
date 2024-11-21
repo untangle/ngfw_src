@@ -26,6 +26,10 @@ Ext.define('Ung.apps.tunnel-vpn.view.Rules', {
     copyAppendField: 'description',
 
     emptyText: 'No Rules defined'.t(),
+    
+    importValidationJavaClass: true,
+
+    importValidationForComboBox: true,
 
     listProperty: 'settings.rules.list',
 

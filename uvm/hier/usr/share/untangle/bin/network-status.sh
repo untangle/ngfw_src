@@ -57,8 +57,11 @@ get_interface_arp_table()
 # @param None
 get_dynamic_routing_table()
 {
-    ip route show proto zebra | \
-        tr -s " " 
+    ospf_result=$(ip route show proto ospf | tr -s " ")
+    bgp_result=$(ip route show proto bgp | tr -s " ")
+    echo "$ospf_result"
+    echo "$bgp_result"
+
 }
 
 # get_dynamic_routing_bgp

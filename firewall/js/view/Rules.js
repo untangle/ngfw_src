@@ -44,6 +44,13 @@ Ext.define('Ung.apps.firewall.view.Rules', {
 
     bind: '{rules}',
 
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+
+    extraColumnConfig: {
+        ruleId: { xtype: 'numberfield' },
+    },
+
     columns: [
         Column.ruleId,
         Column.enabled,

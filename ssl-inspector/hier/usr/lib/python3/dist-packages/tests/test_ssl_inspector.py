@@ -1,15 +1,15 @@
 """ssl_inspector tests"""
 import datetime
 import pytest
+import runtests
+import subprocess
 import sys
 import unittest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
-
 
 default_policy_id = 1
 app = None
@@ -107,10 +107,12 @@ class SslInspectorTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global appData, appWeb, appWebData
 
+        global_functions.get_latest_client_test_pkg("web")
+
         appData = cls._app.getSettings()
-        if (uvmContext.appManager().isInstantiated(cls.appWeb())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.appWeb())):
             raise Exception('app %s already instantiated' % cls.appWeb())
-        appWeb = uvmContext.appManager().instantiate(cls.appWeb(), default_policy_id)
+        appWeb = global_functions.uvmContext.appManager().instantiate(cls.appWeb(), default_policy_id)
         appWebData = appWeb.getSettings()
 
         appData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
@@ -121,10 +123,10 @@ class SslInspectorTests(NGFWTestCase):
         assert (result == 0)
             
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_012_checkServerCertificate(self):
-        result = remote_control.run_command('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi "untangle"' % (testedServerName, testedServerName))
+        result = remote_control.run_command('echo -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | grep -qi -e "arista" -e "untangle"' % (testedServerName, testedServerName))
         assert (result == 0)
 
     def test_015_checkWebFilterBlockInspected(self):
@@ -206,6 +208,40 @@ class SslInspectorTests(NGFWTestCase):
                                                 "term", t["term"])
             assert( found )
 
+    def test_551_https_with_sni_packet_split(self):
+        """ Verify no exceptions with split Hello TLS packets"""
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+
+        app_id = self._app.getAppSettings()["id"]
+        log_file = f"/var/log/uvm/app-{app_id}.log"
+
+        count = 0
+        exceptions = 0
+
+        # Not the entire packet, but a little bit beyond the position of the SNI server record.
+        max_index=1600
+        # Hit as many places as we could be out of bounds with split
+        packet_split_iteration = 2
+
+        for index in range(2, max_index,packet_split_iteration):
+            last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
+            last_log_line = int(last_log_line) + 1
+            result = remote_control.run_command(f"./web/https_client.py -i {index}")
+
+            log_invalid_exception = subprocess.check_output(f"awk 'NR >= {last_log_line} && /WARN  Exception calling extractSNIhostname/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+            print(log_invalid_exception)
+            for log in log_invalid_exception.split("\n"):
+                if len(log) == 0:
+                    continue
+                exceptions += 1
+                break
+
+            count += 1
+
+        print(f"count={count}, exceptions={exceptions}")
+        assert exceptions == 0, "exceptions"
+
     def test_610_web_search_rules(self):
         """check the https web rule searches log correctly"""
         term = "boobs"
@@ -234,6 +270,52 @@ class SslInspectorTests(NGFWTestCase):
             assert( found )
         search_term_rules_clear()
 
+    def test_650_web_search_rules(self):
+        """check the web filter search terms with $ are evaluated and blocked if set
+            %24 will be converted to $
+        """
+        term = "a$$"
+        termTests = [{
+            "host": "www.google.com",
+            "uri":  ("/search?hl=en&q=%s" % "a%24%24"),
+        }]
+        search_term_rule_add(term)
+        for t in termTests:
+            eventTime = datetime.datetime.now()
+            result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1", uri=f"https://{t['host']}{t['uri']}"))
+            events = global_functions.get_events("Web Filter",'All Search Events',None,1)
+            found = global_functions.check_events( events.get('list'), 5,
+                                                   "host", t["host"],
+                                                   "term", term,
+                                                   'blocked', True,
+                                                   'flagged', True )
+            assert( found )
+        search_term_rules_clear()
+
+
+    def test_655_web_search_rules(self):
+        """check the web filter search terms with $ are evaluated and blocked if set"""
+        term = "a$$"
+        termTests = [{
+            "host": "www.google.com",
+            "uri":  ("/search?hl=en&q=%s" % "a\$\$"),
+        }]
+        search_term_rule_add(term)
+        for t in termTests:
+            eventTime = datetime.datetime.now()
+            result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1", uri=f"https://{t['host']}{t['uri']}"))
+            events = global_functions.get_events("Web Filter",'All Search Events',None,1)
+            found = global_functions.check_events( events.get('list'), 5,
+                                                   "host", t["host"],
+                                                   "term", term,
+                                                   'blocked', True,
+                                                   'flagged', True )
+            assert( found )
+        search_term_rules_clear()
+
+
+
+
     def test_700_youtube_safe_search(self):
         """Verify activation of YouTube Safe Search"""
         raise unittest.SkipTest('Youtube Safe Search requires JS rendering web engine')
@@ -252,7 +334,7 @@ class SslInspectorTests(NGFWTestCase):
         global appWeb
 
         if appWeb != None:
-            uvmContext.appManager().destroy( appWeb.getAppSettings()["id"])
+            global_functions.uvmContext.appManager().destroy( appWeb.getAppSettings()["id"])
             appWeb = None
 
 test_registry.register_module("ssl-inspector", SslInspectorTests)

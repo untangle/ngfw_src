@@ -5,7 +5,8 @@ package com.untangle.uvm.event;
 
 import org.json.JSONObject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.app.GlobMatcher;
@@ -18,7 +19,7 @@ import com.untangle.uvm.app.GlobMatcher;
 @SuppressWarnings("serial")
 public class EventRuleCondition
 {
-    private static final Logger logger = Logger.getLogger( EventRuleCondition.class );
+    private static final Logger logger = LogManager.getLogger( EventRuleCondition.class );
 
     private String field;
     private String comparator;

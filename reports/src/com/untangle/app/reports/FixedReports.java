@@ -3,7 +3,8 @@
  */
 package com.untangle.app.reports;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.MailSender;
 import com.untangle.uvm.UvmContextFactory;
@@ -47,7 +48,7 @@ import org.json.JSONObject;
 
 public class FixedReports
 {
-    private static final Logger logger = Logger.getLogger( FixedReports.class );
+    private static final Logger logger = LogManager.getLogger( FixedReports.class );
 
     public static final String REPORTS_FIXED_TEMPLATE_FILENAME =  System.getProperty("uvm.lib.dir") + "/reports/templates/reports.html";
     public static final int DEFAULT_BROWSER_WIDTH = 800;

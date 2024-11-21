@@ -43,14 +43,15 @@ Ext.define('Ung.cmp.RecordEditorController', {
         var fields = this.mainGrid.editorFields;
         for (var i = 0; i < fields.length; i++) {
             if(fields[i].xtype === 'ungrid') {
-                // Build stores for ugrid fields
-                if ("store" in fields[i].bind){
-                    var storeName = fields[i].bind["store"].replace('{', '').replace('}', '');
-                    var storeObj = {};
-                    var listProperty = fields[i].bind["listProperty"];
-                    var dataValue = "record." + (listProperty != null ? listProperty : storeName ) + ".list";
-                    storeObj[storeName] = {data: '{' + dataValue + '}'};
-                    vm.setStores(storeObj);
+                // grid present as ungrid
+                this.initGrid(fields[i],vm);
+            }else if(fields[i].xtype === "container" && fields[i].items){
+                // grid nested in container
+                for(var j=0; j < fields[i].items.length; j++){
+                    var currField = fields[i].items[j];
+                    if(currField.xtype === 'ungrid'){
+                        this.initGrid(currField,vm);
+                    }
                 }
             }
         }
@@ -69,6 +70,20 @@ Ext.define('Ung.cmp.RecordEditorController', {
                 // }
             });
             vm.set('_action', v.record.get('action'));
+        }
+    },
+
+    /**
+     *  Build stores for ungrid fields 
+     */
+    initGrid: function(field, vm){
+        if (typeof field.bind === "object" && "store" in field.bind){
+            var storeName = field.bind["store"].replace('{', '').replace('}', '');
+            var storeObj = {};
+            var listProperty = field.bind["listProperty"];
+            var dataValue = "record." + (listProperty != null ? listProperty : storeName ) + ".list";
+            storeObj[storeName] = {data: '{' + dataValue + '}'};
+            vm.setStores(storeObj);
         }
     },
 

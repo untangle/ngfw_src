@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 
@@ -26,7 +27,7 @@ public class UnblockedSitesMonitor
     private static long MONITOR_SLEEP_DELAY_MS = 5l * 60l * 1000l;
 
     private final WebFilterBase wfb;
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final Monitor monitor = new Monitor();
 
     /**

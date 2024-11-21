@@ -6,7 +6,8 @@ package com.untangle.app.web_cache;
 
 import java.util.Timer;
 import java.util.LinkedList;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -33,7 +34,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class WebCacheApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final Subscription webSub = new Subscription(Protocol.TCP, IPMaskedAddress.anyAddr, PortRange.ANY, IPMaskedAddress.anyAddr, new PortRange(80, 80));
 
     protected static final String STAT_HIT = "hit";

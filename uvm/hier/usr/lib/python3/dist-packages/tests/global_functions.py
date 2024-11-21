@@ -7,6 +7,7 @@ import fcntl
 import struct
 import datetime
 import random
+import shutil
 import string
 import html
 import inspect
@@ -57,6 +58,8 @@ VPN_CLIENT_IP = "10.112.56.23"
 # Servers running remote syslog
 LIST_SYSLOG_SERVER = '10.112.56.23'
 
+Smtp_timeout_seconds = overrides.get("Smtp_timeout_seconds", default=30)
+
 uvmContext = Uvm().getUvmContext(timeout=240)
 uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
 prefix = "@PREFIX@"
@@ -80,7 +83,7 @@ def get_broadcast_address(interface):
         return None
     return subprocess.check_output("ip addr | grep " + interface + "  | grep inet | awk '{printf $4}'", shell=True).decode("utf-8")
 
-def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=False):
+def get_public_ip_address(base_URL=TEST_SERVER_HOST,url_path="cgi-bin/myipaddress.py", extra_options="",localcall=False):
     if base_URL.startswith("http") is False:
         # Add schema
         base_URL = f"http://{base_URL}"
@@ -91,11 +94,11 @@ def get_public_ip_address(base_URL=TEST_SERVER_HOST,extra_options="",localcall=F
         time.sleep(1)
         if localcall:
             try:
-                result = subprocess.check_output(build_wget_command(output_file="-", uri=f"{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), shell=True)
+                result = subprocess.check_output(build_wget_command(output_file="-", uri=f"{base_URL}/{url_path}", all_parameters=True, extra_arguments=extra_options), shell=True)
             except:
                 pass
         else:
-            result = remote_control.run_command(build_wget_command(output_file="-", uri=f"{base_URL}/cgi-bin/myipaddress.py", all_parameters=True, extra_arguments=extra_options), stdout=True)
+            result = remote_control.run_command(build_wget_command(output_file="-", uri=f"{base_URL}/{url_path}", all_parameters=True, extra_arguments=extra_options), stdout=True)
     if type(result) is bytes:
         result = result.decode("utf-8")
     result = result.rstrip()
@@ -871,7 +874,7 @@ def restart_uvm():
     Restart uvm.
     IMPORTANT: This changes uvmContext!
     """
-    global uvmContext
+    global uvmContext, uvmContextLongTimeout
     subprocess.call(["/etc/init.d/untangle-vm","restart"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
     uvmContext = None
@@ -879,6 +882,7 @@ def restart_uvm():
     while max_tries > 0:
         try:
             uvmContext = Uvm().getUvmContext(timeout=240)
+            uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
         except Exception as e:
             pass
         if uvmContext is not None:
@@ -964,7 +968,7 @@ def get_download_speed(download_server="",meg=20):
         print(e)
         return None
 
-def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
+def get_events( eventEntryCategory, eventEntryTitle, conditions, limit, start_date=None, end_date=None ):
     reports = uvmContextLongTimeout.appManager().app("reports")
     if reports == None:
         print("WARNING: reports app not found")
@@ -979,7 +983,10 @@ def get_events( eventEntryCategory, eventEntryTitle, conditions, limit ):
         print(("WARNING: Event entry not found: %s %s" % (eventEntryCategory, eventEntryTitle)))
         return None
 
-    events = reportsManager.getEvents( reportEntry, conditions, limit )
+    if start_date is not None and end_date is not None:
+        events = reportsManager.getDataForReportEntry( reportEntry, start_date, end_date, None, conditions, None, limit )
+    else:
+        events = reportsManager.getEvents( reportEntry, conditions, limit )
     if events == None:
         return None
 
@@ -1091,7 +1098,6 @@ def get_wait_for_events(prefix="", report_category="", report_title="", report_c
         tries -= 1
         events = get_events(report_category, report_title, report_conditions, event_limit)
         assert events != None, f"{prefix} total events found"
-        print(events)
         found = check_events( events.get('list'), check_num_events, matches)
         if found is True:
             return True
@@ -1108,6 +1114,17 @@ def is_in_office_network(wan_ip):
             return True
     return False
 
+def is_device_pppoe():
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+
+    # Get enabled WAN interfaces, static, Ethernet
+    pppoe_status = False
+    for interface in netsettings["interfaces"]["list"]:
+        if interface["v4ConfigType"] == "PPPOE":
+            pppoe_status = True
+            break
+    return pppoe_status
+
 def is_bridged(wan_ip):
     result = remote_control.run_command("ip -o -f inet addr show",stdout=True)
     match = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}\/\d{1,3} brd', result)
@@ -1115,6 +1132,20 @@ def is_bridged(wan_ip):
     if ipaddr.IPv4Address(wan_ip) in ipaddr.IPv4Network(hostname_cidr):
         return True
     return False
+
+def is_vm_instance():
+    # Check if this is a VMware instance
+    hostname_ip = "0.0.0.0"
+    is_vm = True
+    try:
+        vm_result = subprocess.check_output("lscpu | grep VMware", shell=True).decode('utf-8')
+        if ("VMware" not in vm_result):
+            is_vm = False
+    except subprocess.CalledProcessError:
+        is_vm = True
+    else:
+        found = True
+    return is_vm
 
 def cidr_to_netmask(cidr):
     """
@@ -1137,7 +1168,7 @@ def send_test_email(mailhost=TEST_SERVER_HOST):
     """
 
     try:
-       smtpObj = smtplib.SMTP(mailhost)
+       smtpObj = smtplib.SMTP(mailhost,timeout=Smtp_timeout_seconds)
        smtpObj.sendmail(sender, receivers, message)
        print(("Successfully sent email through " + mailhost))
        return 1
@@ -1561,3 +1592,60 @@ def is_vpn_routing(route_table, expected_route=None):
             return True
 
     return False
+
+Vm_conf_filename = "/usr/share/untangle/conf/untangle-vm.conf"
+
+def vm_conf_backup(filename=None):
+    """
+    Make a copy of the current untangle-vm.conf file
+    """
+    if filename is None:
+        filename = f"{Vm_conf_filename}.orig"
+
+    shutil.copyfile(Vm_conf_filename, filename)
+
+    return filename
+
+def vm_conf_restore(filename=None):
+    """
+    Copy file to untangle-vm.conf and perform uvm restart
+    """
+    global uvmContext, uvmContextLongTimeout
+
+    if filename is None:
+        filename = f"{Vm_conf_filename}.orig"
+
+    shutil.copyfile(filename, Vm_conf_filename)
+
+    return restart_uvm()
+
+def vm_conf_update(search=None, replace=None):
+    """
+    Update vm_conf (into a temp file).
+    """
+    temp_filename = f"/tmp/untangle-vm.conf.tmp"
+
+    vm_conf = []
+    with open(Vm_conf_filename, "r") as file:
+        for line in file:
+            if line.startswith(search):
+                line = f"{replace}\n"
+            vm_conf.append(line)
+        file.close()
+
+    with open(temp_filename, "w") as file:
+        for line in vm_conf:
+            file.write(line)
+        file.close()
+
+    return vm_conf_restore(temp_filename)
+
+def get_latest_client_test_pkg(name=None):
+    """
+    Download and install latest client test package
+    """
+    if name is not None:
+        package_filename=f"{name}pkg.tar"
+        remote_control.run_command(f"rm -f {package_filename}*") # remove all previous mail packages
+        results = remote_control.run_command(build_wget_command(uri=f"http://test.untangle.com/test/{package_filename}"))
+        results = remote_control.run_command(f"tar -xvf {package_filename}")

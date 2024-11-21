@@ -18,12 +18,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import com.untangle.uvm.logging.ConfigurationBackupEvent;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.GoogleManager;
 import com.untangle.uvm.ExecManagerResultReader;
-import com.untangle.uvm.app.DirectoryConnector;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
@@ -33,7 +35,7 @@ import com.untangle.uvm.util.I18nUtil;
  */
 public class ConfigurationBackupApp extends AppBase
 {
-    private final Logger logger = Logger.getLogger(ConfigurationBackupApp.class);
+    private final Logger logger = LogManager.getLogger(ConfigurationBackupApp.class);
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/configuration-backup-send-backup.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-configuration-backup-nightly");
@@ -120,6 +122,14 @@ public class ConfigurationBackupApp extends AppBase
         settings.setMinuteInHour(r.nextInt(60));
 
         setSettings( settings );
+    }
+
+    /**
+     * get GoogleManager
+     * @return GoogleManager
+     */
+    public GoogleManager getGoogleManager() {
+        return UvmContextFactory.context().googleManager();
     }
 
     /**
@@ -252,8 +262,8 @@ public class ConfigurationBackupApp extends AppBase
                                     "-t",TIMEOUT_SEC,
                                     "-f",backupFile.getAbsoluteFile().toString()};
 
-        logger.info("Backing up " + backupFile.getAbsoluteFile() + " to " + backupUri);
-        logger.info("Backup command: " + Arrays.toString(cmd));
+        logger.info("Backing up {} to {}", backupFile.getAbsoluteFile(), backupUri);
+        logger.info("Backup command: {}", Arrays.toString(cmd));
 
         Integer exitCode = 0;
         try {
@@ -265,7 +275,7 @@ public class ConfigurationBackupApp extends AppBase
         }
 
         if(exitCode != 0) {
-            logger.error("Backup returned non-zero error code (" + exitCode + ")");
+            logger.error("Backup returned non-zero error code ({})", exitCode);
 
             String reason = null;
             switch(exitCode) {
@@ -290,7 +300,7 @@ public class ConfigurationBackupApp extends AppBase
             default:
                 reason = "Unknown error";
             }
-            logger.info("Backup failed: " + reason);
+            logger.error("Backup failed: {}", reason);
             this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("My Account")) );
         }
         else {
@@ -307,33 +317,35 @@ public class ConfigurationBackupApp extends AppBase
      */
     private void uploadBackupToGoogleDrive( File backupFile )
     {
-        String directory = null;
         String[] cmd;
-        if ( settings.getGoogleDriveDirectory() == null || "".equals(settings.getGoogleDriveDirectory()) )
+        String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
+        if (StringUtils.isEmpty(appGoogleDrivePath))
             cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
                                backupFile.getAbsoluteFile().toString()};
         else
             cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
-                               "-d",settings.getGoogleDriveDirectory(),
+                               "-d", appGoogleDrivePath,
                                backupFile.getAbsoluteFile().toString()};
-        Integer exitCode = 0;
+        int exitCode = 0;
+        String output = null;
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
             exitCode = reader.waitFor();
+            output = reader.readFromOutput();
         } catch (Exception e) {
             exitCode = 99;
             logger.warn("Exception running backup",e);
         }
 
         if(exitCode != 0) {
-            logger.error("Backup returned non-zero error code (" + exitCode + ")");
+            logger.error("Backup returned non-zero error code ({}):{}", exitCode, output);
 
             String reason = null;
             switch(exitCode) {
             default:
-                reason = "Unknown error";
+                reason = "Unknown error. Make sure your google drive is correctly configured. Error: " + output;
             }
-            logger.info("Backup failed: " + reason);
+            logger.warn("Backup failed: {}", reason);
             this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive")) );
         }
         else {

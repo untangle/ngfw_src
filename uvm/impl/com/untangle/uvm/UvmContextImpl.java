@@ -18,7 +18,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.jabsorb.JSONSerializer;
 import org.json.JSONObject;
@@ -83,7 +84,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String TEMPFS_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-tempfs-backup";
     private Pulse tempfsBackupPulse = null;
 
-    private static final Logger logger = Logger.getLogger(UvmContextImpl.class);
+    private static final Logger logger = LogManager.getLogger(UvmContextImpl.class);
 
     private static String uid = null;
     private static String regionName = null;
@@ -1256,7 +1257,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         }
         if (names == null){
             logger.warn("logJavascriptException: unable to retreive json object names");
-            logger.warn(json);
+            logger.warn(json.toString());
             return;
         }
 
@@ -1908,7 +1909,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
          */
         public void run()
         {
-            Logger logger = Logger.getLogger(UvmContextImpl.class);
+            Logger logger = LogManager.getLogger(UvmContextImpl.class);
             logger.info("Calling tempfs backup script");
             owner.execManager.exec(TEMPFS_BACKUP_SCRIPT);
         }

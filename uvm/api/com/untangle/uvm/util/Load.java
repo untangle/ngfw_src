@@ -3,7 +3,8 @@
  */
 package com.untangle.uvm.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
  */
 public class Load
 {
-    private final Logger logger = Logger.getLogger(Load.class);
+    private final Logger logger = LogManager.getLogger(Load.class);
 
     /**
      * The last time (in System.currentTimeMillis()) that the load value was updated

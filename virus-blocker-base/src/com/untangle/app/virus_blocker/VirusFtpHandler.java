@@ -12,7 +12,8 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.ftp.FtpCommand;
 import com.untangle.app.ftp.FtpFunction;
@@ -35,7 +36,7 @@ class VirusFtpHandler extends FtpEventHandler
 {
     private final VirusBlockerBaseApp app;
 
-    private final Logger logger = Logger.getLogger(FtpEventHandler.class);
+    private final Logger logger = LogManager.getLogger(FtpEventHandler.class);
 
     /**
      * Holds the virus scanner FTP state

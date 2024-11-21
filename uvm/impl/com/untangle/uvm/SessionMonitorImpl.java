@@ -17,7 +17,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.SessionMonitor;
 import com.untangle.uvm.UvmContext;
@@ -36,7 +37,7 @@ import com.untangle.uvm.app.SessionEvent;
  */
 public class SessionMonitorImpl implements SessionMonitor
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final String[] conntrackCommands = new String[]{
 	"/usr/sbin/conntrack -L -f ipv6",
@@ -119,9 +120,9 @@ public class SessionMonitorImpl implements SessionMonitor
             }
 
             if ( conntrackState != null ) {
-                session.setClientKBps( conntrackState.c2sRateBps/1000.0f );
-                session.setServerKBps( conntrackState.s2cRateBps/1000.0f );
-                session.setTotalKBps( conntrackState.totalRateBps/1000.0f );
+                session.setClientBps(conntrackState.c2sRateBps);
+                session.setServerBps(conntrackState.s2cRateBps);
+                session.setTotalBps(conntrackState.totalRateBps);
             }
 
             if ( sessionState != null ) {
@@ -309,7 +310,7 @@ public class SessionMonitorImpl implements SessionMonitor
         List<SessionMonitorEntry> sessions = getMergedSessions();
         org.json.JSONObject json = new org.json.JSONObject();
 
-        Map<String, Float> totals = new HashMap<>();
+        Map<String, Double> totals = new HashMap<>();
         Map<String, Integer> counts = new HashMap<>();
 
         try {
@@ -319,10 +320,10 @@ public class SessionMonitorImpl implements SessionMonitor
                     String policy = entry.getPolicy();
                     if ( policy != null ) {
                         if ( totals.containsKey(policy)) {
-                            Float existing = totals.get(policy);
-                            totals.put(policy, entry.getTotalKBps() != null ? existing + entry.getTotalKBps() : existing);
+                            Double existing = totals.get(policy);
+                            totals.put(policy, entry.getTotalBps() != null ? existing + entry.getTotalBps() : existing);
                         } else
-                            totals.put(policy, entry.getTotalKBps() != null ? entry.getTotalKBps() : 0.0f);
+                            totals.put(policy, entry.getTotalBps() != null ? entry.getTotalBps() : 0.0);
                         if ( counts.containsKey(policy)) {
                             Integer existing = counts.get(policy);
                             counts.put(policy, existing + 1);
@@ -333,7 +334,7 @@ public class SessionMonitorImpl implements SessionMonitor
 
                 for (String key: totals.keySet()) {
                     org.json.JSONObject entry = new org.json.JSONObject();
-                    entry.put("totalKbps", totals.get(key));
+                    entry.put("totalBps", totals.get(key));
                     entry.put("sessionCount", counts.get(key));
                     json.put(key, entry);
                 }

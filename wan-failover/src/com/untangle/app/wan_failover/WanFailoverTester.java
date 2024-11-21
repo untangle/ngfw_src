@@ -5,8 +5,10 @@
 package com.untangle.app.wan_failover;
 
 import java.util.LinkedList;
+import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
@@ -20,13 +22,19 @@ import com.untangle.uvm.network.InterfaceSettings;
 public class WanFailoverTester implements Runnable
 {
     private static final int SLEEP_DELAY_MS = 5000;
-
     private static final String ARP_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-arp-test.sh";
     private static final String PING_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-ping-test.sh";
     private static final String HTTP_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-http-test.sh";
     private static final String DNS_TEST = System.getProperty("uvm.bin.dir") + "/wan-failover-dns-test.sh";
-
-    private static final Logger logger = Logger.getLogger(WanFailoverTester.class);
+    private static final Set<String> ERROR_MESSAGES = Set.of(
+        "FIB table does not exist",
+        "Dump terminated",
+        "does not exist",
+        "No such device"
+    );
+    private static final String WAN_INT_MESSAGE = "Wan interface is not connected or reachable. \n";
+    private static final String SPLIT_PATTERN = "\\r?\\n";
+    private static final Logger logger = LogManager.getLogger(WanFailoverTester.class);
 
     private WanFailoverTesterMonitor monitor;
     private WanFailoverApp app;
@@ -291,7 +299,7 @@ public class WanFailoverTester implements Runnable
 
             if (result.output.length() > 0) {
                 logger.debug("Test failed with message: " + result.output);
-                result.message = result.output;
+                result.message = sanitizeMessage(result.output);
                 result.success = false;
             } else {
                 result.message = I18nUtil.marktr("Test Successful.");
@@ -305,6 +313,33 @@ public class WanFailoverTester implements Runnable
         }
 
         return result;
+    }
+
+
+    /**
+     * Sanitize Error message
+     * 
+     * @param message
+     *        The error message
+     * 
+     * @return 
+     *        sanitized message
+     */
+    private static String sanitizeMessage (String message)
+    {
+        for (String errorMessage : ERROR_MESSAGES) {
+            if (message.contains(errorMessage)) {
+                //on first message return the last message
+                String[] lines = message.split(SPLIT_PATTERN);
+                //fetch the last message
+                for (int i = lines.length - 1; i >= 0; i--) {
+                    if (!lines[i].isBlank()) {
+                        return WAN_INT_MESSAGE + lines[i].trim(); // Return last message in the list
+                    }
+                }
+            }
+        }
+        return message;
     }
 
     /**

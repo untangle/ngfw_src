@@ -3,66 +3,55 @@
  */
 package com.untangle.uvm;
 
-import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.IPMatcher;
+import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.event.AlertEvent;
-import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.EventRule;
-import com.untangle.uvm.event.SyslogRule;
-import com.untangle.uvm.event.TriggerRule;
 import com.untangle.uvm.event.EventRuleCondition;
-import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.Reporting;
-import com.untangle.uvm.app.IPMatcher;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SyslogManagerImpl;
-import com.untangle.uvm.util.GlobUtil;
+import com.untangle.uvm.event.EventSettings;
+import com.untangle.uvm.event.SyslogRule;
+import com.untangle.uvm.event.SyslogServer;
+import com.untangle.uvm.event.TriggerRule;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.StringUtil;
-
-import com.untangle.uvm.AdminUserSettings;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONString;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-
-import java.lang.Class;
-import java.lang.reflect.Method;
-
 import java.sql.Timestamp;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.concurrent.TransferQueue;
-import java.util.concurrent.LinkedTransferQueue;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
-import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.apache.log4j.Logger;
-import org.apache.commons.io.IOUtils;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONString;
+import java.util.concurrent.LinkedTransferQueue;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Event prcessor
  */
 public class EventManagerImpl implements EventManager
 {
-    private static final Integer SETTINGS_CURRENT_VERSION = 4;
+    private static final Integer SETTINGS_CURRENT_VERSION = 5;
 
-    private static final Logger logger = Logger.getLogger(EventManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(EventManagerImpl.class);
 
     /**
      * If the event queue length reaches the high water mark
@@ -197,6 +186,41 @@ public class EventManagerImpl implements EventManager
                 throw new RuntimeException("Missing tag lifetime on trigger rule: " + idx);
         }
 
+        if (newSettings != null) {
+            LinkedList<SyslogServer> inputServerList =  newSettings.getSyslogServers();
+            //cover the Base scenario of default LogServer enabled and default logserver post upgrade restart
+            if (inputServerList == null ) {
+                LinkedList<SyslogServer> syslogList = new LinkedList<SyslogServer>();
+                LinkedList<Integer> sysLogIntegerList = new LinkedList<Integer>();
+                if (newSettings.getSyslogEnabled()) {
+                    SyslogServer logServer = new SyslogServer(getLastUsedServerId(inputServerList) + 1, true, newSettings.getSyslogHost(), newSettings.getSyslogPort(), newSettings.getSyslogProtocol(), SyslogManagerImpl.LOG_TAG_PREFIX, "Default Syslog Server");
+                    syslogList.add(logServer);
+                    //Disable sysLogHost, and sysLogEnabled field
+                    //Syslog servers will be managed by List
+                    newSettings.setSyslogHost(null);
+                    newSettings.setSyslogEnabled(false);
+                    newSettings.setSyslogServers(syslogList);
+                    //During Upgrade with Syslog enabled and default syslog set
+                    // first syslog server will have server ID as 1.
+                    sysLogIntegerList.add(1);
+                } else {
+                    newSettings.setSyslogServers(syslogList);
+                }
+                //Set Empty List in case of Syslog Disabled during upgrade.
+                for (SyslogRule rule : newSettings.getSyslogRules()) {
+                    rule.setSyslogServers(sysLogIntegerList);
+                }
+            } else {
+                // set ServerIDs based on last used logic
+                for (SyslogServer syslogServer : inputServerList ) {
+                    //Skip Default Scenario, and set serverID and Tag for New SyslogServers
+                    if (syslogServer.getServerId() == -1) {
+                        syslogServer.setServerId(getLastUsedServerId(inputServerList) + 1);
+                    }
+                }
+            }
+        }
+
         /**
          * Save the settings
          */
@@ -238,7 +262,7 @@ public class EventManagerImpl implements EventManager
         Boolean classFound = false;
         String fieldValue = null;
         for(EventRuleCondition condition: rule.getConditions()){
-            if(condition.getField().equals("class") || condition.getField().equals("javaClass")){
+            if(condition.getField().equals(Constants.CLASS) || condition.getField().equals("javaClass")){
                 fieldValue = condition.getFieldValue();
                 classFound = true;
                 if(!classes.contains(fieldValue)){
@@ -255,30 +279,30 @@ public class EventManagerImpl implements EventManager
     private void buildClassesToProcess(){
         LinkedList<String> classes = new LinkedList<>();
 
-        Boolean allClasses = false;
+        boolean allClasses = false;
         for(EventRule rule : Stream.of(settings.getAlertRules(), settings.getTriggerRules())
                             .flatMap(Collection::stream)
                             .collect(Collectors.toList()) ){
             if(rule.getEnabled()){
                 allClasses = buildClassesToProcessRules(rule, classes);
             }
-            if(allClasses == true){
+            if(allClasses){
                 break;
             }
         }
 
         // NOTE: Make sure syslog processing comes last.
-        if(settings.getSyslogEnabled() && allClasses == false){
-            for(EventRule rule : settings.getSyslogRules()){
-                if(rule.getEnabled()){
+        if(!allClasses){
+            for(SyslogRule rule : settings.getSyslogRules()){
+                if(rule.getEnabled() && !rule.getSyslogServers().isEmpty()){
                     allClasses = buildClassesToProcessRules(rule, classes);
                 }
-                if(allClasses == true){
+                if(allClasses){
                     break;
                 }
             }
         }
-        if(allClasses == true){
+        if(allClasses){
             classes.clear();
         }
 
@@ -301,7 +325,7 @@ public class EventManagerImpl implements EventManager
         if(f.exists()){
             try{
                 InputStream is = new FileInputStream( classesFilename );
-                String jsonTxt = IOUtils.toString(is);
+                String jsonTxt = IOUtils.toString(is, "UTF-8");
                 classFields = new JSONObject(jsonTxt);
             }catch(Exception e){
                 logger.warn( "Unable to load event classes:", e);
@@ -325,7 +349,7 @@ public class EventManagerImpl implements EventManager
 
             for(String variable : sortedKeys){
                 JSONObject jo = new JSONObject(EventManagerImpl.eventTemplateVariables.get(variable));
-                jo.remove("class");
+                jo.remove(Constants.CLASS);
                 result.put(index++, jo);
             }
         }catch(Exception e){
@@ -398,44 +422,51 @@ public class EventManagerImpl implements EventManager
     private void updateSettings(EventSettings settings){
         if(settings.getVersion() < SETTINGS_CURRENT_VERSION){
 
-            // Below code to add ConfigurationBackupEvent as deafult event can be removed after 17.2 release
-            boolean confBackUpFlag = false;
-            boolean successConditionFlag = false;
-            // search for the ConfigurationBackupEvent success rule
+            // Below code to add CriticalAlertEvent as deafult event can be removed after 17.4 release
+            boolean criticalFlag = false;
+            boolean diskCheckFailFlag = false;
+
+            // search for the CriticalAlertEvent DISK_CHECK_FAILURE rule
             for (EventRule er : settings.getAlertRules()) {
                 for(EventRuleCondition c : er.getConditions()) {
-                    if(c.getField().equals("class") && c.getFieldValue().equals("*ConfigurationBackupEvent*")){
-                        confBackUpFlag = true;
+                    if(c.getField().equals(Constants.CLASS) && c.getFieldValue().equals(Constants.CRITICAL_ALERT_EVENT_RGX)){
+                        criticalFlag = true;
                     }
-                }
-                if(confBackUpFlag) {
-                    for(EventRuleCondition c : er.getConditions()) {
-                        if(c.getField().equals("success") && c.getFieldValue().equals("False")){
-                            successConditionFlag = true;
-                        }
+                    if(c.getField().equals(Constants.COMPONENT) && c.getFieldValue().equals("DISK_CHECK_FAILURE")){
+                        diskCheckFailFlag = true;
                     }
                 }
             }
 
-            // if we didn't find the ConfigurationBackupEvent rule with success False create at top
-            if ((!confBackUpFlag) || (!successConditionFlag)) {
+            // if we didn't find the CriticalAlertEvent DISK_CHECK_FAILURE rule create at top
+            if ((!criticalFlag) || (!diskCheckFailFlag)) {
                 LinkedList<EventRuleCondition> conditions;
                 EventRuleCondition condition1;
                 EventRuleCondition condition2;
                 AlertRule eventRule;
 
                 conditions = new LinkedList<>();
-                condition1 = new EventRuleCondition( "class", "=", "*ConfigurationBackupEvent*" );
+                condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.CRITICAL_ALERT_EVENT_RGX );
                 conditions.add( condition1 );
-                condition2 = new EventRuleCondition( "success", "=", "False" );
+                condition2 = new EventRuleCondition( Constants.COMPONENT, Constants.EQUALS_TO, "DISK_CHECK_FAILURE" );
                 conditions.add( condition2 );
-                eventRule = new AlertRule( true, conditions, true, true, "Configuration backup failed", false, 0 );
-                settings.getAlertRules().add( eventRule );
+                eventRule = new AlertRule( true, conditions, true, true, "Disk health checks failed", false, 0 );
+                settings.getAlertRules().addFirst( eventRule );
+            }
+
+            // set the alertrules FieldValues from null to correct values
+            for (EventRule er : settings.getAlertRules()) {
+                if(er.getThresholdTimeframeSec() == null){
+                    er.setThresholdTimeframeSec(60);
+                }
+                if(er.getThresholdEnabled() == null){
+                    er.setThresholdEnabled(false);
+                }
             }
 
             settings.setVersion(SETTINGS_CURRENT_VERSION);
-            this.setSettings( settings );
         }
+        this.setSettings( settings );
     }
 
     /**
@@ -470,23 +501,31 @@ public class EventManagerImpl implements EventManager
         AlertRule eventRule;
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*CriticalAlertEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.CRITICAL_ALERT_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "component", "=", "REPORTS" );
+        condition2 = new EventRuleCondition( Constants.COMPONENT, Constants.EQUALS_TO, "DISK_CHECK_FAILURE" );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, "Disk health checks failed", false, 0 );
+        rules.add( eventRule );
+
+        conditions = new LinkedList<>();
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.CRITICAL_ALERT_EVENT_RGX );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( Constants.COMPONENT, Constants.EQUALS_TO, "REPORTS" );
         conditions.add( condition2 );
         eventRule = new AlertRule( true, conditions, true, true, "Reporting disabled due to low disk space", false, 0 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*WanFailoverEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, "*WanFailoverEvent*" );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "action", "=", "DISCONNECTED" );
+        condition2 = new EventRuleCondition( Constants.ACTION, Constants.EQUALS_TO, "DISCONNECTED" );
         conditions.add( condition2 );
         eventRule = new AlertRule( true, conditions, true, true, "WAN is offline", false, 0 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.SYSTEM_STAT_EVENT_RGX );
         conditions.add( condition1 );
         condition2 = new EventRuleCondition( "load1", ">", "20" );
         conditions.add( condition2 );
@@ -494,7 +533,7 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.SYSTEM_STAT_EVENT_RGX );
         conditions.add( condition1 );
         condition2 = new EventRuleCondition( "diskFreePercent", "<", ".2" );
         conditions.add( condition2 );
@@ -502,7 +541,7 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.SYSTEM_STAT_EVENT_RGX );
         conditions.add( condition1 );
         condition2 = new EventRuleCondition( "memFreePercent", "<", ".05" );
         conditions.add( condition2 );
@@ -510,7 +549,7 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*SystemStatEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.SYSTEM_STAT_EVENT_RGX );
         conditions.add( condition1 );
         condition2 = new EventRuleCondition( "swapUsedPercent", ">", ".25" );
         conditions.add( condition2 );
@@ -518,93 +557,93 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.SESSION_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "SServerPort", "=", "22" );
+        condition2 = new EventRuleCondition( Constants.S_SERVER_PORT, Constants.EQUALS_TO, "22" );
         conditions.add( condition2 );
         eventRule = new AlertRule( true, conditions, true, true, "Suspicious Activity: Client created many SSH sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.SESSION_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "SServerPort", "=", "3389" );
+        condition2 = new EventRuleCondition( Constants.S_SERVER_PORT, Constants.EQUALS_TO, "3389" );
         conditions.add( condition2 );
         eventRule = new AlertRule( true, conditions, true, true, "Suspicious Activity: Client created many RDP sessions", true, 60, Boolean.TRUE, 20.0D, 60, "CClientAddr");
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*SessionEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.SESSION_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "entitled", "=", "false" );
+        condition2 = new EventRuleCondition( "entitled", Constants.EQUALS_TO, Constants.FALSE );
         conditions.add( condition2 );
         eventRule = new AlertRule( true, conditions, true, true, "License limit exceeded. Session not entitled", true, 60*24 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.WEB_FILTER_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        condition2 = new EventRuleCondition( Constants.BLOCKED, Constants.EQUALS_TO, Constants.FALSE );
         conditions.add( condition2 );
-        condition3 = new EventRuleCondition( "category", "=", "Malware Sites" );
+        condition3 = new EventRuleCondition( Constants.CATEGORY, Constants.EQUALS_TO, "Malware Sites" );
         conditions.add( condition3 );
         eventRule = new AlertRule( true, conditions, true, true, "Malware Sites website visit detected", false, 10 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.WEB_FILTER_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        condition2 = new EventRuleCondition( Constants.BLOCKED, Constants.EQUALS_TO, Constants.TRUE );
         conditions.add( condition2 );
-        condition3 = new EventRuleCondition( "category", "=", "Malware Sites" );
+        condition3 = new EventRuleCondition( Constants.CATEGORY, Constants.EQUALS_TO, "Malware Sites" );
         conditions.add( condition3 );
         eventRule = new AlertRule( true, conditions, true, true, "Malware Sites website visit blocked", false, 10 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.WEB_FILTER_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        condition2 = new EventRuleCondition( Constants.BLOCKED, Constants.EQUALS_TO, Constants.FALSE );
         conditions.add( condition2 );
-        condition3 = new EventRuleCondition( "category", "=", "Bot Netst" );
+        condition3 = new EventRuleCondition( Constants.CATEGORY, Constants.EQUALS_TO, "Bot Netst" );
         conditions.add( condition3 );
         eventRule = new AlertRule( true, conditions, true, true, "Bot Nets website visit detected", false, 10 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.WEB_FILTER_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        condition2 = new EventRuleCondition( Constants.BLOCKED, Constants.EQUALS_TO, Constants.TRUE );
         conditions.add( condition2 );
-        condition3 = new EventRuleCondition( "category", "=", "Bot Nets" );
+        condition3 = new EventRuleCondition( Constants.CATEGORY, Constants.EQUALS_TO, "Bot Nets" );
         conditions.add( condition3 );
         eventRule = new AlertRule( true, conditions, true, true, "Bot Nets website visit blocked", false, 10 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.WEB_FILTER_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "blocked", "=", "False" );
+        condition2 = new EventRuleCondition( Constants.BLOCKED, Constants.EQUALS_TO, Constants.FALSE );
         conditions.add( condition2 );
-        condition3 = new EventRuleCondition( "category", "=", "Phishing and Other Frauds" );
+        condition3 = new EventRuleCondition( Constants.CATEGORY, Constants.EQUALS_TO, "Phishing and Other Frauds" );
         conditions.add( condition3 );
         eventRule = new AlertRule( true, conditions, true, true, "Phishing and Other Frauds website visit detected", false, 10 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*WebFilterEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.WEB_FILTER_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "blocked", "=", "True" );
+        condition2 = new EventRuleCondition( Constants.BLOCKED, Constants.EQUALS_TO, Constants.TRUE );
         conditions.add( condition2 );
-        condition3 = new EventRuleCondition( "category", "=", "Phishing and Other Frauds" );
+        condition3 = new EventRuleCondition( Constants.CATEGORY, Constants.EQUALS_TO, "Phishing and Other Frauds" );
         conditions.add( condition3 );
         eventRule = new AlertRule( true, conditions, true, true, "Phishing and Other Frauds website visit blocked", false, 10 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*DeviceTableEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, "*DeviceTableEvent*" );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "key", "=", "add" );
+        condition2 = new EventRuleCondition( "key", Constants.EQUALS_TO, "add" );
         conditions.add( condition2 );
         if ( "i386".equals(System.getProperty("os.arch", "unknown")) || "amd64".equals(System.getProperty("os.arch", "unknown"))) {
             eventRule = new AlertRule( false, conditions, true, true, "New device discovered", false, 0 );
@@ -614,23 +653,23 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*QuotaEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, "*QuotaEvent*" );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "action", "=", "2" );
+        condition2 = new EventRuleCondition( Constants.ACTION, Constants.EQUALS_TO, "2" );
         conditions.add( condition2 );
         eventRule = new AlertRule( false, conditions, true, true, "Host exceeded quota.", false, 0 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.APP_CONTROL_LOG_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "protochain", "=", "*BITTORRE*" );
+        condition2 = new EventRuleCondition( "protochain", Constants.EQUALS_TO, "*BITTORRE*" );
         conditions.add( condition2 );
         eventRule = new AlertRule( false, conditions, true, true, "Host is using Bittorrent", true, 60 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*HttpResponseEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, "*HttpResponseEvent*" );
         conditions.add( condition1 );
         condition2 = new EventRuleCondition( "contentLength", ">", "1000000000" );
         conditions.add( condition2 );
@@ -638,25 +677,25 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*CaptivePortalUserEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, "*CaptivePortalUserEvent*" );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "event", "=", "FAILED" );
+        condition2 = new EventRuleCondition( "event", Constants.EQUALS_TO, "FAILED" );
         conditions.add( condition2 );
         eventRule = new AlertRule( false, conditions, true, true, "Failed Captive Portal login", false, 0 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*VirusHttpEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, "*VirusHttpEvent*" );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "clean", "=", "False" );
+        condition2 = new EventRuleCondition( "clean", Constants.EQUALS_TO, Constants.FALSE );
         conditions.add( condition2 );
         eventRule = new AlertRule( false, conditions, true, true, "HTTP virus blocked", false, 0 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*ConfigurationBackupEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, "*ConfigurationBackupEvent*" );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "success", "=", "False" );
+        condition2 = new EventRuleCondition( "success", Constants.EQUALS_TO, Constants.FALSE );
         conditions.add( condition2 );
         eventRule = new AlertRule( true, conditions, true, true, "Configuration backup failed", false, 0 );
         rules.add( eventRule );
@@ -700,9 +739,9 @@ public class EventManagerImpl implements EventManager
         TriggerRule eventRule;
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*AlertEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, "*AlertEvent*" );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "description", "=", "*Suspicious Activity*" );
+        condition2 = new EventRuleCondition( "description", Constants.EQUALS_TO, "*Suspicious Activity*" );
         conditions.add( condition2 );
         eventRule = new TriggerRule( true, conditions, true, "Tag suspicious activity", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
@@ -712,9 +751,9 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
         
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*");
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.APP_CONTROL_LOG_EVENT_RGX);
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "category", "=", "Proxy" );
+        condition2 = new EventRuleCondition( Constants.CATEGORY, Constants.EQUALS_TO, "Proxy" );
         conditions.add( condition2 );
         eventRule = new TriggerRule( false, conditions, true, "Tag proxy-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
@@ -724,9 +763,9 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.APP_CONTROL_LOG_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "application", "=", "BITTORRE" );
+        condition2 = new EventRuleCondition( "application", Constants.EQUALS_TO, "BITTORRE" );
         conditions.add( condition2 );
         eventRule = new TriggerRule( false, conditions, true, "Tag bittorrent-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
@@ -736,9 +775,9 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
 
         conditions = new LinkedList<>();
-        condition1 = new EventRuleCondition( "class", "=", "*ApplicationControlLogEvent*" );
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.APP_CONTROL_LOG_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( "category", "=", "BITTORRE" );
+        condition2 = new EventRuleCondition( Constants.CATEGORY, Constants.EQUALS_TO, "BITTORRE" );
         conditions.add( condition2 );
         eventRule = new TriggerRule( false, conditions, true, "Tag bittorrent-using hosts", false, 0 );
         eventRule.setAction( TriggerRule.TriggerAction.TAG_HOST );
@@ -759,7 +798,7 @@ public class EventManagerImpl implements EventManager
         Map<String, String> emailSettings = new HashMap<>();
         emailSettings.put( "emailSubject", DefaultEmailSubject );
         emailSettings.put( "emailBody", DefaultEmailBody );
-        emailSettings.put( "emailConvert", "true");
+        emailSettings.put( "emailConvert", Constants.TRUE);
         return emailSettings;
     }
 
@@ -1245,6 +1284,43 @@ public class EventManagerImpl implements EventManager
         }
     }
 
+
+     /**
+     * Returns lastused ID on list of syslogservers provided.
+     * @param syslogServers syslogservers list to process.
+     * @return int lastUsedServerId
+     */
+    private int getLastUsedServerId(LinkedList<SyslogServer> syslogServers) {
+        int lastUsedServerId = 0;
+        if (syslogServers == null || syslogServers.size() == 0)
+            return 0;
+        for (SyslogServer obj : syslogServers) {
+            int objId = obj.getServerId();
+            if (objId == -1)
+                continue;
+            if (objId > lastUsedServerId) {
+                lastUsedServerId = objId;
+            }
+        }
+        return lastUsedServerId;
+    }
+
+
+    /**
+     * Returns filtered syslog servers based on list of server IDS provided.
+     * @param syslogServerIds list of server IDS to filter.
+     * 
+     * @return list of filtered SyslogServers
+     */
+    private LinkedList<SyslogServer> getFilteredSyslogByIDs(LinkedList<Integer> syslogServerIds ) {
+        LinkedList<SyslogServer> sysLogFilteredServers = settings.getSyslogServers().stream()
+        .filter(obj -> syslogServerIds.contains(obj.getServerId()))
+        .collect(Collectors.toCollection(LinkedList::new));
+
+        return sysLogFilteredServers;
+
+    }
+
     /**
      * Process event through syslog rules.
      * @param event LogEvent to process.
@@ -1252,8 +1328,6 @@ public class EventManagerImpl implements EventManager
     private void runSyslogRules( LogEvent event )
     {
         if ( event == null )
-            return;
-        if ( ! settings.getSyslogEnabled() )
             return;
 
         List<SyslogRule> rules = UvmContextFactory.context().eventManager().getSettings().getSyslogRules();
@@ -1264,7 +1338,7 @@ public class EventManagerImpl implements EventManager
         JSONObject jsonSendObject = event.toJSONObject();
         cleanupJsonObject( jsonSendObject );
         try{
-            jsonSendObject.put("class", event.getClass());
+            jsonSendObject.put(Constants.CLASS, event.getClass());
         }catch(Exception e){}
 
         for ( SyslogRule rule : rules ) {
@@ -1277,14 +1351,21 @@ public class EventManagerImpl implements EventManager
             }
 
             logger.debug( "syslog match: " + rule.getDescription() + " matches " + jsonObject.toString() );
-
-            event.setTag(SyslogManagerImpl.LOG_TAG_PREFIX);
-            if ( rule.getSyslog() ) {
-                try {
-                    SyslogManagerImpl.sendSyslog( event, jsonSendObject );
-                } catch (Exception exn) {
-                    logger.warn("failed to send syslog", exn);
+            LinkedList<Integer> rulesSyslogServerIDList = rule.getSyslogServers();
+            if (rulesSyslogServerIDList != null  && rulesSyslogServerIDList.size() > 0) {
+                //get syslogserver list using IDs
+                for (SyslogServer syslogServer: getFilteredSyslogByIDs(rulesSyslogServerIDList) ) {
+                    event.setTag(syslogServer.getTag());
+                    if ( rule.getSyslog() && syslogServer.isEnabled()) {
+                        try {
+                            SyslogManagerImpl.sendSyslog( event, jsonSendObject );
+                        } catch (Exception exn) {
+                            logger.warn("failed to send syslog", exn);
+                        }
+                    }
                 }
+
+
             }
         }
     }
@@ -1360,7 +1441,7 @@ public class EventManagerImpl implements EventManager
             if ( keys == null ) return null;
 
             for( String key : keys ) {
-                if ("class".equals(key))
+                if (Constants.CLASS.equals(key))
                     continue;
                 if (name.equalsIgnoreCase(key)) {
                     Object o = json.get(key);
@@ -1370,7 +1451,7 @@ public class EventManagerImpl implements EventManager
 
             for( String key : keys ) {
                 try {
-                    if ("class".equals(key))
+                    if (Constants.CLASS.equals(key))
                         continue;
                     Object o = json.get(key);
                     if ( o == null )
@@ -1430,8 +1511,10 @@ public class EventManagerImpl implements EventManager
          * Report users
          */
         App reportsApp = UvmContextFactory.context().appManager().app("reports");
-        List<String> reportsEmailAddresses = ((Reporting) reportsApp).getAlertEmailAddresses();
-        alertRecipients.addAll(reportsEmailAddresses);
+        if(reportsApp != null) {
+            List<String> reportsEmailAddresses = ((Reporting) reportsApp).getAlertEmailAddresses();
+            alertRecipients.addAll(reportsEmailAddresses);
+        }
 
         for( String emailAddress : alertRecipients){
             try {
@@ -1473,7 +1556,7 @@ public class EventManagerImpl implements EventManager
         while ( keys.hasNext() ) {
             String key = keys.next();
 
-            if ("class".equals(key)) {
+            if (Constants.CLASS.equals(key)) {
                 keys.remove();
                 continue;
             }

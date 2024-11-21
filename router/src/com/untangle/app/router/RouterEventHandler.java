@@ -6,7 +6,8 @@ package com.untangle.app.router;
 import java.net.InetAddress;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -18,7 +19,7 @@ import com.untangle.uvm.vnet.UDPNewSessionRequest;
  */
 class RouterEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(RouterEventHandler.class);
+    private final Logger logger = LogManager.getLogger(RouterEventHandler.class);
 
     /* Router App */
     private final RouterImpl app;

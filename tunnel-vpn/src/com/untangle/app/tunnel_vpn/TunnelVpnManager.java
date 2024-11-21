@@ -10,7 +10,8 @@ import java.io.FilenameFilter;
 import java.io.File;
 import java.nio.file.Files;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
@@ -22,7 +23,7 @@ import com.untangle.uvm.network.InterfaceStatus;
  */
 public class TunnelVpnManager
 {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private static final String IPTABLES_SCRIPT = System.getProperty("prefix") + "/etc/untangle/iptables-rules.d/350-tunnel-vpn";
     private static final String IMPORT_SCRIPT = System.getProperty("uvm.bin.dir") + "/tunnel-vpn-import";
@@ -221,7 +222,7 @@ public class TunnelVpnManager
             throw new RuntimeException("Failed to find available tunnel ID");
         }
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(IMPORT_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execSafe(IMPORT_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
 
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
@@ -263,7 +264,7 @@ public class TunnelVpnManager
             throw new RuntimeException("Failed to find available tunnel ID");
         }
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(VALIDATE_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execSafe(VALIDATE_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
 
         try {
             String lines[] = result.getOutput().split("\\r?\\n");

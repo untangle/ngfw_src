@@ -70,6 +70,16 @@ cite {
     overflow: visible;
 }
 
+.x-scroller-spacer {
+    transform: none !important;
+}
+
+.x-grid-item-container {
+    position: sticky !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+}
+
 .nav-item {
     display: inline-block;
     height: 40px;

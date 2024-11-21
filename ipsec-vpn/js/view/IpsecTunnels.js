@@ -62,6 +62,9 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         'pingAddress': ''
         },
 
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+
     bind: '{tunnelList}',
 
     columns: [{
@@ -284,6 +287,10 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype: 'container',
         layout: 'column',
         margin: '0 0 5 0',
+        bind: {
+            hidden: '{record.rightAny == true}',
+            disabled: '{record.rightAny == true}'
+        },
         items: [{
             xtype: 'textfield',
             bind: '{record.rightId}',
@@ -379,6 +386,10 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype: 'container',
         layout: 'column',
         margin: '0 0 5 0',
+        bind: {
+            hidden: '{record.rightAny == true}',
+            disabled: '{record.rightAny == true}'
+        },
         items: [{
             xtype:'textfield',
             bind: "{record.rightSourceIp}",
@@ -389,6 +400,10 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype: 'container',
         layout: 'column',
         margin: '0 0 5 0',
+        bind: {
+            hidden: '{record.rightAny == true}',
+            disabled: '{record.rightAny == true}'
+        },
         items: [{
             xtype: 'textfield',
             bind: {
@@ -440,6 +455,10 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype: 'container',
         layout: 'column',
         margin: '0 0 5 0',
+        bind: {
+            hidden: '{record.rightAny == true}',
+            disabled: '{record.rightAny == true}'
+        },
         items: [{
             xtype:'numberfield',
             bind: '{record.dpddelay}',
@@ -458,6 +477,10 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype: 'container',
         layout: 'column',
         margin: '0 0 5 0',
+        bind: {
+            hidden: '{record.rightAny == true}',
+            disabled: '{record.rightAny == true}'
+        },
         items: [{
             xtype:'numberfield',
             bind: '{record.dpdtimeout}',
@@ -476,6 +499,10 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         xtype: 'container',
         layout: 'column',
         margin: '0 0 5 0',
+        bind: {
+            hidden: '{record.rightAny == true}',
+            disabled: '{record.rightAny == true}'
+        },
         items: [{
             xtype: 'textfield',
             bind: '{record.pingAddress}',

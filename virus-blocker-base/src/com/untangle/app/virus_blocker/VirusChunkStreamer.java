@@ -15,7 +15,8 @@ import com.untangle.uvm.vnet.TokenStreamer;
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.Token;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Streams a file out as chunks.
@@ -24,7 +25,7 @@ public class VirusChunkStreamer implements TokenStreamer
 {
     private static final int CHUNK_SIZE = 1024;
 
-    private final Logger logger = Logger.getLogger(VirusChunkStreamer.class);
+    private final Logger logger = LogManager.getLogger(VirusChunkStreamer.class);
 
     private enum StreamState
     {

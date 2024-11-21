@@ -9,7 +9,8 @@ import java.net.InetAddress;
 import java.util.Set;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.io.FileUtils;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -32,7 +33,7 @@ public class AdminManagerImpl implements AdminManager
     private static final String KERNEL_VERSION_SCRIPT = "/bin/uname -r";
     private static final String REBOOT_COUNT_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-reboot-count.sh";
     
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private AdminSettings settings;
 
@@ -204,7 +205,8 @@ public class AdminManagerImpl implements AdminManager
 
         List<?> zshContent; // List<String>
         try {
-            zshContent = (List<?>) FileUtils.readLines(zshHistoryFile, null);
+            String encoding = null;
+            zshContent = (List<?>) FileUtils.readLines(zshHistoryFile, encoding);
         } catch (IOException e) {
             return "UNKNOWN";
         }

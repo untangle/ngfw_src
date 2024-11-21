@@ -5,7 +5,8 @@ package com.untangle.app.smtp.quarantine.store;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.quarantine.InboxIndex;
 import com.untangle.app.smtp.quarantine.InboxRecord;
@@ -18,7 +19,7 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class QuarantineStorageManager
 {
-    private static final Logger logger = Logger.getLogger(QuarantineStorageManager.class);
+    private static final Logger logger = LogManager.getLogger(QuarantineStorageManager.class);
     private static final String SUMMARY_FILE_NAME = "summary.js";
 
     /**

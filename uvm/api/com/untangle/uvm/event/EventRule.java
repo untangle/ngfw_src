@@ -11,7 +11,8 @@ import java.util.LinkedHashMap;
 
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.Load;
 
@@ -24,7 +25,7 @@ import com.untangle.uvm.util.Load;
 @SuppressWarnings("serial")
 public class EventRule implements JSONString, Serializable
 {
-    private static final Logger logger = Logger.getLogger( EventRule.class );
+    private static final Logger logger = LogManager.getLogger( EventRule.class );
 
     private static final int LOAD_STATE_CACHE_MAX_SIZE = 100;
     
@@ -66,7 +67,7 @@ public class EventRule implements JSONString, Serializable
     
     public EventRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, String description )
     {
-        this( enabled, conditions, log, description, null, null, null, null );
+        this( enabled, conditions, log, description, false, null, 60, null );
     }
 
     public List<EventRuleCondition> getConditions() { return this.conditions; }

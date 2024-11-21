@@ -7,6 +7,18 @@ Ext.define('Ung.apps.applicationcontrol.view.Applications', {
     listProperty: 'settings.protoRules.list',
     bind: '{protoRules}',
 
+    extraColumnConfig: {
+        flag: { allowBlank: false, xtype: 'checkbox' },
+        productivity: { allowBlank: false, xtype: 'numberfield' },
+        name: { xtype: 'textfield' },
+        tarpit: { xtype: 'checkbox' },
+        description: { xtype: 'textfield' },
+        block: { allowBlank: false, xtype: 'checkbox' },
+        risk: { allowBlank: false, xtype: 'numberfield' },
+        id: { allowBlank: false, xtype: 'numberfield' },
+        guid: { allowBlank: false,xtype: 'textfield' }
+    },
+
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',

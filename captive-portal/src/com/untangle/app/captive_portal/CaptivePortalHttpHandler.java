@@ -4,7 +4,8 @@
 
 package com.untangle.app.captive_portal;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.http.HttpEventHandler;
 import com.untangle.app.http.RequestLineToken;
@@ -24,7 +25,7 @@ import com.untangle.uvm.vnet.AppTCPSession;
 
 public class CaptivePortalHttpHandler extends HttpEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final CaptivePortalApp app;
 
     /**

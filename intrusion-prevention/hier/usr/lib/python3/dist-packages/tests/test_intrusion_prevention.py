@@ -11,8 +11,9 @@ import glob
 import os
 import shutil
 
+from pathlib import Path
+
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -79,6 +80,8 @@ class IntrusionPreventionTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global app, appSettings, app_id
         cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
+        if os.path.exists('/tmp/backup'):
+            cls.restore_original_files()
         app = IntrusionPreventionTests._app
         appSettings = IntrusionPreventionTests._appSettings
         app_id = cls.get_app_id()
@@ -161,13 +164,6 @@ class IntrusionPreventionTests(NGFWTestCase):
         if os.path.exists(backup_dir):
             shutil.rmtree(backup_dir)
 
-    @staticmethod
-    def compare_files(file1_lines, file2_lines):
-        flag = False
-        for i in range(len(file2_lines)):
-            if file2_lines[i] != file1_lines[i]:
-                flag = True
-        return flag
 
     def test_009_IsRunning(self):
         result = subprocess.call("ps aux | grep suricata | grep -v grep >/dev/null 2>&1", shell=True)
@@ -178,7 +174,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     @pytest.mark.slow
     def test_030_rule_add(self):
@@ -253,7 +249,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
-        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+        wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
         # Also test that it can probably reach us (we're on a 10.x network)
@@ -399,7 +395,7 @@ class IntrusionPreventionTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
-        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+        wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         iperf_avail = global_functions.verify_iperf_configuration(wan_ip)
         device_in_office = global_functions.is_in_office_network(wan_ip)
         # Also test that it can probably reach us (we're on a 10.x network)
@@ -620,7 +616,7 @@ class IntrusionPreventionTests(NGFWTestCase):
             assert len(signature_set) > 0, f"non empty signature set {file_name}"
 
     @pytest.mark.slow
-    def test_settings_changes(self):
+    def test_201_settings_changes(self):
         global app, appSettings 
         original_file_path = "/usr/share/untangle/settings/intrusion-prevention/settings_"+str(app_id)+".js"
         #Read original settings file
@@ -636,18 +632,42 @@ class IntrusionPreventionTests(NGFWTestCase):
         with open(original_file_path, "r") as updated_file:
             updated_content = updated_file.readlines()
         #Verify content of update_file and original_file should not be identical
-        is_updated = self.compare_files(original_content, updated_content)
-        assert is_updated, "Content of updated file matches original file"
+        assert original_content != updated_content, "Content of updated file matches original file"
 
-        #Restore updated configuration file to original files
-        self.restore_original_files()
-        #Restoring original settings as current settings
+
+    def test_300_flow_established_toggle(self):
+        """
+        Verify that with/without the file flag toggle, established is removed or not.
+        """
+        global app, appSettings
+        flow_established_enabled_flag_filename = "/usr/share/untangle/conf/intrusion-prevention-signatures-flow-established"
+        rules_filename = "/etc/suricata/ngfw.rules"
+        # Add "|| true" because if grep doesn't find anything, it will exit with an error code causing an exception
+        command = f"grep -v 'not_established' {rules_filename} | grep -c 'flow:.*established' || true"
+
+        # Flag enabled
+        Path(flow_established_enabled_flag_filename).touch()
+        app.setSettings(appSettings, True, True)
+        established_count = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"with {flow_established_enabled_flag_filename}, found {established_count}")
+        assert established_count > 0, "established found in signatures"
+
+        # Flag disabled (default)
+        Path(flow_established_enabled_flag_filename).unlink()
+        app.setSettings(appSettings, True, True)
+        established_count = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"without {flow_established_enabled_flag_filename}, found {established_count}")
+        assert established_count == 0, "established not found in signatures"
+        empty_flow_count = int(subprocess.check_output(f"grep -c 'flow:;' {rules_filename}|| true", shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
+        print(f"empty flow count {flow_established_enabled_flag_filename}, found {empty_flow_count}")
+        assert empty_flow_count == 0, "empty flow not found in signatures"
+
+    @classmethod
+    def final_extra_tear_down(cls):
+        # Restore original settings to return to initial settings
+        global app
+        cls.restore_original_files()
+        #Restoring default settings
         app.synchronizeSettings()
-        #Read Restored settings file
-        with open(original_file_path, "r") as restored_file:
-            restored_content = restored_file.readlines()
-        #Verify the content of restored_file and original_file is identical
-        is_restored = self.compare_files(original_content, restored_content)
-        assert not is_restored, "Content of updated file does not matches original file"
 
 test_registry.register_module("intrusion-prevention", IntrusionPreventionTests)

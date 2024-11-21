@@ -28,6 +28,10 @@ Ext.define('Ung.config.network.view.FilterRules', {
 
         emptyText: 'No Filter Rules defined'.t(),
 
+        importValidationJavaClass: true,
+
+        importValidationForComboBox: true,
+
         listProperty: 'settings.filterRules.list',
 
         emptyRow: {

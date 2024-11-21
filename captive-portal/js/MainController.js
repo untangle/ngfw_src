@@ -107,12 +107,13 @@ Ext.define('Ung.apps.captive-portal.MainController', {
             return;
         }
 
+        // Below custom page condition can be removed when all users have upgraded to v17.2 and no user is having page type - custom
         var custfile = this.getViewModel().get('settings.customFilename');
         var pagetype = vm.get('settings.pageType');
 
         if ( (pagetype == 'CUSTOM') && ((custfile == null) || (custfile.length === 0)) ) {
             Ext.MessageBox.alert('Missing Custom Captive Page'.t(),
-                'You must upload a custom captive page to use this feature.'.t());
+                'Custom captive portal has been deprecated. Switch to Basic Message or Basic Logic Configuration.'.t());
             return;
         }
 
@@ -160,45 +161,6 @@ Ext.define('Ung.apps.captive-portal.MainController', {
 
     showMissingServiceWarning: function() {
         Ext.MessageBox.alert('Service Not Installed'.t(), 'The Directory Connector application must be installed to use this feature.'.t());
-    },
-
-    uploadCustomFile: function(cmp) {
-        var form = Ext.ComponentQuery.query('form[name=upload_form]')[0];
-        var file = Ext.ComponentQuery.query('textfield[name=upload_file]')[0].value;
-        if ( file == null || file.length === 0 ) {
-            Ext.MessageBox.alert('Select File'.t(), 'Please choose a file to upload.'.t());
-            return;
-            }
-        form.submit({
-            url: "upload",
-            success: Ext.bind(function( form, action ) {
-                Ext.MessageBox.alert('Custom Page Upload Success'.t(), action.result.msg);
-                this.getViewModel().set('settings.customFilename', action.result.msg);
-                this.setSettings();
-            }, this),
-            failure: Ext.bind(function( form, action ) {
-                Ext.MessageBox.alert('Custom Page Upload Failure'.t(), action.result.msg);
-            }, this)
-        });
-    },
-
-    removeCustomFile: function(cmp) {
-        var form = Ext.ComponentQuery.query('form[name=remove_form]')[0];
-        var file = Ext.ComponentQuery.query('textfield[name=custom_file]')[0].value;
-        if ( file == null || file.length === 0 ) {
-            return;
-            }
-        form.submit({
-            url: "upload",
-            success: Ext.bind(function( form, action ) {
-                Ext.MessageBox.alert('Custom Page Remove Success'.t(), action.result.msg);
-                this.getViewModel().set('settings.customFilename', null);
-                this.setSettings();
-            }, this),
-            failure: Ext.bind(function( form, action ) {
-                Ext.MessageBox.alert('Custom Page Remove Failure'.t(), action.result.msg);
-            }, this)
-        });
     },
 
     logoutUser: function(view, row, col, item, e, record) {

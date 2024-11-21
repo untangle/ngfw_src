@@ -18,13 +18,15 @@ import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppManagerSettings;
 import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.PolicyManager;
+import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
@@ -45,7 +47,7 @@ public class AppManagerImpl implements AppManager
     private static HookCallback settingsChangedHook;
     private boolean lastWizardComplete = false;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Stores a map of all currently loaded apps from their appId to the App
@@ -1149,6 +1151,16 @@ public class AppManagerImpl implements AppManager
                 {
                     String name = app.getAppProperties().getName();
                     Long id = app.getAppSettings().getId();
+
+                    boolean isLicenseValid = UvmContextFactory.context().licenseManager().isLicenseValid(name);
+                    boolean isStateInconsistent = !((AppBase) app).getRunState().equals(((AppBase) app).getAppSettings().getTargetState());
+
+                    if(isLicenseValid && isStateInconsistent) {
+                        if(app.getAppSettings().getTargetState().equals(AppState.RUNNING)){
+                            ((AppBase) app).syncStateForValidLicense();
+                        }
+
+                    }
 
                     if (!UvmContextFactory.context().licenseManager().isLicenseValid(name)) {
 

@@ -5,7 +5,9 @@
 package com.untangle.app.threat_prevention;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.BufferUnderflowException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
@@ -21,7 +23,9 @@ import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import com.untangle.app.http.HttpUtility;
 
 /**
  * Extracts the SNI information from HTTPS ClientHello messages and does block
@@ -32,7 +36,7 @@ import org.apache.log4j.Logger;
  */
 public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private ThreatPreventionApp app;
 
     // these are used while extracting the SNI from the SSL ClientHello packet
@@ -149,7 +153,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 
         // scan the buffer for the SNI hostname
         try {
-            domain = extractSNIhostname(buff.duplicate());
+            domain = HttpUtility.extractSniHostname(buff.duplicate());
         }
 
         // on underflow exception we stuff the partial packet into a buffer
@@ -248,13 +252,14 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             logger.debug("Using existing requestLine: " + requestLine.toString());
         }
 
+        String encodedDomain = URLEncoder.encode(domain, StandardCharsets.UTF_8);
         URI fakeUri;
         try {
             fakeUri = new URI("/");
             /**
              * Test that https://domain/ is a valid URL
              */
-            URI uri = new URI("https://" + domain + "/");
+            URI uri = new URI("https://" + encodedDomain + "/");
         } catch (Exception e) {
             if (e.getMessage().contains("Illegal character")) {
                 logger.error("Could not parse (illegal character): " + domain);
@@ -308,7 +313,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         evt = (HttpRequestEvent) sess.globalAttachment(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT);
 
         if (evt == null) {
-            evt = new HttpRequestEvent(requestLine, domain, null, 0);
+            evt = new HttpRequestEvent(requestLine, encodedDomain, null, 0);
             requestLine.setHttpRequestEvent(evt);
             this.app.logEvent(evt);
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT, evt);
@@ -318,10 +323,10 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         }
 
         // attach the hostname we extracted to the session
-        sess.globalAttach(AppSession.KEY_HTTP_HOSTNAME, domain);
+        sess.globalAttach(AppSession.KEY_HTTP_HOSTNAME, encodedDomain);
 
         HeaderToken h = new HeaderToken();
-        h.addField("host", domain);
+        h.addField("host", encodedDomain);
 
         // pass the info to the decision engine to see if we should block
         HttpRedirect redirect = app.getDecisionEngine().checkRequest(sess, sess.getClientAddr(), 443, rlt, h);
@@ -349,127 +354,5 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         array[0] = buff;
         sess.sendDataToServer(array);
         return;
-    }
-
-    /**
-     * Extract the SNI hostname from a ClientHello message. We don't bother
-     * checking the buffer position or length on much of the stuff here since
-     * the caller uses the buffer underflow exception to know when it needs to
-     * wait for more data when a full packet has not yet been received.
-     * 
-     * @param data
-     * @return The SNI hostname if found, otherwise null
-     * @throws Exception
-     */
-    public String extractSNIhostname(ByteBuffer data) throws Exception
-    {
-        int counter = 0;
-        int pos;
-
-        logger.debug("Searching for SNI in " + data.toString());
-
-        // make sure we have a TLS handshake message
-        int recordType = Math.abs(data.get());
-
-        if (recordType != TLS_HANDSHAKE) {
-            logger.debug("First byte is not TLS Handshake signature");
-            return (null);
-        }
-
-        int sslVersion = data.getShort();
-        int recLength = Math.abs(data.getShort());
-
-        // make sure we have a ClientHello message
-        int shakeType = Math.abs(data.get());
-
-        if (shakeType != CLIENT_HELLO) {
-            logger.debug("Handshake type is not ClientHello");
-            return (null);
-        }
-
-        // extract all the handshake data so we can get to the extensions
-        int messHilen = data.get();
-        int messLolen = data.getShort();
-        int clientVersion = data.getShort();
-        int clientTime = data.getInt();
-
-        // skip over the fixed size client random data 
-        if (data.remaining() < 28) throw new BufferUnderflowException();
-        pos = data.position();
-        data.position(pos + 28);
-
-        // skip over the variable size session id data
-        int sessionLength = Math.abs(data.get());
-        if (sessionLength > 0) {
-            if (data.remaining() < sessionLength) throw new BufferUnderflowException();
-            pos = data.position();
-            data.position(pos + sessionLength);
-        }
-
-        // skip over the variable size cipher suites data
-        int cipherLength = Math.abs(data.getShort());
-        if (cipherLength > 0) {
-            if (data.remaining() < cipherLength) throw new BufferUnderflowException();
-            pos = data.position();
-            data.position(pos + cipherLength);
-        }
-
-        // skip over the variable size compression methods data
-        int compLength = Math.abs(data.get());
-        if (compLength > 0) {
-            if (data.remaining() < compLength) throw new BufferUnderflowException();
-            pos = data.position();
-            data.position(pos + compLength);
-        }
-
-        // if the position equals recLength plus 5 we know this is the end
-        // of the packet and thus there are no extensions - will normally
-        // be equal but we include the greater than just to be safe
-        if (data.position() >= (recLength + 5)) {
-            logger.debug("No extensions found in TLS handshake message");
-            return (null);
-        }
-
-        // get the total size of extension data block
-        int extensionLength = Math.abs(data.getShort());
-
-        while (counter < extensionLength) {
-            int extType = Math.abs(data.getShort());
-            int extSize = Math.abs(data.getShort());
-
-            // if not server name extension adjust the offset to the next
-            // extension record and continue
-            if (extType != SERVER_NAME) {
-                data.position(data.position() + extSize);
-                counter += (extSize + 4);
-                continue;
-            }
-
-            // we read the name list info by passing the offset location so we
-            // don't modify the position which makes it easier to skip over the
-            // whole extension if we bail out during name extraction
-            int listLength = Math.abs(data.getShort(data.position()));
-            int nameType = Math.abs(data.get(data.position() + 2));
-            int nameLength = Math.abs(data.getShort(data.position() + 3));
-
-            // if we find a name type we don't understand we just abandon
-            // processing the rest of the extension
-            if (nameType != HOST_NAME) {
-                data.position(data.position() + extSize);
-                counter += (extSize + 4);
-                continue;
-            }
-
-            // found a valid host name so adjust the position to skip over
-            // the list length and name type info we directly accessed above
-            data.position(data.position() + 5);
-            byte[] hostData = new byte[nameLength];
-            data.get(hostData, 0, nameLength);
-            String hostName = new String(hostData);
-            logger.debug("Extracted SNI hostname = " + hostName);
-            return hostName.toLowerCase();
-        }
-
-        return (null);
     }
 }

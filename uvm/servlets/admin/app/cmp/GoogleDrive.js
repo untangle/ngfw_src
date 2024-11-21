@@ -9,6 +9,11 @@ Ext.define('Ung.cmp.GoogleDrive', {
         }
         return googleDriveConfigured;
     },
+    getRootDirectory: function () {
+        var googleManager = Rpc.directData('rpc.UvmContext.googleManager');
+            rootDirectory = googleManager.getAppSpecificGoogleDrivePath(null);
+        return rootDirectory;
+    },
     configure: function (policyId) {
         Ung.app.redirectTo('#config/administration/google');
     }

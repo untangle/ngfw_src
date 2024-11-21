@@ -183,6 +183,62 @@ Ext.define('Ung.cmp.Grid', {
             // If you want to override the styling, just add an emptyText member to the defined viewConfig
             viewConfig.emptyText = '<p style="text-align: center; margin: 0; line-height: 2;"><i class="fa fa-info-circle fa-2x"></i> <br/>' + this.emptyText + '</p>';
         }
+        if(this.importValidationJavaClass !== undefined){
+            viewConfig.importValidationJavaClass = this.importValidationJavaClass;
+        }else{
+            viewConfig.importValidationJavaClass = false;
+        }
+        if(this.importValidationForAlertEvents !== undefined){
+            viewConfig.importValidationForAlertEvents = this.importValidationForAlertEvents;
+        }else{
+            viewConfig.importValidationForAlertEvents = false;
+        }
+        if(this.importValidationForComboBox !== undefined){
+            viewConfig.importValidationForComboBox = this.importValidationForComboBox;
+        }else{
+            viewConfig.importValidationForComboBox = false;
+        }
+        if(this.importValidatorParams !== undefined){
+            viewConfig.importValidatorParams = this.importValidatorParams;
+        }else{
+            viewConfig.importValidatorParams = null;
+        }
+        if(this.importValidationForFieldSet !== undefined){
+            viewConfig.importValidationForFieldSet = this.importValidationForFieldSet;
+        }else{
+            viewConfig.importValidationForFieldSet = false;
+        }
+        if(this.nestedFieldsArr !== undefined){
+            viewConfig.nestedFieldsArr = this.nestedFieldsArr;
+        }else{
+            viewConfig.nestedFieldsArr = {};
+        }
+        if(this.extraColumnConfig !== undefined){
+            viewConfig.extraColumnConfig = this.extraColumnConfig;
+        }else{
+            viewConfig.extraColumnConfig = null;
+        }
+        if(this.importDirectComboValues !== undefined){
+            viewConfig.importDirectComboValues = this.importDirectComboValues;
+        }else{
+            viewConfig.importDirectComboValues = [];
+        }
+        if(this.checkIfAlreadyPresent !== undefined){
+            viewConfig.checkIfAlreadyPresent = this.checkIfAlreadyPresent;
+        }else{
+            viewConfig.checkIfAlreadyPresent = {};
+        }
+        if(this.extraValueCheckForCombo !== undefined){
+            viewConfig.extraValueCheckForCombo = this.extraValueCheckForCombo;
+        }else{
+            viewConfig.extraValueCheckForCombo = {};
+        }
+        if(this.skipConditionsCheck !== undefined){
+            viewConfig.skipConditionsCheck = this.skipConditionsCheck;
+        }else{
+            viewConfig.skipConditionsCheck = false;
+        }
+
         if( this.viewConfig ){
             Ext.apply( viewConfig, this.viewConfig );
         }

@@ -22,12 +22,14 @@ import java.io.FileOutputStream;
 import java.io.BufferedReader;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.OAuthDomain;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.app.captive_portal.CaptivePortalSettings.AuthenticationType;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.SessionMatcher;
@@ -65,7 +67,7 @@ public class CaptivePortalApp extends AppBase
         SESSALLOW, SESSBLOCK, SESSQUERY, AUTHGOOD, AUTHFAIL
     }
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private final Integer policyId = getAppSettings().getPolicyId();
 
     private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-create";
@@ -319,6 +321,10 @@ public class CaptivePortalApp extends AppBase
      */
     private void saveAppSettings(CaptivePortalSettings argSettings)
     {
+        //Modify settings to ANY_OAUTH in case Facebook is set
+        if (AuthenticationType.FACEBOOK.equals(argSettings.getAuthenticationType())) {
+            argSettings.setAuthenticationType(AuthenticationType.ANY_OAUTH);
+        }
         // set a unique id for each capture rule
         int idx = this.getAppSettings().getPolicyId().intValue() * 100000;
         for (CaptureRule rule : argSettings.getCaptureRules())
@@ -529,6 +535,9 @@ public class CaptivePortalApp extends AppBase
             // to the common apply function
             if (readSettings.getSecretKey() == null) {
                 initializeCookieKey(readSettings);
+            }
+            //Save Settings
+            if (readSettings.getSecretKey() == null || AuthenticationType.FACEBOOK.equals(readSettings.getAuthenticationType())) {
                 saveAppSettings(readSettings);
             }
             applyAppSettings(readSettings);
@@ -1381,9 +1390,9 @@ public class CaptivePortalApp extends AppBase
              * expect so clean up any existing custom page that may already
              * exist and extract the file into our custom directory
              */
-            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
-            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
-            UvmContextFactory.context().execManager().exec("unzip -o " + CAPTURE_TEMPORARY_UPLOAD + " -d " + customPath);
+            UvmContextFactory.context().execManager().execSafe(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().execSafe(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().execSafe("unzip -o " + CAPTURE_TEMPORARY_UPLOAD + " -d " + customPath);
 
             tempFile.delete();
             logger.debug("Custom zip uploaded to: " + customPath);
@@ -1422,8 +1431,8 @@ public class CaptivePortalApp extends AppBase
             String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + argument);
 
             // use our existing remove and create scripts to wipe any existing custom page
-            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
-            UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().execSafe(CAPTURE_CUSTOM_REMOVE_SCRIPT + " " + customPath);
+            UvmContextFactory.context().execManager().execSafe(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
 
             logger.debug("Custom zip removed from: " + customPath);
             return new ExecManagerResult(0, "The custom captive portal page has been removed");

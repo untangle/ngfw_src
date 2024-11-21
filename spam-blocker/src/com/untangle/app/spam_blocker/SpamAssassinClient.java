@@ -21,7 +21,8 @@ import java.util.regex.Pattern;
 
 import com.untangle.app.spam_blocker.ReportItem;
 import com.untangle.app.spam_blocker.SpamReport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Implementation of a spam asssasin client
@@ -35,7 +36,7 @@ public final class SpamAssassinClient implements Runnable
     private boolean done = false;
     private volatile SpamReport spamReport;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public final static String SPAMD_DEFHOST = "127.0.0.1"; // default host
     public final static int SPAMD_DEFPORT = 783; // default port

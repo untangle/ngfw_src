@@ -16,10 +16,7 @@ import uvm.i18n_helper
 
 from urllib.parse import urlparse
 
-from uvm.settings_reader import get_app_settings_item
-from uvm.settings_reader import get_appid_settings
-from uvm.settings_reader import get_app_settings
-from uvm.settings_reader import get_settings_item
+from uvm import settings_reader
 
 _ = uvm.i18n_helper.get_translation('untangle').lgettext
 
@@ -31,11 +28,6 @@ OAUTH_PROVIDERS = {
         "platform": "365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com",
         "method": "googleLogin",
         "uri": "https://accounts.google.com/o/oauth2/v2/auth?client_id=365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.GoogleState.$"
-    },
-    "FACEBOOK": {
-        "platform": "1840471182948119",
-        "method": "facebookLogin",
-        "uri": "https://www.facebook.com/v2.9/dialog/oauth?client_id=1840471182948119&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.FacebookState.$"
     },
     "MICROSOFT": {
         "platform": "f8285e96-b240-4036-8ea5-f37cf6b981bb",
@@ -230,7 +222,7 @@ def index(req):
     # found a custom.py file so load it up, grab the index function reference
     # and call the index function to generate the capture page
     if (os.path.exists(rawpath + "custom.py")):
-        cust = import_file(rawpath + "custom.py")
+        cust = _import_file(rawpath + "custom.py")
         if not cust:
             raise Exception("Unable to locate or import custom.py")
         func = getattr(cust,"index")
@@ -489,7 +481,6 @@ def generate_page(req,captureSettings,args,extra='',page=None,template_name=None
         target = f"{schema}{req.hostname}{port}/capture/handler.py/index?nonce={args['NONCE']}&method={args['METHOD']}&appid={args['APPID']}&host={args['HOST']}&uri={args['URI']}"
 
         page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE"))
-        page = replace_marker(page,'$.FacebookState.$', urllib.parse.quote(target + "&authmode=FACEBOOK"))
         page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT"))
 
         page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.untangle.com/callback.php"))
@@ -563,20 +554,20 @@ def load_capture_settings(req,appid=None):
     companyName = 'Arista'
 
     # if there is an OEM name configured we use that instead of our company name
-    oemName = get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
+    oemName = settings_reader.get_settings_item("/usr/share/untangle/conf/oem.js","oemName")
     if (oemName != None):
         companyName = oemName
 
     # if there is a company name in the branding manager it wins over everything else
-    brandco = get_app_settings_item('branding-manager','companyName')
+    brandco = settings_reader.get_app_settings_item('branding-manager','companyName')
     if (brandco != None):
         companyName = brandco
 
     try:
         if (appid == None):
-            captureSettings = get_app_settings('captive-portal')
+            captureSettings = settings_reader.get_app_settings('captive-portal')
         else:
-            captureSettings = get_appid_settings(int(appid))
+            captureSettings = settings_reader.get_appid_settings(int(appid))
     except Exception as e:
         req.log_error("handler.py: Exception loading settings: %s" % str(e))
 
@@ -657,7 +648,7 @@ def custom_handler(req):
     webpath = "/capture/custom_" + str(args['APPID']) + "/"
 
     # import the custom.py
-    cust = import_file(rawpath + "custom")
+    cust = _import_file(rawpath + "custom")
     if not cust:
         raise Exception("Unable to locate or import custom.py")
 
@@ -673,7 +664,7 @@ def custom_handler(req):
     return(page)
 
 #-----------------------------------------------------------------------------
-def import_file(filename):
+def _import_file(filename):
     (path, name) = os.path.split(filename)
     (name, ext) = os.path.splitext(name)
     (file, filename, data) = imp.find_module(name, [path])

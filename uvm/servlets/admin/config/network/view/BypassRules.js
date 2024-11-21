@@ -18,6 +18,20 @@ Ext.define('Ung.config.network.view.BypassRules', {
 
     items: [{
         xtype: 'ungrid',
+        itemId: 'bypass-rules-grid',
+        srcAddrIsLanCheck: true,
+        controller: 'unconfigbypassrulesgridcontroller',
+
+        dockedItems: [{
+            xtype: 'container',
+            padding: '8 5',
+            style: { fontSize: '12px', background: '#DADADA'},
+            html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'One or more rules have the condition of the source address a LAN address.'.t(),
+            hidden: true,
+            bind: {
+                hidden: '{!warnBypassRuleSrcAddrIsLan}'
+            }
+        }],
 
         tbar: ['@add', '->', '@import', '@export'],
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
@@ -27,6 +41,10 @@ Ext.define('Ung.config.network.view.BypassRules', {
         emptyText: 'No Bypass Rules defined'.t(),
 
         listProperty: 'settings.bypassRules.list',
+
+        importValidationJavaClass: true,
+
+        importValidationForComboBox: true,
 
         emptyRow: {
             ruleId: -1,
@@ -53,6 +71,7 @@ Ext.define('Ung.config.network.view.BypassRules', {
             dataIndex: 'bypass',
             width: Renderer.booleanWidth
         }],
+        editorXtype: 'ung.cmp.unconfigbypassrulesrecordeditor',
         editorFields: [
             Field.enableRule(),
             Field.description,

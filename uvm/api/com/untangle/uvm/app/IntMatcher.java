@@ -7,7 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -46,7 +47,7 @@ public class IntMatcher implements java.io.Serializable
         MatcherCache = new ConcurrentHashMap<>();
     }
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     public String matcher;
 

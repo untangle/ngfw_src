@@ -16,7 +16,8 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.FileVisitOption;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The plugin manager manages the dynamically loadable class files "plugins"
@@ -24,7 +25,7 @@ import org.apache.log4j.Logger;
  */
 public class PluginManagerImpl implements PluginManager
 {
-    private final Logger logger = Logger.getLogger(PluginManagerImpl.class);
+    private final Logger logger = LogManager.getLogger(PluginManagerImpl.class);
 
     /**
      * The singleton instance

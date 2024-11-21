@@ -23,7 +23,8 @@ import javax.net.ssl.SSLException;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The unparser handles converting plaint-text SSL traffic back to SSL traffic,
@@ -38,7 +39,7 @@ import org.apache.log4j.Logger;
  */
 public class SslInspectorUnparserEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final SslInspectorApp app;
     private final boolean clientSide;

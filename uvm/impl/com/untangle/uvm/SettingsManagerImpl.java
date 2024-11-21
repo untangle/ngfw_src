@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,13 +23,18 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.log4j.Logger;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.util.Timeout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
 import org.jabsorb.serializer.UnmarshallException;
@@ -36,16 +42,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.untangle.uvm.util.IOUtil;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SettingsChangesEvent;
 import com.untangle.uvm.app.HostnameLookup;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * SettingsManager is the manager for all settings files
  */
 public class SettingsManagerImpl implements SettingsManager
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Valid characters for settings file names
@@ -120,19 +125,24 @@ public class SettingsManagerImpl implements SettingsManager
      * @return The object that was loaded or null if an object was not loaded.
      * @throws SettingsException
      */
+    @SuppressWarnings("deprecation")
     public <T> T loadUrl( Class<T> clz, String urlStr ) throws SettingsException
     {
         InputStream is = null;
-
         CloseableHttpResponse response = null;
         RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(90000)
-            .setSocketTimeout(90000)
-            .setConnectionRequestTimeout(90000)
-            .build();
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(90000))
+                .build();
+
+        PoolingHttpClientConnectionManager poolingConnManager = new PoolingHttpClientConnectionManager();
+        poolingConnManager.setDefaultConnectionConfig(ConnectionConfig.custom()
+                .setConnectTimeout(Timeout.ofMilliseconds(90000))
+                .setSocketTimeout(Timeout.ofMilliseconds(90000))
+                .build());
         CloseableHttpClient httpClient = HttpClients.custom()
-            .setDefaultRequestConfig(requestConfig)
-            .build();
+                .setDefaultRequestConfig(requestConfig)
+                .setConnectionManager(poolingConnManager)
+                .build();
         
         try {
             URL url = new URL(urlStr);
@@ -306,6 +316,37 @@ public class SettingsManagerImpl implements SettingsManager
         _saveImpl( fileName, inputFilename, saveVersion, true );
     }
 
+     /**
+     *Retrieve  username and hostname for reports app
+     *  @param  appName for which data is fetched
+     *
+     *  @return A string with comma separated username and hostname
+     */
+    public String getUserAndHostNameInfo(String appName) {
+
+        String username = null;
+        String hostname = null;
+        InheritableThreadLocal<HttpServletRequest> inheritableThreadLocal = UvmContextImpl.getInstance().threadRequest();
+        if((inheritableThreadLocal != null) &&
+           (inheritableThreadLocal.get() != null)){
+            username = inheritableThreadLocal.get().getRemoteUser();
+            HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().appManager().app(appName);
+            try {
+                hostname = inheritableThreadLocal.get().getRemoteAddr();
+                if( reports != null && hostname != null){
+                    hostname = reports.lookupHostname(InetAddress.getByName(inheritableThreadLocal.get().getRemoteAddr()));
+                }
+                if( hostname == null ){
+                    hostname = inheritableThreadLocal.get().getRemoteAddr();
+                }
+                if (hostname != null  & username != null) return username + "," +hostname;
+            } catch(UnknownHostException e) {
+                logger.warn("Host not found: ", e);
+            }
+        }
+        return null;
+    }
+
     /**
      * Set the serializer used for settings
      * @param serializer
@@ -330,7 +371,7 @@ public class SettingsManagerImpl implements SettingsManager
      * @param clz the class
      * @param fileName the filename to load
      * @return The loaded value
-     * @throws SettingSException
+     * @throws SettingsException
      */
     private <T> T _loadImpl( Class<T> clz, String fileName ) throws SettingsException
     {
@@ -527,17 +568,17 @@ public class SettingsManagerImpl implements SettingsManager
         
         if ( prettyFormat ) {
             String formatCmd = new String(System.getProperty("uvm.bin.dir") + "/" + "ut-format-json" + " " + outputFileName );
-            UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.DEBUG);
+            UvmContextImpl.context().execManager().setLevel(Level.DEBUG);
             UvmContextImpl.context().execManager().execResult(formatCmd);
-            UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.INFO);
+            UvmContextImpl.context().execManager().setLevel(Level.INFO);
         }
 
         /**
          * Call sync to force save to filesystem
          */
-        UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.DEBUG);
+        UvmContextImpl.context().execManager().setLevel(Level.DEBUG);
         UvmContextImpl.context().execManager().execResult("sync");
-        UvmContextImpl.context().execManager().setLevel(org.apache.log4j.Level.INFO);
+        UvmContextImpl.context().execManager().setLevel(Level.INFO);
         
         if ( saveVersion ) {
             String[] chops = outputFileName.split(File.separator);
@@ -551,16 +592,12 @@ public class SettingsManagerImpl implements SettingsManager
             
                 String username = null;
                 String hostname = null;
-                if((UvmContextImpl.getInstance().threadRequest() != null) &&
-                   (UvmContextImpl.getInstance().threadRequest().get() != null)){
-                    username = UvmContextImpl.getInstance().threadRequest().get().getRemoteUser();
-                    HostnameLookup reports = (HostnameLookup) UvmContextFactory.context().appManager().app("reports");
-                    hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
-                    if( reports != null && hostname != null){
-                        hostname = reports.lookupHostname(InetAddress.getByName(UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr()));
-                    }
-                    if( hostname == null ){
-                        hostname = UvmContextImpl.getInstance().threadRequest().get().getRemoteAddr();
+                String userHostNameInfo = getUserAndHostNameInfo("reports");
+                if (userHostNameInfo != null) {
+                    String infoArray[] = userHostNameInfo.split(",");
+                    if (infoArray != null & infoArray.length == 2) {
+                        username = infoArray[0];
+                        hostname = infoArray[1];
                     }
                 }
                 if (!outputFileName.contains(LICENSE_FILE_NAME)) {

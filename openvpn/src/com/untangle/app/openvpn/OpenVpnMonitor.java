@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.sql.Timestamp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTableEntry;
@@ -64,7 +65,7 @@ class OpenVpnMonitor implements Runnable
     private static final int START_INDEX = 8;
     private static final int TOTAL_INDEX = 13;
 
-    protected static final Logger logger = Logger.getLogger(OpenVpnMonitor.class);
+    protected static final Logger logger = LogManager.getLogger(OpenVpnMonitor.class);
 
     /* Maps the active client names to their current state and stats */
     private Map<String, ClientState> activeMap = null;

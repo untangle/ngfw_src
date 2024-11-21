@@ -11,10 +11,13 @@ import os
 import re
 import requests
 import runtests
+import subprocess
 import sys
 import unittest
 import pytest
 import datetime
+import urllib.parse
+import json
 
 from io import BytesIO as BytesIO
 from datetime import datetime
@@ -23,7 +26,6 @@ from datetime import timedelta
 from html.parser import HTMLParser
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.overrides as overrides
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
@@ -62,11 +64,11 @@ class ContentIdParser(HTMLParser):
 def configure_mail_relay():
     global orig_mailsettings, test_email_address
     test_email_address = global_functions.random_email()
-    orig_mailsettings = uvmContext.mailSender().getSettings()
+    orig_mailsettings = global_functions.uvmContext.mailSender().getSettings()
     new_mailsettings = copy.deepcopy(orig_mailsettings)
     new_mailsettings['sendMethod'] = 'DIRECT'
     new_mailsettings['fromAddress'] = test_email_address
-    uvmContext.mailSender().setSettings(new_mailsettings)
+    global_functions.uvmContext.mailSender().setSettings(new_mailsettings)
 
 
 def create_firewall_rule( conditionType, value, blocked=True ):
@@ -228,6 +230,8 @@ Sql_field_injects = overrides.get(
             "character-casting": "chr(97)",
             "system-catalog": "from pg_catalog",
             "always-true": "or 1=1",
+            "lo_prefix_tables": "admin_logins RIGHT JOIN (SELECT lo_export('123456', '/var/lib/postgresql/custom.py') AS dummy_column) AS dummy ON 1 = 1 ",
+
         },
         "parameters": {
             "ReportEntry":{
@@ -803,9 +807,9 @@ class ReportsTests(NGFWTestCase):
         reportSettings = cls._app.getSettings()
         orig_settings = copy.deepcopy(reportSettings)
 
-        if (uvmContext.appManager().isInstantiated(cls.webAppName())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.webAppName())):
             raise Exception('app %s already instantiated' % cls.webAppName())
-        web_app = uvmContext.appManager().instantiate(cls.webAppName(), default_policy_id)
+        web_app = global_functions.uvmContext.appManager().instantiate(cls.webAppName(), default_policy_id)
         # Skip checking relaying is possible if we have determined it as true on previous test.
         try:
             can_relay = global_functions.send_test_email()
@@ -814,7 +818,7 @@ class ReportsTests(NGFWTestCase):
 
         if can_syslog == None:
             can_syslog = False
-            wan_IP = uvmContext.networkManager().getFirstWanAddress()
+            wan_IP = global_functions.uvmContext.networkManager().getFirstWanAddress()
             syslog_server_host = global_functions.find_syslog_server(wan_IP)
             if syslog_server_host:
                 portResult = remote_control.run_command("sudo lsof -i :514", host=syslog_server_host)
@@ -827,12 +831,12 @@ class ReportsTests(NGFWTestCase):
         assert (result == 0)
     
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
         
     # Test that the database can be reinitialized (deleted then initialized) by checking 
     # that all of the tables are present before and after
     def test_020_reinitialize_database(self):
-        reports_manager = uvmContext.appManager().app("reports").getReportsManager()
+        reports_manager = global_functions.uvmContext.appManager().app("reports").getReportsManager()
         pre_reinit_tables = reports_manager.getTables()
         print(pre_reinit_tables)
         
@@ -842,17 +846,22 @@ class ReportsTests(NGFWTestCase):
         
         assert(len(pre_reinit_tables) == len(post_reinit_tables))
         assert(pre_reinit_tables == post_reinit_tables)
+        # Verify delete all reports data operation event is generated.
+        events = global_functions.get_events("Administration",'All Operations',None,5)
+        found = global_functions.check_events( events.get('list'), 5,
+                                              "operation", "delete all reports data" )
+        assert(found)
 
     def test_040_remote_syslog(self):
         if (not can_syslog):
             raise unittest.SkipTest('Unable to syslog through ' + syslog_server_host)
 
         firewall_app = None
-        if (uvmContext.appManager().isInstantiated("firewall")):
+        if (global_functions.uvmContext.appManager().isInstantiated("firewall")):
             print("App %s already installed" % "firewall")
-            firewall_app = uvmContext.appManager().app("firewall")
+            firewall_app = global_functions.uvmContext.appManager().app("firewall")
         else:
-            firewall_app = uvmContext.appManager().instantiate("firewall", default_policy_id)
+            firewall_app = global_functions.uvmContext.appManager().instantiate("firewall", default_policy_id)
 
         # Install firewall rule to generate syslog events
         rules = firewall_app.getRules()
@@ -865,12 +874,12 @@ class ReportsTests(NGFWTestCase):
                 targetRuleId = rule['ruleId']
                 break
         # Setup syslog to send events to syslog host in /config/events/syslog
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         syslogSettings["syslogEnabled"] = True
         syslogSettings["syslogPort"] = 514
         syslogSettings["syslogProtocol"] = "UDP"
         syslogSettings["syslogHost"] = syslog_server_host
-        uvmContext.eventManager().setSettings( syslogSettings )
+        global_functions.uvmContext.eventManager().setSettings( syslogSettings )
 
         # create some traffic (blocked by firewall and thus create a syslog event)
         exactly_now = datetime.now()
@@ -890,7 +899,7 @@ class ReportsTests(NGFWTestCase):
 
         # remove firewall
         if firewall_app != None:
-            uvmContext.appManager().destroy( firewall_app.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( firewall_app.getAppSettings()["id"] )
         firewall_app = None
         
         # parse the output and look for a rule that matches the expected values
@@ -928,11 +937,148 @@ class ReportsTests(NGFWTestCase):
             time.sleep(2)
 
         # Disable syslog
-        syslogSettings = uvmContext.eventManager().getSettings()
+        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         syslogSettings["syslogEnabled"] = False
-        uvmContext.eventManager().setSettings( syslogSettings )
+        global_functions.uvmContext.eventManager().setSettings( syslogSettings )
             
         assert(found_count == num_string_find)
+
+    # Test Case to Verify the Java Unmarshalling Vulnerability (NGFW-14707)
+    # This vulnerability includes the following two Proofs of Concept (POCs):
+    # 1. Adding a New User to the Local Directory by Abusing Java Unmarshalling
+    #    - Previously, the ability to update beans also impacted the radius server.
+    # 2. Stored XSS by Abusing LanguageManagerImpl and Forcing the Application to Download a Language Pack over HTTP
+    # 
+    # After applying the fix, the /reports/csv API call should no longer accept invalid beans.
+    def test_041_report_csv_vulnerability_via_report_user(self):
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=False))  # password = passwd
+        print(test_email_address)
+        self._app.setSettings(settings)
+        adminURL = global_functions.get_http_url()
+        # Login to reports through report user
+        url_login = adminURL + 'auth/login?url=/reports&realm=Reports&username=' + test_email_address + "&password=passwd"
+        # Send POST request to login and obtain cookies for report user
+        response_login = requests.post(url_login)
+        if response_login.status_code == 200:            
+            # Initialize a variable to store the session cookie value for subsequent reports/csv call
+            session_cookie_value = None
+            # fetch the session cookie for subsequent reports/csv call
+            for cookie in response_login.cookies:
+                if cookie.name == 'session-fc43ad1f':
+                    session_cookie_value = f"{cookie.name}={cookie.value}"
+                    break
+            # Extract auth cookie from previous request headers to authenticate subsequent reports/csv call
+            auth_cookie = response_login.request.headers.get('Cookie')
+
+        #invalid bean argument with LocalDirectoryImpl
+        invalid_arg2_with_localDirectory_bean = {"javaClass": "com.untangle.uvm.LocalDirectoryImpl", "users": {"javaClass": "java.util.LinkedList", "list": [{"firstName": "khush", "lastName": "te9999jjt", "password": "", "passwordShaHash": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", "javaClass": "com.untangle.uvm.LocalDirectoryUser", "expirationTime": 0, "passwordBase64Hash": "dGVzdA==", "passwordMd5Hash": "098f6bcd4621d373cade4e832627b4f6", "mfaEnabled": False, "email": "te@gmail.com", "twofactorSecretKey": "", "username": "test", "localEmpty": False, "localExpires": {"javaClass": "java.util.Date", "time": 1720107932503}, "localForever": True, "_id": "extModel916-1"}, {"username": "khush\" Injection:", "firstName": "khush", "lastName": "khush", "email": "khush@gmail.com", "password": "", "passwordBase64Hash": "YW1tYW1h", "twofactorSecretKey": "", "localExpires": {"javaClass": "java.util.Date", "time": 1720107817551}, "localForever": True, "localEmpty": True, "mfaEnabled": False, "expirationTime": 0, "javaClass": "com.untangle.uvm.LocalDirectoryUser", "markedForDelete": False, "markedForNew": True, "_id": "Ung.model.Rule-2"}]}}
+        #invalid bean argument with LanguageManagerImpl
+        invalid_arg2_with_languageManager_bean = {"javaClass":"com.untangle.uvm.LanguageManagerImpl","languageSettings":{"overrideDateFmt": "","overrideTimestampFmt": "","lastSynchronized": 1720230150449,"overrideDecimalSep": "","javaClass": "com.untangle.uvm.LanguageSettings","language": "de","regionalFormats": "default","overrideThousandSep": "","source": "official"}}
+        #valid bean argument
+        arg2_valid_bean = {"javaClass": "com.untangle.app.reports.ReportEntry", "displayOrder": 1010, "description": "Shows all scanned web requests.", "units": None, "orderByColumn": None, "title": "All Web Events", "colors": None, "enabled": True, "defaultColumns": ["time_stamp", "c_client_addr", "s_server_addr", "s_server_port", "username", "hostname", "host", "uri", "web_filter_blocked", "web_filter_flagged", "web_filter_reason", "web_filter_category"], "pieNumSlices": None, "seriesRenderer": None, "timeDataDynamicAggregationFunction": None, "pieStyle": None, "pieSumColumn": None, "timeDataDynamicAllowNull": None, "orderDesc": None, "table": "http_events", "approximation": None, "timeDataInterval": None, "timeStyle": None, "timeDataDynamicValue": None, "readOnly": True, "timeDataDynamicLimit": None, "timeDataDynamicColumn": None, "pieGroupColumn": None, "timeDataColumns": None, "textColumns": None, "category": "Web Filter", "conditions": [], "uniqueId": "web-filter-SRSZBBKXLN", "textString": None, "type": "EVENT_LIST", "localizedTitle": "All Web Events", "localizedDescription": "Shows all scanned web requests.", "slug": "all-web-events", "url": "web-filter/all-web-events", "icon": "fa-list-ul", "_id": "Ung.model.Report-390"}
+
+        #/report/csv call
+        url = adminURL+'reports/csv'
+
+        #forming authentication header for subsequent reports/csv call
+        headers = {'Cookie': f'{session_cookie_value}; {auth_cookie}',}
+
+        #Argument with invalid bean LocalDirectoryImpl to verify POC 1
+        poc1_data = {'type': 'eventLogExport','arg1': 'System-Server_Status_Events-25.07.2024-00:00-25.07.2024-15:42','arg2': json.dumps(invalid_arg2_with_localDirectory_bean),'arg3': '[]','arg4': 'time_stamp,load_1,mem_free,disk_free','arg5': '1721845800000','arg6': '-1'}
+        #Argument with invalid bean LanguageManagerImpl to verify POC 2
+        poc2_data = {'type': 'eventLogExport','arg1': 'System-Server_Status_Events-25.07.2024-00:00-25.07.2024-15:42','arg2': json.dumps(invalid_arg2_with_languageManager_bean),'arg3': '[]','arg4': 'time_stamp,load_1,mem_free,disk_free','arg5': '1721845800000','arg6': '-1'}
+        #Argument contains valid bean 
+        valid_data = {'type': 'eventLogExport','arg1': 'System-Server_Status_Events-25.07.2024-00:00-25.07.2024-15:42','arg2': json.dumps(arg2_valid_bean),'arg3': '[]','arg4': 'time_stamp,load_1,mem_free,disk_free','arg5': '1721845800000','arg6': '-1'}
+        
+        
+        #request report/csv to verify POC1
+        poc1_request_response = requests.post(url, headers=headers, data=poc1_data, verify=False)
+
+        #request report/csv to verify POC2
+        poc2_request_response = requests.post(url, headers=headers, data=poc2_data, verify=False)
+
+        #request report/csv with valid argument 
+        valid_request_response = requests.post(url, headers=headers, data=valid_data, verify=False)
+
+        error_message = "Internal Server Error - java.lang.RuntimeException: org.jabsorb.serializer.UnmarshallException: Failed to parse JSON bean has no matches"
+
+        # Test POC1
+        if error_message in poc1_request_response.text:
+            print("Passed: Invalid jsonObject is not acceptable")
+        else:
+            assert False, "Invalid jsonObject should not be acceptable"
+
+        # Test POC2
+        if error_message in poc2_request_response.text:
+            print("Passed: Invalid jsonObject is not acceptable")
+        else:
+            assert False, "Invalid jsonObject should not be acceptable"
+
+        # Test valid arg2
+        if error_message not in valid_request_response.text:
+            print("Passed:: Valid jsonObject not forming any exception")
+        else:
+            assert False, "Valid jsonObject should not produce any error message"
+
+      
+    def test_045_report_csv_vulnerability(self):
+        """
+        Test report CSV to only allow valid bean i.e ReportEntry
+        """
+        #invalid bean argument
+        arg2_invalid = {"javaClass": "com.untangle.uvm.LocalDirectoryImpl", "users": {"javaClass": "java.util.LinkedList", "list": [{"firstName": "khush", "lastName": "te9999jjt", "password": "", "passwordShaHash": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", "javaClass": "com.untangle.uvm.LocalDirectoryUser", "expirationTime": 0, "passwordBase64Hash": "dGVzdA==", "passwordMd5Hash": "098f6bcd4621d373cade4e832627b4f6", "mfaEnabled": False, "email": "te@gmail.com", "twofactorSecretKey": "", "username": "test", "localEmpty": False, "localExpires": {"javaClass": "java.util.Date", "time": 1720107932503}, "localForever": True, "_id": "extModel916-1"}, {"username": "khush\" Injection:", "firstName": "khush", "lastName": "khush", "email": "khush@gmail.com", "password": "", "passwordBase64Hash": "YW1tYW1h", "twofactorSecretKey": "", "localExpires": {"javaClass": "java.util.Date", "time": 1720107817551}, "localForever": True, "localEmpty": True, "mfaEnabled": False, "expirationTime": 0, "javaClass": "com.untangle.uvm.LocalDirectoryUser", "markedForDelete": False, "markedForNew": True, "_id": "Ung.model.Rule-2"}]}}
+        #valid bean argument
+        arg2_valid = {"javaClass": "com.untangle.app.reports.ReportEntry", "displayOrder": 1010, "description": "Shows all scanned web requests.", "units": None, "orderByColumn": None, "title": "All Web Events", "colors": None, "enabled": True, "defaultColumns": ["time_stamp", "c_client_addr", "s_server_addr", "s_server_port", "username", "hostname", "host", "uri", "web_filter_blocked", "web_filter_flagged", "web_filter_reason", "web_filter_category"], "pieNumSlices": None, "seriesRenderer": None, "timeDataDynamicAggregationFunction": None, "pieStyle": None, "pieSumColumn": None, "timeDataDynamicAllowNull": None, "orderDesc": None, "table": "http_events", "approximation": None, "timeDataInterval": None, "timeStyle": None, "timeDataDynamicValue": None, "readOnly": True, "timeDataDynamicLimit": None, "timeDataDynamicColumn": None, "pieGroupColumn": None, "timeDataColumns": None, "textColumns": None, "category": "Web Filter", "conditions": [], "uniqueId": "web-filter-SRSZBBKXLN", "textString": None, "type": "EVENT_LIST", "localizedTitle": "All Web Events", "localizedDescription": "Shows all scanned web requests.", "slug": "all-web-events", "url": "web-filter/all-web-events", "icon": "fa-list-ul", "_id": "Ung.model.Report-390"}
+        arg3 = []
+        arg4 = "time_stamp,load_1,mem_free,disk_free"
+        arg5 = "1720463400000"
+        arg6 = "-1"
+
+        # Build the curl command for invalid arg2
+        curl_command_invalid = global_functions.build_curl_command(
+            uri="http://localhost/reports/csv",
+            user_agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0",
+            extra_arguments=f"--data-raw 'type=eventLogExport&arg1=System-Server_Status_Events-09.07.2024-00%3A00-09.07.2024-18%3A08&arg2={urllib.parse.quote(json.dumps(arg2_invalid))}&arg3={urllib.parse.quote(json.dumps(arg3))}&arg4={arg4}&arg5={arg5}&arg6={arg6}'",
+            verbose=True
+        )
+
+        # Build the curl command for valid arg2
+        curl_command_valid = global_functions.build_curl_command(
+            uri="http://localhost/reports/csv",
+            user_agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0",
+            extra_arguments=f"--data-raw 'type=eventLogExport&arg1=System-Server_Status_Events-09.07.2024-00%3A00-09.07.2024-18%3A08&arg2={urllib.parse.quote(json.dumps(arg2_valid))}&arg3={urllib.parse.quote(json.dumps(arg3))}&arg4={arg4}&arg5={arg5}&arg6={arg6}'",
+            verbose=True
+        )
+
+         # Execute curl commands and capture the output
+        try:
+            output_invalid = subprocess.check_output(curl_command_invalid, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            output_invalid = e.output
+
+        try:
+            output_valid = subprocess.check_output(curl_command_valid, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            output_valid = e.output
+
+        # Check for specific error message in outputs
+        error_message = "Internal Server Error - java.lang.RuntimeException: org.jabsorb.serializer.UnmarshallException: Failed to parse JSON bean has no matches"
+
+        # Test for invalid arg2
+        if error_message in output_invalid.decode('utf-8'):
+            print("Passed: Invalid jsonObject is not acceptable")
+        else:
+            assert False, "Invalid jsonObject should not be acceptable"
+
+        # Test for valid arg2
+        if error_message not in output_valid.decode('utf-8'):
+            print("Passed:: Valid jsonObject not forming any exception")
+        else:
+            assert False, "Valid jsonObject should not produce any error message"
 
     def test_050_export_report_events(self):
         """
@@ -993,10 +1139,10 @@ class ReportsTests(NGFWTestCase):
         subprocess.call("rm /tmp/test_100_email_report_admin_file > /dev/null 2>&1", shell=True)
 
         # add administrator
-        adminsettings = uvmContext.adminManager().getSettings()
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(create_admin_user(useremail=test_email_address))
-        uvmContext.adminManager().setSettings(adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         # clear all report users
         settings = app.getSettings()
@@ -1015,7 +1161,7 @@ class ReportsTests(NGFWTestCase):
             email_context_found2 = remote_control.run_command("grep -i -e 'Content-Type: image/png; name=' /tmp/test_100_email_report_admin_file 2>&1", stdout=True)
 
         # restore
-        uvmContext.adminManager().setSettings(orig_adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
@@ -1059,10 +1205,10 @@ class ReportsTests(NGFWTestCase):
         configure_mail_relay()
 
         # add administrator
-        adminsettings = uvmContext.adminManager().getSettings()
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(create_admin_user(useremail=test_email_address))
-        uvmContext.adminManager().setSettings(adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         settings = app.getSettings()
         # add custom template with a test not in daily reports
@@ -1084,7 +1230,7 @@ class ReportsTests(NGFWTestCase):
             email_context_found2 = remote_control.run_command("grep -i 'Administration-VWuRol5uWw' /tmp/test_101_email_admin_override_custom_report_file 2>&1", stdout=True)
 
         # restore
-        uvmContext.adminManager().setSettings(orig_adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
@@ -1107,10 +1253,10 @@ class ReportsTests(NGFWTestCase):
         subprocess.call("rm /tmp/test_102_email_admin_override_custom_report_mobile_file > /dev/null 2>&1", shell=True)
 
         # add administrator
-        adminsettings = uvmContext.adminManager().getSettings()
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(create_admin_user(useremail=test_email_address))
-        uvmContext.adminManager().setSettings(adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         settings = app.getSettings()
         # add custom template with a test not in daily reports
@@ -1132,7 +1278,7 @@ class ReportsTests(NGFWTestCase):
             email_context_found2 = remote_control.run_command("grep -i 'Administration-VWuRol5uWw' /tmp/test_102_email_admin_override_custom_report_mobile_file 2>&1", stdout=True)
 
         # restore
-        uvmContext.adminManager().setSettings(orig_adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
 
         assert(email_found)
         assert((email_context_found1) and (email_context_found2))
@@ -1177,10 +1323,10 @@ class ReportsTests(NGFWTestCase):
         configure_mail_relay()
 
         # add administrator
-        adminsettings = uvmContext.adminManager().getSettings()
+        adminsettings = global_functions.uvmContext.adminManager().getSettings()
         orig_adminsettings = copy.deepcopy(adminsettings)
         adminsettings['users']['list'].append(create_admin_user(useremail=test_email_address))
-        uvmContext.adminManager().setSettings(adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(adminsettings)
 
         # clear all report users
         settings = self._app.getSettings()
@@ -1188,7 +1334,7 @@ class ReportsTests(NGFWTestCase):
         self._app.setSettings(settings)
         
         # install all the apps that aren't already installed
-        system_stats = uvmContext.metricManager().getStats()
+        system_stats = global_functions.uvmContext.metricManager().getStats()
         # print system_stats
         system_memory = system_stats['systemStats']['MemTotal']
         if (int(system_memory) < 2200000000):   # don't use high memory apps in devices with 2G or less.
@@ -1196,10 +1342,10 @@ class ReportsTests(NGFWTestCase):
             apps_name_list = apps_name_list_short
         apps = []
         for name in apps_list:
-            if (uvmContext.appManager().isInstantiated(name)):
+            if (global_functions.uvmContext.appManager().isInstantiated(name)):
                 print("App %s already installed" % name)
             else:
-                apps.append( uvmContext.appManager().instantiate(name, default_policy_id) )
+                apps.append( global_functions.uvmContext.appManager().instantiate(name, default_policy_id) )
             
         # create some traffic 
         result = remote_control.is_online(tries=1)
@@ -1220,19 +1366,21 @@ class ReportsTests(NGFWTestCase):
                 results.append(remote_control.run_command("grep -q -i '%s' /tmp/test_103_email_report_admin_file 2>&1"%str))
 
         # restore
-        uvmContext.adminManager().setSettings(orig_adminsettings)
+        global_functions.uvmContext.adminManager().setSettings(orig_adminsettings)
 
         # remove apps that were installed above
-        for a in apps: uvmContext.appManager().destroy( a.getAppSettings()["id"] )
+        for a in apps: global_functions.uvmContext.appManager().destroy( a.getAppSettings()["id"] )
         
         assert(email_found)
         for result in results:
             assert(result == 0)
 
+
     def test_110_verify_report_users(self):
         # Test report only user can login and report servlet displays 
         # add report user with test_email_address
-        settings = self._app.getSettings()
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
         settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))  # password = passwd
@@ -1244,8 +1392,11 @@ class ReportsTests(NGFWTestCase):
         
         resultLoginPage = subprocess.call(global_functions.build_wget_command(output_file="-", uri=adminURL + 'auth/login?url=/reports&realm=Reports&username=' + test_email_address + "&password=passwd") + " 2>&1 | grep -q Report", shell=True)
         assert (resultLoginPage == 0)
+        # Restore original settings
+        self._app.setSettings(original_settings)
 
-    def test_data_retention_days(self):
+
+    def test_111_data_retention_days(self):
         """
         Day retention removal
 
@@ -1277,7 +1428,7 @@ class ReportsTests(NGFWTestCase):
         print(f"Pre/post table counts: {start_count} < {end_count}")
         assert(end_count < start_count)
 
-    def test_data_retention_hours(self):
+    def test_112_data_retention_hours(self):
         """
         Hour retention removal
 
@@ -1362,6 +1513,8 @@ class ReportsTests(NGFWTestCase):
     def test_500_sql_injection_pie_graph(self):
         """
         """
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1370,10 +1523,13 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "PIE_GRAPH")
+        self._app.setSettings(original_settings)
 
     def test_501_sql_injection_time_graph(self):
         """
         """
+        original_settings = self._app.getSettings()    
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1382,10 +1538,13 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TIME_GRAPH")
+        self._app.setSettings(original_settings)
 
     def test_502_sql_injection_time_graph_dynamic(self):
         """
         """
+        original_settings = self._app.getSettings()    
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1394,10 +1553,13 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TIME_GRAPH_DYNAMIC")
+        self._app.setSettings(original_settings)
 
     def test_503_sql_injection_text(self):
         """
         """
+        original_settings = self._app.getSettings()    
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1406,10 +1568,13 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "TEXT")
+        self._app.setSettings(original_settings)
 
     def test_504_sql_injection_event_list(self):
         """
         """
+        original_settings = self._app.getSettings()    
+        settings = copy.deepcopy(original_settings)
         settings = self._app.getSettings()
         settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
         test_email_address = global_functions.random_email()
@@ -1418,19 +1583,296 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "EVENT_LIST")
+        self._app.setSettings(original_settings)
+
+    def test_600_session_minutes_referral(self):
+        """
+        Verify that missing session table won't cause dependent inserts to fail
+
+        Test stages:
+        initialize:
+          -   Change uvm table cache timeout
+          -   Set system from NTP to manual
+          -   Change system date back to one day before current detention
+          -   Updatedatabase, update to begin"on that day"
+
+        pre:
+          -   Start long running curl command
+          -   Wait until both sessions and sessions_minute are populated with this new session across day boundary
+          -   On new day, simulate database rotation by removing old sessions table
+
+        post:
+          -   Wait a few conntrack cycles
+
+        verify:
+          -   We should have current populated session minutes for the original session id
+
+        Timeline for this test after initialization:
+        [        client curl       ]
+        [pre events] | [post events]
+
+        """
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+
+        global uvmContext
+        # # Safety to ensure database is fully aged out as expected
+        # subprocess.call(f"/etc/cron.daily/reports-cron",shell=True)
+
+        # This cache is 5 minutes by default; we need to reduce it to verify
+        cache_interval_seconds = 1
+        # How long we'll wait in our pre-state
+        pre_duration_interval_seconds = 200
+        # How long we'll wait in the post state
+        # post_duration_interval = 200
+        post_duration_interval = 130
+        # Session should last a little longer than our waits
+        session_duration_interval = pre_duration_interval_seconds + post_duration_interval + 30
+
+        # Query conditions to match our session
+        event_query_conditions = [
+            {"column": "c_client_addr", "operator":"=", "value":remote_control.client_ip},
+            {"column": "s_server_addr", "operator":"=", "value":global_functions.test_server_ip},
+            {"column": "s_server_port", "operator":"=", "value":443}
+        ]
+
+        # Reports app id
+        app_id = ReportsTests._app.getAppSettings()["id"]
+
+        # Log file with reports app id
+        log_file = f"/var/log/uvm/app-{app_id}.log"
+
+        # Tables to perform delete operations upon
+        delete_tables = ["sessions", "session_minutes", "http_events"]
+
+        # Original settings to restore at end
+        original_system_settings = global_functions.uvmContext.systemManager().getSettings()
+
+        # Backip existing untangle-vm.conf
+        global_functions.vm_conf_backup()
+
+        # Kill curl from possibly aborted test run
+        remote_control.run_command(f"ps awwwux | grep [c]url | cut -d' ' -f3 | xargs kill -9 2>/dev/null")
+
+        # Run our test in a try so that on any failure, we can properly cleanup
+        print()
+        failures = []
+        try:
+            print("-" * 80)
+            print("stage=initialize")
+            print("-" * 80)
+
+            # Make sure we're in day-only retention mode
+            report_settings = copy.deepcopy(orig_settings)
+            report_settings["dbRetentionHourly"] = 0
+
+            # How many days ago to start
+            # days_ago = report_settings["dbRetention"] + 1
+            days_ago = 1
+
+            # Disable NTP
+            original_system_settings = global_functions.uvmContext.systemManager().getSettings()
+            system_settings = copy.deepcopy(original_system_settings)
+            system_settings['timeSource'] = 'manual'
+            global_functions.uvmContext.systemManager().setSettings(system_settings)
+
+            # Set time to 90 seconds before 1 day before end of day of retention.
+            # This gives enough time for both the session and session_minute entries
+            initialize_date = subprocess.check_output(f"date -Ins -d '-{days_ago} day 23:58:30'", shell=True).decode("utf-8").strip()
+            print(f"initialize_date={initialize_date}")
+            subprocess.call(f"date -Ins -s '{initialize_date}' >/dev/null",shell=True)
+
+            # Restart UVM due to date change and while we're at it,
+            # change the cacheTableInterval to 1s instead of its 30 min default
+            global_functions.uvmContext = global_functions.vm_conf_update(search="reports_cacheTableInterval=", replace=f"reports_cacheTableInterval=\"{cache_interval_seconds}000\"")
+
+            # Run report sync script to add table
+            print(f"running reports-cron to setup today's tables")
+            subprocess.call(f"/etc/cron.daily/reports-cron",shell=True)
+            # Delete from tables
+            print("pre-delete all rows from tables:")
+            for delete_table in delete_tables:
+                print(f"\tdelete_table={delete_table}")
+                subprocess.check_output(f"psql -U postgres uvm -c \"delete from reports.{delete_table}\"", shell=True).decode("utf-8").strip()
+
+            print("available session tables")
+            for info in subprocess.check_output(f"psql -U postgres uvm -c \"select table_name from information_schema.tables where table_name like 'sessions_%' order by table_name\"", shell=True).decode("utf-8").strip().split("\n"):
+                print(f"\t{info}")
+
+            print("-" * 80)
+            print("stage=pre")
+            print("-" * 80)
+
+            # Start the forked curl command
+            # This uses HTTPS to keep the session alive (via keepalive) througout this test which is critical.
+            # Since curl doesn't have a way to "wait", we rely on the remote server performing a sleep to "pause" the session
+            # IMPORTANT: Assumption is that no other HTTPS traffic from client to test server via HTTPS is occuring during this test
+            curl_command=global_functions.build_curl_command(uri=f"https://{global_functions.TEST_SERVER_HOST}/sleep.php?seconds=1&length=1024&[1-{session_duration_interval}]", max_time=None, override_arguments=["--silent"])
+            print(f"fork curl_command={curl_command} for {session_duration_interval} seconds")
+            remote_control.run_command(f"{curl_command} > /dev/null", nowait=True)
+
+            # We need to wait long enough for:
+            # - Session table to be updated with initial packet (quick, within a second or so)
+            # - The next day's session minute table to be populated with at least one entry
+            # So overall, a little over 2 min to be safe.
+            print()
+            print(f"* sleep pre_duration_interval_seconds={pre_duration_interval_seconds}")
+            sys.stdout.flush()
+
+            # For sessions, ONLY consider sessions that are in our current first day
+            pre_start_date_seconds = subprocess.check_output(f"date +%s -d 'today 00:00:00'", shell=True).decode("utf-8").strip()
+            pre_end_date_seconds = subprocess.check_output(f"date +%s -d '{pre_duration_interval_seconds} seconds'", shell=True).decode("utf-8").strip()
+            # Minutes we are expecting to see something in next day
+            pre_session_minutes_end_date_seconds = subprocess.check_output(f"date +%s -d '{pre_duration_interval_seconds} seconds'", shell=True).decode("utf-8").strip()
+
+            time.sleep(pre_duration_interval_seconds)
+            now_date = subprocess.check_output(f"date", shell=True).decode("utf-8").strip()
+            print(f"ended at {now_date}")
+
+            print()
+            # Collect session and session minute ids and their timestamps
+            session_id_timestamps = {}
+            events = global_functions.get_events("Network", "All Sessions", event_query_conditions, 5,
+                start_date={"javaClass": "java.util.Date", "time": int(pre_start_date_seconds) * 1000},
+                end_date={"javaClass": "java.util.Date", "time": (int(pre_end_date_seconds) * 1000)}
+            )
+            print("pre sessions events=")
+            if events is not None and "list" in events:
+                for event in events["list"]:
+                    session_id = event['session_id']
+                    time_stamp = datetime.fromtimestamp(int(event['time_stamp']['time'])/1000).strftime('%Y-%m-%d %H:%M:%S')
+                    print(f"\t{time_stamp} {session_id} {event['c_client_addr']} {event['s_server_addr']} {event['s_server_port']}")
+                    session_id_timestamps[session_id] = [f"pre_sessions-{time_stamp}"]
+
+            events = global_functions.get_events("Network", "All Session Minutes", event_query_conditions, 5,
+                start_date={"javaClass": "java.util.Date", "time": int(pre_start_date_seconds) * 1000},
+                end_date={"javaClass": "java.util.Date", "time": (int(pre_session_minutes_end_date_seconds) * 1000)}
+            )
+            print("pre session_minutes events=")
+            matching_session_ids = []
+            if events is not None and "list" in events:
+                for event in events["list"]:
+                    session_id = event['session_id']
+                    time_stamp = datetime.fromtimestamp(int(event['time_stamp']['time'])/1000).strftime('%Y-%m-%d %H:%M:%S')
+                    print(f"\t{time_stamp} {session_id} {event['c_client_addr']} {event['s_server_addr']} {event['s_server_port']}")
+                    if session_id in session_id_timestamps:
+                        session_id_timestamps[session_id].append(f"pre_session_minutes-{time_stamp}")
+                        if session_id not in matching_session_ids:
+                            matching_session_ids.append(session_id)
+
+            # We are expecting to find our session_id in sessions and session_minutes
+            assert len(matching_session_ids) > 0, "in pre stage, found corresponding sessions/session_minutes session id"
+            print(f"matching_session_ids={','.join(map(str, matching_session_ids))}")
+
+            # Running reports-cron won't work the next day (unless we set time to actual current, then back..) so we need to simulate the aging by
+            # deleting delete the now-previous day's sessions and session_minutes partition tables.
+            drop_tables = []
+            drop_tables.append(subprocess.check_output("psql -U postgres uvm -c \"select table_name from information_schema.tables where table_schema = 'reports' and table_name like 'sessions_%' order by table_name limit 1\" | grep sessions_", shell=True).decode("utf-8").strip())
+            drop_tables.append(subprocess.check_output("psql -U postgres uvm -c \"select table_name from information_schema.tables where table_schema = 'reports' and table_name like 'session_minutes_%' order by table_name limit 1\" | grep session_minutes_", shell=True).decode("utf-8").strip())
+            print()
+            print("drop tables:")
+            for drop_table in drop_tables:
+                print(f"\tdrop_table={drop_table}")
+                subprocess.check_output(f"psql -U postgres uvm -c \"drop table reports.{drop_table}\"", shell=True).decode("utf-8").strip()
+
+            print("available session tables (should not have earliest table as before)")
+            for info in subprocess.check_output(f"psql -U postgres uvm -c \"select table_name from information_schema.tables where table_name like 'sessions_%' order by table_name\"", shell=True).decode("utf-8").strip().split("\n"):
+                print(f"\t{info}")
+
+            # Get last reports log line so we can monitor entries thereafter
+            last_log_line = subprocess.check_output(f"wc -l {log_file} | cut -d' ' -f1", shell=True).decode("utf-8").strip()
+            last_log_line = int(last_log_line) + 1
+
+            print("-" * 80)
+            print("stage=post")
+            print("-" * 80)
+
+            post_start_date = subprocess.check_output(f"date +%s", shell=True).decode("utf-8").strip()
+
+            # After day change, give a few (3) minutes and a little extra before going into POST
+            # Get the date to start querying after we go into post; we will query for events on this timestamp onward
+            # post_start_date = subprocess.check_output(f"date +%s", shell=True).decode("utf-8").strip()
+            print()
+            print(f"* sleep post_duration_interval={post_duration_interval}")
+            sys.stdout.flush()
+            time.sleep(post_duration_interval)
+
+            events = None
+            events = global_functions.get_events("Network", "All Session Minutes", event_query_conditions, 100,
+                start_date={"javaClass": "java.util.Date", "time": int(post_start_date) * 1000},
+                end_date={"javaClass": "java.util.Date", "time": (int(post_start_date) + 86400) * 1000}
+            )
+            print("post session_minutes events=")
+            found_sessions = []
+            if events is not None and "list" in events:
+                for event in events["list"]:
+                    session_id = event['session_id']
+                    time_stamp = datetime.fromtimestamp(int(event['time_stamp']['time'])/1000).strftime('%Y-%m-%d %H:%M:%S')
+                    print(f"\t{time_stamp} {session_id} {event['c_client_addr']} {event['s_server_addr']} {event['s_server_port']}")
+                    if session_id in session_id_timestamps:
+                        if session_id not in found_sessions:
+                            found_sessions.append(session_id)
+                        session_id_timestamps[session_id].append(f"post_session_minutes-{time_stamp}")
+
+            # Check for exceptions in logs
+            # This may introduce some false positives for other sessions that may be going on that we don't care about
+            log_sql = subprocess.check_output(f"awk 'NR >= {last_log_line} && /BatchUpdateException/{{ print NR, $0 }}' {log_file}", shell=True).decode("utf-8")
+            if log_sql != "":
+                print("update/insert exceptions=")
+                print(f"{log_sql}")
+            assert log_sql == "", "no sql exceptions found in logs"
+
+            print("-" * 80)
+            print("stage=verify")
+            print("-" * 80)
+            assert len(found_sessions) > 0, "found at least one session candidate" 
+
+            if len(found_sessions) > 0:
+                print("finding matching sessions:")
+                for session_id in matching_session_ids:
+                    pre_sessions = False
+                    pre_session_minutes = False
+                    post_session_minutes = False
+                    print(f"\tsession_id={session_id}")
+                    for time_stamp in session_id_timestamps[session_id]:
+                        if time_stamp.startswith("pre_sessions-"):
+                            pre_sessions = True
+                        if time_stamp.startswith("pre_session_minutes-"):
+                           pre_session_minutes = True
+                        if time_stamp.startswith("post_session_minutes"):
+                            post_session_minutes = True
+                        print(f"\t\ttime_stamp={time_stamp}")
+                    assert pre_sessions and pre_session_minutes and post_session_minutes, f"found all stages for session_id={session_id}"
+
+        except Exception as e:
+            failures.append(e)
+
+        # Cleanup
+
+        # Kill lingering curl session (it may not naturally end)
+        remote_control.run_command(f"ps awwwux | grep [c]url | cut -d' ' -f3 | xargs kill -9 2>/dev/null")
+
+        # Restore system back to standard working order
+        global_functions.uvmContext = global_functions.vm_conf_restore()
+
+        # Change system back to NTP
+        global_functions.uvmContext.systemManager().setSettings(original_system_settings)
+        global_functions.uvmContext.forceTimeSync()
+        global_functions.uvmContext = global_functions.restart_uvm()
+        subprocess.call(f"/etc/cron.daily/reports-cron",shell=True)
+
+        assert len(failures) == 0, ", ".join(map(str, failures))
 
     @classmethod
     def final_extra_tear_down(cls):
         global web_app, orig_settings
-        #Restoring original report settings
-        cls._app.setSettings(orig_settings)
         # remove all the apps in case test 103 does not remove them.
         for name in apps_list:
-            if (uvmContext.appManager().isInstantiated(name)):
-                remove_app = uvmContext.appManager().app(name)
-                uvmContext.appManager().destroy(remove_app.getAppSettings()["id"])
+            if (global_functions.uvmContext.appManager().isInstantiated(name)):
+                remove_app = global_functions.uvmContext.appManager().app(name)
+                global_functions.uvmContext.appManager().destroy(remove_app.getAppSettings()["id"])
         if orig_mailsettings != None:
-            uvmContext.mailSender().setSettings(orig_mailsettings)
+            global_functions.uvmContext.mailSender().setSettings(orig_mailsettings)
 
         web_app = None
 

@@ -16,8 +16,9 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import org.apache.log4j.Logger;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.hc.core5.net.URIBuilder;
 import org.apache.commons.codec.digest.Crypt;
 
 import com.untangle.uvm.AdminSettings;
@@ -61,7 +62,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     protected Boolean isWebFilterApp;
     private AppMetric QuicBlockMetric = null;
 
-    protected static final Logger logger = Logger.getLogger(WebFilterBase.class);
+    protected static final Logger logger = LogManager.getLogger(WebFilterBase.class);
     private final int policyId = getAppSettings().getPolicyId().intValue();
 
     protected final PipelineConnector connector;

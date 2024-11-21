@@ -2,6 +2,9 @@ Ext.define('Ung.overrides.form.CheckboxGroup', {
     override: 'Ext.form.CheckboxGroup',
 
     setValue: function(value) {
+        if(this.useParentDefinition) {
+            return this.callParent(arguments);
+        }
         var me    = this,
             boxes = me.getBoxes(),
             b,
@@ -35,6 +38,9 @@ Ext.define('Ung.overrides.form.CheckboxGroup', {
     },
 
     getValue: function() {
+        if(this.useParentDefinition) {
+            return this.callParent(arguments);
+        }
         var values = [],
             boxes  = this.getBoxes(),
             b,

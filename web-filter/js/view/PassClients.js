@@ -25,6 +25,8 @@ Ext.define('Ung.apps.webfilter.view.PassClients', {
 
     emptyText: 'No Pass Clients defined'.t(),
 
+    importValidationJavaClass: true,
+
     listProperty: 'settings.passedClients.list',
     emptyRow: {
         string: '1.2.3.4',

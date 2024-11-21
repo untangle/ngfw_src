@@ -5,6 +5,7 @@ package com.untangle.uvm;
 
 import java.util.List;
 import java.net.InetAddress;
+import java.util.concurrent.ConcurrentMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -82,6 +83,8 @@ public interface NetworkManager
     void setInterfacesOverloadedFlag(boolean value);
 
     boolean getInterfacesOverloadedFlag();
+
+    ConcurrentMap<String, String> lookupMacVendorList(List<String> macAddressList);
 
     public static enum StatusCommands {
         INTERFACE_TRANSFER,

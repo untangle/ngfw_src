@@ -7,7 +7,8 @@ package com.untangle.app.ipsec_vpn;
 import java.net.InetAddress;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTableEntry;
 
@@ -21,7 +22,7 @@ import com.untangle.uvm.HostTableEntry;
 
 public class VirtualUserTable
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private Hashtable<InetAddress, VirtualUserEntry> userTable;
 
     /**

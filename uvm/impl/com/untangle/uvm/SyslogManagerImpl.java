@@ -9,11 +9,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONObject;
 
 import com.untangle.uvm.event.EventSettings;
+import com.untangle.uvm.event.SyslogServer;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
 
@@ -22,15 +24,15 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public class SyslogManagerImpl
 {
-    private static final Logger logger = Logger.getLogger(SyslogManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(SyslogManagerImpl.class);
 
     private static final SyslogManagerImpl MANAGER = new SyslogManagerImpl();
 
     public static final String LOG_TAG = "uvm";
-    public static final String LOG_TAG_PREFIX = LOG_TAG + "[0]: ";
+    public static final String LOG_TAG_PREFIX = LOG_TAG + "[0]:";
 
     private static final File CONF_FILE = new File("/etc/rsyslog.d/untangle-remote.conf");
-    private static final String CONF_LINE = "if ($syslogfacility-text == 'local5') then @";
+    private static final String CONF_LINE = "if $msg startswith ' <tag>' then @";
 
     private static boolean enabled;
 
@@ -61,12 +63,8 @@ public class SyslogManagerImpl
      */
     public static void sendSyslog(LogEvent e, JSONObject jsonEvent)
     {
-        if (!enabled) {
-            return;
-        }
-
         try {
-            logger.log(org.apache.log4j.Level.INFO, e.getTag() + " " + jsonEvent);
+            logger.log(org.apache.logging.log4j.Level.INFO, e.getTag() + " " + jsonEvent);
         } catch (Exception exn) {
             logger.warn("Failed to syslog Event: " + e, exn);
         }
@@ -99,40 +97,44 @@ public class SyslogManagerImpl
      */
     public static void reconfigure(EventSettings eventSettings)
     {
-        if (eventSettings != null && eventSettings.getSyslogEnabled()) {
-            enabled = true;
-            String hostname = eventSettings.getSyslogHost();
-            int port = eventSettings.getSyslogPort();
-            String protocol = eventSettings.getSyslogProtocol();
+        if (eventSettings != null && eventSettings.getSyslogServers() != null ) {
+            //Delete the CONF_FILE as rsyslog process is restarted at the end of reconfigure method
+            CONF_FILE.delete();
+            for (SyslogServer sysLogServer: eventSettings.getSyslogServers()) {
+                String hostname = sysLogServer.getHost();
+                int port = sysLogServer.getPort();
+                String protocol = sysLogServer.getProtocol();
 
-            // set rsylsog conf
-            String conf = CONF_LINE;
-            if (protocol.equalsIgnoreCase("TCP")) {
-                conf += "@";
-            }
-            conf += hostname + ":" + port +"\n";
-            conf += "& stop" + "\n";
-
-            // write conf file
-            BufferedWriter out = null;
-            try {
-                out = new BufferedWriter(new FileWriter(CONF_FILE));
-                out.write(conf, 0, conf.length());
-            } catch (IOException ex) {
-                logger.error("Unable to write file", ex);
-                return;
-            } finally {
-                try {
-                    if (out != null) {
-                        out.close();
-                    }
-                } catch (IOException ex) {
-                    logger.error("Unable to close file", ex);
+                // set rsylsog conf
+                String conf = CONF_LINE.replace("<tag>", sysLogServer.getTag());
+                if (protocol.equalsIgnoreCase("TCP")) {
+                    conf += "@";
                 }
+                conf += hostname + ":" + port +"\n";
+                conf += "& stop" + "\n";
+
+                // write conf file
+                BufferedWriter out = null;
+                try {
+                    out = new BufferedWriter(new FileWriter(CONF_FILE, true));
+                    out.write(conf, 0, conf.length());
+                } catch (IOException ex) {
+                    logger.error("Unable to write file", ex);
+                    return;
+                } finally {
+                    try {
+                        if (out != null) {
+                            out.close();
+                        }
+                    } catch (IOException ex) {
+                        logger.error("Unable to close file", ex);
+                    }
+                }
+
             }
+
         } else {
             // Remove rsyslog conf
-            enabled = false;
             CONF_FILE.delete();
         }
 

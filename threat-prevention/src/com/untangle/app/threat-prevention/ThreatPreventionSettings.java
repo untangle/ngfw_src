@@ -3,7 +3,8 @@
  */
 package com.untangle.app.threat_prevention;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.GenericRule;
 
@@ -21,7 +22,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class ThreatPreventionSettings implements Serializable, JSONString
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private Integer version = Integer.valueOf(1);
 
     private Integer reputationThreshold = 20;

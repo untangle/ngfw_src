@@ -7,7 +7,6 @@ import subprocess
 import time
 from uvm import Uvm
 
-from .global_functions import uvmContext
 from tests.common import NGFWTestCase
 import runtests.test_registry as test_registry
 import runtests.remote_control as remote_control
@@ -41,19 +40,17 @@ class PerformanceTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global orig_netsettings, wan_ip
         if orig_netsettings == None:
-            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
-        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+            orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
 
     def test_100_tcp_throughput(self):
         """
         Run iperf through system against different TCP receive buffer sizes to determine effect on throughput
         """
-        global uvmContext
-
         # Skip if apps are running
         for application_name in Performance_throughput_applications:
             if application_name != "router":
-                if (uvmContext.appManager().isInstantiated(application_name)):
+                if (global_functions.uvmContext.appManager().isInstantiated(application_name)):
                     raise unittest.SkipTest('app %s already instantiated' % application_name)
 
         # Skip if iperf not installed
@@ -103,7 +100,7 @@ class PerformanceTests(NGFWTestCase):
                 "javaClass": "com.untangle.uvm.network.BypassRule",
                 "ruleId": -1
         }]
-        uvmContext.networkManager().setNetworkSettings(network_settings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
 
         ## Run and get bypass throughput
         bypass_throughput = []
@@ -114,7 +111,7 @@ class PerformanceTests(NGFWTestCase):
 
         ## Remove bypass rule
         network_settings["bypassRules"]["list"] = []
-        uvmContext.networkManager().setNetworkSettings(network_settings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
 
         ##
         ## Loop through various TCP receive sizes
@@ -146,7 +143,7 @@ class PerformanceTests(NGFWTestCase):
 
             os.replace(untangle_vm_conf_tmp_filename, untangle_vm_conf_filename)
             ## Restart uvm
-            uvmContext = global_functions.restart_uvm()
+            global_functions.uvmContext = global_functions.restart_uvm()
 
             ##
             ## Loop through applications
@@ -164,7 +161,7 @@ class PerformanceTests(NGFWTestCase):
                 ##
                 application = None
                 if application_name != "router":
-                    application = uvmContext.appManager().instantiate(application_name, default_policy_id)
+                    application = global_functions.uvmContext.appManager().instantiate(application_name, default_policy_id)
 
                 ## Loop through app to get average throughput
                 application_throughput = []
@@ -174,7 +171,7 @@ class PerformanceTests(NGFWTestCase):
                 application_average = sum(application_throughput) / len(application_throughput)
 
                 if application != None:
-                    uvmContext.appManager().destroy( application.getAppSettings()["id"] )
+                    global_functions.uvmContext.appManager().destroy( application.getAppSettings()["id"] )
                     application = None
 
                 results[tcp_buffer_size][application_name] = {
@@ -208,7 +205,7 @@ class PerformanceTests(NGFWTestCase):
         ##
         ## Restore orginal untangle-vm.conf
         shutil.copyfile(untangle_vm_conf_original_filename, untangle_vm_conf_filename)
-        uvmContext = global_functions.restart_uvm()
+        global_functions.uvmContext = global_functions.restart_uvm()
 
         ##
         ## Stop iperf server
@@ -223,9 +220,8 @@ class PerformanceTests(NGFWTestCase):
 
     @classmethod
     def final_extra_tear_down(cls):
-        global uvmContext
 
         # Restore original settings to return to initial settings
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
 test_registry.register_module("performance", PerformanceTests)

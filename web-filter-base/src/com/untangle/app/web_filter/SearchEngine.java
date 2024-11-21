@@ -15,8 +15,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.log4j.Logger;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HeaderToken;
@@ -28,7 +29,7 @@ import com.untangle.uvm.util.UrlMatchingUtil;
  */
 public class SearchEngine
 {
-    private static final Logger logger = Logger.getLogger(SearchEngine.class);
+    private static final Logger logger = LogManager.getLogger(SearchEngine.class);
 
     private static final List<String> SearchEngineHosts;
     private static final List<Pattern> SearchEngines;
@@ -80,10 +81,12 @@ public class SearchEngine
      *        URL URI.
      * @param header
      *        The header token
+    * @param requestLine
+     *        The requestLine token
      *
      * @return The query term
      */
-    public static String getQueryTerm(InetAddress clientIp, String host, String uri, HeaderToken header)
+    public static String getQueryTerm(InetAddress clientIp, String host, String uri, HeaderToken header, RequestLineToken requestLine)
     {
         boolean hostFound = false;
         for(String hostPiece : SearchEngineHosts){
@@ -131,7 +134,26 @@ public class SearchEngine
                 }
             }
         }
-
+        //For YouTube Retry button fetching URL from RequestLine referer to match with patterns
+        if(host.contains(WebFilterDecisionEngine.YOUTUBE_HEADER_FIELD_FIND_NAME) ) {
+           String referer = requestLine.getRequestLine().getHttpRequestEvent().getReferer();
+            if (referer == null) {
+                return term;
+            }
+            for (Pattern p : SearchEngines) {
+                Matcher m = p.matcher(referer);
+                if (m.matches()) {
+                    try {
+                        term = m.group(m.groupCount());
+                        term = URLDecoder.decode(term, "UTF-8");
+                    } catch (Exception e) {
+    
+                    }
+                    return term;
+                }
+            }
+            
+        }
         return term;
     }
 

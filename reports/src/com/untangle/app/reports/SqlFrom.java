@@ -9,7 +9,8 @@ import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.velocity.util.StringUtils;
 
 /**
@@ -18,7 +19,7 @@ import org.apache.velocity.util.StringUtils;
 @SuppressWarnings("serial")
 public class SqlFrom implements Serializable, JSONString
 {
-    private static final Logger logger = Logger.getLogger(SqlCondition.class);
+    private static final Logger logger = LogManager.getLogger(SqlCondition.class);
 
     private static final String TABLE_TEMPLATE = " %table% WHERE %where% ";
     private static final String RANGE_TEMPLATE = " ( SELECT %rangeCase% as %column% from %table% WHERE %where% ) t ";

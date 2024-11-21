@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONArray;
 
@@ -31,8 +32,8 @@ import com.untangle.uvm.logging.LogEvent;
  */
 public abstract class AppBase implements App
 {
-    private static final Logger staticLogger = Logger.getLogger(AppBase.class);
-    private final Logger logger = Logger.getLogger(AppBase.class);
+    private static final Logger staticLogger = LogManager.getLogger(AppBase.class);
+    private final Logger logger = LogManager.getLogger(AppBase.class);
 
     private String eventTag = "";
 
@@ -869,6 +870,13 @@ public abstract class AppBase implements App
         }
     }
 
+    /**
+     * Synch runState with targetState for Valid license
+     */
+    public void syncStateForValidLicense(){
+        start(false);
+    }
+    
     /**
      * Start the application
      * 

@@ -5,7 +5,8 @@ package com.untangle.app.router;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Affinity;
@@ -26,7 +27,7 @@ public class RouterImpl extends AppBase implements HostnameLookup
 
     private final PipelineConnector[] connectors;
 
-    private final Logger logger = Logger.getLogger( RouterImpl.class );
+    private final Logger logger = LogManager.getLogger( RouterImpl.class );
 
     /**
      * RouterImpl

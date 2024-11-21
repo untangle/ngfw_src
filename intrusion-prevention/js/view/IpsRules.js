@@ -58,6 +58,12 @@ Ext.define('Ung.apps.intrusionprevention.view.Rules', {
         destinationNetworks: 'recommended'
     },
 
+    importValidationJavaClass: true,
+
+    importValidationForComboBox: true,
+
+    skipConditionsCheck: true,
+
     columns: [{
         xtype:'checkcolumn',
         header: "Enabled".t(),

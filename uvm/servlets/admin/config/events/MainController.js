@@ -4,9 +4,13 @@ Ext.define('Ung.config.events.MainController', {
     alias: 'controller.config-events',
 
     control: {
-        '#': {
-            afterrender: 'loadEvents',
-        },
+        '#': { afterrender: 'loadEvents', },
+        '#syslog': { 
+            afterrender: function() {
+                var me = this;
+                Ext.Function.defer(function() { me.onSyslogRulesGridChange(); }, 1000);
+            } 
+        }
     },
 
     loadEvents: function () {
@@ -131,6 +135,11 @@ Ext.define('Ung.config.events.MainController', {
                 templateUnmatched: ''
             });
 
+            if(vm.get("settings.syslogServers.list").length > 0){
+                vm.set('syslogServersGridEmpty', false);
+            }else{
+                vm.set('syslogServersGridEmpty', true);
+            }
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -165,6 +174,13 @@ Ext.define('Ung.config.events.MainController', {
                         record.drop();
                     }
                 });
+                if(grid.itemId == 'syslogservers') {
+                    store.each(function (record) {
+                        if(!record.get('tag')) {
+                            record.set('tag', Ext.String.format('uvm-to-{0}', record.get('host')));
+                        }
+                    });
+                }
                 store.isReordered = undefined;
                 vm.set(grid.listProperty, Ext.Array.pluck(store.getRange(), 'data'));
                 store.commitChanges();
@@ -182,6 +198,7 @@ Ext.define('Ung.config.events.MainController', {
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
+            Ext.Function.defer(function() { me.onSyslogRulesGridChange(); }, 1000);
         }, function(ex) {
             if(!Util.isDestroyed(v, vm)){
                 vm.set('panel.saveDisabled', true);
@@ -301,6 +318,63 @@ Ext.define('Ung.config.events.MainController', {
         });
     },
 
+    onSyslogServersGridChange: function(store, record){
+        var vm = this.getViewModel();
+        if((store.getModifiedRecords().length > 0 ||
+                store.getNewRecords().length > 0 ||
+                store.getRemovedRecords().length > 0)) {
+            vm.set('syslogRuleGridDisabled', true);
+            // Check if modified records only have reserved boolean modified 
+            // and accordingly set skipDetectGridChanges flag
+            var isGridPropertyChanged;
+            store.getModifiedRecords().forEach(function(modifiedRecord) {
+                if(modifiedRecord.modified) {
+                    var keys = Object.keys(modifiedRecord.modified);
+                    if(!(keys.length === 1 && keys[0] === 'reserved')) {
+                        isGridPropertyChanged = true;
+                    }
+                }
+            });
+            store.skipDetectGridChanges = !isGridPropertyChanged;
+        } else {
+            vm.set('syslogRuleGridDisabled', false);
+        }
+    },
+
+    onSyslogRulesGridChange: function(store, record) {
+        var view = this.getView(),
+            vm = this.getViewModel(),
+            usedServerIds = {},
+            serverList = [];
+        store = store ? store : view.down('config-events-syslog').down('[itemId=syslogrules]').getStore();
+
+        // Find serverId's of syslog servers which are used in syslog rules         
+        store.each(function(rulesRecord) {
+            if(!rulesRecord.get('markedForDelete')) {
+                if(rulesRecord.data.syslogServers && rulesRecord.data.syslogServers.list) {
+                    serverList = rulesRecord.data.syslogServers.list;
+                    if(!Ext.isArray(serverList)) {
+                        serverList = [ serverList ];
+                    }
+                    serverList.forEach(function(serverId) {
+                        usedServerIds[serverId] = true;
+                    });
+                }
+            }
+        });
+
+        // Mark used syslog server records as reserved
+        var syslogServerStore = view.down('config-events-syslog').down('[itemId=syslogservers]').getStore();
+        syslogServerStore.each(function(serversRecord) {
+            if(usedServerIds[serversRecord.get('serverId')]) {
+                serversRecord.set('reserved', true);
+            } else {
+                serversRecord.set('reserved', false);
+            }
+        });
+        vm.set('syslogRuleGridDisabled', false);
+    },
+
     statics: {
         conditionsClass: {
             header: 'Class'.t(),
@@ -322,4 +396,109 @@ Ext.define('Ung.config.events.MainController', {
         }
     }
 
+});
+
+Ext.define('Ung.config.events.SyslogRulesController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.uneventssyslogrulesgrid',
+
+    sysLogServersRenderer: function(value, column) {
+        value.javaClass = "java.util.LinkedList";
+        if(value.list) {
+            if(!Ext.isArray(value.list)) {
+                value.list = [ value.list ];
+            }
+            return this.getSysLogsServerNameFromId(value.list, column);
+        } else {
+            value.list = [];
+        }
+        var noServerStr = '<i>' + 'No Sys Log Server'.t() + '<i>';
+        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(noServerStr) + '"';
+        return noServerStr;
+    },
+
+    /**
+     * Method to get list of syslog server hostnames from syslog server Id list
+     * @param list List of sysolg server id's
+     * @return List of syslog server host names whose id's are present in serverId list
+     */
+    getSysLogsServerNameFromId: function(serverIds, column) {
+        if(serverIds.length == 0) {
+            var noServerStr = '<i>' + 'No Sys Log Server'.t() + '<i>';
+            column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(noServerStr) + '"';
+            return noServerStr;
+        }
+
+        var serverList = this.getViewModel().get('settings.syslogServers.list'),
+            data = serverList.filter(function(server) {
+                return serverIds.includes(server.serverId);
+            }).map(function(server) {
+                return server.description;
+            });
+        column.tdAttr = 'data-qtip="' + Ext.String.htmlEncode(data.join(", ")) + '"';
+        return data.join(", ");
+    }
+});
+
+Ext.define('Ung.config.events.SyslogRulesEditor', {
+    extend: 'Ung.cmp.RecordEditor',
+    xtype: 'ung.cmp.unsyslogruleseditor',
+    itemId: 'syslogruleseditor',
+
+    controller: 'unsyslogruleseditorcontroller'
+});
+
+Ext.define('Ung.config.events.SyslogRulesEditorController', {
+    extend: 'Ung.cmp.RecordEditorController',
+    alias: 'controller.unsyslogruleseditorcontroller',
+
+    control: {
+        '#syslogruleseditor': {
+            afterrender: 'afterSysLogRuleEditorRender'
+        }
+    },
+
+    afterSysLogRuleEditorRender: function() {
+        var view = this.getView();
+            actionContainer = view.down('#actioncontainer');
+        actionContainer.removeAll();
+        actionContainer.add({
+            xtype: 'checkboxgroup',
+            fieldLabel: 'Syslog Servers'.t(),
+            useParentDefinition: true,
+            itemId: 'syslogserverscheckbox',
+            labelWidth: 155,
+            readOnlyCls: 'x-item-disabled',
+            bind: {
+                value: '{record.syslogServers}'
+            },
+            columns: 3,
+            vertical: true,
+            items: this.getSyslogServerCBItems()
+        });
+    },
+
+    getSyslogServerCBItems: function() {
+        var view = this.getView(),
+            items = [],
+            syslogServerStore = view.up('config-events-syslog').down('[itemId=syslogservers]').getStore();
+
+        syslogServerStore.each(function(record) {
+            if(record.get('serverId') > 0 && !record.get('markedForDelete')) {
+                var readOnly = !record.get('enabled'),
+                    qtip = readOnly ? Ext.String.format('Enable the server with host {0}'.t(), record.get('host')) : record.get('host');
+                items.push({ 
+                    boxLabel: record.get('description'),
+                    name: 'list', 
+                    inputValue: Number(record.get('serverId')),
+                    autoEl: {
+                        tag: 'div',
+                        'data-qtip': qtip
+                    },
+                    readOnly: readOnly
+                });
+            }
+        });
+        return items;
+    }
 });

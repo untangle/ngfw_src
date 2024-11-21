@@ -7,7 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,7 +30,7 @@ import com.untangle.app.webroot.WebrootQuery;
  */
 public class ThreatPreventionEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(ThreatPreventionEventHandler.class);
+    private final Logger logger = LogManager.getLogger(ThreatPreventionEventHandler.class);
 
     private String action = ThreatPreventionApp.ACTION_BLOCK;
     private Boolean flag = true;

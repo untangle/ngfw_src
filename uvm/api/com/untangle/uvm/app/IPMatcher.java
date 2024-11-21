@@ -10,7 +10,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * An interface to test for an address.
@@ -65,7 +66,7 @@ public class IPMatcher
         ANY, NONE, SINGLE, RANGE, SUBNET, LIST
     };
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * The string format of this matcher

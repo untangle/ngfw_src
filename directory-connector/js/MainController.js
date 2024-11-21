@@ -478,7 +478,10 @@ Ext.define('Ung.apps.directory-connector.cmp.ActiveDirectoryServerTestController
                     statusText = 'Empty settings!'.t();
                     break;
                 case 'FAIL_QUERY':
-                    statusText = 'Query failed!'.t();
+                    statusText = 'Connection Failed: Check AD server settings, certificates, network, and firewall rules.'.t();
+                    break;
+                case 'AUTH_QUERY_FAIL':
+                    statusText = 'Authentication failure!'.t();
                     break;
                 case 'FAIL_QUERY_NONE':
                     statusText = 'Query failed, cannot find object defined by domain and OU'.t();

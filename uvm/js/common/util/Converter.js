@@ -54,7 +54,7 @@ Ext.define('Ung.util.Converter', {
     ipaddr: function (v) { return v || ''; },
 
     httpMethod: function (v) { return Map.httpMethods[v] || v; },
-    loginFailureReason: function (v) { return Map.loginFailureReasons[v] || ''; },
+    loginReason: function (v) { return Map.loginReasons[v] || ''; },
 
     priority: function (v) { return Map.httpMethods[v] || v; },
     emailAction: function (v) { return Map.emailActions[v] || 'unknown action'.t(); },
@@ -66,7 +66,6 @@ Ext.define('Ung.util.Converter', {
             ACTIVE_DIRECTORY: 'Active Directory'.t(),
             RADIUS: 'RADIUS'.t(),
             GOOGLE: 'Google Account'.t(),
-            FACEBOOK: 'Facebook Account'.t(),
             MICROSOFT: 'Microsoft Account'.t(),
             CUSTOM: 'Custom'.t()
         };
@@ -121,5 +120,17 @@ Ext.define('Ung.util.Converter', {
     // },
 
     // not implemented, see old Renderer
-    webRule: function () {}
+    webRule: function () {},
+
+    /**
+     * This function is used to convert the field value string 
+     * to html encoded string for preventing XSS or command injection
+     */
+    stringHtmlEncode: function(value) {
+        // Decode any already-encoded characters
+        var decodedValue = Ext.String.htmlDecode(value);
+
+        // Encode the decoded value to ensure proper encoding
+        return Ext.String.htmlEncode(decodedValue);
+    }
 });

@@ -8,16 +8,20 @@ import java.util.LinkedList;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Set;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
@@ -28,7 +32,7 @@ import com.untangle.uvm.CriticalAlertEvent;
  */
 public class EventWriterImpl implements Runnable
 {
-    private static final Logger logger = Logger.getLogger(EventWriterImpl.class);
+    private static final Logger logger = LogManager.getLogger(EventWriterImpl.class);
 
     /**
      * The amount of time for the event write to sleep
@@ -117,7 +121,14 @@ public class EventWriterImpl implements Runnable
      * Stores the total number of events written
      */
     private long totalEventsWritten = 0;
-    
+
+    /**
+     * This stores the tables names so we can failback if reference table does not exist
+     */
+    static private long cacheTableInterval = 5 * 60 * 1000;
+    private Set<String> cacheTables = new HashSet<>();
+    private long cacheTableLastCheck = 0;
+
     /**
      * This is a queue of incoming events
      */
@@ -132,6 +143,13 @@ public class EventWriterImpl implements Runnable
                 logger.warn("Invalid value: " + System.getProperty( "reports.max_queue_len" ),e);
             }
         }
+        if ((temp = System.getProperty("reports.queue_drain_threshold")) != null) {
+            try {
+                LOW_WATER_MARK = Integer.parseInt(temp);
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "reports.queue_drain_threshold" ),e);
+            }
+        }
         if ((temp = System.getProperty("reports.events_per_cycle")) != null) {
             try {
                 MAX_EVENTS_PER_CYCLE = Integer.parseInt(temp);
@@ -144,6 +162,13 @@ public class EventWriterImpl implements Runnable
                 SYNC_TIME = Integer.parseInt( temp );
             } catch (Exception e) {
                 logger.warn("Invalid value: " + System.getProperty( "reports.sync_time" ),e);
+            }
+        }
+        if ((temp = System.getProperty("reports.cacheTableInterval")) != null) {
+            try {
+                cacheTableInterval = Integer.parseInt(temp);
+            } catch (Exception e) {
+                logger.warn("Invalid value: " + System.getProperty( "reports.cacheTableInterval" ),e);
             }
         }
     }
@@ -394,6 +419,72 @@ public class EventWriterImpl implements Runnable
     }
 
     /**
+     * Determine if table (including partition table) exists
+     *
+     * We don't worry about concurency as every call through here is single threaded.
+     *
+     * @param wantTableName
+     *  Name of table.
+     * @return
+     *  Array of all table names.
+     */
+    public Boolean partitionTableExists(String wantTableName)
+    {
+        Connection conn = null;
+        try {
+            if ( ( cacheTableLastCheck == 0 ) ||
+                (System.currentTimeMillis() > (cacheTableLastCheck + cacheTableInterval))){
+                /*
+                 * Cache has expired, rebuild
+                 */
+                conn = app.getDbConnection();
+                if(conn == null){
+                    return null;
+                }
+                cacheTableLastCheck = System.currentTimeMillis();
+                logger.warn("partitionTableExists: refresh cache");
+                cacheTables = new HashSet<>();
+                ResultSet rs = null;
+                if (ReportsApp.dbDriver.equals("sqlite")) {
+                    // don't cache sqlite results
+                    // the result is FORWARD_ONLY
+                    rs = conn.getMetaData().getTables( null, null, null, null );
+                } else {
+                    rs = conn.getMetaData().getTables( null, "reports", null, null );
+                }
+                rs.beforeFirst();
+ 
+                while(rs.next()){
+                    try {
+                        String tableName = rs.getString(3);
+                        String type = rs.getString(4);
+
+                        if ("TABLE".equals(type) && tableName.equals(wantTableName)){
+                            cacheTables.add(tableName);
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Exception fetching table names",e);
+                    }
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn("Failed to retrieve table names", e);
+            return null;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception e) {
+                    logger.warn("Close Exception", e);
+                }
+            }
+        }
+
+        // Return result of hashset lookup for table existance.
+        return cacheTables.contains(wantTableName);
+    }
+
+    /**
      * Write the logQueue to the database
      *
      * @param logQueue
@@ -406,22 +497,6 @@ public class EventWriterImpl implements Runnable
          */
         Map<String,Integer> countMap = new HashMap<>(); // Map from Event type to count of this type of event
         Map<String,Long> timeMap     = new HashMap<>();    // Map from Event type to culumalite time to write these events
-        if (logger.isInfoEnabled()) {
-            for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
-                LogEvent event = i.next();
-
-                /**
-                 * Update the stats
-                 */
-                String eventTypeName = event.getClass().getSimpleName();
-                Integer currentCount = countMap.get(eventTypeName);
-                if (currentCount == null)
-                    currentCount = 1;
-                else
-                    currentCount = currentCount+1;
-                countMap.put(eventTypeName, currentCount);
-            }
-        }
 
         /**
          * Calculate the write delay
@@ -437,9 +512,20 @@ public class EventWriterImpl implements Runnable
 
         HashMap<String,PreparedStatement> statementCache = new LinkedHashMap<>();
         
-        logger.debug("Compiling PreparedStatement(s)... (event count: " + logQueue.size() + ")");
+        logger.debug("Compiling PreparedStatement(s)... (event count: " + count + ")");
+        boolean logLevelInfo = logger.isInfoEnabled();
         for (Iterator<LogEvent> i = logQueue.iterator(); i.hasNext(); ) {
             LogEvent event = i.next();
+
+            if (logLevelInfo) {
+                String eventTypeName = event.getClass().getSimpleName();
+                Integer currentCount = countMap.get(eventTypeName);
+                if (currentCount == null)
+                    currentCount = 1;
+                else
+                    currentCount = currentCount + 1;
+                countMap.put(eventTypeName, currentCount);
+            }
             
             try {
                 event.compileStatements( this.dbConnection, statementCache );
@@ -460,7 +546,7 @@ public class EventWriterImpl implements Runnable
         logger.debug("Compiling PreparedStatement(s)... Complete");
 
         int statementCount = statementCache.size();
-        logger.debug("Executing PreparedStatement(s)... (statement count: " + statementCache.size() + ")");
+        logger.debug("Executing PreparedStatement(s)... (statement count: " + statementCount + ")");
         java.util.Set<Map.Entry<String,PreparedStatement>> entries = statementCache.entrySet();
 
         /**

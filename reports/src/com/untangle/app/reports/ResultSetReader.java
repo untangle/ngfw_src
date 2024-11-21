@@ -10,10 +10,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
+import com.untangle.uvm.StringEscaperUtil;
 import com.untangle.uvm.UvmContextFactory;
 
 /**
@@ -27,7 +28,7 @@ import com.untangle.uvm.UvmContextFactory;
  */
 public class ResultSetReader implements Runnable
 {
-    private static final Logger logger = Logger.getLogger(ResultSetReader.class);
+    private static final Logger logger = LogManager.getLogger(ResultSetReader.class);
 
     /**
      * MAX_RESULTS defines the maximum # of results that can be serialized in memory at one time
@@ -142,7 +143,7 @@ public class ResultSetReader implements Runnable
 
                         // if its a string, escape any javascript
                         if (o instanceof String) {
-                            o = StringEscapeUtils.escapeHtml4(o.toString());
+                            o = StringEscaperUtil.escapeHtml4(o.toString());
                         }
 
                         row.put( metadata.getColumnName(columnIter), o );
@@ -198,7 +199,7 @@ public class ResultSetReader implements Runnable
 
                         // if its a string, escape any javascript
                         if (o instanceof String) {
-                            o = StringEscapeUtils.escapeHtml4(o.toString());
+                            o = StringEscaperUtil.escapeHtml4(o.toString());
                         }
                         //logger.info( "getEvents( " + queryStr + " ) column[ " + metadata.getColumnName(i) + " ] = " + o);
 

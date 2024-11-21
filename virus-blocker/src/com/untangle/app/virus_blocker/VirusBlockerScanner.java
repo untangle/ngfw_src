@@ -10,7 +10,8 @@ import java.net.Socket;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.app.virus_blocker.VirusScanner;
 import com.untangle.app.virus_blocker.VirusScannerResult;
@@ -21,7 +22,7 @@ import com.untangle.uvm.vnet.AppSession;
  */
 public class VirusBlockerScanner implements VirusScanner
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static final int timeout = 29500; /* 29.5 sec */
 

@@ -28,16 +28,27 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
         type: 'vbox'
     },
 
+    // tbar can be removed when all users have upgraded to v17.2 and no user is having page type - custom
+    tbar: [{
+        xtype: 'tbtext',
+        padding: '8 5',
+        style: { fontSize: '12px' },
+        hidden: true,
+        bind: {
+            hidden: '{settings.pageType !== "CUSTOM"}',
+        },
+        html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Custom captive portal has been deprecated. Switch to Basic Message or Basic Logic Configuration.'.t()
+    }],
+
     items: [{
         xtype: 'radiogroup',
         margin: '0 0 20 0',
         bind: '{settings.pageType}',
         simpleValue: true,
-        columns: 3,
+        columns: 2,
         items: [
             { boxLabel: '<strong>' + 'Basic Message'.t() + '</strong>', inputValue: 'BASIC_MESSAGE', width: 150 },
             { boxLabel: '<strong>' + 'Basic Login'.t() + '</strong>', inputValue: 'BASIC_LOGIN', width: 150 },
-            { boxLabel: '<strong>' + 'Custom'.t() + '</strong>', inputValue: 'CUSTOM', width: 150 },
             { xtype: 'button', iconCls: 'fa fa-eye', text: 'Preview Captive Portal Page'.t(), margin: '10 0 0 0', handler: 'previewCaptivePage' }
         ]
     }, {
@@ -120,73 +131,6 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
             fieldLabel: 'Lower Text'.t(),
             width: 600,
             bind: '{settings.basicLoginFooter}'
-        }]
-    }, {
-        xtype: 'fieldset',
-        width: '100%',
-        title: 'Captive Portal Page Configuration'.t(),
-        padding: 10,
-        hidden: true,
-        bind: {
-            hidden: '{settings.pageType !== "CUSTOM"}'
-        },
-        items: [{
-            xtype: 'form',
-            name: 'upload_form',
-            border: false,
-            margin: '0 0 0 0',
-            items: [{
-                xtype: 'fileuploadfield',
-                name: 'upload_file',
-                buttonText: 'Upload Custom Captive Page ZIP File'.t(),
-                buttonOnly: true,
-                listeners: { 'change': 'uploadCustomFile' }
-            },{
-                xtype: 'hidden',
-                name: 'type',
-                value: 'CaptivePortal/custom_upload'
-            },{
-                xtype: 'hidden',
-                name: 'argument',
-                bind: {
-                    value: '{instance.id}'
-                }
-            }]
-        }, {
-            xtype: 'form',
-            name: 'remove_form',
-            border: false,
-            margin: '10 0 0 0',
-            items: [{
-                xtype: 'textfield',
-                fieldLabel: 'Active Custom File'.t(),
-                labelAlign: 'top',
-                readOnly: true,
-                name: 'custom_file',
-                bind: '{settings.customFilename}',
-                width: 500
-            },{
-                xtype: 'fileuploadfield',
-                name: 'remove_file',
-                allowBlank: true,
-                hidden: true
-            },{
-                xtype: 'hidden',
-                name: 'type',
-                value: 'CaptivePortal/custom_remove'
-            },{
-                xtype: 'hidden',
-                name: 'argument',
-                bind: {
-                    value: '{instance.id}'
-                }
-            }, {
-                xtype: 'button',
-                formBind: true,
-                name: 'remove',
-                text: 'Remove Custom File'.t(),
-                handler: 'removeCustomFile'
-            }]
         }]
     }, {
         xtype: 'fieldset',

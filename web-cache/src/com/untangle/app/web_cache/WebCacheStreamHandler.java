@@ -12,7 +12,8 @@ import java.io.IOException;
 
 import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This is the main network event handler
@@ -22,7 +23,7 @@ import org.apache.log4j.Logger;
  */
 public class WebCacheStreamHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private WebCacheApp app;
 
     /**

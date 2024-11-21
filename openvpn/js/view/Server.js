@@ -220,6 +220,10 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         'existing': false
     },
 
+    importValidationJavaClass: true,
+
+    importValidationForComboBox: true,
+
     bind: '{remoteClients}',
 
     columns: [{
@@ -267,7 +271,12 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
         bind: {
             value: '{record.name}',
             readOnly: '{record.existing}'
-        }
+        },
+        validator: function(value, component) {
+            if(component === undefined)
+                    component = this;
+            return Util.isUnique(value, 'remote client', 'name', component," app-openvpn-remote-clients-grid");
+        }    
     }, {
         xtype: 'combobox',
         fieldLabel: 'Group'.t(),
@@ -296,7 +305,12 @@ Ext.define('Ung.apps.openvpn.cmp.RemoteClientsGrid', {
             hidden: '{!record.export}'
         },
         allowBlank: false,
-        vtype: 'cidrBlockList'
+        vtype: 'cidrBlockList',
+        validator: function(value, component) {
+            if(component === undefined)
+                    component = this;
+            return Util.isIpIntersects(value, 'remote client', 'exportNetwork', component," app-openvpn-remote-clients-grid");
+        }
     }]
 
 });
@@ -324,6 +338,10 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
         'export': false
     },
 
+    importValidationJavaClass: true,
+
+    importValidationForComboBox: true,
+
     bind: '{groups}',
 
     columns: [{
@@ -345,7 +363,12 @@ Ext.define('Ung.apps.openvpn.cmp.GroupsGrid', {
     editorFields: [{
         xtype: 'textfield',
         fieldLabel: 'Group Name'.t(),
-        bind: '{record.name}'
+        bind: '{record.name}',
+        validator: function(value, component) {
+            if(component === undefined)
+                    component = this;
+            return Util.isUnique(value, 'group', 'name', component, 'app-openvpn-groups-grid');
+        }
     }, {
         xtype: 'checkbox',
         fieldLabel: 'Full Tunnel'.t(),
@@ -417,6 +440,8 @@ Ext.define('Ung.apps.openvpn.cmp.ExportedNetworksGrid', {
         'name': '',
         'network': ''
     },
+
+    importValidationJavaClass: true,
 
     bind: '{exportedNetworks}',
 

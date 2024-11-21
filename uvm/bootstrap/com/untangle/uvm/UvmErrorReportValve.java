@@ -8,13 +8,12 @@ import java.io.PrintWriter;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ErrorReportValve;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Sends a friendly error page when a problem occurs.
@@ -27,7 +26,7 @@ public class UvmErrorReportValve extends ErrorReportValve
 {
     public static final String UVM_WEB_MESSAGE_ATTR = "com.untangle.uvm.web.message";
 
-    private static final Logger logger = Logger.getLogger(UvmErrorReportValve.class);
+    private static final Logger logger = LogManager.getLogger(UvmErrorReportValve.class);
 
     /**
      * report
@@ -79,7 +78,7 @@ public class UvmErrorReportValve extends ErrorReportValve
             }
         }
 
-        errorMessage  = StringEscapeUtils.escapeHtml4(errorMessage);
+        errorMessage  = StringEscaperUtil.escapeHtml4(errorMessage);
 
         response.setContentType("text/html");
         response.setCharacterEncoding("utf-8");

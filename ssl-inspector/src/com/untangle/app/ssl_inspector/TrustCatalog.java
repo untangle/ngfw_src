@@ -15,7 +15,8 @@ import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import com.untangle.uvm.ExecManagerResult;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class is used to manage the main trust factory that is used to validate

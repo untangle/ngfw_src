@@ -8,48 +8,100 @@ Ext.define('Ung.config.events.view.Syslog', {
     bodyPadding: 10,
     withValidation: true,
 
-    items:[{
-        title: 'Remote Syslog Configuration'.t(),
-        items: [{
-            xtype: 'component',
-            html: 'If enabled logged events will be sent in real-time to a remote syslog for custom processing.'.t()
+    items:[
+    {
+        xtype: 'ungrid',
+        title: 'Servers'.t(),
+        itemId: 'syslogservers',
+        region: 'center',
+
+        restrictedRecords: {
+            keyMatch: 'reserved',
+            valueMatch: true
+        },
+
+        padding: '0 0 10 0',
+        bind: {
+            store: '{syslogServers}',
+        },
+
+        listProperty: 'settings.syslogServers.list',
+        tbar: ['@add'],
+        recordActions: ['edit', 'delete'],
+
+        emptyText: 'No Servers Configured'.t(),
+
+        emptyRow: {
+            javaClass: 'com.untangle.uvm.event.SyslogServer',
+            serverId: -1,
+            enabled: true,
+            port: 514,
+            protocol: "UDP"
+        },
+
+        columns: [
+            Column.serverId,
+            Column.enabled,
+            Column.description,
+        {
+            header: 'Host'.t(),
+            dataIndex: 'host',
+            flex: 1,
+            width: Renderer.hostnameWidth
         }, {
-            xtype:'checkbox',
-            labelWidth: 160,
-            bind: "{settings.syslogEnabled}",
-            fieldLabel: 'Enable Remote Syslog'.t(),
-            listeners: {
-                disable: function (ck) {
-                    ck.setValue(false);
+            header: 'Port'.t(),
+            width: Renderer.portWidth,
+            dataIndex: 'port'
+        },{
+            header: 'Protocol'.t(),
+            width: Renderer.protocolWidth,
+            dataIndex: 'protocol'
+        },{
+            header: 'Tag'.t(),
+            width: Renderer.tagsWidth,
+            dataIndex: 'tag',
+            renderer: function(value, column, record) {
+                if(!value) {
+                    return Ext.String.format('uvm-to-{0}', record.get('host'));
                 }
+                return value;
             }
-        }, {
-            xtype:'fieldset',
-            collapsible: false,
-            hidden: true,
-            disabled: true,
-            bind: {
-                hidden: '{settings.syslogEnabled == false}',
-                disabled: '{settings.syslogEnabled == false}'
+		}],
+
+        editorFields: [
+            Field.enableRule(),
+            {
+                xtype: 'textfield',
+                fieldLabel: 'Description'.t(),
+                bind: '{record.description}',
+                emptyText: '[no description]'.t(),
+                allowBlank: false,
+                validator: function(value) {
+                    var store = this.up('#syslogservers').getStore(),
+                        currentServerId = this.up('window').getViewModel().get('record.serverId');
+                
+                    // Check if a record with the same description exists in the store
+                    var isDescUnique = store.findBy(function(record) {
+                        if(currentServerId == -1) {
+                            return record.get('description') === value;
+                        } else {
+                            return record.get('serverId') !== currentServerId && record.get('description') === value;
+                        }
+                    }) === -1;
+                    return (isDescUnique) ? true : 'Duplicate description.'.t();
+                }
             },
-            items:[{
+            {
                 xtype: 'textfield',
                 fieldLabel: 'Host'.t(),
-                bind: '{settings.syslogHost}',
-                toValidate: true,
+                bind: '{record.host}',
+                emptyText: '[no host]'.t(),
                 allowBlank: false,
-                blankText: 'Host must be specified.'.t(),
-                validator: Ext.bind( function( value ){
-                    if( value == '127.0.0.1' ||
-                        value == 'localhost' ){
-                        return 'Host cannot be localhost address.'.t();
-                    }
-                    return true;
-                }, this)
+                blankText: 'This field is required'.t()
             },{
                 xtype: 'numberfield',
                 fieldLabel: 'Port'.t(),
-                bind: '{settings.syslogPort}',
+                bind: '{record.port}',
                 toValidate: true,
                 allowDecimals: false,
                 minValue: 0,
@@ -60,27 +112,51 @@ Ext.define('Ung.config.events.view.Syslog', {
                 xtype: 'combo',
                 editable: false,
                 fieldLabel: 'Protocol'.t(),
+                bind: '{record.protocol}',
                 queryMode: 'local',
                 store: [["UDP", 'UDP'.t()],
-                        ["TCP", "TCP".t()]],
-                bind: '{settings.syslogProtocol}',
+                        ["TCP", "TCP".t()]]
             },{
-                name: 'syslogEventsSummary',
-                xtype: 'component',
-                html: '',
-            }]
-        }]
-    }, {
+                xtype: 'textfield',
+                fieldLabel: 'Tag'.t(),
+                bind: '{record.tag}',
+                emptyText: '[default tag: uvm-to-{host}]'.t(),
+                validator: function(value) {
+                    var store = this.up('#syslogservers').getStore(),
+                        currentServerId = this.up('window').getViewModel().get('record.serverId');
+                
+                    // Check if a record with the same tag exists in the store
+                    var isTagUnique = store.findBy(function(record) {
+                        if(currentServerId == -1) {
+                            return record.get('tag') === value;
+                        } else {
+                            return record.get('serverId') !== currentServerId && record.get('tag') === value;
+                        }                        
+                    }) === -1;
+                    return (isTagUnique) ? true : 'Tag already exists.'.t();
+                }
+            }
+        ]
+    },{
+        xtype: 'container',
+        padding: '8 5',
+        style: { fontSize: '12px', background: '#DADADA'},
+        html: '<i class="fa fa-info-circle" style="color: orange;"></i> ' + 'Save the New/Modified/Deleted records in Syslog Server grid to enable Syslog Rules'.t(),
+        hidden: true,
+        bind: {
+            hidden: '{!syslogRuleGridDisabled}'
+        }
+    },{
         xtype: 'ungrid',
-        title: 'Syslog Rules'.t(),
+        controller: 'uneventssyslogrulesgrid',
+        title: 'Rules'.t(),
+        itemId: 'syslogrules',
         region: 'center',
 
-        hidden: true,
-        disabled: true,
+        disabled: false,
         bind: {
             store: '{syslogRules}',
-            hidden: '{settings.syslogEnabled == false}',
-            disabled: '{settings.syslogEnabled == false}'
+            disabled: '{syslogRuleGridDisabled || syslogServersGridEmpty}'
         },
 
         listProperty: 'settings.syslogRules.list',
@@ -88,6 +164,8 @@ Ext.define('Ung.config.events.view.Syslog', {
         recordActions: ['edit', 'copy', 'delete', 'reorder'],
         copyId: 'ruleId',
         copyAppendField: 'description',
+
+        emptyText: 'No Rules Configured'.t(),
 
         emptyRow: {
             javaClass: 'com.untangle.uvm.event.SyslogRule',
@@ -105,7 +183,11 @@ Ext.define('Ung.config.events.view.Syslog', {
             thresholdEnabled: false,
             thresholdTimeframeSec: 60,
             thresholdGroupingField: null,
-            syslog: true
+            syslog: true,
+            syslogServers: {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            }
         },
 
         columns: [
@@ -115,12 +197,14 @@ Ext.define('Ung.config.events.view.Syslog', {
             Ung.config.events.MainController.conditionsClass,
             Ung.config.events.MainController.conditions,
         {
-            xtype:'checkcolumn',
-            header: 'Remote Syslog'.t(),
-            dataIndex: 'syslog',
-            width: Renderer.booleanWidth + 30
+            header: 'Syslog Servers'.t(),
+            width: Renderer.conditionsWidth,
+            flex: 2,
+            dataIndex: 'syslogServers',
+            renderer: 'sysLogServersRenderer'
         }],
 
+        editorXtype: 'ung.cmp.unsyslogruleseditor',
         editorFields: [
             Field.enableRule(),
             Field.description,
@@ -192,17 +276,7 @@ Ext.define('Ung.config.events.view.Syslog', {
         }, {
             xtype: 'fieldset',
             title: 'Perform the following action(s):'.t(),
-            items:[{
-                xtype:'checkbox',
-                fieldLabel: 'Remote Syslog'.t(),
-                labelWidth: 160,
-                bind: '{record.syslog}',
-                listeners: {
-                    disable: function (ck) {
-                        ck.setValue(false);
-                    }
-                }
-            }]
+            itemId: 'actioncontainer'
         }]
     }]
 });

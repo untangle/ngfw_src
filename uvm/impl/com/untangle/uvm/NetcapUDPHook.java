@@ -5,7 +5,8 @@ package com.untangle.uvm;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.jnetcap.UDPAttributes;
 import com.untangle.jnetcap.NetcapCallback;
@@ -24,7 +25,7 @@ import com.untangle.uvm.vnet.AppUDPSession;
 public class NetcapUDPHook implements NetcapCallback
 {
     private static NetcapUDPHook INSTANCE;
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * getInstance gets the NetcapUDPHook singleton

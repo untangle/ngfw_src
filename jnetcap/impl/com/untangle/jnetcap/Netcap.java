@@ -6,14 +6,15 @@ package com.untangle.jnetcap;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Netcap ss the main JNetcap interface
  */
 public final class Netcap
 {
-    private static final Logger logger = Logger.getLogger( Netcap.class );
+    private static final Logger logger = LogManager.getLogger( Netcap.class );
 
     public static final short IPPROTO_UDP  = 17;
     public static final short IPPROTO_TCP  = 6;

@@ -70,63 +70,89 @@ Ext.define('Ung.apps.reports.view.Data', {
         title: 'Google Drive Backup'.t(),
         labelWidth: 150,
         items: [{
-            xtype: 'container',
-            margin: '5 0 15 0',
-            html: 'If enabled, Configuration Backup uploads reports data backup files to Google Drive.'.t()
-        }, {
+             xtype: 'container',
+             margin: '5 0 15 0',
+             html: 'If enabled, Configuration Backup uploads reports data backup files to Google Drive.'.t()
+         }, {
+             xtype: 'component',
+             bind: {
+                 html: '{driveConfiguredText}',
+                 style: { color: '{googleDriveConfigured ? "green" : "red"}'}
+             }
+         }, {
             xtype: 'component',
+            hidden: true,
             bind: {
-                html: '{driveConfiguredText}',
-                style: { color: '{googleDriveConfigured ? "green" : "red"}'}
+                hidden: '{rootDirectory}',
+                html: 'The Google Drive directory is not selected.'.t(),
+                style: { color: "red" }
             }
         }, {
-            xtype: 'button',
-            text: 'Configure Google Drive'.t(),
-            margin: '10 0 15 0',
-            handler: 'configureGoogleDrive'
-        }, {
-            xtype: 'checkbox',
-            boxLabel: 'Upload Data to Google Drive'.t(),
+             xtype: 'button',
+             text: 'Configure Google Drive'.t(),
+             margin: '10 0 15 0',
+             handler: 'configureGoogleDrive'
+         }, {
+             xtype: 'checkbox',
+             boxLabel: 'Upload Data to Google Drive'.t(),
+             disabled: true,
+             bind: {
+                 value: '{settings.googleDriveUploadData}',
+                 disabled: '{!googleDriveConfigured || !rootDirectory}'
+             },
+             listeners: {
+                 render: function(obj) {
+                     obj.getEl().set({'data-qtip': 'If enabled and configured Configuration Backup will upload backups to google drive.'.t()});
+                 }
+             }
+         }, {
+             xtype: 'checkbox',
+             boxLabel: 'Upload CSVs to Google Drive'.t(),
+             disabled: true,
+             bind: {
+                 value: '{settings.googleDriveUploadCsv}',
+                 disabled: '{!googleDriveConfigured || !rootDirectory}'
+             },
+             listeners: {
+                 render: function(obj) {
+                     obj.getEl().set({'data-qtip': 'If enabled and configured Configuration Backup will upload backups to google drive.'.t()});
+                 }
+             }
+         }, {
+            xtype: 'fieldset',
             disabled: true,
+            hidden: true,
             bind: {
-                value: '{settings.googleDriveUploadData}',
-                disabled: '{!googleDriveConfigured}'
+                disabled: '{!googleDriveConfigured || !rootDirectory}',
+                hidden: '{!googleDriveConfigured || !rootDirectory}'
             },
-            listeners: {
-                render: function(obj) {
-                    obj.getEl().set({'data-qtip': 'If enabled and configured Configuration Backup will upload backups to google drive.'.t()});
-                }
-            }
-        }, {
-            xtype: 'checkbox',
-            boxLabel: 'Upload CSVs to Google Drive'.t(),
-            disabled: true,
-            bind: {
-                value: '{settings.googleDriveUploadCsv}',
-                disabled: '{!googleDriveConfigured}'
+            layout: {
+                type: 'hbox'
             },
-            listeners: {
-                render: function(obj) {
-                    obj.getEl().set({'data-qtip': 'If enabled and configured Configuration Backup will upload backups to google drive.'.t()});
+            items: [{
+                xtype: 'displayfield',
+                margin: '10 0 10 10',
+                fieldLabel: 'Google Drive Directory',
+                labelWidth: 150,
+                renderer: function() {
+                    var rootDirectory = Rpc.directData('rpc.UvmContext.googleManager.getAppSpecificGoogleDrivePath', null);
+                    return Ext.String.format('<strong><span class="cond-val"> {0}</span></strong>', rootDirectory + " /");
                 }
-            }
-        }, {
-            xtype: 'textfield',
-            regex: /^[\w\. \/]+$/,
-            regexText: 'The field can have only alphanumerics, spaces, or periods.'.t(),
-            fieldLabel: 'Google Drive Directory'.t(),
-            labelWidth: 150,
-            disabled: true,
-            bind: {
-                value: '{settings.googleDriveDirectory}',
-                disabled: '{!googleDriveConfigured}'
-            },
-            listeners: {
-                render: function(obj) {
-                    obj.getEl().set({'data-qtip': 'The destination directory in google drive.'.t()});
+            },{
+                xtype: 'textfield',
+                margin: '10 10 10 0',
+                regex: /^[\w\. \/]+$/,
+                regexText: "The field can have only alphanumerics, spaces, or periods.".t(),
+                bind: '{settings.googleDriveDirectory}',
+                width: 200,
+                emptyText: 'Enter folder name',
+                autoEl: {
+                    tag: 'div',
+                    'data-qtip': "The destination directory in google drive.".t()
                 }
-            }
-        }]
+            }]
+        }
+    ]
     }, {
         title: 'Import / Restore Data Backup Files'.t(),
         labelWidth: 150,
@@ -183,6 +209,7 @@ Ext.define('Ung.apps.reports.view.Data', {
         }, {
             xtype: 'textfield',
             fieldLabel: 'Password'.t(),
+            inputType: 'password',
             width: 300,
             bind: '{settings.dbPassword}',
             allowBlank: false,

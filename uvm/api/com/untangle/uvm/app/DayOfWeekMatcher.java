@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Date;
 import java.util.Calendar;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A matcher for days of the week
@@ -48,7 +49,7 @@ public class DayOfWeekMatcher
         MatcherCache = new ConcurrentHashMap<>();
     }
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private enum DayOfWeekMatcherType
     {

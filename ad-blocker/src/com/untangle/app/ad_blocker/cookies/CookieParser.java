@@ -6,7 +6,8 @@ package com.untangle.app.ad_blocker.cookies;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class provides static cookie parsing utility methods
@@ -17,7 +18,7 @@ public class CookieParser
     private static final int VALUE_STATE = 1;
     private static final int END_AVPAIR_STATE = 2;
 
-    private final static Logger logger = Logger.getLogger(CookieParser.class);
+    private final static Logger logger = LogManager.getLogger(CookieParser.class);
 
     /**
      * Parses a cookie, keys and values are converted to lower case.

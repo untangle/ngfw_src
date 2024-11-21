@@ -4,14 +4,15 @@
 
 package com.untangle.app.virus_blocker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Abstract framework for a virus scanner client
  */
 abstract public class VirusClient implements Runnable
 {
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
 
     protected final static int READ_SZ = 1024;
 

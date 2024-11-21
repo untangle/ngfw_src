@@ -99,11 +99,6 @@ Ext.define('Ung.apps.intrusionprevention.view.Signatures', {
         flex:3,
         hidden: true
     },{
-        header: "Reference".t(),
-        dataIndex: 'sid',
-        width: Renderer.messageWidth,
-        renderer: Ung.apps.intrusionprevention.MainController.referenceRenderer
-    },{
         header: "Recommended Action".t(),
         dataIndex: 'recommendedAction',
         width: Renderer.messageWidth,

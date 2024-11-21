@@ -184,34 +184,6 @@ Ext.define('Ung.apps.openvpn.MainController', {
         });
         if (problem != 0) return(false);
 
-        // check for duplicate client names
-        counter = 1;
-        clientStore.each(function(record) {
-            var clientName = record.get('name');
-            if (clientNames[clientName] != null) {
-                message = Ext.String.format("The client name: {0} in row: {1} already exists.", clientName, counter);
-                problem++;
-                Ext.MessageBox.alert("Add Remote Client Failed".t(), message);
-            }
-            if (! record.get('markedForDelete')) clientNames[clientName] = true;
-            counter++;
-        });
-        if (problem != 0) return(false);
-
-        // check for duplicate group names
-        counter = 1;
-        groupStore.each(function(record) {
-            var groupName = record.get('name');
-            if (groupNames[groupName] != null) {
-                message = Ext.String.format("The group name: {0} in row: {1} already exists.", groupName, counter);
-                problem++;
-                Ext.MessageBox.alert("Add Group Failed".t(), message);
-            }
-            if (! record.get('markedForDelete')) groupNames[groupName] = true;
-            counter++;
-        });
-        if (problem != 0) return(false);
-
         // we must not allow port 443 or Apache will get very upset
         var pfield = Ext.ComponentQuery.query('textfield[fieldIndex=listenPort]')[0];
         var pvalue = pfield.getValue();
@@ -377,15 +349,15 @@ Ext.define('Ung.apps.openvpn.SpecialGridController', {
                 var clients = [{
                   name: 'downloadUntangleConfigurationFile',
                   type: 'zip',
-                  message: 'Click here to download this client\'s configuration zip file for remote NGFW OpenVPN site to site connections.'.t()
+                  message: 'Download client configuration zip file for remote NGFW OpenVPN site to site connections.'.t()
                 },{
                   name: 'downloadGenericConfigurationFile',
                   type: 'ovpn',
-                  message: 'Click here to download this client\'s configuration as a single ovpn file with all certificates included inline (For use with OpenVPN Community Edition).'.t()
+                  message: 'Download client configuration as a single ovpn file with all certificates included inline (For use with OpenVPN Community Edition).'.t()
                 },{
                   name: 'downloadChromebookConfigurationFile',
                   type: 'onc',
-                  message: 'Click here to download this client\'s configuration onc file for Chromebook.'.t()
+                  message: 'Download client configuration ONC file for Chromebook.'.t()
                 }];
 
                 Ext.MessageBox.wait("Building OpenVPN Clients...".t(), "Please Wait".t());

@@ -60,6 +60,11 @@ Ext.define('Ung.apps.wan-failover.view.TestGrid', {
         'testHistorySize': 10
     },
 
+    extraValueCheckForCombo : { interfaceId : 1 },
+
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+
     columns: [{
         xtype: 'checkcolumn',
         header: 'Enabled'.t(),

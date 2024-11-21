@@ -8,7 +8,6 @@ import pytest
 import sys
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -53,9 +52,12 @@ tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
 
+local_host_ip = None
+local_host_lan_ip = None
+
 Remote_ngfw = overrides.get("Remote_ngfw", default={
-        "serverAddress": "192.168.1.17",
-        "adminPassword": "admin123"
+        "serverAddress": IPSEC_HOST,
+        "adminPassword": "passwd"
 })
 
 def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip=None, local_lan_ip=None, local_lan_range=None):
@@ -63,11 +65,12 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
     Create an ipsec tunnel settings entry.
     If the Local values are not defined, use the WAN address to search for them from IPSEC_CONFIGURED_HOST_IPS.
     """
+    global local_host_ip, local_host_lan_ip
     if ( local_ip is None or
          local_lan_ip is None or
          local_lan_range is None ):
         # Lookup local config from associated WAN
-        wan_ip = uvmContext.networkManager().getFirstWanAddress()
+        wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
         for host_config in IPSEC_CONFIGURED_HOST_IPS:
             if (wan_ip == host_config[0]):
                 if local_ip is None:
@@ -76,6 +79,8 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
                     local_lan_ip = host_config[1]
                 if local_lan_range is None:
                     local_lan_range = host_config[2]
+                local_host_ip = local_ip
+                local_host_lan_ip = local_lan_ip
                 break
 
         if ( local_ip is None or
@@ -197,9 +202,9 @@ def createDNSRule( networkAddr, name):
 
 
 def addDNSRule(newRule):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings['dnsSettings']['staticEntries']['list'].insert(0,newRule)
-    uvmContext.networkManager().setNetworkSettings(netsettings)  
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)  
 
 def create_alias(ipAddress,ipNetmask,ipPrefix):
     return {
@@ -261,18 +266,18 @@ class IPsecTests(NGFWTestCase):
         tunnelUp = False
 
         if orig_netsettings == None:
-            orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+            orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
-        if (uvmContext.appManager().isInstantiated(cls.appNameAD())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.appNameAD())):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.appNameAD())
             else:
-                appAD = uvmContext.appManager().app(cls.appNameAD())
+                appAD = global_functions.uvmContext.appManager().app(cls.appNameAD())
         else:
-            appAD = uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
+            appAD = global_functions.uvmContext.appManager().instantiate(cls.appNameAD(), default_policy_id)
 
         appDataRD = appAD.getSettings().get('radiusSettings')
-        appFW = uvmContext.appManager().instantiate(cls.appNameFW(), default_policy_id)
+        appFW = global_functions.uvmContext.appManager().instantiate(cls.appNameFW(), default_policy_id)
         ipsecHostResult = subprocess.call(["ping","-c","1",IPSEC_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         l2tpClientHostResult = subprocess.call(["ping","-c","1",L2TP_CLIENT_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -283,7 +288,7 @@ class IPsecTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_createIpsecTunnel(self):
         global tunnelUp, ipsecTestLAN
@@ -322,7 +327,7 @@ class IPsecTests(NGFWTestCase):
         ##
         vlan_interface_name = "ats_vlan"
         network_settings = copy.deepcopy(orig_netsettings)
-        vlan_netspace = uvmContext.netspaceManager().getAvailableAddressSpace("IPv4", 1);
+        vlan_netspace = global_functions.uvmContext.netspaceManager().getAvailableAddressSpace("IPv4", 1);
         vlan_host, vlan_netmask = global_functions.cidr_to_netmask(vlan_netspace)
         network_settings["interfaces"]["list"].append({
             "configType": "ADDRESSED",
@@ -372,8 +377,8 @@ class IPsecTests(NGFWTestCase):
             "wirelessMode": "AP",
             "wirelessVisibility": 0
         })
-        uvmContext.networkManager().setNetworkSettings(network_settings)
-        network_settings = uvmContext.networkManager().getNetworkSettings()
+        global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
+        network_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
         interface_id = None
         for interface in network_settings["interfaces"]["list"]:
             if interface["name"] == vlan_interface_name:
@@ -401,14 +406,14 @@ class IPsecTests(NGFWTestCase):
                 "javaClass": "com.untangle.uvm.network.FilterRule",
                 "ruleId": -1
         })
-        uvmContext.networkManager().setNetworkSettings(network_settings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
 
         # Attempt to ping from the remote network back to us
         # If we are marked for the vlan, this will fail
         ipsecPcLanResult = remote_control.run_command("ping -c 1 %s" % remote_control.client_ip, host=IPSEC_PC_LAN_IP)
         # clear firewall rule in case test fails so it does not affect other tests
         network_settings["filterRules"]["list"] =[]
-        uvmContext.networkManager().setNetworkSettings(network_settings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
         assert(ipsecPcLanResult != 1)
 
     def test_025_verifyIPsecBypass(self):           
@@ -448,8 +453,8 @@ class IPsecTests(NGFWTestCase):
         global tunnelUp
         if (not tunnelUp):
             raise unittest.SkipTest("Test test_020_createIpsecTunnel success required ")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         # wait for networking to restart
         timeout = 60
         ipsecHostLANResult = 1
@@ -465,12 +470,12 @@ class IPsecTests(NGFWTestCase):
         assert (ipsecPcLanResult == 0)
         
     def test_040_windowsL2TPlocalDirectory(self):
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        wan_IP = global_functions.uvmContext.networkManager().getFirstWanAddress()
         if (l2tpClientHostResult != 0):
             raise unittest.SkipTest("l2tpClientHostResult not available")
         if (not wan_IP in L2TP_SERVER_HOSTS):
             raise unittest.SkipTest("No paired L2TP client available")
-        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+        global_functions.uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         appData = self._app.getSettings()
         appData = createL2TPconfig(appData,"LOCAL_DIRECTORY")
         self._app.setSettings(appData)
@@ -488,11 +493,11 @@ class IPsecTests(NGFWTestCase):
                         found = True
             # Send command for Windows VPN disconnect.
         vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=L2TP_CLIENT_HOST)
-        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        global_functions.uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         assert(found)
         # Use same user with different password
         new_user_password = "testtest"
-        uvmContext.localDirectory().setUsers(createLocalDirectoryUser(userpassword=new_user_password))
+        global_functions.uvmContext.localDirectory().setUsers(createLocalDirectoryUser(userpassword=new_user_password))
         appData = createL2TPconfig(appData,"LOCAL_DIRECTORY")
         self._app.setSettings(appData)
         timeout = 480
@@ -509,11 +514,11 @@ class IPsecTests(NGFWTestCase):
                         found = True
         # Send command for Windows VPN disconnect.
         vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_IP), host=L2TP_CLIENT_HOST)
-        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        global_functions.uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         assert(found)
 
     def test_042_windowsL2TPAlias(self):
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        wan_IP = global_functions.uvmContext.networkManager().getFirstWanAddress()
         device_in_office = global_functions.is_in_office_network(wan_IP)
         # L2TP Alias only works at the office network.
         if not device_in_office:
@@ -531,7 +536,7 @@ class IPsecTests(NGFWTestCase):
                         netsettings['interfaces']['list'][i]['v4Aliases']['list'].append(create_alias(L2TP_ALIAS_IP,
                                                                                          netsettings['interfaces']['list'][i]['v4StaticNetmask'],
                                                                                          netsettings['interfaces']['list'][i]['v4StaticPrefix']))
-                        uvmContext.networkManager().setNetworkSettings(netsettings)
+                        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
                         ip_alias_set = True
                         break;
 
@@ -539,7 +544,7 @@ class IPsecTests(NGFWTestCase):
             raise unittest.SkipTest("Unable to set alias IP")
         wan_addresses = [wan_IP,L2TP_ALIAS_IP]
         # Set Local Directory users
-        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+        global_functions.uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
         orig_app_settings = self._app.getSettings()
         newAppSettings = copy.deepcopy(orig_app_settings)
         newAppSettings = createL2TPconfig(newAppSettings,"LOCAL_DIRECTORY")
@@ -569,11 +574,11 @@ class IPsecTests(NGFWTestCase):
                             found = True
                 # Send command for Windows VPN disconnect.
             vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=L2TP_CLIENT_HOST)
-            uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+            global_functions.uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
             assert(found)
             # Use same user with different password
             new_user_password = "testtest"
-            uvmContext.localDirectory().setUsers(createLocalDirectoryUser(userpassword=new_user_password))
+            global_functions.uvmContext.localDirectory().setUsers(createLocalDirectoryUser(userpassword=new_user_password))
             timeout = 480
             found = False
             # Send command for Windows VPN connect.
@@ -589,18 +594,18 @@ class IPsecTests(NGFWTestCase):
             # Send command for Windows VPN disconnect.
             vpnServerResult = remote_control.run_command("rasdial.exe %s /d" % (wan_addr), host=L2TP_CLIENT_HOST)
             # set original user and password
-            uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+            global_functions.uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
             assert(found)
 
         # Clean up settings
-        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
+        global_functions.uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())
         netsettings['interfaces']['list'][i]['v4Aliases']['list'][:] = []
-        uvmContext.networkManager().setNetworkSettings(netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
         self._app.setSettings(orig_app_settings)
 
     def test_050_windowsL2TPRadiusDirectory(self):
         global appAD
-        wan_IP = uvmContext.networkManager().getFirstWanAddress()
+        wan_IP = global_functions.uvmContext.networkManager().getFirstWanAddress()
         if (radiusResult != 0):
             raise unittest.SkipTest("No RADIUS server available")
         if (l2tpClientHostResult != 0):
@@ -809,7 +814,7 @@ class IPsecTests(NGFWTestCase):
 
         # Configure local tunnel with remote any
         ipsec_settings = self._app.getSettings()
-        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan="192.168.57.100/24" , local_ip="active_wan_address", local_lan_ip="192.168.2.1", local_lan_range="192.168.2.1/24")]
+        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan=IPSEC_HOST_LAN)]
         self._app.setSettings(ipsec_settings)
 
         # Configure IPSec on remote NGFW
@@ -822,13 +827,14 @@ class IPsecTests(NGFWTestCase):
             remote_app = remote_uvm_context.appManager().instantiate(appName, default_policy_id)
         remote_app.start()
 
+        
         remote_ipsec_settings = remote_app.getSettings()
-        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="192.168.1.6", remote_lan="192.168.2.1/24" , local_ip="active_wan_address", local_lan_ip="192.168.57.100", local_lan_range="192.168.57.100/24")]
+        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=local_host_ip, remote_lan=local_host_lan_ip)]
         remote_app.setSettings(remote_ipsec_settings)
         time.sleep(10)
 
         # Add pingAddress in local NGFW tunnel
-        ipsec_settings["tunnels"]["list"][0]["pingAddress"] = "192.168.57.100"
+        ipsec_settings["tunnels"]["list"][0]["pingAddress"] = IPSEC_HOST_LAN_IP
         self._app.setSettings(ipsec_settings)
         time.sleep(40)
 
@@ -845,14 +851,14 @@ class IPsecTests(NGFWTestCase):
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
         if orig_netsettings:
-            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         # Remove Directory Connector
         if appAD != None:
-            uvmContext.appManager().destroy( appAD.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( appAD.getAppSettings()["id"] )
             appAD = None
         # Remove Firewall
         if appFW != None:
-            uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
             appFW = None
 
 

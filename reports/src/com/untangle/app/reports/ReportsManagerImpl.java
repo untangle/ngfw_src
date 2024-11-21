@@ -19,12 +19,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.OperationsEvent;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.WebBrowser;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -39,11 +41,13 @@ import com.untangle.uvm.app.PolicyManager;
  */
 public class ReportsManagerImpl implements ReportsManager
 {
-    private static final Logger logger = Logger.getLogger(ReportsManagerImpl.class);
+    private static final Logger logger = LogManager.getLogger(ReportsManagerImpl.class);
 
     private static ReportsManagerImpl instance = null;
 
     private static ReportsApp app = null;
+
+    private static String DELETE_ALL_REPORTS = "delete all reports data";
 
     /**
      * This stores the table column metadata lookup results so we don't have to frequently lookup metadata
@@ -216,7 +220,7 @@ public class ReportsManagerImpl implements ReportsManager
             if ( ! app.isLicenseValid() ) {
                 continue;
             }
-            org.json.JSONObject json = new org.json.JSONObject();
+            JSONObject json = new JSONObject();
 
             try {
                 json.put("displayName", appProperties.getDisplayName());
@@ -242,7 +246,7 @@ public class ReportsManagerImpl implements ReportsManager
         ArrayList<JSONObject> currentApplications = new ArrayList<>();
 
         for ( AppProperties appProperties : this.appPropertiesList ) {
-            org.json.JSONObject json = new org.json.JSONObject();
+            JSONObject json = new JSONObject();
 
             try {
                 json.put("displayName", appProperties.getDisplayName());
@@ -650,9 +654,9 @@ public class ReportsManagerImpl implements ReportsManager
      * @return
      *  ArrayList containing JSONObject of event result.
      */
-    public ArrayList<org.json.JSONObject> getEvents(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
+    public ArrayList<JSONObject> getEvents(final ReportEntry entry, final SqlCondition[] extraConditions, final int limit)
     {
-        ArrayList<org.json.JSONObject> results = null;
+        ArrayList<JSONObject> results = null;
         if (entry == null) {
             logger.warn("Invalid arguments");
             return results;
@@ -818,7 +822,7 @@ public class ReportsManagerImpl implements ReportsManager
         ArrayList<JSONObject> interfacesInfo = new ArrayList<>();
         for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getInterfaces() ){
             try {
-                JSONObject json = new org.json.JSONObject();
+                JSONObject json = new JSONObject();
                 json.put("interfaceId", interfaceSettings.getInterfaceId());
                 json.put("name", interfaceSettings.getName() );
                 interfacesInfo.add(json);
@@ -828,7 +832,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
         for( InterfaceSettings interfaceSettings : UvmContextFactory.context().networkManager().getNetworkSettings().getVirtualInterfaces() ){
             try {
-                JSONObject json = new org.json.JSONObject();
+                JSONObject json = new JSONObject();
                 json.put("interfaceId", interfaceSettings.getInterfaceId());
                 json.put("name", interfaceSettings.getName() );
                 interfacesInfo.add(json);
@@ -1107,11 +1111,7 @@ public class ReportsManagerImpl implements ReportsManager
      */
     private HashMap<String,String> getColumnMetaData( String tableName )
     {
-        Connection conn = app.getDbConnection();
-        if ( conn == null ) {
-            return null;
-        }
-
+        Connection conn = null;
         try {
             HashMap<String,String> results = cacheColumnsResults.get( tableName );
             if ( results != null ) {
@@ -1119,6 +1119,10 @@ public class ReportsManagerImpl implements ReportsManager
             }
             results = new HashMap<>();
 
+            conn = app.getDbConnection();
+            if ( conn == null ) {
+                return null;
+            }
             ResultSet rs;
             if (ReportsApp.dbDriver.equals("sqlite"))
                 rs = conn.getMetaData().getColumns( null, null, tableName, null );
@@ -1139,8 +1143,12 @@ public class ReportsManagerImpl implements ReportsManager
             logger.warn("Failed to fetch column meta data", e);
             return null;
         } finally {
-            try { conn.close(); } catch (Exception e) {
-                logger.warn("Close Exception",e);
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception e) {
+                    logger.warn("Close Exception", e);
+                }
             }
         }
     }
@@ -1199,7 +1207,54 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public void reinitializeDatabase()
     {
-        String cmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
+        try {
+            //Need to stop EventWriter thread to avoid DB write failures
+            if (app.getEventWriter() != null) {
+                app.getEventWriter().stop();
+            }
+            String pgCleanupCmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
+            String pgStopCmd = "/etc/init.d/postgresql stop >/dev/null 2>&1";
+            String pgStatusCmd = "/etc/init.d/postgresql status";
+            String pgStartCmd = "/etc/init.d/postgresql start >/dev/null 2>&1";
+            String generateReportTablesCmd = "/usr/share/untangle/bin/reports-generate-tables.py";
+            UvmContextFactory.context().execManager().execResult(pgStopCmd);
+            int pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd + " | grep Stopped");
+            UvmContextFactory.context().execManager().execOutput(pgCleanupCmd);
+            UvmContextFactory.context().execManager().execResult(pgStartCmd);
+            pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd);
+            if (pgStatus == 0) {
+                UvmContextFactory.context().execManager().execOutput(generateReportTablesCmd);
+                String username = null;
+                String hostname = null;
+                String userHostNameInfo = UvmContextFactory.context().settingsManager().getUserAndHostNameInfo("reports");
+                if (userHostNameInfo != null) {
+                    String infoArray[] = userHostNameInfo.split(",");
+                    if (infoArray != null & infoArray.length == 2) {
+                        username = infoArray[0];
+                        hostname = infoArray[1];
+                    }
+
+                    OperationsEvent event = new OperationsEvent(DELETE_ALL_REPORTS, username, hostname);
+                    //Start EventWriter after successful completion of DELETE_ALL_REPORTS data
+                    if (app.getEventWriter() != null) {
+                        app.getEventWriter().start(app);
+                        //Added additional wait, EventWriter yet to be ready
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            logger.warn("Interrupted during wait....");
+                        }
+                        UvmContextFactory.context().logEvent(event);
+                    }
+                    } else {
+                        logger.info("Operation event generation failed, EventWriter not ready, Restart is required ");
+                    }
+            } else {
+                logger.warn("postgres not ready, cannot reinitialize db " + pgStatusCmd);
+                if (app.getEventWriter() != null) app.getEventWriter().start(app);
+            }
+        } catch (Exception e) {
+            logger.warn("Exception occured during reinitializeDB", e);
+        }
     }
 }

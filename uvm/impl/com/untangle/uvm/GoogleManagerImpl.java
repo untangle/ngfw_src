@@ -5,16 +5,14 @@ package com.untangle.uvm;
 
 import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.log4j.Logger;
-
-import com.untangle.uvm.UvmContextFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * GoogleManagerImpl provides the API implementation of all RADIUS related functionality
@@ -23,8 +21,9 @@ public class GoogleManagerImpl implements GoogleManager
 {
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
     private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
-    
-    private final Logger logger = Logger.getLogger(getClass());
+    public String RELAY_SERVER_URL = "https://auth-relay.untangle.com";
+
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * This is just a copy of the current settings being used
@@ -80,6 +79,19 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
+     * Removes google drive credentials.json
+     */
+    private void removeGoogleDriveCredentials() {
+        try {
+            File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
+            if ( creds.exists() )
+                creds.delete();
+        } catch (Exception ex) {
+            logger.warn("Error deleting credentials.json.", ex);
+        }
+    }
+
+    /**
      * Configure Google authenticator settings.
      *
      * @param settings  Google authenticator settings.
@@ -99,64 +111,59 @@ public class GoogleManagerImpl implements GoogleManager
 
         this.settings = settings;
 
-        if ( isGoogleDriveConnected() ) {
-            String credentialsJson = "{\"client_id\":\"661509598543-1p2n8foedn1n0t7t767q9sgd0accml07.apps.googleusercontent.com\",\"client_secret\":\"eJDmfgIrqJvFvk5ZoH05CJz-\",\"refresh_token\":\"";
-            credentialsJson += settings.getDriveRefreshToken();
-            credentialsJson += "\"}";
-
-            BufferedWriter bw = null;
-            FileWriter fw = null;
-            try {
-                UvmContextFactory.context().execManager().execOutput("mkdir -p " + GOOGLE_DRIVE_PATH + ".gd/");
-                fw = new FileWriter(new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json"));
-                bw = new BufferedWriter(fw);
-                bw.write(credentialsJson);
-                bw.close();
-            } catch (Exception ex) {
-                logger.warn("Error writing credentials.json.", ex);
-            }finally{
-                if(fw != null){
-                    try{
-                        fw.close();
-                    }catch(IOException ex){
-                        logger.error("Unable to close file", ex);
-                    }
+        if (isGoogleDriveConnected()) {
+            // Set refresh token in credentials.json
+            if (StringUtils.isNotEmpty(this.settings.getDriveRefreshToken())) {
+                ExecManagerResultReader reader;
+                try {
+                    reader = UvmContextFactory.context().execManager().execEvil("sed -i 's/\"refresh_token\": *\"[^\"]*\"/\"refresh_token\":\"" + settings.getDriveRefreshToken() + "\"/g' " + GOOGLE_DRIVE_PATH + ".gd/credentials.json");
+                    reader.waitFor();
+                } catch (IOException e) {
+                    logger.warn("Exception updating refresh token", e);
                 }
-                if(bw != null){
-                    try{
-                        bw.close();
-                    }catch(IOException ex){
-                        logger.error("Unable to close file", ex);
-                    }
-                }
+            } else {
+                logger.info("Drive is connected but refresh token in settings object is empty");
             }
         } else {
-            try {
-                File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
-                if ( creds.exists() )
-                    creds.delete();
-            } catch (Exception ex) {
-                logger.warn("Error deleting credentials.json.", ex);
-            }
+            removeGoogleDriveCredentials();
         }
     }
 
     /**
-     * Determine if Google drive is connection.
+     * Determine if google drive is connected by checking access token's validity. 'drive about' returns 400 bad request if token is invalid
      *
      * @return true if Google drive is configured, false otherwise.
      */
     public boolean isGoogleDriveConnected()
     {
-        String token = settings.getDriveRefreshToken();
+        int exitCode = 0;
+        ExecManagerResultReader reader = null;
+        try {
+            reader = UvmContextFactory.context().execManager().execEvil("/usr/bin/drive about " +  GOOGLE_DRIVE_PATH);
+            exitCode = reader.waitFor();
+        } catch (IOException e) {
+            logger.warn("Exception checking connectivity to google drive",e);
+        }
+        return exitCode == 0;
+    }
 
-        if ( token == null )
-            return false;
-        token = token.replaceAll("\\s+","");
-        if ( "".equals( token ))
-            return false;
-
-        return true;
+    /**
+     * Returns app specific google drive path
+     * This directory path = GOOGLE_DRIVE_ROOT_DIRECTORY + File.separator + appDirectory
+     * returns null if google drive root directory is not available
+     * returns only GOOGLE_DRIVE_ROOT_DIRECTORY if appDirectory is blank
+     * @param appDirectory app specific subdirectory under the root directory where files are stored
+     * @return
+     */
+    @Override
+    public String getAppSpecificGoogleDrivePath(String appDirectory) {
+        if (StringUtils.isEmpty(this.settings.getGoogleDriveRootDirectory())) {
+            return null;
+        }
+        if (StringUtils.isBlank(appDirectory)) {
+            return this.settings.getGoogleDriveRootDirectory();
+        }
+        return this.settings.getGoogleDriveRootDirectory() + File.separator + appDirectory;
     }
 
     /**
@@ -205,6 +212,22 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
+     * Returns spp configuration of the google drive connector app
+     * @return GoogleCloudApp instance
+     */
+    @Override
+    public GoogleCloudApp getGoogleCloudApp() {
+        String appId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh appId " + GOOGLE_DRIVE_PATH);
+        String apiKey = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh apiKey " + GOOGLE_DRIVE_PATH);
+        String clientId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh clientId " + GOOGLE_DRIVE_PATH);
+        String scopes = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh scopes " + GOOGLE_DRIVE_PATH);
+        String redirectUrl = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh redirectUrl " + GOOGLE_DRIVE_PATH);
+
+        // intentionally not exposing client_secret
+        return new GoogleCloudApp(appId, apiKey, clientId, null, scopes, redirectUrl, RELAY_SERVER_URL);
+    }
+
+    /**
      * This launches the google drive command line app and provides the code
      * The google drive app will then fetch and save the refreshToken for future use.
      *
@@ -238,7 +261,7 @@ public class GoogleManagerImpl implements GoogleManager
             if ( refreshToken == null )
                 continue;
             refreshToken = refreshToken.replaceAll("\\s+","");
-            if ( "".equals(refreshToken) )
+            if (refreshToken.isEmpty())
                 continue;
             break;
         }
@@ -246,12 +269,14 @@ public class GoogleManagerImpl implements GoogleManager
         /**
          * save the settings with the refresh token
          */
-        if ( refreshToken != null && !"".equals(refreshToken) ) {
-            refreshToken = refreshToken.replaceAll("\\s+","");
-            logger.info("Refresh Token: " + refreshToken);
+        if ( StringUtils.isNotEmpty(refreshToken)) {
+            refreshToken = refreshToken.replaceAll("\\s+",StringUtils.EMPTY);
+            logger.info("Refresh Token: {}", refreshToken);
         
             GoogleSettings googleSettings = getSettings();
             googleSettings.setDriveRefreshToken( refreshToken );
+            // reset the root directory value in order to be selected again as per new token (new user)
+            googleSettings.setGoogleDriveRootDirectory(null);
             setSettings( googleSettings );
         } else {
             logger.warn("Unable to parse refreshToken");
@@ -268,7 +293,9 @@ public class GoogleManagerImpl implements GoogleManager
     public void disconnectGoogleDrive()
     {
         GoogleSettings googleSettings = getSettings();
-        googleSettings.setDriveRefreshToken( null );
+        removeGoogleDriveCredentials();
+        googleSettings.setDriveRefreshToken(null);
+        googleSettings.setGoogleDriveRootDirectory(null);
         setSettings( googleSettings );
     }
 

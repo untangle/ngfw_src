@@ -5,7 +5,8 @@ package com.untangle.jnetcap;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * NetcapTCPSession
@@ -13,7 +14,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("unused") //JNI
 public class NetcapTCPSession extends NetcapSession
 {
-    private static final Logger logger = Logger.getLogger( NetcapTCPSession.class );
+    private static final Logger logger = LogManager.getLogger( NetcapTCPSession.class );
 
     private static final int FLAG_SERVER_FD                    = 100;
     private static final int FLAG_CLIENT_FD                    = 101;

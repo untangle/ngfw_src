@@ -8,7 +8,6 @@ import unittest
 import pytest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -216,18 +215,18 @@ class OpenVpnTests(NGFWTestCase):
         appData['exports']['list'].append(create_export("192.0.2.0/24")) # append in case using LXC
         cls._app.setSettings(appData)
         
-        if (uvmContext.appManager().isInstantiated(cls.appWebName())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.appWebName())):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.appWebName())
             else:
-                appWeb = uvmContext.appManager().app(cls.appWebName())
+                appWeb = global_functions.uvmContext.appManager().app(cls.appWebName())
         else:
-            appWeb = uvmContext.appManager().instantiate(cls.appWebName(), default_policy_id)
+            appWeb = global_functions.uvmContext.appManager().instantiate(cls.appWebName(), default_policy_id)
 
         vpnHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_SERVER_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         vpnUserPassHostResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_SERVER_USER_PASS_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         vpnClientResult = subprocess.call(["ping","-W","5","-c","1",global_functions.VPN_CLIENT_IP],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        wanIP = uvmContext.networkManager().getFirstWanAddress()
+        wanIP = global_functions.uvmContext.networkManager().getFirstWanAddress()
         if vpnClientResult == 0:
             vpnServerResult = remote_control.run_command("ping -W 5 -c 1 " + wanIP, host=global_functions.VPN_CLIENT_IP)
         else:
@@ -241,7 +240,7 @@ class OpenVpnTests(NGFWTestCase):
         assert (result == 0)
 
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_createVPNTunnel(self):
         global tunnelUp
@@ -316,7 +315,7 @@ class OpenVpnTests(NGFWTestCase):
         assert(timeout > 0)
 
         remoteHostResultUserPass = waitForPing(global_functions.VPN_SERVER_USER_PASS_LAN_IP,0)
-        wanIP = uvmContext.networkManager().getFirstWanAddress()
+        wanIP = global_functions.uvmContext.networkManager().getFirstWanAddress()
         if global_functions.is_bridged(wanIP):
             # skip http test on bridged configurations since 10.111.0.0 network
             result = 0
@@ -410,7 +409,7 @@ class OpenVpnTests(NGFWTestCase):
         assert(pre_events_connect < post_events_connect)
 
     @pytest.mark.slow
-    def test_createDisableClientVPNTunnel(self):
+    def test_041_createDisableClientVPNTunnel(self):
         global appData, vpnServerResult, vpnClientResult
         if (vpnClientResult != 0 or vpnServerResult != 0):
             raise unittest.SkipTest("No paried VPN client available")
@@ -712,7 +711,7 @@ class OpenVpnTests(NGFWTestCase):
         clientLink = self._app.getClientDistributionDownloadLink(vpnClientName,"zip")
 
         #create Local Directory User for authentication
-        uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
+        global_functions.uvmContext.localDirectory().setUsers(createLocalDirectoryUser())
 
         #download, unzip, move config to correct directory
         result = configureVPNClientForConnection(clientLink)
@@ -757,7 +756,7 @@ class OpenVpnTests(NGFWTestCase):
         assert(pre_events_connect < post_events_connect)
 
         #remove Local Directory User
-        uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())        
+        global_functions.uvmContext.localDirectory().setUsers(removeLocalDirectoryUser())        
 
     def test_075_createClientVPNTunnelRadiusUserPass(self):
         global appData, vpnServerResult, vpnClientResult, appDC
@@ -769,11 +768,11 @@ class OpenVpnTests(NGFWTestCase):
         if (radiusResult != 0):
             raise unittest.SkipTest("No RADIUS server available")
         appNameDC = "directory-connector"
-        if (uvmContext.appManager().isInstantiated(appNameDC)):
+        if (global_functions.uvmContext.appManager().isInstantiated(appNameDC)):
             print("App %s already installed" % appNameDC)
-            appDC = uvmContext.appManager().app(appNameDC)
+            appDC = global_functions.uvmContext.appManager().app(appNameDC)
         else:
-            appDC = uvmContext.appManager().instantiate(appNameDC, default_policy_id)
+            appDC = global_functions.uvmContext.appManager().instantiate(appNameDC, default_policy_id)
         appDC.setSettings(createDirectoryConnectorSettings(radius_enable=True))
         
         running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
@@ -855,11 +854,11 @@ class OpenVpnTests(NGFWTestCase):
         if (adResult != 0):
             raise unittest.SkipTest("No AD server available")
         appNameDC = "directory-connector"
-        if (uvmContext.appManager().isInstantiated(appNameDC)):
+        if (global_functions.uvmContext.appManager().isInstantiated(appNameDC)):
             print("App %s already installed" % appNameDC)
-            appDC = uvmContext.appManager().app(appNameDC)
+            appDC = global_functions.uvmContext.appManager().app(appNameDC)
         else:
-            appDC = uvmContext.appManager().instantiate(appNameDC, default_policy_id)
+            appDC = global_functions.uvmContext.appManager().instantiate(appNameDC, default_policy_id)
         appDC.setSettings(createDirectoryConnectorSettings(ad_enable=True,ldap_secure=True))
         
         running = remote_control.run_command("pidof openvpn", host=global_functions.VPN_CLIENT_IP,)
@@ -977,11 +976,11 @@ class OpenVpnTests(NGFWTestCase):
         
         # install TunnelVPN
         tunnelAppName = "tunnel-vpn"
-        if (uvmContext.appManager().isInstantiated(tunnelAppName)):
+        if (global_functions.uvmContext.appManager().isInstantiated(tunnelAppName)):
             print('app %s already instantiated' % tunnelAppName)
-            tunnelApp = uvmContext.appManager().app(tunnelAppName)
+            tunnelApp = global_functions.uvmContext.appManager().app(tunnelAppName)
         else:
-            tunnelApp = uvmContext.appManager().instantiate(tunnelAppName, default_policy_id)    
+            tunnelApp = global_functions.uvmContext.appManager().instantiate(tunnelAppName, default_policy_id)    
         tunnelApp.start()
 
         #set up TunnelVPN
@@ -1037,13 +1036,13 @@ class OpenVpnTests(NGFWTestCase):
         global appWeb, appDC, tunnelApp
 
         if appWeb != None:
-            uvmContext.appManager().destroy( appWeb.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( appWeb.getAppSettings()["id"] )
             appWeb = None
         if appDC != None:
-            uvmContext.appManager().destroy( appDC.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( appDC.getAppSettings()["id"] )
             appDC = None
         if tunnelApp != None:
-            uvmContext.appManager().destroy( tunnelApp.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( tunnelApp.getAppSettings()["id"] )
             tunnelApp = None
 
 

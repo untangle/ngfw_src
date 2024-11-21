@@ -34,8 +34,12 @@ function getInterfaceStatus()
     local t_duplex=${FLAG_UNKNOWN}
     local t_eee_enabled=${FLAG_UNKNOWN}
     local t_eee_active=${FLAG_UNKNOWN}
-    local t_mtu=$(cat /sys/class/net/${t_intf}/mtu)
+    local t_mtu=1500
     local t_link_supported=${FLAG_UNKNOWN}
+
+    if [ -f /sys/class/net/${t_intf}/mtu ]; then
+        t_mtu=$(cat /sys/class/net/${t_intf}/mtu)
+    fi
 
     if [ ! -z "${t_comma}" ] ; then 
         echo "    ${t_comma}" ; 

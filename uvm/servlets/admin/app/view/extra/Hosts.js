@@ -89,7 +89,8 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'httpUserAgent',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'captivePortalAuthenticated',
         },{
@@ -97,7 +98,8 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'hostname',
             type: 'string',
-            sortType: 'asHostname'
+            sortType: 'asHostname',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'hostnameSource',
             type: 'string',
@@ -105,35 +107,48 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'hostnameDhcp',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'hostnameDns',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'hostnameDevice',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'hostnameDeviceLastKnown',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'hostnameOpenVpn',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'hostnameReports',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'hostnameDirectoryConnector',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
+        },{
+            name: 'hostnameWireGuardVpn',
+            type: 'string',
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'username',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'usernameSource',
             type: 'string',
@@ -141,23 +156,33 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             name: 'usernameDirectoryConnector',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'usernameCaptivePortal',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'usernameDevice',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'usernameOpenVpn',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'usernameIpsecVpn',
             type: 'string',
-            sortType: 'asUnString'
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
+        },{
+            name: 'usernameWireGuardVpn',
+            type: 'string',
+            sortType: 'asUnString',
+            convert: Converter.stringHtmlEncode
         },{
             name: 'quotaSize',
         },{
@@ -318,6 +343,12 @@ Ext.define('Ung.view.extra.Hosts', {
             hidden: true,
             filter: Renderer.stringFilter
         },{
+            header: 'Hostname (WireGuardVPN)'.t(),
+            dataIndex: 'hostnameWireGuardVpn',
+            width: Renderer.hostnameWidth,
+            hidden: true,
+            filter: Renderer.stringFilter
+        },{
             header: 'Username'.t(),
             dataIndex: 'username',
             width: Renderer.usernameWidth,
@@ -355,6 +386,12 @@ Ext.define('Ung.view.extra.Hosts', {
         },{
             header: 'Username (IPsec VPN)'.t(),
             dataIndex: 'usernameIpsecVpn',
+            width: Renderer.usernameWidth,
+            hidden: true,
+            filter: Renderer.stringFilter
+        },{
+            header: 'Username (WireGuard VPN)'.t(),
+            dataIndex: 'usernameWireGuardVpn',
             width: Renderer.usernameWidth,
             hidden: true,
             filter: Renderer.stringFilter

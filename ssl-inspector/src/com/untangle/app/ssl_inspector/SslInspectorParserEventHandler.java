@@ -22,7 +22,8 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.OAuthDomain;
 import com.untangle.uvm.UvmContextFactory;
@@ -50,7 +51,7 @@ import com.untangle.uvm.vnet.TCPNewSessionRequest;
  */
 public class SslInspectorParserEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private final SslInspectorApp app;
     private final boolean clientSide;

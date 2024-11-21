@@ -1227,7 +1227,6 @@ Ext.define('Ung.util.Renderer', {
         ACTIVE_DIRECTORY: 'Active Directory'.t(),
         RADIUS: 'RADIUS'.t(),
         GOOGLE: 'Google Account'.t(),
-        FACEBOOK: 'Facebook Account'.t(),
         MICROSOFT: 'Microsoft Account'.t(),
         CUSTOM: 'Custom'.t(),
         default: 'Unknown'.t()
@@ -1247,17 +1246,20 @@ Ext.define('Ung.util.Renderer', {
         return ( value in Renderer.configurationBackupSuccessMap ) ? Renderer.configurationBackupSuccessMap[value] : Renderer.configurationBackupSuccessMap['default'];
     },
 
-    loginFailureReasonMap : {
+    loginReasonMap : {
         U:'invalid username'.t(),
         P: 'invalid password'.t(),
+        T: 'invalid TOTP'.t(),
+        I: 'logged in successfully'.t(),
+        O: 'logged out successfully'.t(),
         default: ''
 
     },
-    loginFailureReason: function( value ){
+    loginReason: function( value ){
         if(Ext.isEmpty(value)) {
             return '';
         }
-        return ( value in Renderer.loginFailureReasonMap ) ? Renderer.loginFailureReasonMap[value] : Renderer.loginFailureReasonMap['default'];
+        return ( value in Renderer.loginReasonMap ) ? Renderer.loginReasonMap[value] : Renderer.loginReasonMap['default'];
     },
 
     loginSuccess: function( value ){
@@ -1346,5 +1348,13 @@ Ext.define('Ung.util.Renderer', {
             return tagsList.length > 0 ? tagsList.join(" ") : "";
         }
         return "";
+    },
+    renderBps : function(val, metaData, record) {
+        if(val && val > 0){
+            var value = Util.bytesRenderer(val,true);
+            metaData.tdAttr = 'data-qtip="' + value + '"';
+            return value;
+        }
+        return '<span style="color: #CCC">0</span>';
     } 
 });

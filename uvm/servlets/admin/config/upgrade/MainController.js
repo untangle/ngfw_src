@@ -42,6 +42,52 @@ Ext.define('Ung.config.upgrade.MainController', {
 
     },
 
+    canUpgrade: function() {
+        var view = this.getView();
+            Rpc.asyncData('rpc.systemManager.canUpgrade')
+                .then(function(result) {
+                        var upgradeIssues = result.set;
+                        var upgradeButton  = view.down('[name="upgradeButton"]');
+                        var upgradeIssueText = view.down('[name="upgradeIssueText"]');
+
+                        // Get the number of upgrade issues
+                        var numIssues = Object.keys(upgradeIssues).length;
+                        if (numIssues === 0) {
+                            // Enable Upgrade Now button
+                            if(upgradeButton)
+                                upgradeButton.show();
+                        } else {
+                            // Hide UpgradeNow button if having any system issue
+                            upgradeButton.hide();
+
+                            // Display upgrade issues message 
+                            var message = '<b>Upgrades are ready but unable to install:</b><ul>'.t();
+                            
+                            // Iterate through each upgrade issue and list them 
+                            Object.keys(upgradeIssues).forEach(function(issue) {
+                                message += '<li>';
+                                switch (issue) {
+                                    case 'LOW_DISK':
+                                        message += 'Not enough disk space'.t();
+                                        break;
+                                    // Add more cases for other upgrade issues
+                                    default:
+                                        message += 'Unknown issue: '.t() + issue;
+                                        break;
+                                }
+                                message += '</li>';
+                            });
+                            message += '</ul>';
+
+                            upgradeIssueText.update(message);
+                            upgradeIssueText.show();
+                        }
+                   
+                }, function(ex) {
+                    Util.handleException(ex);
+                });
+    },
+    
     loadSettings: function () {
         var me = this,
             v = me.getView(),
@@ -99,18 +145,16 @@ Ext.define('Ung.config.upgrade.MainController', {
     },
 
     checkUpgrades: function () {
+        var me = this;
         var view = this.getView();
-
         setTimeout( function(){
             Rpc.asyncData('rpc.systemManager.upgradesAvailable')
             .then(function (result) {
                 if(Util.isDestroyed(view)){
                     return;
                 }
-                if(result) {
-                    var upgradeButton = view.down('[name="upgradeButton"]');
-                    if (upgradeButton)
-                        upgradeButton.show();
+                if(result) {                   
+                    me.canUpgrade();
                 } else {
                     var upgradeText = view.down('[name="upgradeText"]');
                     if (upgradeText)
@@ -123,6 +167,34 @@ Ext.define('Ung.config.upgrade.MainController', {
                 }
             });
         }, 100);
+    },
+
+    onUpgradeNowClick: function() {
+        var me = this;
+
+        Rpc.asyncData('rpc.systemManager.checkDiskHealth')
+        .then(function(result) {
+            if(result.includes("'fail'")) {
+                Ext.Msg.show({
+                    title: 'Warning'.t(),
+                    message: 'Drive health check failed. Disk issues could cause upgrade failures or data loss.<br>Are you sure you want to proceed with upgrade ?'.t(),
+                    buttons: Ext.Msg.OKCANCEL,
+                    icon: Ext.Msg.QUESTION,
+                    fn: function (btn) {
+                        if (btn === 'ok') {
+                            me.setSkipDiskCheckFlag(true);
+                            me.downloadUpgrades();
+                        } 
+                    }
+                });
+            } else {
+                me.downloadUpgrades();
+            }
+        });
+    },
+
+    setSkipDiskCheckFlag: function(skipDiskCheck){
+        Rpc.directData('rpc.systemManager.setSkipDiskCheck', skipDiskCheck);
     },
 
     downloadUpgrades: function() {
@@ -142,6 +214,7 @@ Ext.define('Ung.config.upgrade.MainController', {
                 me.upgrade();
             } else {
                 Ext.MessageBox.alert("Warning".t(), "Downloading upgrades failed.".t());
+                me.setSkipDiskCheckFlag(false);
             }
         });
         me.getDownloadStatus();

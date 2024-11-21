@@ -13,11 +13,20 @@ import org.json.JSONString;
 public class GoogleSettings implements java.io.Serializable, JSONString
 {
     private String driveRefreshToken = null;
+    private String googleDriveRootDirectory;
     
     public GoogleSettings() { }
 
     public String getDriveRefreshToken() { return driveRefreshToken; }
     public void setDriveRefreshToken(String newValue) { this.driveRefreshToken = newValue; }
+
+    public String getGoogleDriveRootDirectory() {
+        return googleDriveRootDirectory;
+    }
+
+    public void setGoogleDriveRootDirectory(String googleDriveRootDirectory) {
+        this.googleDriveRootDirectory = googleDriveRootDirectory;
+    }
 
     public String toJSONString()
     {

@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.net.InetAddress;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppMetric;
+import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -27,7 +29,7 @@ public class BandwidthControlApp extends AppBase
     public static final String STAT_PRIORITIZE = "prioritize";
     public static final String STAT_TAGGED = "tagged";
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private boolean shownExpiredWarning = false;
     
@@ -116,6 +118,25 @@ public class BandwidthControlApp extends AppBase
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_GIVEN, this.userQuotaGivenHook );
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_EXCEEDED, this.userQuotaExceededHook );
         UvmContextFactory.context().hookManager().registerCallback( com.untangle.uvm.HookManager.USER_TABLE_QUOTA_REMOVED, this.userQuotaRemovedHook );
+    }
+
+     /**
+     * Post Bandwith-control App start. Fetch network settings
+     * and set qosEnabled to true.
+     *
+     * @param isPermanentTransition
+     */
+    @Override
+    protected void postStart(boolean isPermanentTransition)
+    {
+        logger.info("Bandwith-control POST START");
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        if(networkSettings.getQosSettings().getQosEnabled()){
+            return;
+        }
+        networkSettings.getQosSettings().setQosEnabled(true);
+        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+        logger.info("QosEnabled set to true");
     }
 
     /**

@@ -19,7 +19,6 @@ import urllib3
 import fnmatch
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import tests.global_functions as global_functions
 import runtests.test_registry as test_registry
 import runtests.remote_control as remote_control
@@ -83,7 +82,7 @@ def check_javascript_exceptions(errors):
         print(error)
         uvm_last_line = subprocess.check_output("wc -l /var/log/uvm/uvm.log | cut -d' ' -f1", shell=True).decode("utf-8").strip()
         print(uvm_last_line)
-        uvmContext.logJavascriptException(errors[error])
+        global_functions.uvmContext.logJavascriptException(errors[error])
         exceptions = subprocess.check_output(f"awk 'NR >= {uvm_last_line} && /logJavascriptException/{{ print NR, $0 }}' /var/log/uvm/uvm.log", shell=True).decode("utf-8")
         print(exceptions)
         assert exceptions != "", f"for {error} found logged exceptions"
@@ -182,7 +181,45 @@ class UvmTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
 
-    def test_011_help_links(self):
+    @pytest.mark.slow
+    def test_011_validate_serial_number(self):
+        """
+        Ensure valid serial number is returned if present
+        """
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+        
+        # Skip if VMware instance
+        if (global_functions.is_vm_instance()):
+            raise unittest.SkipTest('Skipping serial number check on VM')
+        
+        file_path = '/tmp/product_serial'
+        device_serial_number = 'CTW23050243'
+        with open(file_path, "w") as f:
+            f.write(device_serial_number)
+
+        initial_serial_number  = global_functions.uvmContext.getServerSerialNumber()
+        subprocess.call("mount /tmp/product_serial /sys/devices/virtual/dmi/id/product_serial -o rw,bind", shell=True, stderr=subprocess.STDOUT)
+        ## Restart uvm
+        global_functions.restart_uvm()
+        updated_serial_number  = global_functions.uvmContext.getServerSerialNumber()
+        ## verify serial number is updated to CTW23050243
+        assert(device_serial_number == updated_serial_number)
+        #unmounting the /tmp/product_serial
+        subprocess.call("umount -v /sys/devices/virtual/dmi/id/product_serial", shell=True, stderr=subprocess.STDOUT)
+        ##Reverting back to initial serial number
+        with open(file_path, "w") as f:
+            f.write(initial_serial_number)
+        subprocess.call("mount /tmp/product_serial /sys/devices/virtual/dmi/id/product_serial -o rw,bind", shell=True, stderr=subprocess.STDOUT)
+        global_functions.restart_uvm()
+        ## verify serial number is updated to initial vlue
+        assert (initial_serial_number == global_functions.uvmContext.getServerSerialNumber())
+        #unmounting the /tmp/product_serial
+        subprocess.call("umount -v /sys/devices/virtual/dmi/id/product_serial", shell=True, stderr=subprocess.STDOUT)
+        ## removing file /tmp/product_serial
+        subprocess.call("rm -f /tmp/product_serial", shell=True, stderr=subprocess.STDOUT)
+
+    def test_012_help_links(self):
         helpLinkFile = "/tmp/helpLinks.json"
         subprocess.call(global_functions.build_wget_command(uri="http://test.untangle.com/test/help_links.json", output_file=helpLinkFile), shell=True)
         # if the links file was not found skip this test
@@ -211,8 +248,8 @@ class UvmTests(NGFWTestCase):
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
 
-            pat = re.compile(r'''.*URL=https://wiki.*.untangle.com/(.*)">.*$''')
-            version = uvmContext.getFullVersion()
+            pat = re.compile(r'''.*URL=https://wiki.*.arista.com/(.*)">.*$''')
+            version = global_functions.uvmContext.getFullVersion()
             print("------------------------------------------------------")
             if ('subcat' in link):
                 subLinks.extend(link['subcat'])
@@ -221,7 +258,7 @@ class UvmTests(NGFWTestCase):
                     subLink = link['fragment'] + "/" + subLink
                 else:
                     subLink = link['fragment']
-                url = "https://wiki.untangle.com/get.php?fragment=" + subLink + "&uid=0000-0000-0000-0000&version=" + version + "&webui=true&lang=en"
+                url = "https://wiki.edge.arista.com/get.php?fragment=" + subLink + "&uid=0000-0000-0000-0000&version=" + version + "&webui=true&lang=en"
                 print(("Checking %s = %s " % (subLink, url)))
                 req = urllib.request.Request( url, headers=hdr) 
                 ret = urllib.request.urlopen( req, context=ctx )
@@ -744,95 +781,95 @@ class UvmTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
         # Test mail setting in config -> email -> outgoing server
-        if (uvmContext.appManager().isInstantiated(self.appNameSpamCase())):
+        if (global_functions.uvmContext.appManager().isInstantiated(self.appNameSpamCase())):
             print("smtp case present")
         else:
             print("smtp not present")
-            uvmContext.appManager().instantiate(self.appNameSpamCase(), 1)
-        appSP = uvmContext.appManager().app(self.appNameSpamCase())
+            global_functions.uvmContext.appManager().instantiate(self.appNameSpamCase(), 1)
+        appSP = global_functions.uvmContext.appManager().app(self.appNameSpamCase())
         origAppDataSP = appSP.getSmtpSettings()
-        origMailsettings = uvmContext.mailSender().getSettings()
+        origMailsettings = global_functions.uvmContext.mailSender().getSettings()
         # print(appDataSP)
         newMailsettings = copy.deepcopy(origMailsettings)
         newMailsettings['smtpHost'] = global_functions.TEST_SERVER_HOST
         newMailsettings['smtpPort'] = "6800"
         newMailsettings['sendMethod'] = 'CUSTOM'
 
-        uvmContext.mailSender().setSettings(newMailsettings)
+        global_functions.uvmContext.mailSender().setSettings(newMailsettings)
         time.sleep(10) # give it time for exim to restart
 
         appDataSP = appSP.getSmtpSettings()
         appSP.setSmtpSettingsWithoutSafelists(appDataSP)
         recipient = global_functions.random_email()
-        uvmContext.mailSender().sendTestMessage(recipient)
+        global_functions.uvmContext.mailSender().sendTestMessage(recipient)
         time.sleep(2)
         # force exim to flush queue
         subprocess.call(["exim -qff >/dev/null 2>&1"],shell=True,stdout=None,stderr=None)
         time.sleep(10)
 
-        uvmContext.mailSender().setSettings(origMailsettings)
+        global_functions.uvmContext.mailSender().setSettings(origMailsettings)
         appSP.setSmtpSettingsWithoutSafelists(origAppDataSP)
         emailContext = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"http://test.untangle.com/cgi-bin/getEmail.py?toaddress={recipient}") + " 2>&1" ,stdout=True)
         assert('Test Message' in emailContext)
 
     def test_040_trigger_rule_tag_host(self):
-        settings = uvmContext.eventManager().getSettings()
+        settings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
         new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.client_ip+"*")
         settings['triggerRules']['list'] = [ new_rule ]
-        uvmContext.eventManager().setSettings( settings )
+        global_functions.uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
         time.sleep(4)
 
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         tag_test = entry.get('tagsString')
-        uvmContext.eventManager().setSettings( orig_settings )
+        global_functions.uvmContext.eventManager().setSettings( orig_settings )
         assert( tag_test != None )
         assert( "test-tag" in tag_test )
 
     def test_041_trigger_rule_untag_host(self):
-        settings = uvmContext.eventManager().getSettings()
+        settings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
         new_rule = create_trigger_rule("TAG_HOST", "localAddr", "test-tag", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.client_ip+"*")
         settings['triggerRules']['list'] = [ new_rule ]
-        uvmContext.eventManager().setSettings( settings )
+        global_functions.uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
         time.sleep(4)
 
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         tag_test = entry.get('tagsString')
-        uvmContext.eventManager().setSettings( orig_settings )
+        global_functions.uvmContext.eventManager().setSettings( orig_settings )
 
         new_rule = create_trigger_rule("UNTAG_HOST", "localAddr", "test*", 30, "test tag rule", "class", "=", "*SessionEvent*", "localAddr", "=", "*"+remote_control.client_ip+"*")
         settings['triggerRules']['list'] = [ new_rule ]
-        uvmContext.eventManager().setSettings( settings )
+        global_functions.uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
         time.sleep(4)
 
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         tag_test2 = entry.get('tagsString')
 
-        uvmContext.eventManager().setSettings( orig_settings )
+        global_functions.uvmContext.eventManager().setSettings( orig_settings )
         assert( tag_test != None )
         assert( "test-tag" in tag_test )
         assert( tag_test2 == None or "test-tag" not in tag_test2)
 
     def test_042_trigger_rule_tag_host_subcondition(self):
-        settings = uvmContext.eventManager().getSettings()
+        settings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(settings)
         new_rule = create_trigger_rule("TAG_HOST", "sessionEvent.localAddr", "test-tag-2", 30, "test tag rule", "class", "=", "*SessionStatsEvent*", "sessionEvent.localAddr", "=", "*"+remote_control.client_ip+"*")
         settings['triggerRules']['list'] = [ new_rule ]
-        uvmContext.eventManager().setSettings( settings )
+        global_functions.uvmContext.eventManager().setSettings( settings )
 
         result = remote_control.is_online()
         time.sleep(4)
 
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
 
-        uvmContext.eventManager().setSettings( orig_settings )
+        global_functions.uvmContext.eventManager().setSettings( orig_settings )
         tag_test = entry.get('tagsString')
         assert( tag_test != None )
         assert( "test-tag-2" in tag_test )
@@ -843,33 +880,33 @@ class UvmTests(NGFWTestCase):
         """
         default_policy_id = 1
         application_name = "web-filter"
-        if uvmContext.appManager().isInstantiated(application_name):
+        if global_functions.uvmContext.appManager().isInstantiated(application_name):
             raise unittest.SkipTest(f"app {application_name} already instantiated")
 
-        application = uvmContext.appManager().instantiate(application_name, default_policy_id)
+        application = global_functions.uvmContext.appManager().instantiate(application_name, default_policy_id)
 
         try:
             global_functions.wait_for_event_queue_drain(queue_size_key="eventQueueSize")
         except Exception as e:
-            uvmContext.appManager().destroy( application.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( application.getAppSettings()["id"] )
             raise unittest.SkipTest(e)
 
-        uvmContext.appManager().destroy( application.getAppSettings()["id"] )
+        global_functions.uvmContext.appManager().destroy( application.getAppSettings()["id"] )
 
     def test_100_account_login(self):
         untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
         if untangleEmail == "message":
             raise unittest.SkipTest('Skipping no accound found:' + str(untanglePassword))
 
-        result = uvmContext.cloudManager().accountLogin( untangleEmail, untanglePassword, uvmContext.getServerUID(), "", "", "")
+        result = global_functions.uvmContext.cloudManager().accountLogin( untangleEmail, untanglePassword, global_functions.uvmContext.getServerUID(), "", "", "")
         assert (result.get('success'))
 
     def test_101_account_login_invalid(self):
-        result = uvmContext.cloudManager().accountLogin( "foobar@untangle.com", "badpassword" )
+        result = global_functions.uvmContext.cloudManager().accountLogin( "foobar@untangle.com", "badpassword" )
         assert not result.get('success')
 
     def test_102_admin_login_event(self):
-        uvmContext.adminManager().logAdminLoginEvent( "admin", True, "127.0.1.1", True, 'X' )
+        global_functions.uvmContext.adminManager().logAdminLoginEvent( "admin", True, "127.0.1.1", True, 'X' )
         events = global_functions.get_events('Administration','Admin Login Events',None,10)
         assert(events != None)
         for i in events.get('list'):
@@ -885,8 +922,8 @@ class UvmTests(NGFWTestCase):
     # Make sure the HostsFileManager is working as expected
     def test_110_hosts_file_manager(self):
         # get the hostname and settings from the network manager
-        fullName = uvmContext.networkManager().getFullyQualifiedHostname()
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        fullName = global_functions.uvmContext.networkManager().getFullyQualifiedHostname()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
         print(("Checking HostsFileManager records for " + fullName))
 
@@ -944,9 +981,9 @@ class UvmTests(NGFWTestCase):
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
         # Enable cloud connection  
-        system_settings = uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         system_settings['cloudEnabled'] = True
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
         
         # run cmd status
         result = ""
@@ -965,36 +1002,37 @@ class UvmTests(NGFWTestCase):
     def test_140_change_language(self):
         """Check if changing language converts the GUI"""
         # Set language to Spanish
-        language_settings = uvmContext.languageManager().getLanguageSettings()
+        language_settings = global_functions.uvmContext.languageManager().getLanguageSettings()
         language_settings_orig = copy.deepcopy(language_settings)
         language_settings['language'] = 'es'
-        uvmContext.languageManager().setLanguageSettings(language_settings)
+        global_functions.uvmContext.languageManager().setLanguageSettings(language_settings)
         # Previous instance of test looked for "Not allowed" with its Spanish translation "no permitido".
         # However, this translation could change.  So assume that looking for "Not allowed" fails due to it being translated.
         result = subprocess.call(global_functions.build_wget_command( output_file="-", content_on_error=True, uri="http://localhost/admin/download") + ' 2>&1 | grep -qv "Not allowed"', shell=True)
 
         # revert language
-        uvmContext.languageManager().setLanguageSettings(language_settings_orig)
+        global_functions.uvmContext.languageManager().setLanguageSettings(language_settings_orig)
         
         assert(result == 0)
 
     def test_150_synchronize_Language(self):
         """Check synchronizeLanguage returns OK"""
-        synchronized = uvmContext.languageManager().synchronizeLanguage()
+        synchronized = global_functions.uvmContext.languageManager().synchronizeLanguage()
 
     def test_160_change_community_language(self):
         """Check if changing community language converts the GUI"""
+        raise unittest.SkipTest("Community languages no longer supported NGFW-14374.")
         #set language to Russian
-        language_settings_community = uvmContext.languageManager().getLanguageSettings()
+        language_settings_community = global_functions.uvmContext.languageManager().getLanguageSettings()
         language_settings_community_orig = copy.deepcopy(language_settings_community)
         language_settings_community['language'] = "ru"
-        uvmContext.languageManager().setLanguageSettings(language_settings_community)
+        global_functions.uvmContext.languageManager().setLanguageSettings(language_settings_community)
         # Previous instance of test looked for "Not allowed" with its Russian translation "ne polozheno" but the real translation was the unicode "Метод не разрешен".
         # which is not easy to match via grep.  So assume that looking for "Not allowed" fails due to it being translated.
         result = subprocess.call(global_functions.build_wget_command( output_file="-", content_on_error=True, uri="http://localhost/admin/download") + ' 2>&1 | grep -qv "Not allowed"', shell=True)
 
         #Revert language
-        uvmContext.languageManager().setLanguageSettings(language_settings_community_orig)
+        global_functions.uvmContext.languageManager().setLanguageSettings(language_settings_community_orig)
 
         assert(result == 0)
 
@@ -1007,7 +1045,7 @@ class UvmTests(NGFWTestCase):
         # We want file name and rotation count
         rotating_pattern = re.compile(r'rotating pattern: ([^\s]+) .* \((\d+) rotations\)')
 
-        system_settings = uvmContext.systemManager().getSettings()
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
         previous_log_retention = system_settings["logRetention"]
 
         # Build hash of current log files and their rotation values
@@ -1027,7 +1065,7 @@ class UvmTests(NGFWTestCase):
             new_log_retention = int(previous_log_retention/2)
 
         system_settings["logRetention"] = new_log_retention
-        uvmContext.systemManager().setSettings(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings)
 
         logrotate_test_output_lines = subprocess.check_output("logrotate -d /etc/logrotate.conf 2>&1 | grep 'rotating pattern:' | grep rotations", shell=True).decode('utf-8').split("\n")
         same_rotation = False
@@ -1066,7 +1104,7 @@ class UvmTests(NGFWTestCase):
             raise unittest.SkipTest(full_filename + " not available")
         df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('utf-8').split(' ')
         time.sleep(60)
-        metrics_and_stats = uvmContext.metricManager().getMetricsAndStats()
+        metrics_and_stats = global_functions.uvmContext.metricManager().getMetricsAndStats()
         uvm_free_disk_percent = (float(metrics_and_stats["systemStats"]["freeDiskSpace"]) / float(metrics_and_stats["systemStats"]["totalDiskSpace"]) * 100)
         subprocess.run(["rm", "-f", full_filename])
         assert(uvm_free_disk_percent < 5)
@@ -1076,7 +1114,7 @@ class UvmTests(NGFWTestCase):
             raise unittest.SkipTest(full_filename + " not available 2nd")
         df_fields = subprocess.check_output("df | grep /$ | tr -s ' '", shell=True).decode('utf-8').split(' ')
         time.sleep(60)
-        metrics_and_stats = uvmContext.metricManager().getMetricsAndStats()
+        metrics_and_stats = global_functions.uvmContext.metricManager().getMetricsAndStats()
         uvm_free_disk_percent = (float(metrics_and_stats["systemStats"]["freeDiskSpace"]) / float(metrics_and_stats["systemStats"]["totalDiskSpace"]) * 100)
         subprocess.run(["rm", "-f", full_filename])
         assert(uvm_free_disk_percent > 5)
@@ -1117,7 +1155,7 @@ class UvmTests(NGFWTestCase):
 
     # Checks that feedback link is under arista
     def test_300_feedback_link(self):
-        feeddback_url = uvmContext.getFeedbackUrl()
+        feeddback_url = global_functions.uvmContext.getFeedbackUrl()
         match = re.search('^https://edge.arista.com/feedback$', feeddback_url)
         assert(match)
 
@@ -1131,45 +1169,70 @@ class UvmTests(NGFWTestCase):
         # This should prune no of license files to 5
         # Executing  reload license 6 times
         for _ in range(6):
-            uvmContext.licenseManager().reloadLicenses(False)
+            global_functions.uvmContext.licenseManager().reloadLicenses(False)
         license_files = find_files("/usr/share/untangle/conf/licenses/", "*licenses.js*")
         # verify pruned no of license files to <=5
         assert len(license_files) <= 5
 
+
     @pytest.mark.slow
-    def test_305_validate_serial_number(self):
+    def test_304_email_cleaner(self):
         """
-        Ensure valid serial number is returned if present
+        1. Modify FROM_EMAIL to non deliverable mail
+        2. Send emails to non deliverable email, note the count of messages using exim -bpc
+        3. Run cron script explicitly to delete the emails which are having TO or FROM the Outgoing Email FROM_EMAIL address.
+        4. Verify the count of messages should decrease after cron script is run
         """
-        if runtests.quick_tests_only:
-            raise unittest.SkipTest('Skipping a time consuming test')
-        file_path = '/tmp/product_serial'
-        device_serial_number = 'CTW23050243'
-        with open(file_path, "w") as f:
-            f.write(device_serial_number)
 
-        initial_serial_number  = global_functions.uvmContext.getServerSerialNumber()
-        subprocess.call("mount /tmp/product_serial /sys/devices/virtual/dmi/id/product_serial -o rw,bind", shell=True, stderr=subprocess.STDOUT)
-        ## Restart uvm
-        global_functions.restart_uvm()
-        updated_serial_number  = global_functions.uvmContext.getServerSerialNumber()
-        ## verify serial number is updated to CTW23050243
-        assert(device_serial_number == updated_serial_number)
-        #unmounting the /tmp/product_serial
-        subprocess.call("umount -v /sys/devices/virtual/dmi/id/product_serial", shell=True, stderr=subprocess.STDOUT)
-        ##Reverting back to initial serial number
-        with open(file_path, "w") as f:
-            f.write(initial_serial_number)
-        subprocess.call("mount /tmp/product_serial /sys/devices/virtual/dmi/id/product_serial -o rw,bind", shell=True, stderr=subprocess.STDOUT)
-        global_functions.restart_uvm()
-        ## verify serial number is updated to initial vlue
-        assert (initial_serial_number == global_functions.uvmContext.getServerSerialNumber())
-        #unmounting the /tmp/product_serial
-        subprocess.call("umount -v /sys/devices/virtual/dmi/id/product_serial", shell=True, stderr=subprocess.STDOUT)
-        ## removing file /tmp/product_serial
-        subprocess.call("rm -f /tmp/product_serial", shell=True, stderr=subprocess.STDOUT)
+        tester_email_address = "tester@domain.com"
+        origMailsettings = global_functions.uvmContext.mailSender().getSettings()
+        mail_settings = copy.deepcopy(origMailsettings)
+        # Updating email settings
+        #print(str(mail_settings))
+        mail_settings["fromAddress"] = tester_email_address
+        mail_settings["sendMethod"] = "DIRECT"
+        global_functions.uvmContext.mailSender().setSettings(mail_settings)
+        time.sleep(2)
+        subject = "Test Email"
+        body = "Body of the Email"
+        email_message = f"From: {tester_email_address}\nTo: {tester_email_address}\nSubject: {subject}\n\n{body}"
+        initial_count="0"
+        final_count="0"
+        try:
+            for i in range(10):
+                subprocess.run(['exim', '-bm', '-t'], input=email_message.encode(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+            time.sleep(20)
+            # count of messages will be +10 after running of the for loop
+            initial_count = subprocess.check_output(f"exim -bpc",shell=True,stderr=subprocess.STDOUT)
+            # count of messages will be -10 after running of the cleaner script with messages older than 10 seconds
+            subprocess.check_output(f'/etc/cron.daily/untangle-email-cleaner 10',  shell=True, stderr=subprocess.PIPE)
+            final_count = subprocess.check_output(f"exim -bpc",shell=True,stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            pass
+        # In the test we have added 10 mail messages , after the cron script is run , atmost 10 messages will be deleted
+        # The final count of messages will be less than initial count.
+        if type(initial_count) is bytes and type(final_count) is bytes:
+            assert(int(final_count) <= int(initial_count))
+        # Setting back Original email settings
+        global_functions.uvmContext.mailSender().setSettings(origMailsettings)
 
-
+    def test_307_geo_ip_address(self):
+        """
+        1. Validating GeoIP methods for given IP Address
+        """
+        ip_address = "128.101.101.101"
+        expected_output = "United States : US : Minnesota : MN : Saint Paul : 55113"
+        country_name = global_functions.uvmContext.geographyManager().getCountryName(ip_address)
+        country_code = global_functions.uvmContext.geographyManager().getCountryCode(ip_address)
+        sub_division_name = global_functions.uvmContext.geographyManager().getSubdivisionName(ip_address)
+        sub_division_code = global_functions.uvmContext.geographyManager().getSubdivisionCode(ip_address)
+        city_name = global_functions.uvmContext.geographyManager().getCityName(ip_address)
+        postal_code = global_functions.uvmContext.geographyManager().getPostalCode(ip_address)
+        recieved_output = country_name + " : " + country_code + " : " + sub_division_name + " : " + sub_division_code  + " : " + city_name + " : " + postal_code
+        assert(expected_output == recieved_output)
+        # for IPs with no information None is received
+        country_name = global_functions.uvmContext.geographyManager().getCountryName("192.168.56.120")
+        assert(country_name is None)
 
     def test_310_system_logs(self):
         subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/system_logs.zip", post_data="type=SystemSupportLogs", uri="http://localhost/admin/download"), shell=True)

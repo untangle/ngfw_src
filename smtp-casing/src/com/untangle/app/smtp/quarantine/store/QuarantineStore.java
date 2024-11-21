@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.quarantine.InboxIndex;
 import com.untangle.app.smtp.quarantine.InboxRecord;
@@ -68,7 +69,7 @@ public class QuarantineStore
         ERROR
     };
 
-    private final Logger logger = Logger.getLogger(QuarantineStore.class);
+    private final Logger logger = LogManager.getLogger(QuarantineStore.class);
     private File rootDir;
     private AddressLock addressLock;
     private MasterTable masterTable;

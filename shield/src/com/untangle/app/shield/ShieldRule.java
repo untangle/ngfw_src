@@ -9,7 +9,8 @@ import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This in the implementation of a Shield Rule
@@ -20,7 +21,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("serial")
 public class ShieldRule implements JSONString, Serializable
 {
-    private static final Logger logger = Logger.getLogger(ShieldRule.class);
+    private static final Logger logger = LogManager.getLogger(ShieldRule.class);
 
     public enum ShieldRuleAction
     {

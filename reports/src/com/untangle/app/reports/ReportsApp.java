@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
@@ -25,15 +26,20 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import com.untangle.uvm.ExecManagerResultReader;
+import com.untangle.uvm.GoogleManager;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.text.StringEscapeUtils;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.EventManager;
 import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.StringEscaperUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.ConfigurationBackupEvent;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
@@ -44,6 +50,7 @@ import com.untangle.uvm.app.HostnameLookup;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.ObjectMatcher;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import org.apache.commons.codec.binary.Base64;
@@ -55,7 +62,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 {
     public static final String REPORTS_EVENT_LOG_DOWNLOAD_HANDLER = "reportsEventLogExport";
 
-    private static final Logger logger = Logger.getLogger(ReportsApp.class);
+    private static final Logger logger = LogManager.getLogger(ReportsApp.class);
 
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
     private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-tables.py";
@@ -63,13 +70,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private static final String REPORTS_VACUUM_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-vacuum-yesterdays-tables.sh";
     private static final String REPORTS_GOOGLE_DATA_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-data.sh";
     private static final String REPORTS_GOOGLE_CSV_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-csv.sh";
-    private static final String REPORTS_GENERATE_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-reports.py";
+    private static final String REPORTS_LOG_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-log-data.py";
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
     private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
     private static final String REPORTS_DB_DRIVER_FILE = System.getProperty("uvm.conf.dir") + "/database-driver";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
     private static final File HOURLY_CRON_FILE = new File("/etc/cron.hourly/reports-cron");
+    private static final String LINE_BREAK = "\n";
 
     protected static EventWriterImpl eventWriter = null;
     protected static EventReaderImpl eventReader = null;
@@ -222,6 +230,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     }
 
     /**
+     * get GoogleManager
+     * @return GoogleManager
+     */
+    public GoogleManager getGoogleManager() {
+        return UvmContextFactory.context().googleManager();
+    }
+
+    /**
      * Read reports settings.
      *
      * @return
@@ -353,6 +369,21 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
         return 0;
     }
+
+
+    /**
+     * Return EventWriterImpl object.
+     *
+     * @return
+     *  EventWriterImpl object.
+     */
+    protected EventWriterImpl getEventWriter()
+    {
+        if (ReportsApp.eventWriter != null)
+            return ReportsApp.eventWriter;
+
+        return null;
+    }
     
     /** 
      * Save settings using default values.
@@ -450,6 +481,18 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     public boolean getDiskFullFlag()
     {
         return ReportsApp.eventWriter.getDiskFullFlag();
+    }
+
+    /**
+     * Determine if table exists in database
+     *
+     * @param wantTableName
+     * @return
+     * Boolean value true indicates if table exists, otherwise it does not.
+     */
+    public boolean partitionTableExists(String wantTableName)
+    {
+        return ReportsApp.eventWriter.partitionTableExists(wantTableName);
     }
 
     /** 
@@ -587,6 +630,15 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         if ( settings.getVersion() == null || settings.getVersion() < 5 ) {
             logger.warn("Running v13.0 conversion...");
             conversion_13_0_0();
+        }
+
+        /*
+         * Update daily cron file for 17.3 version
+         */
+        if ( settings.getVersion() == null || settings.getVersion() < 6 ) {
+            logger.info("Modifying daily cron file");
+            writeCronFile();
+            settings.setVersion(6);
         }
 
         /* sync settings to disk if necessary */
@@ -742,7 +794,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
-        settings.setVersion( 5 );
+        settings.setVersion( 6 );
         settings.setEmailTemplates( defaultEmailTemplates() );
         settings.setReportsUsers( defaultReportsUsers( null ) );
 
@@ -799,46 +851,112 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         return ReportsApp.dbDriver;
     }
 
+    /**
+     * Logs reports data
+     */
+    public void logReportsData()
+    {
+        executeCommand(new String[] {REPORTS_GENERATE_TABLES_SCRIPT, "|", "logger", "-t", "uvmreports"});
+
+        // We only need to execute this script if the database has daily retention set
+        if ( settings.getDbRetention() > 0) {
+            executeCommand(new String[] {REPORTS_CLEAN_TABLES_SCRIPT, "-d", ReportsApp.dbDriver, String.valueOf(settings.getDbRetention()), "|", "logger", "-t", "uvmreports"});
+        }
+        executeCommand(new String[] {REPORTS_VACUUM_TABLES_SCRIPT, "|", "logger", "-t", "uvmreports"});
+        executeCommand(new String[] {REPORTS_GENERATE_FIXED_REPORTS_SCRIPT, "|", "logger", "-t", "uvmreports"});
+
+        /**
+         * If google drive is enabled and licensed and configured
+         * upload to google drive
+         */
+        GoogleManager googleManager = UvmContextFactory.context().googleManager();
+        if ( googleManager != null && googleManager.isGoogleDriveConnected()) {
+            uploadBackupToGoogleDrive();
+        }
+    }
+
+    /**
+     * Upload the backup to Google drive.
+     */
+    private void uploadBackupToGoogleDrive()
+    {
+        String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
+        String[] cmd;
+        if ( settings.getGoogleDriveUploadData() ) {
+            cmd = StringUtils.isNotEmpty(appGoogleDrivePath)
+                    ? new String[] {REPORTS_GOOGLE_DATA_BACKUP_SCRIPT, "-d", appGoogleDrivePath}
+                    : new String[] {REPORTS_GOOGLE_DATA_BACKUP_SCRIPT};
+            executeGoogleDriveCommand(cmd);
+        }
+        if ( settings.getGoogleDriveUploadCsv() ) {
+            cmd = StringUtils.isNotEmpty(appGoogleDrivePath)
+                    ? new String[] {REPORTS_GOOGLE_CSV_BACKUP_SCRIPT, "-d", appGoogleDrivePath}
+                    : new String[] {REPORTS_GOOGLE_CSV_BACKUP_SCRIPT};
+            executeGoogleDriveCommand(cmd);
+        }
+    }
+
+    /**
+     * Executes the input command
+     * @param cmd
+     * @return
+     */
+    private ExecManagerResultReader executeCommand(String[] cmd) {
+        ExecManagerResultReader reader = null;
+        try {
+            reader = UvmContextFactory.context().execManager().execEvil(cmd);
+            reader.waitFor();
+        } catch (Exception e) {
+            logger.warn("Exception occurred while running command",e);
+        }
+        return reader;
+    }
+
+    /**
+     * Executes the input command to upload files to google drive and logs the event
+     * @param cmd
+     */
+    private void executeGoogleDriveCommand(String[] cmd) {
+        Integer exitCode = 99;
+        String output = StringUtils.EMPTY;
+        ExecManagerResultReader reader = executeCommand(cmd);
+        if (reader == null) {
+            logger.warn("Exception occurred while running command={}", Arrays.toString(cmd));
+        } else {
+            exitCode = reader.getResult();
+            output = reader.readFromOutput();
+        }
+        if(exitCode != 0) {
+            logger.error("Execution returned non-zero error code ({}):{}", exitCode, output);
+
+            String reason = null;
+            switch(exitCode) {
+                default:
+                    reason = "Error: " + output;
+            }
+            logger.warn("Command={} execution failed: {}", cmd, reason);
+            this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive")) );
+        }
+        else {
+            logger.info("Command={} executed successfully", Arrays.toString(cmd));
+            this.logEvent( new ConfigurationBackupEvent(true, I18nUtil.marktr("Successfully uploaded."), I18nUtil.marktr("Google Drive")) );
+        }
+        // log output of drive upload
+        executeCommand(new String[] { "logger", "-t", "uvmreports", "\"" + output.replace("\"", "\\\"").replace("`", StringUtils.EMPTY) + "\""});
+    }
+
     /** 
      * Write reports application cronjob file.
      */
     private void writeCronFile()
     {
         // write the cron file for nightly runs
-        String cronStr = "#!/bin/sh" + "\n" + REPORTS_GENERATE_TABLES_SCRIPT + " | logger -t uvmreports" + "\n";
-
-        // We only need to write this file if the database has daily retention set
-        if ( settings.getDbRetention() > 0) {
-            cronStr += REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + settings.getDbRetention() + " | logger -t uvmreports" + "\n";
-        }
-        
-        cronStr += REPORTS_VACUUM_TABLES_SCRIPT + " | logger -t uvmreports" + "\n" + REPORTS_GENERATE_FIXED_REPORTS_SCRIPT + " | logger -t uvmreports" + "\n";
-
-        if ( settings.getGoogleDriveUploadData() ) {
-            String dir = settings.getGoogleDriveDirectory();
-            if ( dir != null )
-                dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
-            else
-                dir = "";
-            
-            cronStr += REPORTS_GOOGLE_DATA_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
-        }
-        if ( settings.getGoogleDriveUploadCsv() ) {
-            String dir = settings.getGoogleDriveDirectory();
-            if ( dir != null )
-                dir = " -d \"" + settings.getGoogleDriveDirectory() + "\"";
-            else
-                dir = "";
-            
-            cronStr += REPORTS_GOOGLE_CSV_BACKUP_SCRIPT + " " + dir + " | logger -t uvmreports" + "\n";
-        }
-
-        
+        String cronStr = "#!/bin/sh" + LINE_BREAK + REPORTS_LOG_DATA_SCRIPT;
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(CRON_FILE));
             out.write(cronStr, 0, cronStr.length());
-            out.write("\n");
+            out.write(LINE_BREAK);
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
             return;
@@ -863,14 +981,14 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
         //Currently we only need to write this file if the database has hourly retention set
         if(settings.getDbRetentionHourly() > 0) {
-            String cronStr = "#!/bin/sh" + "\n" +
-            REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " -h " + settings.getDbRetentionHourly() + " 0 | logger -t uvmreports" + "\n";
+            String cronStr = "#!/bin/sh" + LINE_BREAK +
+            REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " -h " + settings.getDbRetentionHourly() + " 0 | logger -t uvmreports" + LINE_BREAK;
 
             BufferedWriter out = null;
             try {
                 out = new BufferedWriter(new FileWriter(HOURLY_CRON_FILE));
                 out.write(cronStr, 0, cronStr.length());
-                out.write("\n");
+                out.write(LINE_BREAK);
             } catch (IOException ex) {
                 logger.error("Unable to write file", ex);
                 return;
@@ -1182,7 +1300,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 resp.setHeader("Content-Type","text/csv");
                 resp.setHeader("Content-Disposition","attachment; filename="+name+".csv");
                 // Write the header
-                resp.getWriter().write(columnListStr + "\n");
+                resp.getWriter().write(columnListStr + LINE_BREAK);
                 resp.getWriter().flush();
 
                 ResultSet resultSet = resultSetReader.getResultSet();
@@ -1206,24 +1324,25 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                             // do nothing - object not found
                         }
                         String oStr = "";
-                        if (o != null)
+                        if (o != null) {
                             /**
                              * Unescape any html
                              */
-                            oStr = StringEscapeUtils.unescapeHtml4(o.toString());
+                            oStr = StringEscaperUtil.unescapeHtml4(o.toString());
 
                             /**
                              * remove any commas in the string, and escape leading -, ", @, +, and =
                              * with a single quote to prevent formula injections
                              */
                             oStr = oStr.replaceAll(",","").replaceAll("(^|,)([-\"@+=])","$1'$2");
+                        }
                     
                         if (writtenColumnCount != 0)
                             resp.getWriter().write(",");
                         resp.getWriter().write(oStr);
                         writtenColumnCount++;
                     }
-                    resp.getWriter().write("\n");
+                    resp.getWriter().write(LINE_BREAK);
                 }
             } catch (Exception e) {
                 logger.warn("Failed to export CSV.",e);
@@ -1269,21 +1388,23 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 String arg5 = req.getParameter("arg5");
                 String arg6 = req.getParameter("arg6");
 
-                if ( "".equals(arg2) || arg2 == null )
+                if ( arg2 == null || "".equals(arg2))
                     throw new RuntimeException("Invalid arguments");
 
                 String name = arg1;
-                ReportEntry query = (ReportEntry) UvmContextFactory.context().getSerializer().fromJSON( arg2 );
+                ReportEntry query = null;
+                query = ObjectMatcher.parseJson(arg2,ReportEntry.class);
                 SqlCondition[] conditions;
                 String columnListStr = arg4;
 
                 Date startDate = getDate(arg5);
                 Date endDate = getDate(arg6);
 
-                if ( "".equals(arg3) || "[]".equals(arg3) || arg3 == null )
+                if ( arg3 == null || "".equals(arg3) || "[]".equals(arg3) )
                     conditions = null;
-                else
-                    conditions = (SqlCondition[]) UvmContextFactory.context().getSerializer().fromJSON( req.getParameter("arg3") );
+                else{
+                    conditions = ObjectMatcher.parseJsonArray(arg3, SqlCondition[].class);
+                }
 
                 if (name == null || query == null || columnListStr == null) {
                     logger.warn("Invalid parameters: " + name + " , " + query + " , " + columnListStr);

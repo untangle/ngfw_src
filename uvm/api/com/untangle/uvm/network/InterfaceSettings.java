@@ -8,7 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -18,7 +19,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class InterfaceSettings implements Serializable, JSONString
 {
-    private static final Logger logger = Logger.getLogger( InterfaceSettings.class );
+    private static final Logger logger = LogManager.getLogger( InterfaceSettings.class );
 
     public static final int   MIN_INTERFACE_ID      = 0x01;
     public static final int   WIREGUARD_INTERFACE_ID= 0xf9;

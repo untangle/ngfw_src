@@ -12,7 +12,8 @@ import java.util.regex.Pattern;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HostTableEntry;
@@ -35,7 +36,7 @@ import com.untangle.app.http.HeaderToken;
  */
 public class HttpParserEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(HttpParserEventHandler.class);
+    private final Logger logger = LogManager.getLogger(HttpParserEventHandler.class);
     private static final String STATE_KEY = "http-parser-state";
 
     private static final String CONTENT_LENGTH_HEADER = "content-length";

@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
 import static com.untangle.uvm.Dispatcher.SESSION_ID_MDC_KEY;
 
 import com.untangle.uvm.Tag;
@@ -37,7 +37,7 @@ import com.untangle.jvector.Vector;
  */
 public abstract class AppSessionImpl implements AppSession
 {
-    protected Logger logger = Logger.getLogger(AppSessionImpl.class);
+    protected Logger logger = LogManager.getLogger(AppSessionImpl.class);
 
     protected boolean released = false;
 
@@ -55,8 +55,6 @@ public abstract class AppSessionImpl implements AppSession
     protected final int newClientPort;
     protected final InetAddress newServerAddr;
     protected final int newServerPort;
-
-    private static DateFormat formatter = new AbsoluteTimeDateFormat();
 
     protected final Dispatcher dispatcher;
 
@@ -501,7 +499,7 @@ public abstract class AppSessionImpl implements AppSession
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
-            MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+            ThreadContext.put(SESSION_ID_MDC_KEY, idForMDC());
 
             if (this.clientIncomingSocketQueue != null) this.clientIncomingSocketQueue.raze();
             if (this.serverIncomingSocketQueue != null) this.serverIncomingSocketQueue.raze();
@@ -527,7 +525,7 @@ public abstract class AppSessionImpl implements AppSession
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
-            MDC.remove(SESSION_ID_MDC_KEY);
+            ThreadContext.remove(SESSION_ID_MDC_KEY);
         }
     }
 
@@ -901,7 +899,7 @@ public abstract class AppSessionImpl implements AppSession
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
-            MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+            ThreadContext.put(SESSION_ID_MDC_KEY, idForMDC());
 
             sendCompleteEvent();
         } catch (Exception x) {
@@ -912,7 +910,7 @@ public abstract class AppSessionImpl implements AppSession
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
-            MDC.remove(SESSION_ID_MDC_KEY);
+            ThreadContext.remove(SESSION_ID_MDC_KEY);
         }
     }
 
@@ -991,7 +989,7 @@ public abstract class AppSessionImpl implements AppSession
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
-            MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+            ThreadContext.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = clientIncomingSocketQueue();
             if (in != null) in.reset();
@@ -1004,7 +1002,7 @@ public abstract class AppSessionImpl implements AppSession
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
-            MDC.remove(SESSION_ID_MDC_KEY);
+            ThreadContext.remove(SESSION_ID_MDC_KEY);
         }
     }
 
@@ -1019,7 +1017,7 @@ public abstract class AppSessionImpl implements AppSession
     {
         try {
             UvmContextImpl.getInstance().loggingManager().setLoggingApp(pipelineConnector().app().getAppSettings().getId());
-            MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+            ThreadContext.put(SESSION_ID_MDC_KEY, idForMDC());
 
             IncomingSocketQueue in = serverIncomingSocketQueue();
             if (in != null) in.reset();
@@ -1032,7 +1030,7 @@ public abstract class AppSessionImpl implements AppSession
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             UvmContextImpl.getInstance().loggingManager().setLoggingUvm();
-            MDC.remove(SESSION_ID_MDC_KEY);
+            ThreadContext.remove(SESSION_ID_MDC_KEY);
         }
     }
 
@@ -1067,10 +1065,6 @@ public abstract class AppSessionImpl implements AppSession
      */
     public void orClientMark(int bitmask)
     {
-        //java.lang.StringBuilder sb = new java.lang.StringBuilder();
-        //java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
-        //logger.debug(formatter.format("Set ClientMark to 0x%08x",client_mark).toString()); sb.setLength(0);
-
         this.sessionGlobalState().netcapSession().orClientMark(bitmask);
     }
 
@@ -1118,10 +1112,6 @@ public abstract class AppSessionImpl implements AppSession
      */
     public void orServerMark(int bitmask)
     {
-        //java.lang.StringBuilder sb = new java.lang.StringBuilder();
-        //java.util.Formatter formatter = new java.util.Formatter(sb, java.util.Locale.US);
-        //logger.debug(formatter.format("Set ServerMark to 0x%08x",server_mark).toString()); sb.setLength(0);
-
         this.sessionGlobalState().netcapSession().orServerMark(bitmask);
     }
 
@@ -1149,7 +1139,7 @@ public abstract class AppSessionImpl implements AppSession
     public void writeEvent(int side, OutgoingSocketQueue out)
     {
         String sideName = side == CLIENT ? "client" : "server";
-        MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+        ThreadContext.put(SESSION_ID_MDC_KEY, idForMDC());
         try {
             assert out != null;
             if (!out.isEmpty()) {
@@ -1187,7 +1177,7 @@ public abstract class AppSessionImpl implements AppSession
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            MDC.remove(SESSION_ID_MDC_KEY);
+            ThreadContext.remove(SESSION_ID_MDC_KEY);
         }
     }
 
@@ -1202,7 +1192,7 @@ public abstract class AppSessionImpl implements AppSession
     public void readEvent(int side, IncomingSocketQueue in)
     {
         String sideName = side == CLIENT ? "client" : "server";
-        MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+        ThreadContext.put(SESSION_ID_MDC_KEY, idForMDC());
         try {
             assert in != null;
 
@@ -1256,7 +1246,7 @@ public abstract class AppSessionImpl implements AppSession
         } catch (OutOfMemoryError x) {
             UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            MDC.remove(SESSION_ID_MDC_KEY);
+            ThreadContext.remove(SESSION_ID_MDC_KEY);
         }
     }
 

@@ -7,7 +7,8 @@ import java.nio.ByteBuffer;
 
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.mime.MIMETCPStreamer;
 import com.untangle.uvm.vnet.MetadataToken;
@@ -22,7 +23,7 @@ public class CompleteMIMEToken extends MetadataToken
 
     private static final int CHUNK_SZ = 1024 * 4;
 
-    private final Logger m_logger = Logger.getLogger(CompleteMIMEToken.class);
+    private final Logger m_logger = LogManager.getLogger(CompleteMIMEToken.class);
 
     private final MimeMessage m_msg;
     private final SmtpMessageEvent m_msgInfo;
@@ -103,7 +104,7 @@ public class CompleteMIMEToken extends MetadataToken
     {
 
         private ByteBufferByteStuffer m_bbbs = new ByteBufferByteStuffer();
-        private final Logger m_logger = Logger.getLogger(CompleteMIMEToken.StuffingMIMETCPStreamer.class);
+        private final Logger m_logger = LogManager.getLogger(CompleteMIMEToken.StuffingMIMETCPStreamer.class);
         private ByteBuffer m_readBuf = ByteBuffer.allocate(CHUNK_SZ);
         private boolean m_readLast = false;
 

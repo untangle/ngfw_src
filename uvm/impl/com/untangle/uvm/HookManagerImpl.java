@@ -10,7 +10,8 @@ import java.util.Iterator;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The hook manager is a singleton to register and call hooks when certain
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class HookManagerImpl implements HookManager
 {
-    private final Logger logger = Logger.getLogger(HookManagerImpl.class);
+    private final Logger logger = LogManager.getLogger(HookManagerImpl.class);
 
     /**
      * The singleton instance

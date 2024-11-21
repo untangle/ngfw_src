@@ -14,7 +14,8 @@ import javax.activation.DataHandler;
 import javax.mail.Part;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.MailExport;
 import com.untangle.app.smtp.MailExportFactory;
@@ -43,7 +44,7 @@ public class VirusSmtpHandler extends SmtpEventHandler implements TemplateTransl
 {
     private static final String MOD_SUB_TEMPLATE = "[VIRUS] $MIMEMessage:SUBJECT$";
 
-    private final Logger logger = Logger.getLogger(VirusSmtpHandler.class);
+    private final Logger logger = LogManager.getLogger(VirusSmtpHandler.class);
 
     private final VirusBlockerBaseApp app;
 

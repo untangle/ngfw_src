@@ -18,7 +18,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.io.IOUtils;
 
 import com.untangle.uvm.UvmContextFactory;
@@ -32,7 +33,7 @@ import com.untangle.uvm.util.Pulse;
  */
 public class WebrootDaemon
 {
-    private final Logger logger = Logger.getLogger(WebrootDaemon.class);
+    private final Logger logger = LogManager.getLogger(WebrootDaemon.class);
 
     /**
      * The singleton instance

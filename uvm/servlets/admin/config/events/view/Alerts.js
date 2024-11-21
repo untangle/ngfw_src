@@ -43,6 +43,11 @@ Ext.define('Ung.config.events.view.Alerts', {
             emailLimitFrequencyMinutes: 0,
         },
 
+        importValidationJavaClass: true,
+        importValidationForAlertEvents: true,
+        importValidationForFieldSet: true,
+        importValidationForComboBox: true,
+
         columns: [
             Column.ruleId,
             Column.enabled,

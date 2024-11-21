@@ -66,7 +66,7 @@ public class AlertRule extends EventRule
      */
     public AlertRule( boolean enabled, List<EventRuleCondition> conditions, boolean log, boolean email, String description, boolean frequencyLimit, int frequencyMinutes )
     {
-		this(enabled, conditions, log, email, description, frequencyLimit, frequencyMinutes, null, null, null, null);
+		this(enabled, conditions, log, email, description, frequencyLimit, frequencyMinutes, false, null, 60, null);
     }
 
     /**

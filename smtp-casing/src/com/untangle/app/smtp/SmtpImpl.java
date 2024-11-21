@@ -8,7 +8,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.smtp.quarantine.Quarantine;
 import com.untangle.app.smtp.quarantine.QuarantineMaintenenceView;
@@ -40,7 +41,7 @@ public class SmtpImpl extends AppBase implements MailExport
     public static final String GLOBAL_SAFELIST_NAME = "GLOBAL";
 
     private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-    private final Logger logger = Logger.getLogger(SmtpImpl.class);
+    private final Logger logger = LogManager.getLogger(SmtpImpl.class);
 
     private SessionEventHandler clientSideHandler = new ForkedEventHandler( new SmtpClientParserEventHandler(), new SmtpClientUnparserEventHandler() );
     private SessionEventHandler serverSideHandler = new ForkedEventHandler( new SmtpServerUnparserEventHandler(), new SmtpServerParserEventHandler() );

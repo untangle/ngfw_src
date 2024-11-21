@@ -48,6 +48,17 @@ Ext.define('Ung.apps.ad-blocker.view.CookieFilters', {
 
         emptyText: 'No User Defined Cookie Filters Defined'.t(),
 
+        extraColumnConfig: {
+            blocked: { xtype: 'checkbox' },
+            flagged: { xtype: 'checkbox' },
+            name: { xtype: 'textfield' },
+            description: { xtype: 'textfield' },
+            readOnly: { xtype: 'checkbox' },
+            id: { xtype: 'numberfield' },
+            category: { xtype: 'textfield' },
+            enabled: { allowBlank: false, xtype: 'checkbox' },
+        },
+
         columns: [
             Column.enabled, {
                 header: 'Rule'.t(),

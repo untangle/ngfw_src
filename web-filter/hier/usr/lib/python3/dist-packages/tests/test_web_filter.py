@@ -9,7 +9,6 @@ import copy
 
 import unittest
 import pytest
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -18,10 +17,10 @@ from .test_web_filter_base import WebFilterBaseTests
 
 
 def setHttpHttpsPorts(httpPort, httpsPort):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings['httpPort'] = httpPort
     netsettings['httpsPort'] = httpsPort
-    uvmContext.networkManager().setNetworkSettings(netsettings)
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
 #
 # Just extends the web filter base tests
@@ -176,7 +175,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        google_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.google.com/search?hl=en&q=boobs&safe=off", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'safe=strict'")
+        google_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.google.com/search?hl=en&q=boobs", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'safe=strict'")
 
         assert( google_result_without_safe == 0 )
         assert( google_result_with_safe == 0 )
@@ -187,7 +186,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        bing_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.bing.com/search?q=boobs&adlt=off", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'adlt=strict'")
+        bing_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://www.bing.com/search?q=boobs", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'adlt=strict'")
 
         assert(bing_result_without_safe == 0)
         assert(bing_result_with_safe == 0)
@@ -198,7 +197,7 @@ class WebFilterTests(WebFilterBaseTests):
 
         settings["enforceSafeSearch"] = True
         self._app.setSettings(settings)
-        yahoo_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://search.yahoo.com/search?p=boobs&vm=p", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'vm=r'")
+        yahoo_result_with_safe = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://search.yahoo.com/search?p=boobs", user_agent="Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7) Gecko/20040613 Firefox/0.8.0+)") + " | grep -q 'vm=r'")
 
         assert(yahoo_result_with_safe == 0)
         assert(yahoo_result_without_safe == 0)
@@ -747,7 +746,7 @@ class WebFilterTests(WebFilterBaseTests):
     def test_010_0000_rule_condition_host_quota_exceeded(self):
         "test HOST_QUOTA_EXCEEDED"
         global_functions.host_quota_give( 1000, 300 )
-        uvmContext.hostTable().decrementQuota( remote_control.client_ip, 10000 )
+        global_functions.uvmContext.hostTable().decrementQuota( remote_control.client_ip, 10000 )
         self.rule_add("HOST_QUOTA_EXCEEDED",None)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -765,7 +764,7 @@ class WebFilterTests(WebFilterBaseTests):
     def test_010_0000_rule_condition_client_quota_exceeded(self):
         "test CLIENT_QUOTA_EXCEEDED"
         global_functions.host_quota_give( 1000, 300 )
-        uvmContext.hostTable().decrementQuota( remote_control.client_ip, 10000 )
+        global_functions.uvmContext.hostTable().decrementQuota( remote_control.client_ip, 10000 )
         self.rule_add("CLIENT_QUOTA_EXCEEDED",None)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -791,7 +790,7 @@ class WebFilterTests(WebFilterBaseTests):
         "test USER_QUOTA_EXCEEDED"
         global_functions.host_username_set( remote_control.get_hostname() )
         global_functions.user_quota_give( remote_control.get_hostname(), 1000, 300 )
-        uvmContext.userTable().decrementQuota( remote_control.get_hostname(), 10000 )
+        global_functions.uvmContext.userTable().decrementQuota( remote_control.get_hostname(), 10000 )
         self.rule_add("USER_QUOTA_EXCEEDED",None)
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -830,7 +829,7 @@ class WebFilterTests(WebFilterBaseTests):
     def test_010_0000_rule_condition_host_quota_attainment(self):
         "test HOST_QUOTA_ATTAINMENT"
         global_functions.host_quota_give( 1000, 300 )
-        uvmContext.hostTable().decrementQuota( remote_control.client_ip, 10000 )
+        global_functions.uvmContext.hostTable().decrementQuota( remote_control.client_ip, 10000 )
         self.rule_add("HOST_QUOTA_ATTAINMENT",">1.1")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         assert (result == 0)
@@ -849,7 +848,7 @@ class WebFilterTests(WebFilterBaseTests):
     def test_010_0000_rule_condition_client_quota_attainment(self):
         "test CLIENT_QUOTA_ATTAINMENT"
         global_functions.host_quota_give( 1000, 300 )
-        uvmContext.hostTable().decrementQuota( remote_control.client_ip, 10000 )
+        global_functions.uvmContext.hostTable().decrementQuota( remote_control.client_ip, 10000 )
         self.rule_add("CLIENT_QUOTA_ATTAINMENT",">1.1")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -875,7 +874,7 @@ class WebFilterTests(WebFilterBaseTests):
         "test USER_QUOTA_ATTAINMENT"
         global_functions.host_username_set( remote_control.get_hostname() )
         global_functions.user_quota_give( remote_control.get_hostname(), 1000, 300 )
-        uvmContext.userTable().decrementQuota( remote_control.get_hostname(), 10000 )
+        global_functions.uvmContext.userTable().decrementQuota( remote_control.get_hostname(), 10000 )
         self.rule_add("USER_QUOTA_ATTAINMENT",">1.1")
         result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage")
         self.rules_clear()
@@ -913,7 +912,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_host_mac_vendor(self):
         "test HOST_MAC_VENDOR"
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         vendor = entry.get('macVendor')
         if vendor == None:
             raise unittest.SkipTest('No MAC vendor')
@@ -932,7 +931,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_client_mac_vendor(self):
         "test CLIENT_MAC_VENDOR"
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         vendor = entry.get('macVendor')
         if vendor == None:
             raise unittest.SkipTest('No MAC vendor')
@@ -958,7 +957,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_server_mac_vendor_no_entry(self):
         "test SERVER_MAC_VENDOR if no host entry exists - * should not match null"
-        entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
         if entry != None:
             raise unittest.SkipTest('Entry exists')
         self.rule_add("SERVER_MAC_VENDOR",'*')
@@ -968,7 +967,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_host_mac_vendor(self):
         "test HOST_MAC_VENDOR"
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         vendor = entry.get('macVendor')
         if vendor == None:
             raise unittest.SkipTest('No MAC vendor')
@@ -987,7 +986,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_client_mac_vendor(self):
         "test CLIENT_MAC_VENDOR"
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         vendor = entry.get('macVendor')
         if vendor == None:
             raise unittest.SkipTest('No MAC vendor')
@@ -1013,7 +1012,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_server_mac_vendor_no_entry(self):
         "test SERVER_MAC_VENDOR if no host entry exists - * should not match null"
-        entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
         if entry != None:
             raise unittest.SkipTest('Entry exists')
         self.rule_add("SERVER_MAC_VENDOR",'*')
@@ -1023,7 +1022,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_host_mac(self):
         "test HOST_MAC"
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         mac = entry.get('macAddress')
         if mac == None:
             raise unittest.SkipTest('No MAC address')
@@ -1041,7 +1040,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_src_mac(self):
         "test SRC_MAC"
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         mac = entry.get('macAddress')
         if mac == None:
             raise unittest.SkipTest('No MAC address')
@@ -1066,7 +1065,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_dst_mac_no_entry(self):
         "test DST_MAC if no host entry exists - * should not match null"
-        entry = uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( socket.gethostbyname("test.untangle.com") )
         if entry != None:
             raise unittest.SkipTest('Entry exists')
         self.rule_add("DST_MAC",'*')
@@ -1240,7 +1239,7 @@ class WebFilterTests(WebFilterBaseTests):
 
     def test_010_0000_rule_condition_http_user_agent(self):
         "test HTTP_USER_AGENT"
-        entry = uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
+        entry = global_functions.uvmContext.hostTable().getHostTableEntry( remote_control.client_ip )
         if entry.get('httpUserAgent') == None or not('linux' in entry.get('httpUserAgent')):
             raise unittest.SkipTest('No usable user agent')
         self.rule_add("HTTP_USER_AGENT","*linux*")

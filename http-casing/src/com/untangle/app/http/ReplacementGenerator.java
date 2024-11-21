@@ -7,9 +7,7 @@ import java.lang.Class;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.Inet4Address;
-import java.net.URLEncoder;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,24 +16,24 @@ import java.util.Map;
 
 import com.untangle.uvm.vnet.ChunkToken;
 import com.untangle.uvm.vnet.EndMarkerToken;
-import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.NonceFactory;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.vnet.AppTCPSession;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.Logger;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Generates a replacement page for Apps that block traffic.
  */
 public abstract class ReplacementGenerator<T extends RedirectDetails>
 {
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     private static HashMap<Class<?>,Map<String,Method>> ParameterClassMethodMap = new HashMap<>();
 

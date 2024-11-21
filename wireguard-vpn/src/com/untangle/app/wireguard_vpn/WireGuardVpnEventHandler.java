@@ -9,7 +9,8 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.IPNewSessionRequest;
 import com.untangle.uvm.vnet.TCPNewSessionRequest;
 import com.untangle.uvm.vnet.UDPNewSessionRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Event handler for WireGuard nVPN traffic
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
  */
 class WireGuardVpnEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(WireGuardVpnEventHandler.class);
+    private final Logger logger = LogManager.getLogger(WireGuardVpnEventHandler.class);
 
     private final WireGuardVpnApp app;
 

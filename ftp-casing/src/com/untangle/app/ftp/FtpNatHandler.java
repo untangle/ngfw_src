@@ -9,7 +9,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.Protocol;
@@ -27,7 +28,7 @@ import com.untangle.app.ftp.FtpEventHandler;
  */
 class FtpNatHandler extends FtpEventHandler
 {
-    protected static final Logger logger = Logger.getLogger( FtpNatHandler.class );
+    protected static final Logger logger = LogManager.getLogger( FtpNatHandler.class );
 
     private final static int portStart = 10000 + (int)(Math.random()*3000);
     private final static int portRange = 5000;
@@ -548,7 +549,7 @@ class SessionRedirectKey
  */
 class SessionRedirect
 {
-    private static final Logger logger = Logger.getLogger( SessionRedirect.class );
+    private static final Logger logger = LogManager.getLogger( SessionRedirect.class );
 
     final InetAddress newServerAddr;
     final int         newServerPort;

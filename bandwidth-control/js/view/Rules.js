@@ -28,6 +28,20 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
 
     emptyText: 'No Rules defined'.t(),
 
+    importValidationJavaClass: true,
+    importValidationForComboBox: true,
+    nestedFieldsArr: {
+        fields: ["action"],
+        nestedFieldCondn: {
+            priority: function (value) { return value !== "SET_PRIORITY"; },
+            quotaTime: function (value) { return value !== "GIVE_HOST_QUOTA" && value !== "GIVE_USER_QUOTA"; },
+            quotaBytes: function (value) { return value !== "GIVE_HOST_QUOTA" && value !== "GIVE_USER_QUOTA"; },
+            tagName: function (value) { return value !== "TAG_HOST"; },
+            tagTime: function (value) { return value !== "TAG_HOST"; },
+        },
+        toCompareField: "actionType"
+    },
+
     emptyRow: {
         ruleId: 0,
         enabled: true,
@@ -84,21 +98,24 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
             {
                 name:"HOST_MAC",
                 displayName: "Host MAC Address".t(),
-                type: "textfield"
+                type: "textfield",
+                allowBlank: false,
             },
             "SRC_MAC",
             "DST_MAC",
             {
                 name:"HOST_MAC_VENDOR",
                 displayName: "Host MAC Vendor".t(),
-                type: "textfield"
+                type: "textfield",
+                allowBlank: false,
             },
             "CLIENT_MAC_VENDOR",
             "SERVER_MAC_VENDOR",
             {
                 name:"HOST_IN_PENALTY_BOX",
                 displayName: "Host in Penalty Box".t(),
-                type: "boolean"
+                type: "boolean",
+                onlyTrue: true,
             },
             "CLIENT_IN_PENALTY_BOX",
             "SERVER_IN_PENALTY_BOX",
@@ -141,7 +158,8 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Rules', {
             {
                 name:"REMOTE_HOST_COUNTRY",
                 displayName: 'Remote Host Country'.t(),
-                type: 'countryfield'
+                type: 'countryfield',
+                importValidation: true,
             },
             "CLIENT_COUNTRY",
             "SERVER_COUNTRY",

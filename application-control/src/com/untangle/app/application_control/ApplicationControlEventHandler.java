@@ -16,7 +16,8 @@ import com.untangle.uvm.vnet.AbstractEventHandler;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AppUDPSession;
 import com.untangle.uvm.vnet.IPPacketHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This is the main event handler where we pass traffic to the daemon for
@@ -36,7 +37,7 @@ public class ApplicationControlEventHandler extends AbstractEventHandler
 
     public static final int SELECT_TIMEOUT = 100;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     private ApplicationControlApp app;
     private int networkPort = 0;
 

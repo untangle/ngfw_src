@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
@@ -69,7 +70,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
 
     private final PipelineConnector[] connectors;
     private final VirusReplacementGenerator replacementGenerator;
-    private final Logger logger = Logger.getLogger(VirusBlockerBaseApp.class);
+    private final Logger logger = LogManager.getLogger(VirusBlockerBaseApp.class);
 
     /*
      * the signatures are updated at startup, so using new Date() is not that

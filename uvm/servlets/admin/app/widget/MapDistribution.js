@@ -24,9 +24,23 @@ Ext.define('Ung.widget.MapDistribution', {
         reference: 'mapCmp'
     }],
 
+    // Function to convert bytes to the appropriate unit
+    bytesToDynamicSize : function(bytes) {
+        if (bytes < 1000) {
+            return 10;
+        } else if (bytes < 1000 * 1000) {
+            return 30;
+        } else if (bytes < 1000 * 1000 * 1000) {
+            return 50;
+        } else if (bytes < 1000 * 1000 * 1000 * 1000) {
+            return 70;
+        } else {
+            return 90;
+        }
+    },
+
     fetchData: function (cb) {
         var me = this;
-
         if (me.chart) {
             me.chart.showLoading('<i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>');
             Rpc.asyncData('rpc.UvmContext.geographyManager.getGeoSessionStats')
@@ -38,13 +52,19 @@ Ext.define('Ung.widget.MapDistribution', {
                 me.chart.hideLoading();
                 cb();
                 for (i = 0; i < result.length; i += 1) {
-                    var bubbleSize = 0;
-                    if (result[i].kbps)
-                        bubbleSize = Math.round(result[i].kbps * 100) / 100;
+                    var bubbleSize = 0, numberPart = 0, unitPart = "", convertedValue="";
+                    if (result[i].bps){
+                        convertedValue = Util.bytesRenderer(result[i].bps, true);
+                        numberPart = parseFloat(convertedValue);
+                        unitPart = convertedValue.replace(/[\d\s.]+/g, '');
+                        bubbleSize = result[i].bps;
+                    }
                     data.push({
                         lat: result[i].latitude,
                         lon: result[i].longitude,
-                        z: bubbleSize,
+                        z: bubbleSize == 0 ? 0 : me.bytesToDynamicSize(bubbleSize),
+                        numberPart: numberPart,
+                        unitPart: unitPart,
                         country: result[i].country,
                         sessionCount: result[i].sessionCount
                     });
@@ -137,10 +157,7 @@ Ext.define('Ung.widget.MapDistribution', {
                 headerFormat: '',
                 pointFormatter: function () {
                     var str = '<strong>' + this.country + '</strong><br/><strong>' + this.sessionCount + '</strong> ' + 'sessions'.t() + '<br/>';
-                    var value = Util.bytesRenderer(this.z,true);
-                    var numberPart = parseFloat(value);
-                    var unitPart = value.replace(/[\d\s.]+/g, '');
-                    str += '<strong>' + numberPart + '</strong> ' + unitPart ;
+                    str += '<strong>' + this.numberPart + '</strong> ' + this.unitPart ;
                     return str;
                 },
                 hideDelay: 0

@@ -193,6 +193,7 @@ dict = {
     'active_hosts' : i18n._('Active Hosts'),
     'rx_rate' : i18n._('Rx Rate'),
     'tx_rate' : i18n._('Tx Rate'),
+    'operation' : i18n._('Operation'),
 }
 
 

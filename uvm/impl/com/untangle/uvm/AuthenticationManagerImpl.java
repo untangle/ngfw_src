@@ -9,7 +9,8 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The Manager for system-based authentication
@@ -20,7 +21,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager
 
     private final String OAUTH_DOMAIN_CONFIG = System.getProperty("uvm.home") + "/conf/ut-oauth.conf";
 
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private UrisSaveHookCallback urisSaveHookCallback = new UrisSaveHookCallback();
 

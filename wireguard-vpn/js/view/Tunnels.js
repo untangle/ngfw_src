@@ -61,6 +61,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'pingUnreachableEvents': false
     },
 
+    importValidationJavaClass: true,
+
     bind: '{tunnels}',
 
     columns: [{
@@ -88,7 +90,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             vtype: 'isSingleIpValid',
             emptyText: '[enter peer IP address]'.t(),
             validator: function(value) {
-                return peerIpAddrValidator(value, 'peerAddress', this);
+                return peerIpAddrValidator(value, 'peerAddress', this, 'app-wireguard-vpn-server-tunnels-grid');
             }
         }
     }, {
@@ -133,8 +135,10 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: {
             value: '{record.description}'
         },
-        validator: function(value) {
-            return isUnique(value, 'description', this);
+        validator: function(value, component) {
+            if(component === undefined)
+                    component = this;
+            return Util.isUnique(value, 'tunnel', 'description', component, 'app-wireguard-vpn-server-tunnels-grid');
         }
     }, {
         xtype: 'textfield',
@@ -144,8 +148,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: {
             value: '{record.publicKey}'
         },
-        validator: function(value) {
-            return isUnique(value, 'publicKey', this);
+        validator: function(value, component) {
+            if(component == undefined){
+                component = this;
+            }
+            return Util.isUnique(value, 'tunnel', 'publicKey', component, 'app-wireguard-vpn-server-tunnels-grid');
         }
     }, {
         xtype: 'fieldset',
@@ -206,8 +213,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: {
             value: '{record.peerAddress}'
         },
-        validator: function(value) {
-            return peerIpAddrValidator(value, 'peerAddress', this);
+        validator: function(value, component) {
+            if(component == undefined){
+                component = this;
+            }
+            return peerIpAddrValidator(value, 'peerAddress', component, 'app-wireguard-vpn-server-tunnels-grid');
         }
     }, {
         xtype: 'textarea',
@@ -219,9 +229,10 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: {
             value: '{record.networks}'
         },
-        validator: function(value) {
+        validator: function(value, component) {
             try{
                 var isValidVtypeField = Ext.form.field.VTypes[this.vtype](value);
+                var peerNetworkIp ;
                 if(!isValidVtypeField){
                     return true;
                 }
@@ -231,8 +242,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 if(remoteNetworks.trim().length<=0){
                     return true;
                 }
-                
-                var peerNetworkIp = this.up("app-wireguard-vpn").getViewModel().get("settings").addressPool;
+                if(component === undefined){
+                    peerNetworkIp  = this.up("app-wireguard-vpn").getViewModel().get("settings").addressPool;
+                }else{
+                    peerNetworkIp  = component.getView().up().up().getViewModel()._data.settings.addressPool;
+                }
                 var localNetworkStore = remoteNetworks.length > 0 ? Ext.Array.map(remoteNetworks.split("\n"),function (remoteIpAddr){
                     return remoteIpAddr.trim();
                 }) : [];
@@ -308,6 +322,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
 
 function isUnique(value, field, component) {
     var currentRecord ;
+    if(component.getId().indexOf('textfield') !== -1){
     if(component.up('window')!=undefined)
          currentRecord = component.up('window').getViewModel().data.record.get(field);
     if (value === currentRecord) {
@@ -316,6 +331,7 @@ function isUnique(value, field, component) {
     //Return true if editable field peerAddress in grid is not modified
     if(!component.dirty && field === 'peerAddress') {
         return true; 
+    }
     }
     var grid = Ext.ComponentQuery.query('app-wireguard-vpn-server-tunnels-grid')[0];
     var store = grid.getStore();
@@ -330,9 +346,14 @@ function isUnique(value, field, component) {
 
 function isIPAddressUnderNWRange(value, component) { 
     var wirgrdVpnCmp = Ext.ComponentQuery.query('[alias=widget.app-wireguard-vpn]')[0];
+    var addrpool;
     if(wirgrdVpnCmp)
         unusedPoolAddr =  wirgrdVpnCmp.getController().getNextUnusedPoolAddr();
-    var addrpool = component.up('tabpanel').getViewModel().data.originalSettings.addressPool;
+    if(component.getId().indexOf('textfield') !== -1){
+         addrpool = component.up('tabpanel').getViewModel().data.originalSettings.addressPool;
+    }else{
+         addrpool = component.getView().up().up().getViewModel()._data.settings.addressPool;
+    }
     var subnet = addrpool.split('/')[1];
     var pool = addrpool.split('/')[0];
     netMask = Util.getV4NetmaskMap()[subnet ? subnet: 32];
@@ -348,13 +369,9 @@ function isIPAddressUnderNWRange(value, component) {
     }       
 }
 
-function peerIpAddrValidator(value, field, component) {
-    var uniqueError = isUnique(value, field, component);
-    var rangeError = isIPAddressUnderNWRange(value, component);
-    
-    if (rangeError !== true) {
-        return rangeError;
-    } else if (uniqueError !== true) {
+function peerIpAddrValidator(value, field, component, grid) {
+    var uniqueError = Util.isUnique(value, 'tunnel', field, component, grid);
+    if (uniqueError !== true) {
         return uniqueError;
     } else {
         return true;

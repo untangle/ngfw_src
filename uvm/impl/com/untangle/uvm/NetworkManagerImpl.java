@@ -3,37 +3,8 @@
  */
 package com.untangle.uvm;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Collections;
-import java.util.Comparator;
-import java.net.InetAddress;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.function.Predicate;
-import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.log4j.Logger;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.NetspaceManager;
-import com.untangle.uvm.NetworkManager;
-import com.untangle.uvm.HookManager;
-import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceStatus;
@@ -64,16 +35,44 @@ import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
 import com.untangle.uvm.network.DynamicRouteNetwork;
 import com.untangle.uvm.network.DynamicRouteOspfArea;
 import com.untangle.uvm.network.DynamicRouteOspfInterface;
-import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.util.ObjectMatcher;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jabsorb.serializer.UnmarshallException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.Iterator;
 
 /**
  * The Network Manager handles all the network configuration
  */
 public class NetworkManagerImpl implements NetworkManager
 {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    public static final String MAC = "MAC";
+    public static final String ORGANIZATION = "Organization";
+    public static final String COMMA = ",";
+    private final Logger logger = LogManager.getLogger(this.getClass());
 
     private final String updateRulesScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-update-rules.sh";
     private final String deviceStatusScript = System.getProperty("uvm.bin.dir") + "/ut-uvm-device-status.sh";
@@ -89,6 +88,9 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ADDRESS = "static-address";
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
+
+    // creating a cache for the lookedup mac addresses and vendors
+    private static ConcurrentMap<String,String> cachedMacAddrVendorList = new ConcurrentHashMap<>();
 
     /**
      * The current network settings
@@ -653,12 +655,17 @@ public class NetworkManagerImpl implements NetworkManager
         String output = UvmContextFactory.context().execManager().execOutput(deviceStatusScript + argStr);
         List<DeviceStatus> entryList = null;
         try {
-            entryList = (List<DeviceStatus>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
-        } catch (Exception e) {
-            logger.warn("Unable to parse device status: ", e);
-            logger.warn("Unable to parse device status: " + output);
-            return null;
-        }
+            //expected Java class type
+            Class<List<DeviceStatus>> ListOfDeviceStatusClass = (Class<List<DeviceStatus>>) (Class<?>) List.class;
+            entryList = ObjectMatcher.parseJson(output, ListOfDeviceStatusClass); 
+            } catch (JSONException | UnmarshallException e) {
+                logger.warn("Unable to parse device status: ", e);
+                logger.warn("Unable to parse device status: " + output);
+                return null;
+            } catch (Exception e) {
+                logger.error("Unexpected exception while getting device status: ", e);
+                return null; 
+            }
         return entryList;
     }
     
@@ -1729,10 +1736,22 @@ public class NetworkManagerImpl implements NetworkManager
             networkSettings.setHostName( UvmContextFactory.context().oemManager().getOemName().toLowerCase() );
         networkSettings.setHostName( networkSettings.getHostName().replaceAll("\\..*","") );
         
+        List<InterfaceSettings> interfacesSettings =  networkSettings.getInterfaces();
+        List<InterfaceSettings> interfacesToMove = interfacesSettings.stream()
+                                                                        .filter(i-> i.getInterfaceId() == -1).collect(Collectors.toList());
+        
+        // For each interface with id == -1, remove it and add it to the end
+        if(!interfacesToMove.isEmpty()){
+            for (InterfaceSettings interfaceToMove : interfacesToMove) {
+                interfacesSettings.remove(interfaceToMove);  // Remove the interface from its current position
+                interfacesSettings.add(interfaceToMove);  // Add it to the last position
+            }
+        }  
+        
         /**
          * Handle VLAN interfaces
          */
-        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+        for ( InterfaceSettings intf : interfacesSettings ) {
             if (!intf.getIsVlanInterface())
                 continue;
             if ( intf.getVlanTag() == null )
@@ -1745,7 +1764,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
 
             InterfaceSettings parent = null;
-            for ( InterfaceSettings intf2 : networkSettings.getInterfaces() ) {
+            for ( InterfaceSettings intf2 : interfacesSettings ) {
                 if ( intf.getVlanParent() == intf2.getInterfaceId() )
                     parent = intf2;
             }
@@ -1762,7 +1781,7 @@ public class NetworkManagerImpl implements NetworkManager
          * Handle PPPoE interfaces
          */
         int pppCount = 0;
-        for ( InterfaceSettings intf : networkSettings.getInterfaces() ) {
+        for ( InterfaceSettings intf : interfacesSettings ) {
             if ( !InterfaceSettings.ConfigType.DISABLED.equals( intf.getConfigType() ) &&
                  InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
                 // save the old system dev (usuallyy physdev or sometimse vlan dev as root dev)
@@ -2378,43 +2397,6 @@ public class NetworkManagerImpl implements NetworkManager
         ruleSnmpConditions.add(ruleSnmpMatcher3);
         filterRuleSnmp.setConditions( ruleSnmpConditions );
 
-        FilterRule filterRuleUpnp = new FilterRule();
-        filterRuleUpnp.setReadOnly( true );
-        filterRuleUpnp.setEnabled( true );
-        filterRuleUpnp.setIpv6Enabled( true );
-        filterRuleUpnp.setDescription( "Allow UPnP (UDP/1900) on non-WANs" );
-        filterRuleUpnp.setBlocked( false );
-        conditions = new LinkedList<>();
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "1900" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "UDP" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
-        filterRuleUpnp.setConditions( conditions );
-
-        FilterRule filterRuleUpnpB = new FilterRule();
-        filterRuleUpnpB.setReadOnly( true );
-        filterRuleUpnpB.setEnabled( true );
-        filterRuleUpnpB.setIpv6Enabled( true );
-        filterRuleUpnpB.setDescription( "Allow UPnP (TCP/5000) on non-WANs" );
-        filterRuleUpnpB.setBlocked( false );
-        conditions = new LinkedList<>();
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "5000" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "TCP" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
-        filterRuleUpnpB.setConditions( conditions );
-
-        FilterRule filterRuleUpnpC = new FilterRule();
-        filterRuleUpnpC.setReadOnly( true );
-        filterRuleUpnpC.setEnabled( true );
-        filterRuleUpnpC.setIpv6Enabled( true );
-        filterRuleUpnpC.setDescription( "Allow UPnP (UDP/5351) on non-WANs" );
-        filterRuleUpnpC.setBlocked( false );
-        conditions = new LinkedList<>();
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.DST_PORT, "5351" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.PROTOCOL, "UDP" ));
-        conditions.add(new FilterRuleCondition( FilterRuleCondition.ConditionType.SRC_INTF, "non_wan" ));
-        filterRuleUpnpC.setConditions( conditions );
-
-
         FilterRule filterRuleBgp = new FilterRule();
         filterRuleBgp.setReadOnly( true );
         filterRuleBgp.setEnabled( true );
@@ -2561,9 +2543,6 @@ public class NetworkManagerImpl implements NetworkManager
         rules.add( filterRuleDhcp );
         rules.add( filterRuleHttp );
         rules.add( filterRuleSnmp );
-        rules.add( filterRuleUpnp );
-        rules.add( filterRuleUpnpB );
-        rules.add( filterRuleUpnpC );
         rules.add(filterRuleBgp);
         rules.add(filterRuleOspf);
         rules.add( filterRuleAhEsp );
@@ -2772,6 +2751,46 @@ public class NetworkManagerImpl implements NetworkManager
     public String getUpnpManager(String command, String arguments)
     {
         return UvmContextFactory.context().execManager().execOutput(upnpManagerScript + " " + command + " " + arguments);
+    }
+
+    /**
+     * Lookup the hardware vendors for a MAC addresses
+     *
+     * @param macAddressList
+     *        The MAC address List
+     * @return The MAC addresses with hardware vendors, or null
+     */
+    public ConcurrentMap<String, String> lookupMacVendorList(List<String> macAddressList) {
+        // find MAC addresses that are missing in cache
+        List<String> missingMacAddressList = macAddressList.stream()
+                .filter(macAddress -> !cachedMacAddrVendorList.containsKey(macAddress))
+                .toList();
+
+        if (!missingMacAddressList.isEmpty()) {
+            try {
+                String macAddresses = String.join(COMMA, missingMacAddressList);
+                logger.info("Cloud MAC lookup: {}", macAddresses);
+                // fetch the vendors for the mac addresses
+                JSONArray macAddrVendorArr = UvmContextFactory.context().deviceTable().lookupMacVendor(macAddresses);
+                if (macAddrVendorArr != null) {
+                    for (int i = 0; i < macAddrVendorArr.length(); i++) {
+                        JSONObject macAddrVendor = macAddrVendorArr.getJSONObject(i);
+                        if (macAddrVendor.has(MAC) && macAddrVendor.has(ORGANIZATION)) {
+                            String macAddr = macAddrVendor.getString(MAC), vendorName = macAddrVendor.getString(ORGANIZATION);
+                            if (logger.isDebugEnabled())
+                                logger.debug("Cloud MAC lookup: {} ,Cloud Vendor lookup: {}", macAddr, vendorName);
+                            // add the fetched mac address with vendor in our cache
+                            cachedMacAddrVendorList.put(macAddr, vendorName);
+                        }
+                    }
+                } else {
+                    logger.info("Vendors not found for MAC addresses: {}", macAddresses);
+                }
+            } catch (Exception exn) {
+                logger.warn("Exception looking up MAC address vendor:", exn);
+            }
+        }
+        return cachedMacAddrVendorList;
     }
 
     /**
@@ -3016,9 +3035,11 @@ public class NetworkManagerImpl implements NetworkManager
             case DYNAMIC_ROUTING_OSPF:
             case ROUTING_TABLE:
             case QOS:
-            case DHCP_LEASES:
+            case DHCP_LEASES: {
+                if(argument != null && argument.contains("&")) throw new RuntimeException("runTroubleshooting suspicious argument: (" + argument + "), blocked");
+                
                 return UvmContextFactory.context().execManager().execOutputSafe(statusScript + " get_" + command.toString().toLowerCase() + " " + argument);
-
+            }
             default:
                 throw new RuntimeException("getStatus unknown command: " + command);
         }
@@ -3055,6 +3076,12 @@ public class NetworkManagerImpl implements NetworkManager
             case DOWNLOAD:
             case TRACE:
                 try{
+                    for(String var : environment_variables) {
+                        if (var.contains(";") || var.contains("&") || var.contains("|")
+                                || var.contains(">") || var.contains("$(")) {
+                            throw new RuntimeException("runTroubleshooting suspicious command: (" + environment_variables + "), blocked");
+                        }
+                    }
                     return UvmContextFactory.context().execManager().execEvil(new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()}, environment_variables.toArray(new String[0]));
                 }catch(Exception e){
                     logger.warn("runTroubleshooting executing:", e);
@@ -3086,6 +3113,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         private static final String CHARACTER_ENCODING = "utf-8";
         private static final String PATH = "/tmp/network-tests/";
+        private static final String FORWARD_SLASH = "/";
+        private static final Path BASE_PATH = Paths.get(PATH).toAbsolutePath().normalize();
 
         /**
          * getName
@@ -3110,6 +3139,14 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.warn("Invalid parameters: " + name );
                 return;
             }
+            // Ensuring that filename can only be downloaded from under our path and is valid
+            if (name.startsWith(FORWARD_SLASH)) name = name.substring(1);
+
+            Path resolvedPath = BASE_PATH.resolve(name).normalize();
+            if (!resolvedPath.startsWith(BASE_PATH) || !resolvedPath.toFile().exists()) {
+                logger.warn("Invalid parameter: {}, won't download the file", name );
+                return;
+            }
 
             FileInputStream fis = null;
             OutputStream out = null;
@@ -3120,7 +3157,7 @@ public class NetworkManagerImpl implements NetworkManager
 
                 byte[] buffer = new byte[1024];
                 int read;
-                // Ensure that filename can only be downloaded from under our path
+
                 fis = new FileInputStream(PATH + name);
                 out = resp.getOutputStream();
                 

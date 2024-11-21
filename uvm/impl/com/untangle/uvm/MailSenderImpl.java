@@ -41,7 +41,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.sun.mail.smtp.SMTPTransport;
 import com.untangle.uvm.MailSender;
@@ -123,7 +124,7 @@ public class MailSenderImpl implements MailSender
 
     private MailSenderNetworkSettingsHook networkSettingsChangeHook = new MailSenderNetworkSettingsHook();
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Constructor
@@ -650,7 +651,11 @@ public class MailSenderImpl implements MailSender
         // restart exim
         // run it in the background because this runs whenever networking is saved
         // and this takes several seconds
-        UvmContextFactory.context().execManager().exec(EXIM_CMD_RESTART_EXIM);
+        try{
+            UvmContextFactory.context().execManager().execEvil(EXIM_CMD_RESTART_EXIM + " &");
+        }catch( Exception e){
+            logger.warn("error calling " + EXIM_CMD_RESTART_EXIM, e);
+        }
 
     }
 

@@ -63,6 +63,6 @@ class AppBuilder
 
   ## Helper to retrieve the standard dependencies
   def AppBuilder.baseJars
-    Jars::Base + [@uvm_lib['api']]
+    Jars::Base + [@uvm_lib['api']] + [@uvm_lib['bootstrap']]
   end
 end

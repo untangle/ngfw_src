@@ -15,26 +15,28 @@ UNZIP=unzip
 #* EDIT HERE WHEN ADDING, UPGRADING, OR REMOVING.
 ###############################################################################
 tarballs_gz=apache-ant-1.6.5.tar.gz \
-	apache-tomcat-8.5.83-embed.tar.gz \
-	logging-log4j-1.2.16.tar.gz \
+	apache-tomcat-9.0.89-embed.tar.gz \
+	logging-log4j-2.23.1.tar.gz \
 	velocity-1.4.tar.gz \
-	commons-fileupload-1.1.tar.gz \
-	commons-io-1.1.tar.gz \
+	commons-fileupload-1.5-bin.tar.gz \
+	commons-io-2.11.0.tar.gz \
 	commons-lang3-3.9-bin.tar.gz \
-	commons-text-1.8-bin.tar.gz \
-	httpcomponents-client-4.5.1-bin.tar.gz \
-	slf4j-1.4.3.tar.gz \
+	commons-logging-1.3.2-bin.tar.gz \
+	commons-codec-1.17.0-bin.tar.gz \
+	httpcomponents-client-5.3.1-bin.tar.gz \
+	slf4j-2.0.9.tar.gz \
 	Ext.ux.Exporter-1.0.tar.gz
 
 tarballs_bz2=
 
-zips=javamail-1_3_3_01.zip jabsorb-1.2.2-src.zip \
-	jradius-client-1.1.4-release.zip apache-taglibs-standard-1.2.5.zip \
-	selenium-java-3.141.59.zip geoip2-2.6.0-with-dependencies.zip
+zips=javamail-1_3_3_01.zip jabsorb-1.2.4-src.zip \
+	jradius-client-1.0.0-release.zip apache-taglibs-standard-1.2.5.zip \
+	selenium-java-3.141.59.zip geoip2-2.17.0-with-dependencies.zip
 
 jars=gettext-commons-0.9.1.jar postgresql-9.4-1201.jdbc4.jar \
 	dnsjava-3.5.0-20211020.jar sqlite-jdbc-3.15.1.jar \
-	jakarta.activation-1.2.1.jar jta-1.1.jar
+	jakarta.activation-1.2.1.jar jta-1.1.jar \
+	spotbugs-annotations-4.7.3.jar biz.aQute.bndlib-7.0.0.jar
 
 ###############################################################################
 ###############################################################################
@@ -43,9 +45,6 @@ packages=$(patsubst %.zip,$(OUTPUT_DIRECTORY)/%,$(zips))
 packages+=$(patsubst %.tar.gz,$(OUTPUT_DIRECTORY)/%,$(tarballs_gz))
 packages+=$(patsubst %.tar.bz2,$(OUTPUT_DIRECTORY)/%,$(tarballs_bz2))
 packages+=$(patsubst %.jar,$(OUTPUT_DIRECTORY)/%,$(jars))
-
-$(OUTPUT_DIRECTORY)/jabsorb-1.2.2-src: $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 jabsorb-1.2.2-src.patch
-$(OUTPUT_DIRECTORY)/apache-log4j-1.2.16: $(OUTPUT_DIRECTORY)/logging-log4j-1.2.16.tar.gz $(OUTPUT_DIRECTORY)/apache-ant-1.6.5 apache-log4j-1.2.16.patch
 
 all: $(packages) ;
 # remove files and directories with spaces in names

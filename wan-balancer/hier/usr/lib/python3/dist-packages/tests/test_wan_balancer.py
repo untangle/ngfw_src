@@ -8,7 +8,6 @@ import pytest
 import runtests
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
@@ -115,9 +114,9 @@ def nuke_wan_balancer_route_rules():
 
 
 def append_route_rule(newRule):
-    netsettings = uvmContext.networkManager().getNetworkSettings()
+    netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings['staticRoutes']['list'].append(newRule)
-    uvmContext.networkManager().setNetworkSettings(netsettings)
+    global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
 
 def build_wan_test_rule(matchInterface, testType="ping", pingHost="8.8.8.8", httpURL="http://192.168.244.1/", testInterval=5, testTimeout=2):
@@ -203,14 +202,14 @@ class WanBalancerTests(NGFWTestCase):
 
         app_data = cls._app.getSettings()
             
-        if (uvmContext.appManager().isInstantiated(cls.appNameWanFailover())):
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.appNameWanFailover())):
             raise Exception('app %s already instantiated' % cls.appNameWanFailover())
-        app_wan_failover = uvmContext.appManager().instantiate(cls.appNameWanFailover(), default_policy_id)
+        app_wan_failover = global_functions.uvmContext.appManager().instantiate(cls.appNameWanFailover(), default_policy_id)
         app_wan_failover.start()
         app_wan_failoverData = app_wan_failover.getSettings()
 
         index_of_wans = global_functions.get_wan_tuples()
-        orig_netsettings = uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         ip_address_testdestination =  socket.gethostbyname("test.untangle.com")
 
     def setUp(self):
@@ -220,7 +219,7 @@ class WanBalancerTests(NGFWTestCase):
         assert (result == 0)
     
     def test_011_license_valid(self):
-        assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+        assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
     def test_020_stickySession(self):
         result = global_functions.get_public_ip_address()
@@ -343,7 +342,7 @@ class WanBalancerTests(NGFWTestCase):
         # Test that Networking routes override routed rules in WAN Balancer
         if (len(index_of_wans) < 2):
             raise unittest.SkipTest("Need at least two WANS for test_080_routedWanVsNetworkRoute")
-        netsettings = netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         nuke_wan_balancer_route_rules()
 
         set_wan_weight("all", 0)
@@ -360,7 +359,7 @@ class WanBalancerTests(NGFWTestCase):
         build_single_wan_route_rule("DST_ADDR",ip_address_testdestination,weightedIndexTup[0])
         result2 = global_functions.get_public_ip_address(extra_options="--no-check-certificate --secure-protocol=auto")
         print("Routed IP %s and retrieved IP %s" % (routedIP, result2))
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         assert (result1 == routedIP)
         assert (result2 == routedIP)
@@ -421,7 +420,7 @@ class WanBalancerTests(NGFWTestCase):
         if same_wan_network(index_of_wans):
             raise unittest.SkipTest("WANS on same network")
 
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         for wanIndexTup in index_of_wans:
             wanIndex = wanIndexTup[0]
             nuke_wan_balancer_rules()
@@ -457,7 +456,7 @@ class WanBalancerTests(NGFWTestCase):
 
         nuke_wan_balancer_rules()
         nuke_wan_failover_rules()
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
     
     @pytest.mark.slow
     def test_110_networkRouteWanDown(self):
@@ -467,7 +466,7 @@ class WanBalancerTests(NGFWTestCase):
             raise unittest.SkipTest('Skipping a time consuming test')
         if (len(index_of_wans) < 2):
             raise unittest.SkipTest("Need at least two WANS for combination of wan-balancer and wan failover tests")
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         nuke_wan_balancer_rules()
 
         for wanIndexTup in index_of_wans:
@@ -481,7 +480,7 @@ class WanBalancerTests(NGFWTestCase):
             wanGatewayIP = wanIndexTup[3]
             netsettings['staticRoutes']['list']=[]
             netsettings['staticRoutes']['list'].append(create_route_rule(ip_address_testdestination,32,wanGatewayIP))
-            uvmContext.networkManager().setNetworkSettings(netsettings)
+            global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
             # Test that only the routed interface is used 5 times
             subprocess.check_output("ip route flush cache", shell=True)
             for x in range(0, 5):
@@ -518,7 +517,7 @@ class WanBalancerTests(NGFWTestCase):
         # Remove failover rules
         nuke_wan_failover_rules()
         # Remove static routes
-        uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+        global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     @pytest.mark.slow
     def test_120_natOneToOneWanDown(self):
@@ -532,7 +531,7 @@ class WanBalancerTests(NGFWTestCase):
         pre_count = global_functions.get_app_metric_value(app_wan_failover,"changed")
         
         # raise unittest.SkipTest('Skipping test_120_natOneToOneWanDown as not possible with current network layout ')
-        netsettings = uvmContext.networkManager().getNetworkSettings()
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
         nuke_wan_balancer_rules()
         nuke_wan_failover_rules()
         # create valid failover tests
@@ -549,7 +548,7 @@ class WanBalancerTests(NGFWTestCase):
             # Add networking route which does not handle re-routing if WAN is down
             netsettings['natRules']['list']=[]
             netsettings['natRules']['list'].append(build_nat_rules("DST_ADDR",ip_address_testdestination,wanIP))
-            uvmContext.networkManager().setNetworkSettings(netsettings)
+            global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
 
             # Test that only the routed interface is used 5 times
             subprocess.check_output("ip route flush cache", shell=True)
@@ -580,7 +579,7 @@ class WanBalancerTests(NGFWTestCase):
                 result = global_functions.get_public_ip_address()
                 print("WAN Down NAT 1:1 IP %s  External IP %s and retrieved IP %s" % (wanIP, wanExternalIP, result))
                 assert (result == wanExternalIP)
-            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         nuke_wan_failover_rules()
         # Check to see if the faceplate counters have incremented. 
@@ -593,10 +592,10 @@ class WanBalancerTests(NGFWTestCase):
 
         # Restore original settings to return to initial settings
         if app_wan_failover != None:
-            uvmContext.appManager().destroy( app_wan_failover.getAppSettings()["id"] )
+            global_functions.uvmContext.appManager().destroy( app_wan_failover.getAppSettings()["id"] )
             app_wan_failover = None
         if orig_netsettings != None:
-            uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
             
 
 test_registry.register_module("wan-balancer", WanBalancerTests)

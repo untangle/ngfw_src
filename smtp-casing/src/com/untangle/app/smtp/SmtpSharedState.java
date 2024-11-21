@@ -11,7 +11,8 @@ import javax.mail.internet.InternetAddress;
 import com.untangle.app.smtp.sasl.SASLObserver;
 import com.untangle.app.smtp.sasl.SASLObserverFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -102,7 +103,7 @@ class SmtpSharedState
 
     private static final long LIKELY_TIMEOUT_LENGTH = 1000 * 60;// 1 minute
 
-    private final Logger logger = Logger.getLogger(SmtpSharedState.class);
+    private final Logger logger = LogManager.getLogger(SmtpSharedState.class);
 
     protected SmtpTransaction currentTransaction;
     protected List<ResponseAction> outstandingRequests;

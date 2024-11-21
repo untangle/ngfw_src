@@ -17,7 +17,8 @@ import java.nio.ByteBuffer;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * File Manager for Virus Blocker. It creates a temporary file on disk or in
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class VirusFileManager extends OutputStream
 {
-    private final Logger logger = Logger.getLogger(VirusFileManager.class);
+    private final Logger logger = LogManager.getLogger(VirusFileManager.class);
     private boolean memoryMode = false;
 
     private File diskFile = null;
