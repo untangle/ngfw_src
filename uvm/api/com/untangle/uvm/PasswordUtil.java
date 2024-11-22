@@ -40,12 +40,12 @@ public class PasswordUtil
      * 
     */
     /**
-     * Encrypt the provided password by invoking an password manager
+     * Encrypt the provided password by invoking password manager
      * command to retrieve the encrypted value.
      * @param password a <code>String</code> containing the password to be encrypt
      * @return a <code>String</code> containing the encrypt password or null if an error occurs during encryption so caller need to handle this.
      * @throw IllegalArgumentException if the encrypted password is null or empty.
-     * @throw IllegalStateException if the decryption output is invalid (e.g., the command output cannot be parsed correctly).
+     * @throw IllegalStateException if the encryption output is invalid (e.g., the command output cannot be parsed correctly).
     */
     public static String getEncryptPassword(String password){
         try {
@@ -65,7 +65,7 @@ public class PasswordUtil
     /**
      * Decrypts the provided encrypted password by invoking password manager
      * command to retrieve the decrypted value.
-     * @param encryptedPassword The encrypted password string to be decrypted.
+     * @param encryptedPassword a <code>String</code>  containing encrypted password string to be decrypted.
      * @return a <code>String</code> containing decrypted password, or null if an error occurs during decryption so caller need to handle this.
      * @throw IllegalArgumentException if the encrypted password is null or empty.
      * @throw IllegalStateException if the decryption output is invalid (e.g., the command output cannot be parsed correctly).
@@ -95,7 +95,7 @@ public class PasswordUtil
         String cmdOutput = UvmContextFactory.context().execManager().execOutput(false, command);
         String[] encryptOrDecryptPassword = cmdOutput.split(Constants.NEW_LINE);
         if (encryptOrDecryptPassword.length <= 1) {
-            throw new IllegalStateException("Decryption output is invalid.");
+            throw new IllegalStateException("Output is invalid.");
         }
         return encryptOrDecryptPassword[1];  
     }
