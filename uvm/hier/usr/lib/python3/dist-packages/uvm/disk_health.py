@@ -2,6 +2,7 @@ from psutil import disk_partitions
 from subprocess import run, CalledProcessError
 import re
 from collections import defaultdict
+import os
 
 # Constants for Messages
 ROOT_NOT_FOUND = "Root partition not found."
@@ -47,6 +48,13 @@ def run_smart_check(disk):
 
 def check_smart_health():
     """Find and check the SMART health of the root disk."""
+    if os.getenv("MOCK_TEST_PASS"):
+        update_status("pass", f"{SMART_RESULT} {SMART_PASS_KEYWORD}")
+        return dict(status)
+    elif os.getenv("MOCK_TEST_FAIL"):
+        update_status("fail", f"{SMART_RESULT} {SMART_FAIL_KEYWORD}")
+        return dict(status)
+    
     root_disk = get_root_disk()
     if root_disk:
         run_smart_check(root_disk)
