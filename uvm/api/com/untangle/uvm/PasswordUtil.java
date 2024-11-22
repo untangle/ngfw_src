@@ -15,6 +15,8 @@ import java.security.SecureRandom;
 public class PasswordUtil
 {
     public static final String PASSWORD_HASH_ALGORITHM = "MD5";
+    public static final String ENCRYPTED_PASSWORD = "";
+    public static final String DECRYPTED_PASSWORD = "";
 
     public static final int SALT_LENGTH = 8;
 
@@ -41,7 +43,8 @@ public class PasswordUtil
         if (encryptPassword.length <= 1) {
             throw new IllegalStateException("Decryption output is invalid.");
         }
-        return encryotPassword[1];
+        ENCRYPTED_PASSWORD = encryotPassword[1];
+        return ENCRYPTED_PASSWORD;
     }
     /**
      * Decrypts the provided encrypted password by invoking an external password manager
@@ -59,7 +62,8 @@ public class PasswordUtil
         if (decryptPassword.length <= 1) {
             throw new IllegalStateException("Decryption output is invalid.");
         }
-        return decryptPassword[1];
+        DECRYPTED_PASSWORD = decryptPassword[1];
+        return DECRYPTED_PASSWORD;
     }
     
     /**
