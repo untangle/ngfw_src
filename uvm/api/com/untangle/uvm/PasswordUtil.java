@@ -15,8 +15,6 @@ import java.security.SecureRandom;
 public class PasswordUtil
 {
     public static final String PASSWORD_HASH_ALGORITHM = "MD5";
-    public static final String ENCRYPTED_PASSWORD = "";
-    public static final String DECRYPTED_PASSWORD = "";
 
     public static final int SALT_LENGTH = 8;
 
@@ -43,7 +41,7 @@ public class PasswordUtil
         if (encryptPassword.length <= 1) {
             throw new IllegalStateException("Decryption output is invalid.");
         }
-        ENCRYPTED_PASSWORD = encryotPassword[1];
+        final String ENCRYPTED_PASSWORD = encryptPassword[1];
         return ENCRYPTED_PASSWORD;
     }
     /**
@@ -62,7 +60,7 @@ public class PasswordUtil
         if (decryptPassword.length <= 1) {
             throw new IllegalStateException("Decryption output is invalid.");
         }
-        DECRYPTED_PASSWORD = decryptPassword[1];
+        final String DECRYPTED_PASSWORD = decryptPassword[1];
         return DECRYPTED_PASSWORD;
     }
     
