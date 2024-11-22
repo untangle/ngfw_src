@@ -38,6 +38,11 @@ public interface ExecManager
     /**
      * Execute the specified command and return the stdout
      */
+    String execOutput( boolean logEnabled, String cmd );
+
+    /**
+     * Execute the specified command and return the stdout
+     */
     String execOutput( String cmd, boolean rateLimit );
 
     /**

@@ -8,7 +8,8 @@ import java.security.NoSuchAlgorithmException;
 import com.untangle.uvm.UvmContextFactory;
 import org.apache.commons.lang3.StringUtils;
 import java.security.SecureRandom;
-
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 /**
  * Password utility.
  */
@@ -21,47 +22,69 @@ public class PasswordUtil
     // We pass no seed here, so we'll get different random numbers each time.
     private static SecureRandom srng = new SecureRandom();
 
+    private final static Logger logger = LogManager.getLogger(PasswordUtil.class);
 
-    /**  ************************* NOTE *************************
-     *  Currently binary is generating warn related to TPM including the password in second line
-     *  so handled the code accordingly in getEncryptPassword() and getDecryptPassword()
-     *  Also while executing the command password is shown in logger in future will handle this by overriding rhe exec method
-    */
-    /**
-     * Encrypt the provided password by invoking an password manager
-     * command to retrieve the encrypted value.
-     * 
-     * @param password a <code>String</code> containing the password to be encrypt
-     * @return a <code>String</code> containing the encrypt password
-    */
-    public static String getEncryptPassword(String password){
-        String command = new StringBuilder("/usr/bin/password-manager -e ").append(password).toString();
-        String cmdOutput =  UvmContextFactory.context().execManager().execOutput(command);
-        String[] encryptPassword = cmdOutput.split("\n");
-        if (encryptPassword.length <= 1) {
-            throw new IllegalStateException("Decryption output is invalid.");
-        }
-        final String ENCRYPTED_PASSWORD = encryptPassword[1];
-        return ENCRYPTED_PASSWORD;
-    }
-    /**
-     * Decrypts the provided encrypted password by invoking an external password manager
-     * command to retrieve the decrypted value.
-     * @param encryptedPassword a <code>String</code> containing the encrypted password to be decrypted
-     * @return a <code>String</code> containing the decrypted password
+    private final static String passwordEncryptionCmd = "/usr/bin/password-manager -e ";
+    private final static String passwordDecryptionCmd = "/usr/bin/password-manager -d ";
+    
+    
+        /**  ************************* NOTE *************************
+         *  Currently binary is generating warn related to TPM including the password in second line
+         *  so handled the code accordingly in getEncryptPassword() and getDecryptPassword()
+         *  Also while executing the command password is shown in log, I  handled this by overriding rhe execOutput() 
+         *  and sending the value as false so you will not see any cmd log for password encryption and decryption
+         * 
+         * To get it in log for debug purpose you can set the value as true
+         * 
         */
-    public static String getDecryptPassword(String encryptedPassword) {
-        if (StringUtils.isBlank(encryptedPassword)) {
-            throw new IllegalArgumentException("Encrypted password must not be null or empty.");
+        /**
+         * Encrypt the provided password by invoking an password manager
+         * command to retrieve the encrypted value.
+         * 
+         * @param password a <code>String</code> containing the password to be encrypt
+         * @return a <code>String</code> containing the encrypt password
+        */
+        public static String getEncryptPassword(String password){
+            try {
+                String command = passwordEncryptionCmd + password;
+                String cmdOutput =  UvmContextFactory.context().execManager().execOutput(false, command);
+                String[] encryptPassword = cmdOutput.split("\n");
+                if (encryptPassword.length <= 1) {
+                    throw new IllegalStateException("Encryption output is invalid.");
+                }
+                return encryptPassword[1];               
+            } catch (IllegalStateException e) {
+                logger.info("Encryption output is invalid."+ e);
+            } 
+            catch (Exception e) {
+                logger.info("Exception occured while encrypting the password"+ e);
+            }
+            return null;
         }
-        String command = "/usr/bin/password-manager -d " + encryptedPassword;
-        String cmdOutput = UvmContextFactory.context().execManager().execOutput(command);
-        String[] decryptPassword = cmdOutput.split("\n");
-        if (decryptPassword.length <= 1) {
-            throw new IllegalStateException("Decryption output is invalid.");
+        /**
+         * Decrypts the provided encrypted password by invoking an external password manager
+         * command to retrieve the decrypted value.
+         * @param encryptedPassword a <code>String</code> containing the encrypted password to be decrypted
+         * @return a <code>String</code> containing the decrypted password
+            */
+        public static String getDecryptPassword(String encryptedPassword) {
+            try {
+                if (StringUtils.isBlank(encryptedPassword)) {
+                    throw new IllegalArgumentException("Encrypted password must not be null or empty.");
+                }
+                String command = passwordDecryptionCmd + encryptedPassword;
+                String cmdOutput = UvmContextFactory.context().execManager().execOutput(false, command);
+                String[] decryptPassword = cmdOutput.split("\n");
+                if (decryptPassword.length <= 1) {
+                    throw new IllegalStateException("Decryption output is invalid.");
+                }
+                return decryptPassword[1];                
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                logger.info("Encrypted password must not be null or empty, or decryption output is invalid. "+ e);
+            } catch (Exception e) {
+                logger.info("Exception occured while decrypting the password "+ e);
         }
-        final String DECRYPTED_PASSWORD = decryptPassword[1];
-        return DECRYPTED_PASSWORD;
+        return null;       
     }
     
     /**
