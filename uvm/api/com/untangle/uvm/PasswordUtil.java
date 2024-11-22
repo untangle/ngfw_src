@@ -21,6 +21,12 @@ public class PasswordUtil
     // We pass no seed here, so we'll get different random numbers each time.
     private static SecureRandom srng = new SecureRandom();
 
+
+    /**  ************************* NOTE *************************
+     *  Currently binary is generating warn related to TPM including the password in second line
+     *  so handled the code accordingly in getEncryptPassword() and getDecryptPassword()
+     *  Also while executing the command password is shown in logger in future will handle this by overriding rhe exec method
+    */
     /**
      * Encrypt the provided password by invoking an password manager
      * command to retrieve the encrypted value.
