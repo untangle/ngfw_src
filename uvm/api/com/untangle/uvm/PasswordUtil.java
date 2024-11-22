@@ -5,6 +5,8 @@ package com.untangle.uvm;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import com.untangle.uvm.UvmContextFactory;
+import org.apache.commons.lang3.StringUtils;
 import java.security.SecureRandom;
 
 /**
@@ -19,6 +21,41 @@ public class PasswordUtil
     // We pass no seed here, so we'll get different random numbers each time.
     private static SecureRandom srng = new SecureRandom();
 
+    /**
+     * Encrypt the provided password by invoking an password manager
+     * command to retrieve the encrypted value.
+     * 
+     * @param password a <code>String</code> containing the password to be encrypt
+     * @return a <code>String</code> containing the encrypt password
+    */
+    public static String getEncryptPassword(String password){
+        String command = new StringBuilder("/usr/bin/password-manager -e ").append(password).toString();
+        String cmdOutput =  UvmContextFactory.context().execManager().execOutput(command);
+        String[] encryptPassword = cmdOutput.split("\n");
+        if (encryptPassword.length <= 1) {
+            throw new IllegalStateException("Decryption output is invalid.");
+        }
+        return encryotPassword[1];
+    }
+    /**
+     * Decrypts the provided encrypted password by invoking an external password manager
+     * command to retrieve the decrypted value.
+     * @param encryptedPassword a <code>String</code> containing the encrypted password to be decrypted
+     * @return a <code>String</code> containing the decrypted password
+        */
+    public static String getDecryptPassword(String encryptedPassword) {
+        if (StringUtils.isBlank(encryptedPassword)) {
+            throw new IllegalArgumentException("Encrypted password must not be null or empty.");
+        }
+        String command = "/usr/bin/password-manager -d " + encryptedPassword;
+        String cmdOutput = UvmContextFactory.context().execManager().execOutput(command);
+        String[] decryptPassword = cmdOutput.split("\n");
+        if (decryptPassword.length <= 1) {
+            throw new IllegalStateException("Decryption output is invalid.");
+        }
+        return decryptPassword[1];
+    }
+    
     /**
      * Use <code>encrypt</code> to encrypt a password (using a one-way hash
      * function) before storing into the User prefs app. We automatically
