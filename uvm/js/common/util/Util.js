@@ -1412,5 +1412,23 @@ Ext.define('Ung.util.Util', {
     
         // If no intersection found, return true
         return true;
+    },
+
+    /**
+     * Method to validate network intersection
+     * @param rawString
+     * @return encrypted string 
+     */
+    encrypt: function(rawString) {
+        return Rpc.directData('rpc.systemManager.encryptString', rawString);
+    },
+
+    /**
+     * Method to validate network intersection
+     * @param encryptedString
+     * @return decrypted string
+     */
+    decrypt: function(encryptedString) {
+        return Rpc.directData('rpc.systemManager.decryptString', encryptedString);
     }
 });

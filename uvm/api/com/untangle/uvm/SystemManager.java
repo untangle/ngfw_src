@@ -91,4 +91,8 @@ public interface SystemManager
     Long getLogDirectorySize();
 
     void logDiskCheckFailure( String diskCheckErrors );
+
+    String encryptString( String rawString);
+
+    String decryptString( String encryptedString);
 }

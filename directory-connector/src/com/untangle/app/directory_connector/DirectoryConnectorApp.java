@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -168,6 +169,10 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 writeFlag = true;
             }
 
+            // setSettings will set encrypted password and remove original password
+            if ( readSettings.getVersion() == 3 )
+                writeFlag = true;
+
             if (writeFlag == true) {
                 // if any changes were made we need to write the updated settings
                 this.setSettings( readSettings );
@@ -223,6 +228,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             throw new IllegalArgumentException("Must provide settings for Google");
         }
 
+        setEncryptedPassword(newSettings);
         /**
          * Save the settings
          */
@@ -242,6 +248,22 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         try { logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
 
         this.reconfigure();
+    }
+
+     /**
+     * Encrypt the password for AD Servers
+     *
+     * @param settings
+     *      Settings to convert.
+     */
+    private void setEncryptedPassword( DirectoryConnectorSettings settings ) {
+        ActiveDirectorySettings adSettings = settings.getActiveDirectorySettings();
+        if(null != adSettings.getServers()) {
+            for(ActiveDirectoryServer server : adSettings.getServers()) {
+                if(!StringUtils.isBlank(server.getSuperuserPass()))
+                    server.setEncrSupUserPass(null);
+            }
+        }
     }
 
     /**
