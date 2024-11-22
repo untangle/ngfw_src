@@ -31,4 +31,6 @@ public class Constants {
     public static final String WEB_FILTER_EVENT_RGX = "*WebFilterEvent*";
     public static final String APP_CONTROL_LOG_EVENT_RGX = "*ApplicationControlLogEvent*";
 
+    // Escape sequence
+    public static final String NEW_LINE = "\n";
 }
