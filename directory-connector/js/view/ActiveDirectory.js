@@ -48,6 +48,9 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                 listProperty: 'settings.activeDirectorySettings.servers.list',
                 ruleJavaClass: 'com.untangle.app.directory_connector.ActiveDirectoryServer',
 
+                importValidationJavaClass: true,
+                importValidatorParams: { "superuserPass": "encrSupUserPass" },
+
                 emptyRow: {
                     LDAPHost: '',
                     LDAPPort: 636,
@@ -242,7 +245,25 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     inputType: 'password',
                     fieldLabel: 'Authentication Password'.t(),
                     bind: '{record.superuserPass}',
-                    allowBlank: false
+                    validator: function (value, encPass) {
+                        if(value) return true;
+                        var emptyText = "[Leave empty to keep the current password unchanged]".t();
+                        if(encPass) {
+                            this.emptyText = emptyText;
+                            return true;
+                        }
+                        try {
+                            var record = this.lookupViewModel().get('record');
+                            if(record.data.encrSupUserPass) {
+                                this.emptyText = emptyText;
+                                return true;
+                            }
+                        } catch(error) {
+                            // Do nothing
+                        }
+                        this.emptyText = "[no authentication password]".t();
+                        return "This field is required".t();
+                    }
                 },{
                     xtype: 'container',
                     layout: 'column',
