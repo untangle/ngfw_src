@@ -61,6 +61,8 @@ public class SystemSettings implements Serializable, JSONString
     private String radiusProxyRealm = "";
     private String radiusProxyUsername = "";
     private String radiusProxyPassword = "";
+    private String radiusProxyEncryptedPassword = "";
+
 
     private String installType = "";
 
@@ -187,6 +189,8 @@ public class SystemSettings implements Serializable, JSONString
     public void setRadiusProxyUsername(String newValue) { this.radiusProxyUsername = newValue; }
     public String getRadiusProxyPassword() { return radiusProxyPassword; }
     public void setRadiusProxyPassword(String newValue) { this.radiusProxyPassword = newValue; }
+    public String getRadiusProxyEncryptedPassword() { return radiusProxyEncryptedPassword; }
+    public void setRadiusProxyEncryptedPassword(String newValue) { this.radiusProxyEncryptedPassword = newValue; }
 
     /* DEPRECATED in 12.2 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */

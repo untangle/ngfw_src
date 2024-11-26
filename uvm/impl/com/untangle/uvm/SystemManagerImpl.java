@@ -124,9 +124,11 @@ public class SystemManagerImpl implements SystemManager
             logger.warn("No settings found - Initializing new settings.");
             this.setSettings(defaultSettings(), false);
         } else {
+            readSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(readSettings.getRadiusProxyPassword()));
+            readSettings.setRadiusProxyPassword(null);
             this.settings = readSettings;
 
-            if (this.settings.getVersion() < SETTINGS_VERSION) {
+            if (this.settings.getVersion() <= SETTINGS_VERSION) {
                 this.settings.setVersion(SETTINGS_VERSION);
                 this.settings.setLogRetention(7);
                 this.setSettings(this.settings, false);
@@ -242,6 +244,17 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
+    * Set settings without regards to the dirtyRadiusFields
+    *
+    * @param password
+    *        The new settings
+    * @return password
+    */
+    public String getDecryptedPassword(String password){
+        return PasswordUtil.getDecryptPassword(password);
+    }
+
+    /**
      * Set the settings
      * 
      * @param newSettings
@@ -255,9 +268,13 @@ public class SystemManagerImpl implements SystemManager
         String oldApacheCert = null;
         if (settings != null) oldApacheCert = settings.getWebCertificate();
 
-        /**
+        /*
          * Save the settings
          */
+        if(dirtyRadiusFields){
+            newSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(newSettings.getRadiusProxyPassword()));
+            newSettings.setRadiusProxyPassword(null);
+        }
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
             settingsManager.save(this.SettingsFileName, newSettings);

@@ -76,6 +76,8 @@ public interface SystemManager
 
     int getUsedDiskSpacePercentage();
 
+    String getDecryptedPassword(String password);
+
     org.json.JSONObject getDownloadStatus();
 
     boolean upgradesAvailable();
