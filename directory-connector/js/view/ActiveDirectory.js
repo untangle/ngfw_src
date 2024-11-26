@@ -248,6 +248,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     validator: function (value, encPass) {
                         if(value) return true;
                         var emptyText = "[Leave empty to keep the current password unchanged]".t();
+                        // encPass is recieved from import validation call
                         if(encPass) {
                             this.emptyText = emptyText;
                             return true;

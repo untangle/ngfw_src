@@ -732,11 +732,12 @@ abstract class LdapAdapter
         throws CommunicationException, AuthenticationException, NamingException
     {
         ActiveDirectoryServer settings = getSettings();
+        String password = settings.getSuperuserPass() != null ? settings.getSuperuserPass() : PasswordUtil.getDecryptPassword(settings.getEncrSupUserPass());
         return createContext(settings.getLDAPHost(),
                              settings.getLDAPPort(),
                              settings.getLDAPSecure(),
                              getSuperuserDN(),
-                             PasswordUtil.getDecryptPassword(settings.getEncrSupUserPass()));
+                             password);
     }
 
     /**

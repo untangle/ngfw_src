@@ -19,7 +19,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             }
 
             vm.set('settings', result);
-            // me.updatePasswd();
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -30,16 +29,6 @@ Ext.define('Ung.apps.directory-connector.MainController', {
             }
             Util.handleException(ex);
         });
-    },
-
-    updatePasswd: function() {
-        var vm = this.getViewModel();
-        servers = vm.get('settings.activeDirectorySettings.servers.list');
-        if(servers){
-            servers.forEach(function(server){
-                server.superuserPass = Util.decrypt(server.encrSupUserPass);
-            });
-        }
     },
 
     setSettings: function () {
