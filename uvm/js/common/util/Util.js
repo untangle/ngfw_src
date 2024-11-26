@@ -1415,7 +1415,7 @@ Ext.define('Ung.util.Util', {
     },
 
     /**
-     * Method to validate network intersection
+     * Method to encrypt raw credentials
      * @param rawString
      * @return encrypted string 
      */
@@ -1424,7 +1424,7 @@ Ext.define('Ung.util.Util', {
     },
 
     /**
-     * Method to validate network intersection
+     * Method to decrypt encrypted credentials
      * @param encryptedString
      * @return decrypted string
      */

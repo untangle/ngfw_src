@@ -1565,7 +1565,7 @@ can look deeper. - mahotz
     }
 
     /**
-     * Method to validate network intersection
+     * Method to encrypt raw credentials 
      * @param rawString
      * @return encrypted string 
      */
@@ -1574,7 +1574,7 @@ can look deeper. - mahotz
     }
 
     /**
-     * Method to validate network intersection
+     * Method to decrypt encrypted credentials
      * @param encryptedString
      * @return decrypted string
      */

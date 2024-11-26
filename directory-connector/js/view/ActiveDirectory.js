@@ -253,14 +253,12 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                             this.emptyText = emptyText;
                             return true;
                         }
-                        try {
+                        if(this.lookupViewModel) {
                             var record = this.lookupViewModel().get('record');
-                            if(record.data.encrSupUserPass) {
+                            if(record && record.data.encrSupUserPass) {
                                 this.emptyText = emptyText;
                                 return true;
-                            }
-                        } catch(error) {
-                            // Do nothing
+                            } 
                         }
                         this.emptyText = "[no authentication password]".t();
                         return "This field is required".t();
