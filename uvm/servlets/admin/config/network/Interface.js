@@ -8,6 +8,7 @@ Ext.define('Ung.config.network.Interface', {
     layout: 'border',
     modal: true,
     withValidation: true,
+    itemId: 'interface',
 
     items: [{
         region: 'north',
@@ -513,6 +514,19 @@ Ext.define('Ung.config.network.Interface', {
                     inputType: 'password',
                     bind: {
                         value: '{intf.v4PPPoEPassword}',
+                    },
+                    listeners: {
+                        afterrender: function() {
+                            var me = this;
+                            var window = me.up('window[itemId=interface]');
+                            if(window){
+                                var intf = window.getViewModel().get('intf');
+                                var isPppoeConfigEnabled = intf.get('getConfigType') !== 'DISABLED' && intf.get('v4ConfigType') === 'PPPOE';
+                                if(isPppoeConfigEnabled && intf.get('v4PPPoEPasswordEncrypted')){
+                                    me.setValue(Util.decrypt(intf.get('v4PPPoEPasswordEncrypted')));
+                                }
+                            }
+                        }
                     },
                     fieldLabel: 'Password'.t()
                 }, {
