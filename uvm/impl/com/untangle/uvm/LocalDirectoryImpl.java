@@ -104,11 +104,11 @@ public class LocalDirectoryImpl implements LocalDirectory
         try{
             userPassword = PasswordUtil.getDecryptPassword(systemSettings.getRadiusProxyEncryptedPassword());
             if (userPassword == null) {
-                throw new NullPointerException("Got null as decryptedPassword");
+                throw new PasswordUtil.CryptoProcessException("Got null as decryptedPassword");
             }
         }catch (Exception exn) { 
             logger.error("Exception occured while fetching original password", exn);
-            return new ExecManagerResult(1, "Unable to decrypt the encrypted password for AD server" + systemSettings.getRadiusProxyServer()).getOutput();
+            return "Unable to decrypt the encrypted password for AD server" + systemSettings.getRadiusProxyServer();
         }
         String command = (FREERADIUS_PROXY_SCRIPT + " \"" + systemSettings.getRadiusProxyUsername() + "\" \"" + userPassword + "\"");
 
@@ -144,7 +144,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         try{
             userPassword = PasswordUtil.getDecryptPassword(systemSettings.getRadiusProxyEncryptedPassword());
             if (userPassword == null) {
-                throw new NullPointerException("Got null as decryptedPassword");
+                throw new PasswordUtil.CryptoProcessException("Got null as decryptedPassword");
             }
         }catch (Exception exn) { 
             logger.error("Exception occured while fetching original password", exn);
@@ -282,7 +282,7 @@ public class LocalDirectoryImpl implements LocalDirectory
                 //     return true;
                 //Check for the records which still contains PasswordBase64Hash
                 String base64 = calculateBase64Hash(password);
-                if(!StringUtils.isBlank(user.getPasswordBase64Hash())){
+                if(StringUtils.isNotBlank(user.getPasswordBase64Hash())){
                     if (base64 != null && base64.equals(user.getPasswordBase64Hash()) && !accountExpired(user)) return true;
                 }
                 String encryptedPassword = PasswordUtil.getEncryptPassword(password);
@@ -440,7 +440,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             /**
              * Set the encrypted passowrd and other hashes has changed and we must recalculate the values
              */
-            if(!StringUtils.isBlank(user.getPasswordBase64Hash())){ 
+            if(StringUtils.isNotBlank(user.getPasswordBase64Hash())){ 
                 String password = getPasswordFromBase64Hash(user.getPasswordBase64Hash());
                 user.setPasswordShaHash(calculateShaHash(password));
                 user.setPasswordMd5Hash(calculateMd5Hash(password));
@@ -648,23 +648,14 @@ public class LocalDirectoryImpl implements LocalDirectory
 
             auth.write(FILE_DISCLAIMER);
 
-            try {
-                for (LocalDirectoryUser user : list) {
-                    String userPassword;
-                    if(!StringUtils.isBlank(user.getPasswordBase64Hash())){
-                        byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
-                        userPassword = new String(rawPassword);
-                    }else{
-                        userPassword = PasswordUtil.getDecryptPassword(user.getEncryptedPassword());
-                        if (userPassword == null) {
-                            throw new NullPointerException("Got null as decryptedPassword");
-                        }
-                    }
-                    auth.write(user.getUsername() + " : XAUTH 0x" + stringHexify(userPassword) + "\n");
-                    auth.write(user.getUsername() + " : EAP 0x" + stringHexify(userPassword) + "\n");
+            for (LocalDirectoryUser user : list) {
+                String userPassword = getOriginalPass(user);
+                if (userPassword == null) {
+                    logger.info("Error while creating entry in XAUTH secrets file for user : " + user.getUsername());
+                    continue;
                 }
-            } catch (NullPointerException e) {
-                logger.warn("Exception occured while decrypting the password");
+                auth.write(user.getUsername() + " : XAUTH 0x" + stringHexify(userPassword) + "\n");
+                auth.write(user.getUsername() + " : EAP 0x" + stringHexify(userPassword) + "\n");
             }
 
             auth.flush();
@@ -685,6 +676,24 @@ public class LocalDirectoryImpl implements LocalDirectory
                 }
             }
         }
+    }
+    /**
+     * This method is used to fetch the original user password form base64 and encrypted password
+     *
+     * @param user
+     *        The local directory user
+     * @return
+     *        Original password
+     */
+    private String getOriginalPass(LocalDirectoryUser user){
+        String userPassword;
+        if(StringUtils.isNotBlank(user.getPasswordBase64Hash())){
+            byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
+            userPassword = new String(rawPassword);
+        }else{
+            userPassword = PasswordUtil.getDecryptPassword(user.getEncryptedPassword());
+        }
+        return userPassword;
     }
 
     /**
@@ -714,25 +723,17 @@ public class LocalDirectoryImpl implements LocalDirectory
 
             if (systemSettings.getRadiusServerEnabled()) {
                 for (LocalDirectoryUser user : list) {
-                    String userPassword;
-                    if(!StringUtils.isBlank(user.getPasswordBase64Hash())){
-                        byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
-                        userPassword = new String(rawPassword);
-                    }else{
-                        userPassword = PasswordUtil.getDecryptPassword(user.getEncryptedPassword());
-                        if (userPassword == null) {
-                            throw new NullPointerException("Got null as decryptedPassword");
-                        }
+                    String userPassword = getOriginalPass(user);
+                    if (userPassword == null) {
+                        logger.info("Error while creating entry in RADIUS secrets file for user : " + user.getUsername());
+                        continue;
                     }
                     fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\", MS-CHAP-Use-NTLM-Auth := 0\n");
                 }
             }
             fw.flush();
             fw.close();
-        } catch (NullPointerException exn) {
-            logger.error("Exception occured while fetching original password", exn);
-        }
-        catch (Exception exn) {
+        } catch (Exception exn) {
             logger.error("Exception creating RADIUS secrets file", exn);
         } finally {
             if (fw != null) {

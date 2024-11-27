@@ -26,8 +26,8 @@ public class PasswordUtil
 
     private final static Logger logger = LogManager.getLogger(PasswordUtil.class);
 
-    private final static String passwordEncryptionCmd = "/usr/bin/password-manager -e ";
-    private final static String passwordDecryptionCmd = "/usr/bin/password-manager -d ";
+    private final static String passwordEncryptionCmd = "/usr/bin/password-manager-bin -e ";
+    private final static String passwordDecryptionCmd = "/usr/bin/password-manager-bin -d ";
     
     
     /**  ************************* NOTE *************************
@@ -165,5 +165,31 @@ public class PasswordUtil
             if (testRawPW[i] != rawPW[i])
                 return false;
         return true;
+    }
+
+    /**
+     * Password  exception
+     */
+    @SuppressWarnings("serial")
+    public static class CryptoProcessException extends Exception
+    {
+        /**
+         * Initialize instance of CryptoProcessException.
+         * @param  message String of message.
+         * @return         Instance of CryptoProcessException.
+         */
+        public CryptoProcessException(String message) {
+            super(message);
+        }
+
+        /**
+         * Initialize instance of CryptoProcessException.
+         * @param  message String of message.
+         * @param  cause Trowable of cause.
+         * @return         Instance of CryptoProcessException.
+         */
+        public CryptoProcessException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }

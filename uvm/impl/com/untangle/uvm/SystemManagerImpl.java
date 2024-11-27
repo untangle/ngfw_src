@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.commons.lang3.StringUtils;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -56,7 +57,7 @@ import com.untangle.uvm.util.StringUtil;
  */
 public class SystemManagerImpl implements SystemManager
 {
-    private static final int SETTINGS_VERSION = 4;
+    private static final int SETTINGS_VERSION = 5;
     private static final String ZIP_FILE = "system_logs.zip";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
@@ -90,12 +91,12 @@ public class SystemManagerImpl implements SystemManager
 
     private int downloadTotalFileCount;
     private int downloadCurrentFileCount;
-    private String downloadCurrentFileProgress = "";
-    private String downloadCurrentFileRate = "";
+    private String downloadCurrentFileProgress = StringUtils.EMPTY;
+    private String downloadCurrentFileRate = StringUtils.EMPTY;
 
     private Calendar currentCalendar = Calendar.getInstance();
 
-    private String SettingsFileName = "";
+    private String SettingsFileName = StringUtils.EMPTY;
 
     private boolean isUpgrading = false;
     private boolean skipDiskCheck = false;
@@ -125,13 +126,13 @@ public class SystemManagerImpl implements SystemManager
             logger.warn("No settings found - Initializing new settings.");
             this.setSettings(defaultSettings(), false);
         } else {
-            if(!StringUtils.isBlank(readSettings.getRadiusProxyPassword())){
+            if(StringUtils.isNotBlank(readSettings.getRadiusProxyPassword())){
                 readSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(readSettings.getRadiusProxyPassword()));
                 readSettings.setRadiusProxyPassword(null);
             }
             this.settings = readSettings;
 
-            if (this.settings.getVersion() <= SETTINGS_VERSION) {
+            if (this.settings.getVersion() < SETTINGS_VERSION) {
                 this.settings.setVersion(SETTINGS_VERSION);
                 this.settings.setLogRetention(7);
                 this.setSettings(this.settings, false);

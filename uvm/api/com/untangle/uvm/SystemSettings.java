@@ -10,6 +10,7 @@ import org.json.JSONString;
 
 import com.untangle.uvm.app.DayOfWeekMatcher;
 
+import org.apache.commons.lang3.StringUtils;
 /**
  * System settings.
  */
@@ -56,12 +57,12 @@ public class SystemSettings implements Serializable, JSONString
      * These are used for RADIUS proxy support
      */
     private boolean radiusProxyEnabled = false;
-    private String radiusProxyServer = "";
-    private String radiusProxyWorkgroup = "";
-    private String radiusProxyRealm = "";
-    private String radiusProxyUsername = "";
-    private String radiusProxyPassword = "";
-    private String radiusProxyEncryptedPassword = "";
+    private String radiusProxyServer = StringUtils.EMPTY;
+    private String radiusProxyWorkgroup = StringUtils.EMPTY;
+    private String radiusProxyRealm = StringUtils.EMPTY;
+    private String radiusProxyUsername = StringUtils.EMPTY;
+    private String radiusProxyPassword = StringUtils.EMPTY;
+    private String radiusProxyEncryptedPassword = StringUtils.EMPTY;
 
 
     private String installType = "";
