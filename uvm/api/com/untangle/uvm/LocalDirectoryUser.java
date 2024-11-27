@@ -91,10 +91,10 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     /**
      * Set the encryptedPassword
      * 
-     * @param encryptedPassword The encryptedPassword
+     * @param password The original password
      */
-    public void setEncryptedPassword(String encryptedPassword) {
-        this.encryptedPassword = makeNotNull(encryptedPassword);
+    public void setEncryptedPassword(String password) {
+        this.encryptedPassword = makeNotNull(password);
     }
 
     /**

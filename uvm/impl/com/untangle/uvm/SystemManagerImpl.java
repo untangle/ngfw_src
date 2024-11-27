@@ -33,6 +33,7 @@ import java.util.zip.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -124,8 +125,10 @@ public class SystemManagerImpl implements SystemManager
             logger.warn("No settings found - Initializing new settings.");
             this.setSettings(defaultSettings(), false);
         } else {
-            readSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(readSettings.getRadiusProxyPassword()));
-            readSettings.setRadiusProxyPassword(null);
+            if(!StringUtils.isBlank(readSettings.getRadiusProxyPassword())){
+                readSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(readSettings.getRadiusProxyPassword()));
+                readSettings.setRadiusProxyPassword(null);
+            }
             this.settings = readSettings;
 
             if (this.settings.getVersion() <= SETTINGS_VERSION) {

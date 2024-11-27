@@ -76,7 +76,7 @@ public interface SystemManager
 
     int getUsedDiskSpacePercentage();
 
-    String getDecryptedPassword(String password);
+    String getDecryptedPassword(String encryptedPassword);
 
     org.json.JSONObject getDownloadStatus();
 

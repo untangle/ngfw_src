@@ -610,6 +610,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         // Read the settings from file
         try {
             users = (LinkedList<LocalDirectoryUser>) settingsManager.load(LinkedList.class, LOCAL_DIRECTORY_SETTINGS_FILE);
+            //For backup restore, user record needs to be set with encrypted password only
             setUsers(users);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Unable to read localDirectory file: ", e);
