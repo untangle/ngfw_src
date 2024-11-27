@@ -271,7 +271,7 @@ public class SystemManagerImpl implements SystemManager
         String oldApacheCert = null;
         if (settings != null) oldApacheCert = settings.getWebCertificate();
 
-        /*
+        /**
          * Save the settings
          */
         if(dirtyRadiusFields){
