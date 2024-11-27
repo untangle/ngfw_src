@@ -651,7 +651,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             for (LocalDirectoryUser user : list) {
                 String userPassword = getOriginalPass(user);
                 if (userPassword == null) {
-                    logger.info("Error while creating entry in XAUTH secrets file for user : " + user.getUsername());
+                    logger.warn("Error while creating entry in XAUTH secrets file for user : " + user.getUsername());
                     continue;
                 }
                 auth.write(user.getUsername() + " : XAUTH 0x" + stringHexify(userPassword) + "\n");
@@ -725,7 +725,7 @@ public class LocalDirectoryImpl implements LocalDirectory
                 for (LocalDirectoryUser user : list) {
                     String userPassword = getOriginalPass(user);
                     if (userPassword == null) {
-                        logger.info("Error while creating entry in RADIUS secrets file for user : " + user.getUsername());
+                        logger.warn("Error while creating entry in RADIUS secrets file for user : " + user.getUsername());
                         continue;
                     }
                     fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\", MS-CHAP-Use-NTLM-Auth := 0\n");
