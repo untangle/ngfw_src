@@ -102,11 +102,8 @@ public class LocalDirectoryImpl implements LocalDirectory
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
         String userPassword;
         try{
-            userPassword = PasswordUtil.getDecryptPassword(systemSettings.getRadiusProxyEncryptedPassword());
-            if (userPassword == null) {
-                throw new PasswordUtil.CryptoProcessException("Got null as decryptedPassword");
-            }
-        }catch (Exception exn) { 
+            userPassword = getRadiusProxyOriginalPassword(systemSettings);
+        }catch (PasswordUtil.CryptoProcessException exn) { 
             logger.error("Exception occured while fetching original password", exn);
             return "Unable to decrypt the encrypted password for AD server" + systemSettings.getRadiusProxyServer();
         }
@@ -142,11 +139,8 @@ public class LocalDirectoryImpl implements LocalDirectory
             return new ExecManagerResult(1, "Unable to resolve the IP address of the AD Server " + systemSettings.getRadiusProxyServer());
         } catch (Exception exn) { }
         try{
-            userPassword = PasswordUtil.getDecryptPassword(systemSettings.getRadiusProxyEncryptedPassword());
-            if (userPassword == null) {
-                throw new PasswordUtil.CryptoProcessException("Got null as decryptedPassword");
-            }
-        }catch (Exception exn) { 
+            userPassword = getRadiusProxyOriginalPassword(systemSettings);
+        }catch (PasswordUtil.CryptoProcessException exn) { 
             logger.error("Exception occured while fetching original password", exn);
             return new ExecManagerResult(1, "Unable to decrypt the encrypted password of AD server " + systemSettings.getRadiusProxyServer());
         }
@@ -166,6 +160,21 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         return result;
+    }
+    /**
+     * This method used to fetch the radius proxy original ppassword
+     *
+     * @param systemSettings
+     *        The system Settings 
+     * @return original Radius Proxy password
+     * @throws PasswordUtil.CryptoProcessException if the decrypted password is `null`, indicating a decryption failure.
+     */
+    private String getRadiusProxyOriginalPassword(SystemSettings systemSettings) throws PasswordUtil.CryptoProcessException{
+        String userPassword = PasswordUtil.getDecryptPassword(systemSettings.getRadiusProxyEncryptedPassword());
+        if (userPassword == null) {
+            throw new PasswordUtil.CryptoProcessException("Got null as decryptedPassword");
+        }
+        return userPassword;
     }
 
     /**
@@ -649,7 +658,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             auth.write(FILE_DISCLAIMER);
 
             for (LocalDirectoryUser user : list) {
-                String userPassword = getOriginalPass(user);
+                String userPassword = getLocalUserOriginalPass(user);
                 if (userPassword == null) {
                     logger.warn("Error while creating entry in XAUTH secrets file for user : " + user.getUsername());
                     continue;
@@ -678,14 +687,14 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
     }
     /**
-     * This method is used to fetch the original user password form base64 and encrypted password
+     * This method is used to fetch the original local user password form base64 and encrypted password
      *
      * @param user
      *        The local directory user
      * @return
      *        Original password
      */
-    private String getOriginalPass(LocalDirectoryUser user){
+    private String getLocalUserOriginalPass(LocalDirectoryUser user){
         String userPassword;
         if(StringUtils.isNotBlank(user.getPasswordBase64Hash())){
             byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
@@ -723,7 +732,7 @@ public class LocalDirectoryImpl implements LocalDirectory
 
             if (systemSettings.getRadiusServerEnabled()) {
                 for (LocalDirectoryUser user : list) {
-                    String userPassword = getOriginalPass(user);
+                    String userPassword = getLocalUserOriginalPass(user);
                     if (userPassword == null) {
                         logger.warn("Error while creating entry in RADIUS secrets file for user : " + user.getUsername());
                         continue;
