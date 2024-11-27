@@ -26,8 +26,8 @@ public class PasswordUtil
 
     private final static Logger logger = LogManager.getLogger(PasswordUtil.class);
 
-    private final static String passwordEncryptionCmd = "/usr/bin/password-manager-bin -e ";
-    private final static String passwordDecryptionCmd = "/usr/bin/password-manager-bin -d ";
+    private final static String passwordEncryptionCmd = "/usr/bin/password-manager -e ";
+    private final static String passwordDecryptionCmd = "/usr/bin/password-manager -d ";
     
     
     /**  ************************* NOTE *************************
