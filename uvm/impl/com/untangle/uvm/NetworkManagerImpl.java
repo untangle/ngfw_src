@@ -141,24 +141,7 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
                 if (readSettings != null){
-                    this.networkSettings = readSettings;
-                    List<InterfaceSettings> interfacesSettings =  networkSettings.getInterfaces();
-                    for ( InterfaceSettings intf : interfacesSettings ) {
-                        if (!InterfaceSettings.ConfigType.DISABLED.equals( intf.getConfigType() ) &&
-                            InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) { 
-
-                            if(intf.getV4PPPoEPassword() != null && !intf.getV4PPPoEPassword().isEmpty()){
-                                intf.setV4PPPoEPasswordEncrypted(PasswordUtil.getEncryptPassword(intf.getV4PPPoEPassword()));
-                                intf.setV4PPPoEPassword("");
-                            }
-                            if(intf.getV4PPPoEPasswordEncrypted() != null && !intf.getV4PPPoEPasswordEncrypted().isEmpty()){
-                                intf.setV4PPPoEPassword("");
-                            }
-                            logger.info("********Inside pppoe block********** " + this.settingsFilenameBackup + " = " + intf.getV4PPPoEPasswordEncrypted());
-                        }
-                        networkSettings.setInterfaces(interfacesSettings);  
-                        settingsManager.save( this.settingsFilename, readSettings );
-                    }  
+                    settingsManager.save( this.settingsFilename, readSettings ); 
                 } 
             } catch ( SettingsManager.SettingsException e ) {
                 logger.warn( "Failed to load settings:", e );
@@ -1808,11 +1791,11 @@ public class NetworkManagerImpl implements NetworkManager
                 //Encrypt the password for v4PPPoEPassword and save it in v4PPPoEPasswordEncrypted
                 if(intf.getV4PPPoEPassword() != null && !intf.getV4PPPoEPassword().isEmpty()){
                     intf.setV4PPPoEPasswordEncrypted(PasswordUtil.getEncryptPassword(intf.getV4PPPoEPassword()));
-                    intf.setV4PPPoEPassword("");
                 }
                 if(intf.getV4PPPoEPasswordEncrypted() != null && !intf.getV4PPPoEPasswordEncrypted().isEmpty()){
                     intf.setV4PPPoEPassword("");
                 }
+                logger.info("********Inside Sanitize pppoe block********** " + intf.getV4PPPoEPasswordEncrypted() + " = " + intf.getV4PPPoEPassword());
                 pppCount++;
             }
         }
