@@ -101,7 +101,6 @@ public class LocalDirectoryImpl implements LocalDirectory
     {
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
         String userPassword;
-        // String passowrd = PasswordUtil.getDecryptPassword(systemSettings.getRadiusProxyEncryptedPassword());
         try{
             userPassword = PasswordUtil.getDecryptPassword(systemSettings.getRadiusProxyEncryptedPassword());
             if (userPassword == null) {
@@ -157,7 +156,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         command += (" osName=\"Untangle NG Firewall\"");
         command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
 
-        ExecManagerResult result =  UvmContextFactory.context().execManager().exec(command);
+        ExecManagerResult result =  UvmContextFactory.context().execManager().exec(command, false, false, false);
 
         // NGFW-13595 The winbind service must be restarted after we create
         // the computer account because it requires the SID that gets created
