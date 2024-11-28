@@ -1794,7 +1794,7 @@ public class NetworkManagerImpl implements NetworkManager
                     intf.setV4PPPoEPasswordEncrypted(PasswordUtil.getEncryptPassword(intf.getV4PPPoEPassword()));
                 }
                 if(StringUtils.isNotBlank(intf.getV4PPPoEPasswordEncrypted())){
-                    intf.setV4PPPoEPassword("");
+                    intf.setV4PPPoEPassword(StringUtils.EMPTY);
                 }
                 pppCount++;
             }
