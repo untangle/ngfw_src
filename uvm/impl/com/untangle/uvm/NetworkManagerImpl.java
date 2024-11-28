@@ -140,9 +140,9 @@ public class NetworkManagerImpl implements NetworkManager
                 readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
                 logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
-                if (readSettings != null){
+                if (readSettings != null)
                     settingsManager.save( this.settingsFilename, readSettings ); 
-                } 
+                 
             } catch ( SettingsManager.SettingsException e ) {
                 logger.warn( "Failed to load settings:", e );
             }
