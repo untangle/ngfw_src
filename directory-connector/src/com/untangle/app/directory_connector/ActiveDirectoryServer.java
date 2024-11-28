@@ -142,7 +142,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
         return encrSupUserPass; 
     }
     /**
-     * Sets encrypted superuser username.
+     * Sets encrypted superuser password.
      *
      * @param encrSupUserPass
      *      encrypted superuser password
@@ -150,7 +150,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
     public void setEncrSupUserPass(String encrSupUserPass) { 
         if(encrSupUserPass != null) {
             this.encrSupUserPass = encrSupUserPass;
-        } else if(!StringUtils.isBlank(this.superuserPass)) {
+        } else if(StringUtils.isNotBlank(this.superuserPass)) {
             this.encrSupUserPass = PasswordUtil.getEncryptPassword(superuserPass);
             this.superuserPass = null;
         }

@@ -246,6 +246,7 @@ Ext.define('Ung.apps.directoryconnector.view.ActiveDirectory', {
                     fieldLabel: 'Authentication Password'.t(),
                     bind: '{record.superuserPass}',
                     validator: function (value, encPass) {
+                        // Either superuserPass or encrSupUserPass should not be blank
                         if(value) return true;
                         var emptyText = "[Leave empty to keep the current password unchanged]".t();
                         // encPass is recieved from import validation call
