@@ -43,6 +43,7 @@ import org.jabsorb.serializer.UnmarshallException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -141,8 +142,8 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
                 if (readSettings != null)
-                    settingsManager.save( this.settingsFilename, readSettings ); 
-                 
+                    settingsManager.save( this.settingsFilename, readSettings );
+                
             } catch ( SettingsManager.SettingsException e ) {
                 logger.warn( "Failed to load settings:", e );
             }
@@ -1789,13 +1790,12 @@ public class NetworkManagerImpl implements NetworkManager
                 intf.setSystemDev("ppp" + pppCount);
                 intf.setSymbolicDev("ppp" + pppCount);
                 //Encrypt the password for v4PPPoEPassword and save it in v4PPPoEPasswordEncrypted
-                if(intf.getV4PPPoEPassword() != null && !intf.getV4PPPoEPassword().isEmpty()){
+                if(StringUtils.isNotBlank(intf.getV4PPPoEPassword())){
                     intf.setV4PPPoEPasswordEncrypted(PasswordUtil.getEncryptPassword(intf.getV4PPPoEPassword()));
                 }
-                if(intf.getV4PPPoEPasswordEncrypted() != null && !intf.getV4PPPoEPasswordEncrypted().isEmpty()){
+                if(StringUtils.isNotBlank(intf.getV4PPPoEPasswordEncrypted())){
                     intf.setV4PPPoEPassword("");
                 }
-                logger.info("********Inside Sanitize pppoe block********** " + intf.getV4PPPoEPasswordEncrypted() + " = " + intf.getV4PPPoEPassword());
                 pppCount++;
             }
         }
