@@ -260,7 +260,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         ActiveDirectorySettings adSettings = settings.getActiveDirectorySettings();
         for(ActiveDirectoryServer server : adSettings.getServers()) {
             if(StringUtils.isNotBlank(server.getSuperuserPass()))
-                server.setEncrSupUserPass(null);
+                server.encryptSuperUserPass();
         }
     }
 

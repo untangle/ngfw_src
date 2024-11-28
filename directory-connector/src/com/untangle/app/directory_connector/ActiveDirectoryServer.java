@@ -67,7 +67,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
         this.ldapSecure = ldapSecure;
         this.ouFilters = new LinkedList<>();
         this.azure = azure;
-        this.setEncrSupUserPass(null);
+        this.encryptSuperUserPass();
     }
 
     /**
@@ -148,9 +148,15 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
      *      encrypted superuser password
      */
     public void setEncrSupUserPass(String encrSupUserPass) { 
-        if(encrSupUserPass != null) {
-            this.encrSupUserPass = encrSupUserPass;
-        } else if(StringUtils.isNotBlank(this.superuserPass)) {
+        this.encrSupUserPass = encrSupUserPass;
+    }
+
+    /**
+     * Gets encrypted password using superuserPass sets it to encrSupUserPass
+     * Sets superuserPass to null
+     */
+    public void encryptSuperUserPass() { 
+        if(StringUtils.isNotBlank(this.superuserPass)) {
             this.encrSupUserPass = PasswordUtil.getEncryptPassword(superuserPass);
             this.superuserPass = null;
         }
