@@ -242,17 +242,6 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
-    * Set settings without regards to the dirtyRadiusFields
-    *
-    * @param password
-    *        The new settings
-    * @return password
-    */
-    public String getDecryptedPassword(String password){
-        return PasswordUtil.getDecryptPassword(password);
-    }
-    
-    /**
      * Set the settings
      * 
      * @param newSettings

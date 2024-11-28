@@ -526,8 +526,7 @@ Ext.define('Ung.config.network.Interface', {
                             var window = me.up('window[itemId=interface]');
                             if(window){
                                 var intf = window.getViewModel().get('intf');
-                                var isPppoeConfigEnabled = intf.get('getConfigType') !== 'DISABLED' && intf.get('v4ConfigType') === 'PPPOE';
-                                if(isPppoeConfigEnabled && intf.get('v4PPPoEPasswordEncrypted')){
+                                if((intf.get('getConfigType') !== 'DISABLED') && intf.get('v4PPPoEPasswordEncrypted')){
                                     me.setValue(Util.getDecryptedPassword(intf.get('v4PPPoEPasswordEncrypted')));
                                 }
                             }
