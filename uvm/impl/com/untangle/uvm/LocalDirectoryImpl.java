@@ -145,7 +145,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             return new ExecManagerResult(1, "Unable to decrypt the encrypted password of AD server " + systemSettings.getRadiusProxyServer());
         }
         String command = ("/usr/bin/net ads --no-dns-updates join");
-        command = String.format(" -U \"%s%%%s\"", getRadiusProxyUsername(), userPassword);
+        command = String.format(" -U \"%s%%%s\"", systemSettings.getRadiusProxyUsername(), userPassword);
         command += (" -S " + systemSettings.getRadiusProxyServer());
         command += (" osName=\"Untangle NG Firewall\"");
         command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
@@ -660,7 +660,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             for (LocalDirectoryUser user : list) {
                 String userPassword = getLocalUserOriginalPass(user);
                 if (userPassword == null) {
-                    logger.warn("Error while creating entry in XAUTH secrets file for user : " , user.getUsername());
+                    logger.warn("Error while creating entry in XAUTH secrets file for user : {}" , user.getUsername());
                     continue;
                 }
                 auth.write(user.getUsername() + " : XAUTH 0x" + stringHexify(userPassword) + "\n");
@@ -734,7 +734,7 @@ public class LocalDirectoryImpl implements LocalDirectory
                 for (LocalDirectoryUser user : list) {
                     String userPassword = getLocalUserOriginalPass(user);
                     if (userPassword == null) {
-                        logger.warn("Error while creating entry in RADIUS secrets file for user : " , user.getUsername());
+                        logger.warn("Error while creating entry in RADIUS secrets file for user : {}" , user.getUsername());
                         continue;
                     }
                     fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\", MS-CHAP-Use-NTLM-Auth := 0\n");

@@ -125,7 +125,7 @@ public class SystemManagerImpl implements SystemManager
             logger.warn("No settings found - Initializing new settings.");
             this.setSettings(defaultSettings(), false);
         } else {
-            if(StringUtils.isNotBlank(readSettings.getRadiusProxyPassword())){
+            if(readSettings.getRadiusProxyPassword() != null){
                 readSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(readSettings.getRadiusProxyPassword()));
                 readSettings.setRadiusProxyPassword(null);
             }
