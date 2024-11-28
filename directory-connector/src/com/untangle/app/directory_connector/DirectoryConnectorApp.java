@@ -258,11 +258,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     private void setEncryptedPassword( DirectoryConnectorSettings settings ) {
         ActiveDirectorySettings adSettings = settings.getActiveDirectorySettings();
-        if(null != adSettings.getServers()) {
-            for(ActiveDirectoryServer server : adSettings.getServers()) {
-                if(!StringUtils.isBlank(server.getSuperuserPass()))
-                    server.setEncrSupUserPass(null);
-            }
+        for(ActiveDirectoryServer server : adSettings.getServers()) {
+            if(!StringUtils.isBlank(server.getSuperuserPass()))
+                server.setEncrSupUserPass(null);
         }
     }
 

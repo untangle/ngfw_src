@@ -1563,22 +1563,4 @@ can look deeper. - mahotz
         CriticalAlertEvent alert = new CriticalAlertEvent("DISK_CHECK_FAILURE", "Disk health checks failed, Upgrade aborted", "Errors: " + diskCheckErrors);
         UvmContextFactory.context().logEvent(alert);
     }
-
-    /**
-     * Method to encrypt raw credentials 
-     * @param rawString
-     * @return encrypted string 
-     */
-    public String encryptString(String rawString) {
-        return PasswordUtil.getEncryptPassword(rawString);
-    }
-
-    /**
-     * Method to decrypt encrypted credentials
-     * @param encryptedString
-     * @return decrypted string
-     */
-    public String decryptString( String encryptedString) {
-        return PasswordUtil.getDecryptPassword(encryptedString);
-    }
 }
