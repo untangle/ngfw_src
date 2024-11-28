@@ -170,8 +170,10 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             }
 
             // setSettings will set encrypted password and remove original password
-            if ( readSettings.getVersion() == 3 )
+            if ( readSettings.getVersion() < 4 ) {
+                readSettings.setVersion(4);
                 writeFlag = true;
+            }
 
             if (writeFlag == true) {
                 // if any changes were made we need to write the updated settings
