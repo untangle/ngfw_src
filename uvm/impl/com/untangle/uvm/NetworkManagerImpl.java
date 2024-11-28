@@ -1790,11 +1790,9 @@ public class NetworkManagerImpl implements NetworkManager
                 intf.setSystemDev("ppp" + pppCount);
                 intf.setSymbolicDev("ppp" + pppCount);
                 //Encrypt the password for v4PPPoEPassword and save it in v4PPPoEPasswordEncrypted
-                if(StringUtils.isNotBlank(intf.getV4PPPoEPassword())){
+                if(intf.getV4PPPoEPassword() != null){
                     intf.setV4PPPoEPasswordEncrypted(PasswordUtil.getEncryptPassword(intf.getV4PPPoEPassword()));
-                }
-                if(StringUtils.isNotBlank(intf.getV4PPPoEPasswordEncrypted())){
-                    intf.setV4PPPoEPassword(StringUtils.EMPTY);
+                    intf.setV4PPPoEPassword(null);
                 }
                 pppCount++;
             }
