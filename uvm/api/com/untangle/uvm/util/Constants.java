@@ -33,4 +33,7 @@ public class Constants {
 
     // Escape sequence
     public static final String NEW_LINE = "\n";
+
+    //Empty string
+    public static final String EMPTY_STRING = "\" \"";
 }
