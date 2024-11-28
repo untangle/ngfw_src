@@ -458,21 +458,21 @@ abstract class LdapAdapter
             return createSuperuserContext();
         }
         catch(AuthenticationException ex) {
-            logger.warn(String.format("Unable to create superuser context with settings: Host: %s Port: %s Superuser DN: %s Encrypted Pass: %s ; Error is: %s", 
+            logger.warn("Unable to create superuser context with settings: Host: {} Port: {} Superuser DN: {} Encrypted Pass: {} ; Error is: ", 
                                         settings.getLDAPHost(), 
                                         settings.getLDAPPort(), 
                                         getSuperuserDN(), 
-                                        settings.getEncrSupUserPass()==null?"<null>":"<not null>", 
-                                        ex));
+                                        (settings.getSuperuserPass()==null && settings.getEncrSupUserPass()==null)?"<null>":"<not null>",
+                                        ex);
             throw ex;
         }
         catch(CommunicationException ex) {
-            logger.warn(String.format("Unable to create superuser context with settings: Host: %s Port: %s Superuser DN: %s Encrypted Pass: %s ; Error is: %s", 
+            logger.warn("Unable to create superuser context with settings: Host: {} Port: {} Superuser DN: {} Encrypted Pass: {} ; Error is: {}", 
                                         settings.getLDAPHost(), 
                                         settings.getLDAPPort(), 
                                         getSuperuserDN(), 
-                                        settings.getEncrSupUserPass()==null?"<null>":"<not null>", 
-                                        ex.toString()));
+                                        (settings.getSuperuserPass()==null && settings.getEncrSupUserPass()==null)?"<null>":"<not null>", 
+                                        ex.toString());
 
             Throwable cause = null; 
             Throwable result = ex;
@@ -484,12 +484,12 @@ abstract class LdapAdapter
             throw new CommunicationException( result.getMessage() + ": " + ex.getMessage() );
         }
         catch(Exception ex) {
-            logger.warn(String.format("Unable to create superuser context with settings: Host: %s Port: %s Superuser DN: %s Encrypted Pass: %s ; Error is: %s", 
+            logger.warn("Unable to create superuser context with settings: Host: {} Port: {} Superuser DN: {} Encrypted Pass: {} ; Error is: ", 
                                         settings.getLDAPHost(), 
                                         settings.getLDAPPort(), 
                                         getSuperuserDN(), 
-                                        settings.getEncrSupUserPass()==null?"<null>":"<not null>1", 
-                                        ex));
+                                        (settings.getSuperuserPass()==null && settings.getEncrSupUserPass()==null)?"<null>":"<not null>",
+                                        ex);
             throw ex;
         }
     }
