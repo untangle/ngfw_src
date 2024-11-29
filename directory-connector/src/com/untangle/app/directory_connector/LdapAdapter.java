@@ -62,6 +62,7 @@ import javax.net.ssl.SSLContext;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.uvm.PasswordUtil;
 import com.untangle.uvm.util.Pair;
 
 /**
@@ -461,7 +462,7 @@ abstract class LdapAdapter
                         "Host: \"" + settings.getLDAPHost() + "\", " +
                         "Port: \"" + settings.getLDAPPort() + "\", " +
                         "Superuser DN: \"" + getSuperuserDN() + "\", " +
-                        "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
+                        "Encrypted Pass: " + (settings.getEncrSupUserPass()==null?"<null>":"<not null>") +
                         " ; Error is: " + ex);
             throw ex;
         }
@@ -470,7 +471,7 @@ abstract class LdapAdapter
                         "Host: \"" + settings.getLDAPHost() + "\", " +
                         "Port: \"" + settings.getLDAPPort() + "\", " +
                         "Superuser DN: \"" + getSuperuserDN() + "\", " +
-                        "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
+                        "Encrypted Pass: " + (settings.getEncrSupUserPass()==null?"<null>":"<not null>") +
                         " ; Error is: " + ex.toString());
 
             Throwable cause = null; 
@@ -487,7 +488,7 @@ abstract class LdapAdapter
                          "Host: \"" + settings.getLDAPHost() + "\", " +
                          "Port: \"" + settings.getLDAPPort() + "\", " +
                          "Superuser DN: \"" + getSuperuserDN() + "\", " +
-                         "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
+                         "Encrypted Pass: " + (settings.getEncrSupUserPass()==null?"<null>":"<not null>") +
                          " ; Error is: " + ex);
             throw ex;
         }
@@ -731,11 +732,12 @@ abstract class LdapAdapter
         throws CommunicationException, AuthenticationException, NamingException
     {
         ActiveDirectoryServer settings = getSettings();
+        String password = settings.getSuperuserPass() != null ? settings.getSuperuserPass() : PasswordUtil.getDecryptPassword(settings.getEncrSupUserPass());
         return createContext(settings.getLDAPHost(),
                              settings.getLDAPPort(),
                              settings.getLDAPSecure(),
                              getSuperuserDN(),
-                             settings.getSuperuserPass());
+                             password);
     }
 
     /**
