@@ -49,13 +49,18 @@ public class PasswordUtil
     */
     public static String getEncryptPassword(String password){
         try {
-            if (StringUtils.isBlank(password)) {
-                throw new IllegalArgumentException("password can not be null or empty.");
+            if (password == null) {
+                throw new IllegalArgumentException("password can not be null.");
+            }
+            //paasword encryption should work for empty string too as we allow empty passwords
+            if(password.isEmpty() || password.isBlank()){
+                //set empty string as " " so command can execute for empty and blank password too
+                password = Constants.EMPTY_STRING;
             }
             String command = passwordEncryptionCmd + password;
             return execCmd(command);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            logger.error("Password can not be null or empty, or encryption output is invalid.", e);
+            logger.error("Password can not be null or encryption output is invalid.", e);
         } 
         catch (Exception e) {
             logger.error("Exception occured while encrypting the password", e);

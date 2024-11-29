@@ -510,7 +510,7 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
             } else if (newPolicyId.equals(oldPolicyId)) {
                 return false;
             } else {
-                logger.info("Resetting session for policy switch: " +
+                logger.debug(" Resetting session for policy switch: " +
                             clientAddr.toString() + ":" + clientPort + " -> " +
                             serverAddr.toString() + ":" + serverPort +
                             " Old policy: " + oldPolicyId + " New policy: " + newPolicyId + " New rule ID: " + newPolicyRuleId);

@@ -193,6 +193,11 @@ Ext.define('Ung.config.network.Interface', {
                 itemId: 'ipv4ConfigType',
                 layout: { type: 'hbox' },
                 defaults: { padding: '0 10' },
+                style:{
+                    "display": "flex",
+                    "justify-content": "space-around",
+                    "overflow": "visible !important"
+                },
                 simpleValue: true,
                 // hidden: true,
                 bind: {
