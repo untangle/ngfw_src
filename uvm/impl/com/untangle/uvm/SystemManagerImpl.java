@@ -126,7 +126,7 @@ public class SystemManagerImpl implements SystemManager
             this.setSettings(defaultSettings(), false);
         } else {
             if(readSettings.getRadiusProxyPassword() != null){
-                readSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(readSettings.getRadiusProxyPassword()));
+                readSettings.setRadiusProxyEncryptedPassword(getEncryptedPassword(readSettings.getRadiusProxyPassword()));
                 readSettings.setRadiusProxyPassword(null);
             }
             this.settings = readSettings;
@@ -247,14 +247,25 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
-    * Set settings without regards to the dirtyRadiusFields
+    * Get decrypted passowrd from encrypted password
     *
-    * @param password
+    * @param encryptedPassword
     *        The new settings
     * @return password
     */
-    public String getDecryptedPassword(String password){
-        return PasswordUtil.getDecryptPassword(password);
+    public String getDecryptedPassword(String encryptedPassword){
+        return PasswordUtil.getDecryptPassword(encryptedPassword);
+    }
+
+    /**
+    * Get encrypted passowrd from  password
+    *
+    * @param password
+    *        The new settings
+    * @return encrypted password
+    */
+    public String getEncryptedPassword(String password){
+        return PasswordUtil.getEncryptPassword(password);
     }
 
     /**
@@ -275,7 +286,7 @@ public class SystemManagerImpl implements SystemManager
          * Save the settings
          */
         if(dirtyRadiusFields){
-            newSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(newSettings.getRadiusProxyPassword()));
+            newSettings.setRadiusProxyEncryptedPassword(getEncryptedPassword(newSettings.getRadiusProxyPassword()));
             newSettings.setRadiusProxyPassword(null);
         }
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
