@@ -223,7 +223,7 @@ Ext.define('Ung.config.network.Interface', {
                                         intf.set('v4PPPoEPassword', Util.getDecryptedPassword(intf.get('v4PPPoEPasswordEncrypted')));
                                     }
                                     intf.set('transientv4PPPoEPassword', null);
-                                } else if (newValue !== "PPPOE") {
+                                } else {
                                     intf.set('transientv4PPPoEPassword', intf.get('v4PPPoEPassword'));
                                     intf.set('v4PPPoEPassword', null);
                                 }
