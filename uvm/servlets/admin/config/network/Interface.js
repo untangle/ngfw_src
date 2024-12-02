@@ -209,7 +209,29 @@ Ext.define('Ung.config.network.Interface', {
                     { boxLabel: 'Auto (DHCP)'.t(), inputValue: 'AUTO', bind: { disabled: '{!intf.isWan}'} },
                     { boxLabel: 'Static'.t(),      inputValue: 'STATIC' },
                     { boxLabel: 'PPPoE'.t(),       inputValue: 'PPPOE', bind: { disabled: '{!intf.isWan}'} }
-                ]
+                ],
+                listeners: {
+                    change: function (rg, newValue, oldValue) {
+                        if (oldValue !== newValue) {
+                            var me = this,
+                                window = me.up('window[itemId=interface]');
+                            if (window) {
+                                var intf = window.getViewModel().get('intf');
+                                if (newValue !== "PPPOE") {
+                                    intf.set('transientv4PPPoEPassword', intf.get('v4PPPoEPassword'));
+                                    intf.set('v4PPPoEPassword', null);
+                                } else if (newValue === "PPPOE") {
+                                    intf.set('v4PPPoEPassword', intf.get('transientv4PPPoEPassword'));
+                                    if (!intf.get('v4PPPoEPassword') && intf.get('v4PPPoEPasswordEncrypted')) {
+                                        intf.set('v4PPPoEPassword', Util.getDecryptedPassword(intf.get('v4PPPoEPasswordEncrypted')));
+                                    }
+                                    intf.set('transientv4PPPoEPassword', null);
+                                }
+
+                            }
+                        }
+                    }
+                },
             }, '->', {
                 xtype: 'button',
                 text: 'Renew DHCP Lease'.t(),
@@ -522,11 +544,12 @@ Ext.define('Ung.config.network.Interface', {
                     },
                     listeners: {
                         afterrender: function() {
-                            var me = this;
-                            var window = me.up('window[itemId=interface]');
-                            if(window){
-                                var intf = window.getViewModel().get('intf');
-                                if((intf.get('getConfigType') !== 'DISABLED') && intf.get('v4PPPoEPasswordEncrypted')){
+                            var me = this,
+                            window = me.up('window[itemId=interface]');
+                            if (window){
+                                var intf = window.getViewModel().get('intf'),
+                                    isPppoeConfigEnabled = intf.get('getConfigType') !== 'DISABLED' && intf.get('v4ConfigType') === 'PPPOE';
+                                if (isPppoeConfigEnabled && intf.get('v4PPPoEPasswordEncrypted')){
                                     me.setValue(Util.getDecryptedPassword(intf.get('v4PPPoEPasswordEncrypted')));
                                 }
                             }
