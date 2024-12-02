@@ -242,6 +242,26 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
+    * Get decrypted passowrd from encrypted password
+    *
+    * @param encryptedPassword
+    * @return password
+    */
+    public String getDecryptedPassword(String encryptedPassword){
+        return PasswordUtil.getDecryptPassword(encryptedPassword);
+    }
+
+    /**
+    * Get encrypted password from password
+    *
+    * @param password
+    * @return encrypted password
+    */
+    public String getEncryptedPassword(String password){
+        return PasswordUtil.getEncryptPassword(password);
+    }
+
+    /**
      * Set the settings
      * 
      * @param newSettings

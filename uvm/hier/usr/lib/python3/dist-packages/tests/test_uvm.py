@@ -1036,6 +1036,34 @@ class UvmTests(NGFWTestCase):
 
         assert(result == 0)
 
+    def test_165_password_encryption_decryption_process(self):
+        """
+        Verify password encryption decryption process
+        """
+        password = 'passwd'
+        # Test 1: Valid password - it should pass if encrypted and decrypted correctly
+        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+
+        # Compare original password with decrypted password
+        self.assertEqual(password, decrypted_password, "Password encryption/decryption failed.")
+
+        # Test 2: Empty password - it should pass if encrypted and decrypted correctly
+        password = " "
+        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+
+        # Password should match after encryption and decryption
+        self.assertEqual(password, decrypted_password, "Empty password encryption/decryption failed.")
+
+        # Test 3: None (null) password - should return None or raise an exception
+        password = None
+        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+
+        # Check if encryption of None returns None or raises an exception
+        self.assertIsNone(encrypted_password, "Encrypted password should be None when input is None.")
+
+
     def test_170_log_retention(self):
         """
         Verify log retention policy
