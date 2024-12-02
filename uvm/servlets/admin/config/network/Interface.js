@@ -217,15 +217,15 @@ Ext.define('Ung.config.network.Interface', {
                                 window = me.up('window[itemId=interface]');
                             if (window) {
                                 var intf = window.getViewModel().get('intf');
-                                if (newValue !== "PPPOE") {
-                                    intf.set('transientv4PPPoEPassword', intf.get('v4PPPoEPassword'));
-                                    intf.set('v4PPPoEPassword', null);
-                                } else if (newValue === "PPPOE") {
+                                if (newValue === "PPPOE") {
                                     intf.set('v4PPPoEPassword', intf.get('transientv4PPPoEPassword'));
                                     if (!intf.get('v4PPPoEPassword') && intf.get('v4PPPoEPasswordEncrypted')) {
                                         intf.set('v4PPPoEPassword', Util.getDecryptedPassword(intf.get('v4PPPoEPasswordEncrypted')));
                                     }
                                     intf.set('transientv4PPPoEPassword', null);
+                                } else if (newValue !== "PPPOE") {
+                                    intf.set('transientv4PPPoEPassword', intf.get('v4PPPoEPassword'));
+                                    intf.set('v4PPPoEPassword', null);
                                 }
 
                             }
