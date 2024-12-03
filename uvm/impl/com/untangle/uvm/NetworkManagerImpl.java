@@ -143,7 +143,7 @@ public class NetworkManagerImpl implements NetworkManager
                 
                 if (readSettings != null)
                     settingsManager.save( this.settingsFilename, readSettings );
-                
+                    
             } catch ( SettingsManager.SettingsException e ) {
                 logger.warn( "Failed to load settings:", e );
             }
