@@ -247,14 +247,23 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
-    * Set settings without regards to the dirtyRadiusFields
+    * Get decrypted passowrd from encrypted password
     *
-    * @param password
-    *        The new settings
+    * @param encryptedPassword
     * @return password
     */
-    public String getDecryptedPassword(String password){
-        return PasswordUtil.getDecryptPassword(password);
+    public String getDecryptedPassword(String encryptedPassword){
+        return PasswordUtil.getDecryptPassword(encryptedPassword);
+    }
+
+    /**
+    * Get encrypted password from password
+    *
+    * @param password
+    * @return encrypted password
+    */
+    public String getEncryptedPassword(String password){
+        return PasswordUtil.getEncryptPassword(password);
     }
 
     /**
