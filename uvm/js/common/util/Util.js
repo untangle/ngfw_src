@@ -63,6 +63,10 @@ Ext.define('Ung.util.Util', {
         return Ext.Date.subtract(clientDate, Ext.Date.MINUTE, new Date().getTimezoneOffset() + rpc.timeZoneOffset / 60000);
     },
 
+    getDecryptedPassword: function(encryptedPassword){ 
+        return rpc.systemManager.getDecryptedPassword(encryptedPassword);
+    },
+
     // returns milliseconds depending of the servlet ADMIN or REPORTS
     getMilliseconds: function () {
         // UvmContext
