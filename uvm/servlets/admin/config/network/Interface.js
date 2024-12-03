@@ -218,19 +218,13 @@ Ext.define('Ung.config.network.Interface', {
                             if (window) {
                                 var intf = window.getViewModel().get('intf');
                                 if (newValue !== "PPPOE") {
-                                    // Persist plaintext password in a temporary field (which we don't want to be sent to backend)
-                                    intf.set('transientv4PPPoEPassword', intf.get('v4PPPoEPassword'));
                                     // clear the plaintext
                                     intf.set('v4PPPoEPassword', null);
                                 } else {
-                                    // repopulate plaintext value from the temporary field
-                                    intf.set('v4PPPoEPassword', intf.get('transientv4PPPoEPassword'));
-                                    // If plaintext is still unavailable and we have encrypted password then get the corresponding plaintext from backend
-                                    if (!intf.get('v4PPPoEPassword') && intf.get('v4PPPoEPasswordEncrypted')) {
+                                    // If we have encrypted password then get the corresponding plaintext from backend
+                                    if (intf.get('v4PPPoEPasswordEncrypted') && !intf.get('v4PPPoEPassword')) {
                                         intf.set('v4PPPoEPassword', Util.getDecryptedPassword(intf.get('v4PPPoEPasswordEncrypted')));
                                     }
-                                    // clear the temporary field
-                                    intf.set('transientv4PPPoEPassword', null);
                                 }
 
                             }
@@ -546,19 +540,6 @@ Ext.define('Ung.config.network.Interface', {
                     inputType: 'password',
                     bind: {
                         value: '{intf.v4PPPoEPassword}',
-                    },
-                    listeners: {
-                        afterrender: function() {
-                            var me = this,
-                            window = me.up('window[itemId=interface]');
-                            if (window){
-                                var intf = window.getViewModel().get('intf'),
-                                    isPppoeConfigEnabled = intf.get('getConfigType') !== 'DISABLED' && intf.get('v4ConfigType') === 'PPPOE';
-                                if (isPppoeConfigEnabled && intf.get('v4PPPoEPasswordEncrypted')){
-                                    me.setValue(Util.getDecryptedPassword(intf.get('v4PPPoEPasswordEncrypted')));
-                                }
-                            }
-                        }
                     },
                     fieldLabel: 'Password'.t()
                 }, {
