@@ -73,6 +73,7 @@ Ext.define('Ung.apps.openvpn.MainController', {
             }
 
             vm.set('settings', result);
+            me.getOrignalPasswd();
 
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
@@ -96,6 +97,19 @@ Ext.define('Ung.apps.openvpn.MainController', {
                 });
             }
         });
+    },
+
+    getOrignalPasswd: function() {
+        var vm = this.getViewModel();
+        servers = vm.get('settings.remoteServers.list');
+        if(servers){
+            servers.forEach(function(server){
+                encryptedPassword = server.remoteServerEncryptedPassword;
+                if(encryptedPassword != null && encryptedPassword != ""){
+                    server.authPassword = Util.getDecryptedPassword(server.remoteServerEncryptedPassword);
+                }
+            });
+        }
     },
 
     setSettings: function () {
