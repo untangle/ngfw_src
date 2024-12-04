@@ -10,12 +10,48 @@ Ext.define('Ung.view.extra.Devices', {
     controller: 'devices',
 
     layout: 'border',
+    bodyPadding: 10,
 
     defaults: {
-        border: false
+        border: true
     },
 
     items: [{
+        xtype: 'fieldset',
+        title: 'Auto Device Removal'.t(),
+        region: 'north',
+        padding: 10,
+        checkboxToggle: true,
+        collapsible: true,
+        collapsed: true,
+        layout: 'hbox',
+        checkbox: {
+            bind: '{settings.autoDeviceRemove}'
+        },
+        items: [{
+            xtype: 'numberfield',
+            fieldLabel: 'Remove inactive device after'.t(),
+            allowDecimals: false,
+            minValue: 1,
+            maxValue: 999,
+            labelWidth: 200,
+            // allowBlank: false,
+            // blankText: 'You must provide a valid threshold.'.t(),
+            autoEl: {
+                tag: 'div',
+                'data-qtip': 'Specify the number of days of inactivity after which a device should be removed.'.t(),
+            },
+            bind: {
+                value: '{settings.autoRemovalThreshold}',
+                disabled: '{!settings.autoDeviceRemove}'
+            }
+        }, {
+            xtype: 'displayfield',
+            value: 'days'.t(),
+            margin: '0 0 0 10',
+            width: 75
+        }],
+    }, {
         xtype: 'ungrid',
         region: 'center',
         itemId: 'devicesgrid',
@@ -268,6 +304,6 @@ Ext.define('Ung.view.extra.Devices', {
     bbar: ['->', {
         text: '<strong>' + 'Save'.t() + '</strong>',
         iconCls: 'fa fa-floppy-o',
-        handler: 'saveDevices'
+        handler: 'saveDevicesSettings'
     }]
 });

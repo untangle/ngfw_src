@@ -20,6 +20,7 @@ Ext.define('Ung.view.extra.DevicesController', {
     getDevices: function () {
         var me = this,
             v = me.getView(),
+            vm = me.getViewModel(),
             grid = me.getView().down('#devicesgrid'),
             filters = grid.getStore().getFilters(),
             store = Ext.getStore('devices');
@@ -41,10 +42,11 @@ Ext.define('Ung.view.extra.DevicesController', {
         }
 
         me.getView().setLoading(true);
-        Rpc.asyncData('rpc.deviceTable.getDevices')
+        Rpc.asyncData('rpc.deviceTable.getDevicesSettings')
             .then(function(result) {
                 me.getView().setLoading(false);
-                store.loadData(result.list);
+                vm.set('settings', result);
+                store.loadData(result.devices.list);
                 if(store.getSorters().items.length == 0){
                     store.sort('macAddress', 'ASC');
                 }
@@ -64,8 +66,8 @@ Ext.define('Ung.view.extra.DevicesController', {
 
     timestampColumns : [ "lastSessionTime" ],
 
-    saveDevices: function () {
-        var me = this, list = [];
+    saveDevicesSettings: function () {
+        var me = this, list = [], vm = me.getViewModel();
 
         me.getView().query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -99,11 +101,10 @@ Ext.define('Ung.view.extra.DevicesController', {
             });
         });
 
+        vm.set('settings.devices.list', list);
+
         me.getView().setLoading(true);
-        Rpc.asyncData('rpc.deviceTable.setDevices', {
-            javaClass: 'java.util.LinkedList',
-            list: list
-        }).then(function() {
+        Rpc.asyncData('rpc.deviceTable.setDevicesSettings', vm.get('settings')).then(function() {
             me.getDevices();
         }, function (ex) {
             Util.handleException(ex);

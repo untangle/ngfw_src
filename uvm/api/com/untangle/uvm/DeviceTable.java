@@ -19,14 +19,8 @@ public interface DeviceTable
 
     public Map<String, DeviceTableEntry> getDeviceTable();
 
-    public LinkedList<DeviceTableEntry> getDevices();
-
-    public void setDevices( LinkedList<DeviceTableEntry> devices );
-
     public DeviceTableEntry getDevice( String macAddress );
     
     public JSONArray lookupMacVendor( String macAddress );
-
-    public void saveDevices();
 }
 

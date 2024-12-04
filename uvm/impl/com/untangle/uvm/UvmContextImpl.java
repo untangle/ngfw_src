@@ -1669,7 +1669,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             if ( hostTableImpl != null )
                 hostTableImpl.saveHosts();
             if ( deviceTableImpl != null )
-                deviceTableImpl.saveDevices();
+                deviceTableImpl.saveSettings(true);
         } catch (Exception exn) {
             logger.error("Failed to save hosts/devices", exn);
         }
