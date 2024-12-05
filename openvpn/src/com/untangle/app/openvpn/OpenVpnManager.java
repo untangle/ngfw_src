@@ -796,15 +796,13 @@ public class OpenVpnManager
 
                 // if user+pass auth is enabled create the auth file
                 if (server.getAuthUserPass()) {
-                    if(server.getAuthPassword()!= null){
-                        serverPassword = server.getAuthPassword();
-                    }else{
-                        serverPassword = PasswordUtil.getDecryptPassword(server.getRemoteServerEncryptedPassword());
-                        if(serverPassword == null){
-                            logger.warn("Error occured while decrypting the encrypted passowrd for server : { }", name);
-                            continue;
-                        }
+
+                    serverPassword = PasswordUtil.getDecryptPassword(server.getRemoteServerEncryptedPassword());
+                    if(serverPassword == null){
+                        logger.warn("Error occured while decrypting the encrypted passowrd for server : { }", name);
+                        continue;
                     }
+                    
                     File authFile = new File("/etc/openvpn/" + name + ".auth");
                     authWriter = new BufferedWriter(new FileWriter(authFile));
                     authWriter.write(server.getAuthUsername() + LINE_BREAK);
