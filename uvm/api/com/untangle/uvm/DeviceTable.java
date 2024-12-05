@@ -17,10 +17,14 @@ public interface DeviceTable
 
     public DeviceTableEntry addDevice( String macAddress );
 
-    public Map<String, DeviceTableEntry> getDeviceTable();
+    public DevicesSettings getDevicesSettings();
+
+    public void setDevicesSettings(DevicesSettings newSettings);
 
     public DeviceTableEntry getDevice( String macAddress );
     
     public JSONArray lookupMacVendor( String macAddress );
+
+    public void saveSettings(boolean lastSaveTimeCheck);
 }
 

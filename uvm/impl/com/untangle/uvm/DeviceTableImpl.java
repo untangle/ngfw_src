@@ -4,6 +4,8 @@
 
 package com.untangle.uvm;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -17,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -51,11 +54,10 @@ public class DeviceTableImpl implements DeviceTable
                                                       * max size to reduce to
                                                       * when pruning map
                                                       */
-    private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /*
-                                                                        * 6
-                                                                        * hours
-                                                                        */
+    private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /* 6 hours */
+    private static final int PERIODIC_REMOVE_DELAY = 1000 * 60 * 60 * 24; /* 24 hours */
     private static final String DEVICES_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/devices.js";
+    private static final long WAIT_BETWEEN_TWO_SAVES = 60 * 1000; /* 60 sec */
 
     private static final Logger logger = LogManager.getLogger(DeviceTableImpl.class);    
 
@@ -63,9 +65,16 @@ public class DeviceTableImpl implements DeviceTable
 
     private DevicesSettings devicesSettings;
 
+    private final Runnable autoDeleteTask = () -> autoDeleteDevices(false);
+
     private final Pulse saverPulse = new Pulse("device-table-saver", new DeviceTableSaver(), PERIODIC_SAVE_DELAY);
+    private final Pulse autoDeletePulse = new Pulse("auto-remove-devices", new Thread(autoDeleteTask), PERIODIC_REMOVE_DELAY);
 
     private volatile long lastSaveTime = 0;
+
+    private final Object lock = new Object();
+
+
 
     /**
      * Constructor
@@ -74,6 +83,7 @@ public class DeviceTableImpl implements DeviceTable
     {
         saverPulse.start();
         loadSavedDevices();
+        autoDeletePulse.start();
     }
 
     /**
@@ -87,22 +97,11 @@ public class DeviceTableImpl implements DeviceTable
     }
 
     /**
-     * Get the device table
-     *
-     * @return The device table
-     */
-    public Map<String, DeviceTableEntry> getDeviceTable()
-    {
-        return deviceTable;
-    }
-
-    /**
      * Get the devices settings
      * @return {@link DevicesSettings}
      */
     public DevicesSettings getDevicesSettings() {
-        LinkedList<DeviceTableEntry> list = new LinkedList<>(deviceTable.values());
-        this.devicesSettings.setDevices(list);
+        updateSettingsFromDeviceTable();
         return this.devicesSettings;
     }
 
@@ -114,8 +113,8 @@ public class DeviceTableImpl implements DeviceTable
         if (newSettings.isAutoDeviceRemove() && (newSettings.getAutoRemovalThreshold() < 1 || newSettings.getAutoRemovalThreshold() > 999)) {
             throw new IllegalArgumentException("Invalid auto device removal threshold");
         }
-        ConcurrentHashMap<String, DeviceTableEntry> oldDeviceTable = this.deviceTable;
-        this.deviceTable = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, DeviceTableEntry> oldDeviceTable = deviceTable;
+        deviceTable = new ConcurrentHashMap<>();
 
         // For each entry, If it isn't in the table, create new entry. else keep as it is.
         for (DeviceTableEntry entry : newSettings.getDevices()) {
@@ -125,17 +124,22 @@ public class DeviceTableImpl implements DeviceTable
             DeviceTableEntry existingEntry = oldDeviceTable.get(macAddress);
             if (existingEntry != null) {
                 existingEntry.copy(entry);
-                this.deviceTable.put(existingEntry.getMacAddress(), existingEntry);
+                deviceTable.put(existingEntry.getMacAddress(), existingEntry);
             } else {
                 addDevice(entry);
                 entry.enableLogging();
             }
         }
-        // Change current settings
-        this.devicesSettings = newSettings;
+        // If configs have been changed run devices removal
+        if (null != devicesSettings && newSettings.isAutoDeviceRemove()) {
+            if (!devicesSettings.isAutoDeviceRemove() || devicesSettings.getAutoRemovalThreshold() != newSettings.getAutoRemovalThreshold())
+                autoDeleteDevices(true);
+        }
 
+        // Change current settings
+        devicesSettings = newSettings;
         // Save the settings
-        this.saveSettings(false);
+        saveSettings(false);
     }
 
     /**
@@ -143,26 +147,39 @@ public class DeviceTableImpl implements DeviceTable
      * @param lastSaveTimeCheck
      */
     public void saveSettings(boolean lastSaveTimeCheck) {
-        // If we just recently saved, within 60 seconds do not save again
-        if (lastSaveTimeCheck && System.currentTimeMillis() - lastSaveTime < (60 * 1000)) {
-            logger.info("Saved recently, skipping...");
-            return;
-        }
-        lastSaveTime = System.currentTimeMillis();
-        try {
+        // If we just recently saved, within 60 seconds wait.
+        synchronized (lock) {
+            long currentTime = System.currentTimeMillis();
+            long timeSinceLastSave = currentTime - lastSaveTime;
+            long waitTime;
+            if (lastSaveTimeCheck && timeSinceLastSave < WAIT_BETWEEN_TWO_SAVES) {
+                logger.info("Saved recently, waiting...");
+                waitTime = WAIT_BETWEEN_TWO_SAVES - timeSinceLastSave;
+                try {
+                    lock.wait(waitTime);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restore interrupted status
+                }
+            }
+            lastSaveTime = System.currentTimeMillis();
+            logger.info("lastSaveTime: {}", lastSaveTime);
+            try {
             /* If this is the first time we're saving. Lookup any unknown MAC
               vendors We only do this once so we don't flood the cloud server
             */
-            if (lastSaveTime == 0)
-                populateMacVendor();
+                if (lastSaveTime == 0)
+                    populateMacVendor();
 
-            LinkedList<DeviceTableEntry> list = getDevicesList();
-            this.devicesSettings.setDevices(list);
+                LinkedList<DeviceTableEntry> list = getDevicesList();
+                this.devicesSettings.setDevices(list);
 
-            UvmContextFactory.context().settingsManager().save(DEVICES_SAVE_FILENAME, this.devicesSettings, true, true);
-            logger.info("Saving devices to file... done");
-        } catch (Exception e) {
-            logger.error(e);
+                UvmContextFactory.context().settingsManager().save(DEVICES_SAVE_FILENAME, this.devicesSettings, true, true);
+                logger.info("Saving devices to file... done");
+            } catch (Exception e) {
+                logger.error(e);
+            }
+            // Notify other waiting threads
+            lock.notifyAll();
         }
     }
 
@@ -430,11 +447,52 @@ public class DeviceTableImpl implements DeviceTable
                 }
             }
             deviceTable.put(newEntry.getMacAddress(), newEntry);
-            LinkedList<DeviceTableEntry> list = new LinkedList<>(deviceTable.values());
-            devicesSettings.setDevices(list);
+            updateSettingsFromDeviceTable();
         } catch (Exception exn) {
             logger.warn("Exception looking up MAC address vendor:", exn);
         }
+    }
+
+    /**
+     *
+     * @param skipSave
+     */
+    public void autoDeleteDevices(boolean skipSave) {
+        if (null == devicesSettings) return;
+        if (!devicesSettings.isAutoDeviceRemove()) return;
+        int autoRemovalThreshold = devicesSettings.getAutoRemovalThreshold();
+        try {
+            // Filter devicesMap to retain only those devices whose lastSeen is within the threshold
+            deviceTable = deviceTable.entrySet()
+                    .stream()
+                    .filter(entry -> {
+                        long currentTime = System.currentTimeMillis();
+                        long lastSeen = entry.getValue().getLastSessionTime();
+                        long daysSinceLastSeen = (currentTime - lastSeen) / (24 * 60 * 60 * 1000); // Convert millis to days
+                        return daysSinceLastSeen < autoRemovalThreshold;
+                    })
+                    .collect(Collectors.toConcurrentMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (existing, replacement) -> existing,
+                            ConcurrentHashMap::new
+                    ));
+            // update settings from device table
+            updateSettingsFromDeviceTable();
+            // save the devices settings
+            if (!skipSave)
+                saveSettings(false);
+        } catch (Exception e) {
+            logger.error("Exception: ", e);
+        }
+    }
+
+    /**
+     * updates devices from device table
+     */
+    public void updateSettingsFromDeviceTable() {
+        LinkedList<DeviceTableEntry> list = new LinkedList<>(deviceTable.values());
+        devicesSettings.setDevices(list);
     }
 
     /**
@@ -447,7 +505,6 @@ public class DeviceTableImpl implements DeviceTable
          */
         public void run()
         {
-//            saveDevices();
             saveSettings(true);
         }
     }
