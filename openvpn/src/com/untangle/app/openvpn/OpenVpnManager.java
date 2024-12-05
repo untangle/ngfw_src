@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.PasswordUtil;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -747,7 +748,7 @@ public class OpenVpnManager
         BufferedWriter authWriter;
         for (OpenVpnRemoteServer server : remoteServers) {
             if (!server.getEnabled()) continue;
-
+            String serverPassword;
             String name = server.getName();
             logger.info("Writing server configuration file for [" + name + "]");
 
@@ -795,10 +796,17 @@ public class OpenVpnManager
 
                 // if user+pass auth is enabled create the auth file
                 if (server.getAuthUserPass()) {
+
+                    serverPassword = PasswordUtil.getDecryptPassword(server.getRemoteServerEncryptedPassword());
+                    if(serverPassword == null){
+                        logger.warn("Error occured while decrypting the encrypted passowrd for server : { }", name);
+                        continue;
+                    }
+                    
                     File authFile = new File("/etc/openvpn/" + name + ".auth");
                     authWriter = new BufferedWriter(new FileWriter(authFile));
                     authWriter.write(server.getAuthUsername() + LINE_BREAK);
-                    authWriter.write(server.getAuthPassword() + LINE_BREAK);
+                    authWriter.write(serverPassword + LINE_BREAK);
                 }
 
                 count += 1;

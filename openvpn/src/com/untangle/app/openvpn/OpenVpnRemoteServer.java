@@ -18,6 +18,7 @@ public class OpenVpnRemoteServer implements java.io.Serializable, org.json.JSONS
     private boolean authUserPass = false;
     private String authUsername;
     private String authPassword;
+    private String remoteServerEncryptedPassword;
 
     public OpenVpnRemoteServer()
     {
@@ -39,6 +40,9 @@ public class OpenVpnRemoteServer implements java.io.Serializable, org.json.JSONS
 
     public String getAuthPassword() { return this.authPassword; }
     public void setAuthPassword( String newValue ) { this.authPassword = newValue; }
+
+    public String getRemoteServerEncryptedPassword() { return this.remoteServerEncryptedPassword; }
+    public void setRemoteServerEncryptedPassword( String newValue ) { this.remoteServerEncryptedPassword = newValue; }
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
