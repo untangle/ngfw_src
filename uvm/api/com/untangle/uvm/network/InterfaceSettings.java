@@ -78,6 +78,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private Boolean     v4PPPoEUsePeerDns; /* If the DNS should be determined via PPP */
     private InetAddress v4PPPoEDns1; /* the dns1  of this interface if configured static */
     private InetAddress v4PPPoEDns2; /* the dns2  of this interface if configured static */
+    private String      v4PPPoEPasswordEncrypted; /* Encrypted PPPoE Password */
 
     private Boolean     v4NatEgressTraffic;
     private Boolean     v4NatIngressTraffic;
@@ -230,6 +231,9 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public String getV4PPPoEPassword( ) { return this.v4PPPoEPassword; }
     public void setV4PPPoEPassword( String newValue ) { this.v4PPPoEPassword = newValue; }
+
+    public String getV4PPPoEPasswordEncrypted( ) { return this.v4PPPoEPasswordEncrypted; }
+    public void setV4PPPoEPasswordEncrypted( String newValue ) { this.v4PPPoEPasswordEncrypted = newValue; }
 
     public Boolean getV4PPPoEUsePeerDns( ) { return this.v4PPPoEUsePeerDns; }
     public void setV4PPPoEUsePeerDns( Boolean newValue ) { this.v4PPPoEUsePeerDns = newValue; }
