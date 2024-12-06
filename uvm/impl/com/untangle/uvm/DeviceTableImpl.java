@@ -4,32 +4,27 @@
 
 package com.untangle.uvm;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
+import com.untangle.uvm.util.Constants;
+import com.untangle.uvm.util.Pulse;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONArray;
-
-
-import com.untangle.uvm.util.Pulse;
 
 /**
  * DeviceTable stores a known "devices" (MAC addresses) that have ever been
@@ -56,8 +51,9 @@ public class DeviceTableImpl implements DeviceTable
                                                       */
     private static final int PERIODIC_SAVE_DELAY = 1000 * 60 * 60 * 6; /* 6 hours */
     private static final int PERIODIC_REMOVE_DELAY = 1000 * 60 * 60 * 24; /* 24 hours */
-    private static final String DEVICES_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/devices.js";
     private static final long WAIT_BETWEEN_TWO_SAVES = 60 * 1000; /* 60 sec */
+
+    private static final String DEVICES_SAVE_FILENAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/devices.js";
 
     private static final Logger logger = LogManager.getLogger(DeviceTableImpl.class);    
 
@@ -65,17 +61,13 @@ public class DeviceTableImpl implements DeviceTable
 
     private DevicesSettings devicesSettings;
 
+    private final Object lock = new Object();
     private final Runnable autoDeleteTask = () -> autoDeleteDevices(false);
-
-    private final Pulse saverPulse = new Pulse("device-table-saver", new DeviceTableSaver(), PERIODIC_SAVE_DELAY);
     private final Pulse autoDeletePulse = new Pulse("auto-remove-devices", new Thread(autoDeleteTask), PERIODIC_REMOVE_DELAY);
 
+    private final Pulse saverPulse = new Pulse("device-table-saver", new DeviceTableSaver(), PERIODIC_SAVE_DELAY);
+
     private volatile long lastSaveTime = 0;
-
-    private final Object lock = new Object();
-
-
-
     /**
      * Constructor
      */
@@ -110,43 +102,50 @@ public class DeviceTableImpl implements DeviceTable
      * @param newSettings {@link DevicesSettings}
      */
     public synchronized void setDevicesSettings(DevicesSettings newSettings) {
-        if (newSettings.isAutoDeviceRemove() && (newSettings.getAutoRemovalThreshold() < 1 || newSettings.getAutoRemovalThreshold() > 999)) {
+        if (newSettings.isAutoDeviceRemove() && (newSettings.getAutoRemovalThreshold() < 1 || newSettings.getAutoRemovalThreshold() > 999))
             throw new IllegalArgumentException("Invalid auto device removal threshold");
-        }
+
+        logger.info("Setting new device settings: {}", newSettings);
         ConcurrentHashMap<String, DeviceTableEntry> oldDeviceTable = deviceTable;
         deviceTable = new ConcurrentHashMap<>();
 
         // For each entry, If it isn't in the table, create new entry. else keep as it is.
-        for (DeviceTableEntry entry : newSettings.getDevices()) {
-            String macAddress = entry.getMacAddress();
-            if (macAddress == null) continue;
+        newSettings.getDevices()
+            .stream()
+            .filter(entry -> null != entry.getMacAddress())
+            .forEach(entry -> {
+                DeviceTableEntry existingEntry = oldDeviceTable.get(entry.getMacAddress());
+                if (existingEntry != null) {
+                    existingEntry.copy(entry);
+                    deviceTable.put(existingEntry.getMacAddress(), existingEntry);
+                } else {
+                    addDevice(entry);
+                    entry.enableLogging();
+                }
+            });
+        logger.info("Loaded devices from file. ({} entries)", deviceTable.size());
 
-            DeviceTableEntry existingEntry = oldDeviceTable.get(macAddress);
-            if (existingEntry != null) {
-                existingEntry.copy(entry);
-                deviceTable.put(existingEntry.getMacAddress(), existingEntry);
-            } else {
-                addDevice(entry);
-                entry.enableLogging();
-            }
-        }
         // If configs have been changed run devices removal
         if (null != devicesSettings && newSettings.isAutoDeviceRemove()) {
-            if (!devicesSettings.isAutoDeviceRemove() || devicesSettings.getAutoRemovalThreshold() != newSettings.getAutoRemovalThreshold())
-                autoDeleteDevices(true);
+            if (!devicesSettings.isAutoDeviceRemove() || devicesSettings.getAutoRemovalThreshold() != newSettings.getAutoRemovalThreshold()) {
+                devicesSettings.setAutoDeviceRemove(true);
+                autoDeleteDevices(true);        // skip save as we will be saving the settings later in this method.
+            }
         }
 
-        // Change current settings
+        // Change current settings to new settings
         devicesSettings = newSettings;
-        // Save the settings
-        saveSettings(false);
+        // Save the settings. Skip last save time check
+        saveDevicesSettings(false);
     }
 
     /**
-     * 
-     * @param lastSaveTimeCheck
+     * Saves the settings to devices.js file
+     * Checks if last save time is older than WAIT_BETWEEN_TWO_SAVES
+     * if lastSaveTimeCheck passed is true waits for remaining time else continues
+     * @param lastSaveTimeCheck if false, last save time check id skipped
      */
-    public void saveSettings(boolean lastSaveTimeCheck) {
+    public void saveDevicesSettings(boolean lastSaveTimeCheck) {
         // If we just recently saved, within 60 seconds wait.
         synchronized (lock) {
             long currentTime = System.currentTimeMillis();
@@ -164,19 +163,21 @@ public class DeviceTableImpl implements DeviceTable
             lastSaveTime = System.currentTimeMillis();
             logger.info("lastSaveTime: {}", lastSaveTime);
             try {
-            /* If this is the first time we're saving. Lookup any unknown MAC
-              vendors We only do this once so we don't flood the cloud server
-            */
+                /* If this is the first time we're saving. Lookup any unknown MAC
+                 * vendors We only do this once so we don't flood the cloud server
+                */
                 if (lastSaveTime == 0)
                     populateMacVendor();
 
                 LinkedList<DeviceTableEntry> list = getDevicesList();
                 this.devicesSettings.setDevices(list);
 
+                // Save the devices settings to devices.js file
+                logger.info("Saving devices settings to file");
                 UvmContextFactory.context().settingsManager().save(DEVICES_SAVE_FILENAME, this.devicesSettings, true, true);
                 logger.info("Saving devices to file... done");
             } catch (Exception e) {
-                logger.error(e);
+                logger.error("Exception while saving the devices settings: ", e);
             }
             // Notify other waiting threads
             lock.notifyAll();
@@ -184,67 +185,52 @@ public class DeviceTableImpl implements DeviceTable
     }
 
     /**
-     *
-     * @return
+     * populates the mac vendor for devices whose mac vendor is blank
      */
-    private LinkedList<DeviceTableEntry> getDevicesList() {
-        Collection<DeviceTableEntry> entries = deviceTable.values();
-        logger.info("Saving devices to file... ({} entries)",  entries.size());
-
-        LinkedList<DeviceTableEntry> list = new LinkedList<>();
-        for (DeviceTableEntry entry : entries) {
-            list.add(entry);
-        }
-
-        if (list.size() > HIGH_WATER_SIZE) {
-            logger.info("Device list over max size, pruning oldest entries"); // remove entries with oldest (lowest) lastSeenTime
-            Collections.sort(list, new Comparator<DeviceTableEntry>()
-            {
-                /**
-                 * Compare function for sorting and finding old entries
-                 *
-                 * @param o1
-                 *        The first entry
-                 * @param o2
-                 *        The second entry
-                 * @return The compare result
-                 */
-                public int compare(DeviceTableEntry o1, DeviceTableEntry o2)
-                {
-                    if (o1.getLastSessionTime() < o2.getLastSessionTime()) return 1;
-                    if (o1.getLastSessionTime() == o2.getLastSessionTime()) return 0;
-                    return -1;
+    private void populateMacVendor() {
+        /* If we don't know the MAC vendor, do a lookup
+         * in case we know it now with an updated DB
+         */
+        deviceTable.values()
+            .stream()
+            .filter(entry -> null != entry.getMacAddress() && StringUtils.isBlank(entry.getMacVendor()))
+            .forEach(entry -> {
+                try{
+                    JSONArray macAddressVendor = lookupMacVendor(entry.getMacAddress());
+                    if(macAddressVendor.length() > 0) {
+                        JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
+                        if (macAddrVendor.has(Constants.MAC) && macAddrVendor.has(Constants.ORGANIZATION)
+                                && StringUtils.isNotBlank(macAddrVendor.getString(Constants.ORGANIZATION)))
+                            entry.setMacVendor(macAddrVendor.getString(Constants.ORGANIZATION));
+                    }
+                } catch (Exception e) {
+                    logger.error("Error while fetching mac vendor for address {}", entry.getMacAddress(), e);
                 }
             });
-            logger.info("Device table  too large. Removing " + (list.size() - LOW_WATER_SIZE) + " eldest entries.");
-            while (list.size() > LOW_WATER_SIZE) {
-                DeviceTableEntry entry = list.removeLast();
-                this.deviceTable.remove(entry.getMacAddress());
-            }
-            logger.info("Device table new size: " + this.deviceTable.size());
-        }
-
-        return list;
     }
 
     /**
-     *
-     * @throws JSONException
+     * If devices size is greater than HIGH_WATER_SIZE remove devices
+     * whose last seen is oldest till devices size equals LOW_WATER_SIZE
+     * @return LinkedList of {@link DeviceTableEntry}
      */
-    private void populateMacVendor() throws JSONException {
-        for (DeviceTableEntry entry : deviceTable.values()) {
-            /* If we don't know the MAC vendor, do a lookup in case we know
-               it now with an updated DB
-             */
-            if (null != entry.getMacAddress() && StringUtils.isBlank(entry.getMacVendor())) {
-                JSONArray macAddressVendor = lookupMacVendor(entry.getMacAddress());
-                if(macAddressVendor.length() > 0) {
-                    JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
-                    if (macAddrVendor.has("MAC") && macAddrVendor.has("Organization") && StringUtils.isNotBlank(macAddrVendor.getString("Organization")))
-                        entry.setMacVendor(macAddrVendor.getString("Organization"));
-                }
+    private LinkedList<DeviceTableEntry> getDevicesList() {
+        logger.info("Filtering devices from device table to save in devices.js file");
+        LinkedList<DeviceTableEntry> list = new LinkedList<>(deviceTable.values());
+
+        if (list.size() > HIGH_WATER_SIZE) {
+            // remove entries with oldest (lowest) lastSeenTime
+            logger.info("Device list over max size, pruning oldest entries");
+            list.sort((o1, o2) -> Long.compare(o2.getLastSessionTime(), o1.getLastSessionTime()));
+
+            logger.info("Device table  too large. Removing {} eldest entries.", list.size() - LOW_WATER_SIZE);
+            while (list.size() > LOW_WATER_SIZE) {
+                DeviceTableEntry entry = list.removeLast();
+                deviceTable.remove(entry.getMacAddress());
             }
+            logger.info("Device table new size: {}", deviceTable.size());
         }
+        return list;
     }
 
     /**
@@ -375,6 +361,12 @@ public class DeviceTableImpl implements DeviceTable
             DevicesSettings settings = new DevicesSettings();       // Initialise default settings
             boolean writeFlag = false;
 
+            /* In 17.4 we are updating devices.js structure from LinkedList type to DevicesSettings
+             * On upgrade for the first time try block will throw ClassCastException.
+             * In that case we need to load settings as LinkedList.
+             * This ClassCastException catch block can be removed in version 17.5
+             * and this method should be refactored
+             */
             logger.info("Loading devices from file...");
             try {
                 settings = UvmContextFactory.context().settingsManager().load(DevicesSettings.class, DEVICES_SAVE_FILENAME);
@@ -383,41 +375,49 @@ public class DeviceTableImpl implements DeviceTable
                 LinkedList<DeviceTableEntry> savedEntries = UvmContextFactory.context().settingsManager().load(LinkedList.class, DEVICES_SAVE_FILENAME);
                 convertSettingsToV1(savedEntries, settings);
             } catch (Exception e) {
-                logger.error(e);
-                // Write Default Settings
+                logger.error("Exception while reading devices settings file: ", e);
+            }
+            if(null == settings) {
+                // Fresh Install Write Default Settings
+                settings = new DevicesSettings();
                 writeFlag = true;
             }
 
-            if (null != settings.getDevices()) {
-                for (DeviceTableEntry entry : settings.getDevices()) {
-                    // if its invalid just ignore it
-                    if (entry.getMacAddress() == null) {
-                        logger.warn("Invalid entry: {}", entry.toJSONString());
-                        continue;
-                    }
-                    entry.enableLogging(); //enable logging now that the object has been built
-                    this.deviceTable.put(entry.getMacAddress(), entry);
-                }
-                logger.info("Loaded devices from file. ({} entries)", this.deviceTable.size());
-            } else {
+            if (null != settings.getDevices())
+                updateDevicesToDeviceTable(settings.getDevices());
+            else
                 logger.info("Loaded devices from file. (no devices saved)");
-            }
 
-            if (writeFlag) {
+            if (writeFlag)
                 this.setDevicesSettings(settings);
-            } else {
+            else
                 this.devicesSettings = settings;
-            }
+
         } catch (Exception e) {
-            logger.warn("Failed to load devices ", e);
+            logger.warn("Failed to load devices settings ", e);
         }
     }
 
     /**
-     *
-     * @param savedEntries
-     * @param settings
-     * @return
+     * Updates the devices table from read settings devices
+     * @param devices LinkedList of {@link DeviceTableEntry}
+     */
+    private void updateDevicesToDeviceTable(LinkedList<DeviceTableEntry> devices) {
+        devices.stream()
+            .filter(entry -> null != entry.getMacAddress())
+            .forEach(entry -> {
+                //enable logging now that the object has been built
+                entry.enableLogging();
+                this.deviceTable.put(entry.getMacAddress(), entry);
+            });
+        logger.info("Loaded devices from file. ({} entries)", deviceTable.size());
+    }
+
+    /**
+     * Adds old settings (List of devices) to new DevicesSettings object
+     * called once for upgrade/backup restore scenarios
+     * @param savedEntries LinkedList of {@link DeviceTableEntry}
+     * @param settings {@link DevicesSettings}
      */
     private void convertSettingsToV1(LinkedList<DeviceTableEntry> savedEntries, DevicesSettings settings) {
         settings.setDevices(savedEntries);
@@ -443,10 +443,12 @@ public class DeviceTableImpl implements DeviceTable
                 JSONArray macAddressVendor = lookupMacVendor(newEntry.getMacAddress());
                 if(macAddressVendor.length() > 0){
                     JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
-                    if (macAddrVendor.has("MAC") && macAddrVendor.has("Organization") && macAddrVendor.getString("Organization") != null && macAddrVendor.getString("Organization") != "") newEntry.setMacVendor(macAddrVendor.getString("Organization"));
+                    if (macAddrVendor.has(Constants.MAC) && macAddrVendor.has(Constants.ORGANIZATION) && StringUtils.isNotBlank(macAddrVendor.getString(Constants.ORGANIZATION)))
+                        newEntry.setMacVendor(macAddrVendor.getString(Constants.ORGANIZATION));
                 }
             }
             deviceTable.put(newEntry.getMacAddress(), newEntry);
+            // update settings from device table
             updateSettingsFromDeviceTable();
         } catch (Exception exn) {
             logger.warn("Exception looking up MAC address vendor:", exn);
@@ -454,41 +456,44 @@ public class DeviceTableImpl implements DeviceTable
     }
 
     /**
-     *
-     * @param skipSave
+     * If autoDeviceRemove is configured, checks for devices
+     * whose last seen is older than configured threshold
+     * saves the settings at end in devices.js file
+     * @param skipSave if true skips saving the settings
      */
     public void autoDeleteDevices(boolean skipSave) {
+        // return if auto device removal is disabled
         if (null == devicesSettings) return;
         if (!devicesSettings.isAutoDeviceRemove()) return;
         int autoRemovalThreshold = devicesSettings.getAutoRemovalThreshold();
         try {
             // Filter devicesMap to retain only those devices whose lastSeen is within the threshold
             deviceTable = deviceTable.entrySet()
-                    .stream()
-                    .filter(entry -> {
-                        long currentTime = System.currentTimeMillis();
-                        long lastSeen = entry.getValue().getLastSessionTime();
-                        long daysSinceLastSeen = (currentTime - lastSeen) / (24 * 60 * 60 * 1000); // Convert millis to days
-                        return daysSinceLastSeen < autoRemovalThreshold;
-                    })
-                    .collect(Collectors.toConcurrentMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (existing, replacement) -> existing,
-                            ConcurrentHashMap::new
-                    ));
+                .stream()
+                .filter(entry -> {
+                    long currentTime = System.currentTimeMillis();
+                    long lastSeen = entry.getValue().getLastSessionTime();
+                    long daysSinceLastSeen = (currentTime - lastSeen) / (24 * 60 * 60 * 1000); // Convert millis to days
+                    return daysSinceLastSeen < autoRemovalThreshold;
+                })
+                .collect(Collectors.toConcurrentMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (existing, replacement) -> existing,
+                        ConcurrentHashMap::new
+                ));
             // update settings from device table
             updateSettingsFromDeviceTable();
             // save the devices settings
             if (!skipSave)
-                saveSettings(false);
+                saveDevicesSettings(false);
         } catch (Exception e) {
-            logger.error("Exception: ", e);
+            logger.error("Exception while removing devices: ", e);
         }
     }
 
     /**
-     * updates devices from device table
+     * updates devices in settings from device table
      */
     public void updateSettingsFromDeviceTable() {
         LinkedList<DeviceTableEntry> list = new LinkedList<>(deviceTable.values());
@@ -505,7 +510,7 @@ public class DeviceTableImpl implements DeviceTable
          */
         public void run()
         {
-            saveSettings(true);
+            saveDevicesSettings(true);
         }
     }
 }

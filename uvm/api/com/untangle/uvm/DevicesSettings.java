@@ -42,13 +42,13 @@ package com.untangle.uvm;
      public void setDevices(LinkedList<DeviceTableEntry> devices) { this.devices = devices; }
 
      /**
-      * returns if auto device removal is enabled or not
+      * returns autoDeviceRemove
       * @return boolean for auto device removal
       */
      public boolean isAutoDeviceRemove() { return autoDeviceRemove; }
      /**
-      * Set if auto device removal is enabled or not
-      * @param autoDeviceRemove config
+      * Set autoDeviceRemove
+      * @param autoDeviceRemove boolean for auto device removal
       */
      public void setAutoDeviceRemove(boolean autoDeviceRemove) { this.autoDeviceRemove = autoDeviceRemove; }
 
@@ -63,6 +63,10 @@ package com.untangle.uvm;
       */
      public void setAutoRemovalThreshold(int autoRemovalThreshold) { this.autoRemovalThreshold = autoRemovalThreshold; }
 
+     /**
+      * Returns string representation of this object
+      * @return string representation of this object
+      */
      @Override
      public String toJSONString() {
          JSONObject jO = new JSONObject(this);
