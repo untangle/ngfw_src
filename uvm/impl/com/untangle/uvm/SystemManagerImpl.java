@@ -46,6 +46,7 @@ import com.untangle.uvm.ExecManagerResultReader;
 import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.event.AdminLoginEvent;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.FileDirectoryMetadata;
 import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.util.StringUtil;
@@ -75,6 +76,8 @@ public class SystemManagerImpl implements SystemManager
 
     private static final String CRON_STRING = " root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
+    private static final String BDAM_LICENSE_UPDATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-bdam-license-update.py";
+    private static final File BDAM_CRON_FILE = new File("/etc/cron.daily/bdam-cron");
 
     // 850K .......... .......... .......... .......... .......... 96% 46.6K 6s
     private static final Pattern DOWNLOAD_PATTERN = Pattern.compile(".*([0-9]+)K[ .]+([0-9%]+) *([0-9]+\\.[0-9]+[KM]).*");
@@ -164,6 +167,12 @@ public class SystemManagerImpl implements SystemManager
          */
         if (settings.getAutoUpgrade() && !CRON_FILE.exists()) writeCronFile();
         if (settings.getAutoUpgrade() && settingsFile.lastModified() > CRON_FILE.lastModified()) writeCronFile();
+
+        /**
+         * Write bdam_cron to auto update license 
+         */
+        if (!BDAM_CRON_FILE.exists())
+            writeBDAMCronFile();
 
         /**
          * If auto-upgrade is disabled and cron file exists, delete it
@@ -1333,6 +1342,36 @@ can look deeper. - mahotz
                 return;
             }
         }
+    }
+
+    /** 
+     * Write BDAM licence update cronjob file.
+     */
+    private void writeBDAMCronFile()
+    {
+        // write the cron file for nightly runs
+        String cronStr =  "#!/bin/sh" + Constants.NEW_LINE + BDAM_LICENSE_UPDATE_SCRIPT;
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(BDAM_CRON_FILE));
+            out.write(cronStr, 0, cronStr.length());
+            out.write(Constants.NEW_LINE);
+        } catch (IOException ex) {
+            logger.error("Unable to write file", ex);
+            return;
+        }finally{
+            if(out != null){
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
+        }
+
+        // Make files executable
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + BDAM_CRON_FILE);
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + BDAM_LICENSE_UPDATE_SCRIPT);
     }
 
     /**
