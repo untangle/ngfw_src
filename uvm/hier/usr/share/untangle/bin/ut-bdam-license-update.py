@@ -45,7 +45,6 @@ def update_license_in_file(file_path, new_license):
                 current_license = line.strip().split('=')[1]
 
                 if current_license != new_license:
-                    print(f"Updating LicenseSerial to: {new_license}")
                     lines[i] = f"LicenseSerial={new_license}\n"  # Update the line with the new license
 
                 break
@@ -55,7 +54,6 @@ def update_license_in_file(file_path, new_license):
             file.writelines(lines)
 
     except Exception as e:
-        #print(f"Error reading or writing the file: {e}")
         pass
 
 
