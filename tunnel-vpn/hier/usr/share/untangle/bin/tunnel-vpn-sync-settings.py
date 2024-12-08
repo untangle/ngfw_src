@@ -19,6 +19,8 @@ import traceback
 import json
 import datetime
 import stat
+import time
+from uvm import Uvm
 
 from   sync import *
 
@@ -63,6 +65,16 @@ class ArgumentParser(object):
             print(exc)
             printUsage()
             exit(1)
+
+tunnel_log = open("/var/log/tunnelLog.log", "a")
+uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
+
+def log(str):
+    try:
+        tunnel_log.write(str + "\n")
+        tunnel_log.flush()
+    except:
+        pass
 
 def printUsage():
     sys.stderr.write( """\
@@ -261,8 +273,31 @@ for tunnel in settings.get('tunnels').get('list'):
     password = 'password'
     if tunnel.get('username') != None:
         username = tunnel.get('username')
-    if tunnel.get('password') != None:
-        password = tunnel.get('password')
+    if tunnel.get('encryptedTunnelVpnPassword') != None:
+        try:
+            system_manager = Uvm().getUvmContext().systemManager()
+            if not system_manager:
+                log("System Manager is not available...")
+                continue
+            log(f"Before decryption {tunnel.get('encryptedTunnelVpnPassword')}")
+            print("Before decryption" % tunnel.get('encryptedTunnelVpnPassword'))
+            start_time = time.time()
+            password = system_manager.getDecryptedPassword(tunnel.get('encryptedTunnelVpnPassword'))
+
+            end_time = time.time()
+            time_taken = end_time - start_time
+            log("After decryption: %s" % password)
+            print("After decryption: " % password)
+            log(f"Time taken to decrypt the password: {time_taken:.2f} seconds")
+            print("Time taken to decrypt the password: %s seconds" % time_taken)
+        except Exception as e:
+            log(f"Encountered an error {e}")
+            print("Encountered an error %s" % e)
+
+
+    print("Decrypted password: %s" % password)
+    log("Decrypted password: %s" % password)
+
     filename = parser.prefix + "@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-%i/auth.txt" % tunnel.get('tunnelId')
     try: os.makedirs(os.path.dirname(filename))
     except: pass

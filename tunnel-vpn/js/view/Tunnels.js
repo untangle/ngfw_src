@@ -186,6 +186,19 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
             disabled: '{tunnelUsernameHidden == true}',
             hidden: '{tunnelProviderSelected == false}'
         },
+        listeners: {
+            afterrender: function() {
+                var me = this,
+                vm = me.up('window').getViewModel(),
+                record = vm.get('record');
+
+                if(record){
+                    if (!record.get('password') && record.get('encryptedTunnelVpnPassword')){
+                        me.setValue(Util.getDecryptedPassword(record.get('encryptedTunnelVpnPassword')));
+                    }
+                }
+            }
+        },
     }, {
         xtype: 'fieldset',
         margin: '0 10 0 190',

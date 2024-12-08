@@ -1323,4 +1323,47 @@ class UvmTests(NGFWTestCase):
         assert int(upgrade) > 0, "{int(upgrade)} upgrade log files found"
         assert int(wrapper) > 0, "{int(wrapper)} wrapper log files found"
 
+    '''
+    def create_tunnel_vpn_tunnel(provider, username, password):
+        encoded_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+        encoded_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+        if (provider == 'NGFirewall'):
+            return {'javaClass': 'java.util.LinkedList',
+            'list': [{
+                "boundInterfaceId": 0,
+                "enabled": true,
+                "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
+                "name": "tunnel-NGFirewall",
+                "nat": true,
+                "provider": "NGFirewall",
+                "tunnelId": 200
+            }]
+            }
+        elif (provider == 'CustomZip'):
+            return {'javaClass': 'java.util.LinkedList',
+            'list': [{
+                "boundInterfaceId": 0,
+                "enabled": true,
+                "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
+                "name": "tunnel-CustomZip",
+                "nat": true,
+                "provider": "CustomZip",
+                "tunnelId": 201
+            }]
+            }
+        elif (provider == 'CustomZipPass'):
+            return {'javaClass': 'java.util.LinkedList',
+            'list': [{
+                "boundInterfaceId": 0,
+                "enabled": true,
+                "encryptedTunnelVpnPassword": encoded_password,
+                "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
+                "name": "tunnel-CustomZipPass",
+                "nat": true,
+                "provider": "CustomZipPass",
+                "tunnelId": 202,
+                "username": username
+            }]
+            }
+        '''
 test_registry.register_module("uvm", UvmTests)
