@@ -279,15 +279,16 @@ for tunnel in settings.get('tunnels').get('list'):
             if not system_manager:
                 log("System Manager is not available...")
                 continue
-            log(f"Before decryption {tunnel.get('encryptedTunnelVpnPassword')}")
-            print("Before decryption" % tunnel.get('encryptedTunnelVpnPassword'))
+            encryptedpassword = tunnel.get('encryptedTunnelVpnPassword')
+            log(f"Before decryption {encryptedpassword}")
+            print("Before decryption: %s" % encryptedpassword)
             start_time = time.time()
             password = system_manager.getDecryptedPassword(tunnel.get('encryptedTunnelVpnPassword'))
 
             end_time = time.time()
             time_taken = end_time - start_time
-            log("After decryption: %s" % password)
-            print("After decryption: " % password)
+            log(f"After decryption: {password}")
+            print("After decryption: %s" % password)
             log(f"Time taken to decrypt the password: {time_taken:.2f} seconds")
             print("Time taken to decrypt the password: %s seconds" % time_taken)
         except Exception as e:
@@ -296,7 +297,7 @@ for tunnel in settings.get('tunnels').get('list'):
 
 
     print("Decrypted password: %s" % password)
-    log("Decrypted password: %s" % password)
+    log(f"Decrypted password: {password}")
 
     filename = parser.prefix + "@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-%i/auth.txt" % tunnel.get('tunnelId')
     try: os.makedirs(os.path.dirname(filename))
