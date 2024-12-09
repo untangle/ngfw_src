@@ -20,10 +20,8 @@ import json
 import datetime
 import stat
 import time
-from uvm import Uvm
-
+from sync import EncryptionUtil
 from   sync import *
-
 class ArgumentParser(object):
     def __init__(self):
         self.file = None
@@ -65,16 +63,6 @@ class ArgumentParser(object):
             print(exc)
             printUsage()
             exit(1)
-
-tunnel_log = open("/var/log/tunnelLog.log", "a")
-uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
-
-def log(str):
-    try:
-        tunnel_log.write(str + "\n")
-        tunnel_log.flush()
-    except:
-        pass
 
 def printUsage():
     sys.stderr.write( """\
@@ -274,30 +262,12 @@ for tunnel in settings.get('tunnels').get('list'):
     if tunnel.get('username') != None:
         username = tunnel.get('username')
     if tunnel.get('encryptedTunnelVpnPassword') != None:
+        password = tunnel.get('encryptedTunnelVpnPassword')
         try:
-            system_manager = Uvm().getUvmContext().systemManager()
-            if not system_manager:
-                log("System Manager is not available...")
-                continue
-            encryptedpassword = tunnel.get('encryptedTunnelVpnPassword')
-            log(f"Before decryption {encryptedpassword}")
-            print("Before decryption: %s" % encryptedpassword)
-            start_time = time.time()
-            password = system_manager.getDecryptedPassword(tunnel.get('encryptedTunnelVpnPassword'))
-
-            end_time = time.time()
-            time_taken = end_time - start_time
-            log(f"After decryption: {password}")
-            print("After decryption: %s" % password)
-            log(f"Time taken to decrypt the password: {time_taken:.2f} seconds")
-            print("Time taken to decrypt the password: %s seconds" % time_taken)
+            password = EncryptionUtil.execute_password_manager('-d', password)
         except Exception as e:
-            log(f"Encountered an error {e}")
-            print("Encountered an error %s" % e)
-
-
-    print("Decrypted password: %s" % password)
-    log(f"Decrypted password: {password}")
+            print(f"Unable to decrypt the password for  {tunnel.get('name')} due to: {e}")
+            raise e
 
     filename = parser.prefix + "@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-%i/auth.txt" % tunnel.get('tunnelId')
     try: os.makedirs(os.path.dirname(filename))
