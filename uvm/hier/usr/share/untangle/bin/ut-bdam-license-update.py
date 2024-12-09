@@ -1,6 +1,27 @@
 #!/usr/bin/python3 -u
 
 import subprocess
+import os
+import os.path
+import datetime
+
+bdamserver_log = open("/var/log/bdamserver.log", "a")
+
+def log(message, log_type="INFO"):
+    """Log to the log file with a timestamp and PID."""
+    try:
+        # Get the current timestamp
+        timestamp = datetime.datetime.now().strftime("%a %b %d %H:%M:%S %Y")
+        # Get the PID (Process ID)
+        pid = os.getpid()
+        # Construct the full log message
+        full_message = f"{timestamp} [{pid}] {log_type}: {message}"
+        
+        # Write to the log file
+        bdamserver_log.write(full_message + "\n")
+        bdamserver_log.flush()
+    except Exception as e:
+        pass
 
 def manage_service(service_name, command):
     """Manage the bdam service."""
@@ -14,23 +35,57 @@ def manage_service(service_name, command):
         )
 
         if command == 'status':
-            # Check if the service is active and running
-            return result.returncode == 0 and "active (running)" in result.stdout
+            if result.returncode == 0 and "active (running)" in result.stdout:
+                log(f"The service {service_name} is running.", f"INFO")
+                return True
+            else:
+                log(f"The service {service_name} is not running.", f"ERROR")
+                return False
+
         elif command == 'restart':
-            return result.returncode == 0
+            if result.returncode == 0:
+                log(f"The service {service_name} has been restarted.", f"INFO")
+                return True
+            else:
+                log(f"Failed to restart the service {service_name}.", f"ERROR")
+                return False
         
-        return False  # Invalid command case
+        # For any other commands
+        log(f"Invalid command: {command} for service {service_name}.", f"ERROR")
+        return False
 
     except Exception as e:
+        log(f"Error while managing service {service_name}: {str(e)}", f"ERROR")
         return False
 
 def get_license_from_curl():
-    # Run the curl command and get the latest license version
     """Get the latest license version."""
     try:
-        result = subprocess.run(['curl', '-s', 'https://downloads.untangle.com/bdam/config'], stdout=subprocess.PIPE, text=True)
-        return result.stdout.strip()
+        # Run curl command and capture both stdout and stderr
+        result = subprocess.run(
+            ['curl', '-s', '-w', '%{http_code}', 'https://downloads.untangle.com/bdam/config'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        # Check the HTTP status code
+        http_code = result.stdout[-3:]  
+        if http_code != '200':
+            log(f"Request failed with HTTP status code {http_code}. Please check the request.", f"ERROR")
+            return None
+
+        # If response is valid, return it
+        response = result.stdout[:-3].strip()  # Exclude the HTTP code from stdout
+        if response:
+            log(f"Latest License serial number {response}.", f"INFO")
+            return response
+        else:
+            log(f"Not able to retriew License serial number .", f"ERROR")
+            return None
+
     except subprocess.CalledProcessError as e:
+        log(f"Exception occured while getting the latest license .", f"ERROR")
         return None
 
 def update_license_in_file(file_path, new_license):
@@ -46,6 +101,7 @@ def update_license_in_file(file_path, new_license):
 
                 if current_license != new_license:
                     lines[i] = f"LicenseSerial={new_license}\n"  # Update the line with the new license
+                    log(f"Updated bdamserver.conf with latest License serial number  is {new_license}.", f"INFO")
 
                 break
 
