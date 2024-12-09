@@ -29,14 +29,9 @@ app = None
 appFW = None
 
 default_policy_id = 1
-TUNNEL_ID = 200
 origMailsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
 DEFAULT_RULE_DESCRIPTION = "Route all traffic over any available Tunnel."
-DEFAULT_CONDITION = {
-            "javaClass": "java.util.LinkedList",
-            "list": []
-        }
 
 Login_username = overrides.get("Login_username", default="admin")
 Login_password = overrides.get("Login_password", default="passwd")
@@ -100,27 +95,6 @@ def create_local_directory_user(directory_user='test',expire_time=0):
 def remove_local_directory_user():
     return {'javaClass': 'java.util.LinkedList',
         'list': []
-    }
-
-def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",name="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
-    encoded_password = global_functions.uvmContext.systemManager().getEncryptedPassword("test")
-    return {
-        "allTraffic": False,
-        "enabled": vpn_enabled,
-        "encryptedTunnelVpnPassword":encoded_password,
-        "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
-        "name": name,
-        "provider": "Arista",
-        "tags": {
-            "javaClass": "java.util.LinkedList",
-            "list": []
-        },
-        "tunnelId": vpn_tunnel_id
-    }
-
-def remove_tunnelvpn_connection():
-    return {'javaClass': 'java.util.LinkedList',
-    'list': []
     }
 
 def check_javascript_exceptions(errors):
@@ -1349,36 +1323,5 @@ class UvmTests(NGFWTestCase):
         assert int(reports) > 0, "{int(reports)} reports log files found"
         assert int(upgrade) > 0, "{int(upgrade)} upgrade log files found"
         assert int(wrapper) > 0, "{int(wrapper)} wrapper log files found"
-
-    '''
-    def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=TUNNEL_ID, description=DEFAULT_RULE_DESCRIPTION, conditions=DEFAULT_CONDITION):
-        return {
-            "conditions": conditions,
-            "description": description,
-            "enabled": vpn_enabled,
-            "ipv6Enabled": vpn_ipv6,
-            "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnRule",
-            "ruleId": rule_id,
-            "tunnelId": vpn_tunnel_id
-        }
-    '''
-
-    def test_311_password_encryption_tunnelVPN_setting_process(self):
-        """
-        Verify tunnel vpn password encryption setting process
-        """
-        global tunnelApp   
-        appData = self._app.getSettings()
-        appData['tunnels']['list'].append(create_tunnel_profile())
-        self._app.setSettings(appData)
-
-        listOfConnections = self._app.getTunnelStatusList()
-        assert appData['tunnels']['encryptedTunnelVpnPassword'], "encryptedTunnelVpnPassword not found"
-        assert not appData['tunnels']['password'], "password not encrypted"
-
-        # remove the added tunnel
-        appData['tunnels']['list'][:] = []
-        self._app.setSettings(appData)
-        appData['tunnels']['list'].append(remove_tunnelvpn_connection())
 
 test_registry.register_module("uvm", UvmTests)

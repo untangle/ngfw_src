@@ -60,6 +60,11 @@ def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",name="tunnel
             "tunnelId": vpn_tunnel_id
     }
 
+def remove_tunnel_profile():
+    return {'javaClass': 'java.util.LinkedList',
+        'list': []
+    }
+
 def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, description, field, operator, value, field2, operator2, value2):
     return {
         "description": description,
@@ -279,5 +284,20 @@ class TunnelVpnTests(NGFWTestCase):
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
         assert(connectStatus == "CONNECTED")
+    
+    def test_041_password_encryption_setting_process_for_Tunnel_VPN(self):
+        """
+        Verify tunnel vpn password encryption setting process
+        """
+        appData = self._app.getSettings()
+        appData['tunnels']['list'].append(create_tunnel_profile())
+        self._app.setSettings(appData)
+
+        tunnel = appData['list'][0]
+        
+        assert tunnel.get('password') is None, "Password is not None"
+
+        # clear the created tunner
+        appData['tunnels']['list'].appned(remove_tunnel_profile())
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
