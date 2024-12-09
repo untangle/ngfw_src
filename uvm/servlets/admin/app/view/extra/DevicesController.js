@@ -6,10 +6,10 @@ Ext.define('Ung.view.extra.DevicesController', {
     control: {
         '#': {
             deactivate: 'onDeactivate',
-            refresh: 'getDevices'
+            refresh: 'getDevicesSettings'
         },
         '#devicesgrid': {
-            afterrender: 'getDevices'
+            afterrender: 'getDevicesSettings'
         }
     },
 
@@ -17,7 +17,7 @@ Ext.define('Ung.view.extra.DevicesController', {
         view.destroy();
     },
 
-    getDevices: function () {
+    getDevicesSettings: function () {
         var me = this,
             v = me.getView(),
             vm = me.getViewModel(),
@@ -66,8 +66,12 @@ Ext.define('Ung.view.extra.DevicesController', {
 
     timestampColumns : [ "lastSessionTime" ],
 
-    saveDevicesSettings: function () {
-        var me = this, list = [], vm = me.getViewModel();
+    setDevicesSettings: function () {
+        var me = this, list = [], v = me.getView(), vm = me.getViewModel();
+
+        if (!Util.validateFields(v)) {
+            return;
+        }
 
         me.getView().query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -105,7 +109,7 @@ Ext.define('Ung.view.extra.DevicesController', {
 
         me.getView().setLoading(true);
         Rpc.asyncData('rpc.deviceTable.setDevicesSettings', vm.get('settings')).then(function() {
-            me.getDevices();
+            me.getDevicesSettings();
         }, function (ex) {
             Util.handleException(ex);
         }).always(function () {

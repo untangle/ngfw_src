@@ -143,8 +143,8 @@ public class DeviceTableImpl implements DeviceTable
     /**
      * Saves the settings to devices.js file
      * Checks if last save time is older than WAIT_BETWEEN_TWO_SAVES
-     * if lastSaveTimeCheck passed is true waits for remaining time else continues
-     * @param lastSaveTimeCheck if false, last save time check id skipped
+     * if lastSaveTimeCheck is true waits for remaining time else continues
+     * @param lastSaveTimeCheck if false, last save time check is skipped
      */
     public void saveDevicesSettings(boolean lastSaveTimeCheck) {
         // If we just recently saved, within 60 seconds wait.

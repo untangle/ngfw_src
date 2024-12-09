@@ -1,6 +1,7 @@
 Ext.define('Ung.view.extra.Devices', {
     extend: 'Ext.panel.Panel',
     xtype: 'ung.devices',
+    withValidation: true,
 
     /* requires-start */
     requires: [
@@ -34,9 +35,9 @@ Ext.define('Ung.view.extra.Devices', {
             allowDecimals: false,
             minValue: 1,
             maxValue: 999,
+            allowBlank: false,
+            blankText: 'You must provide a valid threshold.'.t(),
             labelWidth: 200,
-            // allowBlank: false,
-            // blankText: 'You must provide a valid threshold.'.t(),
             autoEl: {
                 tag: 'div',
                 'data-qtip': 'Specify the number of days of inactivity after which a device should be removed.'.t(),
@@ -275,7 +276,7 @@ Ext.define('Ung.view.extra.Devices', {
         xtype: 'button',
         text: 'Refresh'.t(),
         iconCls: 'fa fa-repeat',
-        handler: 'getDevices',
+        handler: 'getDevicesSettings',
         bind: {
             disabled: '{autoRefresh}'
         }
@@ -304,6 +305,6 @@ Ext.define('Ung.view.extra.Devices', {
     bbar: ['->', {
         text: '<strong>' + 'Save'.t() + '</strong>',
         iconCls: 'fa fa-floppy-o',
-        handler: 'saveDevicesSettings'
+        handler: 'setDevicesSettings'
     }]
 });
