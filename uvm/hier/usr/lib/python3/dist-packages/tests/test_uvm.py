@@ -31,7 +31,6 @@ appFW = None
 default_policy_id = 1
 origMailsettings = None
 test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
-DEFAULT_RULE_DESCRIPTION = "Route all traffic over any available Tunnel."
 
 Login_username = overrides.get("Login_username", default="admin")
 Login_password = overrides.get("Login_password", default="passwd")
