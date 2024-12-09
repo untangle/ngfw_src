@@ -129,6 +129,7 @@ public class DeviceTableImpl implements DeviceTable
         if (null != devicesSettings && newSettings.isAutoDeviceRemove()) {
             if (!devicesSettings.isAutoDeviceRemove() || devicesSettings.getAutoRemovalThreshold() != newSettings.getAutoRemovalThreshold()) {
                 devicesSettings.setAutoDeviceRemove(true);
+                devicesSettings.setAutoRemovalThreshold(newSettings.getAutoRemovalThreshold());
                 autoDeleteDevices(true);        // skip save as we will be saving the settings later in this method.
             }
         }
@@ -358,26 +359,30 @@ public class DeviceTableImpl implements DeviceTable
     private void loadSavedDevices() {
         try {
             this.deviceTable = new ConcurrentHashMap<>();
-            DevicesSettings settings = new DevicesSettings();       // Initialise default settings
+            DevicesSettings settings = null;       // Initialise default settings
             boolean writeFlag = false;
+            boolean oldSettings = false;
 
             /* In 17.4 we are updating devices.js structure from LinkedList type to DevicesSettings
              * On upgrade for the first time try block will throw ClassCastException.
              * In that case we need to load settings as LinkedList.
-             * This ClassCastException catch block can be removed in version 17.5
-             * and this method should be refactored
              */
             logger.info("Loading devices from file...");
             try {
                 settings = UvmContextFactory.context().settingsManager().load(DevicesSettings.class, DEVICES_SAVE_FILENAME);
             } catch (ClassCastException e) {
-                writeFlag = true;
-                LinkedList<DeviceTableEntry> savedEntries = UvmContextFactory.context().settingsManager().load(LinkedList.class, DEVICES_SAVE_FILENAME);
-                convertSettingsToV1(savedEntries, settings);
+                oldSettings = true;
+                logger.error("ClassCastException while reading devices settings file: ", e);
             } catch (Exception e) {
                 logger.error("Exception while reading devices settings file: ", e);
             }
-            if(null == settings) {
+
+            if (oldSettings) {
+                settings = readOldSettings();
+                writeFlag = true;
+            }
+
+            if (null == settings) {
                 // Fresh Install Write Default Settings
                 settings = new DevicesSettings();
                 writeFlag = true;
@@ -399,6 +404,27 @@ public class DeviceTableImpl implements DeviceTable
     }
 
     /**
+     * reads old devices settings (List of devices) and sets it to DevicesSettings
+     * called once for upgrade/backup restore scenarios
+     * @return {@link DevicesSettings}
+     */
+    @SuppressWarnings("unchecked")
+    private DevicesSettings readOldSettings() {
+        DevicesSettings settings = new DevicesSettings();;
+        LinkedList<DeviceTableEntry> savedEntries = null;
+        logger.info("Reading old settings file");
+        try {
+            savedEntries = UvmContextFactory.context().settingsManager().load(LinkedList.class, DEVICES_SAVE_FILENAME);
+        } catch (Exception e) {
+            logger.error("Exception while reading old devices settings file: ", e);
+        }
+        if(null != savedEntries)
+            settings.setDevices(savedEntries);
+        return settings;
+    }
+
+
+    /**
      * Updates the devices table from read settings devices
      * @param devices LinkedList of {@link DeviceTableEntry}
      */
@@ -411,17 +437,6 @@ public class DeviceTableImpl implements DeviceTable
                 this.deviceTable.put(entry.getMacAddress(), entry);
             });
         logger.info("Loaded devices from file. ({} entries)", deviceTable.size());
-    }
-
-    /**
-     * Adds old settings (List of devices) to new DevicesSettings object
-     * called once for upgrade/backup restore scenarios
-     * @param savedEntries LinkedList of {@link DeviceTableEntry}
-     * @param settings {@link DevicesSettings}
-     */
-    private void convertSettingsToV1(LinkedList<DeviceTableEntry> savedEntries, DevicesSettings settings) {
-        settings.setDevices(savedEntries);
-        settings.setVersion(1);
     }
 
     /**
