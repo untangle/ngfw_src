@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -18,9 +17,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,7 +57,8 @@ public class DeviceTableImpl implements DeviceTable
 
     private DevicesSettings devicesSettings;
 
-    private final Object lock = new Object();
+    private static final int MIN_THRESHOLD = 1;
+    private static final int MAX_THRESHOLD = 999;
     private final Runnable autoDeleteTask = () -> autoDeleteDevices(false);
     private final Pulse autoDeletePulse = new Pulse("auto-remove-devices", new Thread(autoDeleteTask), PERIODIC_REMOVE_DELAY);
 
@@ -102,7 +99,8 @@ public class DeviceTableImpl implements DeviceTable
      * @param newSettings {@link DevicesSettings}
      */
     public synchronized void setDevicesSettings(DevicesSettings newSettings) {
-        if (newSettings.isAutoDeviceRemove() && (newSettings.getAutoRemovalThreshold() < 1 || newSettings.getAutoRemovalThreshold() > 999))
+        if (newSettings.isAutoDeviceRemove() &&
+                (newSettings.getAutoRemovalThreshold() < MIN_THRESHOLD || newSettings.getAutoRemovalThreshold() > MAX_THRESHOLD))
             throw new IllegalArgumentException("Invalid auto device removal threshold");
 
         logger.info("Setting new device settings: {}", newSettings);
@@ -146,42 +144,38 @@ public class DeviceTableImpl implements DeviceTable
      * if lastSaveTimeCheck is true waits for remaining time else continues
      * @param lastSaveTimeCheck if false, last save time check is skipped
      */
-    public void saveDevicesSettings(boolean lastSaveTimeCheck) {
+    public synchronized void saveDevicesSettings(boolean lastSaveTimeCheck) {
         // If we just recently saved, within 60 seconds wait.
-        synchronized (lock) {
-            long currentTime = System.currentTimeMillis();
-            long timeSinceLastSave = currentTime - lastSaveTime;
-            long waitTime;
-            if (lastSaveTimeCheck && timeSinceLastSave < WAIT_BETWEEN_TWO_SAVES) {
-                logger.info("Saved recently, waiting...");
-                waitTime = WAIT_BETWEEN_TWO_SAVES - timeSinceLastSave;
-                try {
-                    lock.wait(waitTime);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Restore interrupted status
-                }
-            }
-            lastSaveTime = System.currentTimeMillis();
-            logger.info("lastSaveTime: {}", lastSaveTime);
+        long currentTime = System.currentTimeMillis();
+        long timeSinceLastSave = currentTime - lastSaveTime;
+        long waitTime;
+        if (lastSaveTimeCheck && timeSinceLastSave < WAIT_BETWEEN_TWO_SAVES) {
+            logger.info("Saved recently, waiting...");
+            waitTime = WAIT_BETWEEN_TWO_SAVES - timeSinceLastSave;
             try {
-                /* If this is the first time we're saving. Lookup any unknown MAC
-                 * vendors We only do this once so we don't flood the cloud server
-                */
-                if (lastSaveTime == 0)
-                    populateMacVendor();
-
-                LinkedList<DeviceTableEntry> list = getDevicesList();
-                this.devicesSettings.setDevices(list);
-
-                // Save the devices settings to devices.js file
-                logger.info("Saving devices settings to file");
-                UvmContextFactory.context().settingsManager().save(DEVICES_SAVE_FILENAME, this.devicesSettings, true, true);
-                logger.info("Saving devices to file... done");
-            } catch (Exception e) {
-                logger.error("Exception while saving the devices settings: ", e);
+                wait(waitTime);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Restore interrupted status
             }
-            // Notify other waiting threads
-            lock.notifyAll();
+        }
+        lastSaveTime = System.currentTimeMillis();
+        logger.info("lastSaveTime: {}", lastSaveTime);
+        try {
+            /* If this is the first time we're saving. Lookup any unknown MAC
+             * vendors We only do this once so we don't flood the cloud server
+            */
+            if (lastSaveTime == 0)
+                populateMacVendor();
+
+            LinkedList<DeviceTableEntry> list = getDevicesList();
+            this.devicesSettings.setDevices(list);
+
+            // Save the devices settings to devices.js file
+            logger.info("Saving devices settings to file");
+            UvmContextFactory.context().settingsManager().save(DEVICES_SAVE_FILENAME, this.devicesSettings, true, true);
+            logger.info("Saving devices to file... done");
+        } catch (Exception e) {
+            logger.error("Exception while saving the devices settings: ", e);
         }
     }
 
@@ -486,10 +480,7 @@ public class DeviceTableImpl implements DeviceTable
             deviceTable = deviceTable.entrySet()
                 .stream()
                 .filter(entry -> {
-                    long currentTime = System.currentTimeMillis();
-                    long lastSeen = entry.getValue().getLastSessionTime();
-                    long daysSinceLastSeen = (currentTime - lastSeen) / (24 * 60 * 60 * 1000); // Convert millis to days
-                    return daysSinceLastSeen < autoRemovalThreshold;
+                    return excludedFromRemoval(entry, autoRemovalThreshold);
                 })
                 .collect(Collectors.toConcurrentMap(
                         Map.Entry::getKey,
@@ -505,6 +496,20 @@ public class DeviceTableImpl implements DeviceTable
         } catch (Exception e) {
             logger.error("Exception while removing devices: ", e);
         }
+    }
+
+    /**
+     * Check if device table entry can be excluded from removal
+     * @param entry Map of {@link DeviceTableEntry}
+     * @param autoRemovalThreshold last seen threshold in days
+     * @return true if entry is to be retained else false
+     */
+    private static boolean excludedFromRemoval(Map.Entry<String, DeviceTableEntry> entry, int autoRemovalThreshold) {
+        if (null == entry.getValue()) return false;
+        long currentTime = System.currentTimeMillis();
+        long lastSeen = entry.getValue().getLastSessionTime();
+        long daysSinceLastSeen = (currentTime - lastSeen) / (24 * 60 * 60 * 1000); // Convert millis to days
+        return daysSinceLastSeen < autoRemovalThreshold;
     }
 
     /**

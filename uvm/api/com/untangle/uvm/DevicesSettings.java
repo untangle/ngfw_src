@@ -12,12 +12,13 @@ package com.untangle.uvm;
  /**
   * Modal class for Devices Settings
   */
+ @SuppressWarnings("serial")
  public class DevicesSettings implements Serializable, JSONString {
 
      private int version = 1;
      private LinkedList<DeviceTableEntry> devices = new LinkedList<>();
      private boolean autoDeviceRemove = false;
-     private int autoRemovalThreshold = 30;
+     private int autoRemovalThreshold = 30;         // In days
 
      /**
       * Get the version of settings
