@@ -326,28 +326,27 @@ class TunnelVpnTests(NGFWTestCase):
         filename1 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId200}/auth.txt"
         filename2 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId201}/auth.txt"
 
-        # If password is encrypted, it should be decrypted and saved in auth.txt file.
-        # If there is no password, then also auth.txt file get created with default password.
-        with open(filename1, 'r') as file:
-        # Read the entire content of the file into a variable
-            lines = file.readlines()
-            for line in lines:
-                line = line.strip()  # Remove newline or extra spaces
-                if len(lines) >= 2:
-                     # Store the second line into a variable
-                    second_line = lines[1].strip()  # Remove newline or extra spaces
-                    assert True is second_line, appData['tunnels']['list'][0]["password"]
+        second_line = None
+        with open(filename1, 'r') as file:        
+            file.seek(0)  # Reset the file pointer to the beginning of the file
+            lines = file.readlines()  # Now read the lines again
+            if len(lines) > 1:
+                second_line = lines[1].strip()  # Removing trailing newline
+            else:
+                print("The file doesn't contain a second line.")
+        assert second_line == "testing", f"Expected 'testing' but got '{second_line}'"
 
-        with open(filename2, 'r') as file:
-        # Read the entire content of the file into a variable
-            lines = file.readlines()
-            for line in lines:
-                if len(lines) >= 2:
-                    # Store the second line into a variable
-                    second_line = lines[1].strip()  # Remove newline or extra spaces
-                    assert True is second_line, "password"
-
+        with open(filename2, 'r') as file:        
+            file.seek(0)  # Reset the file pointer to the beginning of the file
+            lines = file.readlines()  # Now read the lines again
+            if len(lines) > 1:
+                second_line = lines[1].strip()  # Removing trailing newline
+            else:
+                print("The file doesn't contain a second line.")
+        assert second_line == "password", f"Expected 'testing' but got '{second_line}'"
+        
         # clear the created tunnel
         appData['tunnels']['list'].append(remove_tunnel_profile())
+        self._app.setSettings(appData)
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
