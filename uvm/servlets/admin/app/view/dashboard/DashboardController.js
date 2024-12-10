@@ -156,7 +156,8 @@ Ext.define('Ung.view.dashboard.DashboardController', {
                 if(Util.isDestroyed(vm)){
                     return;
                 }
-                vm.set('deviceCount', result.devices.list.length);
+                if (result && result.devices)
+                    vm.set('deviceCount', result.devices.list.length);
             },function(ex){
                 Util.handleException(ex);
             });
