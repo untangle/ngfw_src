@@ -649,34 +649,6 @@ Ext.define('Ung.util.Util', {
         return true;
     },
 
-    validateFields: function (form) {
-        invalidFields = [];
-
-        form.query('field').forEach(function (field) {
-            if(field.isHidden()){
-                return;
-            }
-            if(field.up('*{isHidden()==true}')){
-                return;
-            }
-            if(field.up().tab && field.up().tab.isHidden() == true ){
-                return;
-            }
-            if(field.initialConfig.bind && field.$hasBinds == undefined){
-                return;
-            }
-            if( field.isValid() == false){
-                invalidFields.push({ label: field.getFieldLabel(), error: field.getActiveError() });
-            }
-        });
-
-        if (invalidFields.length > 0) {
-            Util.invalidFormToast(invalidFields);
-            return false;
-        }
-        return true;
-    },
-
     urlValidator2: function (url) {
         if (url.match(/^([^:]+):\/\// ) !== null) {
             return 'Site cannot contain URL protocol.'.t();

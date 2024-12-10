@@ -69,7 +69,7 @@ Ext.define('Ung.view.extra.DevicesController', {
     setDevicesSettings: function () {
         var me = this, list = [], v = me.getView(), vm = me.getViewModel();
 
-        if (!Util.validateFields(v)) {
+        if (!me.validateFields(v)) {
             return;
         }
 
@@ -115,5 +115,33 @@ Ext.define('Ung.view.extra.DevicesController', {
         }).always(function () {
             me.getView().setLoading(false);
         });
-    }
+    },
+
+    validateFields: function (form) {
+        invalidFields = [];
+
+        form.query('field').forEach(function (field) {
+            if(field.isHidden()){
+                return;
+            }
+            if(field.up('*{isHidden()==true}')){
+                return;
+            }
+            if(field.up().tab && field.up().tab.isHidden() == true ){
+                return;
+            }
+            if(field.initialConfig.bind && field.$hasBinds == undefined){
+                return;
+            }
+            if( field.isValid() == false){
+                invalidFields.push({ label: field.getFieldLabel(), error: field.getActiveError() });
+            }
+        });
+
+        if (invalidFields.length > 0) {
+            Util.invalidFormToast(invalidFields);
+            return false;
+        }
+        return true;
+    },
 });

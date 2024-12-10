@@ -59,6 +59,8 @@ public class DeviceTableImpl implements DeviceTable
 
     private static final int MIN_THRESHOLD = 1;
     private static final int MAX_THRESHOLD = 999;
+    public static final String ORGANIZATION = "Organization";
+    public static final String MAC = "MAC";
     private final Runnable autoDeleteTask = () -> autoDeleteDevices(false);
     private final Pulse autoDeletePulse = new Pulse("auto-remove-devices", new Thread(autoDeleteTask), PERIODIC_REMOVE_DELAY);
 
@@ -194,9 +196,9 @@ public class DeviceTableImpl implements DeviceTable
                     JSONArray macAddressVendor = lookupMacVendor(entry.getMacAddress());
                     if(macAddressVendor.length() > 0) {
                         JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
-                        if (macAddrVendor.has(Constants.MAC) && macAddrVendor.has(Constants.ORGANIZATION)
-                                && StringUtils.isNotBlank(macAddrVendor.getString(Constants.ORGANIZATION)))
-                            entry.setMacVendor(macAddrVendor.getString(Constants.ORGANIZATION));
+                        if (macAddrVendor.has(MAC) && macAddrVendor.has(ORGANIZATION)
+                                && StringUtils.isNotBlank(macAddrVendor.getString(ORGANIZATION)))
+                            entry.setMacVendor(macAddrVendor.getString(ORGANIZATION));
                     }
                 } catch (Exception e) {
                     logger.error("Error while fetching mac vendor for address {}", entry.getMacAddress(), e);
@@ -452,8 +454,8 @@ public class DeviceTableImpl implements DeviceTable
                 JSONArray macAddressVendor = lookupMacVendor(newEntry.getMacAddress());
                 if(macAddressVendor.length() > 0){
                     JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
-                    if (macAddrVendor.has(Constants.MAC) && macAddrVendor.has(Constants.ORGANIZATION) && StringUtils.isNotBlank(macAddrVendor.getString(Constants.ORGANIZATION)))
-                        newEntry.setMacVendor(macAddrVendor.getString(Constants.ORGANIZATION));
+                    if (macAddrVendor.has(MAC) && macAddrVendor.has(ORGANIZATION) && StringUtils.isNotBlank(macAddrVendor.getString(ORGANIZATION)))
+                        newEntry.setMacVendor(macAddrVendor.getString(ORGANIZATION));
                 }
             }
             deviceTable.put(newEntry.getMacAddress(), newEntry);

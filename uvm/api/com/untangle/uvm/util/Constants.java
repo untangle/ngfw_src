@@ -31,8 +31,4 @@ public class Constants {
     public static final String WEB_FILTER_EVENT_RGX = "*WebFilterEvent*";
     public static final String APP_CONTROL_LOG_EVENT_RGX = "*ApplicationControlLogEvent*";
 
-    // Commonly used keys
-    public static final String ORGANIZATION = "Organization";
-    public static final String MAC = "MAC";
-
 }
