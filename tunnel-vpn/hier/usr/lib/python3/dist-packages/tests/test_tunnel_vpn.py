@@ -347,6 +347,5 @@ class TunnelVpnTests(NGFWTestCase):
         
         # clear the created tunnel
         appData['tunnels']['list'].append(remove_tunnel_profile())
-        self._app.setSettings(appData)
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
