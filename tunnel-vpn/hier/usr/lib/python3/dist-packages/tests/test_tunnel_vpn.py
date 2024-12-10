@@ -306,11 +306,11 @@ class TunnelVpnTests(NGFWTestCase):
         """
         appData = self._app.getSettings()
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1",password="test"))
-        self._app.setSettings(appData)
-        tunnel_with_password = appData['tunnels']['list'][0]
-
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel2"))
         self._app.setSettings(appData)
+
+        appData = self._app.getSettings()
+        tunnel_with_password = appData['tunnels']['list'][0]
         tunnel_with_no_password = appData['tunnels']['list'][1]
 
         assert tunnel_with_password.get('encryptedTunnelVpnPassword') is not None, "encryptedTunnelVpnPassword is missing"
