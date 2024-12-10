@@ -60,6 +60,41 @@ def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",name="tunnel
             "tunnelId": vpn_tunnel_id
     }
 
+def create_tunnel_profile_for_password_encrypt(vpn_enabled=True,provider="tunnel-Arista",password=None,name="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
+    encoded_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+    if  (password):
+        return {
+            "allTraffic": False,
+            "enabled": vpn_enabled,
+            "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
+            "name": name,
+            "encryptedTunnelVpnPassword": encoded_password, 
+            "provider": "Arista",
+            "tags": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "tunnelId": vpn_tunnel_id
+        }
+    else:
+        return {
+            "allTraffic": False,
+            "enabled": vpn_enabled,
+            "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
+            "name": name,
+            "provider": "Arista",
+            "tags": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "tunnelId": vpn_tunnel_id
+    }
+
+def remove_tunnel_profile():
+    return {'javaClass': 'java.util.LinkedList',
+        'list': []
+    }
+
 def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, description, field, operator, value, field2, operator2, value2):
     return {
         "description": description,
@@ -279,5 +314,27 @@ class TunnelVpnTests(NGFWTestCase):
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
         assert(connectStatus == "CONNECTED")
+    
+    def test_041_password_encryption_setting_process_for_Tunnel_VPN(self):
+        """
+        Verify tunnel vpn password encryption setting process
+        """
+        appData = self._app.getSettings()
+        appData['tunnels']['list'].append(create_tunnel_profile_for_password_encrypt(name="Tunnel1",password="test"))
+        self._app.setSettings(appData)
+        tunnel_with_password = appData['tunnels']['list'][0]
+
+        appData['tunnels']['list'].append(create_tunnel_profile_for_password_encrypt(name="Tunnel2"))
+        self._app.setSettings(appData)
+        tunnel_with_no_password = appData['tunnels']['list'][1]
+
+        assert tunnel_with_password.get('encryptedTunnelVpnPassword') is not None, "encryptedTunnelVpnPassword is missing"
+        assert tunnel_with_password.get('password') is None, "Password is not None"
+
+        assert tunnel_with_no_password.get('encryptedTunnelVpnPassword') is None, "encryptedTunnelVpnPassword is not none"
+        assert tunnel_with_no_password.get('password') is None, "Password is not None"
+
+        # clear the created tunnel
+        appData['tunnels']['list'].append(remove_tunnel_profile())
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
