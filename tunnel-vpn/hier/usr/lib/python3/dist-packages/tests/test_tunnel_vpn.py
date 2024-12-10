@@ -46,29 +46,14 @@ def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=T
             "tunnelId": vpn_tunnel_id
     }
 
-def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",name="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
-    return {
-            "allTraffic": False,
-            "enabled": vpn_enabled,
-            "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
-            "name": name,
-            "provider": "Arista",
-            "tags": {
-                "javaClass": "java.util.LinkedList",
-                "list": []
-            },
-            "tunnelId": vpn_tunnel_id
-    }
-
-def create_tunnel_profile_for_password_encrypt(vpn_enabled=True,provider="tunnel-Arista",password=None,name="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
-    encoded_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
-    if  (password):
+def create_tunnel_profile(vpn_enabled=True,provider="tunnel-Arista",password= None,name="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
+    if (password):
         return {
             "allTraffic": False,
             "enabled": vpn_enabled,
             "javaClass": "com.untangle.app.tunnel_vpn.TunnelVpnTunnelSettings",
             "name": name,
-            "encryptedTunnelVpnPassword": encoded_password, 
+            "password": password, 
             "provider": "Arista",
             "tags": {
                 "javaClass": "java.util.LinkedList",
@@ -88,7 +73,7 @@ def create_tunnel_profile_for_password_encrypt(vpn_enabled=True,provider="tunnel
                 "list": []
             },
             "tunnelId": vpn_tunnel_id
-    }
+        }
 
 def remove_tunnel_profile():
     return {'javaClass': 'java.util.LinkedList',
@@ -320,11 +305,11 @@ class TunnelVpnTests(NGFWTestCase):
         Verify tunnel vpn password encryption setting process
         """
         appData = self._app.getSettings()
-        appData['tunnels']['list'].append(create_tunnel_profile_for_password_encrypt(name="Tunnel1",password="test"))
+        appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1",password="test"))
         self._app.setSettings(appData)
         tunnel_with_password = appData['tunnels']['list'][0]
 
-        appData['tunnels']['list'].append(create_tunnel_profile_for_password_encrypt(name="Tunnel2"))
+        appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel2"))
         self._app.setSettings(appData)
         tunnel_with_no_password = appData['tunnels']['list'][1]
 

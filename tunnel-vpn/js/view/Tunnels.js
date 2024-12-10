@@ -191,11 +191,8 @@ Ext.define('Ung.apps.tunnel-vpn.view.Tunnels', {
                 var me = this,
                 vm = me.up('window').getViewModel(),
                 record = vm.get('record');
-
-                if(record){
-                    if (!record.get('password') && record.get('encryptedTunnelVpnPassword')){
-                        me.setValue(Util.getDecryptedPassword(record.get('encryptedTunnelVpnPassword')));
-                    }
+                if(record && !record.get('password') && record.get('encryptedTunnelVpnPassword')){
+                    me.setValue(Util.getDecryptedPassword(record.get('encryptedTunnelVpnPassword')));
                 }
             }
         },
