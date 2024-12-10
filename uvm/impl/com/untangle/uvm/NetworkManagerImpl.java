@@ -173,6 +173,11 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = readSettings;
             updateNetworkReservations(readSettings);
             configureInterfaceSettingsArray();
+            
+            // setSettings will set encrypted password and remove original password
+            if(this.networkSettings.getVersion() < 11){
+                this.networkSettings.setVersion(11);
+            }
 
             if ( this.networkSettings.getVersion() < currentVersion ) {
                 convertSettings();
