@@ -651,16 +651,30 @@ class BandwidthControlTests(NGFWTestCase):
 
     def test_101_qos_enabled(self):
         """
-        Verify if qosEnabled is disabled and if the app is started then qosEnabled is enabled
+        Verify qos enablement only in case when valid QoS values are set
         """
-        global networkSettings,appName, remote_app, test_var, appName
+        # Test with valid QoS value
         self._app.stop()
-        networkSettings = uvmContext.networkManager().getNetworkSettings()
+        orig_network_settings = uvmContext.networkManager().getNetworkSettings()
+        networkSettings = copy.deepcopy(orig_network_settings)
         networkSettings['qosSettings']['qosEnabled']=False
         uvmContext.networkManager().setNetworkSettings(networkSettings)
         self._app.start()
         networkSettings = uvmContext.networkManager().getNetworkSettings()
         assert(networkSettings['qosSettings']['qosEnabled'])
+        # Test with invalid QoS value
+        self._app.stop()
+        networkSettings['qosSettings']['qosEnabled']=False
+        i = 0
+        for interface in networkSettings['interfaces']['list']:
+            if interface['isWan']:
+                networkSettings['interfaces']['list'][i]['downloadBandwidthKbps']=0
+                networkSettings['interfaces']['list'][i]['uploadBandwidthKbps']=0
+            i += 1
+        uvmContext.networkManager().setNetworkSettings(networkSettings)
+        self._app.start()
+        networkSettings = uvmContext.networkManager().getNetworkSettings()
+        assert networkSettings['qosSettings']['qosEnabled'] == False, "Test Failed: The Qos Enabled for invalid values."        
 
     @classmethod
     def final_extra_tear_down(cls):
