@@ -151,12 +151,12 @@ Ext.define('Ung.view.dashboard.DashboardController', {
         var vm = this.getViewModel();
         vm.set('stats', Ext.getStore('stats').first());
 
-        Rpc.asyncData('rpc.deviceTable.getDevices')
+        Rpc.asyncData('rpc.deviceTable.getDevicesSettings')
             .then( function(result){
                 if(Util.isDestroyed(vm)){
                     return;
                 }
-                vm.set('deviceCount', result.list.length);
+                vm.set('deviceCount', result.devices.list.length);
             },function(ex){
                 Util.handleException(ex);
             });

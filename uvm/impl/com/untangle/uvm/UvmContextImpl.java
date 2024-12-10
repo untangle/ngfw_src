@@ -30,7 +30,6 @@ import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppManager;
 import com.untangle.uvm.app.AppSettings.AppState;
-import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.util.IOUtil;
@@ -1669,7 +1668,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             if ( hostTableImpl != null )
                 hostTableImpl.saveHosts();
             if ( deviceTableImpl != null )
-                deviceTableImpl.saveDevices();
+                deviceTableImpl.saveDevicesSettings(true);
         } catch (Exception exn) {
             logger.error("Failed to save hosts/devices", exn);
         }

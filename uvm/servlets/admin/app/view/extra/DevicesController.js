@@ -6,10 +6,10 @@ Ext.define('Ung.view.extra.DevicesController', {
     control: {
         '#': {
             deactivate: 'onDeactivate',
-            refresh: 'getDevices'
+            refresh: 'getDevicesSettings'
         },
         '#devicesgrid': {
-            afterrender: 'getDevices'
+            afterrender: 'getDevicesSettings'
         }
     },
 
@@ -17,9 +17,10 @@ Ext.define('Ung.view.extra.DevicesController', {
         view.destroy();
     },
 
-    getDevices: function () {
+    getDevicesSettings: function () {
         var me = this,
             v = me.getView(),
+            vm = me.getViewModel(),
             grid = me.getView().down('#devicesgrid'),
             filters = grid.getStore().getFilters(),
             store = Ext.getStore('devices');
@@ -41,10 +42,11 @@ Ext.define('Ung.view.extra.DevicesController', {
         }
 
         me.getView().setLoading(true);
-        Rpc.asyncData('rpc.deviceTable.getDevices')
+        Rpc.asyncData('rpc.deviceTable.getDevicesSettings')
             .then(function(result) {
                 me.getView().setLoading(false);
-                store.loadData(result.list);
+                vm.set('settings', result);
+                store.loadData(result.devices.list);
                 if(store.getSorters().items.length == 0){
                     store.sort('macAddress', 'ASC');
                 }
@@ -64,8 +66,12 @@ Ext.define('Ung.view.extra.DevicesController', {
 
     timestampColumns : [ "lastSessionTime" ],
 
-    saveDevices: function () {
-        var me = this, list = [];
+    setDevicesSettings: function () {
+        var me = this, list = [], v = me.getView(), vm = me.getViewModel();
+
+        if (!me.validateFields(v)) {
+            return;
+        }
 
         me.getView().query('ungrid').forEach(function (grid) {
             var store = grid.getStore();
@@ -99,16 +105,43 @@ Ext.define('Ung.view.extra.DevicesController', {
             });
         });
 
+        vm.set('settings.devices.list', list);
+
         me.getView().setLoading(true);
-        Rpc.asyncData('rpc.deviceTable.setDevices', {
-            javaClass: 'java.util.LinkedList',
-            list: list
-        }).then(function() {
-            me.getDevices();
+        Rpc.asyncData('rpc.deviceTable.setDevicesSettings', vm.get('settings')).then(function() {
+            me.getDevicesSettings();
         }, function (ex) {
             Util.handleException(ex);
         }).always(function () {
             me.getView().setLoading(false);
         });
-    }
+    },
+
+    validateFields: function (form) {
+        invalidFields = [];
+
+        form.query('field').forEach(function (field) {
+            if(field.isHidden()){
+                return;
+            }
+            if(field.up('*{isHidden()==true}')){
+                return;
+            }
+            if(field.up().tab && field.up().tab.isHidden() == true ){
+                return;
+            }
+            if(field.initialConfig.bind && field.$hasBinds == undefined){
+                return;
+            }
+            if( field.isValid() == false){
+                invalidFields.push({ label: field.getFieldLabel(), error: field.getActiveError() });
+            }
+        });
+
+        if (invalidFields.length > 0) {
+            Util.invalidFormToast(invalidFields);
+            return false;
+        }
+        return true;
+    },
 });
