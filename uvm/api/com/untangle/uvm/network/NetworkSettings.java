@@ -24,7 +24,7 @@ public class NetworkSettings implements Serializable, JSONString
     public static final String PUBLIC_URL_HOSTNAME = "hostname";
     public static final String PUBLIC_URL_ADDRESS_AND_PORT = "address_and_port";
 
-    private Integer version;
+    private Integer version = Integer.valueOf(11);
 
     private List<InterfaceSettings> interfaces = null;
     private List<InterfaceSettings> virtualInterfaces = null;
