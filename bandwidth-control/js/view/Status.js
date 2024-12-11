@@ -48,19 +48,19 @@ Ext.define('Ung.apps.bandwidthcontrol.view.Status', {
                 bind: {
                     hidden: '{isConfigured}'
                 }
+            },  {
+                xtype: 'component',
+                html: '<i class="fa fa-exclamation-triangle fa-red"></i><span style="color: red;">' + ' WARNING: Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled.'.t() + '</span>',
+                hidden: true,
+                bind: {
+                    hidden: '{qosEnabled}'
+                }
             }, {
                 xtype: 'component',
                 html: 'Bandwidth Control is configured'.t(),
                 hidden: true,
                 bind: {
                     hidden: '{!isConfigured}'
-                }
-            }, {
-                xtype: 'component',
-                html: 'Bandwidth Control is enabled, but QoS is not enabled. Bandwidth Control requires QoS to be enabled.'.t(),
-                hidden: true,
-                bind: {
-                    hidden: '{qosEnabled}'
                 }
             }, {
                 xtype: 'button',
