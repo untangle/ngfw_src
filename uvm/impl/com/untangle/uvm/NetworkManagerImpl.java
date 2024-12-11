@@ -174,7 +174,6 @@ public class NetworkManagerImpl implements NetworkManager
             updateNetworkReservations(readSettings);
             configureInterfaceSettingsArray();
 
-
             if ( this.networkSettings.getVersion() < currentVersion ) {
                 convertSettings();
             }
