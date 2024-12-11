@@ -665,12 +665,10 @@ class BandwidthControlTests(NGFWTestCase):
         # Test with invalid QoS value
         self._app.stop()
         networkSettings['qosSettings']['qosEnabled']=False
-        i = 0
         for interface in networkSettings['interfaces']['list']:
             if interface['isWan']:
-                networkSettings['interfaces']['list'][i]['downloadBandwidthKbps']=0
-                networkSettings['interfaces']['list'][i]['uploadBandwidthKbps']=0
-            i += 1
+                interface['downloadBandwidthKbps']=0
+                interface['uploadBandwidthKbps']=0
         uvmContext.networkManager().setNetworkSettings(networkSettings)
         self._app.start()
         networkSettings = uvmContext.networkManager().getNetworkSettings()
