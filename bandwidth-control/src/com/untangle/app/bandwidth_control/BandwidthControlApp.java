@@ -134,9 +134,14 @@ public class BandwidthControlApp extends AppBase
         if(networkSettings.getQosSettings().getQosEnabled()){
             return;
         }
-        networkSettings.getQosSettings().setQosEnabled(true);
-        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
-        logger.info("QosEnabled set to true");
+        boolean isValidQosValue = networkSettings.getInterfaces().stream().anyMatch(network -> network.getIsWan() && network.getDownloadBandwidthKbps() > 0 && network.getUploadBandwidthKbps() > 0);
+        if(isValidQosValue){
+            networkSettings.getQosSettings().setQosEnabled(true);
+            UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+            logger.info("QosEnabled set to true");
+        }else{
+            logger.error("bandwidth control would not be able to enable QoS. Please configure valid Qos values.");
+        }
     }
 
     /**

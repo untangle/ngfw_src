@@ -10,6 +10,7 @@ Ext.define('Ung.apps.bandwidthcontrol.MainController', {
 
     afterRender: function () {
         this.getSettings();
+        this.fetchQosData();
     },
 
     // use a callback function needed for config wizard
