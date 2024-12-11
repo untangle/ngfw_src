@@ -46,7 +46,7 @@ def create_tunnel_rule(vpn_enabled=True,vpn_ipv6=True,rule_id=50,vpn_tunnel_id=T
             "tunnelId": vpn_tunnel_id
     }
 
-def create_tunnel_profile(username=None,vpn_enabled=True,provider="tunnel-Arista",password= None,name="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
+def create_tunnel_profile(username=None,vpn_enabled=True,provider="tunnel-Arista",password=None,name="tunnel-Arista",vpn_tunnel_id=TUNNEL_ID):
     if (password):
         return {
             "allTraffic": False,
@@ -75,11 +75,6 @@ def create_tunnel_profile(username=None,vpn_enabled=True,provider="tunnel-Arista
             },
             "tunnelId": vpn_tunnel_id
         }
-
-def remove_tunnel_profile():
-    return {'javaClass': 'java.util.LinkedList',
-        'list': []
-    }
 
 def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, description, field, operator, value, field2, operator2, value2):
     return {
@@ -301,12 +296,12 @@ class TunnelVpnTests(NGFWTestCase):
         assert(connected)
         assert(connectStatus == "CONNECTED")
     
-    def test_041_password_encryption_setting_process_for_Tunnel_VPN(self):
+    def test_50_password_encryption_setting_process_for_Tunnel_VPN(self):
         """
         Verify tunnel vpn password encryption setting process
         """
         appData = self._app.getSettings()
-        appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1",password="testing",vpn_tunnel_id="200",username="test"))
+        appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1",password="testing",vpn_tunnel_id="202",username="test"))
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel2",vpn_tunnel_id="201"))
         self._app.setSettings(appData)
 
@@ -320,10 +315,10 @@ class TunnelVpnTests(NGFWTestCase):
         assert tunnel_with_no_password.get('encryptedTunnelVpnPassword') is None, "encryptedTunnelVpnPassword is not none"
         assert tunnel_with_no_password.get('password') is None, "Password is not None"
 
-        tunnelId200 = appData['tunnels']['list'][0]["tunnelId"]
+        tunnelId202 = appData['tunnels']['list'][0]["tunnelId"]
         tunnelId201 = appData['tunnels']['list'][1]["tunnelId"]
 
-        filename1 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId200}/auth.txt"
+        filename1 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId202}/auth.txt"
         filename2 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId201}/auth.txt"
 
         second_line = None
@@ -346,6 +341,7 @@ class TunnelVpnTests(NGFWTestCase):
         assert second_line == "password", f"Expected 'testing' but got '{second_line}'"
         
         # clear the created tunnel
-        appData['tunnels']['list'].append(remove_tunnel_profile())
+        appData['tunnels']['list'][:] = []
+        self._app.setSettings(appData)
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)

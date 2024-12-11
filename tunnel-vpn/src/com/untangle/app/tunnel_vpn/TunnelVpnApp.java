@@ -304,6 +304,7 @@ public class TunnelVpnApp extends AppBase
             // setSettings will set encrypted password and remove original password
             if ( readSettings.getVersion() < 2 ) {
                 readSettings.setVersion(2);
+                this.setSettings(readSettings);
             }
             /**
              * If the settings file date is newer than the system files, re-sync
