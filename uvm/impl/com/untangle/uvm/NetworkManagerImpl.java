@@ -97,7 +97,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
-    private Integer currentVersion = 10;
+    private Integer currentVersion = 11;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
@@ -174,10 +174,6 @@ public class NetworkManagerImpl implements NetworkManager
             updateNetworkReservations(readSettings);
             configureInterfaceSettingsArray();
 
-            // setSettings will set encrypted password and remove original password
-            if ( this.networkSettings.getVersion() < 11 ) {
-                this.networkSettings.setVersion(11);
-            }
 
             if ( this.networkSettings.getVersion() < currentVersion ) {
                 convertSettings();
