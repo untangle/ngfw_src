@@ -97,7 +97,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
-    private Integer currentVersion = 10;
+    private Integer currentVersion = 11;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
