@@ -8,6 +8,7 @@ Ext.define('Ung.config.network.Interface', {
     layout: 'border',
     modal: true,
     withValidation: true,
+    itemId: 'interface',
 
     items: [{
         region: 'north',
@@ -208,7 +209,28 @@ Ext.define('Ung.config.network.Interface', {
                     { boxLabel: 'Auto (DHCP)'.t(), inputValue: 'AUTO', bind: { disabled: '{!intf.isWan}'} },
                     { boxLabel: 'Static'.t(),      inputValue: 'STATIC' },
                     { boxLabel: 'PPPoE'.t(),       inputValue: 'PPPOE', bind: { disabled: '{!intf.isWan}'} }
-                ]
+                ],
+                listeners: {
+                    change: function (rg, newValue, oldValue) {
+                        if (oldValue !== newValue) {
+                            var me = this,
+                                window = me.up('window[itemId=interface]');
+                            if (window) {
+                                var intf = window.getViewModel().get('intf');
+                                if (newValue !== "PPPOE") {
+                                    // clear the plaintext
+                                    intf.set('v4PPPoEPassword', null);
+                                } else {
+                                    // If we have encrypted password then get the corresponding plaintext from backend
+                                    if (intf.get('v4PPPoEPasswordEncrypted') && !intf.get('v4PPPoEPassword')) {
+                                        intf.set('v4PPPoEPassword', Util.getDecryptedPassword(intf.get('v4PPPoEPasswordEncrypted')));
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                },
             }, '->', {
                 xtype: 'button',
                 text: 'Renew DHCP Lease'.t(),

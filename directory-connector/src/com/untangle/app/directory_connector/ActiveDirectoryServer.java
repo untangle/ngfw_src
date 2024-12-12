@@ -3,8 +3,12 @@
  */
 package com.untangle.app.directory_connector;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.json.JSONString;
+
+import com.untangle.uvm.PasswordUtil;
+
 import java.util.List;
 import java.util.LinkedList;
 
@@ -19,6 +23,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
 {
     private String superuser;
     private String superuserPass;
+    private String encrSupUserPass;
     private String domain;
     private String ldapHost;
     private boolean ldapSecure;
@@ -62,6 +67,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
         this.ldapSecure = ldapSecure;
         this.ouFilters = new LinkedList<>();
         this.azure = azure;
+        this.encryptSuperUserPass();
     }
 
     /**
@@ -125,6 +131,36 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
      *      superuser password
      */
     public void setSuperuserPass(String pass) { this.superuserPass = pass; }
+
+    /**
+     * Returns encrypted superuser password.
+     *
+     * @return
+     *      encrypted superuser password.
+     */
+    public String getEncrSupUserPass() {
+        return encrSupUserPass; 
+    }
+    /**
+     * Sets encrypted superuser password.
+     *
+     * @param encrSupUserPass
+     *      encrypted superuser password
+     */
+    public void setEncrSupUserPass(String encrSupUserPass) { 
+        this.encrSupUserPass = encrSupUserPass;
+    }
+
+    /**
+     * Gets encrypted password using superuserPass sets it to encrSupUserPass
+     * Sets superuserPass to null
+     */
+    public void encryptSuperUserPass() { 
+        if(StringUtils.isNotBlank(this.superuserPass)) {
+            this.encrSupUserPass = PasswordUtil.getEncryptPassword(superuserPass);
+            this.superuserPass = null;
+        }
+    }
 
     /**
      * Returns domain name

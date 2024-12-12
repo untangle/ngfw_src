@@ -24,6 +24,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
+import com.untangle.uvm.PasswordUtil;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
@@ -99,6 +100,13 @@ public class TunnelVpnApp extends AppBase
          * Save the settings
          */
         String appID = this.getAppSettings().getId().toString();
+        for(TunnelVpnTunnelSettings tunnelSettings : newSettings.getTunnels()) {
+            if(tunnelSettings.getPassword() != null){
+                // encrypt the plaintext password of password to encryptedTunnelVpnPassword
+                tunnelSettings.setEncryptedTunnelVpnPassword(PasswordUtil.getEncryptPassword(tunnelSettings.getPassword()));
+                tunnelSettings.setPassword(null);// remove cleartext
+            }
+        }
         try {
             UvmContextFactory.context().settingsManager().save( System.getProperty("uvm.settings.dir") + "/" + "tunnel-vpn/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
@@ -293,6 +301,11 @@ public class TunnelVpnApp extends AppBase
         } else {
             logger.info("Loading Settings...");
 
+            // setSettings will set encrypted password and remove original password
+            if ( readSettings.getVersion() < 2 ) {
+                readSettings.setVersion(2);
+                this.setSettings(readSettings);
+            }
             /**
              * If the settings file date is newer than the system files, re-sync
              * them

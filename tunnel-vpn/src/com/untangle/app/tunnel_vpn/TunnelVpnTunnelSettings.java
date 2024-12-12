@@ -25,6 +25,7 @@ public class TunnelVpnTunnelSettings implements JSONString, Serializable
     private String provider = null;
     private String username = null;
     private String password = null;
+    private String encryptedTunnelVpnPassword = null; /* encrypted password of password*/
 
     private Integer boundInterfaceId = null; /* 0 and null mean any interface */
     
@@ -49,6 +50,9 @@ public class TunnelVpnTunnelSettings implements JSONString, Serializable
 
     public String getPassword() { return password; }
     public void setPassword(String newValue) { this.password = newValue; }
+
+    public String getEncryptedTunnelVpnPassword() { return encryptedTunnelVpnPassword; }
+    public void setEncryptedTunnelVpnPassword(String newValue) { this.encryptedTunnelVpnPassword = newValue; }
 
     public boolean getNat() { return nat; }
     public void setNat(boolean newValue) { this.nat = newValue; }

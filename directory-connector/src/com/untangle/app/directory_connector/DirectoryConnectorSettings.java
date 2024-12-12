@@ -12,7 +12,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DirectoryConnectorSettings implements java.io.Serializable, JSONString
 {
-    private int version = 3;
+    private int version = 4;
 
     private boolean apiEnabled = false;
     private String apiSecretKey = null;
