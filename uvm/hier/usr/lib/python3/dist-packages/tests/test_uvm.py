@@ -96,6 +96,33 @@ def find_files(dir_path, search_string):
             license_files.append(os.path.join(root, filename))
     return license_files
 
+def buildDevicesSettings(devicesList=[]):
+    return {
+        "autoDeviceRemove": False,
+        "autoRemovalThreshold": 30,
+        "devices": {
+            "javaClass": "java.util.LinkedList",
+            "list": devicesList
+        },
+        "javaClass": "com.untangle.uvm.DevicesSettings",
+        "version": 1
+    }
+
+def buildDevice(hostname="client", interfaceId=0, lastSessionTime=0, macAddress="e7:b5:a0:3a:cd:49", macVendor=None, tagsList=[], tagsString=""):
+    return {
+        "hostnameLastKnown": hostname,
+        "interfaceId": interfaceId,
+        "javaClass": "com.untangle.uvm.DeviceTableEntry",
+        "lastSessionTime": lastSessionTime,
+        "macAddress": macAddress,
+        "macVendor": macVendor,
+        "tags": {
+            "javaClass": "java.util.LinkedList",
+            "list": tagsList
+        },
+        "tagsString": tagsString
+    }
+
 class TestTotp:
     """
     Static class for managing TOTP for time-based OTP
@@ -1252,5 +1279,53 @@ class UvmTests(NGFWTestCase):
         assert int(reports) > 0, "{int(reports)} reports log files found"
         assert int(upgrade) > 0, "{int(upgrade)} upgrade log files found"
         assert int(wrapper) > 0, "{int(wrapper)} wrapper log files found"
+
+    def test_315_auto_devices_remove(self):
+        """ Test to validate auto device removal functionality """
+        # Get old devices settings
+        oldDevicesSettings = global_functions.uvmContext.deviceTable().getDevicesSettings()
+        
+        # Initialise new settings
+        newDevicesSettings = buildDevicesSettings()
+
+        # Set new settings with a device having last seen = current - 6 days 
+        # and a device with last seen = current - 4 days
+        removalMacAddress = "e7:b5:a0:3a:cd:49"
+        retainedMacAddress = "46:2f:66:0e:03:92"
+        removalDeviceTime = int(round(time.time() * 1000)) - 6 * 24 * 60 * 60 * 1000
+        retainedDeviceTime = int(round(time.time() * 1000)) - 4 * 24 * 60 * 60 * 1000
+        removalDevice = buildDevice(interfaceId=2, lastSessionTime=removalDeviceTime, macAddress=removalMacAddress)
+        retainedDevice = buildDevice(interfaceId=2, lastSessionTime=retainedDeviceTime, macAddress=retainedMacAddress)
+        
+        newDevicesSettings['devices']['list'].append(removalDevice)
+        newDevicesSettings['devices']['list'].append(retainedDevice)
+
+        global_functions.uvmContext.deviceTable().setDevicesSettings(newDevicesSettings)
+
+        # Fetch settings and assert if both devices are added in settings
+        settings = global_functions.uvmContext.deviceTable().getDevicesSettings()
+        devices = [ device for device in settings['devices']['list'] if device["macAddress"] == removalMacAddress ]
+        assert(len(devices) == 1)
+        devices = [ device for device in settings['devices']['list'] if device["macAddress"] == retainedMacAddress ]
+        assert(len(devices) == 1)
+
+        time.sleep(1)
+        
+        # Set auto removal threshold to 5 days
+        newDevicesSettings["autoDeviceRemove"] = True
+        newDevicesSettings["autoRemovalThreshold"] = 5
+
+        # Set settings should trigger device removal as we are changing the config property
+        global_functions.uvmContext.deviceTable().setDevicesSettings(newDevicesSettings)
+
+        # Fetch Settings and check only removalDevice is removed from settings
+        settings = global_functions.uvmContext.deviceTable().getDevicesSettings()
+        devices = [ device for device in settings['devices']['list'] if device["macAddress"] == removalMacAddress ]
+        assert(len(devices) == 0)
+        devices = [ device for device in settings['devices']['list'] if device["macAddress"] == retainedMacAddress ]
+        assert(len(devices) == 1)
+
+        # Set old settings
+        global_functions.uvmContext.deviceTable().setDevicesSettings(oldDevicesSettings)
 
 test_registry.register_module("uvm", UvmTests)
