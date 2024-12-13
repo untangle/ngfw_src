@@ -11,6 +11,14 @@ Ext.define('Ung.config.network.view.DynamicRouting', {
         margin: 10
     },
 
+    // html: '',
+    // listeners: {
+    //     afterrender: function (view) {
+    //         view.setHtml('<iframe src="/vue/NgfwDns" style="width: 100%; height: 100%; border: none;"></iframe>');
+    //     },
+    // },
+
+
     items:[{
         xtype: 'checkbox',
         fieldLabel: 'Dynamic Routing Enabled'.t(),

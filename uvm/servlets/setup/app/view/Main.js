@@ -27,6 +27,13 @@ Ext.define('Ung.Setup.Main', {
     listeners: {
         afterrender: 'onAfterRender'
     },
+    
+    // html: '',
+    // listeners: {
+    //     afterrender: function (view) {
+    //         view.setHtml('<iframe src="/vue/setupwizard" style="width: 100%; height: 100%; border: none;"></iframe>');
+    //     },
+    // },
     controller: {
 
         onAfterRender: function () {

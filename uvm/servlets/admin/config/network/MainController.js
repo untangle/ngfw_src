@@ -1620,7 +1620,13 @@ Ext.define('Ung.config.network.MainController', {
                                 i++;
                             });
                         }
+                        
                     }
+
+                    
+
+
+
                 },
                 enableColumnHide: false,
                 sortableColumns: false,
