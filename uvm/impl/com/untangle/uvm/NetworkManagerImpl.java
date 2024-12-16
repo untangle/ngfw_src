@@ -118,7 +118,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NetworkSettings readSettings = null;
-        boolean qosDisableSettingChnages = false;
+        boolean qosDisableSettingChanges = false;
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new NetworkTestDownloadHandler() );
 
@@ -176,8 +176,8 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = readSettings;
             updateNetworkReservations(readSettings);
             configureInterfaceSettingsArray();
-            //NGFW-14917 : To diasble QoS in buggy enviroment need to set updated setting in same version too.
-            if ( this.networkSettings.getVersion() < currentVersion || qosDisableSettingChnages) {
+            //NGFW-14917 : To disable QoS, we need to apply the updated settings in the same version.
+            if ( this.networkSettings.getVersion() < currentVersion || qosDisableSettingChanges) {
                 convertSettings();
             }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
