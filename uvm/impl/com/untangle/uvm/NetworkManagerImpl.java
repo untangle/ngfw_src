@@ -165,6 +165,11 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
         else {
+            boolean isValidQosValue = readSettings.getInterfaces().stream().anyMatch(network -> network.getIsWan() && network.getDownloadBandwidthKbps() > 0 && network.getUploadBandwidthKbps() > 0);
+            if(!isValidQosValue){
+                readSettings.getQosSettings().setQosEnabled(false);
+                logger.debug("QosEnabled set to false. Please configure valid value.");
+            }
             checkForNewDevices( readSettings );
             checkForRemovedDevices( readSettings );
             
