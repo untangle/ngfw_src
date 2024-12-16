@@ -118,6 +118,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NetworkSettings readSettings = null;
+        boolean qosDisableSettingChnages = false;
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new NetworkTestDownloadHandler() );
 
@@ -165,10 +166,9 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
         else {
-            boolean isValidQosValue = readSettings.getInterfaces().stream().anyMatch(network -> network.getIsWan() && network.getDownloadBandwidthKbps() > 0 && network.getUploadBandwidthKbps() > 0);
-            if(!isValidQosValue){
+            if(readSettings.getQosSettings().getQosEnabled() && !(readSettings.getInterfaces().stream().anyMatch(network -> network.getIsWan() && network.getDownloadBandwidthKbps() > 0 && network.getUploadBandwidthKbps() > 0))){
                 readSettings.getQosSettings().setQosEnabled(false);
-                logger.debug("QosEnabled set to false.");
+                qosDisableSettingChnages = true;
             }
             checkForNewDevices( readSettings );
             checkForRemovedDevices( readSettings );
@@ -176,8 +176,8 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = readSettings;
             updateNetworkReservations(readSettings);
             configureInterfaceSettingsArray();
-
-            if ( this.networkSettings.getVersion() < currentVersion ) {
+            //NGFW-14917 : To diasble QoS in buggy enviroment need to set updated setting in same version too.
+            if ( this.networkSettings.getVersion() < currentVersion || qosDisableSettingChnages) {
                 convertSettings();
             }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
