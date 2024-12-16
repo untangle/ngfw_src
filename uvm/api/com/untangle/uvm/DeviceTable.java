@@ -3,9 +3,6 @@
  */
 package com.untangle.uvm;
 
-import java.util.Map;
-import java.util.LinkedList;
-
 import org.json.JSONArray;
 
 /**
@@ -17,16 +14,14 @@ public interface DeviceTable
 
     public DeviceTableEntry addDevice( String macAddress );
 
-    public Map<String, DeviceTableEntry> getDeviceTable();
+    public DevicesSettings getDevicesSettings();
 
-    public LinkedList<DeviceTableEntry> getDevices();
-
-    public void setDevices( LinkedList<DeviceTableEntry> devices );
+    public void setDevicesSettings(DevicesSettings newSettings);
 
     public DeviceTableEntry getDevice( String macAddress );
     
     public JSONArray lookupMacVendor( String macAddress );
 
-    public void saveDevices();
+    public void saveDevicesSettings(boolean lastSaveTimeCheck);
 }
 
