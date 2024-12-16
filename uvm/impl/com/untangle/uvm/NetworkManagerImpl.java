@@ -168,7 +168,7 @@ public class NetworkManagerImpl implements NetworkManager
         else {
             if(readSettings.getQosSettings().getQosEnabled() && !(readSettings.getInterfaces().stream().anyMatch(network -> network.getIsWan() && network.getDownloadBandwidthKbps() > 0 && network.getUploadBandwidthKbps() > 0))){
                 readSettings.getQosSettings().setQosEnabled(false);
-                qosDisableSettingChnages = true;
+                qosDisableSettingChanges = true;
             }
             checkForNewDevices( readSettings );
             checkForRemovedDevices( readSettings );
