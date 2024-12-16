@@ -118,6 +118,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         NetworkSettings readSettings = null;
+        boolean qosDisableSettingChanges = false;
 
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new NetworkTestDownloadHandler() );
 
@@ -165,14 +166,18 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
         else {
+            if(readSettings.getQosSettings().getQosEnabled() && !(readSettings.getInterfaces().stream().anyMatch(network -> network.getIsWan() && network.getDownloadBandwidthKbps() > 0 && network.getUploadBandwidthKbps() > 0))){
+                readSettings.getQosSettings().setQosEnabled(false);
+                qosDisableSettingChanges = true;
+            }
             checkForNewDevices( readSettings );
             checkForRemovedDevices( readSettings );
             
             this.networkSettings = readSettings;
             updateNetworkReservations(readSettings);
             configureInterfaceSettingsArray();
-
-            if ( this.networkSettings.getVersion() < currentVersion ) {
+            //NGFW-14917 : To disable QoS, we need to apply the updated settings in the same version.
+            if ( this.networkSettings.getVersion() < currentVersion || qosDisableSettingChanges) {
                 convertSettings();
             }
             logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
