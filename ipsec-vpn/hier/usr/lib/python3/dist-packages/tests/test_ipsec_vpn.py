@@ -34,14 +34,11 @@ IPSEC_HOST_LAN_IP = overrides.get("IPSEC_HOST_LAN_IP", default="192.168.235.96")
 IPSEC_PC_LAN_IP = overrides.get("IPSEC_PC_LAN_IP", default="192.168.235.83")
 IPSEC_HOST_NAME = overrides.get("IPSEC_HOST_NAME", default="ipsecsite.untangle.int")
 IPSEC_CONFIGURED_HOST_IPS = overrides.get("IPSEC_CONFIGURED_HOST_IPS", default=
-                        [('10.112.0.134','192.168.14.1','192.168.14.0/24'), # ATS
-                        ('10.112.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
-                        ('10.112.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
+                        [('10.112.13.36','192.168.10.1','192.168.10.1/24'), # ATS
                         ('10.112.56.89','10.112.56.89','10.112.56.15/32'),  # QA 3 Bridged
-                        ('10.112.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
-                        ('10.112.56.57','192.168.4.1','192.168.4.0/24'),    # QA box .57
-                        ('10.112.56.58','192.168.12.1','192.168.12.0/24'),  # QA box .58
-                        ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box .59
+                        ('10.112.56.57','192.168.10.1','192.168.10.0/24'),  # QA box .57
+                        ('10.112.56.58','192.168.10.1','192.168.10.0/24'),  # QA box .58
+                        ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box Dual .59
 )
 
 default_policy_id = 1
@@ -52,9 +49,12 @@ tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
 
+local_host_ip = None
+local_host_lan_ip = None
+
 Remote_ngfw = overrides.get("Remote_ngfw", default={
-        "serverAddress": "192.168.1.17",
-        "adminPassword": "admin123"
+        "serverAddress": IPSEC_HOST,
+        "adminPassword": "passwd"
 })
 
 def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip=None, local_lan_ip=None, local_lan_range=None):
@@ -62,6 +62,7 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
     Create an ipsec tunnel settings entry.
     If the Local values are not defined, use the WAN address to search for them from IPSEC_CONFIGURED_HOST_IPS.
     """
+    global local_host_ip, local_host_lan_ip
     if ( local_ip is None or
          local_lan_ip is None or
          local_lan_range is None ):
@@ -75,6 +76,8 @@ def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip
                     local_lan_ip = host_config[1]
                 if local_lan_range is None:
                     local_lan_range = host_config[2]
+                local_host_ip = local_ip
+                local_host_lan_ip = local_lan_ip
                 break
 
         if ( local_ip is None or
@@ -808,7 +811,7 @@ class IPsecTests(NGFWTestCase):
 
         # Configure local tunnel with remote any
         ipsec_settings = self._app.getSettings()
-        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan="192.168.57.100/24" , local_ip="active_wan_address", local_lan_ip="192.168.2.1", local_lan_range="192.168.2.1/24")]
+        ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan=IPSEC_HOST_LAN)]
         self._app.setSettings(ipsec_settings)
 
         # Configure IPSec on remote NGFW
@@ -821,13 +824,14 @@ class IPsecTests(NGFWTestCase):
             remote_app = remote_uvm_context.appManager().instantiate(appName, default_policy_id)
         remote_app.start()
 
+        
         remote_ipsec_settings = remote_app.getSettings()
-        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="192.168.1.6", remote_lan="192.168.2.1/24" , local_ip="active_wan_address", local_lan_ip="192.168.57.100", local_lan_range="192.168.57.100/24")]
+        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=local_host_ip, remote_lan=local_host_lan_ip)]
         remote_app.setSettings(remote_ipsec_settings)
         time.sleep(10)
 
         # Add pingAddress in local NGFW tunnel
-        ipsec_settings["tunnels"]["list"][0]["pingAddress"] = "192.168.57.100"
+        ipsec_settings["tunnels"]["list"][0]["pingAddress"] = IPSEC_HOST_LAN_IP
         self._app.setSettings(ipsec_settings)
         time.sleep(40)
 
