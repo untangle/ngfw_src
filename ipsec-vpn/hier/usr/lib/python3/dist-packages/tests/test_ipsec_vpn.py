@@ -38,7 +38,7 @@ IPSEC_CONFIGURED_HOST_IPS = overrides.get("IPSEC_CONFIGURED_HOST_IPS", default=
                         ('10.112.56.89','10.112.56.89','10.112.56.15/32'),  # QA 3 Bridged
                         ('10.112.56.57','192.168.10.1','192.168.10.0/24'),  # QA box .57
                         ('10.112.56.58','192.168.10.1','192.168.10.0/24'),  # QA box .58
-                        ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box Dual .59
+                        ('10.112.56.59','192.168.10.1','192.168.10.0/24')] # QA box Dual .59
 )
 
 default_policy_id = 1
@@ -804,10 +804,11 @@ class IPsecTests(NGFWTestCase):
         lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
         assert lan_client_ping_result is True, "reached remote lan client"
 
-    def test_081_any_remote_tunnel_ping(self):
+    def test_082_any_remote_tunnel_ping(self):
         """
         Verify ipsec tunnel with any remote does't ping pingAddress and generate Tunnel Connection Events
         """
+        raise unittest.SkipTest("Test test_081_any_remote_tunnel_ping deletes all the static entries in the target IPsec box and breaks all the other IPsec tests ")
 
         # Configure local tunnel with remote any
         ipsec_settings = self._app.getSettings()
