@@ -38,6 +38,7 @@ Ext.define('Ung.config.local-directory.MainController', {
 
             vm.set('usersData', users);
             vm.set('systemSettings', result[1]);
+            me.getOrignalPasswd();
             v.setLoading(false);
             vm.set('panel.saveDisabled', false);
         }, function(ex) {
@@ -46,6 +47,16 @@ Ext.define('Ung.config.local-directory.MainController', {
                 v.setLoading(false);
             }
         });
+    },
+
+    getOrignalPasswd: function() { 
+        var vm = this.getViewModel();
+        encryptedPassword = vm.get('systemSettings.radiusProxyEncryptedPassword');
+        if(encryptedPassword != null && encryptedPassword != "")
+        {
+            password  = Util.getDecryptedPassword(encryptedPassword);
+            vm.set('systemSettings.radiusProxyPassword', password);
+        }
     },
 
     saveSettings: function () {

@@ -25,6 +25,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.NetspaceManager;
 import com.untangle.uvm.NetspaceManager.NetworkSpace;
+import com.untangle.uvm.PasswordUtil;
 import com.untangle.uvm.NetspaceManager.IPVersion;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
@@ -50,7 +51,7 @@ import com.untangle.uvm.vnet.PipelineConnector;
 public class OpenVpnAppImpl extends AppBase
 {
 
-    private static final Integer SETTINGS_CURRENT_VERSION = 1;
+    private static final Integer SETTINGS_CURRENT_VERSION = 2;
 
     private final Logger logger = LogManager.getLogger(getClass());
 
@@ -291,6 +292,11 @@ public class OpenVpnAppImpl extends AppBase
         sanitizeSettings(newSettings);
 
         /**
+         * encrypt the password of remote server stroed in new Settings
+         */
+        setEncryptedPassword(newSettings);
+
+        /**
          * Save the settings
          */
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
@@ -348,6 +354,22 @@ public class OpenVpnAppImpl extends AppBase
             cleanServerSettings();
         } catch (Exception exn) {
             logger.warn("Exception during client/server cleanup", exn);
+        }
+    }
+
+    /**
+     * Encrypt the password for Remote Servers
+     *
+     * @param settings
+     *      Settings to convert.
+     */
+    private void setEncryptedPassword( OpenVpnSettings settings ) {
+        List<OpenVpnRemoteServer> remoteServers = settings.getRemoteServers();
+        for(OpenVpnRemoteServer server : remoteServers) {
+            if(server.getAuthPassword() != null){
+                server.setRemoteServerEncryptedPassword(PasswordUtil.getEncryptPassword(server.getAuthPassword()));
+                server.setAuthPassword(null);
+            }
         }
     }
 

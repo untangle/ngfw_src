@@ -33,6 +33,7 @@ import java.util.zip.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -56,7 +57,7 @@ import com.untangle.uvm.util.StringUtil;
  */
 public class SystemManagerImpl implements SystemManager
 {
-    private static final int SETTINGS_VERSION = 4;
+    private static final int SETTINGS_VERSION = 5;
     private static final String ZIP_FILE = "system_logs.zip";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
@@ -92,12 +93,12 @@ public class SystemManagerImpl implements SystemManager
 
     private int downloadTotalFileCount;
     private int downloadCurrentFileCount;
-    private String downloadCurrentFileProgress = "";
-    private String downloadCurrentFileRate = "";
+    private String downloadCurrentFileProgress = StringUtils.EMPTY;
+    private String downloadCurrentFileRate = StringUtils.EMPTY;
 
     private Calendar currentCalendar = Calendar.getInstance();
 
-    private String SettingsFileName = "";
+    private String SettingsFileName = StringUtils.EMPTY;
 
     private boolean isUpgrading = false;
     private boolean skipDiskCheck = false;
@@ -127,6 +128,10 @@ public class SystemManagerImpl implements SystemManager
             logger.warn("No settings found - Initializing new settings.");
             this.setSettings(defaultSettings(), false);
         } else {
+            if(readSettings.getRadiusProxyPassword() != null){
+                readSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(readSettings.getRadiusProxyPassword()));
+                readSettings.setRadiusProxyPassword(null);
+            }
             this.settings = readSettings;
 
             if (this.settings.getVersion() < SETTINGS_VERSION) {
@@ -251,6 +256,26 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
+    * Get decrypted passowrd from encrypted password
+    *
+    * @param encryptedPassword
+    * @return password
+    */
+    public String getDecryptedPassword(String encryptedPassword){
+        return PasswordUtil.getDecryptPassword(encryptedPassword);
+    }
+
+    /**
+    * Get encrypted password from password
+    *
+    * @param password
+    * @return encrypted password
+    */
+    public String getEncryptedPassword(String password){
+        return PasswordUtil.getEncryptPassword(password);
+    }
+
+    /**
      * Set the settings
      * 
      * @param newSettings
@@ -267,6 +292,10 @@ public class SystemManagerImpl implements SystemManager
         /**
          * Save the settings
          */
+        if(dirtyRadiusFields){
+            newSettings.setRadiusProxyEncryptedPassword(PasswordUtil.getEncryptPassword(newSettings.getRadiusProxyPassword()));
+            newSettings.setRadiusProxyPassword(null);
+        }
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
             settingsManager.save(this.SettingsFileName, newSettings);

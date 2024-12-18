@@ -43,6 +43,7 @@ import org.jabsorb.serializer.UnmarshallException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -96,7 +97,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
-    private Integer currentVersion = 10;
+    private Integer currentVersion = 11;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
@@ -1782,12 +1783,15 @@ public class NetworkManagerImpl implements NetworkManager
          */
         int pppCount = 0;
         for ( InterfaceSettings intf : interfacesSettings ) {
-            if ( !InterfaceSettings.ConfigType.DISABLED.equals( intf.getConfigType() ) &&
-                 InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType() ) ) {
+            if (!InterfaceSettings.ConfigType.DISABLED.equals( intf.getConfigType()) && InterfaceSettings.V4ConfigType.PPPOE.equals( intf.getV4ConfigType())){
                 // save the old system dev (usuallyy physdev or sometimse vlan dev as root dev)
                 intf.setV4PPPoERootDev(intf.getSystemDev());
                 intf.setSystemDev("ppp" + pppCount);
                 intf.setSymbolicDev("ppp" + pppCount);
+                if(intf.getV4PPPoEPassword() != null){
+                    intf.setV4PPPoEPasswordEncrypted(PasswordUtil.getEncryptPassword(intf.getV4PPPoEPassword()));
+                    intf.setV4PPPoEPassword(null);
+                }
                 pppCount++;
             }
         }

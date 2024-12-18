@@ -34,14 +34,11 @@ IPSEC_HOST_LAN_IP = overrides.get("IPSEC_HOST_LAN_IP", default="192.168.235.96")
 IPSEC_PC_LAN_IP = overrides.get("IPSEC_PC_LAN_IP", default="192.168.235.83")
 IPSEC_HOST_NAME = overrides.get("IPSEC_HOST_NAME", default="ipsecsite.untangle.int")
 IPSEC_CONFIGURED_HOST_IPS = overrides.get("IPSEC_CONFIGURED_HOST_IPS", default=
-                        [('10.112.0.134','192.168.14.1','192.168.14.0/24'), # ATS
-                        ('10.112.56.49','192.168.10.49','192.168.10.0/24'), # QA 1
-                        ('10.112.56.61','192.168.10.61','192.168.10.0/24'), # QA 2
+                        [('10.112.13.36','192.168.10.1','192.168.10.1/24'), # ATS
                         ('10.112.56.89','10.112.56.89','10.112.56.15/32'),  # QA 3 Bridged
-                        ('10.112.56.94','192.168.10.94','192.168.10.0/24'), # QA 4 Dual WAN
-                        ('10.112.56.57','192.168.4.1','192.168.4.0/24'),    # QA box .57
-                        ('10.112.56.58','192.168.12.1','192.168.12.0/24'),  # QA box .58
-                        ('10.112.56.59','192.168.10.59','192.168.10.0/24')] # QA box .59
+                        ('10.112.56.57','192.168.10.1','192.168.10.0/24'),  # QA box .57
+                        ('10.112.56.58','192.168.10.1','192.168.10.0/24'),  # QA box .58
+                        ('10.112.56.59','192.168.10.1','192.168.10.0/24')] # QA box Dual .59
 )
 
 default_policy_id = 1
@@ -807,10 +804,11 @@ class IPsecTests(NGFWTestCase):
         lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
         assert lan_client_ping_result is True, "reached remote lan client"
 
-    def test_081_any_remote_tunnel_ping(self):
+    def test_082_any_remote_tunnel_ping(self):
         """
         Verify ipsec tunnel with any remote does't ping pingAddress and generate Tunnel Connection Events
         """
+        raise unittest.SkipTest("Test test_081_any_remote_tunnel_ping deletes all the static entries in the target IPsec box and breaks all the other IPsec tests ")
 
         # Configure local tunnel with remote any
         ipsec_settings = self._app.getSettings()

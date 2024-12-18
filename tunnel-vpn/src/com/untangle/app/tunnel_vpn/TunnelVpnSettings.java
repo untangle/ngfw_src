@@ -17,7 +17,7 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class TunnelVpnSettings implements Serializable, JSONString
 {
-    private Integer version = Integer.valueOf(1);
+    private Integer version = Integer.valueOf(2);
 
     private List<TunnelVpnTunnelSettings> servers = new LinkedList<>();
 

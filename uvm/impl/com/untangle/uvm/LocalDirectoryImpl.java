@@ -15,6 +15,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.security.MessageDigest;
@@ -99,9 +100,16 @@ public class LocalDirectoryImpl implements LocalDirectory
     public String getRadiusProxyStatus()
     {
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
-        String command = (FREERADIUS_PROXY_SCRIPT + " \"" + systemSettings.getRadiusProxyUsername() + "\" \"" + systemSettings.getRadiusProxyPassword() + "\"");
+        String userPassword;
+        try{
+            userPassword = getRadiusProxyOriginalPassword(systemSettings);
+        }catch (PasswordUtil.CryptoProcessException exn) { 
+            logger.error("Exception occured while fetching original password", exn);
+            return "Unable to decrypt the encrypted password for AD server" + systemSettings.getRadiusProxyServer();
+        }
+        String command = String.format("%s \"%s\" \"%s\"", FREERADIUS_PROXY_SCRIPT, systemSettings.getRadiusProxyUsername(), userPassword);
 
-        return UvmContextFactory.context().execManager().execOutput(command);
+        return UvmContextFactory.context().execManager().execOutput(false, command);
     }
 
     /**
@@ -113,6 +121,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     public ExecManagerResult addRadiusComputerAccount()
     {
         SystemSettings systemSettings = UvmContextFactory.context().systemManager().getSettings();
+        String userPassword;
 
         // The hostname and workgroup must NOT be the same or the samba tools
         // will throw all kinds of obscure errors about memory allocation when
@@ -129,14 +138,19 @@ public class LocalDirectoryImpl implements LocalDirectory
         } catch (java.net.UnknownHostException exn) {
             return new ExecManagerResult(1, "Unable to resolve the IP address of the AD Server " + systemSettings.getRadiusProxyServer());
         } catch (Exception exn) { }
-
+        try{
+            userPassword = getRadiusProxyOriginalPassword(systemSettings);
+        }catch (PasswordUtil.CryptoProcessException exn) { 
+            logger.error("Exception occured while fetching original password", exn);
+            return new ExecManagerResult(1, "Unable to decrypt the encrypted password of AD server " + systemSettings.getRadiusProxyServer());
+        }
         String command = ("/usr/bin/net ads --no-dns-updates join");
-        command += (" -U \"" + systemSettings.getRadiusProxyUsername() + "%" + systemSettings.getRadiusProxyPassword() + "\"");
+        command = String.format(" -U \"%s%%%s\"", systemSettings.getRadiusProxyUsername(), userPassword);
         command += (" -S " + systemSettings.getRadiusProxyServer());
         command += (" osName=\"Untangle NG Firewall\"");
         command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
 
-        ExecManagerResult result =  UvmContextFactory.context().execManager().exec(command);
+        ExecManagerResult result =  UvmContextFactory.context().execManager().exec(command, false, false, false);
 
         // NGFW-13595 The winbind service must be restarted after we create
         // the computer account because it requires the SID that gets created
@@ -146,6 +160,21 @@ public class LocalDirectoryImpl implements LocalDirectory
         }
 
         return result;
+    }
+    /**
+     * This method used to fetch the radius proxy original ppassword
+     *
+     * @param systemSettings
+     *        The system Settings 
+     * @return original Radius Proxy password
+     * @throws PasswordUtil.CryptoProcessException if the decrypted password is `null`, indicating a decryption failure.
+     */
+    private String getRadiusProxyOriginalPassword(SystemSettings systemSettings) throws PasswordUtil.CryptoProcessException{
+        String userPassword = PasswordUtil.getDecryptPassword(systemSettings.getRadiusProxyEncryptedPassword());
+        if (userPassword == null) {
+            throw new PasswordUtil.CryptoProcessException("Got null as decryptedPassword");
+        }
+        return userPassword;
     }
 
     /**
@@ -260,8 +289,13 @@ public class LocalDirectoryImpl implements LocalDirectory
             if (username.equals(user.getUsername())) {
                 // if (password.equals(user.getPassword()) && !accountExpired(user))
                 //     return true;
+                //Check for the records which still contains PasswordBase64Hash
                 String base64 = calculateBase64Hash(password);
-                if (base64 != null && base64.equals(user.getPasswordBase64Hash()) && !accountExpired(user)) return true;
+                if(StringUtils.isNotBlank(user.getPasswordBase64Hash())){
+                    if (base64 != null && base64.equals(user.getPasswordBase64Hash()) && !accountExpired(user)) return true;
+                }
+                String encryptedPassword = PasswordUtil.getEncryptPassword(password);
+                if (encryptedPassword != null && encryptedPassword.equals(user.getEncryptedPassword()) && !accountExpired(user)) return true;
                 String md5 = calculateMd5Hash(password);
                 if (md5 != null && md5.equals(user.getPasswordMd5Hash()) && !accountExpired(user)) return true;
                 String sha = calculateShaHash(password);
@@ -413,13 +447,17 @@ public class LocalDirectoryImpl implements LocalDirectory
             else usersSeen.add(user.getUsername());
 
             /**
-             * Set the other hashes has changed and we must recalculate the
+             * Set the encrypted passowrd and other hashes has changed and we must recalculate the values
              */
-            String password = getPasswordFromBase64Hash(user.getPasswordBase64Hash());
-            user.setPasswordShaHash(calculateShaHash(password));
-            user.setPasswordMd5Hash(calculateMd5Hash(password));
+            if(StringUtils.isNotBlank(user.getPasswordBase64Hash())){ 
+                String password = getPasswordFromBase64Hash(user.getPasswordBase64Hash());
+                user.setPasswordShaHash(calculateShaHash(password));
+                user.setPasswordMd5Hash(calculateMd5Hash(password));
+                user.setEncryptedPassword(PasswordUtil.getEncryptPassword(password));
+                user.setPasswordBase64Hash(null);
+                user.setPassword(null);
+            }
         }
-
         saveUsersList(users);
     }
 
@@ -432,8 +470,8 @@ public class LocalDirectoryImpl implements LocalDirectory
     public void addUser(LocalDirectoryUser user)
     {
         LinkedList<LocalDirectoryUser> users = this.getUsers();
-        user.setPasswordBase64Hash(calculateBase64Hash(user.getPassword()));
-        user.setPassword(""); //remove cleartext
+        user.setEncryptedPassword(PasswordUtil.getEncryptPassword(user.getPassword()));
+        user.setPassword(null); //remove password
         users.add(user);
 
         this.saveUsersList(users);
@@ -580,6 +618,8 @@ public class LocalDirectoryImpl implements LocalDirectory
         // Read the settings from file
         try {
             users = (LinkedList<LocalDirectoryUser>) settingsManager.load(LinkedList.class, LOCAL_DIRECTORY_SETTINGS_FILE);
+            //For backup restore, user record needs to be set with encrypted password only
+            setUsers(users);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Unable to read localDirectory file: ", e);
         }
@@ -618,8 +658,11 @@ public class LocalDirectoryImpl implements LocalDirectory
             auth.write(FILE_DISCLAIMER);
 
             for (LocalDirectoryUser user : list) {
-                byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
-                String userPassword = new String(rawPassword);
+                String userPassword = getLocalUserOriginalPass(user);
+                if (userPassword == null) {
+                    logger.warn("Error while creating entry in XAUTH secrets file for user : {}" , user.getUsername());
+                    continue;
+                }
                 auth.write(user.getUsername() + " : XAUTH 0x" + stringHexify(userPassword) + "\n");
                 auth.write(user.getUsername() + " : EAP 0x" + stringHexify(userPassword) + "\n");
             }
@@ -642,6 +685,24 @@ public class LocalDirectoryImpl implements LocalDirectory
                 }
             }
         }
+    }
+    /**
+     * This method is used to fetch the original local user password form base64 and encrypted password
+     *
+     * @param user
+     *        The local directory user
+     * @return
+     *        Original password
+     */
+    private String getLocalUserOriginalPass(LocalDirectoryUser user){
+        String userPassword;
+        if(StringUtils.isNotBlank(user.getPasswordBase64Hash())){
+            byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
+            userPassword = new String(rawPassword);
+        }else{
+            userPassword = PasswordUtil.getDecryptPassword(user.getEncryptedPassword());
+        }
+        return userPassword;
     }
 
     /**
@@ -671,8 +732,11 @@ public class LocalDirectoryImpl implements LocalDirectory
 
             if (systemSettings.getRadiusServerEnabled()) {
                 for (LocalDirectoryUser user : list) {
-                    byte[] rawPassword = Base64.decodeBase64(user.getPasswordBase64Hash().getBytes());
-                    String userPassword = new String(rawPassword);
+                    String userPassword = getLocalUserOriginalPass(user);
+                    if (userPassword == null) {
+                        logger.warn("Error while creating entry in RADIUS secrets file for user : {}" , user.getUsername());
+                        continue;
+                    }
                     fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\", MS-CHAP-Use-NTLM-Auth := 0\n");
                 }
             }

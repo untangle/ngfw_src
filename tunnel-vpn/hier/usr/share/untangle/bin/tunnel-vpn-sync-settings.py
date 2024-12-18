@@ -19,9 +19,9 @@ import traceback
 import json
 import datetime
 import stat
-
+import time
+from sync import EncryptionUtil
 from   sync import *
-
 class ArgumentParser(object):
     def __init__(self):
         self.file = None
@@ -261,8 +261,14 @@ for tunnel in settings.get('tunnels').get('list'):
     password = 'password'
     if tunnel.get('username') != None:
         username = tunnel.get('username')
-    if tunnel.get('password') != None:
-        password = tunnel.get('password')
+    if tunnel.get('encryptedTunnelVpnPassword') != None:
+        password = tunnel.get('encryptedTunnelVpnPassword')
+        try:
+            password = EncryptionUtil.execute_password_manager('-d', password)
+        except Exception as e:
+            print(f"Unable to decrypt the password for  {tunnel.get('name')} due to: {e}")
+            raise e
+
     filename = parser.prefix + "@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-%i/auth.txt" % tunnel.get('tunnelId')
     try: os.makedirs(os.path.dirname(filename))
     except: pass

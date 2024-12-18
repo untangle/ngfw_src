@@ -17,6 +17,7 @@ import urllib.request, urllib.error, urllib.parse
 import urllib
 import urllib3
 import fnmatch
+import base64
 
 from tests.common import NGFWTestCase
 import tests.global_functions as global_functions
@@ -74,6 +75,27 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
         "ruleId": 1
     }
 
+def create_local_directory_user(directory_user='test',expire_time=0):
+    user_email = directory_user + "@test.untangle.com"
+    passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
+    return {'javaClass': 'java.util.LinkedList',
+        'list': [{
+            'username': directory_user,
+            'firstName': '[firstName]',
+            'lastName': '[lastName]',
+            'javaClass': 'com.untangle.uvm.LocalDirectoryUser',
+            'expirationTime': expire_time,
+            'passwordBase64Hash': passwd_encoded.decode("utf-8"),
+            'email': user_email
+            },]
+    }
+
+
+def remove_local_directory_user():
+    return {'javaClass': 'java.util.LinkedList',
+        'list': []
+    }
+
 def check_javascript_exceptions(errors):
     """
     Get current end line for uvm log, run logJavascripException, and verify it was logged
@@ -95,6 +117,33 @@ def find_files(dir_path, search_string):
         for filename in fnmatch.filter(files, search_string):
             license_files.append(os.path.join(root, filename))
     return license_files
+
+def buildDevicesSettings(devicesList=[]):
+    return {
+        "autoDeviceRemove": False,
+        "autoRemovalThreshold": 30,
+        "devices": {
+            "javaClass": "java.util.LinkedList",
+            "list": devicesList
+        },
+        "javaClass": "com.untangle.uvm.DevicesSettings",
+        "version": 1
+    }
+
+def buildDevice(hostname="client", interfaceId=0, lastSessionTime=0, macAddress="e7:b5:a0:3a:cd:49", macVendor=None, tagsList=[], tagsString=""):
+    return {
+        "hostnameLastKnown": hostname,
+        "interfaceId": interfaceId,
+        "javaClass": "com.untangle.uvm.DeviceTableEntry",
+        "lastSessionTime": lastSessionTime,
+        "macAddress": macAddress,
+        "macVendor": macVendor,
+        "tags": {
+            "javaClass": "java.util.LinkedList",
+            "list": tagsList
+        },
+        "tagsString": tagsString
+    }
 
 class TestTotp:
     """
@@ -1036,6 +1085,54 @@ class UvmTests(NGFWTestCase):
 
         assert(result == 0)
 
+    def test_165_password_encryption_decryption_process(self):
+        """
+        Verify password encryption decryption process
+        """
+        password = 'passwd'
+        # Test 1: Valid password - it should pass if encrypted and decrypted correctly
+        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+
+        # Compare original password with decrypted password
+        self.assertEqual(password, decrypted_password, "Password encryption/decryption failed.")
+
+        # Test 2: Empty password - it should pass if encrypted and decrypted correctly
+        password = " "
+        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+
+        # Password should match after encryption and decryption
+        self.assertEqual(password, decrypted_password, "Empty password encryption/decryption failed.")
+
+        # Test 3: None (null) password - should return None or raise an exception
+        password = None
+        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+
+        # Check if encryption of None returns None or raises an exception
+        self.assertIsNone(encrypted_password, "Encrypted password should be None when input is None.")
+
+
+    def test_168_password_encryption_setting_process(self):
+        """
+        Verify password encryption setting process
+        """
+        # Create local directory user 'test'
+        global_functions.uvmContext.localDirectory().setUsers(create_local_directory_user())
+
+        # Get local directory users 
+        users = global_functions.uvmContext.localDirectory().getUsers()
+
+        # Extract the user object
+        user = users['list'][0]
+
+        # Assert that encryptedPassword is present and password is None
+        assert user.get('encryptedPassword') is not None, "encryptedPassword is missing"
+        assert user.get('password') is None, "password is not None"
+        #Clear the created user
+        global_functions.uvmContext.localDirectory().setUsers(remove_local_directory_user())
+        
+
     def test_170_log_retention(self):
         """
         Verify log retention policy
@@ -1252,5 +1349,53 @@ class UvmTests(NGFWTestCase):
         assert int(reports) > 0, "{int(reports)} reports log files found"
         assert int(upgrade) > 0, "{int(upgrade)} upgrade log files found"
         assert int(wrapper) > 0, "{int(wrapper)} wrapper log files found"
+
+    def test_315_auto_devices_remove(self):
+        """ Test to validate auto device removal functionality """
+        # Get old devices settings
+        oldDevicesSettings = global_functions.uvmContext.deviceTable().getDevicesSettings()
+        
+        # Initialise new settings
+        newDevicesSettings = buildDevicesSettings()
+
+        # Set new settings with a device having last seen = current - 6 days 
+        # and a device with last seen = current - 4 days
+        removalMacAddress = "e7:b5:a0:3a:cd:49"
+        retainedMacAddress = "46:2f:66:0e:03:92"
+        removalDeviceTime = int(round(time.time() * 1000)) - 6 * 24 * 60 * 60 * 1000
+        retainedDeviceTime = int(round(time.time() * 1000)) - 4 * 24 * 60 * 60 * 1000
+        removalDevice = buildDevice(interfaceId=2, lastSessionTime=removalDeviceTime, macAddress=removalMacAddress)
+        retainedDevice = buildDevice(interfaceId=2, lastSessionTime=retainedDeviceTime, macAddress=retainedMacAddress)
+        
+        newDevicesSettings['devices']['list'].append(removalDevice)
+        newDevicesSettings['devices']['list'].append(retainedDevice)
+
+        global_functions.uvmContext.deviceTable().setDevicesSettings(newDevicesSettings)
+
+        # Fetch settings and assert if both devices are added in settings
+        settings = global_functions.uvmContext.deviceTable().getDevicesSettings()
+        devices = [ device for device in settings['devices']['list'] if device["macAddress"] == removalMacAddress ]
+        assert(len(devices) == 1)
+        devices = [ device for device in settings['devices']['list'] if device["macAddress"] == retainedMacAddress ]
+        assert(len(devices) == 1)
+
+        time.sleep(1)
+        
+        # Set auto removal threshold to 5 days
+        newDevicesSettings["autoDeviceRemove"] = True
+        newDevicesSettings["autoRemovalThreshold"] = 5
+
+        # Set settings should trigger device removal as we are changing the config property
+        global_functions.uvmContext.deviceTable().setDevicesSettings(newDevicesSettings)
+
+        # Fetch Settings and check only removalDevice is removed from settings
+        settings = global_functions.uvmContext.deviceTable().getDevicesSettings()
+        devices = [ device for device in settings['devices']['list'] if device["macAddress"] == removalMacAddress ]
+        assert(len(devices) == 0)
+        devices = [ device for device in settings['devices']['list'] if device["macAddress"] == retainedMacAddress ]
+        assert(len(devices) == 1)
+
+        # Set old settings
+        global_functions.uvmContext.deviceTable().setDevicesSettings(oldDevicesSettings)
 
 test_registry.register_module("uvm", UvmTests)
