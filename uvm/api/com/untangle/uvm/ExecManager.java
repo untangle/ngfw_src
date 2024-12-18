@@ -14,6 +14,11 @@ public interface ExecManager
     ExecManagerResult exec( String cmd );
 
     /**
+    * Execute the specified command and return the result
+    */
+    ExecManagerResult exec(String cmd, boolean rateLimit, boolean safe, boolean logEnabled);
+
+    /**
      * Execute the specified command and return the stdout
      */
     ExecManagerResult exec( String cmd, boolean rateLimit );
@@ -34,6 +39,11 @@ public interface ExecManager
      * Execute the specified command and return the stdout
      */
     String execOutput( String cmd );
+
+    /**
+     * Execute the specified command and return the stdout
+     */
+    String execOutput( boolean logEnabled, String cmd );
 
     /**
      * Execute the specified command and return the stdout

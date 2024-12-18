@@ -26,8 +26,7 @@ Ext.define('Ung.config.local-directory.view.Users', {
             firstName: '',
             lastName: '',
             email: '',
-            password: '',
-            passwordBase64Hash: '',
+            encryptPassword: '',
             twofactorSecretKey: '',
             localExpires: Util.serverToClientDate(new Date()),
             localForever: true,
@@ -82,8 +81,8 @@ Ext.define('Ung.config.local-directory.view.Users', {
             width: Renderer.messageWidth,
             dataIndex: 'password',
             renderer: Ext.bind(function (value, metadata, record) {
-                if (record.get("passwordBase64Hash") == null) return ('');
-                if (Ext.isEmpty(value) && record.get("passwordBase64Hash").length > 0) return ('*** ' + 'Unchanged'.t() + ' ***');
+                if (record.get("encryptedPassword") == null) return ('');
+                if (Ext.isEmpty(value) && record.get("encryptedPassword").length > 0) return ('*** ' + 'Unchanged'.t() + ' ***');
                 var result = "";
                 for (var i = 0; value != null && i < value.length; i++) result = result + '*';
                 return result;

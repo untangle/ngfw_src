@@ -757,12 +757,12 @@ Ext.define('Ung.cmp.GridController', {
                     }
                     
                     var types = ["textfield", "numberfield"];
-                    if((!fieldConfig.hasOwnProperty("allowBlank") || fieldConfig.allowBlank) && (fieldValue === null || fieldValue === undefined) && types.includes(fieldConfig.xtype)){
+                    if((fieldConfig.allowBlank) && (fieldValue === null || fieldValue === undefined) && types.includes(fieldConfig.xtype)){
                         continue;
                     }
 
                     var fieldTypes = ["textfield", "textarea"];
-                    if((!fieldConfig.hasOwnProperty("allowBlank") || fieldConfig.allowBlank) && ((typeof fieldConfig === 'object' && fieldConfig.hidden && fieldConfig.disabled && fieldTypes.includes(fieldConfig.xtype)) || fieldValue === "")){
+                    if((fieldConfig.allowBlank) && ((typeof fieldConfig === 'object' && fieldConfig.hidden && fieldConfig.disabled && fieldTypes.includes(fieldConfig.xtype)) || fieldValue === "")){
                         continue;
                     }
 

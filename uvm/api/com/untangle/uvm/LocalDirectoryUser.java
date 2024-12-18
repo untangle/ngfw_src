@@ -22,6 +22,7 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     private String passwordShaHash;
     private String passwordMd5Hash;
     private String passwordBase64Hash;
+    private String encryptedPassword;
     private Boolean mfaEnabled;
     private String twofactorSecretKey;
 
@@ -79,6 +80,24 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
     }
 
     /**
+     * Get the encryptedPassword 
+     * 
+     * @return the encryptedPassword
+     */
+    public String getEncryptedPassword() {
+        return this.encryptedPassword;
+    }
+
+    /**
+     * Set the encryptedPassword
+     * 
+     * @param password The original password
+     */
+    public void setEncryptedPassword(String password) {
+        this.encryptedPassword = makeNotNull(password);
+    }
+
+    /**
      * Get the passwordShaHash to used in account creation
      * 
      * @return the passwordShaHash
@@ -129,7 +148,7 @@ public final class LocalDirectoryUser implements Serializable, Comparable<LocalD
      * @param passwordBase64Hash The hash
      */
     public void setPasswordBase64Hash(String passwordBase64Hash) {
-        this.passwordBase64Hash = makeNotNull(passwordBase64Hash);
+        this.passwordBase64Hash = passwordBase64Hash;
     }
 
     /**

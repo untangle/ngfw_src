@@ -62,6 +62,7 @@ import javax.net.ssl.SSLContext;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.uvm.PasswordUtil;
 import com.untangle.uvm.util.Pair;
 
 /**
@@ -457,21 +458,21 @@ abstract class LdapAdapter
             return createSuperuserContext();
         }
         catch(AuthenticationException ex) {
-            logger.warn("Unable to create superuser context with settings: " +
-                        "Host: \"" + settings.getLDAPHost() + "\", " +
-                        "Port: \"" + settings.getLDAPPort() + "\", " +
-                        "Superuser DN: \"" + getSuperuserDN() + "\", " +
-                        "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
-                        " ; Error is: " + ex);
+            logger.warn("Unable to create superuser context with settings: Host: {} Port: {} Superuser DN: {} Encrypted Pass: {} ; Error is: ", 
+                                        settings.getLDAPHost(), 
+                                        settings.getLDAPPort(), 
+                                        getSuperuserDN(), 
+                                        (settings.getSuperuserPass()==null && settings.getEncrSupUserPass()==null)?"<null>":"<not null>",
+                                        ex);
             throw ex;
         }
         catch(CommunicationException ex) {
-            logger.warn("Unable to create superuser context with settings: " +
-                        "Host: \"" + settings.getLDAPHost() + "\", " +
-                        "Port: \"" + settings.getLDAPPort() + "\", " +
-                        "Superuser DN: \"" + getSuperuserDN() + "\", " +
-                        "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
-                        " ; Error is: " + ex.toString());
+            logger.warn("Unable to create superuser context with settings: Host: {} Port: {} Superuser DN: {} Encrypted Pass: {} ; Error is: {}", 
+                                        settings.getLDAPHost(), 
+                                        settings.getLDAPPort(), 
+                                        getSuperuserDN(), 
+                                        (settings.getSuperuserPass()==null && settings.getEncrSupUserPass()==null)?"<null>":"<not null>", 
+                                        ex.toString());
 
             Throwable cause = null; 
             Throwable result = ex;
@@ -483,12 +484,12 @@ abstract class LdapAdapter
             throw new CommunicationException( result.getMessage() + ": " + ex.getMessage() );
         }
         catch(Exception ex) {
-            logger.error("Unable to create superuser context with settings: " +
-                         "Host: \"" + settings.getLDAPHost() + "\", " +
-                         "Port: \"" + settings.getLDAPPort() + "\", " +
-                         "Superuser DN: \"" + getSuperuserDN() + "\", " +
-                         "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>") +
-                         " ; Error is: " + ex);
+            logger.warn("Unable to create superuser context with settings: Host: {} Port: {} Superuser DN: {} Encrypted Pass: {} ; Error is: ", 
+                                        settings.getLDAPHost(), 
+                                        settings.getLDAPPort(), 
+                                        getSuperuserDN(), 
+                                        (settings.getSuperuserPass()==null && settings.getEncrSupUserPass()==null)?"<null>":"<not null>",
+                                        ex);
             throw ex;
         }
     }
@@ -731,11 +732,12 @@ abstract class LdapAdapter
         throws CommunicationException, AuthenticationException, NamingException
     {
         ActiveDirectoryServer settings = getSettings();
+        String password = settings.getSuperuserPass() != null ? settings.getSuperuserPass() : PasswordUtil.getDecryptPassword(settings.getEncrSupUserPass());
         return createContext(settings.getLDAPHost(),
                              settings.getLDAPPort(),
                              settings.getLDAPSecure(),
                              getSuperuserDN(),
-                             settings.getSuperuserPass());
+                             password);
     }
 
     /**
