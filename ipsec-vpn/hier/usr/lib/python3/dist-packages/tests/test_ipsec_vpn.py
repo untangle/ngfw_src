@@ -48,6 +48,7 @@ appFW = None
 tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
+ipsec_remote_settings = None
 
 local_host_ip = None
 local_host_lan_ip = None
@@ -808,7 +809,8 @@ class IPsecTests(NGFWTestCase):
         """
         Verify ipsec tunnel with any remote does't ping pingAddress and generate Tunnel Connection Events
         """
-        raise unittest.SkipTest("Test test_081_any_remote_tunnel_ping deletes all the static entries in the target IPsec box and breaks all the other IPsec tests ")
+        global ipsec_remote_settings
+        global remote_app
 
         # Configure local tunnel with remote any
         ipsec_settings = self._app.getSettings()
@@ -825,8 +827,9 @@ class IPsecTests(NGFWTestCase):
             remote_app = remote_uvm_context.appManager().instantiate(appName, default_policy_id)
         remote_app.start()
 
-        
-        remote_ipsec_settings = remote_app.getSettings()
+        ipsec_remote_settings = remote_app.getSettings()
+
+        remote_ipsec_settings = copy.deepcopy(ipsec_remote_settings)
         remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=local_host_ip, remote_lan=local_host_lan_ip)]
         remote_app.setSettings(remote_ipsec_settings)
         time.sleep(10)
@@ -841,6 +844,10 @@ class IPsecTests(NGFWTestCase):
         found = global_functions.check_events( events.get('list'), 5, 
                                               "event_type", "UNREACHABLE" )
         assert(found == False)
+
+        # removed added tunnel lists
+        ipsec_settings["tunnels"]["list"] = []
+        ipsec_settings = self._app.getSettings()
 
     @classmethod
     def final_extra_tear_down(cls):
@@ -858,6 +865,11 @@ class IPsecTests(NGFWTestCase):
         if appFW != None:
             global_functions.uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
             appFW = None
+        # Reset remote ipsec settings to original settings
+        if ipsec_remote_settings != None:
+            remote_app.setSettings(ipsec_remote_settings)
+            ipsec_remote_settings = None
+
 
 
 test_registry.register_module("ipsec-vpn", IPsecTests)
