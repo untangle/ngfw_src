@@ -4,11 +4,6 @@
 
 package com.untangle.uvm;
 
-import com.untangle.uvm.LocalDirectory;
-import com.untangle.uvm.LocalDirectoryUser;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.UvmContextFactory;
-import java.security.Key;
 import com.google.common.io.BaseEncoding;
 
 import org.apache.commons.codec.binary.Base64;
@@ -20,27 +15,17 @@ import org.apache.commons.lang3.StringUtils;
 import java.time.Instant;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.InvalidKeyException;
-import java.util.List;
 import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
-import java.util.Map;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -50,23 +35,23 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class LocalDirectoryImpl implements LocalDirectory
 {
-    private final static String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/local_directory.js";
-    private final static String XAUTH_SECRETS_FILE = "/etc/xauth.secrets";
-    private final static String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
+    private static final String LOCAL_DIRECTORY_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/untangle-vm/local_directory.js";
+    private static final String XAUTH_SECRETS_FILE = "/etc/xauth.secrets";
+    private static final String IPSEC_RELOAD_SECRETS = "/usr/sbin/ipsec rereadsecrets";
 
-    private final static String FREERADIUS_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-logfile";
-    private final static String FREERADIUS_PROXY_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-proxy";
-    private final static String FREERADIUS_LOCAL_SECRETS = "/etc/freeradius/3.0/mods-config/files/untangle.local";
-    private final static String FREERADIUS_AUTHORIZE = "/etc/freeradius/3.0/mods-config/files/authorize";
-    private final static String FREERADIUS_RADIUSD = "/etc/freeradius/3.0/radiusd.conf";
-    private final static String FREERADIUS_SAMBA_DIRECTORY = "/etc/samba";
-    private final static String FREERADIUS_SAMBA_CONFIG = "/etc/samba/smb.conf";
-    private final static String FREERADIUS_KRB5_CONFIG = "/etc/krb5.conf";
-    private final static String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/mschap";
-    private final static String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-enabled/ntlm_auth";
+    private static final String FREERADIUS_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-logfile";
+    private static final String FREERADIUS_PROXY_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-radius-proxy";
+    private static final String FREERADIUS_LOCAL_SECRETS = "/etc/freeradius/3.0/mods-config/files/untangle.local";
+    private static final String FREERADIUS_AUTHORIZE = "/etc/freeradius/3.0/mods-config/files/authorize";
+    private static final String FREERADIUS_RADIUSD = "/etc/freeradius/3.0/radiusd.conf";
+    private static final String FREERADIUS_SAMBA_DIRECTORY = "/etc/samba";
+    private static final String FREERADIUS_SAMBA_CONFIG = "/etc/samba/smb.conf";
+    private static final String FREERADIUS_KRB5_CONFIG = "/etc/krb5.conf";
+    private static final String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/mschap";
+    private static final String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-enabled/ntlm_auth";
 
-    private final static String UNCHANGED_PASSWORD = "***UNCHANGED***";
-    private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n" + "# If you modify this file manually, your changes will be overwritten!\n\n";
+    private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n# If you modify this file manually, your changes will be overwritten!\n\n";
+    public static final Random random = new Random();
 
     private final Logger logger = LogManager.getLogger(getClass());
 
@@ -128,7 +113,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         // the real problem is the name conflict.
         String groupName = systemSettings.getRadiusProxyWorkgroup();
         String machineName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName();
-        if (groupName.toUpperCase().equals(machineName.toUpperCase())) {
+        if (groupName.equalsIgnoreCase(machineName)) {
             return new ExecManagerResult(1, "Unable to create computer account because the System Hostname and AD Workgroup are the same");
         }
 
@@ -145,7 +130,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             return new ExecManagerResult(1, "Unable to decrypt the encrypted password of AD server " + systemSettings.getRadiusProxyServer());
         }
         String command = ("/usr/bin/net ads --no-dns-updates join");
-        command = String.format(" -U \"%s%%%s\"", systemSettings.getRadiusProxyUsername(), userPassword);
+        command += String.format(" -U \"%s%%%s\"", systemSettings.getRadiusProxyUsername(), userPassword);
         command += (" -S " + systemSettings.getRadiusProxyServer());
         command += (" osName=\"Untangle NG Firewall\"");
         command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
@@ -191,15 +176,15 @@ public class LocalDirectoryImpl implements LocalDirectory
     public String testRadiusProxyLogin(String userName, String userPass, String userDomain)
     {
         if (userName.isBlank()) {
-            return new String("Missing Username for authentication test");
+            return "Missing Username for authentication test";
         }
 
         if (userPass.isBlank()) {
-            return new String("Missing Password for authentication test");
+            return "Missing Password for authentication test";
         }
 
         String command = ("/usr/bin/ntlm_auth --request-nt-key");
-        if (userDomain.length() > 0) {
+        if (StringUtils.isNotEmpty(userDomain)) {
             command += (" --domain=\"" + userDomain + "\"");
         }
         command += (" --username=\"" + userName + "\"");
@@ -216,7 +201,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     public String generateSecret() {
         byte[] buffer = new byte[20];
 
-        new Random().nextBytes(buffer);
+        random.nextBytes(buffer);
         byte[] secretKey = Arrays.copyOf(buffer, 10);
 
         return BaseEncoding.base32().encode(secretKey);
@@ -287,13 +272,11 @@ public class LocalDirectoryImpl implements LocalDirectory
 
         for (LocalDirectoryUser user : this.currentList) {
             if (username.equals(user.getUsername())) {
-                // if (password.equals(user.getPassword()) && !accountExpired(user))
-                //     return true;
                 //Check for the records which still contains PasswordBase64Hash
                 String base64 = calculateBase64Hash(password);
-                if(StringUtils.isNotBlank(user.getPasswordBase64Hash())){
-                    if (base64 != null && base64.equals(user.getPasswordBase64Hash()) && !accountExpired(user)) return true;
-                }
+                if(StringUtils.isNotBlank(user.getPasswordBase64Hash()) &&
+                        base64 != null && base64.equals(user.getPasswordBase64Hash()) && !accountExpired(user)) return true;
+
                 String encryptedPassword = PasswordUtil.getEncryptPassword(password);
                 if (encryptedPassword != null && encryptedPassword.equals(user.getEncryptedPassword()) && !accountExpired(user)) return true;
                 String md5 = calculateMd5Hash(password);
@@ -357,7 +340,7 @@ public class LocalDirectoryImpl implements LocalDirectory
     {
         String[] checker;
 
-        logger.debug("RADIUS Login Notification - USER:" + userName + " MAC:" + macAddress);
+        logger.debug("RADIUS Login Notification - USER:{} MAC:{}", userName , macAddress);
 
         // first try AA:BB:CC:DD:EE:FF
         checker = macAddress.split(":");
@@ -397,7 +380,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             handleRadiusUserLogin(userName, builder.toString());
         }
 
-        logger.warn("RADIUS Invalid MAC Address: " + macAddress);
+        logger.warn("RADIUS Invalid MAC Address: {}", macAddress);
     }
 
     /**
@@ -433,6 +416,10 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public void setUsers(LinkedList<LocalDirectoryUser> users)
     {
+        if (users == null || users.isEmpty()) {
+            logger.info("Users list is empty");
+            return;
+        }
         HashSet<String> usersSeen = new HashSet<>();
 
         /**
@@ -618,8 +605,6 @@ public class LocalDirectoryImpl implements LocalDirectory
         // Read the settings from file
         try {
             users = (LinkedList<LocalDirectoryUser>) settingsManager.load(LinkedList.class, LOCAL_DIRECTORY_SETTINGS_FILE);
-            //For backup restore, user record needs to be set with encrypted password only
-            setUsers(users);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Unable to read localDirectory file: ", e);
         }
@@ -627,11 +612,14 @@ public class LocalDirectoryImpl implements LocalDirectory
         // no settings? just initialize new ones
         if (users == null) {
             logger.warn("No settings found - Initializing new settings.");
-            this.saveUsersList(new LinkedList<LocalDirectoryUser>());
+            this.saveUsersList(new LinkedList<>());
         }
 
         // settings loaded so assign to currentList and write IPsec and RADIUS secrets
         else {
+            //For backup restore, user record needs to be set with encrypted password only
+            setUsers(users);
+
             updateXauthSecrets(users);
             // Update chap-secrets
             UvmContextFactory.context().syncSettings().run(LOCAL_DIRECTORY_SETTINGS_FILE);
@@ -660,7 +648,7 @@ public class LocalDirectoryImpl implements LocalDirectory
             for (LocalDirectoryUser user : list) {
                 String userPassword = getLocalUserOriginalPass(user);
                 if (userPassword == null) {
-                    logger.warn("Error while creating entry in XAUTH secrets file for user : {}" , user.getUsername());
+                    logger.warn("Error while creating entry in XAUTH secrets file for user : {}", user.getUsername());
                     continue;
                 }
                 auth.write(user.getUsername() + " : XAUTH 0x" + stringHexify(userPassword) + "\n");
@@ -734,7 +722,7 @@ public class LocalDirectoryImpl implements LocalDirectory
                 for (LocalDirectoryUser user : list) {
                     String userPassword = getLocalUserOriginalPass(user);
                     if (userPassword == null) {
-                        logger.warn("Error while creating entry in RADIUS secrets file for user : {}" , user.getUsername());
+                        logger.warn("Error while creating entry in RADIUS secrets file for user : {}", user.getUsername());
                         continue;
                     }
                     fw.write(user.getUsername() + " Cleartext-Password := \"" + userPassword + "\", MS-CHAP-Use-NTLM-Auth := 0\n");
@@ -1083,16 +1071,15 @@ public class LocalDirectoryImpl implements LocalDirectory
             String hashString;
             hasher.update(password.getBytes());
             byte[] digest = hasher.digest();
-            StringBuffer hexString = new StringBuffer();
-            for (int i = 0; i < digest.length; i++) {
-                hashString = Integer.toHexString(0xFF & digest[i]);
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : digest) {
+                hashString = Integer.toHexString(0xFF & b);
                 if (hashString.length() < 2) hashString = "0" + hashString;
                 hexString.append(hashString);
             }
-            String result = hexString.toString();
-            return result;
+            return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            logger.warn("Unable to find " + hashAlgo + " Algorithm", e);
+            logger.warn("Unable to find {} Algorithm", hashAlgo , e);
         }
 
         return null;
