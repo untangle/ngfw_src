@@ -48,7 +48,8 @@ appFW = None
 tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
-ipsec_remote_settings = None
+remote_uvm_context = None
+remote_app = None
 
 local_host_ip = None
 local_host_lan_ip = None
@@ -809,8 +810,7 @@ class IPsecTests(NGFWTestCase):
         """
         Verify ipsec tunnel with any remote does't ping pingAddress and generate Tunnel Connection Events
         """
-        global ipsec_remote_settings
-        global remote_app
+        global remote_uvm_context, remote_app
 
         # Configure local tunnel with remote any
         ipsec_settings = self._app.getSettings()
@@ -851,8 +851,8 @@ class IPsecTests(NGFWTestCase):
 
     @classmethod
     def final_extra_tear_down(cls):
-        global appAD
-        global appFW
+        global appAD, appFW, remote_uvm_context, remote_app
+
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
         if orig_netsettings:
@@ -865,11 +865,10 @@ class IPsecTests(NGFWTestCase):
         if appFW != None:
             global_functions.uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
             appFW = None
-        # Reset remote ipsec settings to original settings
-        if ipsec_remote_settings != None:
-            remote_app.setSettings(ipsec_remote_settings)
-            ipsec_remote_settings = None
-
+        # Remove created remote app
+        if remote_uvm_context != None:
+            remote_uvm_context.appManager().destroy( remote_app.getAppSettings()["id"] )
+            remote_uvm_context = None
 
 
 test_registry.register_module("ipsec-vpn", IPsecTests)
