@@ -305,6 +305,12 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             meta.tdAttr = 'data-qtip="' + Ext.String.htmlEncode( resp.join(' &nbsp;&bull;&nbsp; ') ) + '"';
             return resp.length > 0 ? resp.join(' &nbsp;&bull;&nbsp; ') : '<em>' + 'No conditions' + '</em>';
         },
+        ProcessDCUserNGroupDataMerge: function(data, result) {
+            Ext.Array.each(data.reverse(), function(record) {
+                result.list.unshift(record);
+            });
+            return result.list;
+        },
         /**
          * Nearly all rule conditions use the same condition.  Most that don't use a subset.
          * Define what you want by the name values such as:
@@ -395,7 +401,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                         }
                     } );
                     conditions.forEach(function (currItem){
-                        me.getWidgetDataAndField(currItem.type, currItem);
+                        me.getWidgetDataAndField(me, currItem.type, currItem);
                     });
                     config[key] = Ext.Array.toValueMap(conditions, 'name');
                     if( !config['conditionsOrder'] ){
@@ -454,7 +460,7 @@ Ext.define('Ung.cmp.ConditionsEditor', {
             ]]
         }],
 
-        getWidgetDataAndField: function(type, currItem){
+        getWidgetDataAndField: function(me, type, currItem){
             switch (type) {
                 case "userfield": {
                     currItem["getData"] = function (field) {
@@ -467,44 +473,41 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                         }];
 
                         if (field) {
-                            Rpc.asyncData('rpc.appManager.app', 'directory-connector')
+                            return Rpc.asyncData('rpc.appManager.app', 'directory-connector')
                                 .then(function (app) {
                                     if (Util.isDestroyed(field)) {
-                                        return;
+                                        return data;
                                     }
                                     if (app) {
-                                        Rpc.asyncData(app, 'getRuleConditonalUserEntries')
+                                        return Rpc.asyncData(app, 'getRuleConditonalUserEntries')
                                             .then(function (result) {
                                                 if (Util.isDestroyed(field)) {
-                                                    return;
+                                                    return data;
                                                 }
-                                                Ext.Array.each(data.reverse(), function (record) {
-                                                    result.list.unshift(record);
-                                                });
-                                                data = result.list;
+                                                return me.ProcessDCUserNGroupDataMerge(data, result);
                                             }, function (ex) {
                                                 Util.handleException(ex);
+                                                return data;
                                             });
                                     }
+                                    return data;
                                 }, function (ex) {
                                     Util.handleException(ex);
+                                    return data;
                                 });
                         } else {
                             try {
                                 var appData = Rpc.directData('rpc.appManager.app', 'directory-connector');
                                 if (appData) {
                                     var result = Rpc.directData(appData, 'getRuleConditonalUserEntries');
-                                    Ext.Array.each(data.reverse(), function (record) {
-                                        result.list.unshift(record);
-                                    });
-                                    data = result.list;
+                                    return { keyName: 'uid', data: me.ProcessDCUserNGroupDataMerge(data, result) };
                                 }
                             } catch (ex) {
                                 Util.handleException(ex);
+                                return { keyName: 'uid', data: data };
                             }
                         }
-
-                        return field ? data : { keyName: 'uid', data: data };
+                        return data;
                     };
 
                     currItem["widgetCreator"] = function (widget, valueBind, condition) {
@@ -530,8 +533,11 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                             },
                             listeners: {
                                 afterrender: function (field) {
-                                    var fetchedData = condition.getData(field);
-                                    field.getStore().loadData(fetchedData);
+                                    condition.getData(field).then(function(data) {
+                                        field.getStore().loadData(data);
+                                    },function(error) {
+                                        console.log("Error occurred while loading user:", error);
+                                    });                                    
                                 }
                             }
                         });
