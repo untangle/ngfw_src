@@ -48,6 +48,8 @@ appFW = None
 tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
+remote_uvm_context = None
+remote_app = None
 
 local_host_ip = None
 local_host_lan_ip = None
@@ -808,10 +810,11 @@ class IPsecTests(NGFWTestCase):
         """
         Verify ipsec tunnel with any remote does't ping pingAddress and generate Tunnel Connection Events
         """
-        raise unittest.SkipTest("Test test_081_any_remote_tunnel_ping deletes all the static entries in the target IPsec box and breaks all the other IPsec tests ")
+        global remote_uvm_context, remote_app
 
         # Configure local tunnel with remote any
-        ipsec_settings = self._app.getSettings()
+        org_ipsec_settings = self._app.getSettings()
+        ipsec_settings = copy.deepcopy(org_ipsec_settings)
         ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan=IPSEC_HOST_LAN)]
         self._app.setSettings(ipsec_settings)
 
@@ -825,8 +828,9 @@ class IPsecTests(NGFWTestCase):
             remote_app = remote_uvm_context.appManager().instantiate(appName, default_policy_id)
         remote_app.start()
 
-        
-        remote_ipsec_settings = remote_app.getSettings()
+        org_remote_ipsec_settings = remote_app.getSettings()
+
+        remote_ipsec_settings = copy.deepcopy(org_remote_ipsec_settings)
         remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=local_host_ip, remote_lan=local_host_lan_ip)]
         remote_app.setSettings(remote_ipsec_settings)
         time.sleep(10)
@@ -842,10 +846,14 @@ class IPsecTests(NGFWTestCase):
                                               "event_type", "UNREACHABLE" )
         assert(found == False)
 
+        # set to original settings
+        self._app.setSettings(org_ipsec_settings)
+        remote_app.setSettings(org_remote_ipsec_settings)
+
     @classmethod
     def final_extra_tear_down(cls):
-        global appAD
-        global appFW
+        global appAD, appFW, remote_uvm_context, remote_app
+
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
         if orig_netsettings:
@@ -858,6 +866,10 @@ class IPsecTests(NGFWTestCase):
         if appFW != None:
             global_functions.uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
             appFW = None
+        # Remove created remote app
+        if remote_uvm_context != None and remote_app!= None:
+            remote_uvm_context.appManager().destroy( remote_app.getAppSettings()["id"] )
+            remote_uvm_context = None
 
 
 test_registry.register_module("ipsec-vpn", IPsecTests)
