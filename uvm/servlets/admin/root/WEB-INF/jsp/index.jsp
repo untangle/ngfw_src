@@ -32,6 +32,9 @@
         
         <!-- Ext.ux.Exporter resources -->
         <script src="/script/common/packages/exporter.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+        <!-- <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/core-js@3"></script>
 
         <script src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js"></script>
         <link href="/ext6.2/classic/theme-${extjsTheme}/resources/theme-${extjsTheme}-all.css" rel="stylesheet" type="text/css" />

@@ -15,6 +15,9 @@
     <script type="text/javascript" src="/ext6.2/classic/theme-${extjsTheme}/theme-${extjsTheme}.js?s=${buildStamp}"></script>
 
     <script type="text/javascript" src="/jsonrpc/jsonrpc.js?s=${buildStamp}"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script> -->
+    <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/core-js@3"></script>
 
     <!-- FontAwesome -->
     <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />

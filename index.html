@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExtJS with Vue Integration</title>
+
+    <!-- Include ExtJS Framework -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/classic/theme-triton/resources/theme-triton-all.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/extjs/6.2.0/ext-all.js"></script>
+
+    <!-- Include Vue Global Build -->
+    <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.js"></script>
+
+    <!-- Include Compiled Webpack Bundle -->
+    <script src="./dist/bundle.js" defer></script>
+
+    <style>
+        body {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // ExtJS Application Code
+        Ext.onReady(function () {
+            // Import the Vue component dynamically
+            const { createApp } = require('./dist/bundle.js');
+            const MyVueComponent = require('./dist/bundle.js').default;
+
+            // Create ExtJS Panel
+            Ext.create('Ext.panel.Panel', {
+                title: 'ExtJS with Vue Integration',
+                width: 600,
+                height: 400,
+                renderTo: Ext.getBody(),
+                html: '<div id="vue-container"></div>', // Placeholder for Vue
+                listeners: {
+                    afterrender: function () {
+                        // Mount the Vue component into the placeholder
+                        createApp(MyVueComponent).mount('#vue-container');
+                    },
+                },
+            });
+        });
+    </script>
+</body>
+</html>
