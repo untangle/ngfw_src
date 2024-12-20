@@ -867,7 +867,7 @@ class IPsecTests(NGFWTestCase):
             global_functions.uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
             appFW = None
         # Remove created remote app
-        if remote_uvm_context != None:
+        if remote_uvm_context != None and remote_app!= None:
             remote_uvm_context.appManager().destroy( remote_app.getAppSettings()["id"] )
             remote_uvm_context = None
 
