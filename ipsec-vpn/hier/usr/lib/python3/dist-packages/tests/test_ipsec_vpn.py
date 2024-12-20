@@ -848,6 +848,7 @@ class IPsecTests(NGFWTestCase):
         # removed added tunnel lists
         ipsec_settings["tunnels"]["list"] = []
         ipsec_settings = self._app.getSettings()
+        self._app.setSettings(ipsec_settings)
 
     @classmethod
     def final_extra_tear_down(cls):
