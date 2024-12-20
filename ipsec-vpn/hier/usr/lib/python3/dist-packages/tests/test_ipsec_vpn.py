@@ -813,7 +813,8 @@ class IPsecTests(NGFWTestCase):
         global remote_uvm_context, remote_app
 
         # Configure local tunnel with remote any
-        ipsec_settings = self._app.getSettings()
+        org_ipsec_settings = self._app.getSettings()
+        ipsec_settings = copy.deepcopy(org_ipsec_settings)
         ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan=IPSEC_HOST_LAN)]
         self._app.setSettings(ipsec_settings)
 
@@ -827,9 +828,9 @@ class IPsecTests(NGFWTestCase):
             remote_app = remote_uvm_context.appManager().instantiate(appName, default_policy_id)
         remote_app.start()
 
-        ipsec_remote_settings = remote_app.getSettings()
+        org_remote_ipsec_settings = remote_app.getSettings()
 
-        remote_ipsec_settings = copy.deepcopy(ipsec_remote_settings)
+        remote_ipsec_settings = copy.deepcopy(org_remote_ipsec_settings)
         remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=local_host_ip, remote_lan=local_host_lan_ip)]
         remote_app.setSettings(remote_ipsec_settings)
         time.sleep(10)
@@ -845,10 +846,9 @@ class IPsecTests(NGFWTestCase):
                                               "event_type", "UNREACHABLE" )
         assert(found == False)
 
-        # removed added tunnel lists
-        ipsec_settings["tunnels"]["list"] = []
-        ipsec_settings = self._app.getSettings()
-        self._app.setSettings(ipsec_settings)
+        # set to original settings
+        self._app.setSettings(org_ipsec_settings)
+        remote_app.setSettings(org_remote_ipsec_settings)
 
     @classmethod
     def final_extra_tear_down(cls):
