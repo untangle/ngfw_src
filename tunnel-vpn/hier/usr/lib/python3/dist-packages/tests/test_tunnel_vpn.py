@@ -300,7 +300,8 @@ class TunnelVpnTests(NGFWTestCase):
         """
         Verify tunnel vpn password encryption setting process
         """
-        appData = self._app.getSettings()
+        org_appData = self._app.getSettings()
+        appData = copy.deepcopy(org_appData)
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1",password="testing",vpn_tunnel_id="202",username="test"))
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel2",vpn_tunnel_id="201"))
         self._app.setSettings(appData)
@@ -340,8 +341,7 @@ class TunnelVpnTests(NGFWTestCase):
                 print("The file doesn't contain a second line.")
         assert second_line == "password", f"Expected 'testing' but got '{second_line}'"
         
-        # clear the created tunnel
-        appData['tunnels']['list'][:] = []
-        self._app.setSettings(appData)
+        # set to original settings
+        self._app.setSettings(org_appData)
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
