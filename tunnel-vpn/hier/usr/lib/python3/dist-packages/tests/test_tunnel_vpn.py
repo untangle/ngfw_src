@@ -307,17 +307,19 @@ class TunnelVpnTests(NGFWTestCase):
         self._app.setSettings(appData)
 
         appData = self._app.getSettings()
-        tunnel_with_password = appData['tunnels']['list'][0]
-        tunnel_with_no_password = appData['tunnels']['list'][1]
+        for tunnel in appData['tunnels']['list']:
+            if tunnel['tunnelId'] == 202:
+                tunnel_with_password = tunnel
+                tunnelId202 = tunnel['tunnelId']
+            elif tunnel['tunnelId'] == 201:
+                tunnel_with_no_password = tunnel
+                tunnelId201 = tunnel['tunnelId']
 
         assert tunnel_with_password.get('encryptedTunnelVpnPassword') is not None, "encryptedTunnelVpnPassword is missing"
         assert tunnel_with_password.get('password') is None, "Password is not None"
 
         assert tunnel_with_no_password.get('encryptedTunnelVpnPassword') is None, "encryptedTunnelVpnPassword is not none"
         assert tunnel_with_no_password.get('password') is None, "Password is not None"
-
-        tunnelId202 = appData['tunnels']['list'][0]["tunnelId"]
-        tunnelId201 = appData['tunnels']['list'][1]["tunnelId"]
 
         filename1 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId202}/auth.txt"
         filename2 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId201}/auth.txt"
