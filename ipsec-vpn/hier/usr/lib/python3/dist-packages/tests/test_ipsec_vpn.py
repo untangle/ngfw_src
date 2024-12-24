@@ -48,8 +48,8 @@ appFW = None
 tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
-remote_uvm_context = None
 remote_app = None
+org_remote_ipsec_settings = None
 
 local_host_ip = None
 local_host_lan_ip = None
@@ -810,7 +810,7 @@ class IPsecTests(NGFWTestCase):
         """
         Verify ipsec tunnel with any remote does't ping pingAddress and generate Tunnel Connection Events
         """
-        global remote_uvm_context, remote_app
+        global remote_app, org_remote_ipsec_settings
 
         # Configure local tunnel with remote any
         org_ipsec_settings = self._app.getSettings()
@@ -844,15 +844,13 @@ class IPsecTests(NGFWTestCase):
         events = global_functions.get_events("IPsec VPN",'Tunnel Connection Events',None,5)
         found = global_functions.check_events( events.get('list'), 5, 
                                               "event_type", "UNREACHABLE" )
-        assert(found == False)
-
         # set to original settings
         self._app.setSettings(org_ipsec_settings)
-        remote_app.setSettings(org_remote_ipsec_settings)
+        assert(found == False)
 
     @classmethod
     def final_extra_tear_down(cls):
-        global appAD, appFW, remote_uvm_context, remote_app
+        global appAD, appFW, remote_app, org_remote_ipsec_settings
 
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
@@ -867,9 +865,9 @@ class IPsecTests(NGFWTestCase):
             global_functions.uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
             appFW = None
         # Remove created remote app
-        if remote_uvm_context != None and remote_app!= None:
-            remote_uvm_context.appManager().destroy( remote_app.getAppSettings()["id"] )
-            remote_uvm_context = None
+        if remote_app != None and org_remote_ipsec_settings != None:
+            remote_app.setSettings(org_remote_ipsec_settings)
+            org_remote_ipsec_settings = None
 
 
 test_registry.register_module("ipsec-vpn", IPsecTests)
