@@ -46,6 +46,7 @@ orig_settings = None
 orig_mailsettings = None
 syslog_server_host = ""
 test_email_address = ""
+reports_clean_tables_script = "/usr/share/untangle/bin/reports-clean-tables.py"
 # pdb.set_trace()
 
 
@@ -1417,8 +1418,9 @@ class ReportsTests(NGFWTestCase):
         result = subprocess.check_output(global_functions.build_postgres_command(query="select count(*) from information_schema.tables where table_schema = 'reports'"), shell=True)
         start_count = int(result.decode("utf-8"))
 
-        # Run clean command from cron
-        result = subprocess.check_output('$(cat /etc/cron.daily/reports-cron | grep "reports-clean-tables.py")', shell=True)
+        # Create and run clean command 
+        clean_command = reports_clean_tables_script + " -d postgresql " + str(settings["dbRetention"]) + "| logger -t uvmreports"
+        result = subprocess.check_output(clean_command, shell=True)
 
         # Get post count of tables
         result = subprocess.check_output(global_functions.build_postgres_command(query="select count(*) from information_schema.tables where table_schema = 'reports'"), shell=True)
