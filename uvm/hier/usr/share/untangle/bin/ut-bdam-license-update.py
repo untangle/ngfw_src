@@ -4,6 +4,7 @@ import subprocess
 import os
 import os.path
 import datetime
+import time
 
 bdamserver_log = open("/var/log/bdamserver.log", "a")
 
@@ -42,14 +43,17 @@ def manage_service(service_name, command):
                 log(f"The service {service_name} is not running.", f"ERROR")
                 return False
 
-        elif command == 'restart':
+        elif command in ['start', 'stop']:
             if result.returncode == 0:
                 log(f"The service {service_name} has been restarted.", f"INFO")
                 return True
             else:
                 log(f"Failed to restart the service {service_name}.", f"ERROR")
                 return False
-        
+        else:
+           pass
+
+
         # For any other commands
         log(f"Invalid command: {command} for service {service_name}.", f"ERROR")
         return False
@@ -116,17 +120,23 @@ def update_license_in_file(file_path, new_license):
 def main():
     file_path = '/etc/bdamserver/bdamserver.conf'
     service_name = 'untangle-bdamserver'
-    
-    if manage_service(service_name, 'status'):  # Only proceed if the service is running
-        # Get the new license serial from the curl request
-        new_license = get_license_from_curl()
-        
-        if new_license:
+
+    new_license = get_license_from_curl()
+    if new_license:
             # Update the file with the new license if it's different from the current one
-            update_license_in_file(file_path, new_license)
-            
-            # Restart the service after updating the license
-            manage_service(service_name, 'restart')
+       update_license_in_file(file_path, new_license)
+    else:
+       return
+
+    
+    if not manage_service(service_name, 'status'):  # Update the license in service file if service disabled
+        # Get the new license serial from the curl request
+        pass
+    else:
+        # stop and start the service after updating the license
+        manage_service(service_name, 'stop')
+        time.sleep(5)
+        manage_service(service_name, 'start')
 
 if __name__ == "__main__":
     main()
