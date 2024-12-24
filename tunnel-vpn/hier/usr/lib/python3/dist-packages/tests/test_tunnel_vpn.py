@@ -300,23 +300,26 @@ class TunnelVpnTests(NGFWTestCase):
         """
         Verify tunnel vpn password encryption setting process
         """
-        appData = self._app.getSettings()
+        org_appData = self._app.getSettings()
+        appData = copy.deepcopy(org_appData)
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1",password="testing",vpn_tunnel_id="202",username="test"))
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel2",vpn_tunnel_id="201"))
         self._app.setSettings(appData)
 
         appData = self._app.getSettings()
-        tunnel_with_password = appData['tunnels']['list'][0]
-        tunnel_with_no_password = appData['tunnels']['list'][1]
+        for tunnel in appData['tunnels']['list']:
+            if tunnel['tunnelId'] == 202:
+                tunnel_with_password = tunnel
+                tunnelId202 = tunnel['tunnelId']
+            elif tunnel['tunnelId'] == 201:
+                tunnel_with_no_password = tunnel
+                tunnelId201 = tunnel['tunnelId']
 
         assert tunnel_with_password.get('encryptedTunnelVpnPassword') is not None, "encryptedTunnelVpnPassword is missing"
         assert tunnel_with_password.get('password') is None, "Password is not None"
 
         assert tunnel_with_no_password.get('encryptedTunnelVpnPassword') is None, "encryptedTunnelVpnPassword is not none"
         assert tunnel_with_no_password.get('password') is None, "Password is not None"
-
-        tunnelId202 = appData['tunnels']['list'][0]["tunnelId"]
-        tunnelId201 = appData['tunnels']['list'][1]["tunnelId"]
 
         filename1 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId202}/auth.txt"
         filename2 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId201}/auth.txt"
@@ -340,8 +343,7 @@ class TunnelVpnTests(NGFWTestCase):
                 print("The file doesn't contain a second line.")
         assert second_line == "password", f"Expected 'testing' but got '{second_line}'"
         
-        # clear the created tunnel
-        appData['tunnels']['list'][:] = []
-        self._app.setSettings(appData)
+        # set to original settings
+        self._app.setSettings(org_appData)
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
