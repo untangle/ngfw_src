@@ -846,6 +846,7 @@ class IPsecTests(NGFWTestCase):
                                               "event_type", "UNREACHABLE" )
         # set to original settings
         self._app.setSettings(org_ipsec_settings)
+        remote_app.setSettings(org_remote_ipsec_settings)
         assert(found == False)
 
     @classmethod
