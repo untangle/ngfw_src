@@ -11,6 +11,7 @@ import os
 import re
 import requests
 import runtests
+import random
 import subprocess
 import sys
 import unittest
@@ -1480,7 +1481,7 @@ class ReportsTests(NGFWTestCase):
         # Copy that original early record, update its timestamp to new early time.
         populate_sql_commands = [
                 f"create temporary table temp_table as (select * from reports.{original_table_name} where time_stamp = '{original_early_time_stamp_string}')",
-                f"update temp_table set time_stamp = '{new_early_time_stamp}'",
+                f"update temp_table set time_stamp = '{new_early_time_stamp}', session_id = '{random.randint(10**18, 10**19 - 1)}'",
         ]
         try:
             # Attempt to make record copy in original table.
@@ -1498,8 +1499,9 @@ class ReportsTests(NGFWTestCase):
         result = subprocess.check_output(global_functions.build_postgres_command(query=f"select count(*) from reports.sessions where time_stamp < '{original_latest_time_stamp_string}'"), shell=True)
         start_count = int(result.decode("utf-8"))
 
-        # Run clean
-        result = subprocess.check_output('$(cat /etc/cron.hourly/reports-cron | grep "reports-clean-tables.py")', shell=True)
+        # Create and run clean command 
+        clean_command = reports_clean_tables_script + " -d postgresql -h " + str(settings["dbRetentionHourly"]) + " " + str(settings["dbRetentionHourly"])
+        result = subprocess.check_output(clean_command, shell=True)
 
         # Get post clean record count
         result = subprocess.check_output(global_functions.build_postgres_command(query=f"select count(*) from reports.sessions where time_stamp < '{original_latest_time_stamp_string}'"), shell=True)
