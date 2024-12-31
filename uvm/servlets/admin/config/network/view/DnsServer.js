@@ -10,121 +10,121 @@ Ext.define('Ung.config.network.view.DnsServer', {
 
     layout: 'border',
 
-    html: '',
-    listeners: {
-        afterrender: function (view) {
-            view.setHtml('<iframe src="/vue/NgfwDns" style="width: 100%; height: 100%; border: none;"></iframe>');
-        },
-    },
+    // html: '',
+    // listeners: {
+    //     afterrender: function (view) {
+    //         view.setHtml('<iframe src="/vue/NgfwDns" style="width: 100%; height: 100%; border: none;"></iframe>');
+    //     },
+    // },
 
-    // items: [{
-    //     xtype: 'ungrid',
-    //     region: 'center',
+    items: [{
+        xtype: 'ungrid',
+        region: 'center',
 
-    //     title: 'Static DNS'.t(),
+        title: 'Static DNS'.t(),
 
-    //     tbar: ['@addInline', '->', '@import', '@export'],
-    //     recordActions: ['delete'],
+        tbar: ['@addInline', '->', '@import', '@export'],
+        recordActions: ['delete'],
 
-    //     emptyText: 'No Static DNS Entries defined'.t(),
+        emptyText: 'No Static DNS Entries defined'.t(),
         
-    //     importValidationJavaClass: true,
+        importValidationJavaClass: true,
 
-    //     listProperty: 'settings.dnsSettings.staticEntries.list',
+        listProperty: 'settings.dnsSettings.staticEntries.list',
 
-    //     emptyRow: {
-    //         name: 'hostname.int',
-    //         address: '1.2.3.4',
-    //         javaClass: 'com.untangle.uvm.network.DnsStaticEntry'
-    //     },
+        emptyRow: {
+            name: 'hostname.int',
+            address: '1.2.3.4',
+            javaClass: 'com.untangle.uvm.network.DnsStaticEntry'
+        },
 
-    //     bind: '{staticDnsEntries}',
+        bind: '{staticDnsEntries}',
 
-    //     columns: [{
-    //         header: 'Name'.t(),
-    //         dataIndex: 'name',
-    //         width: Renderer.hostnameWidth,
-    //         flex: 1,
-    //         editor: {
-    //             xtype: 'textfield',
-    //             allowBlank: false,
-    //             bind: '{record.name}',
-    //             maskRe: /[a-zA-Z0-9\-_.]/,
-    //             emptyText: '[enter name]'.t()
-    //         }
-    //     }, {
-    //         header: 'Address'.t(),
-    //         width: Renderer.ipWidth,
-    //         dataIndex: 'address',
-    //         editor: {
-    //             xtype: 'textfield',
-    //             emptyText: '[enter address]'.t(),
-    //             bind: '{record.address}',
-    //             allowBlank: false,
-    //             vtype: 'ipAddress',
-    //         }
-    //     }]
-    // }, {
-    //     xtype: 'ungrid',
-    //     region: 'south',
+        columns: [{
+            header: 'Name'.t(),
+            dataIndex: 'name',
+            width: Renderer.hostnameWidth,
+            flex: 1,
+            editor: {
+                xtype: 'textfield',
+                allowBlank: false,
+                bind: '{record.name}',
+                maskRe: /[a-zA-Z0-9\-_.]/,
+                emptyText: '[enter name]'.t()
+            }
+        }, {
+            header: 'Address'.t(),
+            width: Renderer.ipWidth,
+            dataIndex: 'address',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter address]'.t(),
+                bind: '{record.address}',
+                allowBlank: false,
+                vtype: 'ipAddress',
+            }
+        }]
+    }, {
+        xtype: 'ungrid',
+        region: 'south',
 
-    //     height: '50%',
-    //     split: true,
+        height: '50%',
+        split: true,
 
-    //     title: 'Domain DNS Servers'.t(),
+        title: 'Domain DNS Servers'.t(),
 
-    //     tbar: ['@addInline', '->', '@import', '@export'],
-    //     recordActions: ['delete'],
+        tbar: ['@addInline', '->', '@import', '@export'],
+        recordActions: ['delete'],
 
-    //     emptyText: 'No Domain DNS Servers defined'.t(),
+        emptyText: 'No Domain DNS Servers defined'.t(),
 
-    //     importValidationJavaClass: true,
+        importValidationJavaClass: true,
 
-    //     listProperty: 'settings.dnsSettings.localServers.list',
+        listProperty: 'settings.dnsSettings.localServers.list',
 
-    //     emptyRow: {
-    //         domain: 'hostname.int',
-    //         localServer: '1.2.3.4',
-    //         javaClass: 'com.untangle.uvm.network.DnsLocalServer'
-    //     },
+        emptyRow: {
+            domain: 'hostname.int',
+            localServer: '1.2.3.4',
+            javaClass: 'com.untangle.uvm.network.DnsLocalServer'
+        },
 
-    //     bind: '{localServers}',
+        bind: '{localServers}',
 
-    //     columns: [{
-    //         header: 'Domain'.t(),
-    //         dataIndex: 'domain',
-    //         width: Renderer.hostnameWidth,
-    //         flex: 1,
-    //         editor: {
-    //             xtype: 'textfield',
-    //             allowBlank: false,
-    //             emptyText: '[enter domain]'.t(),
-    //             maskRe: /[a-zA-Z0-9\-_.]/,
-    //             bind: '{record.domain}',
-    //         }
-    //     }, {
-    //         header: 'Server'.t(),
-    //         width: Renderer.ipWidth,
-    //         dataIndex: 'localServer',
-    //         editor: {
-    //             xtype: 'textfield',
-    //             emptyText: '[enter DNS server]'.t(),
-    //             allowBlank: false,
-    //             bind: '{record.localServer}',
-    //             vtype: 'ipAddress',
-    //         }
-    //     }],
+        columns: [{
+            header: 'Domain'.t(),
+            dataIndex: 'domain',
+            width: Renderer.hostnameWidth,
+            flex: 1,
+            editor: {
+                xtype: 'textfield',
+                allowBlank: false,
+                emptyText: '[enter domain]'.t(),
+                maskRe: /[a-zA-Z0-9\-_.]/,
+                bind: '{record.domain}',
+            }
+        }, {
+            header: 'Server'.t(),
+            width: Renderer.ipWidth,
+            dataIndex: 'localServer',
+            editor: {
+                xtype: 'textfield',
+                emptyText: '[enter DNS server]'.t(),
+                allowBlank: false,
+                bind: '{record.localServer}',
+                vtype: 'ipAddress',
+            }
+        }],
 
-    //     // responsive plugin is added inside ungrid
-    //     responsiveConfig: {
-    //         wide: {
-    //             region: 'east',
-    //             width: '50%'
-    //         },
-    //         tall: {
-    //             region: 'south',
-    //             height: '50%'
-    //         }
-    //     }
-    // }]
+        // responsive plugin is added inside ungrid
+        responsiveConfig: {
+            wide: {
+                region: 'east',
+                width: '50%'
+            },
+            tall: {
+                region: 'south',
+                height: '50%'
+            }
+        }
+    }]
 });

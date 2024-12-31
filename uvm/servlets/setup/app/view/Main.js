@@ -1,5 +1,6 @@
 Ext.define('Ung.Setup.Main', {
-    extend: 'Ext.container.Viewport',
+    // extend: 'Ext.container.Viewport',
+    extend: 'Ext.panel.Panel',
 
     viewModel: {
         data: {
@@ -7,7 +8,7 @@ Ext.define('Ung.Setup.Main', {
             remoteReachable: null
         }
     },
-    layout: 'center',
+     layout: 'center',
     padding: 20,
     items: [{
         xtype: 'container',
@@ -24,14 +25,14 @@ Ext.define('Ung.Setup.Main', {
             html: '<img src="images/BrandingLogo.png?' + (new Date()).getTime() + '" height=48/><h1>' + Ext.String.format('Thanks for choosing {0}!'.t(), rpc.oemShortName) + '</h1>'
         }]
     }],
-    listeners: {
+    listeners: {         
         afterrender: 'onAfterRender'
     },
     
     // html: '',
     // listeners: {
     //     afterrender: function (view) {
-    //         view.setHtml('<iframe src="/vue/setupwizard" style="width: 100%; height: 100%; border: none;"></iframe>');
+    //         view.setHtml('<iframe src="/vue/setupwizard" style="width: 100%; height: 100%; border: 1px solid red;"></iframe>');
     //     },
     // },
     controller: {
@@ -164,6 +165,7 @@ Ext.define('Ung.Setup.Main', {
             Ext.defer(function () {
                 var remoteReachable = rpc.setup.getRemoteReachable();
                 vm.set("remoteReachable", remoteReachable);
+            
             }, 500);
 
             // check if resuming
@@ -174,6 +176,8 @@ Ext.define('Ung.Setup.Main', {
 
         resetWizard: function() {
             var me = this;
+            console.log("rpc.remote",rpc.remote);
+            console.log("rpc.remoteReachable",rpc.remoteReachable);
             if(rpc.remote && !rpc.remoteReachable){
                 if(Util.setRpcJsonrpc("admin") == true){
                     me.resetWizardContinue();
