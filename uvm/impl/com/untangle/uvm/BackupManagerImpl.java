@@ -138,7 +138,7 @@ public class BackupManagerImpl implements BackupManager
         File restoreFile = new File(System.getProperty("uvm.conf.dir") + "/restore.tar.gz");
         ExecManagerResult checkResult = null;
 
-        logger.info("restoreBackup( {} ,  + maintainRegex + {}", restoreFile , " );");
+        logger.info("restoreBackup( {} \"{}\"", restoreFile, maintainRegex);
 
         try {
             //Copy the bytes to a temp file
