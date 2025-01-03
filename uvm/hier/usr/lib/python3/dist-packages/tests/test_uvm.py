@@ -1131,6 +1131,25 @@ class UvmTests(NGFWTestCase):
         assert user.get('password') is None, "password is not None"
         #Clear the created user
         global_functions.uvmContext.localDirectory().setUsers(remove_local_directory_user())
+
+    def test_169_test_local_user_deletion(self):
+        """
+        Verify local user removal
+        """
+        # Create local directory user 'test'
+        global_functions.uvmContext.localDirectory().setUsers(create_local_directory_user())
+
+        #test user creation
+        users = global_functions.uvmContext.localDirectory().getUsers()
+        assert len(users['list']) == 1, f"Assertion failed: Users list is empty."
+
+
+        #Clear the created user
+        global_functions.uvmContext.localDirectory().setUsers(remove_local_directory_user())
+
+        #Check the deletion of user
+        users = global_functions.uvmContext.localDirectory().getUsers()
+        assert len(users['list']) == 0, f"Assertion failed: Users list is not empty, it contains {len(users['list'])} elements."
         
 
     def test_170_log_retention(self):
