@@ -416,10 +416,6 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public void setUsers(LinkedList<LocalDirectoryUser> users)
     {
-        if (users == null || users.isEmpty()) {
-            logger.info("Users list is empty");
-            return;
-        }
         HashSet<String> usersSeen = new HashSet<>();
 
         /**
