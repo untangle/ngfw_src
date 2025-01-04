@@ -10,15 +10,12 @@ import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.event.EventSettings;
-import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.app.Reporting;
 
 import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.TimeZone;
-import java.util.Calendar;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.Date;
@@ -30,7 +27,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileNotFoundException;
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -101,7 +97,7 @@ public class ConfigManagerImpl implements ConfigManager
             logger.warn("Exception creating JSON response", exn);
         }
 
-        logger.debug("RESPONSE = " + response.toString());
+        logger.debug("RESPONSE = {}", response);
         return response;
     }
 
@@ -242,7 +238,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject setHostName(String argName)
     {
-        logger.info("CMAN_HIST setHostName() = " + argName);
+        logger.info("CMAN_HIST setHostName() = {}", argName);
 
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         String oldName = netSettings.getHostName();
@@ -279,7 +275,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject setDomainName(String argName)
     {
-        logger.info("CMAN_HIST setDomainName() = " + argName);
+        logger.info("CMAN_HIST setDomainName() = {}", argName);
 
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         String oldName = netSettings.getDomainName();
@@ -397,7 +393,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject setDeviceTime(String argTime, String argZone)
     {
-        logger.info("CMAN_HIST setDeviceTime() = " + argTime + "|" + argZone);
+        logger.info("CMAN_HIST setDeviceTime() = {}|{}", argTime , argZone);
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date setTime;
@@ -406,7 +402,7 @@ public class ConfigManagerImpl implements ConfigManager
         try {
             setTime = formatter.parse(argTime);
         } catch (Exception exn) {
-            logger.warn("Exception parsing argTime: " + argTime, exn);
+            logger.warn("Exception parsing argTime: {}", argTime, exn);
             return createResponse(1, exn.toString());
         }
 
@@ -432,7 +428,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public JSONObject setAdminCredentials(String argUsername, String argPassword)
     {
-        logger.info("CMAN_HIST setAdminCredentials() = " + argUsername);
+        logger.info("CMAN_HIST setAdminCredentials() = {}", argUsername);
 
         // get the list of admin users
         AdminSettings adminSettings = context.adminManager().getSettings();
@@ -536,7 +532,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object setSyslogServer(boolean argEnabled, String argHost, int argPort, String argProtocol)
     {
-        logger.info("CMAN_HIST setSyslogServer() = " + argEnabled + "|" + argHost + "|" + argPort + "|" + argProtocol);
+        logger.info("CMAN_HIST setSyslogServer() = {}|{}|{}|{}", argEnabled , argHost , argPort , argProtocol);
 
         String protoName = null;
 
@@ -572,13 +568,13 @@ public class ConfigManagerImpl implements ConfigManager
 
         NetworkSettings netSettings = context.networkManager().getNetworkSettings();
         List<DeviceStatus> devStatusList = context.networkManager().getDeviceStatus();
-        LinkedList<InterfaceMetrics> metricList = new LinkedList<InterfaceMetrics>();
+        LinkedList<InterfaceMetrics> metricList = new LinkedList<>();
         BufferedReader reader;
         String readLine;
 
         // we read and parse /proc/net/dev for the raw interface stats
         try {
-            reader = new BufferedReader(new FileReader(new File("/proc/net/dev")));
+            reader = new BufferedReader(new FileReader("/proc/net/dev"));
         } catch (Exception exn) {
             logger.warn("Exception opening /proc/net/dev", exn);
             return metricList;
@@ -605,7 +601,7 @@ public class ConfigManagerImpl implements ConfigManager
 
             // if we don't find exactly the number of columns we expect ignore the line
             if (column.length != 17) {
-                logger.warn("Invalid device line: " + readLine);
+                logger.warn("Invalid device line: {}", readLine);
                 continue;
             }
 
@@ -765,7 +761,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object restoreSystemBackup(String argFileName, String maintainRegex)
     {
-        logger.info("CMAN_HIST restoreSystemBackup() = " + argFileName + "|" + maintainRegex);
+        logger.info("CMAN_HIST restoreSystemBackup() = {}|{}", argFileName , maintainRegex);
 
         // The UI currently passes the following maintainRegex values to restoreBackup:
         // Restore all settings = ''
@@ -806,7 +802,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public Object doDatabaseQuery(String argQuery)
     {
-        logger.info("CMAN_HIST doDatabaseQuery() = " + argQuery);
+        logger.info("CMAN_HIST doDatabaseQuery() = {}", argQuery);
 
         String problem = null;
 
@@ -826,8 +822,8 @@ public class ConfigManagerImpl implements ConfigManager
         TreeMap<String, Object> info = new TreeMap<>();
         info.put("Query", argQuery);
 
-        List<JSONObject> resultData = new LinkedList<JSONObject>();
-        List<String> columnList = new ArrayList<String>();
+        List<JSONObject> resultData = new LinkedList<>();
+        List<String> columnList = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSetMetaData metaData = null;
         ResultSet resultSet = null;
@@ -938,6 +934,7 @@ public class ConfigManagerImpl implements ConfigManager
             }
             json.put(name, item.toString());
         } catch (Exception exn) {
+            logger.error(exn);
         }
     }
 
@@ -1039,7 +1036,6 @@ public class ConfigManagerImpl implements ConfigManager
 
         try {
             File temperatureFile = new File(temperatureSourceFile);
-            String capture = null;
             if (temperatureFile.exists()) {
                 reader = new BufferedReader(new FileReader(temperatureFile));
                 string = reader.readLine();
@@ -1092,13 +1088,12 @@ public class ConfigManagerImpl implements ConfigManager
 
             try {
                 File sensorFile = new File("/sys/devices/virtual/thermal/" + zone.getName() + "/type");
-                String capture = null;
                 if (sensorFile.exists()) {
                     reader = new BufferedReader(new FileReader(sensorFile));
                     string = reader.readLine();
                     if ((string != null) && (string.equals("x86_pkg_temp"))) {
                         discoveryFile = zone.getAbsolutePath() + "/temp";
-                        logger.info("Discovered system temperature source: " + discoveryFile);
+                        logger.info("Discovered system temperature source: {}", discoveryFile);
                     }
                 }
             } catch (Exception exn) {
@@ -1136,7 +1131,6 @@ public class ConfigManagerImpl implements ConfigManager
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd-HHmmss");
         StringBuilder fileName = new StringBuilder();
 
-        TimeZone timezone = context.systemManager().getTimeZone();
         Date date = new Date(System.currentTimeMillis());
         fileName.append("/tmp/diagdump");
         fileName.append("_");
@@ -1247,7 +1241,7 @@ public class ConfigManagerImpl implements ConfigManager
     {
         logger.info("CMAN_HIST getActiveDhcpLeases()");
 
-        LinkedList<DhcpStaticEntry> activeList = new LinkedList<DhcpStaticEntry>();
+        LinkedList<DhcpStaticEntry> activeList = new LinkedList<>();
 
         BufferedReader reader;
         String readLine;
@@ -1277,7 +1271,7 @@ public class ConfigManagerImpl implements ConfigManager
 
             // if we don't find exactly the number of columns we expect ignore the line
             if (column.length != 5) {
-                logger.warn("Invalid reservation line: " + readLine);
+                logger.warn("Invalid reservation line: {}", readLine);
                 continue;
             }
 
@@ -1288,7 +1282,7 @@ public class ConfigManagerImpl implements ConfigManager
             try {
                 hostAddr = InetAddress.getByName(column[2]);
             } catch (Exception exn) {
-
+                logger.error(exn);
             }
 
             if (hostAddr == null) continue;
