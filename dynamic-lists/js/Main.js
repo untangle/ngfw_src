@@ -11,6 +11,8 @@ Ext.define('Ung.apps.dynamic-lists.Main', {
         }
     },
     items: [
-        { xtype: 'app-dynamic-lists-status' }
+        { xtype: 'app-dynamic-lists-status' },
+        { xtype: 'app-dynamic-lists-configuration' }
+
     ]
 });
