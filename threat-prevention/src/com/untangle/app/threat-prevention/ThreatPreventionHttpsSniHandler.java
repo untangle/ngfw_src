@@ -16,6 +16,7 @@ import com.untangle.app.http.RequestLine;
 import com.untangle.app.http.RequestLineToken;
 import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.HttpRequestEvent;
+import com.untangle.app.http.SslEngineBase;
 import com.untangle.app.http.HeaderToken;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -38,13 +39,6 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 {
     private final Logger logger = LogManager.getLogger(getClass());
     private ThreatPreventionApp app;
-
-    // these are used while extracting the SNI from the SSL ClientHello packet
-    private static int TLS_HANDSHAKE = 0x16;
-    private static int CLIENT_HELLO = 0x01;
-    private static int SERVER_NAME = 0x0000;
-    private static int HOST_NAME = 0x00;
-
     /**
      * Constructor
      * 
@@ -96,7 +90,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         }
 
         // see if there is an SSL engine attached to the session
-        ThreatPreventionSSLEngine engine = (ThreatPreventionSSLEngine) session.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SSL_ENGINE);
+        SslEngineBase engine = (SslEngineBase) session.globalAttachment(AppSession.KEY_THREAT_PREVENTION_SSL_ENGINE);
 
         if (engine != null) {
             // found an engine which means we've decided to block so we pass
@@ -136,7 +130,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 
             // if no room in the hold buffer then just give up
             if ((hold.position() + buff.limit()) > hold.capacity()) {
-                logger.debug("Giving up after " + hold.position() + " bytes");
+                logger.debug("Giving up after {} bytes" , hold.position());
                 sess.release();
                 ByteBuffer array[] = new ByteBuffer[1];
                 array[0] = hold;
@@ -149,7 +143,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             buff.flip(); // flip the working buffer
         }
 
-        logger.debug("HANDLE_CHUNK = " + buff.toString());
+        logger.debug("HANDLE_CHUNK = {}", buff.toString());
 
         // scan the buffer for the SNI hostname
         try {
@@ -177,7 +171,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             return;
         }
 
-        if (domain != null) logger.debug("Detected SSL connection (via SNI) to: " + domain);
+        if (domain != null) logger.debug("Detected SSL connection (via SNI) to: {}", domain);
 
         /**
          * If SNI information is not present then we fallback to using the
@@ -212,7 +206,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             }
 
             if (domain != null) {
-                logger.debug("Detected SSL connection (via CERT) to: " + domain);
+                logger.debug("Detected SSL connection (via CERT) to: {}", domain);
             }
         }
 
@@ -247,9 +241,9 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         if (requestLine == null) {
             requestLine = new RequestLine(sess.sessionEvent(), HttpMethod.GET, new byte[] { '/' });
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_REQUEST_LINE, requestLine);
-            logger.debug("Creating new requestLine: " + requestLine.toString());
+            logger.debug("Creating new requestLine: {}", requestLine.toString());
         } else {
-            logger.debug("Using existing requestLine: " + requestLine.toString());
+            logger.debug("Using existing requestLine: {}", requestLine.toString());
         }
 
         String encodedDomain = URLEncoder.encode(domain, StandardCharsets.UTF_8);
@@ -262,9 +256,9 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             URI uri = new URI("https://" + encodedDomain + "/");
         } catch (Exception e) {
             if (e.getMessage().contains("Illegal character")) {
-                logger.error("Could not parse (illegal character): " + domain);
+                logger.error("Could not parse (illegal character): {}", domain);
             } else {
-                logger.error("Could not parse URI for " + domain, e);
+                logger.error("Could not parse URI for {} {}" ,domain, e);
             }
 
             /**
@@ -292,9 +286,9 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         if (rlt == null) {
             rlt = new RequestLineToken(requestLine, "HTTP/1.1");
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_REQUEST_TOKEN, rlt);
-            logger.debug("Creating new requestLineToken: " + rlt.toString());
+            logger.debug("Creating new requestLineToken: {}", rlt.toString());
         } else {
-            logger.debug("Using existing requestLine: " + rlt.toString());
+            logger.debug("Using existing requestLine: {}",  rlt.toString());
         }
 
         /**
@@ -317,9 +311,9 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             requestLine.setHttpRequestEvent(evt);
             this.app.logEvent(evt);
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT, evt);
-            logger.debug("Creating new HttpRequestEvent: " + evt.toString());
+            logger.debug("Creating new HttpRequestEvent: {}", evt.toString());
         } else {
-            logger.debug("Using existing HttpRequestEvent: " + evt.toString());
+            logger.debug("Using existing HttpRequestEvent: {}", evt.toString());
         }
 
         // attach the hostname we extracted to the session
@@ -334,14 +328,14 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         // we have decided to block so we create the SSL engine and start
         // by passing it all the client data received thus far
         if (redirect != null) {
-            logger.debug(" ----------------BLOCKED: " + domain + " traffic----------------");
-            logger.debug("TCP: " + sess.getClientAddr().getHostAddress() + ":" + sess.getClientPort() + " -> " + sess.getServerAddr().getHostAddress() + ":" + sess.getServerPort());
+            logger.debug(" ----------------BLOCKED: {} traffic----------------", domain);
+            logger.debug("TCP: {}:{} -> {}:{}", sess.getClientAddr().getHostAddress(), sess.getClientPort(), sess.getServerAddr().getHostAddress(), sess.getServerPort());
 
-            ThreatPreventionSSLEngine engine;
+            SslEngineBase engine;
             if(app.getSettings().getCloseHttpsBlockEnabled()){
                 sess.killSession();
             }else{
-                engine = new ThreatPreventionSSLEngine(sess, redirect.getResponse());
+                engine = new SslEngineBase(sess, redirect.getResponse());
                 sess.globalAttach(AppSession.KEY_THREAT_PREVENTION_SSL_ENGINE, engine);
                 engine.handleClientData(buff);
             }
