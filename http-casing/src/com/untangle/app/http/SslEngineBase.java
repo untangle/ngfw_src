@@ -30,7 +30,9 @@ import com.untangle.app.http.HeaderToken;
 import com.untangle.app.http.StatusLine;
 
 /**
- * We do just enough processing of HTTPS sessions using SSLEngine so we can
+ * This class is base for all the ssl redirection that we do in webfilter,
+ * threat prevention and captive portal before ssl redirections we have done
+* just enough processing of HTTPS sessions using SSLEngine so we can
 * return a block page when required. It will always cause a browser warning,
 * either because our cert isn't trusted or because we're redirecting to a
 * different place than the client requested, but we figure in most cases it's
@@ -42,25 +44,17 @@ import com.untangle.app.http.StatusLine;
 public class SslEngineBase
 {
     private final Logger logger = LogManager.getLogger(getClass());
-    private AppTCPSession session;
     private SSLContext sslContext;
     private SSLEngine sslEngine;
     private Token[] response;
 
     /**
-     * Constructor
-    * 
-    * @param session
-    *        The session
-    * @param response
-    *        Token[] of https response to send.
+     * Default Constructor
+     * Initilise the keystore and SSLEngine
     */
-    public SslEngineBase(AppTCPSession session, Token[] response)
+    public SslEngineBase()
     {
         String webCertFile = CertificateManager.CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate().replaceAll("\\.pem", "\\.pfx");
-        this.session = session;
-        this.response = response;
-
         try {
             // use the argumented certfile and password to init our keystore
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
@@ -86,18 +80,34 @@ public class SslEngineBase
     }
 
     /**
+    * Constructor
+    * 
+    * @param response
+    *        Token[] of https response to send.
+    */
+    public SslEngineBase(Token[] response)
+    {
+        this();
+        this.response = response;
+    }
+
+    /**
      * Handles a chunk of client data
     * 
+    * @param session
+    *        The session
     * @param buff
     *        The client data
+     @param key
+    *        App specific ssl key
     */
-    public void handleClientData(ByteBuffer buff)
+    public void handleClientData(AppTCPSession session, ByteBuffer buff, String key)
     {
         // pass the data to the client data worker function
         boolean success = false;
 
         try {
-            success = clientDataWorker(buff);
+            success = clientDataWorker(session, buff, key);
         }
 
         // catch any exceptions
@@ -107,7 +117,7 @@ public class SslEngineBase
 
         // null result means something went haywire
         if (!success) {
-            session.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, null);
+            session.globalAttach(key, null);
             session.resetClient();
             session.resetServer();
             session.release();
@@ -118,20 +128,22 @@ public class SslEngineBase
 
     /**
      * Processes a chunk of client data
-    * 
+    * @param session
+    *        The session
     * @param data
     *        The data
     * @return True if processing was successful, otherwise false
+    * @param key
+    *        App specific ssl key
     * @throws Exception
     */
-
-    private boolean clientDataWorker(ByteBuffer data) throws Exception
+    public boolean clientDataWorker(AppTCPSession session, ByteBuffer data, String key) throws Exception
     {
         boolean done = false;
         HandshakeStatus status;
-
         logger.debug("PARAM_BUFFER = {}", data.toString());
-
+        boolean isClientDataProcessed = clientDataProcessor(session, data);
+        if(isClientDataProcessed) return true;
         while (!done) {
             status = sslEngine.getHandshakeStatus();
             logger.debug("STATUS = {}", status);
@@ -162,17 +174,17 @@ public class SslEngineBase
 
             // handle unwrap during handshake
             case NEED_UNWRAP:
-                done = doNeedUnwrap(data);
+                done = doNeedUnwrap(session, data);
                 break;
 
             // handle wrap during handshake
             case NEED_WRAP:
-                done = doNeedWrap(data);
+                done = doNeedWrap(session, data);
                 break;
 
             // handle data when no handshake is in progress
             case NOT_HANDSHAKING:
-                done = doNotHandshaking(data);
+                done = doNotHandshaking(session, data, key);
                 break;
 
             // should never happen but we handle just to be safe
@@ -207,13 +219,14 @@ public class SslEngineBase
 
     /**
      * Called when SSLEngine status = NEED_UNWRAP
-    * 
+    * @param session
+    *        TCP session
     * @param data
     *        The data received
     * @return True to continue the parser loop, false to break out
     * @throws Exception
     */
-    private boolean doNeedUnwrap(ByteBuffer data) throws Exception
+    private boolean doNeedUnwrap(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SSLEngineResult result;
         ByteBuffer target = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize() + 50);
@@ -222,10 +235,9 @@ public class SslEngineBase
         result = sslEngine.unwrap(data, target);
         logger.debug("EXEC_UNWRAP {}" , result.toString());
 
-        if(result.getStatus() == SSLEngineResult.Status.OK && !data.hasRemaining()){
-            // Nothing more to process.
-            return true;
-        }
+        boolean verifySSLstatus = verifySSLstatus(result, data);
+
+        if(verifySSLstatus) return true;
 
         if (result.getStatus() == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
             // underflow during unwrap means the SSLEngine needs more data
@@ -254,13 +266,14 @@ public class SslEngineBase
 
     /**
      * Called when SSLEngine status = NEED_WRAP
-    * 
+    * @param session
+    *        TCP session
     * @param data
     *        The data received
     * @return True to continue the parser loop, false to break out
     * @throws Exception
     */
-    private boolean doNeedWrap(ByteBuffer data) throws Exception
+    private boolean doNeedWrap(AppTCPSession session, ByteBuffer data) throws Exception
     {
         SSLEngineResult result;
         ByteBuffer target = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
@@ -292,13 +305,16 @@ public class SslEngineBase
      * Called when we receive data and dataMode is true, meaning we're done with
     * the handshake and we're now passing data back and forth between the two
     * sides.
-    * 
+    * @param session
+    *        The session
     * @param data
     *        The data received
     * @return True to continue the parser loop, false to break out
+    * @param key
+    *        App specific ssl key
     * @throws Exception
     */
-    private boolean doNotHandshaking(ByteBuffer data) throws Exception
+    private boolean doNotHandshaking(AppTCPSession session, ByteBuffer data, String key) throws Exception
     {
         SSLEngineResult result = null;
         String vector = new String();
@@ -317,9 +333,11 @@ public class SslEngineBase
         if (result.bytesProduced() == 0) return false;
 
         // when unwrap finally returns some data it will be the client request
-        logger.debug("CLIENT REQUEST = {}", new String(target.array(), 0, target.position()));
-
-        for(Token token : this.response){
+        String request = new String(target.array(), 0, target.position());
+        logger.debug("CLIENT REQUEST = {}", request);
+        Token[] generatedResponse = generateResponse(request, session);
+        if(generatedResponse == null) return true;
+        for(Token token : generatedResponse){
             if( token instanceof StatusLine ){
                 vector += ((StatusLine) token).getString();
             }else if( token instanceof HeaderToken){
@@ -335,7 +353,7 @@ public class SslEngineBase
         result = sslEngine.wrap(ibuff, obuff);
 
         // we are done so cleanup attachment and release session
-        session.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, null);
+        session.globalAttach(key, null);
         session.release();
 
         // return the now encrypted reply buffer back to the client
@@ -343,6 +361,44 @@ public class SslEngineBase
         session.sendDataToClient(obuff);
 
         return true;
+    }
+    /**
+     * In case of webfilter and threatprevention no addition process is required hence returning false
+     * 
+     * @param session
+     *        The TCP session
+     * @param data
+     *        The raw data from client
+     * @return True if processing was successful, otherwise false
+     */
+    public boolean clientDataProcessor(AppTCPSession session, ByteBuffer data){
+        return false;
+    }
+
+    /**
+     * Get the response for webfilter and threatprevention
+     * @param request
+     *        Client request
+     * @param session
+     *        The TCP session
+     * @return response if request parse successfully else null
+     */
+    public Token[] generateResponse(String request, AppTCPSession session){
+        return this.response;
+    }
+
+    /**
+     * verify ssl status for webfilter and threatprevention 
+     * @param result
+     *        SSL engine result
+     * @param data
+     *        The raw data from client
+     * @return true if status is ok else false
+     */
+    public boolean verifySSLstatus(SSLEngineResult result,  ByteBuffer data){
+        // Nothing more to process.
+        if(result.getStatus() == SSLEngineResult.Status.OK && !data.hasRemaining()) return true;
+        return false;
     }
 
     /**

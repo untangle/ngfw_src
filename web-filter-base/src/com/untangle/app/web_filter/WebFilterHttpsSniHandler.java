@@ -100,7 +100,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             // found an engine which means we've decided to block so we pass
             // all received data to the SSL engine which will create and
             // encrypt the redirect and return it for transmit to the client
-            engine.handleClientData(data);
+            engine.handleClientData(session, data, AppSession.KEY_WEB_FILTER_SSL_ENGINE);
             return;
         } else {
             // no engine attached so we're still analyzing this thing
@@ -351,9 +351,9 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             if(app.getSettings().getCloseHttpsBlockEnabled()){
                 sess.killSession();
             }else{
-                engine = new SslEngineBase(sess, redirect.getResponse());
+                engine = new SslEngineBase(redirect.getResponse());
                 sess.globalAttach(AppSession.KEY_WEB_FILTER_SSL_ENGINE, engine);
-                engine.handleClientData(buff);
+                engine.handleClientData(sess, buff, AppSession.KEY_WEB_FILTER_SSL_ENGINE);
             }
             return;
         }
