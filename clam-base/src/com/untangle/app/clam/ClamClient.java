@@ -3,10 +3,14 @@
  */
 package com.untangle.app.clam;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.SocketException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.StringTokenizer;
@@ -62,152 +66,56 @@ public class ClamClient extends VirusClient
     public void run()
     {
         VirusClientSocket clamcSocket = null;
-        VirusClientSocket msgcSocket = null;
-
         try {
             clamcSocket = VirusClientSocket.create(cContext.getHost(), cContext.getPort());
+            OutputStream os = clamcSocket.getOutputStream();
+            InputStream is = clamcSocket.getInputStream();
+            FileInputStream fis = new FileInputStream(cContext.getMsgFile());
+            BufferedInputStream bis = new BufferedInputStream(fis) ;
+                // Send the nINSTREAM command to start the scan
+                String command = "nINSTREAM\n";
+                os.write(command.getBytes());
+
+                // Read the file in chunks and send to ClamAV
+                byte[] buffer = new byte[8192]; // 8 KB buffer
+                int bytesRead;
+
+                while ((bytesRead = bis.read(buffer)) != -1) {
+                    // Send the length of the data chunk
+                    byte[] chunkLength = new byte[4];
+                    chunkLength[0] = (byte) (bytesRead >> 24);
+                    chunkLength[1] = (byte) (bytesRead >> 16);
+                    chunkLength[2] = (byte) (bytesRead >> 8);
+                    chunkLength[3] = (byte) (bytesRead);
+
+                    os.write(chunkLength);
+                    os.write(buffer, 0, bytesRead);
+                }
+
+                // Send end-of-stream marker (\x00\x00\x00\x00)
+                os.write(new byte[]{0, 0, 0, 0});
+
+                // Read the response from ClamAV
+                byte[] responseBuffer = new byte[1024];
+                int responseBytesRead = is.read(responseBuffer);
+                String response = new String(responseBuffer, 0, responseBytesRead);
+                Matcher clamdMatcher = REP_RESULTP.matcher(response);
+                if (false == clamdMatcher.find())
+                    throw new Exception(dbgName + ", clamd result is invalid: " + response);
+
+                parseClamdResult(response);
+        } catch (FileNotFoundException e) {
+            clogger.warn(dbgName + ", finish, file not present (" + cContext.getHost() + ":" + cContext.getPort() + ")", e);
+        } catch (IOException e) {
+            clogger.warn(dbgName + ", finish, clamc could not connect to msg clamd (" + cContext.getHost() + ":" + cContext.getPort() + ")", e);
+
         } catch (Exception e) {
             clogger.warn(dbgName + ", finish, clamc could not connect to main clamd; clamd may not be configured or clamd may be overloaded", e);
-            cContext.setResultError();
-            cleanExit();
-            return;
-        }
-        //clogger.debug("run, thread: " + cThread + ", this: " + this + ", create: " + clamcSocket);
 
-        try {
-            BufferedOutputStream bufOutputStream = clamcSocket.getBufferedOutputStream();
-            BufferedReader bufReader = clamcSocket.getBufferedReader();
-
-            if (true == this.stop) {
-                clogger.warn(dbgName + ", clamc interrupted post socket streams");
-                return; // return after finally
-            }
-
-            // send clamc stream cmd (on main socket)
-            // STREAM
-            byte[] rBuf = CMD_STREAM.getBytes();
-            bufOutputStream.write(rBuf, 0, rBuf.length);
-            bufOutputStream.flush();
-
-            // receive clamd msg port reply (on main socket)
-            // PORT <port no>
-            String line;
-            if (null == (line = bufReader.readLine()))
-                throw new Exception(dbgName + ", clamd/clamc terminated connection early");
-
-            clogger.debug(dbgName + ", " + line); // PORT <port no>
-            if (true == this.stop) {
-                clogger.warn(dbgName + ", clamc interrupted post clamd port response");
-                return; // return after finally
-            }
-
-            Matcher clamdMatcher = REPLY_PORTP.matcher(line);
-            if (false == clamdMatcher.find())
-                throw new Exception(dbgName + ", clamd response is invalid: " + line);
-
-            int msgPort = parseClamdResponse(line);
-
-            try {
-                msgcSocket = VirusClientSocket.create(cContext.getHost(), msgPort);
-            } catch (Exception e) {
-                clogger.warn(dbgName + ", finish, clamc could not connect to msg clamd (" + cContext.getHost() + ":" + msgPort + ")", e);
-                cleanExit(clamcSocket, cContext.getHost(), cContext.getPort());
-                clamcSocket = null;
-                return;
-            }
-
-            BufferedOutputStream bufMsgOutputStream = msgcSocket.getBufferedOutputStream();
-            try {
-                // send message (on msg socket)
-                //
-                // if msg socket is interrupted (because of a thrown exception),
-                // we don't exit until we've checked the main socket
-                // - clamd will always have a result to report
-
-                FileInputStream fInputStream = new FileInputStream(cContext.getMsgFile());
-                rBuf = new byte[READ_SZ];
-
-                int rLen;
-                while (0 < (rLen = fInputStream.read(rBuf))) {
-                    bufMsgOutputStream.write(rBuf, 0, rLen);
-                    bufMsgOutputStream.flush();
-                }
-                fInputStream.close();
-                fInputStream = null;
-                rBuf = null;
-            } catch (SocketException e) {
-                // thrown during read block
-                clogger.warn(dbgName + ", clamc msg socket closed/interrupted: " + clamcSocket + ", " + msgcSocket, e);
-                // fall through and check clamd result
-            } catch (IOException e) {
-                // not thrown
-                clogger.warn(dbgName + ", clamc msg i/o exception: " + clamcSocket + ", " + msgcSocket, e);
-                // fall through and check clamd result
-            } catch (Exception e) {
-                clogger.warn(dbgName + ", clamc msg failed", e);
-                // fall through and check clamd result
-            }
-
-            bufMsgOutputStream = null;
-
-            // signal end of msg by closing msg socket
-            cleanup(msgcSocket, cContext.getHost(), msgPort);
-            msgcSocket = null;
-
-            // ignore interrupt because one of above exceptions can force
-            // clamd to report "premature" result
-            // if (true == this.stop) {
-            //     clogger.warn(dbgName + ", clamc interrupted post msg stream");
-            //     return; // return after finally
-            // }
-
-            // receive clamd result (on main socket)
-            if (null == (line = bufReader.readLine()))
-                throw new Exception(dbgName + ", clamd/clamc terminated connection early (did not report result)");
-
-            clogger.debug(dbgName + ", " + line); // stream: <result>
-            // ignore interrupt because one of above exceptions can force
-            // clamd to report "premature" result
-            // if (true == this.stop) {
-            //     clogger.warn(dbgName + ", clamc interrupted post clamd result");
-            //     return; // return after finally
-            // }
-
-            clamdMatcher = REP_RESULTP.matcher(line);
-            if (false == clamdMatcher.find())
-                throw new Exception(dbgName + ", clamd result is invalid: " + line);
-
-            parseClamdResult(line);
-
-            bufReader = null;
-            bufOutputStream = null;
-        } catch (ClosedByInterruptException e) {
-            // not thrown
-            cContext.setResultError();
-            clogger.warn(dbgName + ", clamc i/o channel interrupted:" + clamcSocket + ", " + msgcSocket, e);
-        } catch (SocketException e) {
-            // thrown during read block
-            cContext.setResultError();
-            clogger.warn(dbgName + ", clamc socket closed/interrupted: " + clamcSocket + ", " + msgcSocket, e);
-        } catch (IOException e) {
-            // not thrown
-            cContext.setResultError();
-            clogger.warn(dbgName + ", clamc i/o exception: " + clamcSocket + ", " + msgcSocket, e);
-        } catch (InterruptedException e) {
-            // not thrown
-            cContext.setResultError();
-            clogger.warn(dbgName + ", clamc interrupted: " + clamcSocket + ", " + msgcSocket, e);
-        } catch (Exception e) {
-            // thrown during parse
-            cContext.setResultError();
-            clogger.warn(dbgName + ", clamc failed", e);
         } finally {
-            //clogger.debug(dbgName + ", finish");
             cleanExit(clamcSocket, cContext.getHost(), cContext.getPort());
-            clamcSocket = null;
+
         }
-        
-        return;
     }
 
     /**
