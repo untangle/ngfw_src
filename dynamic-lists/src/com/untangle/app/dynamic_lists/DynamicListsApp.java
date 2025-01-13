@@ -4,15 +4,6 @@
 
 package com.untangle.app.dynamic_lists;
 
-import java.io.File;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.util.List;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -23,13 +14,11 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
-import com.untangle.uvm.app.AppMetric;
-import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-import com.untangle.uvm.util.I18nUtil;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -39,14 +28,13 @@ public class DynamicListsApp extends AppBase
 {
  
     private final Logger logger = LogManager.getLogger(getClass());
-
     private final String SettingsDirectory = "/dynamic-lists/";
-
-   
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
+    private DynamicListsManager dynamicListsManager;
     private DynamicListsSettings settings = null;
+
     /**
      * Constructor
      * 
@@ -58,8 +46,8 @@ public class DynamicListsApp extends AppBase
     public DynamicListsApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
-         //Manager for managing ipset logic
-        //this. DynamicListsManager = new  DynamicListsManager(this);
+        //Manager for managing ipset logic
+        this.dynamicListsManager = new  DynamicListsManager(this);
 
     }
 
@@ -72,9 +60,6 @@ public class DynamicListsApp extends AppBase
     {
         return settings;
     }
-
-
-
 
     /**
      * Return the settings filename
@@ -95,15 +80,17 @@ public class DynamicListsApp extends AppBase
      */
     public void setSettings(final DynamicListsSettings newSettings, boolean restart)
     {
-
-        this.settings = newSettings;
-
+        // Save the settings
         try {
             UvmContextFactory.context().settingsManager().save( this.getSettingsFilename(), newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
         }
+
+        // Change current settings
+        this.settings = newSettings;
+        try { logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
     }
 
     /**
@@ -175,17 +162,13 @@ public class DynamicListsApp extends AppBase
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-
             this.initializeSettings();
         } else {
             logger.info("Loading Settings...");
-
             this.settings = readSettings;
-
         }
             
     }
-
 
     /**
      * Called to uninitialize application settings
@@ -200,7 +183,6 @@ public class DynamicListsApp extends AppBase
      */
     public void initializeSettings()
     {
-      
         DynamicListsSettings settings = getDefaultSettings();
         setSettings(settings, true);
     }
@@ -218,11 +200,29 @@ public class DynamicListsApp extends AppBase
         logger.info("Creating the default settings...");
 
         DynamicListsSettings settings = new DynamicListsSettings();
+        List<BlockList> list = new LinkedList<>();
 
+        BlockList  blockList = new BlockList();
+        blockList.setId(generateUniqueId());
+        blockList.setEnabled(false);
+        blockList.setName("Emerging Threats");
+        blockList.setSource("http://opendbl.net/lists/etknown.list");
+        blockList.setParsingMethod("^\\S{2,256}");
+        blockList.setPollingTime(30);
+        blockList.setPollingUnit("Minutes");
+        blockList.setSkipCertCheck(false);
+        blockList.setType("IPList");
+
+        list.add(blockList);
+        settings.setSourceList(list);
 
         return settings;
     }
 
-
-  
+    private String generateUniqueId() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString()
+                .replaceFirst("4", "7")
+                .replaceFirst("8|9|a|b", "7");
+    }
 }

@@ -5,12 +5,11 @@
 package com.untangle.app.dynamic_lists;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
-import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;
-
 
 
 /**
@@ -19,7 +18,14 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DynamicListsSettings implements Serializable, JSONString
 {
-    private Integer version = 5;
+    private Integer version = 1;
+    private List<BlockList> blockList = new LinkedList<>();
+
+    public Integer getVersion() { return version; }
+    public void setVersion(Integer version) { this.version = version; }
+
+    public List<BlockList> getSourceList() { return blockList; }
+    public void setSourceList(List<BlockList> blockList) { this.blockList = blockList; }
  
     public String toJSONString()
     {
