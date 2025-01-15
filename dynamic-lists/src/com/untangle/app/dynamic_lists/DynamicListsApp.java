@@ -56,17 +56,13 @@ public class DynamicListsApp extends AppBase
      * 
      * @return The application settings
      */
-    public DynamicListsSettings getSettings()
-    {
-        return settings;
-    }
+    public DynamicListsSettings getSettings() { return settings; }
 
     /**
      * Return the settings filename
      * @return String of filename
      */
-    public String getSettingsFilename()
-    {
+    public String getSettingsFilename() {
         return System.getProperty("uvm.settings.dir") + SettingsDirectory + "settings_"  + this.getAppSettings().getId().toString() + ".js";
     }
 
@@ -78,8 +74,7 @@ public class DynamicListsApp extends AppBase
      * @param restart
      *      If true, restart
      */
-    public void setSettings(final DynamicListsSettings newSettings, boolean restart)
-    {
+    public void setSettings(final DynamicListsSettings newSettings, boolean restart) {
         // Save the settings
         try {
             UvmContextFactory.context().settingsManager().save( this.getSettingsFilename(), newSettings );
@@ -99,10 +94,7 @@ public class DynamicListsApp extends AppBase
      * @return List of pipeline connectors
      */
     @Override
-    protected PipelineConnector[] getConnectors()
-    {
-        return this.connectors;
-    }
+    protected PipelineConnector[] getConnectors() { return this.connectors; }
 
     /**
      * Called after the application is started
@@ -111,9 +103,9 @@ public class DynamicListsApp extends AppBase
      *        Permanent transition flag
      */
     @Override
-    protected void postStart(boolean isPermanentTransition)
-    {
-       
+    protected void postStart(boolean isPermanentTransition) {
+        dynamicListsManager.start();
+        dynamicListsManager.configure();
     }
 
     /**
@@ -123,9 +115,8 @@ public class DynamicListsApp extends AppBase
      *        Permanent transition flag
      */
     @Override
-    protected void preStart(boolean isPermanentTransition)
-    {
-       
+    protected void preStart(boolean isPermanentTransition) {
+
     }
 
     /**
@@ -135,17 +126,15 @@ public class DynamicListsApp extends AppBase
      *        Permanent transition flag
      */
     @Override
-    protected void preStop(boolean isPermanentTransition)
-    {
-
+    protected void preStop(boolean isPermanentTransition) {
+        dynamicListsManager.stop();
     }
 
     /**
      * Called after application initialization
      */
     @Override
-    protected void postInit()
-    {
+    protected void postInit() {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         DynamicListsSettings readSettings = null;
@@ -181,15 +170,11 @@ public class DynamicListsApp extends AppBase
     /**
      * Called to initialize application settings
      */
-    public void initializeSettings()
-    {
+    public void initializeSettings() {
         DynamicListsSettings settings = getDefaultSettings();
         setSettings(settings, true);
     }
 
-
-
- 
     /**
      * Create default application settings
      * 
@@ -219,6 +204,10 @@ public class DynamicListsApp extends AppBase
         return settings;
     }
 
+    /**
+     * Creates and return unique id
+     * @return unique id
+     */
     private String generateUniqueId() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString()
