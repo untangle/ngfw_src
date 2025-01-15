@@ -96,7 +96,9 @@ class UriAnalyzer():
         "ftp://{wan_ip}/{ftp_file_name}",
         "https://{wan_address}/test/testPage1.html",
 
-        "http://opendbl.net/lists/etknown.list"    # Update/Remove this if DBL default block list is changed
+        # Update/Remove this if DBL default block list is changed
+        "http://opendbl.net/lists/etknown.list",
+        "http://opendbl.net/lists/dshield.list"
     ]
 
     def __init__(self):

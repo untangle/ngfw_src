@@ -197,10 +197,21 @@ public class DynamicListsApp extends AppBase
         blockList.setPollingUnit("Minutes");
         blockList.setSkipCertCheck(false);
         blockList.setType("IPList");
-
         list.add(blockList);
-        settings.setSourceList(list);
 
+        blockList = new BlockList();
+        blockList.setId(generateUniqueId());
+        blockList.setEnabled(false);
+        blockList.setName("DShield Blocklist");
+        blockList.setSource("http://opendbl.net/lists/dshield.list");
+        blockList.setParsingMethod("((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+)(?:\\/{1}\\d+|-((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+))?");
+        blockList.setPollingTime(1);
+        blockList.setPollingUnit("Hours");
+        blockList.setSkipCertCheck(false);
+        blockList.setType("IPList");
+        list.add(blockList);
+
+        settings.setBlockList(list);
         return settings;
     }
 
@@ -212,6 +223,8 @@ public class DynamicListsApp extends AppBase
         UUID uuid = UUID.randomUUID();
         return uuid.toString()
                 .replaceFirst("4", "7")
-                .replaceFirst("8|9|a|b", "7");
+                .replaceFirst("[89ab]", "7")
+                .replace("-", "")
+                .substring(0,28);
     }
 }

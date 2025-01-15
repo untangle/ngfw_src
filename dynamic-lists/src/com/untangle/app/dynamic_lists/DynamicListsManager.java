@@ -8,6 +8,10 @@ import com.untangle.uvm.UvmContextFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * DynamicListsManager
  */
@@ -38,11 +42,18 @@ public class DynamicListsManager {
      * Stop the filter chain
      */
     protected void stop() {
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_CLEAN_UP_SCRIPT);
+        // Get Existing IPSet names from settings
+        DynamicListsSettings settings = app.getSettings();
+        List<String> ipSets = settings.getBlockList().stream()
+                .map(BlockList::getId)
+                .collect(Collectors.toList());
+        String ipSetsArg = String.join(",", ipSets);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_CLEAN_UP_SCRIPT + " " + ipSetsArg);
+
     }
 
     /**
-     * Configure dynamic-block-lists-routes
+     * Configure dynamic-block-lists iptables
      */
     protected void configure() {
 

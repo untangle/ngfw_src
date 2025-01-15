@@ -24,8 +24,8 @@ public class DynamicListsSettings implements Serializable, JSONString
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
 
-    public List<BlockList> getSourceList() { return blockList; }
-    public void setSourceList(List<BlockList> blockList) { this.blockList = blockList; }
+    public List<BlockList> getBlockList() { return blockList; }
+    public void setBlockList(List<BlockList> blockList) { this.blockList = blockList; }
  
     public String toJSONString()
     {
