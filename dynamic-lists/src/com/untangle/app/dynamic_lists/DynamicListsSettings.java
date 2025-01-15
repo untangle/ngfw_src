@@ -19,13 +19,13 @@ import org.json.JSONString;
 public class DynamicListsSettings implements Serializable, JSONString
 {
     private Integer version = 1;
-    private List<BlockList> blockList = new LinkedList<>();
+    private List<DynamicList> dynamicList = new LinkedList<>();
 
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
 
-    public List<BlockList> getBlockList() { return blockList; }
-    public void setBlockList(List<BlockList> blockList) { this.blockList = blockList; }
+    public List<DynamicList> getDynamicList() { return dynamicList; }
+    public void setDynamicList(List<DynamicList> dynamicList) { this.dynamicList = dynamicList; }
  
     public String toJSONString()
     {

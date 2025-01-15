@@ -4,6 +4,7 @@
 
 package com.untangle.app.dynamic_lists;
 
+import com.untangle.uvm.util.StringUtil;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -75,6 +76,13 @@ public class DynamicListsApp extends AppBase
      *      If true, restart
      */
     public void setSettings(final DynamicListsSettings newSettings, boolean restart) {
+        // Set id for new blocklists
+        newSettings.getDynamicList().stream()
+                .filter(blockList -> StringUtil.isEmpty(blockList.getId()))
+                .forEach(blockList -> {
+                    blockList.setId(generateUniqueId());
+                });
+
         // Save the settings
         try {
             UvmContextFactory.context().settingsManager().save( this.getSettingsFilename(), newSettings );
@@ -185,33 +193,33 @@ public class DynamicListsApp extends AppBase
         logger.info("Creating the default settings...");
 
         DynamicListsSettings settings = new DynamicListsSettings();
-        List<BlockList> list = new LinkedList<>();
+        List<DynamicList> list = new LinkedList<>();
 
-        BlockList  blockList = new BlockList();
-        blockList.setId(generateUniqueId());
-        blockList.setEnabled(false);
-        blockList.setName("Emerging Threats");
-        blockList.setSource("http://opendbl.net/lists/etknown.list");
-        blockList.setParsingMethod("^\\S{2,256}");
-        blockList.setPollingTime(30);
-        blockList.setPollingUnit("Minutes");
-        blockList.setSkipCertCheck(false);
-        blockList.setType("IPList");
-        list.add(blockList);
+        DynamicList dynamicList = new DynamicList();
+        dynamicList.setId(generateUniqueId());
+        dynamicList.setEnabled(false);
+        dynamicList.setName("Emerging Threats");
+        dynamicList.setSource("http://opendbl.net/lists/etknown.list");
+        dynamicList.setParsingMethod("^\\S{2,256}");
+        dynamicList.setPollingTime(30);
+        dynamicList.setPollingUnit("Minutes");
+        dynamicList.setSkipCertCheck(false);
+        dynamicList.setType("IPList");
+        list.add(dynamicList);
 
-        blockList = new BlockList();
-        blockList.setId(generateUniqueId());
-        blockList.setEnabled(false);
-        blockList.setName("DShield Blocklist");
-        blockList.setSource("http://opendbl.net/lists/dshield.list");
-        blockList.setParsingMethod("((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+)(?:\\/{1}\\d+|-((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+))?");
-        blockList.setPollingTime(1);
-        blockList.setPollingUnit("Hours");
-        blockList.setSkipCertCheck(false);
-        blockList.setType("IPList");
-        list.add(blockList);
+        dynamicList = new DynamicList();
+        dynamicList.setId(generateUniqueId());
+        dynamicList.setEnabled(false);
+        dynamicList.setName("DShield Blocklist");
+        dynamicList.setSource("http://opendbl.net/lists/dshield.list");
+        dynamicList.setParsingMethod("((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+)(?:\\/{1}\\d+|-((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+))?");
+        dynamicList.setPollingTime(1);
+        dynamicList.setPollingUnit("Hours");
+        dynamicList.setSkipCertCheck(false);
+        dynamicList.setType("IPList");
+        list.add(dynamicList);
 
-        settings.setBlockList(list);
+        settings.setDynamicList(list);
         return settings;
     }
 

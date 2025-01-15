@@ -13,7 +13,7 @@ iptables -t filter -D FORWARD -m conntrack --ctstate NEW -j dynamic-block-list |
 echo "Flushing dynamic-block-list chain..."
 iptables -t filter -F dynamic-block-list || true
 
-# Destroy all IP sets
+# Destroy active blocklists IP sets
 echo "Destroying specified IP sets..."
 if [ -z "$1" ]; then
     echo "No IP sets provided for destruction. Skipping..."

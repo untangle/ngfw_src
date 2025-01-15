@@ -8,7 +8,6 @@ import com.untangle.uvm.UvmContextFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,8 +43,8 @@ public class DynamicListsManager {
     protected void stop() {
         // Get Existing IPSet names from settings
         DynamicListsSettings settings = app.getSettings();
-        List<String> ipSets = settings.getBlockList().stream()
-                .map(BlockList::getId)
+        List<String> ipSets = settings.getDynamicList().stream()
+                .map(DynamicList::getId)
                 .collect(Collectors.toList());
         String ipSetsArg = String.join(",", ipSets);
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_CLEAN_UP_SCRIPT + " " + ipSetsArg);

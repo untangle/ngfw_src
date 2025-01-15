@@ -96,7 +96,7 @@ class UriAnalyzer():
         "ftp://{wan_ip}/{ftp_file_name}",
         "https://{wan_address}/test/testPage1.html",
 
-        # Update/Remove this if DBL default block list is changed
+        # DBL Uri's
         "http://opendbl.net/lists/etknown.list",
         "http://opendbl.net/lists/dshield.list"
     ]

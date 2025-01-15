@@ -4,6 +4,7 @@
 
 package com.untangle.app.dynamic_lists;
 
+import org.json.JSONObject;
 import org.json.JSONString;
 
 import java.io.Serializable;
@@ -12,7 +13,7 @@ import java.io.Serializable;
  * SourceList
  */
 @SuppressWarnings("serial")
-public class BlockList implements Serializable, JSONString {
+public class DynamicList implements Serializable, JSONString {
 
     private String id;
     private boolean enabled;
@@ -61,6 +62,7 @@ public class BlockList implements Serializable, JSONString {
 
     @Override
     public String toJSONString() {
-        return "";
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
     }
 }
