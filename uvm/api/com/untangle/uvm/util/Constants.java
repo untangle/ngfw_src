@@ -11,6 +11,8 @@ public class Constants {
 
     // Symbols
     public static final String EQUALS_TO = "=";
+    public static final String Hyphen = "-";
+    public static final String COMMA = ",";
 
     // Boolean
     public static final String FALSE = "False";
@@ -36,4 +38,9 @@ public class Constants {
 
     // Empty string
     public static final String EMPTY_STRING = "\" \"";
+    public static final String SPACE = " ";
+
+    // Numbers
+    public static final String FOUR = "4";
+    public static final String SEVEN = "7";
 }

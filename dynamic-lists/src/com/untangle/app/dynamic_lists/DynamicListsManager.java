@@ -5,6 +5,7 @@ package com.untangle.app.dynamic_lists;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,21 +35,25 @@ public class DynamicListsManager {
      * Start the dbl setup
      */
     protected void start() {
+        logger.info("Staring the Dynamic Blocklist Setup Process");
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_SETUP_SCRIPT);
+        logger.info("DBL setup script result: {}", result.getOutput());
     }
 
     /**
      * Stop the filter chain
      */
     protected void stop() {
+        logger.info("Staring the Dynamic Blocklist Cleanup Process");
         // Get Existing IPSet names from settings
         DynamicListsSettings settings = app.getSettings();
         List<String> ipSets = settings.getDynamicList().stream()
                 .map(DynamicList::getId)
                 .collect(Collectors.toList());
-        String ipSetsArg = String.join(",", ipSets);
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_CLEAN_UP_SCRIPT + " " + ipSetsArg);
+        String ipSetsArg = String.join(Constants.COMMA, ipSets);
 
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_CLEAN_UP_SCRIPT + Constants.SPACE + ipSetsArg);
+        logger.info("DBL cleanup script result: {}", result.getOutput());
     }
 
     /**

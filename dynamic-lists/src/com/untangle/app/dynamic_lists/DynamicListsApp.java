@@ -4,7 +4,9 @@
 
 package com.untangle.app.dynamic_lists;
 
+import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -35,6 +37,30 @@ public class DynamicListsApp extends AppBase
 
     private DynamicListsManager dynamicListsManager;
     private DynamicListsSettings settings = null;
+
+    public static final String REGEX_89AB = "[89ab]";
+    public static final String PARSING_REGEX_1 = "^\\S{2,256}";
+    public static final String PARSING_REGEX_2 = "((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+)(?:\\/{1}\\d+|-((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+))?";
+
+    public enum DBLPollingUnit {
+        MINUTES("Minutes"),
+        HOURS("Hours"),
+        DAYS("Days");
+
+        private final String value;
+
+        /**
+         * Constructor
+         * @param value value of enum
+         */
+        DBLPollingUnit(String value) { this.value = value; }
+
+        /**
+         * returns the string value of enum
+         * @return
+         */
+        public String getValue() { return value; }
+    }
 
     /**
      * Constructor
@@ -76,6 +102,7 @@ public class DynamicListsApp extends AppBase
      *      If true, restart
      */
     public void setSettings(final DynamicListsSettings newSettings, boolean restart) {
+        logger.info("Saving the settings. Restart: {}", restart);
         // Set id for new blocklists
         newSettings.getDynamicList().stream()
                 .filter(blockList -> StringUtil.isEmpty(blockList.getId()))
@@ -93,7 +120,12 @@ public class DynamicListsApp extends AppBase
 
         // Change current settings
         this.settings = newSettings;
-        try { logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2)); } catch (Exception e) {}
+        try {
+            if(logger.isDebugEnabled())
+                logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
+        } catch (Exception e) {
+            logger.error("Exception while logging new settings ", e);
+        }
     }
 
     /**
@@ -200,9 +232,9 @@ public class DynamicListsApp extends AppBase
         dynamicList.setEnabled(false);
         dynamicList.setName("Emerging Threats");
         dynamicList.setSource("http://opendbl.net/lists/etknown.list");
-        dynamicList.setParsingMethod("^\\S{2,256}");
+        dynamicList.setParsingMethod(PARSING_REGEX_1);
         dynamicList.setPollingTime(30);
-        dynamicList.setPollingUnit("Minutes");
+        dynamicList.setPollingUnit(DBLPollingUnit.MINUTES.getValue());
         dynamicList.setSkipCertCheck(false);
         dynamicList.setType("IPList");
         list.add(dynamicList);
@@ -212,9 +244,9 @@ public class DynamicListsApp extends AppBase
         dynamicList.setEnabled(false);
         dynamicList.setName("DShield Blocklist");
         dynamicList.setSource("http://opendbl.net/lists/dshield.list");
-        dynamicList.setParsingMethod("((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+)(?:\\/{1}\\d+|-((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+))?");
+        dynamicList.setParsingMethod(PARSING_REGEX_2);
         dynamicList.setPollingTime(1);
-        dynamicList.setPollingUnit("Hours");
+        dynamicList.setPollingUnit(DBLPollingUnit.HOURS.getValue());
         dynamicList.setSkipCertCheck(false);
         dynamicList.setType("IPList");
         list.add(dynamicList);
@@ -230,9 +262,9 @@ public class DynamicListsApp extends AppBase
     private String generateUniqueId() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString()
-                .replaceFirst("4", "7")
-                .replaceFirst("[89ab]", "7")
-                .replace("-", "")
+                .replaceFirst(Constants.FOUR, Constants.SEVEN)
+                .replaceFirst(REGEX_89AB, Constants.SEVEN)
+                .replace(Constants.Hyphen, StringUtils.EMPTY)
                 .substring(0,28);
     }
 }
