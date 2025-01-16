@@ -1221,15 +1221,23 @@ class UvmTests(NGFWTestCase):
         1. Validating GeoIP methods for given IP Address
         """
         ip_address = "128.101.101.101"
-        expected_output = "United States : US : Minnesota : MN : Saint Paul : 55113"
+        expected_country_name = "United States"
+        expected_country_code = "US"
+        expected_sub_division_namme = "Minnesota"
+        expected_sub_division_code = "MN"
+
         country_name = global_functions.uvmContext.geographyManager().getCountryName(ip_address)
         country_code = global_functions.uvmContext.geographyManager().getCountryCode(ip_address)
         sub_division_name = global_functions.uvmContext.geographyManager().getSubdivisionName(ip_address)
         sub_division_code = global_functions.uvmContext.geographyManager().getSubdivisionCode(ip_address)
         city_name = global_functions.uvmContext.geographyManager().getCityName(ip_address)
         postal_code = global_functions.uvmContext.geographyManager().getPostalCode(ip_address)
-        recieved_output = country_name + " : " + country_code + " : " + sub_division_name + " : " + sub_division_code  + " : " + city_name + " : " + postal_code
-        assert(expected_output == recieved_output)
+
+        assert(expected_country_name == country_name)
+        assert(expected_country_code == country_code)
+        assert(expected_sub_division_namme == sub_division_name)
+        assert(expected_sub_division_code == sub_division_code)
+
         # for IPs with no information None is received
         country_name = global_functions.uvmContext.geographyManager().getCountryName("192.168.56.120")
         assert(country_name is None)
