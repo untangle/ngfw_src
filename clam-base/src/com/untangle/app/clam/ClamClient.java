@@ -67,12 +67,17 @@ public class ClamClient extends VirusClient
     public void run()
     {
         VirusClientSocket clamcSocket = null;
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        FileInputStream fis = null;
+        InputStream is = null;
+
         try {
             clamcSocket = VirusClientSocket.create(cContext.getHost(), cContext.getPort());
-            OutputStream os = clamcSocket.getOutputStream();
-            InputStream is = clamcSocket.getInputStream();
-            FileInputStream fis = new FileInputStream(cContext.getMsgFile());
-            BufferedInputStream bis = new BufferedInputStream(fis) ;
+            os = clamcSocket.getOutputStream();
+            is = clamcSocket.getInputStream();
+            fis = new FileInputStream(cContext.getMsgFile());
+            bis = new BufferedInputStream(fis) ;
                 // Send the nINSTREAM command to start the scan
                 os.write(CMD_STREAM.getBytes());
 
@@ -105,14 +110,50 @@ public class ClamClient extends VirusClient
 
                 parseClamdResult(response);
         } catch (FileNotFoundException e) {
+            cContext.setResultError();
             clogger.warn(dbgName + ", finish, file not present (" + cContext.getHost() + ":" + cContext.getPort() + ")", e);
+        } catch (ClosedByInterruptException e) {
+            // not thrown
+            cContext.setResultError();
+            clogger.warn(dbgName + ", clamc i/o channel interrupted:" + clamcSocket , e);
+        } catch (SocketException e) {
+            // thrown during read block
+            cContext.setResultError();
+            clogger.warn(dbgName + ", clamc socket closed/interrupted: " +clamcSocket , e);
         } catch (IOException e) {
-            clogger.warn(dbgName + ", finish, clamc could not connect to msg clamd (" + cContext.getHost() + ":" + cContext.getPort() + ")", e);
-
+            // not thrown
+            cContext.setResultError();
+            clogger.warn(dbgName + ", clamc i/o exception: " + clamcSocket , e);
+        } catch (InterruptedException e) {
+            // not thrown
+            cContext.setResultError();
+            clogger.warn(dbgName + ", clamc interrupted: " + clamcSocket,  e);
         } catch (Exception e) {
-            clogger.warn(dbgName + ", finish, clamc could not connect to main clamd; clamd may not be configured or clamd may be overloaded", e);
-
+            // thrown during parse
+            cContext.setResultError();
+            clogger.warn(dbgName + ", clamc failed", e);
         } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException e) {
+                clogger.warn(dbgName + "Failed to close Bufferedinputstream", e);
+            }
+            try {
+                if (fis != null) fis.close();
+            } catch (IOException e) {
+                clogger.warn(dbgName + "Failed to close Fileinputstream", e);
+            }
+            try {
+                if (os != null) os.close();
+            } catch (IOException e) {
+                clogger.warn(dbgName + "Failed to close outputstream", e);
+            }
+            try {
+                if (is != null) is.close();
+            } catch (IOException e) {
+                clogger.warn(dbgName + "Failed to close input tream", e);
+            }
+
             cleanExit(clamcSocket, cContext.getHost(), cContext.getPort());
 
         }

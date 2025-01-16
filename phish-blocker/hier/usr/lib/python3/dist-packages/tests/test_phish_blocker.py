@@ -42,6 +42,18 @@ def sendPhishMail(mailfrom="test", host=smtpServerHost, useTLS=False):
         mailResult = remote_control.run_command("python mailsender.py --from=" + mailfrom + "@test.untangle.com --to=qa@test.untangle.com ./phish-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
     return mailResult
 
+def scan_stream(data):
+    host = "127.0.0.1"
+    port = 3310
+
+    with socket.create_connection((host, port)) as sock:
+        sock.sendall(b'nINSTREAM\n')
+        size = len(data).to_bytes(4, byteorder='big')
+        sock.sendall(size + data)
+        sock.sendall(b'\x00\x00\x00\x00')  # End of stream
+        response = sock.recv(1024)
+        return response.decode().strip()
+
 @pytest.mark.phish_blocker
 class PhishBlockerTests(NGFWTestCase):
 
@@ -271,6 +283,19 @@ class PhishBlockerTests(NGFWTestCase):
                                             'addr', 'qa@test.untangle.com',
                                             'c_client_addr', remote_control.client_ip,
                                             'phish_blocker_action', 'D')
+
+    #This test to check 3310 clamv port is running and communicating        
+    def test_060_checkClamSocketCommunication(self):
+        if (not canRelay):
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
+        if (not mail_app):
+            raise unittest.SkipTest('Unable download mailsendder app')
+        
+        #Adding test case of valid stream and virus data
+        response_msg = scan_stream(b"This is normal data")
+        response_virus = scan_stream(b'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*')
+        assert("OK" in response_msg)
+        assert("Win.Test.EICAR_HDB-1" in response_virus)
     
     @classmethod
     def final_extra_tear_down(cls):
