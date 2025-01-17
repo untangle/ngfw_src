@@ -264,7 +264,7 @@ public class DynamicListsApp extends AppBase
         return uuid.toString()
                 .replaceFirst(Constants.FOUR, Constants.SEVEN)
                 .replaceFirst(REGEX_89AB, Constants.SEVEN)
-                .replace(Constants.Hyphen, StringUtils.EMPTY)
+                .replace(Constants.HYPHEN, StringUtils.EMPTY)
                 .substring(0,28);
     }
 }

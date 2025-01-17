@@ -11,7 +11,7 @@ public class Constants {
 
     // Symbols
     public static final String EQUALS_TO = "=";
-    public static final String Hyphen = "-";
+    public static final String HYPHEN = "-";
     public static final String COMMA = ",";
 
     // Boolean
