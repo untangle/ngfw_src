@@ -4,15 +4,9 @@
 
 package com.untangle.app.dynamic_lists;
 
-import java.io.File;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.util.List;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.stream.Collectors;
-
+import com.untangle.uvm.util.Constants;
+import com.untangle.uvm.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -23,13 +17,11 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
-import com.untangle.uvm.app.AppMetric;
-import com.untangle.uvm.app.IPMaskedAddress;
-import com.untangle.uvm.vnet.Affinity;
-import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 
-import com.untangle.uvm.util.I18nUtil;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -39,14 +31,37 @@ public class DynamicListsApp extends AppBase
 {
  
     private final Logger logger = LogManager.getLogger(getClass());
-
     private final String SettingsDirectory = "/dynamic-lists/";
-
-   
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
+    private DynamicListsManager dynamicListsManager;
     private DynamicListsSettings settings = null;
+
+    public static final String REGEX_89AB = "[89ab]";
+    public static final String PARSING_REGEX_1 = "^\\S{2,256}";
+    public static final String PARSING_REGEX_2 = "((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+)(?:\\/{1}\\d+|-((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)+|(?:[a-f0-9:]+:+)+(?:[a-f0-9](?:(::)?))+))?";
+
+    public enum DBLPollingUnit {
+        MINUTES("Minutes"),
+        HOURS("Hours"),
+        DAYS("Days");
+
+        private final String value;
+
+        /**
+         * Constructor
+         * @param value value of enum
+         */
+        DBLPollingUnit(String value) { this.value = value; }
+
+        /**
+         * returns the string value of enum
+         * @return
+         */
+        public String getValue() { return value; }
+    }
+
     /**
      * Constructor
      * 
@@ -58,8 +73,8 @@ public class DynamicListsApp extends AppBase
     public DynamicListsApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
-         //Manager for managing ipset logic
-        //this. DynamicListsManager = new  DynamicListsManager(this);
+        //Manager for managing ipset logic
+        this.dynamicListsManager = new  DynamicListsManager(this);
 
     }
 
@@ -68,20 +83,13 @@ public class DynamicListsApp extends AppBase
      * 
      * @return The application settings
      */
-    public DynamicListsSettings getSettings()
-    {
-        return settings;
-    }
-
-
-
+    public DynamicListsSettings getSettings() { return settings; }
 
     /**
      * Return the settings filename
      * @return String of filename
      */
-    public String getSettingsFilename()
-    {
+    public String getSettingsFilename() {
         return System.getProperty("uvm.settings.dir") + SettingsDirectory + "settings_"  + this.getAppSettings().getId().toString() + ".js";
     }
 
@@ -93,16 +101,30 @@ public class DynamicListsApp extends AppBase
      * @param restart
      *      If true, restart
      */
-    public void setSettings(final DynamicListsSettings newSettings, boolean restart)
-    {
+    public void setSettings(final DynamicListsSettings newSettings, boolean restart) {
+        logger.info("Saving the settings. Restart: {}", restart);
+        // Set id for new blocklists
+        newSettings.getDynamicList().stream()
+                .filter(blockList -> StringUtil.isEmpty(blockList.getId()))
+                .forEach(blockList -> {
+                    blockList.setId(generateUniqueId());
+                });
 
-        this.settings = newSettings;
-
+        // Save the settings
         try {
             UvmContextFactory.context().settingsManager().save( this.getSettingsFilename(), newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
+        }
+
+        // Change current settings
+        this.settings = newSettings;
+        try {
+            if(logger.isDebugEnabled())
+                logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
+        } catch (Exception e) {
+            logger.error("Exception while logging new settings ", e);
         }
     }
 
@@ -112,10 +134,7 @@ public class DynamicListsApp extends AppBase
      * @return List of pipeline connectors
      */
     @Override
-    protected PipelineConnector[] getConnectors()
-    {
-        return this.connectors;
-    }
+    protected PipelineConnector[] getConnectors() { return this.connectors; }
 
     /**
      * Called after the application is started
@@ -124,9 +143,9 @@ public class DynamicListsApp extends AppBase
      *        Permanent transition flag
      */
     @Override
-    protected void postStart(boolean isPermanentTransition)
-    {
-       
+    protected void postStart(boolean isPermanentTransition) {
+        dynamicListsManager.start();
+        dynamicListsManager.configure();
     }
 
     /**
@@ -136,9 +155,8 @@ public class DynamicListsApp extends AppBase
      *        Permanent transition flag
      */
     @Override
-    protected void preStart(boolean isPermanentTransition)
-    {
-       
+    protected void preStart(boolean isPermanentTransition) {
+
     }
 
     /**
@@ -148,17 +166,15 @@ public class DynamicListsApp extends AppBase
      *        Permanent transition flag
      */
     @Override
-    protected void preStop(boolean isPermanentTransition)
-    {
-
+    protected void preStop(boolean isPermanentTransition) {
+        dynamicListsManager.stop();
     }
 
     /**
      * Called after application initialization
      */
     @Override
-    protected void postInit()
-    {
+    protected void postInit() {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         DynamicListsSettings readSettings = null;
@@ -175,17 +191,13 @@ public class DynamicListsApp extends AppBase
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-
             this.initializeSettings();
         } else {
             logger.info("Loading Settings...");
-
             this.settings = readSettings;
-
         }
             
     }
-
 
     /**
      * Called to uninitialize application settings
@@ -198,16 +210,11 @@ public class DynamicListsApp extends AppBase
     /**
      * Called to initialize application settings
      */
-    public void initializeSettings()
-    {
-      
+    public void initializeSettings() {
         DynamicListsSettings settings = getDefaultSettings();
         setSettings(settings, true);
     }
 
-
-
- 
     /**
      * Create default application settings
      * 
@@ -218,11 +225,46 @@ public class DynamicListsApp extends AppBase
         logger.info("Creating the default settings...");
 
         DynamicListsSettings settings = new DynamicListsSettings();
+        List<DynamicList> list = new LinkedList<>();
 
+        DynamicList dynamicList = new DynamicList();
+        dynamicList.setId(generateUniqueId());
+        dynamicList.setEnabled(false);
+        dynamicList.setName("Emerging Threats");
+        dynamicList.setSource("http://opendbl.net/lists/etknown.list");
+        dynamicList.setParsingMethod(PARSING_REGEX_1);
+        dynamicList.setPollingTime(30);
+        dynamicList.setPollingUnit(DBLPollingUnit.MINUTES.getValue());
+        dynamicList.setSkipCertCheck(false);
+        dynamicList.setType("IPList");
+        list.add(dynamicList);
 
+        dynamicList = new DynamicList();
+        dynamicList.setId(generateUniqueId());
+        dynamicList.setEnabled(false);
+        dynamicList.setName("DShield Blocklist");
+        dynamicList.setSource("http://opendbl.net/lists/dshield.list");
+        dynamicList.setParsingMethod(PARSING_REGEX_2);
+        dynamicList.setPollingTime(1);
+        dynamicList.setPollingUnit(DBLPollingUnit.HOURS.getValue());
+        dynamicList.setSkipCertCheck(false);
+        dynamicList.setType("IPList");
+        list.add(dynamicList);
+
+        settings.setDynamicList(list);
         return settings;
     }
 
-
-  
+    /**
+     * Creates and return unique id
+     * @return unique id
+     */
+    private String generateUniqueId() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString()
+                .replaceFirst(Constants.FOUR, Constants.SEVEN)
+                .replaceFirst(REGEX_89AB, Constants.SEVEN)
+                .replace(Constants.HYPHEN, StringUtils.EMPTY)
+                .substring(0,28);
+    }
 }
