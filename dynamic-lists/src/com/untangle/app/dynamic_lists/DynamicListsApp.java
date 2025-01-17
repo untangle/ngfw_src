@@ -120,6 +120,7 @@ public class DynamicListsApp extends AppBase
 
         // Change current settings
         this.settings = newSettings;
+        dynamicListsManager.configure();
         try {
             if(logger.isDebugEnabled())
                 logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
@@ -145,7 +146,6 @@ public class DynamicListsApp extends AppBase
     @Override
     protected void postStart(boolean isPermanentTransition) {
         dynamicListsManager.start();
-        dynamicListsManager.configure();
     }
 
     /**
