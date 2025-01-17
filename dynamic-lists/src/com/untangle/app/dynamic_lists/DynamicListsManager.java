@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +38,7 @@ public class DynamicListsManager {
     protected void start() {
         logger.info("Staring the Dynamic Blocklist Setup Process");
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_SETUP_SCRIPT);
+        configure();
         logger.info("DBL setup script result: {}", result.getOutput());
     }
 
@@ -45,14 +47,7 @@ public class DynamicListsManager {
      */
     protected void stop() {
         logger.info("Staring the Dynamic Blocklist Cleanup Process");
-        // Get Existing IPSet names from settings
-        DynamicListsSettings settings = app.getSettings();
-        List<String> ipSets = settings.getDynamicList().stream()
-                .map(DynamicList::getId)
-                .collect(Collectors.toList());
-        String ipSetsArg = String.join(Constants.COMMA, ipSets);
-
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_CLEAN_UP_SCRIPT + Constants.SPACE + ipSetsArg);
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_CLEAN_UP_SCRIPT );
         logger.info("DBL cleanup script result: {}", result.getOutput());
     }
 
@@ -60,6 +55,8 @@ public class DynamicListsManager {
      * Configure dynamic-block-lists iptables
      */
     protected void configure() {
-
+        UvmContextFactory.context().syncSettings().run(
+                app.getSettingsFilename()
+            );
     }
 }
