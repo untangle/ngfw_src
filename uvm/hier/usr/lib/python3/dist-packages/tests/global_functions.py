@@ -1340,7 +1340,8 @@ def check_clamd_ready():
     # wait until clamd service is running on 3310
     print("Waiting for server to start...")
     for i in range(clamdtimeout):
-        time.sleep(1)
+        #Increased sleep to ensure clamd is ready
+        time.sleep(10)
         ncresult = subprocess.call("netcat -n -z 127.0.0.1 3310 >/dev/null 2>&1", shell=True)
         if ncresult == 0:
             break
