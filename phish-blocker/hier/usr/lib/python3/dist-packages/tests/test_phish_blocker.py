@@ -285,7 +285,7 @@ class PhishBlockerTests(NGFWTestCase):
                                             'phish_blocker_action', 'D')
 
     #This test to check 3310 clamv port is running and communicating        
-    def test_060_checkClamSocketCommunication(self):
+    def test_065_checkClamSocketCommunication(self):
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
         if (not mail_app):
