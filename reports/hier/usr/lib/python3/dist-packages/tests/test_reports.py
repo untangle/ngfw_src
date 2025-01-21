@@ -1490,6 +1490,7 @@ class ReportsTests(NGFWTestCase):
             result = subprocess.check_output(global_functions.build_postgres_command(query=commands),shell=True, stderr=subprocess.STDOUT)
         except Exception as e:
             # Unable to record copy in original table; do in previous day.
+            print(e.output.decode('utf-8'))
             commands = populate_sql_commands[:]
             commands.append(f"insert into reports.{target_table_name} select * from temp_table")
             result = subprocess.check_output(global_functions.build_postgres_command(query=commands),shell=True, stderr=subprocess.STDOUT)
