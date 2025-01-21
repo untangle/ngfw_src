@@ -1140,7 +1140,7 @@ Ext.define('Ung.config.network.Interface', {
                     bind: '{intf.dhcpPrefixOverride}',
                     fieldLabel: 'Netmask Override'.t(),
                     editable: false,
-                    store: Util.getV4NetmaskList(false, true),
+                    store: Util.getV4NetmaskList(true, true),
                     queryMode: 'local'
                 }, {
                     // dns override
