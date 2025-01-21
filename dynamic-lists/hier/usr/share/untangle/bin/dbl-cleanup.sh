@@ -52,4 +52,21 @@ iptables -t filter -X dynamic-block-list || {
     echo "dynamic-block-list chain does not exist or is already deleted."
 }
 
+# Delete dynamic blocklist config files and dbl-crons file
+echo "Removing dynamic blocklist config files and cron job..."
+rm -rf /etc/cron.d/dbl-crons
+if [ $? -eq 0 ]; then
+    echo "Successfully removed cron file"
+else
+    echo "Failed to remove cron file"
+fi
+
+rm -rf /etc/config/blocklists
+if [ $? -eq 0 ]; then
+    echo "Successfully removed blocklist config folder"
+else
+    echo "Failed to remove blocklist config folder"
+fi
+
+
 echo "Filter chain removal complete!"
