@@ -1478,21 +1478,22 @@ class ReportsTests(NGFWTestCase):
         print(f"new_early_time_stamp={new_early_time_stamp}")
         print(f"target_table={target_table_name}")
 
-        # Copy that original early record, update its timestamp to new early time.
-        populate_sql_commands = [
-                f"create temporary table temp_table as (select * from reports.{original_table_name} where time_stamp = '{original_early_time_stamp_string}')",
-                f"update temp_table set time_stamp = '{new_early_time_stamp}', session_id = '{random.randint(10**18, 10**19 - 1)}'",
-        ]
+        # NGFW-14964: No longer copying an existing record by setting an earlier timestamp as insertion of the new record was failing 
+        # due to unique constraint on session_id despite providing a random session_id.
+        # This failure was occurring intermittently on either of the ATS environment and on random dates of the execution
+        # Hence just modifying an existing record's timestamp and will hope to clean that as part of the data retention test
         try:
-            # Attempt to make record copy in original table.
-            commands = populate_sql_commands[:]
-            commands.append(f"insert into reports.{original_table_name} select * from temp_table")
+            # Modify an existing record's timestamp.
+            commands = [
+                f"update reports.{original_table_name} set time_stamp = '{new_early_time_stamp}' where time_stamp = '{original_early_time_stamp_string}'"
+            ]
             result = subprocess.check_output(global_functions.build_postgres_command(query=commands),shell=True, stderr=subprocess.STDOUT)
         except Exception as e:
-            # Unable to record copy in original table; do in previous day.
+            # Unable to modify existing record, do in previous day.
             print(e.output.decode('utf-8'))
-            commands = populate_sql_commands[:]
-            commands.append(f"insert into reports.{target_table_name} select * from temp_table")
+            commands = [
+                f"update reports.{target_table_name} set time_stamp = '{new_early_time_stamp}' where time_stamp = '{original_early_time_stamp_string}'"
+            ]
             result = subprocess.check_output(global_functions.build_postgres_command(query=commands),shell=True, stderr=subprocess.STDOUT)
             pass
 
