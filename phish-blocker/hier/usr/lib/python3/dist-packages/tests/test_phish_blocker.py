@@ -42,18 +42,6 @@ def sendPhishMail(mailfrom="test", host=smtpServerHost, useTLS=False):
         mailResult = remote_control.run_command("python mailsender.py --from=" + mailfrom + "@test.untangle.com --to=qa@test.untangle.com ./phish-mail/ --host=" + host + " --reconnect --series=30:0,150,100,50,25,0,180")
     return mailResult
 
-def scan_stream(data):
-    host = "127.0.0.1"
-    port = 3310
-
-    with socket.create_connection((host, port)) as sock:
-        sock.sendall(b'nINSTREAM\n')
-        size = len(data).to_bytes(4, byteorder='big')
-        sock.sendall(size + data)
-        sock.sendall(b'\x00\x00\x00\x00')  # End of stream
-        response = sock.recv(1024)
-        return response.decode().strip()
-
 @pytest.mark.phish_blocker
 class PhishBlockerTests(NGFWTestCase):
 
@@ -120,6 +108,15 @@ class PhishBlockerTests(NGFWTestCase):
         """
         result = global_functions.check_clamd_ready()
         assert (result)
+        #PPPOE ATS fails intermittently sometimes wait till socket is ready.
+        data_to_scan = b"This is normal data"
+        for attempt in range(5):
+            response = global_functions.is_clamav_receive_ready(data_to_scan)
+            if response and "OK" in response:
+                print(f"clamav daemon is ready after {attempt} attempts: Response - {response}")
+                break
+            time.sleep(5)
+
         
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -292,8 +289,8 @@ class PhishBlockerTests(NGFWTestCase):
             raise unittest.SkipTest('Unable download mailsendder app')
         
         #Adding test case of valid stream and virus data
-        response_msg = scan_stream(b"This is normal data")
-        response_virus = scan_stream(b'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*')
+        response_msg = global_functions.is_clamav_receive_ready(b"This is normal data")
+        response_virus = global_functions.is_clamav_receive_ready(b'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*')
         assert("OK" in response_msg)
         assert("Win.Test.EICAR_HDB-1" in response_virus)
     
