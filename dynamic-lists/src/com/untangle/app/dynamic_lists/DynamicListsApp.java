@@ -120,7 +120,11 @@ public class DynamicListsApp extends AppBase
 
         // Change current settings
         this.settings = newSettings;
-        dynamicListsManager.configure();
+
+        // reconfigure only if settings have changed
+        if (restart)
+            dynamicListsManager.configure();
+            
         try {
             if(logger.isDebugEnabled())
                 logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
