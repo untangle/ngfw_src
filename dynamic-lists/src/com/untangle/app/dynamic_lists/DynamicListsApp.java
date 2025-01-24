@@ -179,6 +179,25 @@ public class DynamicListsApp extends AppBase
      */
     @Override
     protected void postInit() {
+        // Load the settings from settings file
+        DynamicListsSettings readSettings = loadSettings();
+
+        /**
+         * If there are still no settings, just initialize
+         */
+        if (readSettings == null) {
+            logger.warn("No settings found - Initializing new settings.");
+            this.initializeSettings();
+        }
+    }
+
+    /**
+     * load the settings from settings file
+     * 
+     * @return DynamicListsSettings loaded settings
+     */
+    public DynamicListsSettings loadSettings() {
+        logger.info("Loading Settings...");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         DynamicListsSettings readSettings = null;
@@ -190,17 +209,9 @@ public class DynamicListsApp extends AppBase
             logger.warn("Failed to load settings:", e);
         }
 
-        /**
-         * If there are still no settings, just initialize
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Initializing new settings.");
-            this.initializeSettings();
-        } else {
-            logger.info("Loading Settings...");
+        if(null != readSettings)
             this.settings = readSettings;
-        }
-            
+        return readSettings;
     }
 
     /**
