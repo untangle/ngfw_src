@@ -14,6 +14,7 @@ Ext.define('Ung.apps.dynamic-lists.MainController', {
             if(Util.isDestroyed(v, vm)){
                 return;
             }
+            vm.set('settings', result);
             vm.set('panel.saveDisabled', false);
             v.setLoading(false);
         },function(ex){
@@ -25,7 +26,7 @@ Ext.define('Ung.apps.dynamic-lists.MainController', {
         });
     },
     setSettings: function () {
-        var me = this, v = this.getView(), vm = this.getViewModel();
+        var me = this, v = this.getView(), vm = this.getViewModel(), settingsChanged = false;
         if (!Util.validateForms(v)) {
             return;
         }
@@ -46,7 +47,7 @@ Ext.define('Ung.apps.dynamic-lists.MainController', {
             }
         });
         v.setLoading(true);
-        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
+        Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'), settingsChanged)
         .then(function(result){
             if(Util.isDestroyed(v, vm)){
                 return;
