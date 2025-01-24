@@ -1650,3 +1650,18 @@ def get_latest_client_test_pkg(name=None):
         remote_control.run_command(f"rm -f {package_filename}*") # remove all previous mail packages
         results = remote_control.run_command(build_wget_command(uri=f"http://test.untangle.com/test/{package_filename}"))
         results = remote_control.run_command(f"tar -xvf {package_filename}")
+
+def is_clamav_receive_ready(data):
+    """
+    Verify Clamd communication, send message and verify in calling function
+    """
+    host = "127.0.0.1"
+    port = 3310
+
+    with socket.create_connection((host, port)) as sock:
+        sock.sendall(b'nINSTREAM\n')
+        size = len(data).to_bytes(4, byteorder='big')
+        sock.sendall(size + data)
+        sock.sendall(b'\x00\x00\x00\x00')  # End of stream
+        response = sock.recv(1024)
+        return response.decode().strip()
