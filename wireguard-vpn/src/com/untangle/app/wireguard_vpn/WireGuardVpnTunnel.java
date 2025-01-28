@@ -36,6 +36,7 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
     private Integer pingInterval = 60;
     private Boolean pingConnectionEvents = true;
     private Boolean pingUnreachableEvents = false;
+    private Boolean assignDnsServer = true;
 
     public Boolean getEnabled() { return enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
@@ -82,6 +83,9 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
 
     public Boolean getPingUnreachableEvents() { return pingUnreachableEvents; }
     public void setPingUnreachableEvents( Boolean newValue ) { this.pingUnreachableEvents = newValue; }
+
+    public Boolean getAssignDnsServer() { return assignDnsServer; }
+    public void setAssignDnsServer(Boolean assignDnsServer) { this.assignDnsServer = assignDnsServer; }
 
     public String toJSONString()
     {
