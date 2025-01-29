@@ -36,7 +36,8 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
     private Integer pingInterval = 60;
     private Boolean pingConnectionEvents = true;
     private Boolean pingUnreachableEvents = false;
-    private Boolean assignDnsServer = true;
+    // Only required for dynamic endpoints
+    private Boolean assignDnsServer = false;
 
     public Boolean getEnabled() { return enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }

@@ -59,7 +59,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'pingInterval': 60,
         'pingConnectionEvents': true,
         'pingUnreachableEvents': false,
-        'assignDnsServer': true
+        'assignDnsServer': false
     },
 
     importValidationJavaClass: true,
