@@ -60,8 +60,21 @@ class ContentIdParser(HTMLParser):
                 if attr[0] == "src":
                     matches = self.cid_src_regex.match(attr[1])
                     if matches is not None and len(matches.groups()) > 0:
-                        self.content_ids.append(matches.group(1))                    
+                        self.content_ids.append(matches.group(1))
 
+def set_wan_weight(app, interfaceId, weight):
+    if interfaceId == None or interfaceId == 0:
+        print("Invalid interface: " + str(interfaceId))
+        return
+    app_data = app.getSettings()
+    if (interfaceId == "all"):
+        i = 0
+        for intefaceIndex in app_data["weights"]:
+            app_data["weights"][i] = weight
+            i += 1
+    else:
+        app_data["weights"][interfaceId-1] = weight
+    app.setSettings(app_data)
 
 def configure_mail_relay():
     global orig_mailsettings, test_email_address
@@ -1343,11 +1356,15 @@ class ReportsTests(NGFWTestCase):
             apps_list = apps_list_short
             apps_name_list = apps_name_list_short
         apps = []
+        wan_balancer_app = None
         for name in apps_list:
             if (global_functions.uvmContext.appManager().isInstantiated(name)):
                 print("App %s already installed" % name)
             else:
-                apps.append( global_functions.uvmContext.appManager().instantiate(name, default_policy_id) )
+                app = global_functions.uvmContext.appManager().instantiate(name, default_policy_id)
+                if "wan-balancer" in name:
+                    wan_balancer_app = app
+                apps.append(app )
             
         # create some traffic 
         result = remote_control.is_online(tries=1)
@@ -1355,11 +1372,27 @@ class ReportsTests(NGFWTestCase):
         # flush out events
         self._app.flushEvents()
 
+        index_of_wans = global_functions.get_wan_tuples()
+        """
+        1) This test breaks for Dual wan set up, it checks whether email is present at particular URL
+        2) wget is used to check for generated email, it breaks with two wan interfaces possibly due to assymetric replies.
+        3) Added a check for dual wan setup and setting up single wan interface to serve 100% traffic.
+        4) wan-balancer is uninstalled at end of test, hence restored to default values.
+        5) This logic will be applicable only for multiple wan setup
+        """
+        if (len(index_of_wans) >=2):
+            for index, (interface_id, ip1, ip2, ip3, intf_name) in enumerate(index_of_wans):
+                #set weight 100 for first and rest 0
+                if index == 0:
+                    set_wan_weight(wan_balancer_app, interface_id, 100)
+                else:
+                    set_wan_weight(wan_balancer_app, interface_id, 0)
+
         # send emails
         subprocess.call([global_functions.get_prefix()+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
         # look for email
-        email_found = fetch_email( "/tmp/test_103_email_report_admin_file", test_email_address )
+        email_found = fetch_email( "/tmp/test_103_email_report_admin_file", test_email_address)
 
         # look for all the appropriate sections in the report email
         results = []
