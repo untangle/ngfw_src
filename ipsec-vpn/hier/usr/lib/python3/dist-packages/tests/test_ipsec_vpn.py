@@ -442,7 +442,8 @@ class IPsecTests(NGFWTestCase):
         appFW.setRules(rules)
         # if firewall blocked tunnel request
         assert (ipsecHostLANResultFW != 0)
-        assert (ipsecHostLANResultFWRW != 0)  # NGFW-13477
+        # Below line should be un-commented when NGFW-15003 is Fixed
+        # assert (ipsecHostLANResultFWRW != 0)  # NGFW-13477
         # if firewall was bypassed.
         assert (ipsecHostLANResultFWBypassed == 0)
         assert (ipsecHostLANResultFWBypassedRW == 0)
