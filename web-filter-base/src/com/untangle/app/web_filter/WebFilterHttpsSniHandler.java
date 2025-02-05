@@ -15,6 +15,7 @@ import com.untangle.app.http.HttpMethod;
 import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.RequestLine;
 import com.untangle.app.http.RequestLineToken;
+import com.untangle.app.http.TlsHandshakeException;
 import com.untangle.app.http.HttpRequestEvent;
 import com.untangle.app.http.HttpUtility;
 import com.untangle.app.http.HeaderToken;
@@ -170,6 +171,11 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             return;
         }
 
+        // For any handshake exception we just log
+        catch (TlsHandshakeException exn) {
+            logger.warn("Exception while handling packet : ", exn.getMessage());
+        }
+
         // any other exception we just log, release, and return
         catch (Exception exn) {
             logger.warn("Exception calling extractSNIhostname ", exn);
@@ -180,7 +186,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             return;
         }
 
-        if (domain != null) logger.debug("Detected SSL connection (via SNI) to: " + domain);
+        if (domain != null) logger.debug("Detected SSL connection (via SNI) to: {}" + domain);
 
         /**
          * If SNI information is not present then we fallback to using the
