@@ -1,7 +1,7 @@
 {
     "uniqueId": "dynamic-lists-8bTqxKxxUK",
     "category": "Dynamic Blocklists",
-    "description": "The amount of total, scanned, and bypassed sessions over time.",
+    "description": "All sessions blocked by Dynamic Blocklists.",
     "displayOrder": 102,
     "javaClass": "com.untangle.app.reports.ReportEntry",
     "readOnly": true,
