@@ -2,7 +2,7 @@
         "javaClass": "com.untangle.uvm.app.AppProperties",
         "className" : "com.untangle.app.dynamic_lists.DynamicListsApp",
         "name" : "dynamic-lists",
-        "displayName" : "Dynamic Blocklists",
+        "displayName" : "Dynamic Lists",
         "type" : "SERVICE",
         "viewPosition" : 1090,
         "autoInstall" : true,

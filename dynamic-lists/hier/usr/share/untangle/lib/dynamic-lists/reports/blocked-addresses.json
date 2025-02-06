@@ -1,6 +1,6 @@
 {
     "uniqueId": "dynamic-lists-8bTqxKxxUK",
-    "category": "Dynamic Blocklists",
+    "category": "Dynamic Lists",
     "description": "All sessions blocked by Dynamic Blocklists.",
     "displayOrder": 102,
     "javaClass": "com.untangle.app.reports.ReportEntry",
