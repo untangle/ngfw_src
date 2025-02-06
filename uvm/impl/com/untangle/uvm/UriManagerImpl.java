@@ -302,7 +302,7 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://untangle.com/api/v1/appliance/OnSettingsUpdate");
+        uriTranslation.setUri("https://edge.arista.com/api/v1/appliance/OnSettingsUpdate");
         uriTranslations.add(uriTranslation);
 
         // On one hand, this is probably better handled as a host, but since this is being released

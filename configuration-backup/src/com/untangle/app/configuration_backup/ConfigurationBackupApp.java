@@ -147,7 +147,7 @@ public class ConfigurationBackupApp extends AppBase
         }
 
         /**
-         * Upload to untangle.com
+         * Upload to edge.arista.com
          */
         uploadBackup( backupFile );
 
@@ -248,7 +248,7 @@ public class ConfigurationBackupApp extends AppBase
     }
 
     /**
-     * Upload the backup to untangle.com
+     * Upload the backup to edge.arista.com
      *
      * @param backupFile
      *  Handle of file to backup.
