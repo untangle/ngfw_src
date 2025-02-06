@@ -43,7 +43,7 @@ public class ConfigurationBackupApp extends AppBase
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/configuration-backup-send-backup.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-configuration-backup-nightly");
 
-    private static final String BACKUP_URL = UvmContextFactory.context().uriManager().getUri("https://boxbackup.untangle.com/boxbackup/backup.php");
+    private static final String BACKUP_URL = UvmContextFactory.context().uriManager().getUri("https://boxbackup.edge.arista.com/boxbackup/backup.php");
     private static final String TIMEOUT_SEC = "1200";
 
     private final PipelineConnector[] connectors = new PipelineConnector[] { };

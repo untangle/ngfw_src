@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 public class DeviceTableImpl implements DeviceTable
 {
-    private static final String CLOUD_LOOKUP_URL = UvmContextFactory.context().uriManager().getUri("https://labs.untangle.com/Utility/v1/mac");
+    private static final String CLOUD_LOOKUP_URL = UvmContextFactory.context().uriManager().getUri("https://labs.edge.arista.com/Utility/v1/mac");
     private static final String CLOUD_LOOKUP_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
     private static final String CONTENT_LENGTH = "Content-length";
     private static final String CONTENT_TYPE = "Content-Type";

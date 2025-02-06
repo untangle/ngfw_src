@@ -242,63 +242,63 @@ public class UriManagerImpl implements UriManager
         LinkedList<UriTranslation> uriTranslations = new LinkedList<>();
 
         UriTranslation uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://ids.untangle.com/suricatasignatures.tar.gz");
+        uriTranslation.setUri("https://ids.edge.arista.com/suricatasignatures.tar.gz");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://labs.untangle.com/Utility/v1/mac");
+        uriTranslation.setUri("https://labs.edge.arista.com/Utility/v1/mac");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://auth-relay.untangle.com/callback.php");
+        uriTranslation.setUri("https://auth-relay.edge.arista.com/callback.php");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://auth.untangle.com/v1/CheckTokenAccess");
+        uriTranslation.setUri("https://auth.edge.arista.com/v1/CheckTokenAccess");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://telemetry.untangle.com/ngfw/v1/infection");
+        uriTranslation.setUri("https://telemetry.edge.arista.com/ngfw/v1/infection");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("http://updates.untangle.com/");
+        uriTranslation.setUri("http://updates.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://cmd.untangle.com/");
+        uriTranslation.setUri("https://cmd.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://license.untangle.com/license.php");
+        uriTranslation.setUri("https://license.edge.arista.com/license.php");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://classify.untangle.com/v1/md5s");
+        uriTranslation.setUri("https://classify.edge.arista.com/v1/md5s");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("http://bd.untangle.com/");
+        uriTranslation.setUri("http://bd.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://boxbackup.untangle.com/boxbackup/backup.php");
+        uriTranslation.setUri("https://boxbackup.edge.arista.com/boxbackup/backup.php");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://boxbackup.untangle.com/api/index.php");
+        uriTranslation.setUri("https://boxbackup.edge.arista.com/api/index.php");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://downloads.untangle.com/download.php");
+        uriTranslation.setUri("https://downloads.edge.arista.com/download.php");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("http://translations.untangle.com/");
+        uriTranslation.setUri("http://translations.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://queue.untangle.com/");
+        uriTranslation.setUri("https://queue.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
@@ -309,7 +309,7 @@ public class UriManagerImpl implements UriManager
         // as a date-release for 15.0 and the update is not going to everyone, adding
         // multiple getXHots() will fail for those non-updated units.
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://supssh.untangle.com/");
+        uriTranslation.setUri("https://supssh.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
@@ -329,7 +329,7 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://auth-relay.untangle.com");
+        uriTranslation.setUri("https://auth-relay.edge.arista.com");
         uriTranslations.add(uriTranslation);
 
         settings.setUriTranslations(uriTranslations);
