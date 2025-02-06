@@ -18,7 +18,7 @@
         }
     ],
     "timeDataColumns": [
-        "sum((not bypassed)::int) as blocked"
+        "sum(CASE WHEN filter_prefix='dynamic_block_list_blocked' THEN 1 ELSE 0 END) as blocked"
     ],
     "colors": [
         "#8c0000"
