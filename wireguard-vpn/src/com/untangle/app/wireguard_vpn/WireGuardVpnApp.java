@@ -32,6 +32,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.NatRuleCondition;
@@ -153,6 +154,10 @@ public class WireGuardVpnApp extends AppBase
             if(tunnel.getPublicKey().equals("")){
                 tunnel.setPrivateKey(this.WireGuardVpnManager.createPrivateKey());
                 tunnel.setPublicKey(this.WireGuardVpnManager.getPublicKey(tunnel.getPrivateKey()));
+            }
+            // For tunnels pushed from ETM save the networks in NGFW format i.e. line seperated
+            if(tunnel.getDescription().startsWith("CCTunnel") && tunnel.getNetworks().contains(Constants.COMMA_STRING)) {
+                tunnel.setNetworks(tunnel.getNetworks().replaceAll(Constants.COMMA_STRING, Constants.NEW_LINE));
             }
         }
 
