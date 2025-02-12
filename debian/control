@@ -331,11 +331,11 @@ Description: Tunnel VPN
  The Tunnel VPN application.
 
 
-Package: untangle-app-dynamic-lists
+Package: untangle-app-dynamic-blocklists
 Architecture: all
 Depends: ${misc:Depends}, untangle-vm, openvpn, python3
-Description: Dynamic Lists
- The Dynamic Lists VPN application.
+Description: Dynamic Blocklists
+ The Dynamic Blocklists VPN application.
 
 Package: untangle-app-intrusion-prevention
 Architecture: all

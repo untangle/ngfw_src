@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.dynamic-lists.view.Configuration', {
+Ext.define('Ung.apps.dynamic-blocklists.view.Configuration', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app-dynamic-lists-configuration',
+    alias: 'widget.app-dynamic-blocklists-configuration',
     itemId: 'configuration',
     title: 'Configuration'.t(),
     scrollable: true,

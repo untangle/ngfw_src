@@ -2,7 +2,7 @@
  * $Id$
  */
 
-package com.untangle.app.dynamic_lists;
+package com.untangle.app.dynamic_blocklists;
 
 import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.StringUtil;
@@ -31,7 +31,7 @@ public class DynamicListsApp extends AppBase
 {
  
     private final Logger logger = LogManager.getLogger(getClass());
-    private final String SettingsDirectory = "/dynamic-lists/";
+    private final String SettingsDirectory = "/dynamic-blocklists/";
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
@@ -124,7 +124,6 @@ public class DynamicListsApp extends AppBase
         // reconfigure only if settings have changed
         if (restart)
             dynamicListsManager.configure();
-            
         try {
             if(logger.isDebugEnabled())
                 logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
@@ -201,7 +200,7 @@ public class DynamicListsApp extends AppBase
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         DynamicListsSettings readSettings = null;
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/dynamic-lists/" + "settings_" + appID + ".js";
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/dynamic-blocklists/" + "settings_" + appID + ".js";
 
         try {
             readSettings = settingsManager.load(DynamicListsSettings.class, settingsFilename);

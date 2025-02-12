@@ -1,6 +1,6 @@
 {
-    "uniqueId": "dynamic-lists-biCUnFjuBp",
-    "category": "Dynamic Lists",
+    "uniqueId": "dynamic-blocklists-biCUnFjuBp",
+    "category": "Dynamic Blocklists",
     "description": "The amount of blocked sessions over time.",
     "displayOrder": 100,
     "enabled": true,

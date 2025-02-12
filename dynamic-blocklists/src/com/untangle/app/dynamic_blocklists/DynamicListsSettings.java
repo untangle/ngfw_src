@@ -2,7 +2,7 @@
  * $Id$
  */
 
-package com.untangle.app.dynamic_lists;
+package com.untangle.app.dynamic_blocklists;
 
 import java.io.Serializable;
 import java.util.LinkedList;
