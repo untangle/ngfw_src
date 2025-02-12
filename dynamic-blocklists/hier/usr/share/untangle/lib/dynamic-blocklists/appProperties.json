@@ -1,6 +1,6 @@
 {
         "javaClass": "com.untangle.uvm.app.AppProperties",
-        "className" : "com.untangle.app.dynamic_blocklists.DynamicListsApp",
+        "className" : "com.untangle.app.dynamic_blocklists.DynamicBlockListsApp",
         "name" : "dynamic-blocklists",
         "displayName" : "Dynamic Blocklists",
         "type" : "SERVICE",

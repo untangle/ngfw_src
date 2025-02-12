@@ -13,19 +13,19 @@ import org.json.JSONString;
 
 
 /**
- * Settings for the DynamicLists app.
+ * Settings for the DynamicBlockLists app.
  */
 @SuppressWarnings("serial")
-public class DynamicListsSettings implements Serializable, JSONString
+public class DynamicBlockListsSettings implements Serializable, JSONString
 {
     private Integer version = 1;
-    private List<DynamicList> dynamicList = new LinkedList<>();
+    private List<DynamicBlockList> dynamicBlockList = new LinkedList<>();
 
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
 
-    public List<DynamicList> getDynamicList() { return dynamicList; }
-    public void setDynamicList(List<DynamicList> dynamicList) { this.dynamicList = dynamicList; }
+    public List<DynamicBlockList> getDynamicBlockList() { return dynamicBlockList; }
+    public void setDynamicBlockList(List<DynamicBlockList> dynamicBlockList) { this.dynamicBlockList = dynamicBlockList; }
  
     public String toJSONString()
     {

@@ -13,7 +13,7 @@ import java.io.Serializable;
  * SourceList
  */
 @SuppressWarnings("serial")
-public class DynamicList implements Serializable, JSONString {
+public class DynamicBlockList implements Serializable, JSONString {
 
     private String id;
     private boolean enabled;
