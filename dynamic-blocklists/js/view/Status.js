@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.dynamic-lists.view.Status', {
+Ext.define('Ung.apps.dynamic-blocklists.view.Status', {
     extend: 'Ext.panel.Panel',
-    alias: 'widget.app-dynamic-lists-status',
+    alias: 'widget.app-dynamic-blocklists-status',
     itemId: 'status',
     title: 'Status'.t(),
     scrollable: true,
@@ -20,9 +20,9 @@ Ext.define('Ung.apps.dynamic-lists.view.Status', {
         items: [{
             xtype: 'component',
             cls: 'app-desc',
-            html: '<img src="/icons/apps/dynamic-lists.svg" width="80" height="80"/>' +
-                '<h3>Dynamic Lists</h3>' +
-                '<p>' + 'Dynamic Lists provides functionality to block IPS from URL Lists.'.t() + '</p>'
+            html: '<img src="/icons/apps/dynamic-blocklists.svg" width="80" height="80"/>' +
+                '<h3>Dynamic Blocklists</h3>' +
+                '<p>' + 'Dynamic Blocklists provides functionality to block IPS from URL Lists.'.t() + '</p>'
         }, {
             xtype: 'applicense',
             hidden: true,

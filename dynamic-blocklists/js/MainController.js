@@ -1,6 +1,6 @@
-Ext.define('Ung.apps.dynamic-lists.MainController', {
+Ext.define('Ung.apps.dynamic-blocklists.MainController', {
     extend: 'Ext.app.ViewController',
-    alias: 'controller.app-dynamic-lists',
+    alias: 'controller.app-dynamic-blocklists',
     control: {
         '#': {
             afterrender: 'getSettings'

@@ -220,7 +220,7 @@ public class NetFilterLogger
                 // extract all of the fields from the message
                 logPrefix = extractField(item, "PREFIX:", StringUtils.EMPTY);
                 // Skip the message if it's not a Dynamic Block List message or logging of blocked sessions is disabled
-                if (!StringUtils.equals(logPrefix, DYNAMIC_BLOCK_LIST_PREFIX) ||
+                if (!StringUtils.equals(logPrefix, DYNAMIC_BLOCK_LIST_PREFIX) &&
                         !UvmContextFactory.context().networkManager().getNetworkSettings().getLogBlockedSessions()) {
                     continue;
                 }
