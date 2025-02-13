@@ -1,0 +1,30 @@
+{
+    "uniqueId": "dynamic-blocklists-biCUnFjuBp",
+    "category": "Dynamic Blocklists",
+    "description": "The amount of blocked sessions over time.",
+    "displayOrder": 100,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderDesc": false,
+    "units": "sessions",
+    "readOnly": true,
+    "table": "sessions",
+    "conditions": [
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "filter_prefix",
+            "operator": "=",
+            "value": "dynamic_block_list_blocked"
+        }
+    ],
+    "timeDataColumns": [
+        "sum(CASE WHEN filter_prefix='dynamic_block_list_blocked' THEN 1 ELSE 0 END) as blocked"
+    ],
+    "colors": [
+        "#8c0000"
+    ],
+    "timeDataInterval": "MINUTE",
+    "timeStyle": "AREA",
+    "title": "Blocked IPs by Time",
+    "type": "TIME_GRAPH"
+}
