@@ -1,7 +1,7 @@
 {
-    "uniqueId": "dynamic-lists-biCUnFjuBp",
+    "uniqueId": "dynamic-blocklists-biCUnFjuBp",
     "category": "Dynamic Blocklists",
-    "description": "The amount of total, scanned, and bypassed sessions created per minute.",
+    "description": "The amount of blocked sessions over time.",
     "displayOrder": 100,
     "enabled": true,
     "javaClass": "com.untangle.app.reports.ReportEntry",
@@ -18,14 +18,10 @@
         }
     ],
     "timeDataColumns": [
-        "count(*) as total",
-        "sum((not bypassed)::int) as scanned",
-        "sum(bypassed::int) as bypassed"
+        "sum(CASE WHEN filter_prefix='dynamic_block_list_blocked' THEN 1 ELSE 0 END) as blocked"
     ],
     "colors": [
-        "#b2b2b2",
-        "#396c2b",
-        "#3399ff"
+        "#8c0000"
     ],
     "timeDataInterval": "MINUTE",
     "timeStyle": "AREA",

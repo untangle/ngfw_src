@@ -2,7 +2,7 @@
  * $Id$
  */
 
-package com.untangle.app.dynamic_lists;
+package com.untangle.app.dynamic_blocklists;
 
 import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.StringUtil;
@@ -25,18 +25,18 @@ import java.util.UUID;
 
 
 /**
- * The DynamicListsApp VPN application manages Dynamic Blocklists.
+ * The DynamicBlockListsApp VPN application manages Dynamic Blocklists.
  */
-public class DynamicListsApp extends AppBase
+public class DynamicBlockListsApp extends AppBase
 {
  
     private final Logger logger = LogManager.getLogger(getClass());
-    private final String SettingsDirectory = "/dynamic-lists/";
+    private final String SettingsDirectory = "/dynamic-blocklists/";
 
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
-    private DynamicListsManager dynamicListsManager;
-    private DynamicListsSettings settings = null;
+    private DynamicBlockListsManager dynamicBlockListsManager;
+    private DynamicBlockListsSettings settings = null;
 
     public static final String REGEX_89AB = "[89ab]";
     public static final String PARSING_REGEX_1 = "^\\S{2,256}";
@@ -70,11 +70,11 @@ public class DynamicListsApp extends AppBase
      * @param appProperties
      *        The application properties
      */
-    public DynamicListsApp(AppSettings appSettings, AppProperties appProperties)
+    public DynamicBlockListsApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
         //Manager for managing ipset logic
-        this.dynamicListsManager = new  DynamicListsManager(this);
+        this.dynamicBlockListsManager = new  DynamicBlockListsManager(this);
 
     }
 
@@ -83,7 +83,7 @@ public class DynamicListsApp extends AppBase
      * 
      * @return The application settings
      */
-    public DynamicListsSettings getSettings() { return settings; }
+    public DynamicBlockListsSettings getSettings() { return settings; }
 
     /**
      * Return the settings filename
@@ -101,10 +101,10 @@ public class DynamicListsApp extends AppBase
      * @param restart
      *      If true, restart
      */
-    public void setSettings(final DynamicListsSettings newSettings, boolean restart) {
+    public void setSettings(final DynamicBlockListsSettings newSettings, boolean restart) {
         logger.info("Saving the settings. Restart: {}", restart);
         // Set id for new blocklists
-        newSettings.getDynamicList().stream()
+        newSettings.getDynamicBlockList().stream()
                 .filter(blockList -> StringUtil.isEmpty(blockList.getId()))
                 .forEach(blockList -> {
                     blockList.setId(generateUniqueId());
@@ -120,11 +120,10 @@ public class DynamicListsApp extends AppBase
 
         // Change current settings
         this.settings = newSettings;
+        dynamicBlockListsManager.configure();
 
         // reconfigure only if settings have changed
         if (restart)
-            dynamicListsManager.configure();
-            
         try {
             if(logger.isDebugEnabled())
                 logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
@@ -149,7 +148,7 @@ public class DynamicListsApp extends AppBase
      */
     @Override
     protected void postStart(boolean isPermanentTransition) {
-        dynamicListsManager.start();
+        dynamicBlockListsManager.start();
     }
 
     /**
@@ -171,7 +170,7 @@ public class DynamicListsApp extends AppBase
      */
     @Override
     protected void preStop(boolean isPermanentTransition) {
-        dynamicListsManager.stop();
+        dynamicBlockListsManager.stop();
     }
 
     /**
@@ -180,7 +179,7 @@ public class DynamicListsApp extends AppBase
     @Override
     protected void postInit() {
         // Load the settings from settings file
-        DynamicListsSettings readSettings = loadSettings();
+        DynamicBlockListsSettings readSettings = loadSettings();
 
         /**
          * If there are still no settings, just initialize
@@ -194,17 +193,17 @@ public class DynamicListsApp extends AppBase
     /**
      * load the settings from settings file
      * 
-     * @return DynamicListsSettings loaded settings
+     * @return DynamicBlockListsSettings loaded settings
      */
-    public DynamicListsSettings loadSettings() {
+    public DynamicBlockListsSettings loadSettings() {
         logger.info("Loading Settings...");
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
-        DynamicListsSettings readSettings = null;
-        String settingsFilename = System.getProperty("uvm.settings.dir") + "/dynamic-lists/" + "settings_" + appID + ".js";
+        DynamicBlockListsSettings readSettings = null;
+        String settingsFilename = System.getProperty("uvm.settings.dir") + "/dynamic-blocklists/" + "settings_" + appID + ".js";
 
         try {
-            readSettings = settingsManager.load(DynamicListsSettings.class, settingsFilename);
+            readSettings = settingsManager.load(DynamicBlockListsSettings.class, settingsFilename);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
         }
@@ -226,7 +225,7 @@ public class DynamicListsApp extends AppBase
      * Called to initialize application settings
      */
     public void initializeSettings() {
-        DynamicListsSettings settings = getDefaultSettings();
+        DynamicBlockListsSettings settings = getDefaultSettings();
         setSettings(settings, true);
     }
 
@@ -235,38 +234,38 @@ public class DynamicListsApp extends AppBase
      * 
      * @return Default settings
      */
-    private DynamicListsSettings getDefaultSettings()
+    private DynamicBlockListsSettings getDefaultSettings()
     {
         logger.info("Creating the default settings...");
 
-        DynamicListsSettings settings = new DynamicListsSettings();
-        List<DynamicList> list = new LinkedList<>();
+        DynamicBlockListsSettings settings = new DynamicBlockListsSettings();
+        List<DynamicBlockList> list = new LinkedList<>();
 
-        DynamicList dynamicList = new DynamicList();
-        dynamicList.setId(generateUniqueId());
-        dynamicList.setEnabled(false);
-        dynamicList.setName("Emerging Threats");
-        dynamicList.setSource("http://opendbl.net/lists/etknown.list");
-        dynamicList.setParsingMethod(PARSING_REGEX_1);
-        dynamicList.setPollingTime(30);
-        dynamicList.setPollingUnit(DBLPollingUnit.MINUTES.getValue());
-        dynamicList.setSkipCertCheck(false);
-        dynamicList.setType("IPList");
-        list.add(dynamicList);
+        DynamicBlockList dynamicBlockList = new DynamicBlockList();
+        dynamicBlockList.setId(generateUniqueId());
+        dynamicBlockList.setEnabled(false);
+        dynamicBlockList.setName("Emerging Threats");
+        dynamicBlockList.setSource("http://opendbl.net/lists/etknown.list");
+        dynamicBlockList.setParsingMethod(PARSING_REGEX_1);
+        dynamicBlockList.setPollingTime(30);
+        dynamicBlockList.setPollingUnit(DBLPollingUnit.MINUTES.getValue());
+        dynamicBlockList.setSkipCertCheck(false);
+        dynamicBlockList.setType("IPList");
+        list.add(dynamicBlockList);
 
-        dynamicList = new DynamicList();
-        dynamicList.setId(generateUniqueId());
-        dynamicList.setEnabled(false);
-        dynamicList.setName("DShield Blocklist");
-        dynamicList.setSource("http://opendbl.net/lists/dshield.list");
-        dynamicList.setParsingMethod(PARSING_REGEX_2);
-        dynamicList.setPollingTime(1);
-        dynamicList.setPollingUnit(DBLPollingUnit.HOURS.getValue());
-        dynamicList.setSkipCertCheck(false);
-        dynamicList.setType("IPList");
-        list.add(dynamicList);
+        dynamicBlockList = new DynamicBlockList();
+        dynamicBlockList.setId(generateUniqueId());
+        dynamicBlockList.setEnabled(false);
+        dynamicBlockList.setName("DShield Blocklist");
+        dynamicBlockList.setSource("http://opendbl.net/lists/dshield.list");
+        dynamicBlockList.setParsingMethod(PARSING_REGEX_2);
+        dynamicBlockList.setPollingTime(1);
+        dynamicBlockList.setPollingUnit(DBLPollingUnit.HOURS.getValue());
+        dynamicBlockList.setSkipCertCheck(false);
+        dynamicBlockList.setType("IPList");
+        list.add(dynamicBlockList);
 
-        settings.setDynamicList(list);
+        settings.setDynamicBlockList(list);
         return settings;
     }
 

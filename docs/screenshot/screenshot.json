@@ -1001,6 +1001,15 @@
         "type": "remove_report_nav"
 
      },{
+        "url": "/admin/index.do#reports?cat=dynamic-blocklists&rep=top-addresses-by-blocked-count",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=dynamic-blocklists&rep=blocked-ips-by-time",
+        "type": "remove_report_nav"
+    },{
+        "url": "/admin/index.do#reports?cat=dynamic-blocklists&rep=blocked-addresses",
+        "type": "remove_report_nav"
+    },{
         "url": "/admin/index.do#reports?cat=events&rep=alerts",
         "type": "remove_report_nav"
      },{

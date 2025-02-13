@@ -1,7 +1,7 @@
 /**
  * $Id$
  */
-package com.untangle.app.dynamic_lists;
+package com.untangle.app.dynamic_blocklists;
 
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
@@ -14,23 +14,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * DynamicListsManager
+ * DynamicBlockListsManager
  */
 @SuppressWarnings("serial")
-public class DynamicListsManager {
+public class DynamicBlockListsManager {
 
     private static final String DBL_SETUP_SCRIPT = System.getProperty("uvm.home") + "/bin/dbl-setup.sh";
     private static final String DBL_CLEAN_UP_SCRIPT = System.getProperty("uvm.home") + "/bin/dbl-cleanup.sh";
 
     private final Logger logger = LogManager.getLogger(this.getClass());
-    private final DynamicListsApp app;
+    private final DynamicBlockListsApp app;
 
     /**
      * Constructor
      *
      * @param app The Dynamic Lists application
      */
-    public DynamicListsManager(DynamicListsApp app) { this.app = app; }
+    public DynamicBlockListsManager(DynamicBlockListsApp app) { this.app = app; }
 
     /**
      * Start the dbl setup

@@ -11919,6 +11919,30 @@ msgstr ""
 msgid "Top Client Addresses"
 msgstr ""
 
+#: /ngfw/build/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/blocked-addresses.json
+msgid "All sessions blocked by Dynamic Blocklists."
+msgstr ""
+
+#: /ngfw/build/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/blocked-addresses.json
+msgid "Blocked Addresses"
+msgstr ""
+
+#: /ngfw/build/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/blocked-ips-by-time.json
+msgid "The amount of blocked sessions over time."
+msgstr ""
+
+#: /ngfw/build/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/blocked-ips-by-time.json
+msgid "Blocked IPs by Time"
+msgstr ""
+
+#: /ngfw/build/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-blocked-addresses.json
+msgid "The number of blocked sessions grouped by server (destination) address."
+msgstr ""
+
+#: /ngfw/build/uvm/hier/usr/share/untangle/lib/untangle-vm/reports/top-blocked-addresses.json
+msgid "Top Addresses by Blocked Count"
+msgstr ""
+
 #: /ngfw/ngfw_src/smtp-casing/servlets/quarantine/root/script/inbox.js:14
 msgid "Filter data ..."
 msgstr ""

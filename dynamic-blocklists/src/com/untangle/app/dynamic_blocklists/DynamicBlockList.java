@@ -2,7 +2,7 @@
  * $Id$
  */
 
-package com.untangle.app.dynamic_lists;
+package com.untangle.app.dynamic_blocklists;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -13,7 +13,7 @@ import java.io.Serializable;
  * SourceList
  */
 @SuppressWarnings("serial")
-public class DynamicList implements Serializable, JSONString {
+public class DynamicBlockList implements Serializable, JSONString {
 
     private String id;
     private boolean enabled;
