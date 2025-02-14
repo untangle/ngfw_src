@@ -25,5 +25,5 @@ RUN apt clean
 RUN rm -rf /var/lib/apt/lists/*
 
 # FIXME: right now there is no bullseye release on updates.u.c
-#RUN echo "deb http://foo:foo@updates.untangle.com/public/${REPOSITORY} ${STABLE_VERSION} main non-free" > /etc/apt/sources.list.d/${STABLE_VERSION}.list
+#RUN echo "deb http://foo:foo@updates.edge.arista.com/public/${REPOSITORY} ${STABLE_VERSION} main non-free" > /etc/apt/sources.list.d/${STABLE_VERSION}.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 735A9E18E8F62EDF413592460B9D6AE3627BF103

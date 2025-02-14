@@ -9709,16 +9709,16 @@ msgid "Congratulations! {0} is ready to be configured."
 msgstr "おめでとうございます{0}に設定する準備が整いました。"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:94
-msgid "Please register with an untangle.com account before continuing."
-msgstr "続行する前にuntangle.comアカウントで登録してください。"
+msgid "Please register with an edge.arista.com account before continuing."
+msgstr "続行する前にedge.arista.comアカウントで登録してください。"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:94
 msgid "Registering gets you the following benefits:"
 msgstr "登録は、次のような利点あなたを取得します。"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:96
-msgid "Access to your account on untangle.com"
-msgstr "untangle.com上の自分のアカウントへのアクセス"
+msgid "Access to your account on edge.arista.com"
+msgstr "edge.arista.com上の自分のアカウントへのアクセス"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:97
 msgid ""
@@ -11262,17 +11262,17 @@ msgid "DNS connectivity failed:"
 msgstr "DNS接続に失敗："
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:253
-msgid "Failed to connect to Untangle. [updates.untangle.com:80]"
-msgstr "解くへの接続に失敗しました。 [updates.untangle.com:80]"
+msgid "Failed to connect to Untangle. [updates.edge.arista.com:80]"
+msgstr "解くへの接続に失敗しました。 [updates.edge.arista.com:80]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:265
-msgid "Failed to connect to Untangle. [license.untangle.com:443]"
-msgstr "解くへの接続に失敗しました。 [license.untangle.com:443]"
+msgid "Failed to connect to Untangle. [license.edge.arista.com:443]"
+msgstr "解くへの接続に失敗しました。 [license.edge.arista.com:443]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:287
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:292
-msgid "Failed to connect to Untangle. [cmd.untangle.com]"
-msgstr "解くへの接続に失敗しました。 [cmd.untangle.com]"
+msgid "Failed to connect to Untangle. [cmd.edge.arista.com]"
+msgstr "解くへの接続に失敗しました。 [cmd.edge.arista.com]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:312
 msgid "Free Disk space is low."

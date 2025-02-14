@@ -16,8 +16,8 @@ class StatusRecord:
         "code": None,
         "name": None,
         "translated_percent": 0.0,
-        "url": "http://translations.untangle.com/engage/ngfw/fr/",
-        "url_translate": "http://translations.untangle.com/projects/ngfw/official/fr/"
+        "url": "http://translations.edge.arista.com/engage/ngfw/fr/",
+        "url_translate": "http://translations.edge.arista.com/projects/ngfw/official/fr/"
     }
 
     def __init__(self, source_id="official", po_file=None):
@@ -41,8 +41,8 @@ class StatusRecord:
 
         self.status["translated_percent"] = int(po_file.updated_record_count() / po_file.total_record_count() * 100)
 
-        self.status["url"] = f"http://translations.untangle.com/engage/ngfw/{po_file.language_id}/"
-        self.status["url_translate"] = f"http://translations.untangle.com/projects/ngfw/{self.source_id}/{po_file.language_id}/"
+        self.status["url"] = f"http://translations.edge.arista.com/engage/ngfw/{po_file.language_id}/"
+        self.status["url_translate"] = f"http://translations.edge.arista.com/projects/ngfw/{self.source_id}/{po_file.language_id}/"
 
     def get_status(self):
         """

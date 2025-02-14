@@ -268,14 +268,14 @@ public class NotificationManagerImpl implements NotificationManager
     private void testConnectivity(List<String> notificationList)
     {
         Socket socket = null;
-        UriTranslation updatesUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("updates.untangle.com");
-        UriTranslation licenseUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("license.untangle.com");
+        UriTranslation updatesUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("updates.edge.arista.com");
+        UriTranslation licenseUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("license.edge.arista.com");
 
         String host = null;
         int port = 0;
         try {
             socket = new Socket();
-            host = updatesUri.getHost() != null ? updatesUri.getHost(): "updates.untangle.com";
+            host = updatesUri.getHost() != null ? updatesUri.getHost(): "updates.edge.arista.com";
             port = updatesUri.getPort() != -1 ? updatesUri.getPort() : 80;
             socket.connect(new InetSocketAddress(host, port), 7000);
         } catch (Exception e) {
@@ -289,7 +289,7 @@ public class NotificationManagerImpl implements NotificationManager
 
         try {
             socket = new Socket();
-            host = licenseUri.getHost() != null ? licenseUri.getHost(): "license.untangle.com";
+            host = licenseUri.getHost() != null ? licenseUri.getHost(): "license.edge.arista.com";
             port = licenseUri.getPort() != -1 ? licenseUri.getPort() : 443;
             socket.connect(new InetSocketAddress(host, port), 7000);
         } catch (Exception e) {
@@ -303,17 +303,17 @@ public class NotificationManagerImpl implements NotificationManager
     }
 
     /**
-     * This test that pyconnector is connected to cmd.untangle.com
+     * This test that pyconnector is connected to cmd.edge.arista.com
      * 
      * @param notificationList - the current list of notifications
      */
     private void testConnector(List<String> notificationList)
     {
-        UriTranslation cmdUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("cmd.untangle.com");
+        UriTranslation cmdUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("cmd.edge.arista.com");
 
         String host = null;
         try {
-            host = cmdUri.getHost() != null ? cmdUri.getHost(): "cmd.untangle.com";
+            host = cmdUri.getHost() != null ? cmdUri.getHost(): "cmd.edge.arista.com";
             if (UvmContextFactory.context().isDevel()) return;
             if (!UvmContextFactory.context().systemManager().getSettings().getCloudEnabled()) return;
 

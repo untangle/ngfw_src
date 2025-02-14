@@ -19,8 +19,8 @@ public class UriManagerSettings implements Serializable, JSONString
     private Integer version = 5;
     private List<UriTranslation> uriTranslations = new LinkedList<>();
 
-    private String dnsTestHost = "updates.untangle.com";
-    private String tcpTestHost = "updates.untangle.com";
+    private String dnsTestHost = "updates.edge.arista.com";
+    private String tcpTestHost = "updates.edge.arista.com";
 
     public UriManagerSettings() { }
 
