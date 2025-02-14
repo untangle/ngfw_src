@@ -5,6 +5,9 @@
 package com.untangle.app.spam_blocker;
 
 import org.apache.logging.log4j.Logger;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.spam_blocker.SpamBlockerBaseApp;
@@ -114,14 +117,10 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     {
         String transmit;
         String search;
-
-        // for both of these we only need to enable the monitoring since it
+        //As now we support only spamassassin for spam-filter we need to clean all the references of mailShell
+        executeMailshellClenup();
+        // We only need to enable the monitoring since it
         // will be disabled automatically when the daemon counts reach zero
-
-        UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-spamcatd");
-        transmit = "PING SPAMC/1.0\r\n";
-        search = "SPAMD/1.5 0 PONG";
-        UvmContextFactory.context().daemonManager().enableRequestMonitoring("untangle-spamcatd", 300, "127.0.0.1", 1784, transmit, search);
 
         UvmContextFactory.context().daemonManager().incrementUsageCount("spamassassin");
         transmit = "PING SPAMC/1.0\r\n";
@@ -135,6 +134,21 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     }
 
     /**
+     * Method called before application stared to clean the mailshell plugins file/folder
+     */
+    private void executeMailshellClenup(){
+        Path mailShellPath = Paths.get("/var/cache/untangle-spamcatd");
+        if (Files.exists(mailShellPath)) {
+            UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-spamcatd");
+            UvmContextFactory.context().execManager().exec("rm -rf " + "/var/cache/untangle-spamcatd");
+            UvmContextFactory.context().execManager().exec("rm -rf " + "/etc/spamcatd");
+            UvmContextFactory.context().execManager().exec("rm -rf " + "/usr/lib/spamcatd");
+            UvmContextFactory.context().execManager().exec("rm -rf " + "/usr/bin/spamcatd");
+            UvmContextFactory.context().execManager().exec("rm -rf " + "/etc/spamassassin/mailshell.*");
+            UvmContextFactory.context().execManager().exec("rm -rf " + "/usr/share/perl5/Mail/SpamAssassin/Plugin/MailShell.pm");
+        }  
+    }
+    /**
      * Called after the application is stopped.
      * 
      * @param isPermanentTransition
@@ -143,7 +157,6 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-spamcatd");
         UvmContextFactory.context().daemonManager().decrementUsageCount("spamassassin");
 
         // disable CRON job if permanent and no one else using SA
@@ -158,7 +171,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     @Override
     public boolean isPremium()
     {
-        return true;
+        return false;
     }
 
     /**

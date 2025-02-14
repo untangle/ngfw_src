@@ -140,7 +140,7 @@ Conflicts: untangle-node-spam-blocker
 Replaces: untangle-node-spam-blocker
 Provides: untangle-node-spam-blocker
 Section: non-free/net
-Depends: ${misc:Depends}, untangle-vm, untangle-spamcatd, untangle-app-license, untangle-base-spam-blocker, untangle-app-smtp, untangle-spamassassin-update
+Depends: ${misc:Depends}, untangle-vm, untangle-base-spam-blocker, untangle-app-smtp, untangle-spamassassin-update
 Description: Spam Blocker
  The Spam Blocker application.
 
@@ -287,15 +287,6 @@ Provides: untangle-node-threat-prevention
 Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-app-license, untangle-bctid, untangle-app-webroot
 Description: Threat Prevention application
  The Threat Prevention application.
-
-Package: untangle-app-spam-blocker-lite
-Architecture: all
-Conflicts: untangle-node-spam-blocker-lite
-Replaces: untangle-node-spam-blocker-lite
-Provides: untangle-node-spam-blocker-lite
-Depends: ${misc:Depends}, untangle-vm, untangle-base-spam-blocker, untangle-app-smtp, untangle-spamassassin-update
-Description: Spam Blocker Lite
- The Spam Blocker Lite application.
 
 Package: untangle-app-phish-blocker
 Architecture: all

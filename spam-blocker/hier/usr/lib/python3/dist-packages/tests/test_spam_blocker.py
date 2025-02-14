@@ -36,6 +36,7 @@ class SpamBlockerTests(SpamBlockerBaseTests):
 
     # verify MAIL_SHELL is scoring. Relies on test_20_smtpTest
     def test_021_check_for_mailshell(self):
+        raise unittest.SkipTest('Mailshell plugin is no more used for spam filtering, skipping the test')
         if (not self.canRelay):
             raise unittest.SkipTest('Unable to relay through ' + global_functions.TEST_SERVER_HOST)
         events = global_functions.get_events(self.displayName(),'Quarantined Events',None,8)
