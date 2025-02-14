@@ -407,6 +407,7 @@ Depends: ${misc:Depends},
 	 untangle-sync-settings,
 	 untangle-python3-runtests,
          untangle-python3-support-diagnostics,
+                  untangle-vue-ui,
 	 unzip,
          zip
 Description: UVM Platform
