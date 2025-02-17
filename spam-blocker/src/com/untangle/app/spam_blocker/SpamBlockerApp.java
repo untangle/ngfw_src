@@ -118,7 +118,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
         String search;
 
         //As now we support only spamassassin for spam-filter we need to clean all the references of mailShell
-        executeMailshellClenup();
+        executeMailshellCleanUp();
         // We only need to enable the monitoring since it
         // will be disabled automatically when the daemon counts reach zero
 
@@ -136,7 +136,7 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     /**
      * Method called before application stared to clean the mailshell plugins file/folder
      */
-    private void executeMailshellClenup(){
+    private void executeMailshellCleanUp(){
         Path mailShellPath = Paths.get("/var/cache/untangle-spamcatd");
         if (Files.exists(mailShellPath)) {
             UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-spamcatd");

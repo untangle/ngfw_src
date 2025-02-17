@@ -250,7 +250,7 @@ public class License implements Serializable
             return SPAM_BLOCKER;
         case "commtouchas":
             return SPAM_BLOCKER;
-        //SPAM_BLOCKER_LITE
+        //SPAM_BLOCKER
         case "spamassassin":
             return SPAM_BLOCKER;
         //SPYWARE
