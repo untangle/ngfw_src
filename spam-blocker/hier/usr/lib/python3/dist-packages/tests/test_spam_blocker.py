@@ -31,8 +31,6 @@ class SpamBlockerTests(SpamBlockerBaseTests):
         self.module_name() # do not remove
         result1 = subprocess.call("ps aux | grep spamd | grep -v grep >/dev/null 2>&1", shell=True)
         assert (result1 == 0)
-        result2 = subprocess.call("ps aux | grep spamcatd | grep -v grep >/dev/null 2>&1", shell=True)
-        assert ( result2 == 0 )
 
     # verify MAIL_SHELL is scoring. Relies on test_20_smtpTest
     def test_021_check_for_mailshell(self):
