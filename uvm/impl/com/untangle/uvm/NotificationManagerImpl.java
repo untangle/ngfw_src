@@ -419,8 +419,8 @@ public class NotificationManagerImpl implements NotificationManager
     /**
      * This test iterates through each rack and test for redundant applications
      * It creates a notification for each redundant pair Currently the redundant
-     * apps are: Web Filter and Web Filter Lite Spam Blocker and Spam Blocker
-     * Lite Web Filter and Web Monitor
+     * apps are: Web Filter and Web Filter Lite
+     * Web Filter and Web Monitor
      * 
      * @param notificationList - the current list of notifications
      */
@@ -429,8 +429,6 @@ public class NotificationManagerImpl implements NotificationManager
         /**
          * Check for redundant apps
          */
-        List<App> spamBlockerLiteList = UvmContextFactory.context().appManager().appInstances("spam-blocker-lite");
-        List<App> spamblockerList = UvmContextFactory.context().appManager().appInstances("spam-blocker");
         List<App> webMonitorList = UvmContextFactory.context().appManager().appInstances("web-monitor");
         List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
 
@@ -442,13 +440,6 @@ public class NotificationManagerImpl implements NotificationManager
             }
         }
 
-        for (App app1 : spamBlockerLiteList) {
-            for (App app2 : spamblockerList) {
-                if (app1.getAppSettings().getId().equals(app2.getAppSettings().getId())) continue;
-
-                if (app1.getAppSettings().getPolicyId().equals(app2.getAppSettings().getPolicyId())) notificationList.add(i18nUtil.tr("One or more policies contain redundant apps") + ": " + " Spam Blocker " + i18nUtil.tr("and") + " Spam Blocker Lite");
-            }
-        }
     }
 
     /**
@@ -463,8 +454,8 @@ public class NotificationManagerImpl implements NotificationManager
         for (InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces()) {
             if (!InterfaceSettings.ConfigType.BRIDGED.equals(intf.getConfigType())) continue;
 
-            logger.debug("testBridgeBackwards: Checking Bridge: " + intf.getSystemDev());
-            logger.debug("testBridgeBackwards: Checking Bridge bridgedTo: " + intf.getBridgedTo());
+            logger.debug("testBridgeBackwards: Checking Bridge: {}", intf.getSystemDev());
+            logger.debug("testBridgeBackwards: Checking Bridge bridgedTo: {}", intf.getBridgedTo());
 
             InterfaceSettings master = UvmContextFactory.context().networkManager().findInterfaceId(intf.getBridgedTo());
             if (master == null) {
@@ -472,9 +463,9 @@ public class NotificationManagerImpl implements NotificationManager
                 continue;
             }
 
-            logger.debug("testBridgeBackwards: Checking Bridge master: " + master.getSystemDev());
+            logger.debug("testBridgeBackwards: Checking Bridge master: {}", master.getSystemDev());
             if (master.getSystemDev() == null) {
-                logger.warn("Unable to locate bridge master systemName: " + master.getName());
+                logger.warn("Unable to locate bridge master systemName: {}", master.getName());
                 continue;
             }
             String bridgeName = master.getSymbolicDev();
@@ -484,7 +475,7 @@ public class NotificationManagerImpl implements NotificationManager
                 logger.warn("Unable to build bridge map");
                 continue;
             }
-            logger.debug("testBridgeBackwards: brctlOutput: " + result);
+            logger.debug("testBridgeBackwards: brctlOutput: {}", result);
 
             /**
              * Parse output brctl showstp output. Example: eth0 2 eth1 1
@@ -494,7 +485,7 @@ public class NotificationManagerImpl implements NotificationManager
                 logger.debug("testBridgeBackwards: line: " + line);
                 String[] subline = line.split(" ");
                 if (subline.length < 2) {
-                    logger.warn("Invalid brctl showstp line: \"" + line + "\"");
+                    logger.warn("Invalid brctl showstp line: \"{}\"", line);
                     break;
                 }
                 Integer key;
@@ -505,7 +496,7 @@ public class NotificationManagerImpl implements NotificationManager
                     continue;
                 }
                 String systemName = subline[0];
-                logger.debug("testBridgeBackwards: Map: " + key + " -> " + systemName);
+                logger.debug("testBridgeBackwards: Map: {} -> {}",key, systemName);
                 bridgeIdToSystemNameMap.put(key, systemName);
             }
 
@@ -517,7 +508,7 @@ public class NotificationManagerImpl implements NotificationManager
 
             InetAddress gateway = UvmContextFactory.context().networkManager().getInterfaceStatus(master.getInterfaceId()).getV4Gateway();
             if (gateway == null) {
-                logger.warn("Missing gateway on bridge master: " + master.getInterfaceId());
+                logger.warn("Missing gateway on bridge master: {}", master.getInterfaceId());
                 return;
             }
 
@@ -531,7 +522,7 @@ public class NotificationManagerImpl implements NotificationManager
             }
             gatewayMac = gatewayMac.replaceAll("\\s+", "");
             if ("".equals(gatewayMac) || "entries".equals(gatewayMac)) {
-                logger.warn("Unable to determine MAC for " + gateway.getHostAddress());
+                logger.warn("Unable to determine MAC for {}", gateway.getHostAddress());
                 return;
             }
 
@@ -540,25 +531,25 @@ public class NotificationManagerImpl implements NotificationManager
              */
             String portNo = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskFree");
             if (portNo == null) {
-                logger.warn("Unable to find port number for MAC: " + gatewayMac);
+                logger.warn("Unable to find port number for MAC: {}", gatewayMac);
                 return;
             }
             portNo = portNo.replaceAll("\\s+", "");
             if ("".equals(portNo)) {
-                logger.warn("Unable to find port number for MAC: " + gatewayMac);
+                logger.warn("Unable to find port number for MAC: {}", gatewayMac);
                 return;
             }
-            logger.debug("testBridgeBackwards: brctl showmacs Output: " + portNo);
+            logger.debug("testBridgeBackwards: brctl showmacs Output: {}", portNo);
             Integer gatewayPortNo = Integer.parseInt(portNo);
-            logger.debug("testBridgeBackwards: Gateway Port: " + gatewayPortNo);
+            logger.debug("testBridgeBackwards: Gateway Port: {}", gatewayPortNo);
 
             /**
              * Lookup the system name for the bridge port
              */
             String gatewayInterfaceSystemName = bridgeIdToSystemNameMap.get(gatewayPortNo);
-            logger.debug("testBridgeBackwards: Gateway Interface: " + gatewayInterfaceSystemName);
+            logger.debug("testBridgeBackwards: Gateway Interface: {}", gatewayInterfaceSystemName);
             if (gatewayInterfaceSystemName == null) {
-                logger.warn("Unable to find bridge port " + gatewayPortNo);
+                logger.warn("Unable to find bridge port {}", gatewayPortNo);
                 return;
             }
 
@@ -568,10 +559,10 @@ public class NotificationManagerImpl implements NotificationManager
              */
             InterfaceSettings gatewayIntf = UvmContextFactory.context().networkManager().findInterfaceSystemDev(gatewayInterfaceSystemName);
             if (gatewayIntf == null) {
-                logger.warn("Unable to find gatewayIntf " + gatewayInterfaceSystemName);
+                logger.warn("Unable to find gatewayIntf {}", gatewayInterfaceSystemName);
                 return;
             }
-            logger.debug("testBridgeBackwards: Final Gateway Inteface: " + gatewayIntf.getName() + " is WAN: " + gatewayIntf.getIsWan());
+            logger.debug("testBridgeBackwards: Final Gateway Inteface: {} is WAN: {}",gatewayIntf.getName(), gatewayIntf.getIsWan());
 
             /**
              * Ideally, this is the WAN, however if its actually an interface
@@ -617,7 +608,7 @@ public class NotificationManagerImpl implements NotificationManager
 
             for (String line : lines.split("\n")) {
                 line = line.replaceAll("\\s+", "");
-                logger.debug("testInterfaceErrors line: " + line);
+                logger.debug("testInterfaceErrors line: {}", line);
 
                 String[] errorsLine = line.split(":");
                 if (errorsLine.length < 2) continue;
@@ -680,12 +671,10 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testSpamDNSServers(List<String> notificationList)
     {
-        List<App> spamBlockerLiteList = UvmContextFactory.context().appManager().appInstances("spam-blocker-lite");
         List<App> spamblockerList = UvmContextFactory.context().appManager().appInstances("spam-blocker");
         String appName = "Spam Blocker";
 
-        if (spamBlockerLiteList.size() == 0 && spamblockerList.size() == 0) return;
-        if (spamBlockerLiteList.size() > 0) appName = "Spam Blocker Lite";
+        if (spamblockerList.size() == 0) return;
         if (spamblockerList.size() > 0) appName = "Spam Blocker";
 
         for (InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces()) {
@@ -733,7 +722,7 @@ public class NotificationManagerImpl implements NotificationManager
                         lookup.setResolver(new SimpleResolver(dnsServer));
                         records = lookup.run();
                     } catch (Exception e) {
-                        logger.warn("Invalid Resolver: " + dnsServer);
+                        logger.warn("Invalid Resolver: {}", dnsServer);
                     }
 
                     if (records == null) {

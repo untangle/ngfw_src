@@ -46,7 +46,6 @@ public class License implements Serializable
     public static final String SHIELD = "shield";
     public static final String SMTP = "smtp";
     public static final String SPAM_BLOCKER = "spam-blocker";
-    public static final String SPAM_BLOCKER_LITE = "spam-blocker-lite";
     public static final String SPYWARE = "spyware";
     public static final String SSL_INSPECTOR = "ssl-inspector";
     public static final String THREAT_PREVENTION = "threat-prevention";
@@ -251,9 +250,9 @@ public class License implements Serializable
             return SPAM_BLOCKER;
         case "commtouchas":
             return SPAM_BLOCKER;
-        //SPAM_BLOCKER_LITE
+        //SPAM_BLOCKER
         case "spamassassin":
-            return SPAM_BLOCKER_LITE;
+            return SPAM_BLOCKER;
         //SPYWARE
         case "idps":
             return SPYWARE;
