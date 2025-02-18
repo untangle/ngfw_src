@@ -77,7 +77,7 @@ WG_NON_ROAMING = overrides.get("WG_NON_ROAMING", default={
     "privateKey": ""
                 })
 
-def build_wireguard_tunnel_roaming(tunnel_enabled, description, endpointHostname, endpointDynamic, endpointPort, publicKey,privateKey, networks, peerAddress, pingUnreachableEvents, pingInterval,pingConnectionEvents, pingAddress):
+def build_wireguard_tunnel_roaming(tunnel_enabled, description, endpointHostname, endpointDynamic, endpointPort, publicKey,privateKey, networks, peerAddress, pingUnreachableEvents, pingInterval,pingConnectionEvents, pingAddress, assignDnsServer=False):
     return {
         "description": description,
         "enabled": tunnel_enabled,
@@ -94,6 +94,7 @@ def build_wireguard_tunnel_roaming(tunnel_enabled, description, endpointHostname
         "pingAddress": pingAddress,
         "privateKey": privateKey,
         "publicKey": publicKey,
+        "assignDnsServer": assignDnsServer
     }
 
 def build_wireguard_tunnel(tunnel_enabled=True, remotePK=WG_REMOTE["publicKey"], remotePeer=WG_REMOTE["peerAddress"], description=WG_REMOTE["hostname"], endpointHostname=WG_REMOTE["serverAddress"], networks=WG_REMOTE["networks"]):
@@ -111,7 +112,8 @@ def build_wireguard_tunnel(tunnel_enabled=True, remotePK=WG_REMOTE["publicKey"],
         "pingInterval": 60,
         "pingUnreachableEvents": False,
         "privateKey": "",
-        "publicKey": WG_REMOTE["publicKey"]
+        "publicKey": WG_REMOTE["publicKey"],
+        "assignDnsServer": False
     }
 
 def wait_for_ping(target_IP="127.0.0.1",ping_result_expected=0):
@@ -478,7 +480,7 @@ class WireGuardVpnTests(NGFWTestCase):
         newAppSettings = copy.deepcopy( appSettings )
 
         # Create roaming client tunnel and set new tunnel in settings.
-        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress']))
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress'],True))
         self._app.setSettings(newAppSettings)
 
         # Check if default search domain (i.e. NGFW domain name) is included in remote client config
@@ -490,8 +492,7 @@ class WireGuardVpnTests(NGFWTestCase):
             if(line.startswith("DNS") and domainName in line):
                 count += 1
                 break
-        if(count == 1): assert(True)
-        else: assert(False)
+        assert(count == 1)
 
         # Set search domain value to blank and check if its reflected in remote client config
         newAppSettings["dnsSearchDomain"] = ""
@@ -503,8 +504,50 @@ class WireGuardVpnTests(NGFWTestCase):
             if(line.startswith("DNS") and "," in line):
                 count += 1
                 break
-        if(count == 0): assert(True)
-        else: assert(False)
+        assert(count == 0)
+
+        self._app.setSettings(appSettings)
+
+    def test_045_verify_assign_dns_config(self):
+        """
+        Check assign dns server checkbox works as expected.
+        """
+        # get app settings and deepcopy it
+        appSettings = self._app.getSettings()
+        newAppSettings = copy.deepcopy( appSettings )
+
+        # Create roaming client tunnel and set new tunnel in settings with default assignDnsServer value False
+        newAppSettings["tunnels"]["list"] = []
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress']))
+        self._app.setSettings(newAppSettings)
+
+        # DNS config should not be present in wireguard config generated.
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert("DNS=" not in remoteConfig)
+
+        # Change assignDnsServer value to True
+        newAppSettings["tunnels"]["list"][0]['assignDnsServer'] = True
+        self._app.setSettings(newAppSettings)
+
+        # DNS config should be present in wireguard config generated.
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert("DNS=" in remoteConfig)
+
+        # Create static client tunnel with default assignDnsServer value False
+        newAppSettings["tunnels"]["list"] = []
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel())
+        self._app.setSettings(newAppSettings)
+
+        # DNS should be present regardless of assignDnsServer flag
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert("DNS=" in remoteConfig)
+
+        # Change assignDnsServer value to True
+        newAppSettings["tunnels"]["list"][0]['assignDnsServer'] = True
+        self._app.setSettings(newAppSettings)
+
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert("DNS=" in remoteConfig)
 
         self._app.setSettings(appSettings)
 
