@@ -611,8 +611,7 @@ public class OpenVpnManager
     private void buildCommonConfiguration(OpenVpnSettings settings, StringBuilder sb) {
         sb.append("proto" + SPACE).append(settings.getProtocol()).append(LINE_BREAK);
         sb.append("port" + SPACE).append(settings.getPort()).append(LINE_BREAK);
-        sb.append("data-ciphers" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
-        sb.append("data-ciphers-fallback" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
+        sb.append("cipher" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
     }
 
     /**
