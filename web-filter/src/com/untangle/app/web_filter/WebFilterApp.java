@@ -5,6 +5,9 @@
 package com.untangle.app.web_filter;
 
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
 import org.apache.logging.log4j.Logger;
@@ -16,6 +19,7 @@ import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Subscription;
 import com.untangle.uvm.app.PortRange;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.vnet.Protocol;
 import com.untangle.uvm.app.GenericRule;
@@ -47,7 +51,8 @@ public class WebFilterApp extends WebFilterBase
     private final PipelineConnector httpsSniConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-https-sni", this, httpsSub, sniHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true);
     private final PipelineConnector quicConnector = UvmContextFactory.context().pipelineFoundry().create("web-filter-quic", this, quicSub, quicHandler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 2, true);
     private final PipelineConnector[] connectors = new PipelineConnector[] { httpConnector, httpsSniConnector, quicConnector };
-
+    private final String globalPassedURLFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "globalPassSiteUrlsSettings.js";
+    private final Path globalPassedURLFilePath = Paths.get(globalPassedURLFileName);
     /**
      * Constructor
      * 
@@ -131,8 +136,21 @@ public class WebFilterApp extends WebFilterBase
     protected void postStop(boolean isPermanentTransition)
     {
         getDecisionEngine().stop();
-
         super.postStop(isPermanentTransition);
+    }
+
+    /**
+     * After stopping, remove the cron job.
+     */
+    @Override
+    protected void postDestroy()
+    {
+        List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
+        if(webFilterList.size() == 1){
+            if (Files.exists(globalPassedURLFilePath)) {
+                UvmContextFactory.context().execManager().exec("rm -rf " + globalPassedURLFileName);
+            }  
+        }
     }
 
     /**

@@ -1297,7 +1297,7 @@ Ext.define('Ung.util.Util', {
         var store = grid.getStore();
 
         var isNameUnique = store.findBy(function(record) {
-            return record.get(field) === value;
+            return record.get(field).trim() === value.trim();
         }) === -1;
         
         return isNameUnique? true : Ext.String.format('A {0} with this {1} already exists.'.t(), form, field);

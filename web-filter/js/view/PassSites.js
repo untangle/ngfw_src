@@ -31,6 +31,7 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
         string: '',
         enabled: true,
         description: '',
+        isGlobal: false,
         javaClass: 'com.untangle.uvm.app.GenericRule'
     },
 
@@ -52,6 +53,12 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
         header: 'Pass'.t(),
         dataIndex: 'enabled',
         resizable: false
+    },{
+        xtype: 'checkcolumn',
+        width: Renderer.booleanWidth,
+        header: 'Global'.t(),
+        dataIndex: 'isGlobal',
+        resizable: false
     }, {
         header: 'Description'.t(),
         width: Renderer.messageWidth,
@@ -64,15 +71,19 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
     }],
     editorFields: [{
         xtype: 'textfield',
-        bind: '{record.string}',
         fieldLabel: 'Site'.t(),
         emptyText: '[enter site]'.t(),
         allowBlank: false,
-        width: 400
+        width: 400,
+        bind: '{record.string}',
     }, {
         xtype: 'checkbox',
         bind: '{record.enabled}',
         fieldLabel: 'Pass'.t()
+    },{
+        xtype: 'checkbox',
+        bind: '{record.isGlobal}',
+        fieldLabel: 'Global'.t()
     }, {
         xtype: 'textarea',
         bind: '{record.description}',

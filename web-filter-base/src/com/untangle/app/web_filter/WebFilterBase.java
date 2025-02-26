@@ -5,13 +5,20 @@
 package com.untangle.app.web_filter;
 
 import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,6 +34,7 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.PasswordUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.app.RuleCondition;
@@ -58,7 +66,8 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     private static final String STAT_IP_ERROR_COUNT = "ip_error_count";
     private static final Integer SETTINGS_CURRENT_VERSION = 6;
     private static int web_filter_deployCount = 0;
-
+    private final String globalPassedURLFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "globalPassSiteUrlsSettings.js";
+    private final Path globalPassedURLFilePath = Paths.get(globalPassedURLFileName);
     protected Boolean isWebFilterApp;
     private AppMetric QuicBlockMetric = null;
 
@@ -494,7 +503,23 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     public WebFilterSettings getSettings()
     {
-        return this.settings;
+        String appID = this.getAppSettings().getId().toString();
+        WebFilterSettings readSettings = this.settings;
+        GlobalPassedUrls globalPassedUrls = null;
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        try {
+            readSettings = settingsManager.load(WebFilterSettings.class, System.getProperty("uvm.settings.dir") + "/" + "" + this.getAppName() + "/" + "settings_" + appID + ".js");
+            globalPassedUrls= settingsManager.load(GlobalPassedUrls.class, System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "globalPassSiteUrlsSettings.js");
+            if(globalPassedUrls != null){
+                readSettings.getPassedUrls().addAll(globalPassedUrls.getGlobalPassedUrls());
+                readSettings.setPassedUrls(getUniqueRulesByString(readSettings.getPassedUrls()));
+            }
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:", e);
+            
+        }
+        return readSettings;
+
     }
 
     /**
@@ -945,8 +970,17 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         WebFilterSettings readSettings = null;
+       
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + appID + ".js";
-
+        // GlobalPassedUrls globalPassedUrls = new GlobalPassedUrls();
+        // if (Files.exists(globalPassedURLFilePath)) {
+        //     try {
+        //         globalPassedUrls = settingsManager.load(GlobalPassedUrls.class, globalPassedURLFileName);
+        //    } catch (SettingsManager.SettingsException e) {
+        //        logger.warn("Failed to save settings.", e);
+        //        return;
+        //    }
+        // }  
         /**
          * First we try to load the existing settings
          */
@@ -963,6 +997,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             logger.warn("No settings found - Initializing new settings.");
 
             WebFilterSettings settings = new WebFilterSettings();
+            // settings.setPassedUrls(globalPassedUrls.getGlobalPassedUrls());
 
             this.initializeCommonSettings(settings);
             this.initializeSettings(settings);
@@ -1000,6 +1035,66 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     {
         getDecisionEngine().removeAllUnblockedItems();
         unblockedSitesMonitor.start();
+    }
+
+    /**
+     * Called before saving the settings
+     * @param settings
+     * @param passedUrls
+     *        Permanent transition flag
+     */
+    protected void setGlobalPassedUrlsToAllInstances(WebFilterSettings settings, List<GenericRule> passedUrls)
+    {
+        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        GlobalPassedUrls globalPassedUrls = null;
+        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "globalPassSiteUrlsSettings.js";
+        List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
+        try {
+             globalPassedUrls = settingsManager.load(GlobalPassedUrls.class, settingsFileName);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.", e);
+            return;
+        }
+        if(globalPassedUrls == null){
+            globalPassedUrls = new GlobalPassedUrls();   
+        }
+        if(settings != null && passedUrls.size() < settings.getPassedUrls().size()){
+            for (GenericRule currentPassedUrl : settings.getPassedUrls()) {
+                boolean isUrlPresent = passedUrls.stream()
+                        .anyMatch(passedUrl -> passedUrl.getString().equals(currentPassedUrl.getString()));
+
+                // If the URL is not present in passedUrls, remove the object with the same URL from globalPassedUrls
+                if (!isUrlPresent) {
+                    globalPassedUrls.getGlobalPassedUrls().removeIf(globalUrl -> globalUrl.getString().equals(currentPassedUrl.getString()));
+                }
+            }
+        }
+        globalPassedUrls.getGlobalPassedUrls().removeIf(item1 -> passedUrls.stream()
+        .anyMatch(item2 -> item2.getString().equals(item1.getString()) && !item2.getIsGlobal()));
+        logger.warn("Failed to save settings.{}", globalPassedUrls);
+        
+        List<GenericRule> globalPassSiteUrls = passedUrls.stream().filter(passedUrl -> passedUrl.getIsGlobal()).collect(Collectors.toCollection(LinkedList::new));
+        globalPassedUrls.getGlobalPassedUrls().addAll(globalPassSiteUrls);
+        globalPassedUrls.setGlobalPassedUrls(getUniqueRulesByString(globalPassedUrls.getGlobalPassedUrls()));
+        try {
+            settingsManager.save(settingsFileName, globalPassedUrls);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.", e);
+            return;
+        }   
+    }
+    /**
+     * Called before saving the settings
+     * @param list
+     *        Permanent transition flag
+     * @return List<GenericRule> 
+     */
+    public List<GenericRule> getUniqueRulesByString(List<GenericRule> list) {
+        Map<String, GenericRule> lastSeenMap = new LinkedHashMap<>();
+        for (GenericRule rule : list) {
+            lastSeenMap.put(rule.getString(), rule); 
+        }
+        return new LinkedList<GenericRule>(lastSeenMap.values());
     }
 
     /**
@@ -1051,6 +1146,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     protected void _setSettings(WebFilterSettings newSettings)
     {
+        setGlobalPassedUrlsToAllInstances(this.settings, newSettings.getPassedUrls());
         /**
          * Prepare settings for saving This makes sure certain things are always
          * true, such as flagged == true if blocked == true
@@ -1081,6 +1177,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             rule.setId(++index);
         }
         index = 0;
+        newSettings.getPassedUrls().removeIf(url -> url.getIsGlobal());
         for(GenericRule rule : newSettings.getPassedUrls()){
             rule.setId(++index);
         }
@@ -1095,9 +1192,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
         fixupSetSettings(newSettings);
 
-        /**
-         * Save the settings
-         */
+
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         try {
@@ -1117,6 +1212,38 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
 
         getDecisionEngine().reconfigure(this.settings);
+
+        // /**
+        //  * Save the settings
+        //  */
+        // String passedURLFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "globalPassSiteUrlsSettings.js";
+        // GlobalPassedUrls globalPassedUrls ;
+        // List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
+        // try {
+        //      globalPassedUrls = settingsManager.load(GlobalPassedUrls.class, passedURLFileName);
+        // } catch (SettingsManager.SettingsException e) {
+        //     logger.warn("Failed to save settings.", e);
+        //     return;
+        // }        
+        // for(App webFilter : webFilterList){
+        //     logger.info("Failed to save settings.{}", webFilter);
+        //     appID = webFilter.getAppSettings().getId().toString();
+        //     String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + appID + ".js";
+        //     WebFilterSettings readSettings = null;
+        //     try {       
+        //         readSettings = settingsManager.load(WebFilterSettings.class, settingsFileName);
+        //         readSettings.getPassedUrls().removeIf(rule -> rule.getIsGlobal());
+        //         readSettings.getPassedUrls().addAll(globalPassedUrls.getGlobalPassedUrls());
+        //         readSettings.setPassedUrls(getUniqueRulesByString(readSettings.getPassedUrls()));
+        //         index = 0;
+        //         for(GenericRule rule : readSettings.getPassedUrls()){
+        //             rule.setId(++index);
+        //         }
+        //         settingsManager.save(settingsFileName, readSettings);
+        //     } catch (SettingsManager.SettingsException e) {
+        //         logger.warn("Failed to load settings:", e);
+        //     }
+        // }
 
     }
 

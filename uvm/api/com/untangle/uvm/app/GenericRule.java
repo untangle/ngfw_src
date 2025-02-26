@@ -27,6 +27,13 @@ public class GenericRule extends BaseRule implements java.io.Serializable, org.j
         this.setId(id);
     }
 
+    public GenericRule(Integer id, String name, String category, String description, Boolean enabled, Boolean blocked, Boolean flagged, Boolean isGlobal)
+    {
+        super(name, category, description, enabled, blocked, flagged, isGlobal);
+        this.setId(id);
+        this.setIsGlobal(isGlobal);
+    }
+
     public GenericRule(String string, String name, String category, String description, Boolean enabled)
     {
         super(name, category, description, enabled);
