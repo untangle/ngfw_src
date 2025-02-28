@@ -35,9 +35,9 @@ except ImportError:
 
 def get_auth_uri():
     try:
-        return Uvm().getUvmContext().uriManager().getUri('https://auth.untangle.com/v1/CheckTokenAccess')
+        return Uvm().getUvmContext().uriManager().getUri('https://auth.edge.arista.com/v1/CheckTokenAccess')
     except:
-        return 'https://auth.untangle.com/v1/CheckTokenAccess'
+        return 'https://auth.edge.arista.com/v1/CheckTokenAccess'
 
 
 class Totp:
@@ -266,7 +266,7 @@ def valid_token(token):
     """
     Returns true if token is valid.
 
-    token -- a token string that we will check against auth.untangle.com
+    token -- a token string that we will check against auth.edge.arista.com
     """
     try:
         uid = getuid()
