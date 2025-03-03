@@ -41,7 +41,6 @@ public class IpsecVpnManager
     private static final String IKEV2_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-ikev2-updown";
     private static final String VTI_UPDOWN_SCRIPT = System.getProperty("uvm.home") + "/bin/ipsec-vti-updown";
 
-
     private static final String IPSEC_APP = "/sbin/ipsec";
 
     private static final String IPSEC_UNTANGLE_FILE = "/etc/ipsec.untangle";
