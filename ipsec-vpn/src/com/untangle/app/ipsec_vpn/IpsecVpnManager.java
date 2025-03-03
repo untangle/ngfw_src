@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.vnet.AppSession;
 
@@ -28,6 +29,7 @@ import com.untangle.uvm.vnet.AppSession;
 public class IpsecVpnManager
 {
     private final Logger logger = LogManager.getLogger(getClass());
+    private final IpsecVpnScriptWriter scriptWriter = new IpsecVpnScriptWriter();
 
 // THIS IS FOR ECLIPSE - @formatter:off
 
@@ -70,11 +72,7 @@ public class IpsecVpnManager
                                               "aes256-sha1-modp2048,aes256-sha1-modp1536,aes256-sha1-modp1024";
 
     public static final String ACTIVE_WAN_ADDRESS = "active_wan_address";
-
-    
-
     private InetAddress activeWanAddress = null;
-    private IpsecVpnApp app;
 
     /**
      * Set the current active WAN address.
@@ -92,28 +90,6 @@ public class IpsecVpnManager
     public InetAddress getActiveWanAddress()
     {
         return this.activeWanAddress;
-    }
-
-    /**
-     * Creates IpsecVpnManager with IpsecVpnApp as an argument
-     * @param app
-     */
-    public IpsecVpnManager(IpsecVpnApp app) {
-        this.app = app;
-    }
-
-    /**
-     * Create the IPsec VPN file from the application settings
-     */
-    protected void configure()
-    {
-        /**
-         * Update IPsec config and iptables script.
-         */
-        UvmContextFactory.context().syncSettings().run(
-                app.getSettingsFilename(),
-                UvmContextFactory.context().networkManager().getNetworkSettingsFilename()
-        );
     }
 
     /**
@@ -147,7 +123,9 @@ public class IpsecVpnManager
         // generate all of the network scripts
         try {
             writeConfigFiles(settings, ipsecCertFile);
-            configure();
+            scriptWriter.write_IPSEC_script(settings);
+            scriptWriter.write_XAUTH_script(settings);
+            scriptWriter.write_GRE_script(settings);
         }
 
         catch (Exception e) {
@@ -163,7 +141,7 @@ public class IpsecVpnManager
 
         // call the ipsec reload script
         UvmContextFactory.context().execManager().exec(RELOAD_IPSEC_SCRIPT + " " + isAppEnabled + " " + settings.getVpnflag());
-        
+
         /*
          * For every active tunnel configured to be always connected we call
          * ipsec route. This will install the kernel policy to automatically
