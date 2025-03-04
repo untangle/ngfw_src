@@ -102,6 +102,8 @@ public class CaptivePortalSSLEngine extends SslEngineBase
                 if ((item.provider.equals("google")) && ((authType == CaptivePortalSettings.AuthenticationType.GOOGLE) || (authType == CaptivePortalSettings.AuthenticationType.ANY_OAUTH))) {
                     if (item.match.equals("full") && sniHostname.toLowerCase().equals(item.name)) allowed = true;
                     if (item.match.equals("end") && sniHostname.toLowerCase().endsWith(item.name)) allowed = true;
+                    //In some case accounts.google.co. is also getting hit after google auth flow
+                    if (item.match.equals("end") && sniHostname.toLowerCase().startsWith("accounts.google.co.")) allowed = true;
                 }
 
                 // check PROVIDER = facebook
