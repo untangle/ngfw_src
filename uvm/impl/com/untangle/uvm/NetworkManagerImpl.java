@@ -27,6 +27,7 @@ import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
+import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.network.NetflowSettings;
@@ -1343,6 +1344,9 @@ public class NetworkManagerImpl implements NetworkManager
          * This never makes sense if the netmasks are equal
          */
         for ( InterfaceSettings intf1 : networkSettings.getInterfaces() ) {
+            if(intf1.getConfigType() == InterfaceSettings.ConfigType.DISABLED && intf1.getName().equals(networkSettings.getDynamicDnsServiceWan())){
+                throw new RuntimeException("This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before disabling this WAN.");
+            }
             if ( intf1.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                 continue;
             if ( intf1.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
