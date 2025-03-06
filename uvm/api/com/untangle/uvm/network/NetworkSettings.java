@@ -47,7 +47,7 @@ public class NetworkSettings implements Serializable, JSONString
     private String  dynamicDnsServicePassword = null;
     private String  dynamicDnsServiceZone = null;
     private String  dynamicDnsServiceHostnames = null;
-    private String  dynamicDnsServiceWan = "None";
+    private String  dynamicDnsServiceWan = "Default";
     private boolean enableSipNatHelper = false;
     private boolean sendIcmpRedirects = true;
     private boolean blockInvalidPackets = true;

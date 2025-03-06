@@ -850,7 +850,7 @@ Ext.define('Ung.config.network.MainController', {
         var vm = this.getViewModel();
         var enabledWanname = [];
         var interfaces = Rpc.directData('rpc.networkManager.getEnabledInterfaces');
-        enabledWanname.push("None");
+        enabledWanname.push("Default");
 
         interfaces.list.forEach( function(intf){
             if(intf["isWan"] == true){
