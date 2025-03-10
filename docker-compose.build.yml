@@ -84,8 +84,8 @@ services:
       entrypoint: ./buildtools/remote-dev-build.sh
 
     # External server for testing/development of:
-    # - translations.untangle.com
-    # (this is suitable to expand to other things hosted on bd.untangle.com)
+    # - translations.edge.arista.com
+    # (this is suitable to expand to other things hosted on bd.edge.arista.com)
     external-services:
       image: nginx:latest
       container_name: external-services

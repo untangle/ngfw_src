@@ -21,7 +21,7 @@ public class GoogleManagerImpl implements GoogleManager
 {
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
     private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
-    public String RELAY_SERVER_URL = "https://auth-relay.untangle.com";
+    public String RELAY_SERVER_URL = "https://auth-relay.edge.arista.com";
 
     private final Logger logger = LogManager.getLogger(getClass());
 
