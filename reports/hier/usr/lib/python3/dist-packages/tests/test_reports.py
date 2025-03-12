@@ -1104,7 +1104,7 @@ class ReportsTests(NGFWTestCase):
         subprocess.call(('/bin/rm -f %s' % csv_tmp), shell=True)
 
         remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
-        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.edge.arista.com"))
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://edge.arista.com"))
         remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://news.google.com"))
         remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.yahoo.com"))
         remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.reddit.com"))

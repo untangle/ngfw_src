@@ -61,7 +61,7 @@ Ext.define('Ung.apps.livesupport.MainController', {
         if ((target) && (target !== '') && (! target.includes('edge.arista.com'))) {
             window.open(target);
         } else {
-            window.open(rpc.uriManager.getUriWithPath("https://www.edge.arista.com/shop/Live-Support"));
+            window.open(rpc.uriManager.getUriWithPath("https://edge.arista.com/shop/Live-Support"));
         }
     }
 });
