@@ -464,8 +464,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             oldName = BRANDING_MANAGER_OLDNAME; break;
         case License.VIRUS_BLOCKER:
             oldName = VIRUS_BLOCKER_OLDNAME; break;
-        case License.SPAM_BLOCKER:
-            oldName = SPAM_BLOCKER_OLDNAME; break;
         case License.WAN_FAILOVER:
             oldName = WAN_FAILOVER_OLDNAME; break;
         case License.IPSEC_VPN:
@@ -730,6 +728,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                      * Complete Meta-data
                      */
                     license = iterator.next();
+                    //From v17.4 we will not add spam-blocker-lite license list
+                    if(license.getDisplayName().equals("Spam Blocker Lite")){
+                        continue;
+                    }
                     _setValidAndStatus(license);
                     if (license.getValid() != null && !license.getValid()) {
                         logger.warn("Removing invalid license from list: " + license);
