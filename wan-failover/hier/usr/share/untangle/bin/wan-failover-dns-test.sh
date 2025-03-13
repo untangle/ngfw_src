@@ -3,7 +3,7 @@
 . @PREFIX@/usr/share/untangle/bin/wan-failover-test.sh $@
 
 DNS_SERVER=$4
-HOSTNAME="www.untangle.com"
+HOSTNAME="edge.arista.com"
 
 if [ -z "$DNS_SERVER" ] || [ "${DNS_SERVER}x" = "0.0.0.0x" ] ; then
     # extract DNS server for this interface from the dnsmasq.conf file

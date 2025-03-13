@@ -9592,16 +9592,16 @@ msgid "Congratulations! {0} is ready to be configured."
 msgstr "恭喜{0}已准备好进行配置。"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:94
-msgid "Please register with an untangle.com account before continuing."
-msgstr "在继续之前请与untangle.com账号注册。"
+msgid "Please register with an edge.arista.com account before continuing."
+msgstr "在继续之前请与edge.arista.com账号注册。"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:94
 msgid "Registering gets you the following benefits:"
 msgstr "注册得到以下好处："
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:96
-msgid "Access to your account on untangle.com"
-msgstr "访问您的帐户untangle.com"
+msgid "Access to your account on edge.arista.com"
+msgstr "访问您的帐户edge.arista.com"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:97
 msgid ""
@@ -11120,17 +11120,17 @@ msgid "DNS connectivity failed:"
 msgstr ""
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:253
-msgid "Failed to connect to Untangle. [updates.untangle.com:80]"
-msgstr "无法连接到解开。 [updates.untangle.com:80]"
+msgid "Failed to connect to Untangle. [updates.edge.arista.com:80]"
+msgstr "无法连接到解开。 [updates.edge.arista.com:80]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:265
-msgid "Failed to connect to Untangle. [license.untangle.com:443]"
-msgstr "无法连接到解开。 [license.untangle.com:443]"
+msgid "Failed to connect to Untangle. [license.edge.arista.com:443]"
+msgstr "无法连接到解开。 [license.edge.arista.com:443]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:287
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:292
-msgid "Failed to connect to Untangle. [cmd.untangle.com]"
-msgstr "无法连接到解开。 [cmd.untangle.com]"
+msgid "Failed to connect to Untangle. [cmd.edge.arista.com]"
+msgstr "无法连接到解开。 [cmd.edge.arista.com]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:312
 msgid "Free Disk space is low."

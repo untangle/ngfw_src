@@ -10099,16 +10099,16 @@ msgid "Congratulations! {0} is ready to be configured."
 msgstr "! Felicidades {0} está listo para ser configurado."
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:94
-msgid "Please register with an untangle.com account before continuing."
-msgstr "Por favor, registrarse en una cuenta untangle.com antes de continuar."
+msgid "Please register with an edge.arista.com account before continuing."
+msgstr "Por favor, registrarse en una cuenta edge.arista.com antes de continuar."
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:94
 msgid "Registering gets you the following benefits:"
 msgstr "Registro de usted obtiene los siguientes beneficios:"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:96
-msgid "Access to your account on untangle.com"
-msgstr "El acceso a su cuenta en untangle.com"
+msgid "Access to your account on edge.arista.com"
+msgstr "El acceso a su cuenta en edge.arista.com"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:97
 msgid ""
@@ -11800,17 +11800,17 @@ msgid "DNS connectivity failed:"
 msgstr "Conectividad DNS falló: "
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:253
-msgid "Failed to connect to Untangle. [updates.untangle.com:80]"
-msgstr "No se pudo conectar a desenredar. [updates.untangle.com:80]"
+msgid "Failed to connect to Untangle. [updates.edge.arista.com:80]"
+msgstr "No se pudo conectar a desenredar. [updates.edge.arista.com:80]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:265
-msgid "Failed to connect to Untangle. [license.untangle.com:443]"
-msgstr "No se pudo conectar a desenredar. [license.untangle.com:443]"
+msgid "Failed to connect to Untangle. [license.edge.arista.com:443]"
+msgstr "No se pudo conectar a desenredar. [license.edge.arista.com:443]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:287
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:292
-msgid "Failed to connect to Untangle. [cmd.untangle.com]"
-msgstr "No se pudo conectar a desenredar. [cmd.untangle.com]"
+msgid "Failed to connect to Untangle. [cmd.edge.arista.com]"
+msgstr "No se pudo conectar a desenredar. [cmd.edge.arista.com]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:312
 #, fuzzy
@@ -21512,10 +21512,10 @@ msgstr ""
 #~ msgstr "American Express"
 
 #~ msgid ""
-#~ "Your untangle.com account has subscriptions that are not assigned to any "
+#~ "Your edge.arista.com account has subscriptions that are not assigned to any "
 #~ "server."
 #~ msgstr ""
-#~ "Su cuenta untangle.com tiene suscripciones que no están asignados a "
+#~ "Su cuenta edge.arista.com tiene suscripciones que no están asignados a "
 #~ "ningún servidor."
 
 #~ msgid ""
@@ -21527,10 +21527,10 @@ msgstr ""
 
 #~ msgid ""
 #~ "If you do not wish to do this, you can skip this and do this at any time "
-#~ "in the future by visiting your account at untangle.com"
+#~ "in the future by visiting your account at edge.arista.com"
 #~ msgstr ""
 #~ "Si no desea hacer esto, puede saltarse esto y hacer esto en cualquier "
-#~ "momento en el futuro, visite su cuenta en untangle.com"
+#~ "momento en el futuro, visite su cuenta en edge.arista.com"
 
 #~ msgid "Open My Account"
 #~ msgstr "Abra Mi Cuenta"

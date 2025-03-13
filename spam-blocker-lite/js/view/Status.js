@@ -20,7 +20,7 @@ Ext.define('Ung.apps.spamblockerlite.view.Status', {
                 '<h3>Spam Blocker Lite</h3>' +
                 '<p>' + 'Spam Blocker Lite detects, blocks, and quarantines spam before it reaches users\' mailboxes.'.t() +
                 '<br><br>' + 'Upgrade to Spam Blocker which includes additional anti-spam engines to provide a catch rate of 99.5% and minimal false positives.  Spam Blocker is updated in real-time, and quarantine is automatic.'.t() +
-                ' <a target="_blank" href="' + rpc.uriManager.getUriWithPath('https://www.untangle.com/shop/Spam-Blocker') + '">LEARN MORE<a/></p>'
+                ' <a target="_blank" href="' + rpc.uriManager.getUriWithPath('https://edge.arista.com/shop/Spam-Blocker') + '">LEARN MORE<a/></p>'
         }, {
             xtype: 'appstate',
         },{

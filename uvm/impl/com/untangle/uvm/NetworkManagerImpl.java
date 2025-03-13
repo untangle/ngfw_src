@@ -1444,10 +1444,10 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
-         * Prevent users from choosing untangle.com (#7574)
+         * Prevent users from choosing edge.arista.com (#7574)
          */
-        if ( "untangle.com".equals(networkSettings.getDomainName()) ) {
-            throw new RuntimeException( "untangle.com is not an allowed domain name." );
+        if ( "edge.arista.com".equals(networkSettings.getDomainName()) ) {
+            throw new RuntimeException( "edge.arista.com is not an allowed domain name." );
         }
 
         /**
