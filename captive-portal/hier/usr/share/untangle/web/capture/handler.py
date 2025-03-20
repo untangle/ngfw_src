@@ -431,6 +431,11 @@ def generate_page(req,captureSettings,args,extra='',page=None,template_name=None
     else:
         page = replace_marker(page,'$.SecureEndpointCheck.$','')
 
+
+    is_google_auth = "false"
+    if (captureSettings.get("authenticationType") == 'GOOGLE'):
+        is_google_auth = "true"
+    page = replace_marker(page,'$.GOOGLEAUTH.$', is_google_auth)
     if (captureSettings.get('pageType') == 'BASIC_LOGIN'):
         page = replace_marker(page,'$.CompanyName.$', captureSettings.get('companyName'))
         page = replace_marker(page,'$.PageTitle.$', captureSettings.get('basicLoginPageTitle'))
