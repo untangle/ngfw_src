@@ -79,8 +79,8 @@ public class InboxMaintenenceServlet extends HttpServlet
         String account = null;
         try {
             if("test".equals(authToken)) { //Just for ui testing
-                account="test@edge.arista.com";
-                req.setAttribute( "forwardAddress", "remapped@edge.arista.com");
+                account="test@untangle.com";
+                req.setAttribute( "forwardAddress", "remapped@untangle.com");
                 req.setAttribute( "safelistData", buildJsonList(new String[] {"safeOne@test.com", "safeTwo@test.com"}));
                 req.setAttribute( "remapsData", "[]");
             } else {
