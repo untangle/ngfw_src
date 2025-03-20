@@ -14,7 +14,7 @@ class StatusFile:
     """
     url_base = None
     url_translate_base = None
-    last_author = "translations@translations.untangle.com"
+    last_author = "translations@translations.edge.arista.com"
     default_last_author = "FULL NAME <EMAIL@ADDRESS>"
 
     status = {

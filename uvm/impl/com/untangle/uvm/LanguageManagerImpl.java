@@ -53,7 +53,7 @@ public class LanguageManagerImpl implements LanguageManager
 {
     private static final String LANGUAGES_DIR;
     private static final String RESOURCES_DIR;
-    private static final String REMOTE_LANGUAGES_URL = UvmContextFactory.context().uriManager().getUri("http://translations.untangle.com/");
+    private static final String REMOTE_LANGUAGES_URL = UvmContextFactory.context().uriManager().getUri("http://translations.edge.arista.com/");
     private static final String REMOTE_LANGUAGES_PROJECT = "ngfw";
     private static final String LOCALE_DIR = "/usr/share/locale";
     private static final String DEFAULT_LANGUAGE = "en";

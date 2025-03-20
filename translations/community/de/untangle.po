@@ -9693,9 +9693,9 @@ msgid "Congratulations! {0} is ready to be configured."
 msgstr "Herzlichen Glückwunsch! {0} jetzt zur Konfiguration bereit ist."
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:94
-msgid "Please register with an untangle.com account before continuing."
+msgid "Please register with an edge.arista.com account before continuing."
 msgstr ""
-"Bitte registrieren Sie sich mit einer untangle.com Konto, bevor Sie "
+"Bitte registrieren Sie sich mit einer edge.arista.com Konto, bevor Sie "
 "fortfahren."
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:94
@@ -9703,8 +9703,8 @@ msgid "Registering gets you the following benefits:"
 msgstr "Registrierung bekommt man folgende Vorteile:"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:96
-msgid "Access to your account on untangle.com"
-msgstr "Zugang zu Ihrem Konto auf untangle.com"
+msgid "Access to your account on edge.arista.com"
+msgstr "Zugang zu Ihrem Konto auf edge.arista.com"
 
 #: /ngfw/ngfw_src/uvm/servlets/admin/app/view/main/Registration.js:97
 msgid ""
@@ -11247,17 +11247,17 @@ msgid "DNS connectivity failed:"
 msgstr ""
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:253
-msgid "Failed to connect to Untangle. [updates.untangle.com:80]"
-msgstr "Fehler beim Entwirren zu verbinden. [updates.untangle.com:80]"
+msgid "Failed to connect to Untangle. [updates.edge.arista.com:80]"
+msgstr "Fehler beim Entwirren zu verbinden. [updates.edge.arista.com:80]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:265
-msgid "Failed to connect to Untangle. [license.untangle.com:443]"
-msgstr "Fehler beim Entwirren zu verbinden. [license.untangle.com:443]"
+msgid "Failed to connect to Untangle. [license.edge.arista.com:443]"
+msgstr "Fehler beim Entwirren zu verbinden. [license.edge.arista.com:443]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:287
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:292
-msgid "Failed to connect to Untangle. [cmd.untangle.com]"
-msgstr "Fehler beim Entwirren zu verbinden. [cmd.untangle.com]"
+msgid "Failed to connect to Untangle. [cmd.edge.arista.com]"
+msgstr "Fehler beim Entwirren zu verbinden. [cmd.edge.arista.com]"
 
 #: /ngfw/ngfw_src/uvm/impl/com/untangle/uvm/NotificationManagerImpl.java:312
 msgid "Free Disk space is low."
