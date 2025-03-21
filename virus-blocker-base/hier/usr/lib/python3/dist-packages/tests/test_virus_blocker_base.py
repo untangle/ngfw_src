@@ -19,6 +19,7 @@ app = None
 appSSL = None
 appSSLData = None
 canRelay = True
+clamavNotReady = False
 testsite = global_functions.TEST_SERVER_HOST
 testsiteIP = socket.gethostbyname(testsite)
 
@@ -79,7 +80,12 @@ class VirusBlockerBaseTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global md5StdNum, appSSL, appSSLData, canRelay
+        global app, md5StdNum, appSSL, appSSLData, canRelay
+        app = cls._app.getName()
+        #For pppoe server clamav takes more time to get ready for connection so need to validate it first
+        if app == "virus_blocker_lite":
+            global clamavNotReady
+            clamavNotReady = global_functions.clamav_not_ready_for_connections()
 
         # download eicar and trojan files before installing virus
         # blocker, using HTTPS to avoid any scanner potentially
@@ -153,6 +159,8 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_016_httpVirusBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
+        if clamavNotReady:
+            raise unittest.SkipTest(" ClamAV not ready to accept connections")
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/virus/virus.exe") + " 2>&1 | grep -q blocked")
         assert (result == 0)
 
@@ -160,6 +168,8 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_017_httpVirusZipBlocked(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
+        if clamavNotReady:
+            raise unittest.SkipTest(" ClamAV not ready to accept connections")
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + testsite + "/virus/fedexvirus.zip") + " 2>&1 | grep -q blocked")
         assert (result == 0)
 
@@ -167,6 +177,8 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_018_httpPartialVirusBlockedWithCache(self):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
+        if clamavNotReady:
+            raise unittest.SkipTest(" ClamAV not ready to accept connections")
         result = remote_control.run_command(global_functions.build_curl_command(uri="http://" + testsite + "/virus/virus.exe", location=True) + " 2>&1 | grep -q blocked")
         assert (result == 0)
         result = remote_control.run_command(global_functions.build_curl_command(uri="http://" + testsite + "/virus/virus.exe", location=True, range="'5-'") + " 2>&1 | grep -q blocked")
@@ -207,6 +219,8 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("local scanner not available on ARM")
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
+        if clamavNotReady:
+            raise unittest.SkipTest(" ClamAV not ready to accept connections")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
@@ -278,6 +292,8 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("Unable to obtain FTP credentials")
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
+        if clamavNotReady:
+            raise unittest.SkipTest(" ClamAV not ready to accept connections")
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
@@ -314,6 +330,8 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("local scanner not available on ARM")
         if (not canRelay):
             raise unittest.SkipTest('Unable to relay through ' + testsiteIP)
+        if clamavNotReady:
+            raise unittest.SkipTest(" ClamAV not ready to accept connections")
         startTime = datetime.now()
         fname = sys._getframe().f_code.co_name
         # download the email script
@@ -433,12 +451,14 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest('Skipping a time consuming test')
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
+        if clamavNotReady:
+            raise unittest.SkipTest(" ClamAV not ready to accept connections")    
         ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         md5LargePDFClean = "06b3cc0a1430c2aaf449b46c72fecee5"
         remote_control.run_command("rm -f /tmp/temp_120_ftpVirusClean_file")
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_120_ftpVirusClean_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/debian-live-8.6.0-amd64-standard.iso"))
+        result = remote_control.run_command(global_functions.build_wget_command(timeout=20, output_file="/tmp/temp_120_ftpVirusClean_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/debian-live-8.6.0-amd64-standard.iso"))
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_120_ftpVirusClean_file | awk '{print $1}'\"", stdout=True)
         print("md5LargePDFClean <%s> vs md5TestNum <%s>" % (md5LargePDFClean, md5TestNum))
