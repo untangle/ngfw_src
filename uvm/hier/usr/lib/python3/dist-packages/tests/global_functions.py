@@ -1665,3 +1665,42 @@ def is_clamav_receive_ready(data):
         sock.sendall(b'\x00\x00\x00\x00')  # End of stream
         response = sock.recv(1024)
         return response.decode().strip()
+
+
+# Method to check if ClamAV is ready to accept connections
+def clamav_not_ready_for_connections(log_file_path= "/var/log/clamav/clamav.log", timeout=300):
+    start_time = time.time()
+    # patterns that indicate ClamAV is ready to accept connections
+    connection_patterns = [
+        r"TCP: Received AF_INET SOCK_STREAM socket from systemd",
+        r"LOCAL: Received AF_UNIX SOCK_STREAM socket from systemd"
+    ]
+    try:
+        # Open the log file in read mode
+        with open(log_file_path, 'r') as log_file:
+            # Move the file pointer to the end of the file to read new log entries only
+            log_file.seek(0, 2)  
+            
+            while True:
+                # Read the new lines from the log file
+                line = log_file.readline()
+                if line == "":  
+                    time.sleep(1)
+                    continue
+                
+                # Check if any line matches the connection patterns
+                if any(re.search(pattern, line) for pattern in connection_patterns):
+                    print("ClamAV is ready to accept connections.")
+                    return False
+                
+                # Check if the timeout has been exceeded
+                if time.time() - start_time > timeout:
+                    print("Timed out waiting for ClamAV to be ready to accept connections.")
+                    return True
+                
+                print("Waiting for ClamAV to be ready to accept connections...")
+                
+    except FileNotFoundError:
+        print(f"Error: Log file {log_file_path} not found.")
+        return True
+
