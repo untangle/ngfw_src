@@ -21,7 +21,7 @@ import org.apache.hc.core5.net.URIBuilder;
  */
 public class UriManagerImpl implements UriManager
 {
-    private static final Integer SettingsCurrentVersion = 5;
+    private static final Integer SettingsCurrentVersion = 6;
 
     private static final String URIS_OVERRIDE_FILE_NAME = System.getProperty("uvm.conf.dir") + "/uris_override.js";
 
@@ -238,7 +238,17 @@ public class UriManagerImpl implements UriManager
     private UriManagerSettings defaultSettings()
     {
         UriManagerSettings settings = new UriManagerSettings();
+        settings.setUriTranslations(getDefaultUris());
+        mergeOverrideSettings(settings);
+        return settings;
+    }
 
+    /**
+     * Get List of Default Uri's
+     *
+     * @return List<UriTranslation> with default Uris.
+     */
+    private List<UriTranslation> getDefaultUris() {
         LinkedList<UriTranslation> uriTranslations = new LinkedList<>();
 
         UriTranslation uriTranslation = new UriTranslation();
@@ -332,11 +342,7 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://auth-relay.edge.arista.com");
         uriTranslations.add(uriTranslation);
 
-        settings.setUriTranslations(uriTranslations);
-
-        mergeOverrideSettings(settings);
-
-        return settings;
+        return uriTranslations;
     }
 
     /**
@@ -411,16 +417,12 @@ public class UriManagerImpl implements UriManager
             return;
         }
 
-        List<UriTranslation> uriTranslations = settings.getUriTranslations();
+        List<UriTranslation> uriTranslations = getDefaultUris();       
 
-        UriTranslation uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://wiki.edge.arista.com/get.php");
-        uriTranslations.add(uriTranslation);        
-
+        // Setting default uri's on upgrade as 
+        // We need to update domains of all Uri's NGFW-14960 | NGFW-15067
         settings.setUriTranslations(uriTranslations);
-
         settings.setVersion(SettingsCurrentVersion);
-
         this.setSettings( settings );
     }
 
