@@ -5,6 +5,7 @@ package com.untangle.uvm.util;
 
 import org.jabsorb.serializer.SerializerState;
 import org.jabsorb.serializer.UnmarshallException;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +51,7 @@ public class ObjectMatcher {
 
         try {
             SerializerState state = new SerializerState();
-            Object jsonObject = new JSONObject(json);
+            Object jsonObject = new JSONArray(json);
             UvmContextFactory.context().getSerializer().tryUnmarshall(state, arrayClazz, jsonObject);
             return (T[]) UvmContextFactory.context().getSerializer().fromJSON(json);
         }catch (UnmarshallException e) {

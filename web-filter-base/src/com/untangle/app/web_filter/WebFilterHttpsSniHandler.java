@@ -15,6 +15,7 @@ import com.untangle.app.http.HttpMethod;
 import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.RequestLine;
 import com.untangle.app.http.RequestLineToken;
+import com.untangle.app.http.TlsHandshakeException;
 import com.untangle.app.http.HttpRequestEvent;
 import com.untangle.app.http.HttpUtility;
 import com.untangle.app.http.HeaderToken;
@@ -163,6 +164,11 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             hold.put(buff);
             sess.attach(hold);
             return;
+        }
+
+        // For any handshake exception we just log
+        catch (TlsHandshakeException exn) {
+            logger.warn("Exception while handling packet : {}", exn.getMessage());
         }
 
         // any other exception we just log, release, and return
