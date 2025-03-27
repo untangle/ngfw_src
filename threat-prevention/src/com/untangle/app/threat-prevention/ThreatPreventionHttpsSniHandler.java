@@ -176,6 +176,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             sess.sendDataToServer(array);
             return;
         }
+
         if (domain != null) logger.debug("Detected SSL connection (via SNI) to: {} ", domain);
 
         /**
