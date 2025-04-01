@@ -14,6 +14,7 @@ import javax.naming.ldap.Rdn;
 import com.untangle.app.http.HttpMethod;
 import com.untangle.app.http.RequestLine;
 import com.untangle.app.http.RequestLineToken;
+import com.untangle.app.http.TlsHandshakeException;
 import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.HttpRequestEvent;
 import com.untangle.app.http.SslEngineBase;
@@ -130,7 +131,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
 
             // if no room in the hold buffer then just give up
             if ((hold.position() + buff.limit()) > hold.capacity()) {
-                logger.debug("Giving up after {} bytes" , hold.position());
+                logger.debug("Giving up after {} bytes", hold.position());
                 sess.release();
                 ByteBuffer array[] = new ByteBuffer[1];
                 array[0] = hold;
@@ -161,6 +162,11 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             return;
         }
 
+        // For any handshake exception we just log
+        catch (TlsHandshakeException exn) {
+            logger.warn("Exception while handling packet : {}", exn.getMessage());
+        }
+
         // any other exception we just log, release, and return
         catch (Exception exn) {
             logger.warn("Exception calling extractSNIhostname ", exn);
@@ -171,7 +177,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             return;
         }
 
-        if (domain != null) logger.debug("Detected SSL connection (via SNI) to: {}", domain);
+        if (domain != null) logger.debug("Detected SSL connection (via SNI) to: {} ", domain);
 
         /**
          * If SNI information is not present then we fallback to using the
@@ -258,7 +264,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             if (e.getMessage().contains("Illegal character")) {
                 logger.error("Could not parse (illegal character): {}", domain);
             } else {
-                logger.error("Could not parse URI for {} {}" ,domain, e);
+                logger.error("Could not parse URI for {}",  domain, e);
             }
 
             /**
@@ -288,7 +294,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_REQUEST_TOKEN, rlt);
             logger.debug("Creating new requestLineToken: {}", rlt.toString());
         } else {
-            logger.debug("Using existing requestLine: {}",  rlt.toString());
+            logger.debug("Using existing requestLine: {}", rlt.toString());
         }
 
         /**
@@ -313,7 +319,7 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT, evt);
             logger.debug("Creating new HttpRequestEvent: {}", evt.toString());
         } else {
-            logger.debug("Using existing HttpRequestEvent: {}", evt.toString());
+            logger.debug("Using existing HttpRequestEvent:{} ", evt.toString());
         }
 
         // attach the hostname we extracted to the session
@@ -329,7 +335,11 @@ public class ThreatPreventionHttpsSniHandler extends AbstractEventHandler
         // by passing it all the client data received thus far
         if (redirect != null) {
             logger.debug(" ----------------BLOCKED: {} traffic----------------", domain);
-            logger.debug("TCP: {}:{} -> {}:{}", sess.getClientAddr().getHostAddress(), sess.getClientPort(), sess.getServerAddr().getHostAddress(), sess.getServerPort());
+            logger.debug("TCP: {}:{} -> {}:{}", 
+            sess.getClientAddr().getHostAddress(), 
+            sess.getClientPort(), 
+            sess.getServerAddr().getHostAddress(), 
+            sess.getServerPort());
 
             SslEngineBase engine;
             if(app.getSettings().getCloseHttpsBlockEnabled()){

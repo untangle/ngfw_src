@@ -441,7 +441,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                 print("cannot remove existing current_path = {current_path}".format(current_path=current_path))
                 return False
 
-        run_ips_updates(url="https://ids.untangle.com/last_suricatasignatures.tar.gz")
+        run_ips_updates(url="https://ids.edge.arista.com/last_suricatasignatures.tar.gz")
 
         # Remove previously saved update tarballs.
         for file_name in glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path)):
@@ -492,7 +492,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                 print("cannot remove existing current_path = {current_path}".format(current_path=current_path))
                 return False
 
-        run_ips_updates(url="https://ids.untangle.com/last_suricatasignatures.tar.gz")
+        run_ips_updates(url="https://ids.edge.arista.com/last_suricatasignatures.tar.gz")
 
         # Remove previously saved update tarballs.
         for file_name in glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path)):
@@ -556,7 +556,7 @@ class IntrusionPreventionTests(NGFWTestCase):
                 print("cannot remove existing current_path = {current_path}".format(current_path=current_path))
                 return False
 
-        run_ips_updates(url="https://ids.untangle.com/last_suricatasignatures.tar.gz")
+        run_ips_updates(url="https://ids.edge.arista.com/last_suricatasignatures.tar.gz")
 
         # Remove previously saved update tarballs.
         for file_name in glob.glob( "{updates_path}/*.tar.gz".format(updates_path=IntrusionPreventionTests.updates_path)):

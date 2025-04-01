@@ -116,6 +116,14 @@ Ext.define('Ung.config.network.view.Hostname', {
             xtype: 'textfield',
             fieldLabel: 'Hostname(s)'.t(),
             bind: '{settings.dynamicDnsServiceHostnames}',
+        },{
+            xtype: 'combo',
+            editable: false,
+            fieldLabel: 'Interface'.t(),
+            bind: {
+                store : '{allWanInterfaceNames}',
+                value: '{settings.dynamicDnsServiceWan}',
+            }
         }]
     }, {
         xtype: 'radiogroup',

@@ -11,7 +11,7 @@ import runtests.overrides as overrides
 
 
 DNS_HOST = overrides.get("DNS_HOST", default="0.0.0.0")
-DNS_HOST_NAME = overrides.get("DNS_HOST", default="boxbackup.untangle.com")
+DNS_HOST_NAME = overrides.get("DNS_HOST", default="boxbackup.edge.arista.com")
 
 def create_alert_rule(description, field, operator, value, field2, operator2, value2, thresholdEnabled=False, thresholdLimit=None, thresholdTimeframeSec=None, thresholdGroupingField=None, sendEmail=False):
     return {

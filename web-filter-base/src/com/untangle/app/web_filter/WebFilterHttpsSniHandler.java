@@ -15,6 +15,7 @@ import com.untangle.app.http.HttpMethod;
 import com.untangle.app.http.HttpRedirect;
 import com.untangle.app.http.RequestLine;
 import com.untangle.app.http.RequestLineToken;
+import com.untangle.app.http.TlsHandshakeException;
 import com.untangle.app.http.HttpRequestEvent;
 import com.untangle.app.http.HttpUtility;
 import com.untangle.app.http.HeaderToken;
@@ -165,6 +166,11 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             return;
         }
 
+        // For any handshake exception we just log
+        catch (TlsHandshakeException exn) {
+            logger.warn("Exception while handling packet : {}", exn.getMessage());
+        }
+
         // any other exception we just log, release, and return
         catch (Exception exn) {
             logger.warn("Exception calling extractSNIhostname ", exn);
@@ -268,7 +274,7 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             if (e.getMessage().contains("Illegal character")) {
                 logger.error("Could not parse (illegal character): {}", domain);
             } else {
-                logger.error("Could not parse URI for {} {}", domain, e);
+                logger.error("Could not parse URI for {}", domain, e);
             }
 
             /**
@@ -321,9 +327,9 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
             requestLine.setHttpRequestEvent(evt);
             this.app.logEvent(evt);
             sess.globalAttach(AppSession.KEY_HTTPS_SNI_HTTP_REQUEST_EVENT, evt);
-            logger.debug("Creating new HttpRequestEvent: {}", evt.toString());
+            logger.debug("Creating new HttpRequestEvent: {}" , evt.toString());
         } else {
-            logger.debug("Using existing HttpRequestEvent: {}", evt.toString());
+            logger.debug("Using existing HttpRequestEvent: {}" , evt.toString());
         }
 
         // attach the hostname we extracted to the session
@@ -339,8 +345,12 @@ public class WebFilterHttpsSniHandler extends AbstractEventHandler
         // by passing it all the client data received thus far
         if (redirect != null) {
             logger.debug(" ----------------BLOCKED: {} traffic----------------", domain);
-            logger.debug("TCP: {} : {} -> {} : {}", sess.getClientAddr().getHostAddress(), sess.getClientPort(), sess.getServerAddr().getHostAddress(), sess.getServerPort());
-
+            logger.debug("TCP: {}:{} -> {}:{}", 
+            sess.getClientAddr().getHostAddress(), 
+            sess.getClientPort(), 
+            sess.getServerAddr().getHostAddress(), 
+            sess.getServerPort());
+            
             if (redirect.getType() == HttpRedirect.RedirectType.BLOCK) {
                 app.incrementBlockCount();
             } else {

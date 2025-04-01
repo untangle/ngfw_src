@@ -27,6 +27,7 @@ import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
+import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.network.NetflowSettings;
@@ -1343,6 +1344,9 @@ public class NetworkManagerImpl implements NetworkManager
          * This never makes sense if the netmasks are equal
          */
         for ( InterfaceSettings intf1 : networkSettings.getInterfaces() ) {
+            if(intf1.getConfigType() == InterfaceSettings.ConfigType.DISABLED && intf1.getName().equals(networkSettings.getDynamicDnsServiceWan())){
+                throw new RuntimeException("This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before disabling this WAN.");
+            }
             if ( intf1.getConfigType() != InterfaceSettings.ConfigType.ADDRESSED )
                 continue;
             if ( intf1.getV4ConfigType() != InterfaceSettings.V4ConfigType.STATIC )
@@ -1440,10 +1444,10 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /**
-         * Prevent users from choosing untangle.com (#7574)
+         * Prevent users from choosing edge.arista.com (#7574)
          */
-        if ( "untangle.com".equals(networkSettings.getDomainName()) ) {
-            throw new RuntimeException( "untangle.com is not an allowed domain name." );
+        if ( "edge.arista.com".equals(networkSettings.getDomainName()) ) {
+            throw new RuntimeException( "edge.arista.com is not an allowed domain name." );
         }
 
         /**
@@ -1788,8 +1792,15 @@ public class NetworkManagerImpl implements NetworkManager
                 intf.setV4PPPoERootDev(intf.getSystemDev());
                 intf.setSystemDev("ppp" + pppCount);
                 intf.setSymbolicDev("ppp" + pppCount);
-                if(intf.getV4PPPoEPassword() != null){
-                    intf.setV4PPPoEPasswordEncrypted(PasswordUtil.getEncryptPassword(intf.getV4PPPoEPassword()));
+                String plainPassword = intf.getV4PPPoEPassword();
+                String encryptedPassword = intf.getV4PPPoEPasswordEncrypted();
+                // Handle empty password by setting encrypted password to null, ensuring the secret file contains "None" as per current behavior.
+                if(plainPassword == null && encryptedPassword != null && PasswordUtil.getDecryptPassword(encryptedPassword).isEmpty()){
+                    intf.setV4PPPoEPasswordEncrypted(null);
+                }
+                // Set encrypted password for non-empty password value
+                if(plainPassword != null){ 
+                    intf.setV4PPPoEPasswordEncrypted(PasswordUtil.getEncryptPassword(plainPassword));
                     intf.setV4PPPoEPassword(null);
                 }
                 pppCount++;

@@ -128,6 +128,9 @@ Ext.define('Ung.config.network.Interface', {
                         if (newValue === 'BRIDGED' && win.getViewModel().get('intf.isWirelessInterface')) { // in case of Wireless interface
                             win.down('tabpanel').setActiveItem(2);
                         }
+                        if (newValue === 'DISABLED' && win.getViewModel().data.intf.data.name === win.getViewModel().linkData.settings.dynamicDnsServiceWan) {
+                            return Ext.MessageBox.alert('Warning'.t(), 'This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before disabling this WAN.'.t());
+                    }                    
                     }
                 }
             }, {

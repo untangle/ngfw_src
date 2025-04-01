@@ -589,13 +589,26 @@ public class OpenVpnManager
         sb.append("remote" + SPACE).append(publicAddress).append(SPACE).append(settings.getPort()).append(" # public address \n");
 
         /**
-         * Also write the static IP of any static WANs This will be used as a
+         * Also write the static IP of any static WANs and DHCP IP of 
+         * any non publicAddress DHCP WANs This will be used as a
          * backup if publicAddress fails or is wrong. This will help for
-         * multi-WAN failover Bug #10828
+         * multi-WAN failover Bug #10828 and NGFW-15044
          */
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         for (InterfaceSettings interfaceSettings : networkSettings.getInterfaces()) {
-            if (interfaceSettings.getIsWan() && interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC) sb.append("remote" + SPACE).append(interfaceSettings.getV4StaticAddress().getHostAddress()).append(SPACE).append(settings.getPort()).append(" # static WAN ").append(interfaceSettings.getInterfaceId()).append(LINE_BREAK);
+            if (interfaceSettings.getIsWan()) {
+                String remoteAddress = null;
+                if (interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.STATIC) {
+                    remoteAddress = interfaceSettings.getV4StaticAddress().getHostAddress();
+                } else if (interfaceSettings.getV4ConfigType() == InterfaceSettings.V4ConfigType.AUTO) {
+                    InetAddress dhcpWanAddress = UvmContextFactory.context().networkManager().getInterfaceStatus( interfaceSettings.getInterfaceId() ).getV4Address();
+                    if (dhcpWanAddress != null && !dhcpWanAddress.getHostAddress().equals(publicAddress)) {
+                        remoteAddress = dhcpWanAddress.getHostAddress();
+                    }
+                }
+                if (remoteAddress != null)
+                    sb.append(String.format("remote %s %d # %s WAN %s%s", remoteAddress, settings.getPort(), interfaceSettings.getV4ConfigType(), interfaceSettings.getInterfaceId(), LINE_BREAK));
+            }
         }
 
         File dir = new File(CLIENT_CONF_FILE_DIR);

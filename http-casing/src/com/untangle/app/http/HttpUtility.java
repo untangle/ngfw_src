@@ -67,7 +67,7 @@ public class HttpUtility {
 
             // if not a valid ClientHello we throw an exception since
             // they may be blocking just this kind of invalid traffic
-            if (legacyType != CLIENT_HELLO) throw new Exception("Packet contains an invalid SSL handshake");
+            if (legacyType != CLIENT_HELLO) throw new TlsHandshakeException("Packet contains an invalid SSL handshake value "+ legacyType);
             // looks like a valid handshake message but the protocol does
             // not support SNI so we just return null
             logger.debug("No SNI available because SSLv2Hello was detected");
@@ -75,14 +75,14 @@ public class HttpUtility {
         }
 
         // not SSLv2Hello so proceed with TLS based on the table describe above
-        if (recordType != TLS_HANDSHAKE) throw new Exception("Packet contains an invalid SSL handshake");
+        if (recordType != TLS_HANDSHAKE) throw new TlsHandshakeException("Packet contains an invalid SSL handshake value " + recordType);
                
         int sslVersion = data.getShort();
         int recordLength = Math.abs(data.getShort());
 
         // make sure we have a ClientHello message
         int shakeType = Math.abs(data.get());
-        if (shakeType != CLIENT_HELLO) throw new Exception("Packet does not contain TLS ClientHello");    
+        if (shakeType != CLIENT_HELLO) throw new TlsHandshakeException("Packet does not contain TLS ClientHello value "+  shakeType);    
            
         // extract all the handshake data so we can get to the extensions
         int messageExtra = data.get();
@@ -202,7 +202,7 @@ public class HttpUtility {
             byte[] hostData = new byte[nameLength];
             data.get(hostData, 0, nameLength);
             String hostName = new String(hostData);
-            logger.debug("Extracted SNI hostname = " + hostName);
+            logger.debug("Extracted SNI hostname =  {}", hostName);
             return hostName.toLowerCase();
     }
 }
