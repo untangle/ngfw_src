@@ -104,6 +104,15 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 var recordObj = JSON.parse(jsonRecord);
                 sequence.unshift(Rpc.directPromise(v.appManager, 'deleteTunnel', recordObj['publicKey']));
             });
+
+            vm.get('settings.tunnels.list').forEach(function(tunnel) {
+                if(tunnel.routedNetworks && tunnel.routedNetworks.list && !tunnel.routedNetworks.javaClass) {
+                    tunnel.routedNetworks.javaClass = 'java.util.LinkedList';
+                    if(typeof tunnel.routedNetworks.list === 'string') {
+                        tunnel.routedNetworks.list = [ tunnel.routedNetworks.list ];
+                    }
+                }
+            });
         }
 
         v.setLoading(true);
@@ -358,6 +367,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
     xtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
     alias: 'widget.unwireguardvpntunnelrecordeditor',
+    itemId: 'unwireguardvpntunnelrecordeditor',
 
     controller: 'unwireguardvpntunnelrecordeditorcontroller'
 });
@@ -365,6 +375,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditor', {
 Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController', {
     extend: 'Ung.cmp.RecordEditorController',
     alias: 'controller.unwireguardvpntunnelrecordeditorcontroller',
+
+    control: {
+        '#unwireguardvpntunnelrecordeditor': {
+            afterrender: 'afterTunnelsEditorRender'
+        }
+    },
 
     pasteTunnel: function(component){
         if(!component.target ||
@@ -458,5 +474,26 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
                 }
             }
         }
+    },
+
+    afterTunnelsEditorRender: function() {
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            items = [],
+            routedNetworks = v.down('#routednetworkscbgroup'),
+            localNetProfiles = vm.get('settings.networkProfiles.list');
+
+        localNetProfiles.forEach(function(profile) {
+            items.push({
+                boxLabel: profile.profileName + ' - ' + profile.subnetsAsString,
+                name: 'list', 
+                inputValue: profile.subnetsAsString,
+                autoEl: {
+                    tag: 'div',
+                    'data-qtip': profile.subnetsAsString
+                }
+            });
+        });
+        routedNetworks.add(items);
     }
 });

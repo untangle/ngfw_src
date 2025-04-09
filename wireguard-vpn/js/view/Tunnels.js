@@ -59,7 +59,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'pingInterval': 60,
         'pingConnectionEvents': true,
         'pingUnreachableEvents': false,
-        'assignDnsServer': false
+        'assignDnsServer': false,
+        'routedNetworks': {
+            'javaClass': 'java.util.LinkedList',
+            'list': []
+        }
     },
 
     importValidationJavaClass: true,
@@ -270,6 +274,17 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 return true;
             }                        
         }
+    }, {
+        xtype: 'checkboxgroup',
+        fieldLabel: 'Routed Networks'.t(),
+        useParentDefinition: true,
+        // labelWidth: 155,
+        itemId: 'routednetworkscbgroup',
+        bind: {
+            value: '{record.routedNetworks}'
+        },
+        columns: 3,
+        vertical: true
     }, {
         xtype: 'checkbox',
         fieldLabel: 'Assign DNS Server'.t(),

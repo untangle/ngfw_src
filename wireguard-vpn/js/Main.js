@@ -47,6 +47,9 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
             },
             networks: {
                 data: '{settings.networks.list}'
+            },
+            networkProfiles: {
+                data: '{settings.networkProfiles.list}'
             }
         },
 

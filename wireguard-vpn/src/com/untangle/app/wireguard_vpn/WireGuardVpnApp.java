@@ -4,14 +4,12 @@
 
 package com.untangle.app.wireguard_vpn;
 
-import java.io.File;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -166,7 +164,11 @@ public class WireGuardVpnApp extends AppBase
         */
         int wgnIdx = 0;
         for(WireGuardVpnNetwork localNets : newSettings.getNetworks()) {
-            localNets.setId(++wgnIdx);
+           localNets.setId(++wgnIdx);
+        }
+
+        for(WireGuardVpnNetworkProfile netProfiles : newSettings.getNetworkProfiles()) {
+            netProfiles.setSubnets(netProfiles.getSubnetsAsString());
         }
 
         /**
@@ -356,10 +358,10 @@ public class WireGuardVpnApp extends AppBase
             }
 
             // 17.3 - add dns search domain by default
-            if(readSettings.getVersion() <= 4) {
-                readSettings.setDnsSearchDomain(this.defaultDnsSerachDomain);
+            if(readSettings.getVersion() <= 5) {
+                updateSettings(readSettings);
                 writeFlag = true;
-                readSettings.setVersion(5);
+                readSettings.setVersion(6);
             }
 
             if (writeFlag == true) {
@@ -373,6 +375,31 @@ public class WireGuardVpnApp extends AppBase
             updateNetworkReservations(readSettings.getAddressPool(), readSettings.getTunnels());
             logger.debug("Settings: " + this.settings.toJSONString());
         }
+    }
+
+    /**
+     * update settings on upgrade
+     * @param readSettings
+     */
+    private void updateSettings(WireGuardVpnSettings readSettings) {
+        List<WireGuardVpnNetwork> networks = readSettings.getNetworks();
+        List<WireGuardVpnNetworkProfile> netProfiles = new LinkedList<>();
+        WireGuardVpnNetworkProfile wgVpnNetProfile = new WireGuardVpnNetworkProfile();
+
+        wgVpnNetProfile.setProfileName("Full Tunnel");
+        List<WireGuardVpnNetwork> subnets = new LinkedList<>();
+        subnets.add(new WireGuardVpnNetwork());
+        wgVpnNetProfile.setSubnets(subnets);
+        netProfiles.add(wgVpnNetProfile);
+
+        wgVpnNetProfile = new WireGuardVpnNetworkProfile();
+        wgVpnNetProfile.setProfileName("Default");
+        wgVpnNetProfile.setSubnets(networks);
+        netProfiles.add(wgVpnNetProfile);
+
+
+        readSettings.setNetworkProfiles(netProfiles);
+//        readSettings.setNetworks(null);
     }
 
     /**
@@ -495,7 +522,23 @@ public class WireGuardVpnApp extends AppBase
             logger.warn(defaultSearchDomain);
             settings.setDnsSearchDomain(defaultSearchDomain);
         }
-        settings.setNetworks(buildNetworkList(lanStatuses));
+        settings.setNetworks(buildNetworkList(lanStatuses)); //TODO Remove this when all changes are done for network profiles
+
+        List<WireGuardVpnNetworkProfile> netProfiles = new LinkedList<>();
+        WireGuardVpnNetworkProfile wgVpnNetProfiles = new WireGuardVpnNetworkProfile();
+
+        wgVpnNetProfiles.setProfileName("Full Tunnel");
+        List<WireGuardVpnNetwork> subnets = new LinkedList<>();
+        subnets.add(new WireGuardVpnNetwork());
+        wgVpnNetProfiles.setSubnets(subnets);
+        netProfiles.add(wgVpnNetProfiles);
+
+        wgVpnNetProfiles = new WireGuardVpnNetworkProfile();
+        wgVpnNetProfiles.setProfileName("Default");
+        wgVpnNetProfiles.setSubnets(buildNetworkList(lanStatuses));
+        netProfiles.add(wgVpnNetProfiles);
+
+        settings.setNetworkProfiles(netProfiles);
 
         IPMaskedAddress newSpace = UvmContextFactory.context().netspaceManager().getAvailableAddressSpace(IPVersion.IPv4, 1);
 

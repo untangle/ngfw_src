@@ -6,7 +6,6 @@ package com.untangle.app.wireguard_vpn;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -38,6 +37,7 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
     private Boolean pingUnreachableEvents = false;
     // Only required for dynamic endpoints
     private Boolean assignDnsServer = false;
+    private LinkedList<String> routedNetworks = null;
 
     public Boolean getEnabled() { return enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
@@ -87,6 +87,9 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
 
     public Boolean getAssignDnsServer() { return assignDnsServer; }
     public void setAssignDnsServer(Boolean assignDnsServer) { this.assignDnsServer = assignDnsServer; }
+
+    public LinkedList<String> getRoutedNetworks() { return routedNetworks; }
+    public void setRoutedNetworks(LinkedList<String> routedNetworks) { this.routedNetworks = routedNetworks; }
 
     public String toJSONString()
     {

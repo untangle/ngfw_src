@@ -118,59 +118,38 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 itemId: 'localNetworkGrid',
                 tbar: ['@addInline'],
                 recordActions: ['delete'],
-                listProperty: 'settings.networks.list',
-                width: 300,
-                bind: '{networks}',
+                listProperty: 'settings.networkProfiles.list',
+                width: 562,
+                bind: '{networkProfiles}',
                 emptyRow: {
-                    javaClass: 'com.untangle.app.wireguard_vpn.WireGuardVpnNetwork',
-                    address: '10.0.0.0/24'
+                    javaClass: 'com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile',
+                    profileName: 'default',
+                    address: '10.0.0.0/24',
                 },
-                columns: [{
-                    dataIndex: 'address',
-                    header: 'Network Address',
+                columns: [
+                    {
+                    dataIndex: 'profileName',
+                    header: 'Profile Name',
                     width: 200,
+                    editor:{
+                        xtype: 'textfield',
+                        allowBlank: false,
+                        emptyText: '[enter profile name]'.t(),
+                        blankText: 'Invalid profile name'.t(),
+                    },
+                }, 
+                {
+                    dataIndex: 'subnetsAsString',
+                    header: 'Network Addresses',
+                    width: 300,
                     flex: 1,
                     editor:{
                         xtype: 'textfield',
-                        vtype: 'cidrBlock',
+                        // vtype: 'cidrBlock',
                         allowBlank: false,
                         emptyText: '[enter address]'.t(),
                         blankText: 'Invalid address specified'.t(),
-                        validator: function(value) {
-                            try{
-                                var isValidVtypeField = Ext.form.field.VTypes[this.vtype](value);
-                                if(!isValidVtypeField){
-                                    return true;
-                                }
-                                var res = Util.networkValidator(value);
-                                if(res != true){
-                                    return res;
-                                }
-                                var me = this,
-                                    defaultNewRowAddress = me.up('#settings').down("#localNetworkGrid").initialConfig.emptyRow.address;
-                                
-                                var localNetworkStoreFn = this.up('#settings').down('#localNetworkGrid').getStore();
-                                var peerNetworkIp = this.up('#settings').down('#peerNetworkIp').getValue();
-
-                                var localNetworkStore = [];
-                  
-                                localNetworkStoreFn.each(function (item){
-                                    if(item.get("address") && !(me.originalValue == "" && item.get("address") == defaultNewRowAddress) && (item.get("address") !== me.originalValue)){
-                                        localNetworkStore.push(item.get("address"));
-                                    }
-                                });
-
-                                if(peerNetworkIp){
-                                    localNetworkStore.push(peerNetworkIp);
-                                }
-                                
-                                return Util.findIpPoolConflict(value, localNetworkStore, this, true);
-
-                            } catch(err) {
-                                console.log(err);
-                                return true;
-                            }                        
-                        }
+                        // TODO Add Validator
                     },
                 }]
             }]
