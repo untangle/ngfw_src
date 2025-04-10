@@ -160,15 +160,15 @@ public class WireGuardVpnApp extends AppBase
         }
 
         /*
-        * Fix up the WGN network ids
-        */
+         * Fix up the WGN network ids
+         */
         int wgnIdx = 0;
-        for(WireGuardVpnNetwork localNets : newSettings.getNetworks()) {
-           localNets.setId(++wgnIdx);
-        }
-
-        for(WireGuardVpnNetworkProfile netProfiles : newSettings.getNetworkProfiles()) {
-            netProfiles.setSubnets(netProfiles.getSubnetsAsString());
+        for(WireGuardVpnNetworkProfile netProfile : newSettings.getNetworkProfiles()) {
+            // Convert subnets from string to list of WireGuardVpnNetworks
+            netProfile.setSubnets(netProfile.getSubnetsAsString());
+            for(WireGuardVpnNetwork wgn : netProfile.getSubnets()) {
+                wgn.setId(++wgnIdx);
+            }
         }
 
         /**
@@ -396,7 +396,6 @@ public class WireGuardVpnApp extends AppBase
         wgVpnNetProfile.setProfileName("Default");
         wgVpnNetProfile.setSubnets(networks);
         netProfiles.add(wgVpnNetProfile);
-
 
         readSettings.setNetworkProfiles(netProfiles);
 //        readSettings.setNetworks(null);
@@ -716,10 +715,13 @@ public class WireGuardVpnApp extends AppBase
                         // Check if the wireguard network is configured for this IP family and has changed
                         if(intf.getV4MaskedAddress() != null && oldWgn.getMaskedAddress().getAddress() instanceof Inet4Address && ! oldWgn.getMaskedAddress().getIPMaskedAddress().equals(intf.getV4MaskedAddress().getIPMaskedAddress())){
                             // This interface has changed, find the settings in new settings and fix it
-                            for(WireGuardVpnNetwork wvn : settings.getNetworks()) {
-                                if( wvn.getId() ==  oldWgn.getId()) {
-                                    wvn.setAddress(intf.getV4MaskedAddress().getIPMaskedAddress());
-                                    setNewSettings = true;
+                            for(WireGuardVpnNetworkProfile profile : settings.getNetworkProfiles()) {
+                                for(WireGuardVpnNetwork wvn : profile.getSubnets()) {
+                                    if( wvn.getId() ==  oldWgn.getId()) {
+                                        wvn.setAddress(intf.getV4MaskedAddress().getIPMaskedAddress());
+                                        setNewSettings = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -727,10 +729,12 @@ public class WireGuardVpnApp extends AppBase
                         // Check if the wireguard network is configured for this IP family and has changed
                         if(intf.getV6MaskedAddress() != null &&  oldWgn.getMaskedAddress().getAddress() instanceof Inet6Address && ! oldWgn.getMaskedAddress().getIPMaskedAddress().equals(intf.getV6MaskedAddress().getIPMaskedAddress())){
                             // This interface has changed, find the settings in new settings and fix it
-                            for(WireGuardVpnNetwork wvn : settings.getNetworks()) {
-                                if( wvn.getId() ==  oldWgn.getId()) {
-                                    wvn.setAddress(intf.getV6MaskedAddress().getIPMaskedAddress());
-                                    setNewSettings = true;
+                            for(WireGuardVpnNetworkProfile profile : settings.getNetworkProfiles()) {
+                                for (WireGuardVpnNetwork wvn : profile.getSubnets()) {
+                                    if (wvn.getId() == oldWgn.getId()) {
+                                        wvn.setAddress(intf.getV6MaskedAddress().getIPMaskedAddress());
+                                        setNewSettings = true;
+                                    }
                                 }
                             }
                         }
@@ -757,10 +761,12 @@ public class WireGuardVpnApp extends AppBase
         this.settingsLink = new Hashtable<InterfaceStatus, WireGuardVpnNetwork>();
 
         // Store the WG settings and the interface status to watch through the network settings change
-        for(var wgNet : settings.getNetworks() ) {
-            for(InterfaceStatus intfStatus : this.lanStatuses) {
-                if(wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV4MaskedAddress().getIPMaskedAddress()) || wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV6MaskedAddress().getIPMaskedAddress())) {
-                    settingsLink.put(intfStatus, wgNet);
+        for(WireGuardVpnNetworkProfile profile : settings.getNetworkProfiles()) {
+            for(var wgNet : profile.getSubnets()) {
+                for(InterfaceStatus intfStatus : this.lanStatuses) {
+                    if(wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV4MaskedAddress().getIPMaskedAddress()) || wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV6MaskedAddress().getIPMaskedAddress())) {
+                        settingsLink.put(intfStatus, wgNet);
+                    }
                 }
             }
         }

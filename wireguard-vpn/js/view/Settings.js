@@ -121,10 +121,22 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 listProperty: 'settings.networkProfiles.list',
                 width: 562,
                 bind: '{networkProfiles}',
+                restrictedRecords: {
+                    keyMatch: 'reserved',
+                    valueMatch: true
+                },
+                listeners: {
+                    cellclick: function(grid,td,cellIndex,record,tr,rowIndex,e,eOpts)  {
+                        if (record.data.profileName === 'Full Tunnel') { 
+                            record.set('reserved', true);
+                            return false; 
+                        }
+                    }
+                },
                 emptyRow: {
                     javaClass: 'com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile',
-                    profileName: 'default',
-                    address: '10.0.0.0/24',
+                    profileName: 'MyProfile',
+                    subnetsAsString: '10.0.0.0/24, 10.32.0.0/24',
                 },
                 columns: [
                     {

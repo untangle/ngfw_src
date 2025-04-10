@@ -39,16 +39,6 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             vm.set('warning', warning);
             vm.set('hostname', networkSettings['hostName']);
 
-            var networks = result[0]['networks']['list'];
-            var netlist = "";
-            if(networks != null){
-                for(x = 0;x < networks.length;x++) {
-                    if (x != 0) netlist += ", ";
-                    netlist += networks[x].address;
-                }
-            }
-            vm.set('localNetworkList', netlist);
-
             v.setLoading(false);
         },function(ex){
             if(!Util.isDestroyed(v, vm)){
@@ -384,7 +374,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
     pasteTunnel: function(component){
         if(!component.target ||
-           !component.target.dataset.componentid ||
+           !component.target.dataset ||
            !component.target.dataset.componentid){
             return;
         }
@@ -447,6 +437,10 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
         this.callParent([view]);
 
+        var rnlist;
+        if(record.get('routedNetworks'))
+            rnlist = record.get('routedNetworks').list;
+        Ung.apps['wireguard-vpn'].Main.setLocalNetworks(rnlist, vm);
         view.down('form').add(
             Ung.apps['wireguard-vpn'].Main.hostDisplayFields(true, !record.get('markedForNew'), true)
         );
@@ -495,5 +489,23 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
             });
         });
         routedNetworks.add(items);
+    },
+
+    onRoutednetworkscbgroupChange: function(checkboxgroup, newValue, oldValue, eOpts) {
+        var editor = checkboxgroup.up('unwireguardvpntunnelrecordeditor'),
+            vm = editor.getViewModel(),
+            record = editor.record,
+            form = editor.down('form'),
+            localServiceInfo = form && form.down('#localserviceinfo');
+
+        if (localServiceInfo) {
+            form.remove(localServiceInfo, true);  // autoDestroy = true
+        }
+
+        Ung.apps['wireguard-vpn'].Main.setLocalNetworks(newValue.list, vm);
+        var newCmp = Ung.apps['wireguard-vpn'].Main.hostDisplayFields(true, false, true );
+
+        if (form) form.add(newCmp);
+
     }
 });

@@ -283,6 +283,9 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         bind: {
             value: '{record.routedNetworks}'
         },
+        listeners: {
+            change: 'onRoutednetworkscbgroupChange'
+        },
         columns: 3,
         vertical: true
     }, {
