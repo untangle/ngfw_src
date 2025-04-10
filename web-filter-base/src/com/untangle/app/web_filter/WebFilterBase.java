@@ -4,6 +4,7 @@
 
 package com.untangle.app.web_filter;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -515,11 +516,11 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             readSettings = settingsManager.load(WebFilterSettings.class, getCurrentSettingFileName());
             WebFilterSettings globalSettings= settingsManager.load(WebFilterSettings.class, globalSettingFileName);
             if(globalSettings.getPassedUrls() != null){
-                readSettings.getPassedUrls().addAll(globalSettings.getPassedUrls());
+                readSettings.getPassedUrls().addAll(0, globalSettings.getPassedUrls());
                 readSettings.setPassedUrls(readSettings.getPassedUrls());
             }
             if(globalSettings.getBlockedUrls() != null){
-                readSettings.getBlockedUrls().addAll(globalSettings.getBlockedUrls());
+                readSettings.getBlockedUrls().addAll(0, globalSettings.getBlockedUrls());
                 readSettings.setBlockedUrls(readSettings.getBlockedUrls());
             }
         } catch (SettingsManager.SettingsException e) {
@@ -975,10 +976,12 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     protected void postDestroy()
     {
         List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
-        if(webFilterList.size() == 1){
-            if (Files.exists(globalSettingFilePath)) {
-                UvmContextFactory.context().execManager().exec("rm -rf " + globalSettingFileName);
-            }  
+        if(webFilterList.size() == 1 && Files.exists(globalSettingFilePath)){
+            try {
+                Files.delete(globalSettingFilePath);
+            } catch (IOException e) {
+                logger.warn("Failed to delete global settings.", e);
+            }        
         }
     }
 
@@ -1129,7 +1132,7 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         // To handle removal of global rule from globalSettings file
         Iterator<GenericRule> globalUrlsIterator = globalUrls.iterator();
         // To handle removal of global rule from globalSettings file
-        if (settings != null && newUrlsCopy.size() < (isBlockedUrls ? this.getSettings().getBlockedUrls().size() : this.getSettings().getPassedUrls().size())){
+        if (settings != null && newUrlsCopy.size() <= (isBlockedUrls ? this.getSettings().getBlockedUrls().size() : this.getSettings().getPassedUrls().size())){
             // Iterate over globalUrls and remove entries that are not in newUrls            
             while (globalUrlsIterator.hasNext()) {
                 GenericRule globalRule = globalUrlsIterator.next();
