@@ -190,27 +190,6 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                         }]
                     }]
             };
-        },
-
-        setLocalNetworks: function(rnlist, viewModel) {
-            var routedNetworks;
-            if(Ext.isArray(rnlist)) {
-                networksList = [];
-                rnlist.forEach(function(networks){
-                    var newList = networks.split(',');
-                    for (var i = 0; i < newList.length; i++) {
-                        var net = newList[i].trim();
-                        if (net && networksList.indexOf(net) === -1) {
-                            networksList.push(net);
-                        }
-                    }
-                });
-                routedNetworks = networksList.join(', ');
-            }
-            if(typeof rnlist === 'string') {
-                routedNetworks = rnlist;
-            }
-            viewModel.set('localNetworkList', routedNetworks);
         }
     }
 

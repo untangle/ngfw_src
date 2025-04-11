@@ -60,7 +60,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'pingConnectionEvents': true,
         'pingUnreachableEvents': false,
         'assignDnsServer': false,
-        'routedNetworks': {
+        'routedNetworkProfiles': {
             'javaClass': 'java.util.LinkedList',
             'list': []
         }
@@ -257,12 +257,13 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 }) : [];
 
                 var res = null;
-                for(var i=0;i<localNetworkStore.length;i++){
-                    res = Util.networkValidator(localNetworkStore[i]);
-                    if(res!=true){
-                        break;
-                    }
-                }
+                // Need to remove this for full tunnel support
+                // for(var i=0;i<localNetworkStore.length;i++){
+                //     res = Util.networkValidator(localNetworkStore[i]);
+                //     if(res!=true){
+                //         break;
+                //     }
+                // }
                 if(res != true){
                     return res;
                 }
@@ -276,12 +277,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         }
     }, {
         xtype: 'checkboxgroup',
-        fieldLabel: 'Routed Networks'.t(),
+        fieldLabel: 'Routed Network Profiles'.t(),
         useParentDefinition: true,
         // labelWidth: 155,
         itemId: 'routednetworkscbgroup',
         bind: {
-            value: '{record.routedNetworks}'
+            value: '{record.routedNetworkProfiles}'
         },
         listeners: {
             change: 'onRoutednetworkscbgroupChange'

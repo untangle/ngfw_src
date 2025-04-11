@@ -96,10 +96,10 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             });
 
             vm.get('settings.tunnels.list').forEach(function(tunnel) {
-                if(tunnel.routedNetworks && tunnel.routedNetworks.list && !tunnel.routedNetworks.javaClass) {
-                    tunnel.routedNetworks.javaClass = 'java.util.LinkedList';
-                    if(typeof tunnel.routedNetworks.list === 'string') {
-                        tunnel.routedNetworks.list = [ tunnel.routedNetworks.list ];
+                if(tunnel.routedNetworkProfiles && tunnel.routedNetworkProfiles.list && !tunnel.routedNetworkProfiles.javaClass) {
+                    tunnel.routedNetworkProfiles.javaClass = 'java.util.LinkedList';
+                    if(typeof tunnel.routedNetworkProfiles.list === 'string') {
+                        tunnel.routedNetworkProfiles.list = [ tunnel.routedNetworkProfiles.list ];
                     }
                 }
             });
@@ -437,10 +437,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
         this.callParent([view]);
 
-        var rnlist;
-        if(record.get('routedNetworks'))
-            rnlist = record.get('routedNetworks').list;
-        Ung.apps['wireguard-vpn'].Main.setLocalNetworks(rnlist, vm);
+        var rnProfileList;
+        if(record.get('routedNetworkProfiles')) {
+            rnProfileList = record.get('routedNetworkProfiles').list;
+        }
+        me.setRoutedNetworksFromProfiles(rnProfileList, vm, record);
         view.down('form').add(
             Ung.apps['wireguard-vpn'].Main.hostDisplayFields(true, !record.get('markedForNew'), true)
         );
@@ -481,7 +482,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
             items.push({
                 boxLabel: profile.profileName + ' - ' + profile.subnetsAsString,
                 name: 'list', 
-                inputValue: profile.subnetsAsString,
+                inputValue: profile.profileName,
                 autoEl: {
                     tag: 'div',
                     'data-qtip': profile.subnetsAsString
@@ -493,7 +494,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
     onRoutednetworkscbgroupChange: function(checkboxgroup, newValue, oldValue, eOpts) {
         var editor = checkboxgroup.up('unwireguardvpntunnelrecordeditor'),
-            vm = editor.getViewModel(),
             record = editor.record,
             form = editor.down('form'),
             localServiceInfo = form && form.down('#localserviceinfo');
@@ -502,10 +502,39 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
             form.remove(localServiceInfo, true);  // autoDestroy = true
         }
 
-        Ung.apps['wireguard-vpn'].Main.setLocalNetworks(newValue.list, vm);
+        this.setRoutedNetworksFromProfiles(newValue.list, record);
         var newCmp = Ung.apps['wireguard-vpn'].Main.hostDisplayFields(true, false, true );
 
         if (form) form.add(newCmp);
 
+    },
+
+    setRoutedNetworksFromProfiles: function(profiles, record) {
+        var vm = this.getViewModel(),
+            localNetProfiles = vm.get('settings.networkProfiles.list'),
+            routedNetworks = "",
+            networksList = [];
+
+        if(profiles) {
+            if(typeof profiles === 'string') {
+                profiles = [ profiles ];
+            }
+
+            localNetProfiles.forEach(function(profile) {
+                if(profiles.indexOf(profile.profileName) !== -1) {
+                    var newList = profile.subnetsAsString.split(',');
+                    for (var i = 0; i < newList.length; i++) {
+                        var net = newList[i].trim();
+                        if (net && networksList.indexOf(net) === -1) {
+                            networksList.push(net);
+                        }
+                    }
+                }
+            });
+            routedNetworks = networksList.join(', ');
+        }   
+
+        vm.set('localNetworkList', routedNetworks);
+        record.set('routedNetworks', routedNetworks);
     }
 });

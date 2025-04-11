@@ -111,7 +111,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
             layout: 'hbox',
             items: [{
                 xtype: 'label',
-                text: 'Local Networks:'.t(),
+                text: 'Local Network Profiles:'.t(),
                 width: 195
             },{
                 xtype: 'ungrid',
@@ -136,10 +136,9 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 emptyRow: {
                     javaClass: 'com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile',
                     profileName: 'MyProfile',
-                    subnetsAsString: '10.0.0.0/24, 10.32.0.0/24',
+                    subnetsAsString: '10.0.0.0/24,10.1.0.0/24',
                 },
-                columns: [
-                    {
+                columns: [{
                     dataIndex: 'profileName',
                     header: 'Profile Name',
                     width: 200,
@@ -148,20 +147,80 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         allowBlank: false,
                         emptyText: '[enter profile name]'.t(),
                         blankText: 'Invalid profile name'.t(),
-                    },
-                }, 
-                {
+                        validator: function(value) {
+                            console.log("In Validator");
+                            var grid = this.up('grid[itemId=localNetworkGrid]'),
+                                store = grid.getStore(),
+                                record = grid.getSelectionModel().getSelection()[0];
+                            // Check if a record with the same name exists in the store
+                            var isNameUnique = store.findBy(function(profile) {
+                                if(record === profile) return false;
+                                return profile.get('profileName') === value;
+                            });
+                            return isNameUnique === -1 ? true : 'Profile name already exists.'.t();
+                        }
+                    }
+                }, {
                     dataIndex: 'subnetsAsString',
                     header: 'Network Addresses',
                     width: 300,
                     flex: 1,
                     editor:{
                         xtype: 'textfield',
-                        // vtype: 'cidrBlock',
+                        vtype: 'cidrBlockList',
                         allowBlank: false,
-                        emptyText: '[enter address]'.t(),
+                        emptyText: '[enter comma seperated networks]'.t(),
                         blankText: 'Invalid address specified'.t(),
-                        // TODO Add Validator
+                        validator: function(value) {
+                            try{
+                                var isValidVtypeField = Ext.form.field.VTypes[this.vtype](value);
+                                if(!isValidVtypeField) return true;
+
+                                networks = value.split(',');
+                                profileNets = [];
+                                for(var i=0; i < networks.length; i++) {
+                                    if(profileNets.indexOf(networks[i]) !== -1) return 'Duplicate networks in the profile'.t();
+                                    if(profileNets.length > 0) {
+                                        res = Util.findIpPoolConflict(networks[i], profileNets, this, true);
+                                        if(res != true) return res; 
+                                    } 
+                                    profileNets.push(networks[i]);
+
+                                    var res = Util.networkValidator(networks[i]);
+                                    if(res != true) return res;
+
+                                    var me = this,
+                                        settings = me.up('#settings'),
+                                        localNetworkStoreFn = settings.down('#localNetworkGrid').getStore(),
+                                        peerNetworkIp = settings.down('#peerNetworkIp').getValue(),
+                                        record = settings.down('#localNetworkGrid').getSelectionModel().getSelection()[0],
+                                        localNetworkStore = [];
+
+                                    if(peerNetworkIp) localNetworkStore.push(peerNetworkIp);
+
+                                    localNetworkStoreFn.each(function (profile){
+                                        if(record !== profile && profile.get("subnetsAsString") && profile.get("subnetsAsString") !== me.originalValue){
+                                            var subnets = profile.get("subnetsAsString").split(',');
+                                            for (var i = 0; i < subnets.length; i++) {
+                                                subnet = subnets[i].trim();
+                                                if(Util.networkValidator(subnet) === true && localNetworkStore.indexOf(subnet) === -1) 
+                                                    localNetworkStore.push(subnet);
+                                            }
+                                        }
+                                        // if(profile.get("address") && !(me.originalValue == "" && profile.get("address") == defaultNewRowAddress) && (profile.get("address") !== me.originalValue)){
+                                        //     localNetworkStore.push(profile.get("address"));
+                                        // }
+                                    });
+
+                                    res = Util.findIpPoolConflict(networks[i], localNetworkStore, this, true);
+                                    if(res != true) return res;
+                                }    
+                                return true;                          
+                            } catch(err) {
+                                console.log(err);
+                                return true;
+                            }                        
+                        }
                     },
                 }]
             }]
@@ -219,9 +278,14 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
 
                             var localNetworkStore = [];
                             
-                            localNetworkStoreFn.each(function (item){
-                                if(item.get("address")){
-                                    localNetworkStore.push(item.get("address"));
+                            localNetworkStoreFn.each(function (profile){
+                                if(profile.get("subnetsAsString")){
+                                    var subnets = profile.get("subnetsAsString").split(',');
+                                    for (var i = 0; i < subnets.length; i++) {
+                                        subnet = subnets[i].trim();
+                                        if(localNetworkStore.indexOf(subnet) === -1) 
+                                            localNetworkStore.push(subnet);
+                                    }
                                 }
                             });
 
