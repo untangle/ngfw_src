@@ -16,7 +16,7 @@ default_policy_id = 1
 app = None
 TUNNEL_ID = 200
 VPN_TUNNEL_URI = overrides.get( "VPN_TUNNEL_URI", default="http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip")
-TUNNEL_VPN_ISOLATED_CLIENT = overrides.get( "TUNNEL_VPN_ISOLATED_CLIENT", default="192.168.72.22")
+TUNNEL_VPN_ISOLATED_CLIENT = overrides.get( "TUNNEL_VPN_ISOLATED_CLIENT", default="192.168.200.56")
 CLIENT_TAGGED_CONDITION = {
             "javaClass": "java.util.LinkedList",
             "list": [
