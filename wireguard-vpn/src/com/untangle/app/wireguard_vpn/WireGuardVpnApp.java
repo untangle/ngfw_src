@@ -150,6 +150,22 @@ public class WireGuardVpnApp extends AppBase
             throw new RuntimeException(conflict);
         }
 
+        /*
+         * Fix up the WGN network ids
+         */
+        int wgnIdx = 0;
+        List<String> newProfileNames = new LinkedList<>();
+        for(WireGuardVpnNetworkProfile netProfile : newSettings.getNetworkProfiles()) {
+            if(newProfileNames.contains(netProfile.getProfileName()))
+                throw new RuntimeException("Duplicate Network Profile Name");
+            newProfileNames.add(netProfile.getProfileName());
+            // Convert subnets from string to list of WireGuardVpnNetworks
+            netProfile.setSubnets(netProfile.getSubnetsAsString());
+            for(WireGuardVpnNetwork wgn : netProfile.getSubnets()) {
+                wgn.setId(++wgnIdx);
+            }
+        }
+
         int idx = 0;
         for (WireGuardVpnTunnel tunnel : newSettings.getTunnels()) {
             tunnel.setId(++idx);
@@ -161,18 +177,10 @@ public class WireGuardVpnApp extends AppBase
             if(tunnel.getDescription().startsWith("CCTunnel") && tunnel.getNetworks().contains(Constants.COMMA_STRING)) {
                 tunnel.setNetworks(tunnel.getNetworks().replaceAll(Constants.COMMA_STRING, Constants.NEW_LINE));
             }
-        }
-
-        /*
-         * Fix up the WGN network ids
-         */
-        int wgnIdx = 0;
-        for(WireGuardVpnNetworkProfile netProfile : newSettings.getNetworkProfiles()) {
-            // Convert subnets from string to list of WireGuardVpnNetworks
-            netProfile.setSubnets(netProfile.getSubnetsAsString());
-            for(WireGuardVpnNetwork wgn : netProfile.getSubnets()) {
-                wgn.setId(++wgnIdx);
-            }
+            // Remove deleted network profiles from tunnel configuration
+            List<String> routedProfiles = tunnel.getRoutedNetworkProfiles();
+            routedProfiles.removeIf(name -> !newProfileNames.contains(name));
+            tunnel.setRoutedNetworks(getRoutedNetworksFromProfiles(routedProfiles, newSettings));
         }
 
         /**
@@ -402,7 +410,7 @@ public class WireGuardVpnApp extends AppBase
         netProfiles.add(wgVpnNetProfile);
 
         readSettings.setNetworkProfiles(netProfiles);
-//        readSettings.setNetworks(null);
+        readSettings.setNetworks(null);
 
         for(WireGuardVpnTunnel tunnel : readSettings.getTunnels()) {
             List<String> routedNetworkProfiles = new LinkedList<>();
@@ -549,7 +557,7 @@ public class WireGuardVpnApp extends AppBase
             logger.warn(defaultSearchDomain);
             settings.setDnsSearchDomain(defaultSearchDomain);
         }
-        settings.setNetworks(buildNetworkList(lanStatuses)); //TODO Remove this when all changes are done for network profiles
+//        settings.setNetworks(buildNetworkList(lanStatuses)); //TODO Remove this when all changes are done for network profiles
 
         List<WireGuardVpnNetworkProfile> netProfiles = new LinkedList<>();
         WireGuardVpnNetworkProfile wgVpnNetProfile = new WireGuardVpnNetworkProfile();

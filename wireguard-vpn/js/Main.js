@@ -184,6 +184,9 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                                     cls: 'x-selectable',
                                     bind: {
                                         value: '{localNetworkList}',
+                                    },
+                                    renderer: function(value) {
+                                        return value ? value.replace(/,\s*/g, ', ') : '';
                                     }
                                 }]
                             }]

@@ -63,7 +63,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'routedNetworkProfiles': {
             'javaClass': 'java.util.LinkedList',
             'list': []
-        }
+        },
+        'routedNetworks':''
     },
 
     importValidationJavaClass: true,
@@ -255,18 +256,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 var localNetworkStore = remoteNetworks.length > 0 ? Ext.Array.map(remoteNetworks.split("\n"),function (remoteIpAddr){
                     return remoteIpAddr.trim();
                 }) : [];
-
-                var res = null;
-                // Need to remove this for full tunnel support
-                // for(var i=0;i<localNetworkStore.length;i++){
-                //     res = Util.networkValidator(localNetworkStore[i]);
-                //     if(res!=true){
-                //         break;
-                //     }
-                // }
-                if(res != true){
-                    return res;
-                }
                 
                 return Util.findIpPoolConflict(peerNetworkIp, localNetworkStore, this, false);
 

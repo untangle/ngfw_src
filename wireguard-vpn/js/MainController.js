@@ -96,11 +96,12 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             });
 
             vm.get('settings.tunnels.list').forEach(function(tunnel) {
-                if(tunnel.routedNetworkProfiles && tunnel.routedNetworkProfiles.list && !tunnel.routedNetworkProfiles.javaClass) {
+                if(tunnel.routedNetworkProfiles && !tunnel.routedNetworkProfiles.javaClass) {
                     tunnel.routedNetworkProfiles.javaClass = 'java.util.LinkedList';
-                    if(typeof tunnel.routedNetworkProfiles.list === 'string') {
+                    if(!tunnel.routedNetworkProfiles.list)
+                        tunnel.routedNetworkProfiles.list = [];
+                    if(typeof tunnel.routedNetworkProfiles.list === 'string')
                         tunnel.routedNetworkProfiles.list = [ tunnel.routedNetworkProfiles.list ];
-                    }
                 }
             });
         }
@@ -480,7 +481,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
         localNetProfiles.forEach(function(profile) {
             items.push({
-                boxLabel: profile.profileName + ' - ' + profile.subnetsAsString,
+                boxLabel: profile.profileName,
                 name: 'list', 
                 inputValue: profile.profileName,
                 autoEl: {
@@ -531,7 +532,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
                     }
                 }
             });
-            routedNetworks = networksList.join(', ');
+            routedNetworks = networksList.join(',');
         }   
 
         vm.set('localNetworkList', routedNetworks);

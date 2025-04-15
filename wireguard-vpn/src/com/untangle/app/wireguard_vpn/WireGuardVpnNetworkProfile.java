@@ -53,7 +53,7 @@ public class WireGuardVpnNetworkProfile implements JSONString, Serializable {
         }
         return subnets.stream()
                 .map(wg -> wg.getAddress().toString())
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(","));
     }
 
     @Override

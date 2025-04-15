@@ -135,7 +135,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 },
                 emptyRow: {
                     javaClass: 'com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile',
-                    profileName: 'MyProfile',
+                    profileName: 'ProfileName',
                     subnetsAsString: '10.0.0.0/24,10.1.0.0/24',
                 },
                 columns: [{
@@ -148,10 +148,12 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         emptyText: '[enter profile name]'.t(),
                         blankText: 'Invalid profile name'.t(),
                         validator: function(value) {
-                            console.log("In Validator");
                             var grid = this.up('grid[itemId=localNetworkGrid]'),
                                 store = grid.getStore(),
                                 record = grid.getSelectionModel().getSelection()[0];
+                            var me = this,
+                                defaultProfileName = me.up('#settings').down("#localNetworkGrid").initialConfig.emptyRow.profileName;
+                            if(value == defaultProfileName) return 'Change default ProfileName.'.t();
                             // Check if a record with the same name exists in the store
                             var isNameUnique = store.findBy(function(profile) {
                                 if(record === profile) return false;
@@ -191,26 +193,10 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
 
                                     var me = this,
                                         settings = me.up('#settings'),
-                                        localNetworkStoreFn = settings.down('#localNetworkGrid').getStore(),
                                         peerNetworkIp = settings.down('#peerNetworkIp').getValue(),
-                                        record = settings.down('#localNetworkGrid').getSelectionModel().getSelection()[0],
                                         localNetworkStore = [];
 
                                     if(peerNetworkIp) localNetworkStore.push(peerNetworkIp);
-
-                                    localNetworkStoreFn.each(function (profile){
-                                        if(record !== profile && profile.get("subnetsAsString") && profile.get("subnetsAsString") !== me.originalValue){
-                                            var subnets = profile.get("subnetsAsString").split(',');
-                                            for (var i = 0; i < subnets.length; i++) {
-                                                subnet = subnets[i].trim();
-                                                if(Util.networkValidator(subnet) === true && localNetworkStore.indexOf(subnet) === -1) 
-                                                    localNetworkStore.push(subnet);
-                                            }
-                                        }
-                                        // if(profile.get("address") && !(me.originalValue == "" && profile.get("address") == defaultNewRowAddress) && (profile.get("address") !== me.originalValue)){
-                                        //     localNetworkStore.push(profile.get("address"));
-                                        // }
-                                    });
 
                                     res = Util.findIpPoolConflict(networks[i], localNetworkStore, this, true);
                                     if(res != true) return res;
@@ -223,6 +209,11 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                         }
                     },
                 }]
+            }, {
+                xtype: 'label',
+                cls: 'warningLabel',
+                margin: '13 0 5 25',
+                html: '<span class="fa fa-exclamation-triangle" style="color: orange;" data-qtip="On profile edit clients will need to configure their connections!"></span>'
             }]
         }]
     }, {
