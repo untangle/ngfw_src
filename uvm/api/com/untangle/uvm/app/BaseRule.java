@@ -19,7 +19,7 @@ public class BaseRule implements java.io.Serializable, org.json.JSONString
     private Boolean flagged = null;
     private Boolean readOnly = null;
     private Object attachment = null;
-    private Boolean isGlobal = null;
+    private Boolean isGlobal = Boolean.FALSE;
 
     public BaseRule() {}
 
