@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This class is used when storing a list of IPMaskedAddress objects
- * that will be managed using a UI grid control.
+ * This class is used to store the subnets in different local network profiles
+ * It will be managed using a UI grid control.
  */
 @SuppressWarnings("serial")
 public class WireGuardVpnNetworkProfile implements JSONString, Serializable {

@@ -95,6 +95,7 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 sequence.unshift(Rpc.directPromise(v.appManager, 'deleteTunnel', recordObj['publicKey']));
             });
 
+            // Format routedNetworkProfiles checkbox list value to java compatible object
             vm.get('settings.tunnels.list').forEach(function(tunnel) {
                 if(tunnel.routedNetworkProfiles && !tunnel.routedNetworkProfiles.javaClass) {
                     tunnel.routedNetworkProfiles.javaClass = 'java.util.LinkedList';
@@ -438,6 +439,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
         this.callParent([view]);
 
+        // Set routed networks from the profiles selected for a tunnel dynamically
         var rnProfileList;
         if(record.get('routedNetworkProfiles')) {
             rnProfileList = record.get('routedNetworkProfiles').list;
@@ -479,6 +481,8 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
             routedNetworks = v.down('#routednetworkscbgroup'),
             localNetProfiles = vm.get('settings.networkProfiles.list');
 
+        // Add all the Local Networks Profiles from settings page as checkboxes
+        // to be selected as Routed Network Profiles on tunnel add/edit window
         localNetProfiles.forEach(function(profile) {
             items.push({
                 boxLabel: profile.profileName,
@@ -493,6 +497,9 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
         routedNetworks.add(items);
     },
 
+    /**
+     * listener for Routed Network Profiles change 
+     */
     onRoutednetworkscbgroupChange: function(checkboxgroup, newValue, oldValue, eOpts) {
         var editor = checkboxgroup.up('unwireguardvpntunnelrecordeditor'),
             record = editor.record,
@@ -510,6 +517,9 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
     },
 
+    /**
+     * Sets the routedNetworks from selected profile names in tunnel store
+     */
     setRoutedNetworksFromProfiles: function(profiles, record) {
         var vm = this.getViewModel(),
             localNetProfiles = vm.get('settings.networkProfiles.list'),

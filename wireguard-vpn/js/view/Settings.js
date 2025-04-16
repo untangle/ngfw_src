@@ -131,11 +131,20 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                             record.set('reserved', true);
                             return false; 
                         }
+                    },
+                    afterrender: function(grid) {
+                        Ext.Function.defer(function() { 
+                            var store = grid.getStore();
+                            store.each(function(record) {
+                                if(record.get('profileName') === 'Full Tunnel')
+                                    record.set('reserved', true);
+                            });
+                        }, 1500);
                     }
                 },
                 emptyRow: {
                     javaClass: 'com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile',
-                    profileName: 'ProfileName',
+                    profileName: 'DefaultProfileName',
                     subnetsAsString: '10.0.0.0/24,10.1.0.0/24',
                 },
                 columns: [{
@@ -153,7 +162,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                                 record = grid.getSelectionModel().getSelection()[0];
                             var me = this,
                                 defaultProfileName = me.up('#settings').down("#localNetworkGrid").initialConfig.emptyRow.profileName;
-                            if(value == defaultProfileName) return 'Change default ProfileName.'.t();
+                            if(value == defaultProfileName) return 'Change default profile name.'.t();
                             // Check if a record with the same name exists in the store
                             var isNameUnique = store.findBy(function(profile) {
                                 if(record === profile) return false;
@@ -167,6 +176,12 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                     header: 'Network Addresses',
                     width: 300,
                     flex: 1,
+                    renderer: function(value) {
+                        var qtip = value ? value.replace(/,\s*/g, ', ') : '';
+                        return '<span data-qtip="' + Ext.String.htmlEncode(qtip) + '">' +
+                               Ext.String.htmlEncode(value) +
+                               '</span>';
+                    },
                     editor:{
                         xtype: 'textfield',
                         vtype: 'cidrBlockList',
@@ -213,7 +228,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                 xtype: 'label',
                 cls: 'warningLabel',
                 margin: '13 0 5 25',
-                html: '<span class="fa fa-exclamation-triangle" style="color: orange;" data-qtip="On profile edit clients will need to configure their connections!"></span>'
+                html: '<span class="fa fa-exclamation-triangle" style="color: orange;" data-qtip="On profile name edit clients will need to configure their connections!"></span>'
             }]
         }]
     }, {

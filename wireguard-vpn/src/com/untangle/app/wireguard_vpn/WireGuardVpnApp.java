@@ -75,6 +75,9 @@ public class WireGuardVpnApp extends AppBase
     private static final String NETSPACE_OWNER = "wireguard-vpn";
     private static final String NETSPACE_SERVER = "server-network";
     private static final String NETSPACE_TUNNEL = "server-tunnel";
+    private static final String FULL_TUNNEL = "Full Tunnel";
+    private static final String DEFAULT = "Default";
+
 
     /**
      * Constructor
@@ -180,6 +183,7 @@ public class WireGuardVpnApp extends AppBase
             // Remove deleted network profiles from tunnel configuration
             List<String> routedProfiles = tunnel.getRoutedNetworkProfiles();
             routedProfiles.removeIf(name -> !newProfileNames.contains(name));
+            // Update tunnel routedNetworks using selected profile names
             tunnel.setRoutedNetworks(getRoutedNetworksFromProfiles(routedProfiles, newSettings));
         }
 
@@ -369,7 +373,7 @@ public class WireGuardVpnApp extends AppBase
                 }
             }
 
-            // 17.3 - add dns search domain by default
+            // 17.5 - Support for Local Network Profiles
             if(readSettings.getVersion() <= 5) {
                 updateSettings(readSettings);
                 writeFlag = true;
@@ -390,21 +394,23 @@ public class WireGuardVpnApp extends AppBase
     }
 
     /**
-     * update settings on upgrade
-     * @param readSettings
+     * Updates the settings on upgrade
+     * Converts networks from settings to network profiles.
+     * Assigns Default profile to all existing tunnels as routed networks
+     * @param readSettings WireGuardVpnSettings
      */
     private void updateSettings(WireGuardVpnSettings readSettings) {
         List<WireGuardVpnNetworkProfile> netProfiles = new LinkedList<>();
         WireGuardVpnNetworkProfile wgVpnNetProfile = new WireGuardVpnNetworkProfile();
 
-        wgVpnNetProfile.setProfileName("Full Tunnel");
+        wgVpnNetProfile.setProfileName(FULL_TUNNEL);
         List<WireGuardVpnNetwork> subnets = new LinkedList<>();
         subnets.add(new WireGuardVpnNetwork());
         wgVpnNetProfile.setSubnets(subnets);
         netProfiles.add(wgVpnNetProfile);
 
         wgVpnNetProfile = new WireGuardVpnNetworkProfile();
-        wgVpnNetProfile.setProfileName("Default");
+        wgVpnNetProfile.setProfileName(DEFAULT);
         subnets = readSettings.getNetworks();
         wgVpnNetProfile.setSubnets(subnets);
         netProfiles.add(wgVpnNetProfile);
@@ -414,17 +420,17 @@ public class WireGuardVpnApp extends AppBase
 
         for(WireGuardVpnTunnel tunnel : readSettings.getTunnels()) {
             List<String> routedNetworkProfiles = new LinkedList<>();
-            routedNetworkProfiles.add("Default");
+            routedNetworkProfiles.add(DEFAULT);
             tunnel.setRoutedNetworkProfiles(routedNetworkProfiles);
             tunnel.setRoutedNetworks(getRoutedNetworksFromProfiles(routedNetworkProfiles, readSettings));
         }
     }
 
     /**
-     * Get Distinct routed networks from the list of selected profiles
-     * @param routedNetworkProfiles
-     * @param wgVpnSettings
-     * @return
+     * Get distinct routed networks from the list of selected profiles
+     * @param routedNetworkProfiles list of tunnel specific routed network profiles
+     * @param wgVpnSettings WireGuardVpnSettings
+     * @return Comma separated distinct routed networks
      */
     public String getRoutedNetworksFromProfiles(List<String> routedNetworkProfiles, WireGuardVpnSettings wgVpnSettings) {
         Set<String> profileNameSet = new HashSet<>(routedNetworkProfiles); // faster lookup
@@ -557,19 +563,18 @@ public class WireGuardVpnApp extends AppBase
             logger.warn(defaultSearchDomain);
             settings.setDnsSearchDomain(defaultSearchDomain);
         }
-//        settings.setNetworks(buildNetworkList(lanStatuses)); //TODO Remove this when all changes are done for network profiles
 
         List<WireGuardVpnNetworkProfile> netProfiles = new LinkedList<>();
         WireGuardVpnNetworkProfile wgVpnNetProfile = new WireGuardVpnNetworkProfile();
 
-        wgVpnNetProfile.setProfileName("Full Tunnel");
+        wgVpnNetProfile.setProfileName(FULL_TUNNEL);
         List<WireGuardVpnNetwork> subnets = new LinkedList<>();
         subnets.add(new WireGuardVpnNetwork());
         wgVpnNetProfile.setSubnets(subnets);
         netProfiles.add(wgVpnNetProfile);
 
         wgVpnNetProfile = new WireGuardVpnNetworkProfile();
-        wgVpnNetProfile.setProfileName("Default");
+        wgVpnNetProfile.setProfileName(DEFAULT);
         wgVpnNetProfile.setSubnets(buildNetworkList(lanStatuses));
         netProfiles.add(wgVpnNetProfile);
 
@@ -770,6 +775,7 @@ public class WireGuardVpnApp extends AppBase
                                     if (wvn.getId() == oldWgn.getId()) {
                                         wvn.setAddress(intf.getV6MaskedAddress().getIPMaskedAddress());
                                         setNewSettings = true;
+                                        break;
                                     }
                                 }
                             }
