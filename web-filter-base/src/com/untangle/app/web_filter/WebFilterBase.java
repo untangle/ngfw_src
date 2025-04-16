@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -539,11 +538,9 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
             WebFilterSettings globalSettings = getGlobalSettings();
             if(globalSettings.getPassedUrls() != null){
                 readSettings.getPassedUrls().addAll(0, globalSettings.getPassedUrls());
-                readSettings.setPassedUrls(readSettings.getPassedUrls());
             }
             if(globalSettings.getBlockedUrls() != null){
                 readSettings.getBlockedUrls().addAll(0, globalSettings.getBlockedUrls());
-                readSettings.setBlockedUrls(readSettings.getBlockedUrls());
             }
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
