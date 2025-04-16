@@ -118,7 +118,7 @@ Ext.define('Ung.Setup.Main', {
                     xtype: 'component',
                     margin: '0 0 20 0',
                     style: { textAlign: 'center' },
-                    html: '<p>' + 'To continue, you must connect to ETM Dashboard which is currently unreachable from this device.'.t() + '<br/>' + 
+                    html: '<p>' + 'To continue, you must connect to ETM Dashboard which is currently unreachable from this device.'.t() + '<br/>' +
                             '<p>' + 'You must configure Internet connectivity to ETM Dashboard to continue.'.t() + '<br/>',
                     hidden: true,
                     bind: {
