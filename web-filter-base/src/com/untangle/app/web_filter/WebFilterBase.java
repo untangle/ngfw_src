@@ -1127,26 +1127,43 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        The current global block/pass url list 
      */
     private void updateUrls(List<GenericRule> newUrls, List<GenericRule> globalUrls) {
-        // Build a set of global rule strings from newUrls for quick lookup
         Set<String> newGlobalRuleStrings = new HashSet<>();
         Iterator<GenericRule> newUrlsIterator = newUrls.iterator();
 
         while (newUrlsIterator.hasNext()) {
             GenericRule newRule = newUrlsIterator.next();
             if (newRule.getIsGlobal()) {
-                newGlobalRuleStrings.add(newRule.getString());
+                String ruleString = newRule.getString();
+                newGlobalRuleStrings.add(ruleString);
 
-                // Only add to globalUrls if not already present
-                boolean existsInGlobal = globalUrls.stream()
-                    .anyMatch(globalRule -> globalRule.getString().equals(newRule.getString()));
-                if (!existsInGlobal) {
-                    globalUrls.add(newRule);
+                Optional<GenericRule> existingGlobalRuleOpt = globalUrls.stream()
+                    .filter(globalRule -> globalRule.getString().equals(ruleString))
+                    .findFirst();
+
+                if (existingGlobalRuleOpt.isPresent()) {
+                    GenericRule globalRule = existingGlobalRuleOpt.get();
+
+                    // Check if any relevant fields differ
+                    boolean changed = globalRule.getBlocked() != newRule.getBlocked()
+                        || !(globalRule.getDescription().equals(newRule.getDescription()))
+                        || globalRule.getEnabled() != newRule.getEnabled()
+                        || globalRule.getFlagged() != newRule.getFlagged();
+
+                    // Update if necessary
+                    if (changed) {
+                        globalRule.setBlocked(newRule.getBlocked());
+                        globalRule.setDescription(newRule.getDescription());
+                        globalRule.setEnabled(newRule.getEnabled());
+                        globalRule.setFlagged(newRule.getFlagged());
+                    }
+                } else {
+                    globalUrls.add(newRule); // Add if not already in globalUrls
                 }
 
-                newUrlsIterator.remove();  // Remove from newUrls since it's global
+                newUrlsIterator.remove(); // Remove from newUrls if it's global
             }
         }
-        // Remove any globalUrls not present in newGlobalRuleStrings
+        // Remove globalUrls not present in newGlobalRuleStrings
         globalUrls.removeIf(globalRule -> !newGlobalRuleStrings.contains(globalRule.getString()));
         
     }
