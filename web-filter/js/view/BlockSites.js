@@ -30,6 +30,7 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
     emptyRow: {
         string: '',
         blocked: true,
+        isGlobal: false,
         flagged: true,
         description: '',
         javaClass: 'com.untangle.uvm.app.GenericRule'
@@ -53,6 +54,12 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
         header: 'Block'.t(),
         dataIndex: 'blocked',
         resizable: false
+    }, {
+        xtype: 'checkcolumn',
+        width: Renderer.booleanWidth,
+        header: 'Global'.t(),
+        dataIndex: 'isGlobal',
+        resizable: false,
     }, {
         xtype: 'checkcolumn',
         width: Renderer.booleanWidth,
@@ -82,6 +89,10 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
         bind: '{record.blocked}',
         fieldLabel: 'Block'.t()
     }, {
+        xtype: 'checkbox',
+        bind: '{record.isGlobal}',
+        fieldLabel: 'Global'.t()
+    },  {
         xtype: 'checkbox',
         bind: '{record.flagged}',
         fieldLabel: 'Flag'.t(),
