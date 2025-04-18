@@ -139,7 +139,7 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                                 if(record.get('profileName') === 'Full Tunnel')
                                     record.set('reserved', true);
                             });
-                        }, 1500);
+                        }, 2000);
                     }
                 },
                 emptyRow: {

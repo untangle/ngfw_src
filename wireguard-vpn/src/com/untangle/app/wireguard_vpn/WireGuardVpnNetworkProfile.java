@@ -5,6 +5,7 @@
 package com.untangle.app.wireguard_vpn;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.Constants;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -35,7 +36,7 @@ public class WireGuardVpnNetworkProfile implements JSONString, Serializable {
             this.subnets = new LinkedList<>();
             return;
         }
-        this.subnets = Arrays.stream(subnetsAsString.split(","))
+        this.subnets = Arrays.stream(subnetsAsString.split(Constants.COMMA_STRING))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .map(addressStr -> {
@@ -53,7 +54,7 @@ public class WireGuardVpnNetworkProfile implements JSONString, Serializable {
         }
         return subnets.stream()
                 .map(wg -> wg.getAddress().toString())
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(Constants.COMMA_STRING));
     }
 
     @Override
