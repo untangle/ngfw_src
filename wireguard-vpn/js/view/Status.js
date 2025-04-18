@@ -32,7 +32,6 @@ Ext.define('Ung.apps.wireguard-vpn.view.Status', {
         }, {
             xtype: 'appstate',
         },
-        Ung.apps['wireguard-vpn'].Main.hostDisplayFields(false),
         {
             xtype: 'fieldset',
             title: '<i class="fa fa-clock-o"></i> ' + 'Enabled Tunnels'.t(),
