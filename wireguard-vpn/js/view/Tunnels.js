@@ -59,7 +59,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'pingInterval': 60,
         'pingConnectionEvents': true,
         'pingUnreachableEvents': false,
-        'assignDnsServer': false
+        'assignDnsServer': false,
+        'routedNetworkProfiles': {
+            'javaClass': 'java.util.LinkedList',
+            'list': []
+        },
+        'routedNetworks':''
     },
 
     importValidationJavaClass: true,
@@ -251,17 +256,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 var localNetworkStore = remoteNetworks.length > 0 ? Ext.Array.map(remoteNetworks.split("\n"),function (remoteIpAddr){
                     return remoteIpAddr.trim();
                 }) : [];
-
-                var res = null;
-                for(var i=0;i<localNetworkStore.length;i++){
-                    res = Util.networkValidator(localNetworkStore[i]);
-                    if(res!=true){
-                        break;
-                    }
-                }
-                if(res != true){
-                    return res;
-                }
                 
                 return Util.findIpPoolConflict(peerNetworkIp, localNetworkStore, this, false);
 
@@ -270,6 +264,20 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 return true;
             }                        
         }
+    }, {
+        xtype: 'checkboxgroup',
+        fieldLabel: 'Routed Network Profiles'.t(),
+        useParentDefinition: true,
+        // labelWidth: 155,
+        itemId: 'routednetworkscbgroup',
+        bind: {
+            value: '{record.routedNetworkProfiles}'
+        },
+        listeners: {
+            change: 'onRoutednetworkscbgroupChange'
+        },
+        columns: 3,
+        vertical: true
     }, {
         xtype: 'checkbox',
         fieldLabel: 'Assign DNS Server'.t(),
