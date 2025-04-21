@@ -19,6 +19,7 @@ public class BaseRule implements java.io.Serializable, org.json.JSONString
     private Boolean flagged = null;
     private Boolean readOnly = null;
     private Object attachment = null;
+    private Boolean isGlobal = Boolean.FALSE;
 
     public BaseRule() {}
 
@@ -30,6 +31,17 @@ public class BaseRule implements java.io.Serializable, org.json.JSONString
         this.enabled = enabled;
         this.blocked = blocked;
         this.flagged = flagged;
+    }
+
+    public BaseRule(String name, String category, String description, Boolean enabled, Boolean blocked, Boolean flagged, Boolean isGlobal)
+    {
+        this.name = name;
+        this.category = category;
+        this.description = description;
+        this.enabled = enabled;
+        this.blocked = blocked;
+        this.flagged = flagged;
+        this.isGlobal = isGlobal;
     }
 
     public BaseRule(String name, String category, String description, Boolean enabled)
@@ -54,6 +66,9 @@ public class BaseRule implements java.io.Serializable, org.json.JSONString
     
     public Integer getId() { return this.id; }
     public void setId( Integer newValue ) { this.id = newValue; }
+
+    public Boolean getIsGlobal() { return this.isGlobal; }
+    public void setIsGlobal( Boolean newValue ) { this.isGlobal = newValue; }
 
     public Boolean getBlocked() { return this.blocked; }
     public void setBlocked( Boolean newValue ) { this.blocked = newValue; }
