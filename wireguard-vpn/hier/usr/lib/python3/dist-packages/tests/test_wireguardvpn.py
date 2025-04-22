@@ -30,24 +30,14 @@ WG_LOCAL = overrides.get("WG_LOCAL", default={
 })
 
 # Remote server
-# WG_REMOTE = overrides.get("WG_REMOTE", default={
-#         "serverAddress": "10.113.150.117",
-#         "hostname": "untangle-ats-wireguard",
-#         "publicKey": "fupwK1yQLvtBOFpW8nHxjIYjSDAzkpCwYGYL2rS5xUU=",
-#         "endpointPort": 51820,
-#         "peerAddress": "172.31.53.1",
-#         "networks": "192.168.20.0/24",
-#         "lanAddress": "192.168.20.170"
-# })
-
 WG_REMOTE = overrides.get("WG_REMOTE", default={
-        "serverAddress": "192.168.1.13",
-        "hostname": "arista",
-        "publicKey": "XvcS5/rgvRj4qbLCElHJygTAzHJZNpIZv8oPJlq1MCc=",
+        "serverAddress": "10.113.150.117",
+        "hostname": "untangle-ats-wireguard",
+        "publicKey": "fupwK1yQLvtBOFpW8nHxjIYjSDAzkpCwYGYL2rS5xUU=",
         "endpointPort": 51820,
-        "peerAddress": "172.16.1.1",
-        "networks": "192.168.57.0/24",
-        "lanAddress": "192.168.57.166"
+        "peerAddress": "172.31.53.1",
+        "networks": "192.168.20.0/24",
+        "lanAddress": "192.168.20.170"
 })
 
 
