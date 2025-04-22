@@ -47,6 +47,14 @@ public class WireGuardVpnNetworkProfile implements JSONString, Serializable {
     }
 
     public void setSubnetsAsString(String subnetsAsString) { this.subnetsAsString = subnetsAsString; }
+    public void setSubnetsAsString(List<WireGuardVpnNetwork> subnets) {
+        if (subnets == null || subnets.isEmpty())
+            this.subnetsAsString = "";
+        else
+            this.subnetsAsString = subnets.stream()
+                .map(wgn -> wgn.getAddress().toString())
+                .collect(Collectors.joining(","));
+    }
     public String getSubnetsAsString() {
         if (subnetsAsString != null) return subnetsAsString;
         if (subnets == null) {

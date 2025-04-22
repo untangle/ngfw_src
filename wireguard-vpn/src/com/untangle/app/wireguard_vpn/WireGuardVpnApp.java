@@ -184,9 +184,11 @@ public class WireGuardVpnApp extends AppBase
             }
             // Remove deleted network profiles from tunnel configuration
             List<String> routedProfiles = tunnel.getRoutedNetworkProfiles();
-            routedProfiles.removeIf(name -> !newProfileNames.contains(name));
-            // Update tunnel routedNetworks using selected profile names
-            tunnel.setRoutedNetworks(getRoutedNetworksFromProfiles(routedProfiles, newSettings));
+            if(routedProfiles != null) {
+                routedProfiles.removeIf(name -> !newProfileNames.contains(name));
+                // Update tunnel routedNetworks using selected profile names
+                tunnel.setRoutedNetworks(getRoutedNetworksFromProfiles(routedProfiles, newSettings));
+            }
         }
 
         /**
@@ -788,6 +790,7 @@ public class WireGuardVpnApp extends AppBase
             for (WireGuardVpnNetwork wvn : profile.getSubnets()) {
                 if (wvn.getId() == oldWgn.getId()) {
                     wvn.setAddress(intf.getIPMaskedAddress());
+                    profile.setSubnetsAsString(profile.getSubnets());
                     setNewSettings = true;
                     break;
                 }
@@ -812,7 +815,8 @@ public class WireGuardVpnApp extends AppBase
         for(WireGuardVpnNetworkProfile profile : settings.getNetworkProfiles()) {
             for(var wgNet : profile.getSubnets()) {
                 for(InterfaceStatus intfStatus : this.lanStatuses) {
-                    if(wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV4MaskedAddress().getIPMaskedAddress()) || wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV6MaskedAddress().getIPMaskedAddress())) {
+                    if((intfStatus.getV4MaskedAddress() != null && wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV4MaskedAddress().getIPMaskedAddress()))
+                            || (intfStatus.getV6MaskedAddress() != null && wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV6MaskedAddress().getIPMaskedAddress()))) {
                         settingsLink.put(intfStatus, wgNet);
                     }
                 }
