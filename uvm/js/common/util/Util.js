@@ -898,6 +898,46 @@ Ext.define('Ung.util.Util', {
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
     },
 
+    /**
+     * Define the styling for global entries. 
+     *
+     * @param record  The grid record to evaluate.
+     * @return Style to apply on global fields.
+     */
+    getGlobalRowClass: function(record) {
+        if (record.phantom === false && record.dirty && !record.get('markedForNew') && record.get('markedForDelete')) {
+            return 'mark-delete';
+        }
+        if (record.get('isGlobal') === true) {
+            return 'row-global-locked';
+        }
+    },
+
+    /**
+     * Determines whether the global checkbox for a given grid record should be clickable.
+     *
+     * @param column  checkBox global column
+     * @param rowIndex index of global field
+     * @return boolean  Returns false if the 'isGlobal' field is true (i.e., the record is global and should not be edited).
+     *                  Returns true if 'isGlobal' is false or not set (i.e., the checkbox can be clicked).
+     */
+    canToggleGlobalCheckbox: function (column, rowIndex) {
+        var grid = column.up('grid');
+        var store = column.getGridStore ? column.getGridStore() : grid.getStore();
+        var record = store.getAt(rowIndex);
+        if (!record) return true;
+    
+        var modified = record.modified || {};
+        var originalValue = modified.hasOwnProperty('isGlobal') ? !record.get('isGlobal') : record.get('isGlobal');
+        var canToggleIsGlobal = !(originalValue === true && !modified.hasOwnProperty('isGlobal'));
+        if (!canToggleIsGlobal && !record.get('markedForNew')) {
+            Ext.MessageBox.alert('Info', '<strong> Global Field </strong> cannot be edited!');
+            return false;
+        } else {
+            return true;
+        }
+    },
+
     isIPInRange: function (ip, network, netmask) {
         // Split the IP address into octets
         var nextPoolOctets = ip.split('.');
