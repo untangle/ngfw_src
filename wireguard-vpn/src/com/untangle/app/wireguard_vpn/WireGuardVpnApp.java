@@ -413,14 +413,20 @@ public class WireGuardVpnApp extends AppBase
         wgVpnNetProfile.setSubnets(subnets);
         netProfiles.add(wgVpnNetProfile);
 
-        wgVpnNetProfile = new WireGuardVpnNetworkProfile();
-        wgVpnNetProfile.setProfileName(DEFAULT);
         subnets = readSettings.getNetworks();
-        wgVpnNetProfile.setSubnets(subnets);
-        netProfiles.add(wgVpnNetProfile);
+        if(subnets != null && !subnets.isEmpty()) {
+            wgVpnNetProfile = new WireGuardVpnNetworkProfile();
+            wgVpnNetProfile.setProfileName(DEFAULT);
+            wgVpnNetProfile.setSubnets(subnets);
+            netProfiles.add(wgVpnNetProfile);
+        }
 
         readSettings.setNetworkProfiles(netProfiles);
         readSettings.setNetworks(null);
+
+        // Return if local networks not found (Default profile is not available)
+        if(subnets == null || subnets.isEmpty())
+            return;
 
         for(WireGuardVpnTunnel tunnel : readSettings.getTunnels()) {
             List<String> routedNetworkProfiles = new LinkedList<>();
