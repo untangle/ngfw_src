@@ -145,6 +145,13 @@ def is_value_in_config_line(config, target_value, key_name):
         return target_value in values
     else:
         return False
+    
+def build_network_profile(profile_name, network_addresses):
+    return {
+        "javaClass": "com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile",
+        "profileName": profile_name,
+        "subnetsAsString": network_addresses
+    }
 
 def wait_for_ping(target_IP="127.0.0.1",ping_result_expected=0):
     timeout = 60  # wait for up to one minute for the target ping result
@@ -310,6 +317,70 @@ class WireGuardVpnTests(NGFWTestCase):
         # AllowedIPs should have 0.0.0.0/0 network in wireguard config generated.
         remoteConfig = self._app.getRemoteConfig(WG_REMOTE['publicKey'])
         assert(is_value_in_config_line(remoteConfig, "0.0.0.0/0", "AllowedIPs"))
+
+        # Set app back to normal
+        self._app.setSettings(origWGSettings)
+
+    def test_027_tunnel_conf_change_on_profile_edit_delete(self):
+        """
+        Verify if profile is used as routed network profile by a tunnel then
+        1. Editing the network addresses should reflect in tunnel routed profiles and routed networks.
+        2. Deleting the profile should remove it from tunnel configuration
+        """
+
+        # Declare constants
+        profileName = "MyProfile"
+        net1 = "10.12.35.0/18"
+        net2 = "10.20.36.0/18"
+        net3 = "10.32.37.0/18"
+
+        # Pull out the current WG settings and copy it
+        origWGSettings = self._app.getSettings()
+        newAppSettings = copy.deepcopy( origWGSettings )
+
+        # Add new profiles in settings
+        newAppSettings["networkProfiles"]["list"].append(build_network_profile(profileName, net1 + "," + net2))
+
+        # Empty tunnels and Create a new tunnel settings
+        newAppSettings["tunnels"]["list"] = []
+        tunnel = build_wireguard_tunnel()
+
+        # Set MyProfile as routedNetworkProfiles in tunnel and append it to tunnel list
+        tunnel["routedNetworkProfiles"]["list"].append(profileName)
+        newAppSettings["tunnels"]["list"].append(tunnel)
+
+        # Set settings and get updated settings from backend
+        self._app.setSettings(newAppSettings)
+        newAppSettings = self._app.getSettings()
+
+        # Verify if MyProfile addresses are present in tunnel routedNetworks
+        routedNetworks = newAppSettings["tunnels"]["list"][0]["routedNetworks"]
+        assert (net1 in routedNetworks) and (net2 in routedNetworks)
+
+        # Edit MyProfile addresses
+        newAppSettings["networkProfiles"]["list"][-1]["subnetsAsString"] = net1 + "," + net3
+
+        # Set settings and get updated settings from backend
+        self._app.setSettings(newAppSettings)
+        newAppSettings = self._app.getSettings()
+
+        # Verify that net2 is not in tunnel routedNetworks but net1 and net3 are
+        routedNetworks = newAppSettings["tunnels"]["list"][0]["routedNetworks"]
+        assert (net2 not in routedNetworks) and (net1 in routedNetworks) and (net3 in routedNetworks)
+        assert(profileName in newAppSettings["tunnels"]["list"][0]["routedNetworkProfiles"]["list"])
+
+        # Delete MyProfile from local network profiles
+        newAppSettings["networkProfiles"]["list"].pop()
+
+        # Set settings and get updated settings from backend
+        self._app.setSettings(newAppSettings)
+        newAppSettings = self._app.getSettings()
+
+        # Verify that net1, net2, net3 are not in tunnel routedNetworks
+        # and MyProfile is removed from routed network profiles
+        routedNetworks = newAppSettings["tunnels"]["list"][0]["routedNetworks"]
+        assert (net1 not in routedNetworks) and (net2 not in routedNetworks) and (net3 not in routedNetworks)
+        assert(profileName not in newAppSettings["tunnels"]["list"][0]["routedNetworkProfiles"]["list"])
 
         # Set app back to normal
         self._app.setSettings(origWGSettings)
