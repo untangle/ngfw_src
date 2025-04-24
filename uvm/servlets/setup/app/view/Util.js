@@ -158,9 +158,9 @@ Ext.define('Ung.Setup.Util', {
         }
 
         if (typeof exception === 'string') {
-            Util.showWarningMessage(exception, '', Util.goToStartPage);
+            this.showWarningMessage(exception, '', this.goToStartPage);
         } else {
-            Util.showWarningMessage(exception.message, details, Util.goToStartPage);
+            this.showWarningMessage(exception.message, details, this.goToStartPage);
         }
     },
 

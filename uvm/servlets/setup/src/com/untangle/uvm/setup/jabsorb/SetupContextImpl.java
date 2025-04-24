@@ -3,7 +3,6 @@
  */
 package com.untangle.uvm.setup.jabsorb;
 
-import java.io.File;
 
 import java.net.Socket;
 import java.net.InetSocketAddress;
@@ -21,7 +20,6 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LanguageManager;
-import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
@@ -130,7 +128,6 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     {
         boolean reachable = false;
         URIBuilder uriBuilder = null;
-        Socket socket = null;
         try{
             uriBuilder = new URIBuilder(this.context.getCmdUrl());
         }catch(Exception e){
@@ -143,18 +140,12 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         if(port == -1){
             port = uriBuilder.getScheme().equals("https") ? 443 : 80;
         }
-        try {
-            socket = new Socket();
+        try (Socket socket = new Socket()) {
             reachable = true;
             socket.connect(new InetSocketAddress(host, port), 7000);
         } catch (Exception e) {
             reachable = false;
-            logger.warn("Failed to connect to cmd:" + " [" + host + ":" + Integer.toString(port) + "]");
-        } finally {
-            try {
-                if (socket != null) socket.close();
-            } catch (Exception e) {
-            }
+            logger.warn("Failed to connect to cmd: [{}:{}]", host, port);
         }
 
         return reachable;

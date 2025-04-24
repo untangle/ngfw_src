@@ -1,4 +1,4 @@
-// Setup Wizard application
+// Legacy Setup Wizard application
 Ext.define('Ung.Setup', {
     extend: 'Ext.app.Application',
     namespace: 'Ung',
@@ -43,4 +43,24 @@ Ext.define('Ung.Setup', {
             ip4AddressRegex: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
         });
     }
+});
+
+// New Setup Wizard application
+Ext.define('Ung.SetupWizard', {
+    extend: 'Ext.container.Viewport',
+
+    viewModel: {
+        data: {
+            resuming: false,
+            remoteReachable: null
+        }
+    },
+    layout: 'fit',
+    padding: 20,
+    listeners: {
+        afterrender: function (view) {
+            view.setHtml('<iframe src="/console/setup/" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>');
+        },
+    }
+
 });

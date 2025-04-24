@@ -14,13 +14,27 @@
     </init-param>
   </servlet>
 
+  <servlet>
+    <servlet-name>SetupWizardServlet</servlet-name>
+    <servlet-class>com.untangle.uvm.setup.servlet.SetupWizardServlet</servlet-class>
+    <init-param>
+      <param-name>buildStamp</param-name>
+      <param-value>@BUILD_STAMP@</param-value>
+    </init-param>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>SetupServlet</servlet-name>
+    <url-pattern>/legacy-setup.do</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>SetupWizardServlet</servlet-name>
     <url-pattern>/index.do</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>SetupServlet</servlet-name>
+    <servlet-name>SetupWizardServlet</servlet-name>
     <url-pattern>/setup.do</url-pattern>
   </servlet-mapping>
 
