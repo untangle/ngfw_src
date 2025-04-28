@@ -184,9 +184,11 @@ public class WireGuardVpnApp extends AppBase
             }
             // Remove deleted network profiles from tunnel configuration
             List<String> routedProfiles = tunnel.getRoutedNetworkProfiles();
-            routedProfiles.removeIf(name -> !newProfileNames.contains(name));
-            // Update tunnel routedNetworks using selected profile names
-            tunnel.setRoutedNetworks(getRoutedNetworksFromProfiles(routedProfiles, newSettings));
+            if(routedProfiles != null) {
+                routedProfiles.removeIf(name -> !newProfileNames.contains(name));
+                // Update tunnel routedNetworks using selected profile names
+                tunnel.setRoutedNetworks(getRoutedNetworksFromProfiles(routedProfiles, newSettings));
+            }
         }
 
         /**
@@ -411,14 +413,20 @@ public class WireGuardVpnApp extends AppBase
         wgVpnNetProfile.setSubnets(subnets);
         netProfiles.add(wgVpnNetProfile);
 
-        wgVpnNetProfile = new WireGuardVpnNetworkProfile();
-        wgVpnNetProfile.setProfileName(DEFAULT);
         subnets = readSettings.getNetworks();
-        wgVpnNetProfile.setSubnets(subnets);
-        netProfiles.add(wgVpnNetProfile);
+        if(subnets != null && !subnets.isEmpty()) {
+            wgVpnNetProfile = new WireGuardVpnNetworkProfile();
+            wgVpnNetProfile.setProfileName(DEFAULT);
+            wgVpnNetProfile.setSubnets(subnets);
+            netProfiles.add(wgVpnNetProfile);
+        }
 
         readSettings.setNetworkProfiles(netProfiles);
         readSettings.setNetworks(null);
+
+        // Return if local networks not found (Default profile is not available)
+        if(subnets == null || subnets.isEmpty())
+            return;
 
         for(WireGuardVpnTunnel tunnel : readSettings.getTunnels()) {
             List<String> routedNetworkProfiles = new LinkedList<>();
@@ -788,6 +796,7 @@ public class WireGuardVpnApp extends AppBase
             for (WireGuardVpnNetwork wvn : profile.getSubnets()) {
                 if (wvn.getId() == oldWgn.getId()) {
                     wvn.setAddress(intf.getIPMaskedAddress());
+                    profile.setSubnetsAsString(profile.getSubnets());
                     setNewSettings = true;
                     break;
                 }
@@ -812,7 +821,8 @@ public class WireGuardVpnApp extends AppBase
         for(WireGuardVpnNetworkProfile profile : settings.getNetworkProfiles()) {
             for(var wgNet : profile.getSubnets()) {
                 for(InterfaceStatus intfStatus : this.lanStatuses) {
-                    if(wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV4MaskedAddress().getIPMaskedAddress()) || wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV6MaskedAddress().getIPMaskedAddress())) {
+                    if((intfStatus.getV4MaskedAddress() != null && wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV4MaskedAddress().getIPMaskedAddress()))
+                            || (intfStatus.getV6MaskedAddress() != null && wgNet.getMaskedAddress().getIPMaskedAddress().equals(intfStatus.getV6MaskedAddress().getIPMaskedAddress()))) {
                         settingsLink.put(intfStatus, wgNet);
                     }
                 }
