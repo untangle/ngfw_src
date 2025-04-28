@@ -4,6 +4,7 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
     itemId: 'pass-sites',
     title: 'Pass Sites'.t(),
     withValidation: false,
+    controller: 'passsites',
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
@@ -25,6 +26,10 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
     emptyText: 'No Pass Sites defined'.t(),
 
     importValidationJavaClass: true,
+
+    viewConfig: {
+        getRowClass : Ung.util.Util.getGlobalRowClass
+    },
 
     listProperty: 'settings.passedUrls.list',
     emptyRow: {
@@ -58,7 +63,10 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
         width: Renderer.booleanWidth,
         header: 'Global'.t(),
         dataIndex: 'isGlobal',
-        resizable: false
+        resizable: false,
+        listeners: {
+            beforecheckchange: Ung.util.Util.canToggleGlobalCheckbox
+        },
     }, {
         header: 'Description'.t(),
         width: Renderer.messageWidth,
@@ -82,8 +90,11 @@ Ext.define('Ung.apps.webfilter.view.PassSites', {
         fieldLabel: 'Pass'.t()
     }, {
         xtype: 'checkbox',
-        bind: '{record.isGlobal}',
-        fieldLabel: 'Global'.t()
+        bind: {
+            value: '{record.isGlobal}',
+            hidden: '{!isAddAction}'
+        }, 
+        fieldLabel: 'Global'.t(),
     }, {
         xtype: 'textarea',
         bind: '{record.description}',
