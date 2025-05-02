@@ -9,13 +9,71 @@ import org.json.JSONString;
 /**
  * Settings for Google
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"deprecation", "serial"})
 public class GoogleSettings implements java.io.Serializable, JSONString
 {
+    private Integer version;
+
+    @Deprecated(forRemoval = true, since = "18")
     private String driveRefreshToken = null;
+
     private String googleDriveRootDirectory;
+
+    private String encryptedDriveAccessToken = null;
+
+    private String encryptedDriveRefreshToken = null;
+
+    private Integer accessTokenExpiresIn;
     
     public GoogleSettings() { }
+
+    /**
+     * Get encrypted access token
+     * @return
+     */
+    public String getEncryptedDriveAccessToken() {
+        return encryptedDriveAccessToken;
+    }
+
+    /**
+     * Set encrypted access token
+     * @param encryptedDriveAccessToken
+     */
+    public void setEncryptedDriveAccessToken(String encryptedDriveAccessToken) {
+        this.encryptedDriveAccessToken = encryptedDriveAccessToken;
+    }
+
+    /**
+     * Set token expiry (in seconds)
+     * @return
+     */
+    public Integer getAccessTokenExpiresIn() {
+        return accessTokenExpiresIn;
+    }
+
+    /**
+     * Get token expiry (in seconds)
+     * @param accessTokenExpiresIn
+     */
+    public void setAccessTokenExpiresIn(Integer accessTokenExpiresIn) {
+        this.accessTokenExpiresIn = accessTokenExpiresIn;
+    }
+
+    /**
+     * Get encrypted refresh token
+     * @return
+     */
+    public String getEncryptedDriveRefreshToken() {
+        return encryptedDriveRefreshToken;
+    }
+
+    /**
+     * Set encrypted refresh token
+     * @param encryptedDriveRefreshToken
+     */
+    public void setEncryptedDriveRefreshToken(String encryptedDriveRefreshToken) {
+        this.encryptedDriveRefreshToken = encryptedDriveRefreshToken;
+    }
 
     public String getDriveRefreshToken() { return driveRefreshToken; }
     public void setDriveRefreshToken(String newValue) { this.driveRefreshToken = newValue; }
@@ -28,9 +86,35 @@ public class GoogleSettings implements java.io.Serializable, JSONString
         this.googleDriveRootDirectory = googleDriveRootDirectory;
     }
 
+    /**
+     * Get settings version.
+     *
+     * @return
+     *      Current settings version.
+     */
+    public Integer getVersion() { return this.version; }
+    /**
+     * Set setting settings.
+     *
+     * @param newValue
+     *      Set newversion.
+     */
+    public void setVersion( Integer newValue ) { this.version = newValue; }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Clears the attributes
+     */
+    public void clear() {
+        this.driveRefreshToken = null;
+        this.googleDriveRootDirectory = null;
+        this.encryptedDriveAccessToken = null;
+        this.encryptedDriveRefreshToken = null;
+        this.accessTokenExpiresIn = null;
     }
 }

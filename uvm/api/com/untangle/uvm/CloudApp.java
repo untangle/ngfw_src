@@ -48,6 +48,10 @@ public abstract class CloudApp implements java.io.Serializable, JSONString {
         this.clientSecret = clientSecret;
     }
 
+    public void decryptAndSetClientSecret(String encryptedClientSecret) {
+        this.clientSecret = PasswordUtil.getDecryptPassword(encryptedClientSecret);
+    }
+
     public String getScopes() {
         return scopes;
     }
