@@ -31,12 +31,12 @@ class WebFilterBaseTests(NGFWTestCase):
     def displayName():
         return "Web Filter"
 
-    def block_url_list_add(self, url, blocked=True, flagged=True, description="description"):
+    def block_url_list_add(self, url, blocked=True, flagged=True, isGlobal=False, description="description"):
         app_name = self._app.getAppName()
         if ("monitor" in app_name):
             newRule = { "blocked": False, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
         else:
-            newRule = { "blocked": blocked, "description": description, "flagged": flagged, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
+            newRule = { "blocked": blocked, "description": description, "flagged": flagged, "isGlobal": isGlobal, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
         rules = self._app.getBlockedUrls()
         rules["list"].append(newRule)
         self._app.setBlockedUrls(rules)
@@ -46,10 +46,22 @@ class WebFilterBaseTests(NGFWTestCase):
         rules["list"] = []
         self._app.setBlockedUrls(rules)
 
-    def pass_url_list_add(self, url, enabled=True, description="description"):
-        newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
+    def block_global_url_list_clear(self):
+        rules = self._app.getBlockedUrls()
+        # Filter out the global rules
+        rules["list"] = [rule for rule in rules["list"] if not rule.get("isGlobal")]
+        self._app.setBlockedUrls(rules)
+
+    def pass_url_list_add(self, url, enabled=True, isGlobal = False, description="description"):
+        newRule =  { "enabled": enabled, "description": description, "isGlobal": isGlobal, "javaClass": "com.untangle.uvm.app.GenericRule", "string": url }
         rules = self._app.getPassedUrls()
         rules["list"].append(newRule)
+        self._app.setPassedUrls(rules)
+
+    def pass_global_url_list_clear(self):
+        rules = self._app.getPassedUrls()
+        # Filter out the global rules
+        rules["list"] = [rule for rule in rules["list"] if not rule.get("isGlobal")]
         self._app.setPassedUrls(rules)
 
     def pass_url_list_clear(self):
@@ -131,14 +143,14 @@ class WebFilterBaseTests(NGFWTestCase):
         webSettings["searchTerms"]["list"] = []
         self._app.setSettings(webSettings)
 
-    def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options=""):
+    def get_web_request_results(self, url="http://test.untangle.com", expected=None, extra_options="", bind_address=None):
         app_name = self._app.getAppName()
         if ("https" in url) or ("pornhub" in url):
             extra_options += "--no-check-certificate "
         if ((expected == None) or (("monitor" in app_name) and (expected == "blockpage"))):
-            result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=url,extra_arguments=extra_options))
+            result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri=url,extra_arguments=extra_options, bind_address=bind_address))
         else:
-            result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=url,extra_arguments=extra_options) + " 2>&1 | grep -q " + expected )
+            result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=url,extra_arguments=extra_options, bind_address=bind_address) + " 2>&1 | grep -q " + expected )
         return result
 
     def check_events(self, host="", uri="", blocked=True, flagged=None):
