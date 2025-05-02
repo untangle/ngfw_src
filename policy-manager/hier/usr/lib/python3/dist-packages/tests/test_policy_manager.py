@@ -20,65 +20,6 @@ thirdRackId = None
 thirdRackFirewall = None
 defaultRackCaptivePortal = None
 
-def addRack(app, name="New Rack", description="", parentId=None):
-    currentSettings = app.getSettings()
-    currentPolicies = currentSettings['policies']
-    maxIdFound = 0
-    for policy in currentPolicies['list']:
-        if policy['policyId'] > maxIdFound:
-            maxIdFound = policy['policyId']
-    newPolicy = { "javaClass" : "com.untangle.app.policy_manager.PolicySettings", "policyId" : maxIdFound+1, "name": name, "description" : description, "parentId" : parentId }
-    currentPolicies['list'].append(newPolicy)
-    app.setSettings(currentSettings)
-    return newPolicy['policyId']
-
-def removeRack(app, id):
-    currentSettings = app.getSettings()
-    currentPolicies = currentSettings['policies']
-    i = 0
-    removed = False
-    for policy in currentPolicies['list']:
-        if policy['policyId'] == id:
-            del currentPolicies['list'][i]
-            removed = True
-            break
-        i = i + 1
-    if removed:
-        app.setSettings(currentSettings)
-    return removed
-
-def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked=True ):
-    conditionTypeStr = str(conditionType)
-    valueStr = str(value)
-    return {
-        "javaClass": "com.untangle.app.policy_manager.PolicyRule", 
-        "ruleId": 1, 
-        "enabled": True, 
-        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
-        "targetPolicy" : targetPolicy,
-        "conditions": {
-            "javaClass": "java.util.LinkedList", 
-            "list": [
-                {
-                    "invert": False, 
-                    "javaClass": "com.untangle.app.policy_manager.PolicyRuleCondition", 
-                    "conditionType": conditionTypeStr, 
-                    "value": valueStr
-                    }
-                ]
-            }
-        }
-
-def appendRule(app, newRule):
-    settings = app.getSettings()
-    settings['rules']['list'].append(newRule)
-    app.setSettings(settings)
-
-def nukeRules(app):
-    settings = app.getSettings()
-    settings['rules']['list'] = []
-    app.setSettings(settings)
-
 def createFirewallSingleConditionRule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
@@ -145,21 +86,21 @@ class PolicyManagerTests(NGFWTestCase):
     # add a rack
     def test_015_addRack(self):
         global secondRackId
-        secondRackId = addRack(self._app)
+        secondRackId = global_functions.addRack(self._app)
         result = remote_control.is_online()
         assert (result == 0)
 
     # remove a rack
     def test_016_removeRack(self):
         global secondRackId
-        assert (removeRack(self._app, secondRackId))
+        assert (global_functions.removeRack(self._app, secondRackId))
         result = remote_control.is_online()
         assert (result == 0)
 
     # add a rack
     def test_021_addSecondRack(self):
         global secondRackId
-        secondRackId = addRack(self._app, name="Second Rack")
+        secondRackId = global_functions.addRack(self._app, name="Second Rack")
         result = remote_control.is_online()
         assert (result == 0)
 
@@ -176,7 +117,7 @@ class PolicyManagerTests(NGFWTestCase):
     # verify client is online
     def test_023_childShouldNotEffectParent(self):
         # add a child that blocks everything
-        blockRackId = addRack(self._app, name="Block Rack", parentId=default_policy_id)
+        blockRackId = global_functions.addRack(self._app, name="Block Rack", parentId=default_policy_id)
         blockRackFirewall = global_functions.uvmContext.appManager().instantiate("firewall", blockRackId)
         assert (blockRackFirewall != None)
         # add a block rule for the client IP
@@ -187,7 +128,7 @@ class PolicyManagerTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
         global_functions.uvmContext.appManager().destroy( blockRackFirewall.getAppSettings()["id"] )
-        assert (removeRack(self._app, blockRackId))
+        assert (global_functions.removeRack(self._app, blockRackId))
 
         # Get the IP address of test.untangle.com
         test_untangle_com_ip = socket.gethostbyname("test.untangle.com")
@@ -203,28 +144,28 @@ class PolicyManagerTests(NGFWTestCase):
     # send client's traffic to second rack - should now be blocked by firewall
     def test_024_addRuleForSecondRack(self):
         global secondRackId
-        appendRule(self._app, createPolicySingleConditionRule("SRC_ADDR",remote_control.client_ip, secondRackId))
+        global_functions.appendRule(self._app, global_functions.createPolicySingleConditionRule("SRC_ADDR",remote_control.client_ip, secondRackId))
         # client should be offline
         result = remote_control.is_online(tries=1)
         assert (result != 0)
         
     # send client back to default rack
     def test_025_removeRuleForSecondRack(self):
-        nukeRules(self._app)
+        global_functions.nukeRules(self._app)
         result = remote_control.is_online()
         assert (result == 0)
 
     # add a third rack thats a child of second rack
     def test_026_addThirdRack(self):
         global thirdRackId
-        thirdRackId = addRack(self._app, name="Third Rack", parentId=secondRackId)
+        thirdRackId = global_functions.addRack(self._app, name="Third Rack", parentId=secondRackId)
         result = remote_control.is_online()
         assert (result == 0)
 
     # send client's traffic to third rack - should now be blocked by firewall inherited from second rack
     def test_027_addRuleForThirdRack(self):
         global thirdRackId
-        appendRule(self._app, createPolicySingleConditionRule("SRC_ADDR",remote_control.client_ip, thirdRackId))
+        global_functions.appendRule(self._app, global_functions.createPolicySingleConditionRule("SRC_ADDR",remote_control.client_ip, thirdRackId))
         # client should be offline
         result = remote_control.is_online(tries=1)
         assert (result != 0)
@@ -284,8 +225,8 @@ class PolicyManagerTests(NGFWTestCase):
         global_functions.uvmContext.hostTable().setHostTableEntry(remote_control.client_ip,userHost)
         # userHost = global_functions.uvmContext.hostTable().getHostTableEntry(remote_control.client_ip)
         # print(userHost)
-        nukeRules(self._app)
-        appendRule(self._app, createPolicySingleConditionRule("USERNAME","[authenticated]", secondRackId))
+        global_functions.nukeRules(self._app)
+        global_functions.appendRule(self._app, global_functions.createPolicySingleConditionRule("USERNAME","[authenticated]", secondRackId))
         
         # check that basic captive page is shown
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/policy_test_040.out", log_file="/tmp/policy_test_040.log", uri="http://www.google.com/", quiet=False))
@@ -338,16 +279,16 @@ class PolicyManagerTests(NGFWTestCase):
     # remove third rack
     def test_982_removeThirdRack(self):
         global thirdRackId
-        nukeRules(self._app)
-        assert (removeRack(self._app, thirdRackId))
+        global_functions.nukeRules(self._app)
+        assert (global_functions.removeRack(self._app, thirdRackId))
         result = remote_control.is_online()
         assert (result == 0)
 
     # remove second rack
     def test_983_removeSecondRack(self):
         global secondRackId
-        nukeRules(self._app)
-        assert (removeRack(self._app, secondRackId))
+        global_functions.nukeRules(self._app)
+        assert (global_functions.removeRack(self._app, secondRackId))
         result = remote_control.is_online()
         assert (result == 0)
 
