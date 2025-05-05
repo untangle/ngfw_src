@@ -460,21 +460,32 @@ public class GoogleManagerImpl implements GoogleManager
         return PasswordUtil.getEncryptPassword(plainText);
     }
 
-
     /**
-     * Token refresh record class
-     * @param manager
+     * Token refresh task
      */
-    private record RefreshAccessTokenJob(GoogleManager manager) implements Runnable {
+    private class RefreshAccessTokenJob implements Runnable {
 
         /**
-         * run method
+         * Google manager reference
+         */
+        private final GoogleManager manager;
+
+        /**
+         * Parameterized constructor
+         * @param manager
+         */
+        public RefreshAccessTokenJob(GoogleManager manager) {
+            this.manager = manager;
+        }
+
+        /**
+         * run task
          */
         public void run() {
-            GoogleSettings settings = manager.getSettings();
+            GoogleSettings currentSettings = manager.getSettings();
                 if (settings != null) {
-                    manager.refreshToken(settings);
-                    manager.setSettings(settings);
+                    manager.refreshToken(currentSettings);
+                    manager.setSettings(currentSettings);
                 }
             }
         }
