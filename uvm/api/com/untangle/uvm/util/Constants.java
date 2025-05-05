@@ -24,6 +24,8 @@ public class Constants {
     public static final String COMMA_STRING = ",";
 
     public static final String EQUALS_TO = "=";
+    public static final String SLASH = "/";
+    public static final String DOUBLE_SLASH = "//";
 
     // Boolean
     public static final String FALSE = "False";

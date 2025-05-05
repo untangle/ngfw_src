@@ -3,92 +3,139 @@
  */
 package com.untangle.uvm;
 
-import java.io.IOException;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.json.JSONObject;
+
+import static com.untangle.uvm.util.Constants.DOUBLE_SLASH;
+import static com.untangle.uvm.util.Constants.SLASH;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * GoogleManagerImpl provides the API implementation of all RADIUS related functionality
  */
 public class GoogleManagerImpl implements GoogleManager
 {
+    private static final String TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo";
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
-    private static final String GOOGLE_DRIVE_TMP_PATH = "/tmp/google-drive/";
-    public String RELAY_SERVER_URL = "https://auth-relay.edge.arista.com";
+    private static final String UVM_BIN_DIR = "uvm.bin.dir";
+    private static String RELAY_SERVER_URL = "https://auth-relay.edge.arista.com";
+
+    private static final String SETTINGS_FILE_NAME = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "google.js";
 
     private final Logger logger = LogManager.getLogger(getClass());
 
+    private final SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     /**
      * This is just a copy of the current settings being used
      */
     private GoogleSettings settings;
-
     /**
-     * These hold the proc, reader, and writer for the drive process if it is active
+     * This holds drive connector credentials required to handle oauth2 flow
      */
-    private Process            driveProc = null;
-    private OutputStreamWriter driveProcOut = null;
-    private BufferedReader     driveProcIn  = null;
+    private GoogleCloudApp cloudOAuth2App;
     
     /**
      * Initialize Google authenticator.
      */
     protected GoogleManagerImpl()
     {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         GoogleSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/untangle-vm/" + "google.js";
         try {
-            readSettings = settingsManager.load( GoogleSettings.class, settingsFileName );
+            readSettings = settingsManager.load( GoogleSettings.class, SETTINGS_FILE_NAME);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:",e);
         }
+
+        // initialize drive connector oauth2 app credentials
+        initializeGoogleCloudAppInstance();
 
         /**
          * If there are still no settings, just initialize
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-            GoogleSettings newSettings = new GoogleSettings();
-            this.setSettings(newSettings);
+            this.setSettings(new GoogleSettings());
         }
         else {
             logger.debug("Loading Settings...");
-            this.settings = readSettings;
-            logger.debug("Settings: " + this.settings.toJSONString());
+
+            // NGFW-15108 Migrating from drive cli to programmatic drive implementation using REST
+            // Transform older settings to v1 version and retrieve new access token based on refresh token
+            migrateToV1SettingsVersion(readSettings);
+            this.setSettings(readSettings);
+            if (logger.isDebugEnabled())
+                logger.debug("Settings: {}", this.settings.toJSONString());
         }
 
         logger.info("Initialized GoogleManager");        
     }
 
     /**
+     * Migrate to v1 settings version.
+     * Major change: Along with refresh token, settings now holds access token including its validity.
+     * By using the refresh token we retrieve the access token so that existing drive configuration still works and users don't need to reconfigure the drive.
+     * @param readSettings
+     */
+    private void migrateToV1SettingsVersion(GoogleSettings readSettings) {
+        if (readSettings.getVersion() == null) {
+            readSettings.setVersion(1);
+            String refreshToken = readSettings.getDriveRefreshToken();
+            if (StringUtils.isNotBlank(refreshToken)) {
+                // encrypt the refresh token first
+                readSettings.setEncryptedDriveRefreshToken(encrypt(refreshToken));
+                // retrieve access token using the refresh token
+                GoogleSettings newTokenObj = getAccessTokenByRefreshToken(refreshToken);
+                if (newTokenObj != null) {
+                    // a new refresh token is not returned in case of authorization grant_type=refresh_token
+                    readSettings.setEncryptedDriveAccessToken(newTokenObj.getEncryptedDriveAccessToken());
+                    readSettings.setAccessTokenExpiresIn(newTokenObj.getAccessTokenExpiresIn());
+                } else {
+                    logger.warn("Unable to get access token from the refresh token. Drive reconfiguration would be required");
+                }
+                // no longer need the plaintext refresh token in settings
+                readSettings.setDriveRefreshToken(null);
+            } else {
+                logger.info("No refresh token found while migrating to v1 settings version");
+            }
+        }
+    }
+
+    /**
+     * Retrieve new access token using the input refresh token
+     * @param refreshToken
+     * @return
+     */
+    private GoogleSettings getAccessTokenByRefreshToken(String refreshToken) {
+        // construct request body required to get access token by using refresh token
+        final String body = "client_id=" + this.cloudOAuth2App.getClientId() +
+                "&client_secret=" + this.cloudOAuth2App.getClientSecret() +
+                "&refresh_token=" + refreshToken +
+                "&grant_type=refresh_token";
+
+        return getTokensFromGoogle(body);
+    }
+
+    /**
      * Get Google Authenticator settings.
      *
-     * @return Google autenticator settings
+     * @return Google authenticator settings
      */
     public GoogleSettings getSettings()
     {
         return this.settings;
-    }
-
-    /**
-     * Removes google drive credentials.json
-     */
-    private void removeGoogleDriveCredentials() {
-        try {
-            File creds = new File(GOOGLE_DRIVE_PATH + ".gd/credentials.json");
-            if ( creds.exists() )
-                creds.delete();
-        } catch (Exception ex) {
-            logger.warn("Error deleting credentials.json.", ex);
-        }
     }
 
     /**
@@ -101,32 +148,14 @@ public class GoogleManagerImpl implements GoogleManager
         /**
          * Save the settings
          */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         try {
-            settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "untangle-vm/" + "google.js", settings );
+            settingsManager.save(SETTINGS_FILE_NAME, settings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.",e);
             return;
         }
 
         this.settings = settings;
-
-        if (isGoogleDriveConnected()) {
-            // Set refresh token in credentials.json
-            if (StringUtils.isNotEmpty(this.settings.getDriveRefreshToken())) {
-                ExecManagerResultReader reader;
-                try {
-                    reader = UvmContextFactory.context().execManager().execEvil("sed -i 's/\"refresh_token\": *\"[^\"]*\"/\"refresh_token\":\"" + settings.getDriveRefreshToken() + "\"/g' " + GOOGLE_DRIVE_PATH + ".gd/credentials.json");
-                    reader.waitFor();
-                } catch (IOException e) {
-                    logger.warn("Exception updating refresh token", e);
-                }
-            } else {
-                logger.info("Drive is connected but refresh token in settings object is empty");
-            }
-        } else {
-            removeGoogleDriveCredentials();
-        }
     }
 
     /**
@@ -136,15 +165,20 @@ public class GoogleManagerImpl implements GoogleManager
      */
     public boolean isGoogleDriveConnected()
     {
-        int exitCode = 0;
-        ExecManagerResultReader reader = null;
-        try {
-            reader = UvmContextFactory.context().execManager().execEvil("/usr/bin/drive about " +  GOOGLE_DRIVE_PATH);
-            exitCode = reader.waitFor();
-        } catch (IOException e) {
-            logger.warn("Exception checking connectivity to google drive",e);
+        // TODO handle token auto refresh
+        if (this.getSettings() == null || StringUtils.isBlank(this.getSettings().getEncryptedDriveAccessToken()))
+            return false;
+
+        // check if token is valid
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            final String accessToken = PasswordUtil.getDecryptPassword(this.getSettings().getEncryptedDriveAccessToken());
+            HttpGet request = new HttpGet(TOKEN_INFO_URL + "?access_token=" + accessToken);
+            int responseCode = httpClient.execute(request, HttpResponse::getCode);
+            return responseCode == 200;
+        } catch (Exception e) {
+            logger.warn("Failed to check access token validity", e);
         }
-        return exitCode == 0;
+        return false;
     }
 
     /**
@@ -178,124 +212,136 @@ public class GoogleManagerImpl implements GoogleManager
      */
     public String getAuthorizationUrl( String windowProtocol, String windowLocation )
     {
-        startAuthorizationProcess(GOOGLE_DRIVE_TMP_PATH);
-        
-        if (driveProcIn == null || driveProcOut == null || driveProc == null) {
-            throw new RuntimeException("Authorization process not running.");
-        }
-
-        if (windowProtocol == null || windowLocation == null) {
-            throw new RuntimeException("Invalid arguments." + windowProtocol + " " + windowLocation);
-        }
-        
         try {
-            String line;
-            while ((line=driveProcIn.readLine())!=null) {
-                logger.info("drive parsing line: " + line);
-                if (!line.contains("https"))
-                    continue;
-
-                URIBuilder builder = new URIBuilder(line);
-                String state = windowProtocol + "//" + windowLocation + "/" + "gdrive" + "/" + "gdrive";
-                builder.setParameter("state",state);
-                builder.setParameter("approval_prompt","force");
-
-                logger.info("Providing authorization URL: " + builder.toString());
-                stopAuthorizationProcess();
-                return builder.toString();
-            }
-            return null;
+            URIBuilder builder = new URIBuilder(this.cloudOAuth2App.getAuthUri());
+            String state = windowProtocol + DOUBLE_SLASH + windowLocation + SLASH + "gdrive" + SLASH + "gdrive";
+            builder.setParameter("client_id", this.cloudOAuth2App.getClientId());
+            builder.setParameter("redirect_uri", this.cloudOAuth2App.getRedirectUrl());
+            builder.setParameter("response_type", "code");
+            builder.setParameter("scope", this.cloudOAuth2App.getScopes());
+            builder.setParameter("access_type", "offline");
+            builder.setParameter("state", state);
+            builder.setParameter("approval_prompt", "force");
+            return builder.toString();
         } catch (Exception e) {
-            logger.error("Failed to parse drive output.",e);
+            logger.error("Failed to construct authorization URL.",e);
             return null;
         }
     }
 
     /**
-     * Returns spp configuration of the google drive connector app
+     * Returns app configuration of the google drive connector app
      * @return GoogleCloudApp instance
      */
     @Override
     public GoogleCloudApp getGoogleCloudApp() {
-        String appId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh appId " + GOOGLE_DRIVE_PATH);
-        String apiKey = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh apiKey " + GOOGLE_DRIVE_PATH);
-        String clientId = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh clientId " + GOOGLE_DRIVE_PATH);
-        String scopes = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh scopes " + GOOGLE_DRIVE_PATH);
-        String redirectUrl = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh redirectUrl " + GOOGLE_DRIVE_PATH);
-
-        // intentionally not exposing client_secret
-        return new GoogleCloudApp(appId, apiKey, clientId, null, scopes, redirectUrl, RELAY_SERVER_URL);
+        if (this.cloudOAuth2App == null) {
+            initializeGoogleCloudAppInstance();
+        }
+        return this.cloudOAuth2App;
     }
 
     /**
-     * This launches the google drive command line app and provides the code
+     * Initialize google oauth2 app instance
+     * This is instance holds all the details required for oauth2 flow.
+     */
+    private void initializeGoogleCloudAppInstance() {
+        try {
+            String appId = UvmContextFactory.context().execManager().execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-google-drive-helper.sh appId " + GOOGLE_DRIVE_PATH);
+            String encryptedApiKey = UvmContextFactory.context().execManager().execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-google-drive-helper.sh encryptedApiKey " + GOOGLE_DRIVE_PATH);
+            String clientId = UvmContextFactory.context().execManager().execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-google-drive-helper.sh clientId " + GOOGLE_DRIVE_PATH);
+            String encryptedClientSecret = UvmContextFactory.context().execManager().execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-google-drive-helper.sh encryptedClientSecret " + GOOGLE_DRIVE_PATH);
+            String scopes = UvmContextFactory.context().execManager().execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-google-drive-helper.sh scopes " + GOOGLE_DRIVE_PATH);
+            String redirectUri = UvmContextFactory.context().execManager().execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-google-drive-helper.sh redirectUri " + GOOGLE_DRIVE_PATH);
+            String authUri = UvmContextFactory.context().execManager().execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-google-drive-helper.sh authUri " + GOOGLE_DRIVE_PATH);
+            String tokenUri = UvmContextFactory.context().execManager().execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-google-drive-helper.sh tokenUri " + GOOGLE_DRIVE_PATH);
+
+            this.cloudOAuth2App = new GoogleCloudApp(appId, encryptedApiKey, clientId, encryptedClientSecret, scopes, redirectUri, RELAY_SERVER_URL, authUri, tokenUri);
+        } catch (Exception ex) {
+            logger.warn("Failed to load oauth2 app instance:", ex);
+        }
+    }
+
+    /**
+     * This launches the google drive command line app and provides the code.
      * The google drive app will then fetch and save the refreshToken for future use.
      *
-     * This also reads the refershToken and saves it in settings.
+     * This also reads the refershToken and saves it in settings
      *
      * @param code the code to send.
      * @return null on success or the error string
      */
     public String provideDriveCode( String code )
     {
-        logger.info("Providing code [" + code + "] to drive");
-        startAuthorizationProcess(GOOGLE_DRIVE_PATH);
-        
-        try {
-            driveProcOut.write(code);
-            driveProcOut.write("\n");
-            driveProcOut.flush();
-            driveProcOut.close();
-        } catch (Exception e) {
-            logger.error("Failed to write code to drive.",e);
-            return e.toString();
-        }
+        logger.info("Providing code [{}] to exchange for the access token", code);
 
-        /* wait up until ten seconds for drive to create credentials.json */
-        String refreshToken = null;
-        for ( int i = 0; i < 10 ; i++ ) {
-            try { Thread.sleep(1000); } catch (Exception e) {}
+        // construct request body required to retrieve new access and refresh tokens
+        String body = "code=" + code +
+                "&client_id=" + this.cloudOAuth2App.getClientId() +
+                "&client_secret=" + this.cloudOAuth2App.getClientSecret() +
+                "&redirect_uri=" + this.cloudOAuth2App.getRedirectUrl() +
+                "&grant_type=authorization_code";
 
-            logger.info("Checking for refresh token...");
-            refreshToken = UvmContextFactory.context().execManager().execOutput(System.getProperty("uvm.bin.dir") + "/ut-google-drive-helper.sh refreshToken " + GOOGLE_DRIVE_PATH);
-            if ( refreshToken == null )
-                continue;
-            refreshToken = refreshToken.replaceAll("\\s+","");
-            if (refreshToken.isEmpty())
-                continue;
-            break;
-        }
+        GoogleSettings newTokenObj = getTokensFromGoogle(body);
+        // should get access and refresh tokens
+        if (newTokenObj != null && StringUtils.isNotBlank(newTokenObj.getEncryptedDriveRefreshToken()) && StringUtils.isNotBlank(newTokenObj.getEncryptedDriveAccessToken())) {
+            logger.info("Encrypted Refresh Token: {}", newTokenObj.getEncryptedDriveRefreshToken());
 
-        /**
-         * save the settings with the refresh token
-         */
-        if ( StringUtils.isNotEmpty(refreshToken)) {
-            refreshToken = refreshToken.replaceAll("\\s+",StringUtils.EMPTY);
-            logger.info("Refresh Token: {}", refreshToken);
-        
-            GoogleSettings googleSettings = getSettings();
-            googleSettings.setDriveRefreshToken( refreshToken );
+            GoogleSettings currentSettings = this.getSettings();
+
+            currentSettings.setEncryptedDriveAccessToken(newTokenObj.getEncryptedDriveAccessToken());
+            currentSettings.setAccessTokenExpiresIn(newTokenObj.getAccessTokenExpiresIn());
+            currentSettings.setEncryptedDriveRefreshToken(newTokenObj.getEncryptedDriveRefreshToken());
             // reset the root directory value in order to be selected again as per new token (new user)
-            googleSettings.setGoogleDriveRootDirectory(null);
-            setSettings( googleSettings );
+            currentSettings.setGoogleDriveRootDirectory(null);
+            // save the settings along with the new tokens
+            setSettings( currentSettings );
         } else {
-            logger.warn("Unable to parse refreshToken");
-            return "Unable to parse refresh_token";
+            logger.warn("Unable to retrieve tokens");
+            return "Unable to retrieve tokens";
         }
-
-        stopAuthorizationProcess();
         return null;
     }
 
     /**
-     * Disconnect Google drive
+     * Get token from google as per input request body
+     * @param body
+     * @return GoogleSettings object by reading the token API response body
+     */
+    private GoogleSettings getTokensFromGoogle(String body) {
+        GoogleSettings tokenObj = null;
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPost request = new HttpPost(this.cloudOAuth2App.getTokenUri());
+            request.setHeader("Content-Type", ContentType.APPLICATION_FORM_URLENCODED);
+            request.setEntity(new StringEntity(body, ContentType.APPLICATION_FORM_URLENCODED));
+
+            String responseBody = httpClient.execute(request, response -> EntityUtils.toString(response.getEntity(), UTF_8));
+            JSONObject json = new JSONObject(responseBody);
+            if (!json.has("access_token")) {
+                // access token is missing, request must have failed
+                throw new Exception(responseBody);
+            }
+
+            tokenObj = new GoogleSettings();
+            tokenObj.setEncryptedDriveAccessToken(encrypt(json.getString("access_token")));
+            tokenObj.setAccessTokenExpiresIn(json.getInt("expires_in"));
+            // refresh token is only present when authorization grant_type=authorization_code
+            if (json.has("refresh_token"))
+                tokenObj.setEncryptedDriveRefreshToken(encrypt(json.getString("refresh_token")));
+
+        } catch (Exception e) {
+            logger.warn("Failed to get token", e);
+        }
+        return tokenObj;
+    }
+
+    /**
+     * Disconnect Google drive by clearing all previous settings
      */
     public void disconnectGoogleDrive()
     {
         GoogleSettings googleSettings = getSettings();
-        removeGoogleDriveCredentials();
-        googleSettings.setDriveRefreshToken(null);
-        googleSettings.setGoogleDriveRootDirectory(null);
+        googleSettings.clear();
         setSettings( googleSettings );
     }
 
@@ -309,47 +355,16 @@ public class GoogleManagerImpl implements GoogleManager
     {
         GoogleSettings googleSettings = getSettings();
         googleSettings.setDriveRefreshToken( refreshToken );
+        migrateToV1SettingsVersion(googleSettings);
         setSettings( googleSettings );
     }
 
     /**
-     * Start Google authorization process
-     * 
-     * @param dir Directory to use
+     * Returns the encrypted string by calling PasswordUtil.getEncryptPassword()
+     * @param plainText
+     * @return
      */
-    private void startAuthorizationProcess( String dir )
-    {
-        if (driveProcIn != null || driveProcOut != null || driveProc != null) {
-            logger.warn("Shutting down previously running drive.");
-            stopAuthorizationProcess();
-        }
-
-        try {
-            logger.info("Launching drive...");
-            ProcessBuilder builder = new ProcessBuilder("/bin/sh","-c","mkdir -p " + dir + " ; cd " + dir + " ; /usr/bin/drive init");
-            builder.redirectErrorStream(true);
-            driveProc = builder.start();
-
-            //driveProc = Runtime.getRuntime().exec(cmd);
-        } catch (IOException e) {
-            logger.error("Couldn't start drive", e);
-            return;
-        }
-
-        driveProcOut = new OutputStreamWriter(driveProc.getOutputStream());
-        driveProcIn  = new BufferedReader(new InputStreamReader(driveProc.getInputStream()));
-    }
-
-    /**
-     * Stop the authorization process.
-     */
-    private void stopAuthorizationProcess()
-    {
-        try { driveProcIn.close(); } catch (Exception ex) { }
-        try { driveProcOut.close(); } catch (Exception ex) { }
-        try { driveProc.destroy(); } catch (Exception ex) { }
-        driveProcIn = null;
-        driveProcOut = null;
-        driveProc = null;
+    private String encrypt(String plainText) {
+        return PasswordUtil.getEncryptPassword(plainText);
     }
 }

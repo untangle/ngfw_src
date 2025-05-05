@@ -342,6 +342,10 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://auth-relay.edge.arista.com");
         uriTranslations.add(uriTranslation);
 
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.googleapis.com/oauth2/v3/tokeninfo");
+        uriTranslations.add(uriTranslation);
+
         return uriTranslations;
     }
 
