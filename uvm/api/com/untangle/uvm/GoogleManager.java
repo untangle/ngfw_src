@@ -10,6 +10,8 @@ import org.json.JSONObject;
  */
 public interface GoogleManager
 {
+    void refreshToken(GoogleSettings readSettings);
+
     GoogleSettings getSettings();
     void setSettings(GoogleSettings settings);
     public boolean isGoogleDriveConnected();
