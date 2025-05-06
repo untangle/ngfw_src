@@ -26,6 +26,8 @@ public class GoogleSettings implements java.io.Serializable, JSONString
 
     private Integer accessTokenExpiresIn;
 
+    private Long accessTokenIssuedAt;
+
     /**
      * Default constructor
      */
@@ -105,6 +107,22 @@ public class GoogleSettings implements java.io.Serializable, JSONString
      */
     public void setVersion( Integer newValue ) { this.version = newValue; }
 
+    /**
+     * Get access token obtained at (epoch in milliseconds)
+     * @return
+     */
+    public Long getAccessTokenIssuedAt() {
+        return accessTokenIssuedAt;
+    }
+
+    /**
+     * Set access token obtained at (epoch in milliseconds)
+     * @param accessTokenIssuedAt
+     */
+    public void setAccessTokenIssuedAt(Long accessTokenIssuedAt) {
+        this.accessTokenIssuedAt = accessTokenIssuedAt;
+    }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
@@ -120,5 +138,6 @@ public class GoogleSettings implements java.io.Serializable, JSONString
         this.encryptedDriveAccessToken = null;
         this.encryptedDriveRefreshToken = null;
         this.accessTokenExpiresIn = null;
+        this.accessTokenIssuedAt = null;
     }
 }

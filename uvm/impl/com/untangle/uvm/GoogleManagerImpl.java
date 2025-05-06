@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.io.File;
+import java.time.Instant;
 
 import com.untangle.uvm.util.Pulse;
 import org.apache.commons.lang3.StringUtils;
@@ -86,14 +87,15 @@ public class GoogleManagerImpl implements GoogleManager
 
             // NGFW-15108 Migrating from drive cli to programmatic drive implementation using REST
             if (readSettings.getVersion() == null) {
-                // Transform older settings to v1 version and retrieve new access token based on refresh token
-                migrateToV1SettingsVersion(readSettings);
+                // Transform older settings to v1 version
+                transformToV1SettingsVersion(readSettings);
             }
-            this.setSettings(readSettings);
+            // gracefully refresh the token after every restart so that the token validity and the refresh job interval never goes out of sync
+            // this also handles setSettings so no need to explicitly call setSettings again
+            handleTokenRefresh(readSettings);
+
             if (logger.isDebugEnabled())
                 logger.debug("Settings: {}", this.settings.toJSONString());
-
-            startTokenRefreshJob(readSettings.getAccessTokenExpiresIn());
         }
 
         logger.info("Initialized GoogleManager");
@@ -101,45 +103,42 @@ public class GoogleManagerImpl implements GoogleManager
 
     /**
      * Migrate to v1 settings version.
-     * Major change: Along with refresh token, settings now holds access token including its validity.
-     * By using the refresh token we retrieve the access token so that existing drive configuration still works and users don't need to reconfigure the drive.
+     * Along with refresh token, settings now holds access token including its validity.
      * @param readSettings
      */
-    private void migrateToV1SettingsVersion(GoogleSettings readSettings) {
+    private void transformToV1SettingsVersion(GoogleSettings readSettings) {
         readSettings.setVersion(1);
         String refreshToken = readSettings.getDriveRefreshToken();
         if (StringUtils.isNotBlank(refreshToken)) {
             // encrypt the refresh token first
             readSettings.setEncryptedDriveRefreshToken(encrypt(refreshToken));
-            handleTokenRefresh(readSettings);
             // no longer need the plaintext refresh token in settings
             readSettings.setDriveRefreshToken(null);
         } else {
-            logger.info("No refresh token found while migrating to v1 settings version");
+            logger.warn("No refresh token found while migrating to v1 settings version");
         }
     }
 
     /**
      * Executes refresh access token flow, retrieves new access token by using available refresh token.
-     * Starts the
-     * @param readSettings
+     * Saves the settings object by calling setSettings
+     * @param setObj
      */
     @Override
-    public void refreshToken(GoogleSettings readSettings) {
-        if (readSettings == null || StringUtils.isBlank(readSettings.getEncryptedDriveRefreshToken())) {
+    public void refreshToken(GoogleSettings setObj) {
+        if (setObj == null || StringUtils.isBlank(setObj.getEncryptedDriveRefreshToken())) {
             logger.warn("Refresh token not available. Unable to get new access token.");
             return;
         }
-        logger.info("Refreshing the access token");
+        logger.debug("Refreshing the access token");
         // retrieve access token using the refresh token
-        GoogleSettings newTokenObj = getAccessTokenByRefreshToken(PasswordUtil.getDecryptPassword(readSettings.getEncryptedDriveRefreshToken()));
+        GoogleSettings newTokenObj = getAccessTokenByRefreshToken(PasswordUtil.getDecryptPassword(setObj.getEncryptedDriveRefreshToken()));
         if (newTokenObj != null) {
-            // a new refresh token is not returned in case of authorization grant_type=refresh_token
-            readSettings.setEncryptedDriveAccessToken(newTokenObj.getEncryptedDriveAccessToken());
-            readSettings.setAccessTokenExpiresIn(newTokenObj.getAccessTokenExpiresIn());
+            copyTokenAttributes(newTokenObj, setObj);
         } else {
             logger.warn("Unable to get access token from the refresh token. Drive reconfiguration would be required");
         }
+        setSettings(setObj);
     }
 
     /**
@@ -188,27 +187,27 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
-     * Determine if google drive is connected by checking access token's validity. 'drive about' returns 400 bad request if token is invalid
+     * Determine if google drive is connected by checking access token's validity. Compare tokens validity based on its retrieved time and expiry.
      *
      * @return true if Google drive is configured, false otherwise.
      */
     public boolean isGoogleDriveConnected()
     {
-        if (this.getSettings() == null)
+        GoogleSettings setObj = this.getSettings();
+        if (setObj == null)
             return false;
 
         boolean valid = false;
-        if (StringUtils.isNotBlank(this.getSettings().getEncryptedDriveAccessToken()))
-            valid = isTokenValid(PasswordUtil.getDecryptPassword(this.getSettings().getEncryptedDriveAccessToken()));
+        if (StringUtils.isNotBlank(setObj.getEncryptedDriveAccessToken()))
+            valid = isTokenValid(setObj.getAccessTokenIssuedAt(), setObj.getAccessTokenExpiresIn());
 
         if (valid)
             return true;
 
-        if (StringUtils.isNotBlank(this.getSettings().getEncryptedDriveRefreshToken())) {
-            logger.debug("Existing access token is not valid, refreshing.");
+        if (StringUtils.isNotBlank(setObj.getEncryptedDriveRefreshToken())) {
+            logger.debug("Existing access token is not valid, refreshing it.");
             // token is invalid, try refreshing it
-            handleTokenRefresh(this.getSettings());
-            setSettings(this.getSettings());
+            handleTokenRefresh(setObj);
         } else {
             logger.debug("Refresh token is not present to retrieve a new access token");
             // no way to refresh the token, give up
@@ -216,16 +215,18 @@ public class GoogleManagerImpl implements GoogleManager
         }
 
         // check if token is valid now
-        return isTokenValid(PasswordUtil.getDecryptPassword(this.getSettings().getEncryptedDriveAccessToken()));
+        return isTokenValid(setObj.getAccessTokenIssuedAt(), setObj.getAccessTokenExpiresIn());
     }
 
     /**
-     * Refreshes the token and starts the token refresh job
+     * Refreshes the token, sets the new token to input settings object and starts the token refresh job
      * @param settings
      */
     private void handleTokenRefresh(GoogleSettings settings) {
-        refreshToken(settings);
-        startTokenRefreshJob(settings.getAccessTokenExpiresIn());
+        if (settings != null && StringUtils.isNotBlank(settings.getEncryptedDriveRefreshToken())) {
+            refreshToken(settings);
+            startTokenRefreshJob(settings.getAccessTokenExpiresIn());
+        }
     }
 
     /**
@@ -243,6 +244,24 @@ public class GoogleManagerImpl implements GoogleManager
             logger.warn("Failed to check access token validity", e);
         }
         return false;
+    }
+
+    /**
+     * Checks the token validity by comparing it with the current timestamp
+     * Validity = token issued time + token expires in, i.e. tokenIssuedAt (in milliseconds) + (expiresInSec (in seconds) * 1000)
+     * If this validity is greater than the current epoch then we conclude that the token is valid
+     * @param tokenIssuedAt
+     * @param expiresInSec
+     * @return
+     */
+    private boolean isTokenValid(Long tokenIssuedAt, Integer expiresInSec) {
+        if (tokenIssuedAt == null || expiresInSec == null) {
+            logger.warn("Not enough inputs to check the token validity");
+            return false;
+        }
+        long adjustedTime = tokenIssuedAt + (expiresInSec * 1000);
+        long currentTime = Instant.now().toEpochMilli();
+        return adjustedTime > currentTime;
     }
 
     /**
@@ -286,6 +305,7 @@ public class GoogleManagerImpl implements GoogleManager
             builder.setParameter("access_type", "offline");
             builder.setParameter("state", state);
             builder.setParameter("approval_prompt", "force");
+            logger.info("Authorization URL: {}", builder.toString());
             return builder.toString();
         } catch (Exception e) {
             logger.error("Failed to construct authorization URL.",e);
@@ -352,10 +372,7 @@ public class GoogleManagerImpl implements GoogleManager
             logger.info("Encrypted Refresh Token: {}", newTokenObj.getEncryptedDriveRefreshToken());
 
             GoogleSettings currentSettings = this.getSettings();
-
-            currentSettings.setEncryptedDriveAccessToken(newTokenObj.getEncryptedDriveAccessToken());
-            currentSettings.setAccessTokenExpiresIn(newTokenObj.getAccessTokenExpiresIn());
-            currentSettings.setEncryptedDriveRefreshToken(newTokenObj.getEncryptedDriveRefreshToken());
+            copyTokenAttributes(newTokenObj, currentSettings);
             // reset the root directory value in order to be selected again as per new token (new user)
             currentSettings.setGoogleDriveRootDirectory(null);
             // save the settings along with the new tokens
@@ -371,6 +388,21 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
+     * Copies available token attributes
+     * @param from
+     * @param to
+     */
+    private static void copyTokenAttributes(GoogleSettings from, GoogleSettings to) {
+        to.setEncryptedDriveAccessToken(from.getEncryptedDriveAccessToken());
+        to.setAccessTokenExpiresIn(from.getAccessTokenExpiresIn());
+        to.setAccessTokenIssuedAt(from.getAccessTokenIssuedAt());
+
+        // a new refresh token is not returned in case of authorization grant_type=refresh_token
+        if (StringUtils.isNotBlank(from.getEncryptedDriveRefreshToken()))
+            to.setEncryptedDriveRefreshToken(from.getEncryptedDriveRefreshToken());
+    }
+
+    /**
      * Starts token refresh job
      * @param expiresIn
      */
@@ -380,6 +412,7 @@ public class GoogleManagerImpl implements GoogleManager
         if (expiresIn != DEFAULT_ACCESS_TOKEN_EXPIRES_IN_SEC)
             tokenRefreshJob = new Pulse(TOKEN_REFRESHER_JOB_NAME, new RefreshAccessTokenJob(this), getTokenRefreshJobInterval(expiresIn));
         tokenRefreshJob.start();
+        logger.debug("Token refresh job started");
     }
 
     /**
@@ -401,9 +434,11 @@ public class GoogleManagerImpl implements GoogleManager
                 throw new Exception(responseBody);
             }
 
+            logger.debug("Received a new access token");
             tokenObj = new GoogleSettings();
             tokenObj.setEncryptedDriveAccessToken(encrypt(json.getString("access_token")));
             tokenObj.setAccessTokenExpiresIn(json.getInt("expires_in"));
+            tokenObj.setAccessTokenIssuedAt(Instant.now().toEpochMilli());
             // refresh token is only present when authorization grant_type=authorization_code
             if (json.has("refresh_token"))
                 tokenObj.setEncryptedDriveRefreshToken(encrypt(json.getString("refresh_token")));
@@ -447,8 +482,10 @@ public class GoogleManagerImpl implements GoogleManager
         GoogleSettings googleSettings = getSettings();
         googleSettings.setDriveRefreshToken( refreshToken );
         if (googleSettings.getVersion() == null)
-            migrateToV1SettingsVersion(googleSettings);
-        setSettings( googleSettings );
+            transformToV1SettingsVersion(googleSettings);
+
+        // refresh the token, call setSettings and start refresh job
+        handleTokenRefresh(googleSettings);
     }
 
     /**
@@ -485,7 +522,6 @@ public class GoogleManagerImpl implements GoogleManager
             GoogleSettings currentSettings = manager.getSettings();
                 if (settings != null) {
                     manager.refreshToken(currentSettings);
-                    manager.setSettings(currentSettings);
                 }
             }
         }
