@@ -12,6 +12,7 @@ import org.json.JSONString;
 @SuppressWarnings({"deprecation", "serial"})
 public class GoogleSettings implements java.io.Serializable, JSONString
 {
+    // TODO set a default value after the next release
     private Integer version;
 
     @Deprecated(forRemoval = true, since = "18")
@@ -24,7 +25,12 @@ public class GoogleSettings implements java.io.Serializable, JSONString
     private String encryptedDriveRefreshToken = null;
 
     private Integer accessTokenExpiresIn;
-    
+
+    private Long accessTokenIssuedAt;
+
+    /**
+     * Default constructor
+     */
     public GoogleSettings() { }
 
     /**
@@ -101,6 +107,22 @@ public class GoogleSettings implements java.io.Serializable, JSONString
      */
     public void setVersion( Integer newValue ) { this.version = newValue; }
 
+    /**
+     * Get access token obtained at (epoch in milliseconds)
+     * @return
+     */
+    public Long getAccessTokenIssuedAt() {
+        return accessTokenIssuedAt;
+    }
+
+    /**
+     * Set access token obtained at (epoch in milliseconds)
+     * @param accessTokenIssuedAt
+     */
+    public void setAccessTokenIssuedAt(Long accessTokenIssuedAt) {
+        this.accessTokenIssuedAt = accessTokenIssuedAt;
+    }
+
     public String toJSONString()
     {
         JSONObject jO = new JSONObject(this);
@@ -116,5 +138,6 @@ public class GoogleSettings implements java.io.Serializable, JSONString
         this.encryptedDriveAccessToken = null;
         this.encryptedDriveRefreshToken = null;
         this.accessTokenExpiresIn = null;
+        this.accessTokenIssuedAt = null;
     }
 }
