@@ -44,6 +44,7 @@ public class ReportsSettings implements Serializable, JSONString
     private boolean googleDriveUploadData = false;
     private boolean googleDriveUploadCsv = false;
     private String  googleDriveDirectory = "Reports Backups";
+    private String  googleDriveDirectoryId;
     
     public ReportsSettings() { }
 
@@ -112,6 +113,14 @@ public class ReportsSettings implements Serializable, JSONString
     
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
+
+    public String getGoogleDriveDirectoryId() {
+        return googleDriveDirectoryId;
+    }
+
+    public void setGoogleDriveDirectoryId(String googleDriveDirectoryId) {
+        this.googleDriveDirectoryId = googleDriveDirectoryId;
+    }
 
     /**
      * @deprecated

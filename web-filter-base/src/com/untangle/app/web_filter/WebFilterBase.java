@@ -5,13 +5,19 @@
 package com.untangle.app.web_filter;
 
 import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
+import java.util.Iterator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import com.untangle.uvm.app.App;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,10 +64,11 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     private static final String STAT_IP_ERROR_COUNT = "ip_error_count";
     private static final Integer SETTINGS_CURRENT_VERSION = 6;
     private static int web_filter_deployCount = 0;
-
+    protected static final String globalSettingFileName = System.getProperty("uvm.settings.dir") + "/" + WEB_FILTER_APP_NAME + "/" + "globalSettings.js";
+    protected static final Path globalSettingFilePath = Paths.get(globalSettingFileName);
     protected Boolean isWebFilterApp;
     private AppMetric QuicBlockMetric = null;
-
+    SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
     protected static final Logger logger = LogManager.getLogger(WebFilterBase.class);
     private final int policyId = getAppSettings().getPolicyId().intValue();
 
@@ -486,15 +493,61 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         logger.warn("Flushing all Unblocked items...");
         getDecisionEngine().removeAllUnblockedItems();
     }
+    /**
+     * Get the current instance settings fileName
+     * 
+     * @return The current settings fileName
+     */
+    public String getCurrentSettingFileName(){
+        String appID = this.getAppSettings().getId().toString();
+        return System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + appID + ".js";
+
+    }
 
     /**
-     * Get the application settings
+     * Get the application settings, including global settings
      * 
      * @return The application settings
      */
     public WebFilterSettings getSettings()
     {
         return this.settings;
+    }
+
+    /** Get Web-filter Global settings
+     * @return globalSettings
+     */
+    public WebFilterSettings getGlobalSettings(){
+        WebFilterSettings globalSettings = new WebFilterSettings();
+        try {
+            globalSettings = settingsManager.load(WebFilterSettings.class, globalSettingFileName);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load Global settings:", e);
+        }
+        return globalSettings;
+    }
+
+    /**
+     * Set the application settings
+     */
+    public void loadAllGlobalSettings()
+    {
+        WebFilterSettings readSettings = new WebFilterSettings();
+        try {
+            readSettings = settingsManager.load(WebFilterSettings.class, this.getCurrentSettingFileName());
+            WebFilterSettings globalSettings = getGlobalSettings();
+            if(globalSettings.getPassedUrls() != null){
+                readSettings.getPassedUrls().addAll(0, globalSettings.getPassedUrls());
+            }
+            if(globalSettings.getBlockedUrls() != null){
+                readSettings.getBlockedUrls().addAll(0, globalSettings.getBlockedUrls());
+            }
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load settings:", e);
+
+        }
+        this.settings = readSettings;
+        getDecisionEngine().reconfigure(this.settings);
     }
 
     /**
@@ -747,6 +800,18 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      *        The settings
      */
     public abstract void initializeSettings(WebFilterSettings settings);
+    
+    /**
+     * Called to initialize web-filter app global settings
+     * 
+     * @param settings
+     *        The new settings
+     */
+    public void initializeGlobalSettings(WebFilterSettings settings)
+    {
+        settings.setBlockedUrls(getGlobalSettings().getBlockedUrls());
+        settings.setPassedUrls(getGlobalSettings().getPassedUrls());
+    }
 
     /**
      * Fix settings
@@ -942,16 +1007,23 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     @Override
     protected void postInit()
     {
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = this.getAppSettings().getId().toString();
         WebFilterSettings readSettings = null;
-        String settingsFileName = System.getProperty("uvm.settings.dir") + "/" + this.getAppName() + "/" + "settings_" + appID + ".js";
+        boolean isGlobalSettingPresent = Files.exists(globalSettingFilePath);
+        // Create the globalSettings file, if it doesn't exist.
+        if (!isGlobalSettingPresent && this.isWebFilterApp) {
+            WebFilterSettings settings = new WebFilterSettings();
+            try {
+                settingsManager.save(globalSettingFileName, settings);
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to create global settings.", e);
+            }
+        }
 
         /**
          * First we try to load the existing settings
          */
         try {
-            readSettings = settingsManager.load(WebFilterSettings.class, settingsFileName);
+            readSettings = settingsManager.load(WebFilterSettings.class, getCurrentSettingFileName());
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
         }
@@ -966,7 +1038,10 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
 
             this.initializeCommonSettings(settings);
             this.initializeSettings(settings);
-
+            //load global setting if exists
+            if (isGlobalSettingPresent && this.isWebFilterApp){
+                this.initializeGlobalSettings(settings);
+            }
             _setSettings(settings);
             logger.debug("Default Settings: " + this.settings.toJSONString());
             return;
@@ -1044,6 +1119,87 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     }
 
     /**
+     * Generalized method to handle both PassedUrls and BlockedUrls
+     * 
+     * @param newUrls
+     *        The new settings 
+     * @param globalUrls
+     *        The current global block/pass url list 
+     */
+    private void updateUrls(List<GenericRule> newUrls, List<GenericRule> globalUrls) {
+        Set<String> newGlobalRuleStrings = new HashSet<>();
+        Iterator<GenericRule> newUrlsIterator = newUrls.iterator();
+
+        while (newUrlsIterator.hasNext()) {
+            GenericRule newRule = newUrlsIterator.next();
+            if (newRule.getIsGlobal()) {
+                String ruleString = newRule.getString();
+                newGlobalRuleStrings.add(ruleString);
+
+                Optional<GenericRule> existingGlobalRuleOpt = globalUrls.stream()
+                    .filter(globalRule -> globalRule.getString().equals(ruleString))
+                    .findFirst();
+
+                if (existingGlobalRuleOpt.isPresent()) {
+                    GenericRule globalRule = existingGlobalRuleOpt.get();
+
+                    // Check if any relevant fields differ
+                    boolean changed = globalRule.getBlocked() != newRule.getBlocked()
+                        || !(globalRule.getDescription().equals(newRule.getDescription()))
+                        || globalRule.getEnabled() != newRule.getEnabled()
+                        || globalRule.getFlagged() != newRule.getFlagged();
+
+                    // Update if necessary
+                    if (changed) {
+                        globalRule.setBlocked(newRule.getBlocked());
+                        globalRule.setDescription(newRule.getDescription());
+                        globalRule.setEnabled(newRule.getEnabled());
+                        globalRule.setFlagged(newRule.getFlagged());
+                    }
+                } else {
+                    globalUrls.add(newRule); // Add if not already in globalUrls
+                }
+
+                newUrlsIterator.remove(); // Remove from newUrls if it's global
+            }
+        }
+        // Remove globalUrls not present in newGlobalRuleStrings
+        globalUrls.removeIf(globalRule -> !newGlobalRuleStrings.contains(globalRule.getString()));
+        
+    }
+    
+    /**
+     * Set the all new global Settings to disk in globalSettings file
+     * 
+     * @param newSettings
+     *        The settings
+     */
+    protected void setGlobalSettings(WebFilterSettings newSettings)
+    {
+        WebFilterSettings globalSettings = getGlobalSettings();;
+        List<GenericRule> newBlockedUrls = newSettings.getBlockedUrls();
+        List<GenericRule> globalBlockedUrls = globalSettings.getBlockedUrls();
+        updateUrls(newBlockedUrls, globalBlockedUrls);
+        // Usage for PassedUrls
+        List<GenericRule> newPassedUrls = newSettings.getPassedUrls();
+        List<GenericRule> globalPassedUrls = globalSettings.getPassedUrls();
+        updateUrls(newPassedUrls, globalPassedUrls);
+
+        // Save the updated global settings
+        globalSettings.setBlockedUrls(globalBlockedUrls);
+        globalSettings.setPassedUrls(globalPassedUrls);
+        try {
+            settingsManager.save(globalSettingFileName, globalSettings);
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to save settings.", e);
+            return;
+        }
+        // Save the updated settings, ensuring the instance settings file does not include global entries.
+        newSettings.setBlockedUrls(newBlockedUrls);
+        newSettings.setPassedUrls(newPassedUrls);
+    }
+
+    /**
      * Set the current settings to new Settings And save the settings to disk
      * 
      * @param newSettings
@@ -1051,6 +1207,10 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     protected void _setSettings(WebFilterSettings newSettings)
     {
+        //Move and save all the global settings to globalSettings file
+        if(this.isWebFilterApp){
+            setGlobalSettings(newSettings);
+        }  
         /**
          * Prepare settings for saving This makes sure certain things are always
          * true, such as flagged == true if blocked == true
@@ -1094,14 +1254,11 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
         }
 
         fixupSetSettings(newSettings);
-
         /**
          * Save the settings
          */
-        SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        String appID = this.getAppSettings().getId().toString();
         try {
-            settingsManager.save(System.getProperty("uvm.settings.dir") + "/" + "" + this.getAppName() + "/" + "settings_" + appID + ".js", newSettings);
+            settingsManager.save(getCurrentSettingFileName(), newSettings);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
             return;
@@ -1111,15 +1268,25 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
          * Change current settings
          */
         this.settings = newSettings;
+        if(this.isWebFilterApp){
+            syncAllInstances();
+        }
         try {
             logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString());
         } catch (Exception e) {
         }
 
-        getDecisionEngine().reconfigure(this.settings);
-
     }
-
+    /**
+     * This is a utility function to update global settings to all other instances
+     **/
+    private void syncAllInstances() { 
+        List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
+        for (App app : webFilterList) {
+                WebFilter webFilter = (WebFilter) app;
+                webFilter.loadAllGlobalSettings();
+            }
+    }
     /**
      * This is a utility function to reassure that all the current categories
      * are in the settings Returns true if the category was added, false

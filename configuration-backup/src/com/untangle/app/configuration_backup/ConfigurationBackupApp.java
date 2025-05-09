@@ -85,6 +85,9 @@ public class ConfigurationBackupApp extends AppBase
         String appID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + appID + ".js";
 
+        // Set google drive folderId
+        setGoogleDriveDirectoryFolderId(newSettings);
+
         try {
             UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
         } catch (Exception exn) {
@@ -95,6 +98,17 @@ public class ConfigurationBackupApp extends AppBase
         this.settings = newSettings;
 
         writeCronFile();
+    }
+
+    /**
+     * Set app's google drive folderId (must call setSettings after this method call)
+     * @param settings
+     */
+    private void setGoogleDriveDirectoryFolderId(ConfigurationBackupSettings settings) {
+        if (getGoogleManager().isGoogleDriveConnected()) {
+            String appDirectoryId = getGoogleManager().getAppSpecificGoogleDriveFolderId(settings.getGoogleDriveDirectory());
+            settings.setGoogleDriveDirectoryId(appDirectoryId);
+        }
     }
 
     /**
@@ -208,6 +222,14 @@ public class ConfigurationBackupApp extends AppBase
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified())
             writeCronFile();
+
+        /**
+         * Set google directory folderId, during restart, fetch folderId only if not available in settings
+         */
+        if (StringUtils.isEmpty(settings.getGoogleDriveDirectoryId())) {
+            setGoogleDriveDirectoryFolderId(settings);
+            setSettings(settings);
+        }
     }
 
     /**
