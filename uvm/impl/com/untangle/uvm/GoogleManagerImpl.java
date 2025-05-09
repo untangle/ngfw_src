@@ -4,6 +4,8 @@
 package com.untangle.uvm;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 import com.untangle.uvm.util.Pulse;
@@ -19,6 +21,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.untangle.uvm.util.Constants.DOUBLE_SLASH;
@@ -37,6 +40,7 @@ public class GoogleManagerImpl implements GoogleManager
     private static final long DEFAULT_ACCESS_TOKEN_EXPIRES_IN_SEC = 3599; // just less than an hour
     private static final long REFRESH_THRESHOLD_IN_SEC = 50;
     private static final String TOKEN_REFRESHER_JOB_NAME = "GoogleDriveTokenRefresher";
+    private static final String DRIVE_FILES_API = "https://www.googleapis.com/drive/v3/files";
 
     private static String RELAY_SERVER_URL = "https://auth-relay.edge.arista.com";
 
@@ -91,14 +95,31 @@ public class GoogleManagerImpl implements GoogleManager
                 transformToV1SettingsVersion(readSettings);
             }
             // gracefully refresh the token after every restart so that the token validity and the refresh job interval never goes out of sync
-            // this also handles setSettings so no need to explicitly call setSettings again
             handleTokenRefresh(readSettings);
+
+            // During restart, set root directoryId onlt if it is not available
+            if (StringUtils.isEmpty(readSettings.getGoogleDriveRootDirectoryId()))
+                setRootDirectoryId(readSettings);
+            //  no need to explicitly call setSettings again since it is done in previous steps
 
             if (logger.isDebugEnabled())
                 logger.debug("Settings: {}", this.settings.toJSONString());
         }
 
         logger.info("Initialized GoogleManager");
+    }
+
+    /**
+     * Sets folderId of the selected root directory. Requires google drive to be connected
+     * @param readSettings
+     */
+    private void setRootDirectoryId(GoogleSettings readSettings) {
+        if (isGoogleDriveConnected()) {
+            // set root folderId, don't create folder since it has to be created by user and selected from UI using Picker
+            String rootFolderId = resolveOrCreateFolderPath(readSettings.getGoogleDriveRootDirectory(), false, "root");
+            readSettings.setGoogleDriveRootDirectoryId(rootFolderId);
+            setSettings(readSettings);
+        }
     }
 
     /**
@@ -281,6 +302,18 @@ public class GoogleManagerImpl implements GoogleManager
             return this.settings.getGoogleDriveRootDirectory();
         }
         return this.settings.getGoogleDriveRootDirectory() + File.separator + appDirectory;
+    }
+
+    /**
+     * Returns folderId of the app directory. Creates the directory if not present.
+     * Since app directory is nested under a parent directory, we retrieve the folderId by passing the relevant parent information
+     * @param appDirectory
+     * @return
+     */
+    @Override
+    public String getAppSpecificGoogleDriveFolderId(String appDirectory) {
+        // for app directories, root directory present in google settings is always the parent.
+        return resolveOrCreateFolderPath(appDirectory, true, this.getSettings().getGoogleDriveRootDirectoryId());
     }
 
     /**
@@ -495,6 +528,113 @@ public class GoogleManagerImpl implements GoogleManager
      */
     private String encrypt(String plainText) {
         return PasswordUtil.getEncryptPassword(plainText);
+    }
+
+    /**
+     * Returns decrypted access token present in current settings object
+     * @return
+     */
+    private String getAccessTokenFromSettings() {
+        return PasswordUtil.getDecryptPassword(this.getSettings().getEncryptedDriveAccessToken());
+    }
+
+    /**
+     * Resolve drive folder by returning the folderId. Creates the folder if createFolder is true.
+     * Starts finding folderId/creating folders under the input parentId.
+     * If folderPath is not available then same input parentId is returned.
+     *
+     * Returns null if createFolder is false and given folder is not found on drive.
+     * @param folderPath
+     * @param createFolder
+     * @param parentId
+     * @return
+     */
+    private String resolveOrCreateFolderPath(String folderPath, boolean createFolder, String parentId) {
+        if (StringUtils.isBlank(folderPath)) {
+            logger.info("folderPath is not available, returning parentId={}", parentId);
+            return parentId;
+        }
+        logger.info("Resolving folderId for the folderPath:{} under parentId:{}", folderPath, parentId);
+        String[] folders = folderPath.split(SLASH);
+
+        for (String folderName : folders) {
+            folderName = folderName.trim();
+            // 1. Check if folder exists
+            String query = String.format("name='%s' and mimeType='application/vnd.google-apps.folder' and '%s' in parents and trashed=false",
+                    folderName, parentId);
+            String url = DRIVE_FILES_API + "?q=" + URLEncoder.encode(query, StandardCharsets.UTF_8)
+                    + "&fields=files(id,name)";
+
+            String folderId;
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                HttpGet request = new HttpGet(url);
+                request.setHeader("Authorization", "Bearer " + getAccessTokenFromSettings());
+
+                String responseBody = httpClient.execute(request, response -> EntityUtils.toString(response.getEntity(), UTF_8));
+                JSONArray files = new JSONObject(responseBody).optJSONArray("files");
+                if (files != null && files.length() > 0) {
+                    folderId = files.getJSONObject(0).getString("id");
+                    logger.info("Found folderName:{}, folderId:{}", folderName, folderId);
+                    parentId = folderId;
+                    // go to next item in the iterator and find its folderId
+                    continue;
+                }
+                if (!createFolder) {
+                    logger.warn("Folder {} not found", folderName);
+                    return null;
+                }
+                // 2. Folder doesn't exist, create it
+                parentId = createDriveFolder(folderName, parentId);
+
+            } catch (Exception e) {
+                logger.warn("Failed to get create drive folder, folderName:{}, parentId:{}", folderName, parentId, e);
+            }
+
+        }
+        logger.info("Drive folder resolved folderPath:{}, folderId:{}", folderPath, parentId);
+        return parentId;
+    }
+
+    /**
+     * Creates a drive folder (btw google drive refers to files and folders as 'file' entity)
+     * Returns the folderId otherwise null if either any input param is missing or folder creation request fails
+     * @param folderName name of the folder
+     * @param parentId parent under which the folder has to be created, (for root level folders, the parentId is 'root')
+     * @return
+     */
+    private String createDriveFolder(String folderName, String parentId) {
+
+        if (StringUtils.isBlank(folderName) || StringUtils.isBlank(parentId)) {
+            logger.warn("Not enough inputs to create drive folder, folderName:{}, parentId:{}", folderName, parentId);
+            return null;
+        }
+
+        String folderId = null;
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            JSONObject metadata = new JSONObject();
+            metadata.put("name", folderName);
+            metadata.put("mimeType", "application/vnd.google-apps.folder");
+            metadata.put("parents", new JSONArray().put(parentId));
+
+            HttpPost request = new HttpPost(DRIVE_FILES_API);
+            request.setHeader("Content-Type", ContentType.APPLICATION_JSON);
+            request.setHeader("Authorization", "Bearer " + getAccessTokenFromSettings());
+            request.setEntity(new StringEntity(metadata.toString(), ContentType.APPLICATION_JSON));
+
+            String responseBody = httpClient.execute(request, response -> EntityUtils.toString(response.getEntity(), UTF_8));
+            JSONObject json = new JSONObject(responseBody);
+            if (!json.has("id")) {
+                // failed to get id
+                throw new Exception(responseBody);
+            }
+            folderId = json.getString("id");
+
+            logger.info("Drive folder created folderName:{}, folderId:{}, ", folderName, folderId);
+        } catch (Exception e) {
+            logger.warn("Failed to get create drive folder, folderName:{}, folderId:{}", folderName, folderId, e);
+        }
+        return folderId;
     }
 
     /**

@@ -20,6 +20,8 @@ public class GoogleSettings implements java.io.Serializable, JSONString
 
     private String googleDriveRootDirectory;
 
+    private String googleDriveRootDirectoryId;
+
     private String encryptedDriveAccessToken = null;
 
     private String encryptedDriveRefreshToken = null;
@@ -93,6 +95,22 @@ public class GoogleSettings implements java.io.Serializable, JSONString
     }
 
     /**
+     * Get fileId of root directory
+     * @return
+     */
+    public String getGoogleDriveRootDirectoryId() {
+        return googleDriveRootDirectoryId;
+    }
+
+    /**
+     * Set fileId of root directory
+     * @return
+     */
+    public void setGoogleDriveRootDirectoryId(String googleDriveRootDirectoryId) {
+        this.googleDriveRootDirectoryId = googleDriveRootDirectoryId;
+    }
+
+    /**
      * Get settings version.
      *
      * @return
@@ -135,6 +153,7 @@ public class GoogleSettings implements java.io.Serializable, JSONString
     public void clear() {
         this.driveRefreshToken = null;
         this.googleDriveRootDirectory = null;
+        this.googleDriveRootDirectoryId = null;
         this.encryptedDriveAccessToken = null;
         this.encryptedDriveRefreshToken = null;
         this.accessTokenExpiresIn = null;

@@ -197,6 +197,9 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 }
             }
         }
+
+        // // Set google drive folderId
+        setGoogleDriveDirectoryFolderId(newSettings);
         
         /**
          * Save the settings
@@ -649,6 +652,15 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             settings.setVersion(6);
         }
 
+        /**
+         * Set google directory folderId
+         */
+        if (settings.getVersion() == null || settings.getVersion() < 7) {
+            setGoogleDriveDirectoryFolderId(settings);
+            settings.setVersion(7);
+            setSettings(settings, false);
+        }
+
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified()){
@@ -657,6 +669,17 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
         if(settingsFile.lastModified() > HOURLY_CRON_FILE.lastModified()) {
             writeHourlyCron();
+        }
+    }
+
+    /**
+     * Set app's google drive folderId (must call setSettings after this method call)
+     * @param settings
+     */
+    private void setGoogleDriveDirectoryFolderId(ReportsSettings settings) {
+        if (getGoogleManager().isGoogleDriveConnected()) {
+            String appDirectoryId = getGoogleManager().getAppSpecificGoogleDriveFolderId(settings.getGoogleDriveDirectory());
+            settings.setGoogleDriveDirectoryId(appDirectoryId);
         }
     }
 

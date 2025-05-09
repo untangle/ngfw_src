@@ -1044,6 +1044,7 @@ Ext.define('Ung.config.administration.MainController', {
     openIframe: function(messageData) {
         var me = this,
             fileName = null,
+            fileId = null,
             vm = me.getViewModel(),
             iframe,
         iframeWindow = Ext.create('Ext.window.Window', {
@@ -1107,6 +1108,7 @@ Ext.define('Ung.config.administration.MainController', {
                             break;
                         case 'fileSelected':
                             fileName = event.data.fileName;
+                            fileId = event.data.fileId;
                             resolve();
                             break;
                         case 'cancel':
@@ -1118,6 +1120,9 @@ Ext.define('Ung.config.administration.MainController', {
         }).then(function() {
             if(fileName) {
                 vm.set('googleSettings.googleDriveRootDirectory', fileName);
+            }
+            if(fileId) {
+                vm.set('googleSettings.googleDriveRootDirectoryId', fileId);
             }
             if(iframeWindow) {
                 iframeWindow.close();
