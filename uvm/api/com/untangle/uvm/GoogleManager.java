@@ -3,8 +3,6 @@
  */
 package com.untangle.uvm;
 
-import org.json.JSONObject;
-
 /**
  * Describe interface <code>GoogleManager</code> here.
  */
@@ -17,6 +15,8 @@ public interface GoogleManager
     public boolean isGoogleDriveConnected();
 
     String getAppSpecificGoogleDrivePath(String appDirectory);
+
+    String getAppSpecificGoogleDriveFolderId(String appDirectory);
 
     public String getAuthorizationUrl(String windowProtocol, String windowLocation );
 
