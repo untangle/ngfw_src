@@ -322,12 +322,6 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://supssh.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
-        // sshrelay.untangle.com is pushed from cmd
-        // this reference can be ignored.
-        uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://sshrelay.untangle.com/");
-        uriTranslations.add(uriTranslation);
-
         uriTranslation = new UriTranslation();
         uriTranslation.setUri("https://edge.arista.com/api/v1");
         uriTranslations.add(uriTranslation);
