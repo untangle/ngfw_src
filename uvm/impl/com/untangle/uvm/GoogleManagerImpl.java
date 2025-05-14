@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -12,16 +13,23 @@ import com.untangle.uvm.util.Pulse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.mime.FormBodyPartBuilder;
+import org.apache.hc.client5.http.entity.mime.HttpMultipartMode;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.entity.mime.StringBody;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.untangle.uvm.util.Constants.DOUBLE_SLASH;
@@ -33,7 +41,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class GoogleManagerImpl implements GoogleManager
 {
-    private static final String TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v3/tokeninfo";
     private static final String GOOGLE_DRIVE_PATH = "/var/lib/google-drive/";
     private static final String UVM_BIN_DIR = "uvm.bin.dir";
 
@@ -41,6 +48,7 @@ public class GoogleManagerImpl implements GoogleManager
     private static final long REFRESH_THRESHOLD_IN_SEC = 50;
     private static final String TOKEN_REFRESHER_JOB_NAME = "GoogleDriveTokenRefresher";
     private static final String DRIVE_FILES_API = "https://www.googleapis.com/drive/v3/files";
+    private static final String DRIVE_UPLOAD_FILES_API = "https://www.googleapis.com/upload/drive/v3/files";
 
     private static String RELAY_SERVER_URL = "https://auth-relay.edge.arista.com";
 
@@ -96,10 +104,6 @@ public class GoogleManagerImpl implements GoogleManager
             }
             // gracefully refresh the token after every restart so that the token validity and the refresh job interval never goes out of sync
             handleTokenRefresh(readSettings);
-
-            // During restart, set root directoryId onlt if it is not available
-            if (StringUtils.isEmpty(readSettings.getGoogleDriveRootDirectoryId()))
-                setRootDirectoryId(readSettings);
             //  no need to explicitly call setSettings again since it is done in previous steps
 
             if (logger.isDebugEnabled())
@@ -107,19 +111,6 @@ public class GoogleManagerImpl implements GoogleManager
         }
 
         logger.info("Initialized GoogleManager");
-    }
-
-    /**
-     * Sets folderId of the selected root directory. Requires google drive to be connected
-     * @param readSettings
-     */
-    private void setRootDirectoryId(GoogleSettings readSettings) {
-        if (isGoogleDriveConnected()) {
-            // set root folderId, don't create folder since it has to be created by user and selected from UI using Picker
-            String rootFolderId = resolveOrCreateFolderPath(readSettings.getGoogleDriveRootDirectory(), false, "root");
-            readSettings.setGoogleDriveRootDirectoryId(rootFolderId);
-            setSettings(readSettings);
-        }
     }
 
     /**
@@ -251,23 +242,6 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
-     * Makes API call to check the access token validity
-     * @param accessToken
-     * @return
-     */
-    private boolean isTokenValid(String accessToken) {
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpGet request = new HttpGet(TOKEN_INFO_URL + "?access_token=" + accessToken);
-            int responseCode = httpClient.execute(request, HttpResponse::getCode);
-            logger.debug("Checking access token validity");
-            return responseCode == 200;
-        } catch (Exception e) {
-            logger.warn("Failed to check access token validity", e);
-        }
-        return false;
-    }
-
-    /**
      * Checks the token validity by comparing it with the current timestamp
      * Validity = token issued time + token expires in, i.e. tokenIssuedAt (in milliseconds) + (expiresInSec (in seconds) * 1000)
      * If this validity is greater than the current epoch then we conclude that the token is valid
@@ -288,32 +262,18 @@ public class GoogleManagerImpl implements GoogleManager
     /**
      * Returns app specific google drive path
      * This directory path = GOOGLE_DRIVE_ROOT_DIRECTORY + File.separator + appDirectory
-     * returns null if google drive root directory is not available
-     * returns only GOOGLE_DRIVE_ROOT_DIRECTORY if appDirectory is blank
+     * returns GOOGLE_DRIVE_ROOT_DIRECTORY if appDirectory is blank
+     * In case when appDirectory and GOOGLE_DRIVE_ROOT_DIRECTORY are not available, then return /, which represents root level for google drive
+     * This means, files are to be uploaded directly at the root level on google drive.
      * @param appDirectory app specific subdirectory under the root directory where files are stored
      * @return
      */
     @Override
     public String getAppSpecificGoogleDrivePath(String appDirectory) {
-        if (StringUtils.isEmpty(this.settings.getGoogleDriveRootDirectory())) {
-            return null;
-        }
         if (StringUtils.isBlank(appDirectory)) {
             return this.settings.getGoogleDriveRootDirectory();
         }
         return this.settings.getGoogleDriveRootDirectory() + File.separator + appDirectory;
-    }
-
-    /**
-     * Returns folderId of the app directory. Creates the directory if not present.
-     * Since app directory is nested under a parent directory, we retrieve the folderId by passing the relevant parent information
-     * @param appDirectory
-     * @return
-     */
-    @Override
-    public String getAppSpecificGoogleDriveFolderId(String appDirectory) {
-        // for app directories, root directory present in google settings is always the parent.
-        return resolveOrCreateFolderPath(appDirectory, true, this.getSettings().getGoogleDriveRootDirectoryId());
     }
 
     /**
@@ -338,7 +298,7 @@ public class GoogleManagerImpl implements GoogleManager
             builder.setParameter("access_type", "offline");
             builder.setParameter("state", state);
             builder.setParameter("approval_prompt", "force");
-            logger.info("Authorization URL: {}", builder.toString());
+            logger.info("Authorization URL: {}", builder);
             return builder.toString();
         } catch (Exception e) {
             logger.error("Failed to construct authorization URL.",e);
@@ -464,7 +424,8 @@ public class GoogleManagerImpl implements GoogleManager
             JSONObject json = new JSONObject(responseBody);
             if (!json.has("access_token")) {
                 // access token is missing, request must have failed
-                throw new Exception(responseBody);
+                logger.warn("Failed to get access token, response:{}", responseBody);
+                return null;
             }
 
             logger.debug("Received a new access token");
@@ -539,26 +500,39 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
-     * Resolve drive folder by returning the folderId. Creates the folder if createFolder is true.
-     * Starts finding folderId/creating folders under the input parentId.
-     * If folderPath is not available then same input parentId is returned.
-     *
-     * Returns null if createFolder is false and given folder is not found on drive.
+     * Resolve drive folder for the input folderPath by returning the folderId.
+     * 1. folderPath can be nested directories separated by '/'.
+     *    For ex., '/first level/second level/reports'. Here folderId of the last directory (in this case 'reports') is returned.
+     * 2. Creates the folder if it is not found on google drive.
+     * 3. Starts finding/creating folders under the input parentId.
+     * 4. If folderPath=/, then resolved folderId is same as input parentId.
+     *    Caller has to ensure the input parentId is 'root' in order to correctly represent '/' as a root directory
+     * 5. If input folderPath is not available then same input parentId is returned.
      * @param folderPath
-     * @param createFolder
      * @param parentId
-     * @return
+     * @return resolved folderId for the last folder name from input folderPath (separated by SLASH)
+     * @throws GoogleDriveOperationFailedException if input parentId is missing or drive get/create API fails
      */
-    private String resolveOrCreateFolderPath(String folderPath, boolean createFolder, String parentId) {
+    private String resolveOrCreateFolderPath(String folderPath, String parentId) throws GoogleDriveOperationFailedException {
+        if (StringUtils.isEmpty(parentId)) {
+            throw new GoogleDriveOperationFailedException("No parent available to upload the folder for folderPath:" + folderPath);
+        }
         if (StringUtils.isBlank(folderPath)) {
             logger.info("folderPath is not available, returning parentId={}", parentId);
             return parentId;
         }
         logger.info("Resolving folderId for the folderPath:{} under parentId:{}", folderPath, parentId);
+
+        // handle directory hierarchy separated by SLASH
         String[] folders = folderPath.split(SLASH);
 
         for (String folderName : folders) {
             folderName = folderName.trim();
+            if (StringUtils.isEmpty(folderName)) {
+                // skip to the next item in the iterator
+                continue;
+            }
+
             // 1. Check if folder exists
             String query = String.format("name='%s' and mimeType='application/vnd.google-apps.folder' and '%s' in parents and trashed=false",
                     folderName, parentId);
@@ -579,34 +553,33 @@ public class GoogleManagerImpl implements GoogleManager
                     // go to next item in the iterator and find its folderId
                     continue;
                 }
-                if (!createFolder) {
-                    logger.warn("Folder {} not found", folderName);
-                    return null;
-                }
                 // 2. Folder doesn't exist, create it
                 parentId = createDriveFolder(folderName, parentId);
-
             } catch (Exception e) {
-                logger.warn("Failed to get create drive folder, folderName:{}, parentId:{}", folderName, parentId, e);
+                // folderName does not exist, nor we are able to create it, stop here
+                throw new GoogleDriveOperationFailedException("Failed to get drive folderId, folderName:" + folderName + ", parentId:" + parentId, e);
             }
 
         }
-        logger.info("Drive folder resolved folderPath:{}, folderId:{}", folderPath, parentId);
+        logger.info("Drive folderId resolved for folderPath:{}, folderId:{}", folderPath, parentId);
         return parentId;
     }
 
     /**
-     * Creates a drive folder (btw google drive refers to files and folders as 'file' entity)
-     * Returns the folderId otherwise null if either any input param is missing or folder creation request fails
+     * Creates a drive folder (google drive refers to files and folders as 'file' entity)
+     * Folder is created under input parentId
+     *
+     * Throws GoogleDriveOperationFailedException if,
+     *  1)either folderName or parentId is missing, 2) folder id is not returned after create API, 3) any exception occurred during create API call
      * @param folderName name of the folder
      * @param parentId parent under which the folder has to be created, (for root level folders, the parentId is 'root')
-     * @return
+     * @return google's folderId
+     * @throws GoogleDriveOperationFailedException
      */
-    private String createDriveFolder(String folderName, String parentId) {
+    private String createDriveFolder(String folderName, String parentId) throws GoogleDriveOperationFailedException {
 
         if (StringUtils.isBlank(folderName) || StringUtils.isBlank(parentId)) {
-            logger.warn("Not enough inputs to create drive folder, folderName:{}, parentId:{}", folderName, parentId);
-            return null;
+            throw new GoogleDriveOperationFailedException("Not enough inputs to create drive folder, folderName:" + folderName + ", parentId:" + parentId);
         }
 
         String folderId = null;
@@ -626,15 +599,98 @@ public class GoogleManagerImpl implements GoogleManager
             JSONObject json = new JSONObject(responseBody);
             if (!json.has("id")) {
                 // failed to get id
-                throw new Exception(responseBody);
+                throw new GoogleDriveOperationFailedException("Failed to create drive folder, folderName: " + folderName + ", parentId: " + parentId + ", response: "  + responseBody);
             }
             folderId = json.getString("id");
 
             logger.info("Drive folder created folderName:{}, folderId:{}, ", folderName, folderId);
+            return folderId;
         } catch (Exception e) {
-            logger.warn("Failed to get create drive folder, folderName:{}, folderId:{}", folderName, folderId, e);
+            throw new GoogleDriveOperationFailedException(e.getMessage(), e.getCause());
         }
-        return folderId;
+    }
+
+    /**
+     * Upload the file located at filePath to google drive under the parentFolder.
+     * folderId of the parentFolder is resolved before the upload.
+     *
+     * Returns the exit code of the whole upload operation.
+     *
+     * Throws GoogleDriveOperationFailedException if,
+     *  1) filePath missing, 2) Any JSON exception occurred during file metadata construction, 3) upload API fails
+     * @param filePath
+     * @param parentFolder
+     * @return 0 indicating successful upload, 99 for the failure.
+     * @throws GoogleDriveOperationFailedException
+     */
+    @Override
+    public int uploadToDrive(String filePath, String parentFolder) throws GoogleDriveOperationFailedException {
+        if (StringUtils.isBlank(filePath)) {
+            throw new GoogleDriveOperationFailedException("File path not present, not uploading");
+        }
+        // resolve folderId for the input parentFolder, this is where the file will be uploaded
+        // look for the parentFolder under the selected root directory
+        String folderId = resolveOrCreateFolderPath(parentFolder, "root");
+        File file = new File(filePath);
+        String url = DRIVE_UPLOAD_FILES_API + "?uploadType=multipart";
+        HttpPost request = new HttpPost(url);
+        request.setHeader("Authorization", "Bearer " + getAccessTokenFromSettings());
+
+        // File metadata, i.e. file name and the parent folder of the file
+        JSONObject metadata = new JSONObject();
+        try {
+            metadata.put("name", file.getName());
+            metadata.put("parents", new JSONArray().put(folderId));
+        } catch (JSONException e) {
+            throw new GoogleDriveOperationFailedException("JSON Exception", e);
+        }
+
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setMode(HttpMultipartMode.STRICT);
+
+        // Construct multipart body
+        builder.addPart(
+                FormBodyPartBuilder.create()
+                        .setName("metadata")
+                        .setBody(new StringBody(metadata.toString(), ContentType.APPLICATION_JSON))
+                        .build()
+        );
+
+        builder.addBinaryBody("file", file, ContentType.APPLICATION_OCTET_STREAM, file.getName());
+        request.setEntity(builder.build());
+
+        Integer x = null;
+        try {
+            x = executePost(request);
+        } catch (Exception e) {
+            throw new GoogleDriveOperationFailedException("Failed to upload file, filePath:" + filePath + ", folderId: " + folderId, e);
+        }
+        if (x != null) return x;
+        return 99;
+    }
+
+    /**
+     * Makes the HTTP POST request
+     * @param request
+     * @return 0 for if API returns either 200 or 201 status code
+     * @throws ParseException
+     * @throws IOException
+     * @throws GoogleDriveOperationFailedException if the API status code different from 200 or 201
+     */
+    private Integer executePost(HttpPost request) throws ParseException, IOException, GoogleDriveOperationFailedException {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            try (ClassicHttpResponse response = client.executeOpen(null, request, HttpClientContext.create())) {
+                String body = EntityUtils.toString(response.getEntity());
+                int code = response.getCode();
+                if (code == 200 || code == 201) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Upload successful: {}", body);
+                    return 0;
+                } else {
+                    throw new GoogleDriveOperationFailedException(code, body, null);
+                }
+            }
+        }
     }
 
     /**

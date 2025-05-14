@@ -343,11 +343,11 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://www.googleapis.com/oauth2/v3/tokeninfo");
+        uriTranslation.setUri("https://www.googleapis.com/drive/v3/files");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://www.googleapis.com/drive/v3/files");
+        uriTranslation.setUri("https://www.googleapis.com/upload/drive/v3/files");
         uriTranslations.add(uriTranslation);
 
         return uriTranslations;

@@ -16,8 +16,6 @@ public interface GoogleManager
 
     String getAppSpecificGoogleDrivePath(String appDirectory);
 
-    String getAppSpecificGoogleDriveFolderId(String appDirectory);
-
     public String getAuthorizationUrl(String windowProtocol, String windowLocation );
 
     public GoogleCloudApp getGoogleCloudApp();
@@ -25,4 +23,6 @@ public interface GoogleManager
     public String provideDriveCode(String code );
     public void disconnectGoogleDrive();
     public void migrateConfiguration( String refreshToken );
+
+    int uploadToDrive(String filePath, String folderName) throws GoogleDriveOperationFailedException;
 }

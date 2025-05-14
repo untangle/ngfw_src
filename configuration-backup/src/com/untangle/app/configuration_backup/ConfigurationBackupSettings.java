@@ -17,7 +17,6 @@ public class ConfigurationBackupSettings implements Serializable, JSONString
     private int minuteInHour;
     private boolean googleDriveEnabled = true;
     private String  googleDriveDirectory = "Configuration Backups";
-    private String googleDriveDirectoryId;
     
     public ConfigurationBackupSettings() { }
 
@@ -32,14 +31,6 @@ public class ConfigurationBackupSettings implements Serializable, JSONString
 
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
-
-    public String getGoogleDriveDirectoryId() {
-        return googleDriveDirectoryId;
-    }
-
-    public void setGoogleDriveDirectoryId(String googleDriveDirectoryId) {
-        this.googleDriveDirectoryId = googleDriveDirectoryId;
-    }
 
     /**
      * Convert settings to JSON string.
