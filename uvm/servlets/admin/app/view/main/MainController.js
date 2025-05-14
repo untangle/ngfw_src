@@ -12,6 +12,7 @@ Ext.define('Ung.view.main.MainController', {
     listen: {
         global: {
             afterlaunch: 'afterLaunch',
+            // afterLaunch: 'showDialogForVue'
         }
     },
 
@@ -22,6 +23,45 @@ Ext.define('Ung.view.main.MainController', {
         this.checkNotifications();
     },
 
+    // showDialogForVue: function () { 
+
+    //     var me = this;
+    //     me.remapDialog = me.getView().add({
+    //         xtype: 'window',
+    //         title: 'Try new Vue Layout'.t(),
+    //         modal: true,
+    //         width: 270,
+    //         height: 170,
+    //         layout: 'fit',
+    //         closable: false,
+    //         onEsc: Ext.emptyFn,
+    //         fbar: [{
+    //             text: 'Dismiss'.t(),
+    //             iconCls: 'fa fa-ban',
+    //             handler: function (btn) {
+    //                 btn.up('window').close();
+    //             }
+    //         }, {
+    //             text: 'Try it now'.t(),
+    //             iconCls: 'fa fa-check',
+    //             handler: function (btn) {
+    //                 window.open('/vue/settings/network', '_blank');
+    //                 btn.up('window').close();
+    //             }
+    //         }]
+    //     });
+    
+    //     me.remapDialog.removeAll(true);
+    //     me.remapDialog.add({
+    //         xtype: 'component',
+    //         // html: '<strong>' + 'Click on the URL to open in new window'.t() + '</strong><br/><br/>' +
+    //         //       '<bURL<br/><b>'.t()
+    //         html: '<strong>' + 'Click on the URL to open in a new window'.t() + '</strong><br/><br/>' +
+    //               '<a href="https://www.google.com" target="_blank">Open Link</a>'
+    //     });
+    
+    //     me.remapDialog.show();
+    // },
     checkRegister: function () {
         var me = this;
         if(!Rpc.directData('rpc.isRegistered')) {
@@ -122,6 +162,12 @@ Ext.define('Ung.view.main.MainController', {
     suggestHandler: function (btn) {
         var suggestUrl = Rpc.directData('rpc.feedbackUrl');
         window.open(suggestUrl);
+    },
+
+    suggestHandlerForVue: function (btn) {
+        var suggestUrl = Rpc.directData('rpc.newLayoutUrl');
+        window.open('/vue/settings/network', '_blank');
+        // window.open(suggestUrl);
     },
 
     supportHandler: function (btn) {

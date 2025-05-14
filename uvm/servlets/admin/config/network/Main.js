@@ -20,11 +20,12 @@ Ext.define('Ung.config.network.Main', {
         type: 'config-network',
         data: {
             allWanInterfaceNames: [],
+            showNetworkItems: true // Flag to control visibility
         },
         stores: {
             allWanInterfaceNamesStore: {
-                data: '{allWanInterfaceNames}',
-            },
+                data: '{allWanInterfaceNames}'
+            }
         },
     },
 

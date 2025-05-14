@@ -65,7 +65,16 @@ Ext.define('Ung.view.main.MainHeading', {
         menuAlign: 'tr-br',
         hidden: true,
         responsiveConfig: null
-    }, {
+    }, 
+    // {
+    //     iconCls: 'fa fa-window-restore', 
+    //     handler: 'suggestHandlerForVue',
+    //     tooltip: 'New Layout'.t(),
+    //     width: 52,
+    //     responsiveConfig: null, 
+    //     cls: 'x-btn-over'
+    // },
+    {
         iconCls: 'fa fa-lightbulb-o fa-lg',
         handler: 'suggestHandler',
         tooltip: 'Suggest Idea'.t(),

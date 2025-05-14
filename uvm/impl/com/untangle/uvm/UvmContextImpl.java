@@ -73,6 +73,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static final String PROPERTY_HELP_URL = "uvm.help.url";
     private static final String DEFAULT_HELP_URL = "https://wiki.edge.arista.com/get.php";
     private static final String PROPERTY_FEEDBACK_URL = "uvm.feedback.url";
+    private static final String PROPERTY_NEW_LAYOUT_URL = "https://google.com";
     private static final String DEFAULT_FEEDBACK_URL = "https://edge.arista.com/feedback";
     private static final String PROPERTY_LEGAL_URL = "uvm.legal.url";
 
@@ -1208,6 +1209,18 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             url = DEFAULT_FEEDBACK_URL;
         return url;
     }
+    /**
+     * getNewLayoutUrl - get the new vue UI for
+     * @return String
+     */
+    public String getNewLayoutUrl()
+    {
+        String url = System.getProperty(PROPERTY_NEW_LAYOUT_URL);
+
+        if (url == null)
+            url = PROPERTY_NEW_LAYOUT_URL;
+        return url;
+    }
 
     /**
      * getLegalUrl - get the URL for legal information in the UI
@@ -1425,6 +1438,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
             json.put("storeUrl", this.getStoreUrl());
             json.put("helpUrl", this.getHelpUrl());
             json.put("feedbackUrl", this.getFeedbackUrl());
+            json.put("newLayoutUrl", this.getNewLayoutUrl());
             json.put("isRegistered", this.isRegistered());
             json.put("isExpertMode", this.isExpertMode());
             json.put("supportEnabled", this.systemManager().getSettings().getSupportEnabled());

@@ -506,6 +506,7 @@ public interface UvmContext
     String getHelpUrl();
     String getFeedbackUrl();
     String getLegalUrl();
+    String getNewLayoutUrl();
 
     /**
      * Check if store is available
