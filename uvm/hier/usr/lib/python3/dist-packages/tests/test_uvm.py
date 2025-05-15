@@ -225,6 +225,11 @@ class UvmTests(NGFWTestCase):
     @staticmethod
     def appNameSpamCase():
         return "smtp"
+    
+    @classmethod
+    def initial_extra_setup(cls):
+        if(not global_functions.is_apache_listening_on_ipv6_port80()):
+            global_functions.restart_apache()
 
     def test_010_client_is_online(self):
         result = remote_control.is_online()
@@ -345,6 +350,9 @@ class UvmTests(NGFWTestCase):
         """
         TestTotp.setup(enable=False)
         # fails due to NGFW-14344
+        if(not global_functions.is_apache_listening_on_ipv6_port80()):
+            raise unittest.SkipTest("Skipping apache is not listening on IPv6")
+        
         try:
             uri="http://localhost/auth/login?url=/admin&realm=Administrator"
             # Make sure we come from ipv6
@@ -524,6 +532,9 @@ class UvmTests(NGFWTestCase):
         """
         TestTotp.setup(enable=True)
         # fails due to NGFW-14344
+        if(not global_functions.is_apache_listening_on_ipv6_port80()):
+            raise unittest.SkipTest("Skipping apache is not listening on IPv6")
+        
         try:
             uri = "http://localhost/auth/login?url=/admin&realm=Administrator"
             override_arguments=["--silent", "-6"]
