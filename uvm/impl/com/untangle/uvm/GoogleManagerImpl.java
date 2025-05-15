@@ -90,8 +90,7 @@ public class GoogleManagerImpl implements GoogleManager
          */
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
-            GoogleSettings defaultSettings = new GoogleSettings();
-            defaultSettings.setVersion(1);
+            GoogleSettings defaultSettings = getDefaultGoogleSettings();
             this.setSettings(defaultSettings);
         }
         else {
@@ -111,6 +110,16 @@ public class GoogleManagerImpl implements GoogleManager
         }
 
         logger.info("Initialized GoogleManager");
+    }
+
+    /**
+     * Default google settings
+     * @return
+     */
+    private static GoogleSettings getDefaultGoogleSettings() {
+        GoogleSettings defaultSettings = new GoogleSettings();
+        defaultSettings.setVersion(1);
+        return defaultSettings;
     }
 
     /**
