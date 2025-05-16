@@ -375,8 +375,6 @@ public class GoogleManagerImpl implements GoogleManager
 
             GoogleSettings currentSettings = this.getSettings();
             copyTokenAttributes(newTokenObj, currentSettings);
-            // reset the root directory value in order to be selected again as per new token (new user)
-            currentSettings.setGoogleDriveRootDirectory(null);
             // save the settings along with the new tokens
             setSettings( currentSettings );
 

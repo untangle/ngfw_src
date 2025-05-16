@@ -130,11 +130,10 @@ public class GoogleSettings implements java.io.Serializable, JSONString
     }
 
     /**
-     * Clears the attributes
+     * Clears the attributes (root directory will only be cleared if it set empty explicitly)
      */
     public void clear() {
         this.driveRefreshToken = null;
-        this.googleDriveRootDirectory = null;
         this.encryptedDriveAccessToken = null;
         this.encryptedDriveRefreshToken = null;
         this.accessTokenExpiresIn = null;
