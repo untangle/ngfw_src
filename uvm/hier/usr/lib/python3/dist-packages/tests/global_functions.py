@@ -1704,3 +1704,31 @@ def clamav_not_ready_for_connections(log_file_path= "/var/log/clamav/clamav.log"
         print(f"Error: Log file {log_file_path} not found.")
         return True
 
+def is_apache_listening_on_ipv6_port80():
+    """
+    Checks if Apache is listening on IPv6 port 80 by parsing `netstat` output.
+    Returns True if found, False otherwise.
+    """
+    try:
+        output = subprocess.check_output(['sudo', 'netstat', '-tlnp'], stderr=subprocess.DEVNULL)
+        lines = output.decode().splitlines()
+        for line in lines:
+            if line.startswith('tcp6') and ':::80' in line and 'apache2' in line:
+                return True
+        return False
+    except subprocess.CalledProcessError as e:
+        print("Error running netstat:", e)
+        return False
+    
+def restart_apache():
+    """
+    Restarts the Apache2 service using systemctl.
+    """
+    try:
+        print("Restarting Apache...")
+        subprocess.run(['sudo', 'systemctl', 'restart', 'apache2'], check=True)
+        # Give Apache time to restart
+        time.sleep(5)
+    except subprocess.CalledProcessError:
+        print("Failed to restart Apache")
+
