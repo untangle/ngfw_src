@@ -20,8 +20,8 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.untangle.uvm.GoogleDriveOperationFailedException;
 import com.untangle.uvm.logging.ConfigurationBackupEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -322,23 +322,15 @@ public class ConfigurationBackupApp extends AppBase
      */
     private void uploadBackupToGoogleDrive( File backupFile )
     {
-        String[] cmd;
         String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
-        if (StringUtils.isEmpty(appGoogleDrivePath))
-            cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
-                               backupFile.getAbsoluteFile().toString()};
-        else
-            cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
-                               "-d", appGoogleDrivePath,
-                               backupFile.getAbsoluteFile().toString()};
         int exitCode = 0;
         String output = null;
         try {
-            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
-            exitCode = reader.waitFor();
-            output = reader.readFromOutput();
-        } catch (Exception e) {
-            exitCode = 99;
+            exitCode = getGoogleManager().uploadToDrive(backupFile.getAbsolutePath(), appGoogleDrivePath);
+        }
+        catch (GoogleDriveOperationFailedException e) {
+            exitCode = e.getExitCode();
+            output = e.getMessage();
             logger.warn("Exception running backup",e);
         }
 

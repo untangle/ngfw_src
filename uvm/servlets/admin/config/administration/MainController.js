@@ -990,9 +990,9 @@ Ext.define('Ung.config.administration.MainController', {
 
                     v.down('[name=fieldsetDriveEnabled]').setVisible(isConnected);
                     v.down('[name=fieldsetDriveDisabled]').setVisible(!isConnected);
+                    vm.set({ googleSettings: googleSettings });
 
-                    if ( isConnected && googleSettings.driveRefreshToken != vm.get('googleSettings.driveRefreshToken')){
-                        vm.set({ googleSettings: googleSettings });
+                    if (isConnected){
                         me.refreshGoogleTask.stop();
                         return;
                     }

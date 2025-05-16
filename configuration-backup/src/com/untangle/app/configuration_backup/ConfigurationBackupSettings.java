@@ -31,7 +31,7 @@ public class ConfigurationBackupSettings implements Serializable, JSONString
 
     public String getGoogleDriveDirectory() { return googleDriveDirectory; }
     public void setGoogleDriveDirectory( String newValue ) { this.googleDriveDirectory = newValue; }
-    
+
     /**
      * Convert settings to JSON string.
      *
