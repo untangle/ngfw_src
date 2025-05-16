@@ -105,8 +105,8 @@ public class GoogleManagerImpl implements GoogleManager
             handleTokenRefresh(readSettings);
             //  no need to explicitly call setSettings again since it is done in previous steps
 
-            if (logger.isDebugEnabled())
-                logger.debug("Settings: {}", this.settings.toJSONString());
+            if (logger.isDebugEnabled() && getSettings() != null)
+                logger.debug("Settings: {}", getSettings().toJSONString());
         }
 
         logger.info("Initialized GoogleManager");
@@ -194,6 +194,10 @@ public class GoogleManagerImpl implements GoogleManager
      */
     public void setSettings( GoogleSettings settings )
     {
+        if (settings == null) {
+            logger.warn("Input settings object is null. Initializing with default settings");
+            settings = getDefaultGoogleSettings();
+        }
         /**
          * Save the settings
          */
@@ -274,15 +278,19 @@ public class GoogleManagerImpl implements GoogleManager
      * returns GOOGLE_DRIVE_ROOT_DIRECTORY if appDirectory is blank
      * In case when appDirectory and GOOGLE_DRIVE_ROOT_DIRECTORY are not available, then return /, which represents root level for google drive
      * This means, files are to be uploaded directly at the root level on google drive.
+     * Returns null if settings is null
      * @param appDirectory app specific subdirectory under the root directory where files are stored
      * @return
      */
     @Override
     public String getAppSpecificGoogleDrivePath(String appDirectory) {
+        if (getSettings() == null)
+            return null;
+
         if (StringUtils.isBlank(appDirectory)) {
-            return this.settings.getGoogleDriveRootDirectory();
+            return getSettings().getGoogleDriveRootDirectory();
         }
-        return this.settings.getGoogleDriveRootDirectory() + File.separator + appDirectory;
+        return getSettings().getGoogleDriveRootDirectory() + File.separator + appDirectory;
     }
 
     /**
@@ -374,7 +382,13 @@ public class GoogleManagerImpl implements GoogleManager
             logger.info("Encrypted Refresh Token: {}", newTokenObj.getEncryptedDriveRefreshToken());
 
             GoogleSettings currentSettings = this.getSettings();
-            copyTokenAttributes(newTokenObj, currentSettings);
+            if (currentSettings != null) {
+                copyTokenAttributes(newTokenObj, currentSettings);
+            } else {
+                logger.warn("Current settings object is null");
+                // current settings is null, new token object becomes our new settings
+                currentSettings = newTokenObj;
+            }
             // save the settings along with the new tokens
             setSettings( currentSettings );
 
@@ -466,7 +480,8 @@ public class GoogleManagerImpl implements GoogleManager
     public void disconnectGoogleDrive()
     {
         GoogleSettings googleSettings = getSettings();
-        googleSettings.clear();
+        if (googleSettings != null)
+            googleSettings.clear();
         setSettings( googleSettings );
 
         tokenRefreshJob.stop();
@@ -481,6 +496,12 @@ public class GoogleManagerImpl implements GoogleManager
     public void migrateConfiguration(String refreshToken)
     {
         GoogleSettings googleSettings = getSettings();
+
+        if (googleSettings == null) {
+            // in case if null settings, initialize settings with default and set version to null so as to trigger following migration flows
+            googleSettings = getDefaultGoogleSettings();
+            googleSettings.setVersion(null);
+        }
         googleSettings.setDriveRefreshToken( refreshToken );
         if (googleSettings.getVersion() == null)
             transformToV1SettingsVersion(googleSettings);
@@ -499,10 +520,14 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
-     * Returns decrypted access token present in current settings object
+     * Returns decrypted access token present in current settings object, null if settings object is null
      * @return
      */
     private String getAccessTokenFromSettings() {
+        if (this.getSettings() == null) {
+            logger.warn("Settings object is null");
+            return null;
+        }
         return PasswordUtil.getDecryptPassword(this.getSettings().getEncryptedDriveAccessToken());
     }
 
