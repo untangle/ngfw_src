@@ -20,8 +20,8 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.untangle.uvm.GoogleDriveOperationFailedException;
 import com.untangle.uvm.logging.ConfigurationBackupEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -85,9 +85,6 @@ public class ConfigurationBackupApp extends AppBase
         String appID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + appID + ".js";
 
-        // Set google drive folderId
-        setGoogleDriveDirectoryFolderId(newSettings);
-
         try {
             UvmContextFactory.context().settingsManager().save( settingsFile, newSettings );
         } catch (Exception exn) {
@@ -98,17 +95,6 @@ public class ConfigurationBackupApp extends AppBase
         this.settings = newSettings;
 
         writeCronFile();
-    }
-
-    /**
-     * Set app's google drive folderId (must call setSettings after this method call)
-     * @param settings
-     */
-    private void setGoogleDriveDirectoryFolderId(ConfigurationBackupSettings settings) {
-        if (getGoogleManager().isGoogleDriveConnected()) {
-            String appDirectoryId = getGoogleManager().getAppSpecificGoogleDriveFolderId(settings.getGoogleDriveDirectory());
-            settings.setGoogleDriveDirectoryId(appDirectoryId);
-        }
     }
 
     /**
@@ -222,14 +208,6 @@ public class ConfigurationBackupApp extends AppBase
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified())
             writeCronFile();
-
-        /**
-         * Set google directory folderId, during restart, fetch folderId only if not available in settings
-         */
-        if (StringUtils.isEmpty(settings.getGoogleDriveDirectoryId())) {
-            setGoogleDriveDirectoryFolderId(settings);
-            setSettings(settings);
-        }
     }
 
     /**
@@ -344,23 +322,15 @@ public class ConfigurationBackupApp extends AppBase
      */
     private void uploadBackupToGoogleDrive( File backupFile )
     {
-        String[] cmd;
         String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
-        if (StringUtils.isEmpty(appGoogleDrivePath))
-            cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
-                               backupFile.getAbsoluteFile().toString()};
-        else
-            cmd = new String[]{"/usr/share/untangle-google-connector/bin/google-drive-upload.py",
-                               "-d", appGoogleDrivePath,
-                               backupFile.getAbsoluteFile().toString()};
         int exitCode = 0;
         String output = null;
         try {
-            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
-            exitCode = reader.waitFor();
-            output = reader.readFromOutput();
-        } catch (Exception e) {
-            exitCode = 99;
+            exitCode = getGoogleManager().uploadToDrive(backupFile.getAbsolutePath(), appGoogleDrivePath);
+        }
+        catch (GoogleDriveOperationFailedException e) {
+            exitCode = e.getExitCode();
+            output = e.getMessage();
             logger.warn("Exception running backup",e);
         }
 
