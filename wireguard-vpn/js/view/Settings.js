@@ -280,6 +280,11 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                             if(!isValidVtypeField){
                                 return true;
                             }
+
+                            // Ensure the network is in a private IP range
+                            if (!Util.isPrivateCIDR(value)) {
+                                return "Only private IP ranges are allowed (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)";
+                            }
                             var localNetworkStoreFn = this.up('#settings').down('#localNetworkGrid').getStore();
 
                             var localNetworkStore = [];
@@ -288,13 +293,13 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                                 if(profile.get("subnetsAsString")){
                                     var subnets = profile.get("subnetsAsString").split(',');
                                     for (var i = 0; i < subnets.length; i++) {
-                                        subnet = subnets[i].trim();
-                                        if(localNetworkStore.indexOf(subnet) === -1) 
+                                        var subnet = subnets[i].trim();
+                                        if (subnet !== "0.0.0.0/0" && localNetworkStore.indexOf(subnet) === -1) {
                                             localNetworkStore.push(subnet);
+                                        }
                                     }
                                 }
                             });
-
                             return Util.findIpPoolConflict(value, localNetworkStore, this, true);
 
                         } catch(err) {

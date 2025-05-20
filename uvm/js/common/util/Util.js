@@ -938,6 +938,44 @@ Ext.define('Ung.util.Util', {
         }
     },
 
+    /**
+     * Checks whether a given CIDR block belongs to a private IP address space.
+     *
+     * Private IP ranges (as defined in RFC 1918) include:
+     * - 10.0.0.0/8
+     * - 172.16.0.0/12
+     * - 192.168.0.0/16
+     *
+     * @param {string} cidr - The CIDR notation string (e.g., "192.168.1.0/24") to validate.
+     * @returns {boolean} - Returns true if the CIDR is within a private IP range; false otherwise.
+     *
+     * @example
+     * isPrivateCIDR("192.168.1.0/24"); // true
+     * isPrivateCIDR("8.8.8.0/24");     // false
+     */
+    isPrivateCIDR: function(cidr) {
+        try {
+            var parts = cidr.split('/');
+            var ip = parts[0].split('.');
+            if (ip.length !== 4) return false;
+    
+            for (var i = 0; i < ip.length; i++) {
+                var num = parseInt(ip[i], 10);
+                if (isNaN(num) || num < 0 || num > 255) return false;
+                ip[i] = num; // Convert to integer for next checks
+            }
+    
+            if (ip[0] === 10) return true;
+            if (ip[0] === 172 && ip[1] >= 16 && ip[1] <= 31) return true;
+            if (ip[0] === 192 && ip[1] === 168) return true;
+    
+            return false; // Not private
+        } catch (e) {
+            return false;
+        }
+    },
+    
+
     isIPInRange: function (ip, network, netmask) {
         // Split the IP address into octets
         var nextPoolOctets = ip.split('.');
