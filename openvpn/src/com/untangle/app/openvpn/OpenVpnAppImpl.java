@@ -712,7 +712,7 @@ public class OpenVpnAppImpl extends AppBase
 
                 if (line.contains("SiteName: ")) {
                     String[] tokens = line.split(" ");
-                    if (tokens.length > 1) sitename = tokens[1];
+                    if (tokens.length > 1) sitename = tokens[1]; 
                 }
             }
         } catch (Exception e) {

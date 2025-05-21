@@ -103,10 +103,15 @@ public class UploadConfig extends HttpServlet
         }
 
         InputStream inputStream = null;
+        String fileName = null;
+        String extension = "";
+        String baseName="", finalName = "";
 
         for (FileItem item : items) {
             if (!"uploadConfigFileName".equals(item.getFieldName())) continue;
             inputStream = item.getInputStream();
+            fileName = item.getName();
+            logger.info("=============================== {} ==============================================", fileName);
             break;
         }
 
@@ -116,11 +121,41 @@ public class UploadConfig extends HttpServlet
             return;
         }
 
+        int dotIndex = fileName.lastIndexOf('.');
+
+        if (dotIndex != -1 && dotIndex != 0 && dotIndex < fileName.length() - 1) {
+            baseName = fileName.substring(0, dotIndex);
+            extension = fileName.substring(dotIndex + 1);
+            int firstDash = baseName.indexOf('-');
+            if (firstDash == -1) {
+                System.out.println("No dash found in: " + fileName);
+                return;
+            }
+            String withoutFirst = baseName.substring(firstDash + 1);
+    
+            // Remove last word (after last dash)
+            int lastDash = withoutFirst.lastIndexOf('-');
+            if (lastDash == -1) {
+                System.out.println("No last dash found in: " + withoutFirst);
+                return;
+            }
+            finalName = withoutFirst.substring(0, lastDash);
+    
+            logger.info("====================================== File Name: " + baseName );
+            logger.info("====================================== Extension: " + extension );
+            logger.info("======================================= Final Name: " + finalName );
+        } else {
+            logger.info("No extension found in the file name.");
+        }
+
         /* Write out the file. */
         File temp = null;
         OutputStream outputStream = null;
         try {
-            temp = File.createTempFile("openvpn-newconfig-", ".zip");
+            if(extension.equals("zip"))
+                temp = File.createTempFile("openvpn-newconfig-", ".zip");
+            else if(extension.equals("ovpn"))
+                temp = File.createTempFile(finalName+"-", "."+extension);
             temp.deleteOnExit();
             outputStream = new FileOutputStream(temp);
 
