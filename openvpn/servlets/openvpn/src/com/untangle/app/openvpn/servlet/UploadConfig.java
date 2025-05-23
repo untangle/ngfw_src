@@ -136,6 +136,8 @@ public class UploadConfig extends HttpServlet
                 temp = File.createTempFile("openvpn-newconfig-", ".zip");
             else if(".ovpn".equals(extension))
                 temp = File.createTempFile(finalName, extension);
+            else 
+                temp = File.createTempFile("invalidFile-", extension);
             temp.deleteOnExit();
             outputStream = new FileOutputStream(temp);
 
