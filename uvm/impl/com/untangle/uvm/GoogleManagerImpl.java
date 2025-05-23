@@ -219,8 +219,10 @@ public class GoogleManagerImpl implements GoogleManager
     public boolean isGoogleDriveConnected()
     {
         GoogleSettings setObj = this.getSettings();
-        if (setObj == null)
+        if (setObj == null) {
+            tokenRefreshJob.stopIfRunning();
             return false;
+        }
 
         boolean valid = false;
         if (StringUtils.isNotBlank(setObj.getEncryptedDriveAccessToken()))
@@ -236,11 +238,18 @@ public class GoogleManagerImpl implements GoogleManager
         } else {
             logger.debug("Refresh token is not present to retrieve a new access token");
             // no way to refresh the token, give up
+            tokenRefreshJob.stopIfRunning();
             return false;
         }
 
         // check if token is valid now
-        return isTokenValid(setObj.getAccessTokenIssuedAt(), setObj.getAccessTokenExpiresIn());
+        valid = isTokenValid(setObj.getAccessTokenIssuedAt(), setObj.getAccessTokenExpiresIn());
+        if (!valid) {
+            // still token is invalid, auto refresh job must have failed (or eventually would fail considering token refresh has failed).
+            // Stop the refresh job.
+            tokenRefreshJob.stopIfRunning();
+        }
+        return valid;
     }
 
     /**
@@ -421,7 +430,7 @@ public class GoogleManagerImpl implements GoogleManager
      * @param expiresIn
      */
     private void startTokenRefreshJob(long expiresIn) {
-        tokenRefreshJob.stop();
+        tokenRefreshJob.stopIfRunning();
         // Reinitialize pulse instance if token expiry is different from the default expiry time
         if (expiresIn != DEFAULT_ACCESS_TOKEN_EXPIRES_IN_SEC)
             tokenRefreshJob = new Pulse(TOKEN_REFRESHER_JOB_NAME, new RefreshAccessTokenJob(this), getTokenRefreshJobInterval(expiresIn));
@@ -484,7 +493,7 @@ public class GoogleManagerImpl implements GoogleManager
             googleSettings.clear();
         setSettings( googleSettings );
 
-        tokenRefreshJob.stop();
+        tokenRefreshJob.stopIfRunning();
     }
 
     /**
@@ -547,13 +556,13 @@ public class GoogleManagerImpl implements GoogleManager
      */
     private String resolveOrCreateFolderPath(String folderPath, String parentId) throws GoogleDriveOperationFailedException {
         if (StringUtils.isEmpty(parentId)) {
-            throw new GoogleDriveOperationFailedException("No parent available to upload the folder for folderPath:" + folderPath);
+            throw new GoogleDriveOperationFailedException("No parent available to upload the folder for folderPath=" + folderPath);
         }
         if (StringUtils.isBlank(folderPath)) {
             logger.info("folderPath is not available, returning parentId={}", parentId);
             return parentId;
         }
-        logger.info("Resolving folderId for the folderPath:{} under parentId:{}", folderPath, parentId);
+        logger.info("Resolving folderId for {} under parentId {}", folderPath, parentId);
 
         // handle directory hierarchy separated by SLASH
         String[] folders = folderPath.split(SLASH);
@@ -580,7 +589,7 @@ public class GoogleManagerImpl implements GoogleManager
                 JSONArray files = new JSONObject(responseBody).optJSONArray("files");
                 if (files != null && files.length() > 0) {
                     folderId = files.getJSONObject(0).getString("id");
-                    logger.info("Found folderName:{}, folderId:{}", folderName, folderId);
+                    logger.debug("Found folderName {} with folderId {}", folderName, folderId);
                     parentId = folderId;
                     // go to next item in the iterator and find its folderId
                     continue;
@@ -589,11 +598,11 @@ public class GoogleManagerImpl implements GoogleManager
                 parentId = createDriveFolder(folderName, parentId);
             } catch (Exception e) {
                 // folderName does not exist, nor we are able to create it, stop here
-                throw new GoogleDriveOperationFailedException("Failed to get drive folderId, folderName:" + folderName + ", parentId:" + parentId, e);
+                throw new GoogleDriveOperationFailedException("Failed to get drive folderId, folderName=" + folderName + ", parentId=" + parentId, e);
             }
 
         }
-        logger.info("Drive folderId resolved for folderPath:{}, folderId:{}", folderPath, parentId);
+        logger.info("Resolved Drive folderId for folderPath {} is {}", folderPath, parentId);
         return parentId;
     }
 
@@ -611,7 +620,7 @@ public class GoogleManagerImpl implements GoogleManager
     private String createDriveFolder(String folderName, String parentId) throws GoogleDriveOperationFailedException {
 
         if (StringUtils.isBlank(folderName) || StringUtils.isBlank(parentId)) {
-            throw new GoogleDriveOperationFailedException("Not enough inputs to create drive folder, folderName:" + folderName + ", parentId:" + parentId);
+            throw new GoogleDriveOperationFailedException("Not enough inputs to create drive folder, folderName=" + folderName + ", parentId=" + parentId);
         }
 
         String folderId = null;
@@ -631,11 +640,11 @@ public class GoogleManagerImpl implements GoogleManager
             JSONObject json = new JSONObject(responseBody);
             if (!json.has("id")) {
                 // failed to get id
-                throw new GoogleDriveOperationFailedException("Failed to create drive folder, folderName: " + folderName + ", parentId: " + parentId + ", response: "  + responseBody);
+                throw new GoogleDriveOperationFailedException("Failed to create drive folder, folderName=" + folderName + ", parentId=" + parentId + ", response="  + responseBody);
             }
             folderId = json.getString("id");
 
-            logger.info("Drive folder created folderName:{}, folderId:{}, ", folderName, folderId);
+            logger.info("Drive folder created for folderName={}, folderId={}, ", folderName, folderId);
             return folderId;
         } catch (Exception e) {
             throw new GoogleDriveOperationFailedException(e.getMessage(), e.getCause());
@@ -663,6 +672,8 @@ public class GoogleManagerImpl implements GoogleManager
         // resolve folderId for the input parentFolder, this is where the file will be uploaded
         // look for the parentFolder under the selected root directory
         String folderId = resolveOrCreateFolderPath(parentFolder, "root");
+        logger.info("Uploading file {} to google drive under parent folder {} with folderId {}", filePath, parentFolder, folderId);
+
         File file = new File(filePath);
         String url = DRIVE_UPLOAD_FILES_API + "?uploadType=multipart";
         HttpPost request = new HttpPost(url);
@@ -694,6 +705,8 @@ public class GoogleManagerImpl implements GoogleManager
         Integer x = null;
         try {
             x = executePost(request);
+        } catch (GoogleDriveOperationFailedException e) {
+            throw e;
         } catch (Exception e) {
             throw new GoogleDriveOperationFailedException("Failed to upload file, filePath:" + filePath + ", folderId: " + folderId, e);
         }

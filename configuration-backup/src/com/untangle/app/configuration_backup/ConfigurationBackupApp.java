@@ -331,7 +331,7 @@ public class ConfigurationBackupApp extends AppBase
         catch (GoogleDriveOperationFailedException e) {
             exitCode = e.getExitCode();
             output = e.getMessage();
-            logger.warn("Exception running backup",e);
+            logger.warn("Exception running backup", e);
         }
 
         if(exitCode != 0) {
@@ -339,9 +339,13 @@ public class ConfigurationBackupApp extends AppBase
 
             String reason = null;
             switch(exitCode) {
-            default:
-                reason = "Unknown error. Make sure your google drive is correctly configured. Error: " + output;
-            }
+                case 401:
+                    reason = "Either google account credentials have changed or drive connector no longer has access to google drive." +
+                            "Try reconfiguring the google drive." + output;
+                    break;
+                default:
+                    reason = "Unknown error. Make sure your google drive is correctly configured. Error: " + output;
+                }
             logger.warn("Backup failed: {}", reason);
             this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("Google Drive")) );
         }
