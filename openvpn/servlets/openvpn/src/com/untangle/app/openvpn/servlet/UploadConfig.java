@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -103,10 +104,11 @@ public class UploadConfig extends HttpServlet
         }
 
         InputStream inputStream = null;
-
+        String fileName = null, finalName =null,extension = null;
         for (FileItem item : items) {
             if (!"uploadConfigFileName".equals(item.getFieldName())) continue;
             inputStream = item.getInputStream();
+            fileName = item.getName();
             break;
         }
 
@@ -115,12 +117,25 @@ public class UploadConfig extends HttpServlet
             writer.write("{ \"success\" : false, \"code\" : \"client error\", \"type\" : 4 }");
             return;
         }
+        if (StringUtils.isNotBlank(fileName)){
+            int dotIndex = fileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                finalName = fileName.substring(0, dotIndex)+"-";
+                extension = fileName.substring(dotIndex);
+            } else {
+                logger.warn("Please upload file with valid extention.");
+                return;
+            }
+        }
 
         /* Write out the file. */
         File temp = null;
         OutputStream outputStream = null;
         try {
-            temp = File.createTempFile("openvpn-newconfig-", ".zip");
+            if(".zip".equals(extension))
+                temp = File.createTempFile("openvpn-newconfig-", ".zip");
+            else if(".ovpn".equals(extension))
+                temp = File.createTempFile(finalName, extension);
             temp.deleteOnExit();
             outputStream = new FileOutputStream(temp);
 
