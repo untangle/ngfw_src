@@ -6,8 +6,9 @@ package com.untangle.uvm.setup.jabsorb;
 
 import java.net.Socket;
 import java.net.InetSocketAddress;
-
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import javax.transaction.TransactionRolledbackException;
@@ -25,6 +26,7 @@ import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.WizardSettings;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.AdminUserSettings;
 /** SetupContextImpl */
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
@@ -194,6 +196,11 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("adminEmail", this.context.adminManager().getAdminEmail());
             json.put("language", this.context.languageManager().getLanguageSettings().getLanguage());
             json.put("translations", this.context.languageManager().getTranslations("untangle"));
+
+            List<InterfaceSettings> interfaces = this.context.networkManager().getNetworkSettings().getInterfaces();
+            boolean isWirelessInterface = interfaces.stream().anyMatch(intf -> intf.getIsWirelessInterface());
+            
+            json.put("isWirelessInterface" , isWirelessInterface);
             json.put("wizardSettings", this.context.getWizardSettings());
             json.put("remote", getRemote());
             json.put("remoteUrl", this.context.getCmdUrl());
