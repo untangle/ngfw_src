@@ -1161,6 +1161,9 @@ Ext.define('Ung.util.Util', {
         components.forEach(function(component) {
             var store = component.getStore();
             var listId = component.listProperty;
+            // Clear any filters applied on store
+            var filters = store.getFilters().clone();
+            store.clearFilter(true);
             if(listId == null){
                 return;
             }
@@ -1211,6 +1214,10 @@ Ext.define('Ung.util.Util', {
                 });
             });
             viewModel.set(listId, values);
+            // restore filters after data is processed
+            filters.each( function(filter){
+                store.addFilter(filter);
+            });
         });
         return changes;
     },
