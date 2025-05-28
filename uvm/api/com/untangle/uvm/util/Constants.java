@@ -19,6 +19,7 @@ public class Constants {
 
     // Symbols
     public static final String DOT = ".";
+    public static final String HYPHEN = "-";
     public static final String UNDERSCORE = "_";
     public static final String SPACE = " ";
     public static final String COMMA_STRING = ",";

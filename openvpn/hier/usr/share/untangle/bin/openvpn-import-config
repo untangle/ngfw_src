@@ -1,76 +1,104 @@
-#! /bin/bash
+#!/bin/bash
 
-# 
-# This script imports a config file containing the necessary configuration to connect to a remote server
-# It stores the files in settings, OpenVpnManager will later copy them into place
+#
+# This script imports a config file containing the necessary configuration to connect to a remote server.
+# It stores the files in settings; OpenVpnManager will later copy them into place.
 #
 
-filename="${1}"
-destination=`mktemp || -3`
+set -euo pipefail
 
-cleanup()
-{
-    if [ ! -z ${TMPDIR} ] ; then
-        rm -rf ${TMPDIR};  
+filename="${1:-}"
+TMPDIR=""
+
+cleanup() {
+    if [[ -n "${TMPDIR}" && -d "${TMPDIR}" ]]; then
+        rm -rf "${TMPDIR}"
     fi
-    exit -1
+    exit 1
 }
 
-if [ ! -f "${filename}" ]; then
+if [[ -z "${filename}" || ! -f "${filename}" ]]; then
     echo "Unable to find the file: ${filename}"
-    exit -1
+    exit 1
 fi
 
-TMPDIR=`mktemp -d || exit -3`
+ext="${filename##*.}"
 
-unzip -q ${filename} -d ${TMPDIR} || { rm -rf ${TMPDIR};  exit -1 ; }
+case "$ext" in
+    zip)
+        TMPDIR=$(mktemp -d) || exit 3
 
-CONFNAME="`ls ${TMPDIR}/untangle-vpn/*.conf`"
+        if ! unzip -q "${filename}" -d "${TMPDIR}"; then
+            cleanup
+        fi
 
-if [ -z "$CONFNAME" ] ; then
-    echo "Missing conf file"
-    exit -1
-fi
+        CONF_FILE_PATH=$(find "${TMPDIR}/untangle-vpn" -name "*.conf" | head -n 1)
 
-SITENAME="`basename $CONFNAME | sed -e 's/.conf//'`"
+        if [[ -z "${CONF_FILE_PATH}" || ! -f "${CONF_FILE_PATH}" ]]; then
+            echo "Missing conf file"
+            cleanup
+        fi
 
-# echo sitename to stdout
-# This is important because the java code launching this script
-# will use this to determine the site name. Do not remove.
-echo "SiteName: ${SITENAME}" 
+        SITENAME=$(basename "${CONF_FILE_PATH}" .conf)
 
-if [ -z "$SITENAME" ] ; then
-    echo "Missing site name"
-    exit -1
-fi
+        # Output site name (required by Java code)
+        echo "SiteName: ${SITENAME}"
 
-## Copy in the necessary files
-mkdir -p @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/
-mkdir -p @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/keys/
+        if [[ -z "${SITENAME}" ]]; then
+            echo "Missing site name"
+            cleanup
+        fi
 
-CONF_FILE="@PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/${SITENAME}.conf"
+        CONF_DIR="@PREFIX@/usr/share/untangle/settings/openvpn/remote-servers"
+        KEYS_DIR="${CONF_DIR}/keys"
+        CONF_FILE="${CONF_DIR}/${SITENAME}.conf"
 
-cp ${TMPDIR}/untangle-vpn/*.conf ${CONF_FILE}
+        mkdir -p "${CONF_DIR}" "${KEYS_DIR}"
 
-if [ $? != 0 ] ; then
-    echo "Copy failed"
-    cleanup
-fi
+        if ! cp "${CONF_FILE_PATH}" "${CONF_FILE}"; then
+            echo "Copy failed"
+            cleanup
+        fi
 
-if [ -d ${TMPDIR}/untangle-vpn/keys ] ; then
-    cp -r ${TMPDIR}/untangle-vpn/keys/* @PREFIX@/usr/share/untangle/settings/openvpn/remote-servers/keys/
-fi
+        if [[ -d "${TMPDIR}/untangle-vpn/keys" ]]; then
+            if ! cp -r "${TMPDIR}/untangle-vpn/keys/"* "${KEYS_DIR}/"; then
+                echo "Key Copy failed"
+                echo "${TMPDIR}"
+                cleanup
+            fi
+        fi
 
-if [ $? != 0 ] ; then
-    echo "Key Copy failed"
-    echo ${TMPDIR}
-    exit
-    cleanup
-fi
+        rm -rf "${TMPDIR}"
 
-## Cleanup
-rm -rf ${TMPDIR}
+        echo "New configuration imported: ${CONF_FILE}"
+        ;;
 
-echo "New configuration imported: ${CONF_FILE}"
+    ovpn)
+        SITENAME=$(basename "${filename}" .ovpn | sed -E 's/[ ()]//g; s/-[0-9]+$//')
 
-true
+        # Output site name (required by Java code)
+        echo "SiteName: ${SITENAME}"
+
+        if [[ -z "${SITENAME}" ]]; then
+            echo "Missing site name"
+            exit 1
+        fi
+
+        CONF_DIR="@PREFIX@/usr/share/untangle/settings/openvpn/remote-servers"
+        CONF_FILE="${CONF_DIR}/${SITENAME}.conf"
+
+        mkdir -p "${CONF_DIR}"
+
+        if ! cp "${filename}" "${CONF_FILE}"; then
+            echo "Failed to copy .ovpn file"
+            exit 1
+        fi
+
+        echo "Inline .ovpn configuration imported: ${CONF_FILE}"
+        ;;
+
+    *)
+        echo "Unsupported file format: .${ext}"
+        exit 2
+        ;;
+esac
