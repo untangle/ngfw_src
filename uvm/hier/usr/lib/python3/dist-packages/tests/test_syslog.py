@@ -1,5 +1,6 @@
 import copy
 import pytest
+import subprocess
 
 from tests.common import NGFWTestCase
 import tests.global_functions as global_functions
@@ -23,6 +24,17 @@ class SysLogTests(NGFWTestCase):
     def module_name():
         return "syslog"
     
+    def checkSyslogStatus(self):
+        # Check rsyslog service status and reset if failed
+        status_output = subprocess.run(
+            ["systemctl", "is-failed", "rsyslog"],
+            capture_output=True,
+            text=True
+        )
+
+        if status_output.returncode == 0 and status_output.stdout.strip() == "failed":
+            subprocess.run(["systemctl", "reset-failed", "rsyslog"])
+
     def test_050_disable_syslog(self):
         syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
@@ -36,7 +48,8 @@ class SysLogTests(NGFWTestCase):
           pass
         global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
-    def test_050_enable_syslog(self):
+    def test_051_enable_syslog(self):
+        self.checkSyslogStatus()
         #covering scenario of setup where default syslog is enabled and configured
         syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
@@ -66,7 +79,8 @@ class SysLogTests(NGFWTestCase):
         assert (syslogUpdatedSettings['syslogRules']['list'][0]['syslogServers']['list'][0] == 2)
         global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
-    def test_050_enable_syslog_withouthostnameset(self):
+    def test_052_enable_syslog_withouthostnameset(self):
+        self.checkSyslogStatus()
         #covering scenario of setup where default syslog is enabled and sysloghost not set configured
         syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
@@ -82,7 +96,8 @@ class SysLogTests(NGFWTestCase):
         global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
 
-    def test_050_multiple_syslogservers(self):
+    def test_053_multiple_syslogservers(self):
+        self.checkSyslogStatus()
         initial_logservers = 0
         syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)
@@ -100,7 +115,8 @@ class SysLogTests(NGFWTestCase):
         global_functions.uvmContext.eventManager().setSettings(orig_settings)
 
 
-    def test_050_delete_syslogservers(self):
+    def test_054_delete_syslogservers(self):
+        self.checkSyslogStatus()
         initial_logservers = 0
         syslogSettings = global_functions.uvmContext.eventManager().getSettings()
         orig_settings = copy.deepcopy(syslogSettings)

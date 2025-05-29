@@ -323,10 +323,6 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("https://sshrelay.untangle.com/");
-        uriTranslations.add(uriTranslation);
-
-        uriTranslation = new UriTranslation();
         uriTranslation.setUri("https://edge.arista.com/api/v1");
         uriTranslations.add(uriTranslation);
 
