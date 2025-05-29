@@ -26,7 +26,11 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        items: ['@add', '->', '@import', '@export']
+        items: ['@add', '-', { xtype: 'ungridfilter', store: 'tunnels' }, '->', '@import', '@export']
+    }],
+    plugins: [ 'gridfilters', {
+        ptype: 'cellediting',
+        clicksToEdit: 1
     }],
 
     recordActions: ['edit', 'copy', 'delete'],
@@ -82,6 +86,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'description',
+        filter: Renderer.stringFilter
     }, {
         header: 'Remote Public Key'.t(),
         width: 290,
@@ -98,27 +103,32 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             validator: function(value) {
                 return peerIpAddrValidator(value, 'peerAddress', this, 'app-wireguard-vpn-server-tunnels-grid');
             }
-        }
+        },
+        filter: Renderer.stringFilter
     }, {
         header: 'Remote Networks'.t(),
         width: Renderer.messageWidth,
         flex: 1,
-        dataIndex: 'networks'
+        dataIndex: 'networks',
+        filter: Renderer.stringFilter
     }, {
         header: 'Remote Endpoint'.t(),
         width: Renderer.messageWidth,
         dataIndex: 'endpointDynamic',
-        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer,
+        filter: Renderer.booleanFilter
     }, {
         header: 'Hostname'.t(),
         width: Renderer.messageWidth,
         dataIndex: 'endpointHostname',
-        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer,
+        filter: Renderer.stringFilter
     }, {
         header: 'Port'.t(),
         width: Renderer.portWidth,
         dataIndex: 'endpointPort',
-        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer,
+        filter: Renderer.numericFilter
     }, {
         xtype: 'actioncolumn',
         header: 'Remote Client'.t(),
