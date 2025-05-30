@@ -6,7 +6,7 @@ ORIG_PATH=/root/orig
 SOURCES_FILE_NAME=/etc/apt/sources.list.d/untangle.list
 
 ## Point apt to packages
-## deb http://302e-9d2e-5023-5e62:untangle@updates.untangle.com/public/bullseye stable-166 main non-free
+## deb http://302e-9d2e-5023-5e62:untangle@updates.edge.arista.com/public/bullseye stable-166 main non-free
 ##
 BACKUP_SOURCES_FILE_NAME=/root/untangle.list
 if [ ! -f $BACKUP_SOURCES_FILE_NAME ] ; then
@@ -16,7 +16,7 @@ fi
 VERSION=$(cat /usr/share/untangle/lib/untangle-libuvm-api/PUBVERSION)
 
 sed -i $SOURCES_FILE_NAME \
-    -e 's/updates.untangle.com/package-server.untangle.int/' \
+    -e 's/updates.edge.arista.com/package-server.untangle.int/' \
     -e "s/stable-[[:digit:]]\+/ngfw-release-$VERSION/"
 
 ##

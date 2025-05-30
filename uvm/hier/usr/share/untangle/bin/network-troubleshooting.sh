@@ -10,8 +10,8 @@
 # Verify basic DNS and TCP conn
 #
 # Environment variables:
-# DNS_TEST_HOST: dns address (e.g.,updates.untangle.com)
-# TCP_TEST_HOST: TCP reachable address (e.g.,updates.untangle.com)
+# DNS_TEST_HOST: dns address (e.g.,updates.edge.arista.com)
+# TCP_TEST_HOST: TCP reachable address (e.g.,updates.edge.arista.com)
 run_connectivity(){
     echo -n 'Testing DNS ... '
 

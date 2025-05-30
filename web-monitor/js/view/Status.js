@@ -20,7 +20,7 @@ Ext.define('Ung.apps.webmonitor.view.Status', {
                 '<h3>Web Monitor</h3>' +
                 '<p>' + 'Web Monitor scans and categorizes web traffic to monitor network usage.'.t() +
                 '<br><br>' + 'Upgrade to Web Filter to control network usage and enforce policies that allow, block, flag or alert web traffic.'.t() +
-                ' <a target="_blank" href="' + rpc.uriManager.getUriWithPath('https://www.untangle.com/shop/web-filter') + '">LEARN MORE<a/></p>'
+                ' <a target="_blank" href="' + rpc.uriManager.getUriWithPath('https://edge.arista.com/shop/web-filter') + '">LEARN MORE<a/></p>'
         }, {
             xtype: 'applicense',
             hidden: true,

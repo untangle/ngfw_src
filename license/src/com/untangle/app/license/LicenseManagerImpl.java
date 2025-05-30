@@ -55,7 +55,7 @@ import com.untangle.uvm.UriTranslation;
 public class LicenseManagerImpl extends AppBase implements LicenseManager
 {
     private static final String LICENSE_URL_PROPERTY = "uvm.license.url";
-    private static final String DEFAULT_LICENSE_URL = "https://license.untangle.com/license.php";
+    private static final String DEFAULT_LICENSE_URL = "https://license.edge.arista.com/license.php";
 
     private static final double LIENENCY_PERCENT = 1.25; /* the enforced seat limit is the license seat limit TIMES this value */
     private static final int    LIENENCY_CONSTANT = 5; /* the enforced seat limit is the license seat limit PLUS this value */
@@ -438,7 +438,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         
         String licenseUrl = System.getProperty( "uvm.license.url" );
         if ( licenseUrl == null )
-            licenseUrl = "https://license.untangle.com/license.php";
+            licenseUrl = "https://license.edge.arista.com/license.php";
         licenseUrl = UvmContextFactory.context().uriManager().getUri(licenseUrl);
 
 
@@ -467,8 +467,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             oldName = BRANDING_MANAGER_OLDNAME; break;
         case License.VIRUS_BLOCKER:
             oldName = VIRUS_BLOCKER_OLDNAME; break;
-        case License.SPAM_BLOCKER:
-            oldName = SPAM_BLOCKER_OLDNAME; break;
         case License.WAN_FAILOVER:
             oldName = WAN_FAILOVER_OLDNAME; break;
         case License.IPSEC_VPN:
@@ -764,7 +762,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private boolean _testLicenseConnectivity()
     {
         Socket socket = null;
-        UriTranslation licenseUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("license.untangle.com");
+        UriTranslation licenseUri = UvmContextFactory.context().uriManager().getUriTranslationByHost("license.edge.arista.com");
 
         String host = null;
         int port = 0;
@@ -772,7 +770,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         try {
             socket = new Socket();
-            host = licenseUri.getHost() != null ? licenseUri.getHost(): "license.untangle.com";
+            host = licenseUri.getHost() != null ? licenseUri.getHost(): "license.edge.arista.com";
             port = licenseUri.getPort() != -1 ? licenseUri.getPort() : 443;
             socket.connect(new InetSocketAddress(host, port), 30000);
         } catch (Exception e) {

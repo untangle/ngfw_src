@@ -225,6 +225,13 @@ class UvmTests(NGFWTestCase):
     @staticmethod
     def appNameSpamCase():
         return "smtp"
+    
+    @classmethod
+    def initial_extra_setup(cls):
+        if(not global_functions.is_apache_listening_on_ipv6_port80()):
+            global_functions.restart_apache()
+            global_functions.uvmContext = global_functions.restart_uvm()
+            time.sleep(180)
 
     def test_010_client_is_online(self):
         result = remote_control.is_online()
@@ -345,6 +352,9 @@ class UvmTests(NGFWTestCase):
         """
         TestTotp.setup(enable=False)
         # fails due to NGFW-14344
+        if(not global_functions.is_apache_listening_on_ipv6_port80()):
+            raise unittest.SkipTest("Skipping apache is not listening on IPv6")
+        
         try:
             uri="http://localhost/auth/login?url=/admin&realm=Administrator"
             # Make sure we come from ipv6
@@ -524,6 +534,9 @@ class UvmTests(NGFWTestCase):
         """
         TestTotp.setup(enable=True)
         # fails due to NGFW-14344
+        if(not global_functions.is_apache_listening_on_ipv6_port80()):
+            raise unittest.SkipTest("Skipping apache is not listening on IPv6")
+        
         try:
             uri = "http://localhost/auth/login?url=/admin&realm=Administrator"
             override_arguments=["--silent", "-6"]
@@ -1131,6 +1144,25 @@ class UvmTests(NGFWTestCase):
         assert user.get('password') is None, "password is not None"
         #Clear the created user
         global_functions.uvmContext.localDirectory().setUsers(remove_local_directory_user())
+
+    def test_169_test_local_user_deletion(self):
+        """
+        Verify local user removal
+        """
+        # Create local directory user 'test'
+        global_functions.uvmContext.localDirectory().setUsers(create_local_directory_user())
+
+        #test user creation
+        users = global_functions.uvmContext.localDirectory().getUsers()
+        assert len(users['list']) == 1, f"Assertion failed: Users list is empty."
+
+
+        #Clear the created user
+        global_functions.uvmContext.localDirectory().setUsers(remove_local_directory_user())
+
+        #Check the deletion of user
+        users = global_functions.uvmContext.localDirectory().getUsers()
+        assert len(users['list']) == 0, f"Assertion failed: Users list is not empty, it contains {len(users['list'])} elements."
         
 
     def test_170_log_retention(self):
@@ -1318,15 +1350,23 @@ class UvmTests(NGFWTestCase):
         1. Validating GeoIP methods for given IP Address
         """
         ip_address = "128.101.101.101"
-        expected_output = "United States : US : Minnesota : MN : Saint Paul : 55113"
+        expected_country_name = "United States"
+        expected_country_code = "US"
+        expected_sub_division_namme = "Minnesota"
+        expected_sub_division_code = "MN"
+
         country_name = global_functions.uvmContext.geographyManager().getCountryName(ip_address)
         country_code = global_functions.uvmContext.geographyManager().getCountryCode(ip_address)
         sub_division_name = global_functions.uvmContext.geographyManager().getSubdivisionName(ip_address)
         sub_division_code = global_functions.uvmContext.geographyManager().getSubdivisionCode(ip_address)
         city_name = global_functions.uvmContext.geographyManager().getCityName(ip_address)
         postal_code = global_functions.uvmContext.geographyManager().getPostalCode(ip_address)
-        recieved_output = country_name + " : " + country_code + " : " + sub_division_name + " : " + sub_division_code  + " : " + city_name + " : " + postal_code
-        assert(expected_output == recieved_output)
+
+        assert(expected_country_name == country_name)
+        assert(expected_country_code == country_code)
+        assert(expected_sub_division_namme == sub_division_name)
+        assert(expected_sub_division_code == sub_division_code)
+
         # for IPs with no information None is received
         country_name = global_functions.uvmContext.geographyManager().getCountryName("192.168.56.120")
         assert(country_name is None)

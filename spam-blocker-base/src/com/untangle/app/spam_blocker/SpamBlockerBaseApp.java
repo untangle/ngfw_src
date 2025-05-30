@@ -80,8 +80,7 @@ public abstract class SpamBlockerBaseApp extends AppBase
         String vendorTag = vendor;
         String badEmailName = "Spam";
 
-        if (vendor.equals("SpamAssassin")) vendorTag = "spam_blocker_lite";
-        else if (vendor.equals("SpamBlockerLite")) vendorTag = "spam_blocker_lite";
+        if (vendor.equals("SpamAssassin")) vendorTag = "spam_blocker";
         else if (vendor.equals("SpamBlocker")) vendorTag = "spam_blocker";
         else if (vendor.equals("Clam")) {
             vendorTag = "phish_blocker";

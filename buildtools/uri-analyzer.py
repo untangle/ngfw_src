@@ -73,19 +73,19 @@ class UriAnalyzer():
 
         "http://standards.ieee.org/cgi-bin/ouisearch?",
         "https://wiki.edge.arista.com/index.php/OpenVPN",
-        "https://www.untangle.com/shop/virus-blocker",
-        "https://www.untangle.com/shop/web-filter",
-        "https://www.untangle.com/shop/Spam-Blocker",
-        "https://www.untangle.com/shop/Live-Support",
-        "https://www.untangle.com/shop/Application-Control",
+        "https://edge.arista.com/shop/virus-blocker",
+        "https://edge.arista.com/shop/web-filter",
+        "https://edge.arista.com/shop/Spam-Blocker",
+        "https://edge.arista.com/shop/Live-Support",
+        "https://edge.arista.com/shop/Application-Control",
 
         "https://easylist-downloads.adblockplus.org/easylist.txt",
-        "https://www.edge.arista.com/favicon.ico",
+        "https://edge.arista.com/favicon.ico",
         "https://edge.arista.com/legal",
 
         "https://wiki.edge.arista.com/get.php",
         "https://edge.arista.com/feedback",
-        "https://downloads.untangle.com/bdam/config",
+        "https://downloads.edge.arista.com/bdam/config",
 
         # From test_network.py
         "http://1.2.3.4/test/testPage1.html",

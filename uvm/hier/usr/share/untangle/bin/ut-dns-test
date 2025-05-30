@@ -2,7 +2,7 @@
 
 DNS_TRIES=4
 DNS_TIMEOUT=2
-TEST_HOST="updates.untangle.com"
+TEST_HOST="updates.edge.arista.com"
 
 if [ $# -lt 1 ] ; then
     echo "Usage: $0 <dns-server-ip>"

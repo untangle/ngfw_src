@@ -37,9 +37,9 @@ Update_ran_file_name = "/tmp/intrusion-prevention-update.ran"
 # get signature translated URI
 def get_signature_template_uri():
 	try:
-		return Uvm().getUvmContext().uriManager().getUri('https://ids.untangle.com/suricatasignatures.tar.gz')
+		return Uvm().getUvmContext().uriManager().getUri('https://ids.edge.arista.com/suricatasignatures.tar.gz')
 	except:
-		return 'https://ids.untangle.com/suricatasignatures.tar.gz'
+		return 'https://ids.edge.arista.com/suricatasignatures.tar.gz'
 
 try:
     Uvm_context = Uvm().getUvmContext(hostname="localhost", username=None, password=None)

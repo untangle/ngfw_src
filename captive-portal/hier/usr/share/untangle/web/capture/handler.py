@@ -117,7 +117,7 @@ def index(req):
         if authenticationType in list(OAUTH_PROVIDERS.keys()):
             if authmode == "Empty":
                 authmode = authenticationType
-            ut = Uvm().getUvmContext().uriManager().getUriTranslationByHost("auth-relay.untangle.com")
+            ut = Uvm().getUvmContext().uriManager().getUriTranslationByHost("auth-relay.edge.arista.com")
             port = ""
             if ut['port'] != -1:
                 ut['port'] = ":" + str(ut['port'])
@@ -431,6 +431,11 @@ def generate_page(req,captureSettings,args,extra='',page=None,template_name=None
     else:
         page = replace_marker(page,'$.SecureEndpointCheck.$','')
 
+
+    is_google_auth = "false"
+    if (captureSettings.get("authenticationType") == 'GOOGLE'):
+        is_google_auth = "true"
+    page = replace_marker(page,'$.GOOGLEAUTH.$', is_google_auth)
     if (captureSettings.get('pageType') == 'BASIC_LOGIN'):
         page = replace_marker(page,'$.CompanyName.$', captureSettings.get('companyName'))
         page = replace_marker(page,'$.PageTitle.$', captureSettings.get('basicLoginPageTitle'))
@@ -483,7 +488,7 @@ def generate_page(req,captureSettings,args,extra='',page=None,template_name=None
         page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE"))
         page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT"))
 
-        page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.untangle.com/callback.php"))
+        page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.edge.arista.com/callback.php"))
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags

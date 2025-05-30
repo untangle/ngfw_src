@@ -20,22 +20,71 @@ app = None
 appWeb = None
 wanIP = None
 
-# Local configuration
-WG_LOCAL = overrides.get("WG_LOCAL", default={
-    "publicKey": "1YbeQWcyHrPnnUJhBKbxKt2ZUbr2I8EiuinG9cYqQmE=",
-    "privateKey": "sICMfPW0s1m74egk3VS4BXe7mah3m5XF+gCN25B0Y2w=",
-    "addressPool": "10.133.205.1/24"
-})
+WG_LOCAL_CONFIG = overrides.get("WG_LOCAL_CONFIG", default=
+                        [
+                        ('10.112.13.36','192.168.10.0/24',"qP9f5uaOS/0tLJ2SW5AeAJoueaAIJOod8v14x/WD4mY=","10.133.201.1/24"), # ATS Dynamics
+                        ('10.112.56.89','172.16.54.0/24',"sGy3LyIUAKMxjJYQNyppBuJw9ibqCcvdOoOrUT0BQGE=","10.133.202.1/24"),  # QA 3 Bridged
+                        ('10.112.56.57','192.168.10.0/24',"sBgaDBcvqmxAdJJrVJB1FoK8VyxpAF5KyRrBdox0yGo=","10.133.203.1/24"),  # QA box .57
+                        ('10.112.56.58','192.168.10.0/24',"OFuDMenzEmR87trbLa+nF0akxPBfeXBbEohKX94dlHg=","10.133.204.1/24"),  # QA box .58
+                        ('10.112.56.59','192.168.10.0/24',"AB7CXs0VSiu4FhJZuW8f18oIKQ5T583/W66aHruwyWY=","10.133.205.1/24"), # QA box .59
+                        ('172.17.18.3','192.168.10.0/24 ',"kEEvdr5X3oePByJuuDSWFpKtu/sXzAdHUl5oDVAaxW4=","10.133.206.1/24") #PPPOE server
+                    ])
 
-# Remote server
+
+def set_local_wg_config(self, local_ip=None, local_public_key=None, local_private_key=None, local_addr_pool=None):
+    """
+    Set the wiregaurd config for local host same as configured in remote server 
+    """
+    if ( local_ip is None or
+         local_public_key is None or
+         local_private_key is None ):
+        # Lookup local config from associated WAN
+        wan_ip = global_functions.uvmContext.networkManager().getFirstWanAddress()
+        for host_config in WG_LOCAL_CONFIG:
+            if (wan_ip == host_config[0]):
+                if local_ip is None:
+                    local_ip = host_config[0]
+                if local_private_key is None:
+                    local_private_key = host_config[2]
+                if local_public_key is None :
+                    command = f'echo "{local_private_key}" | wg pubkey'
+                    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                    local_public_key = result.stdout.strip()
+                if local_addr_pool is None:
+                    local_addr_pool = host_config[3]
+                break
+
+        if ( local_public_key is None or
+            local_private_key is None or
+            local_addr_pool is None ):
+            # Unable to find local configuration for this WAN
+            raise unittest.SkipTest(f"cannot find local configuration for wan {wan_ip}")
+        appData = self._app.getSettings()
+        appData["publicKey"] = local_public_key
+        appData["privateKey"] = local_private_key
+        appData["addressPool"] = local_addr_pool
+        self._app.setSettings(appData)
+
+# Commenting out the previous remote server as it is currently unreachable.
+# Temporarily replacing it with 10.112.56.96.
+# WG_REMOTE = overrides.get("WG_REMOTE", default={
+#         "serverAddress": "10.113.150.117",
+#         "hostname": "untangle-ats-wireguard",
+#         "publicKey": "fupwK1yQLvtBOFpW8nHxjIYjSDAzkpCwYGYL2rS5xUU=",
+#         "endpointPort": 51820,
+#         "peerAddress": "172.31.53.1",
+#         "networks": "192.168.20.0/24",
+#         "lanAddress": "192.168.20.170"
+# })
+
 WG_REMOTE = overrides.get("WG_REMOTE", default={
-        "serverAddress": "10.113.150.117",
-        "hostname": "untangle-ats-wireguard",
-        "publicKey": "fupwK1yQLvtBOFpW8nHxjIYjSDAzkpCwYGYL2rS5xUU=",
+        "serverAddress": "10.112.56.96",
+        "hostname": "untangle-ats-vpn",
+        "publicKey": "dgVORmxoCXTeh1McCkGQ5EikBv8v0gUx/pmX8TTLeDs=",
         "endpointPort": 51820,
-        "peerAddress": "172.31.53.1",
-        "networks": "192.168.20.0/24",
-        "lanAddress": "192.168.20.170"
+        "peerAddress": "172.24.91.1",
+        "networks": "192.168.235.0/24",
+        "lanAddress": "192.168.235.96"
 })
 
 
@@ -77,7 +126,7 @@ WG_NON_ROAMING = overrides.get("WG_NON_ROAMING", default={
     "privateKey": ""
                 })
 
-def build_wireguard_tunnel_roaming(tunnel_enabled, description, endpointHostname, endpointDynamic, endpointPort, publicKey,privateKey, networks, peerAddress, pingUnreachableEvents, pingInterval,pingConnectionEvents, pingAddress):
+def build_wireguard_tunnel_roaming(tunnel_enabled, description, endpointHostname, endpointDynamic, endpointPort, publicKey,privateKey, networks, peerAddress, pingUnreachableEvents, pingInterval,pingConnectionEvents, pingAddress, assignDnsServer=False):
     return {
         "description": description,
         "enabled": tunnel_enabled,
@@ -94,6 +143,7 @@ def build_wireguard_tunnel_roaming(tunnel_enabled, description, endpointHostname
         "pingAddress": pingAddress,
         "privateKey": privateKey,
         "publicKey": publicKey,
+        "assignDnsServer": assignDnsServer
     }
 
 def build_wireguard_tunnel(tunnel_enabled=True, remotePK=WG_REMOTE["publicKey"], remotePeer=WG_REMOTE["peerAddress"], description=WG_REMOTE["hostname"], endpointHostname=WG_REMOTE["serverAddress"], networks=WG_REMOTE["networks"]):
@@ -111,7 +161,8 @@ def build_wireguard_tunnel(tunnel_enabled=True, remotePK=WG_REMOTE["publicKey"],
         "pingInterval": 60,
         "pingUnreachableEvents": False,
         "privateKey": "",
-        "publicKey": WG_REMOTE["publicKey"]
+        "publicKey": WG_REMOTE["publicKey"],
+        "assignDnsServer": False
     }
 
 def wait_for_ping(target_IP="127.0.0.1",ping_result_expected=0):
@@ -171,23 +222,23 @@ class WireGuardVpnTests(NGFWTestCase):
         """
         if (vpnHostResult != 0):
             raise unittest.SkipTest("No paired VPN server available")
-
-        #get and overwrite local service settings to match tunnel settings on the remote/static test box
         appData = self._app.getSettings()
-        appData["publicKey"] = WG_LOCAL["publicKey"]
-        appData["privateKey"] = WG_LOCAL["privateKey"]
-        appData["addressPool"] = WG_LOCAL["addressPool"]
+        org_wg_settings = copy.deepcopy( appData )
+        #get and overwrite local service settings to match tunnel settings on the remote/static test box
+        set_local_wg_config(self)
 
         #set new tunnel settings
+        appData = self._app.getSettings()
         appData["tunnels"]["list"].append(build_wireguard_tunnel())
         self._app.setSettings(appData)
-
+        time.sleep(60)
         assert True is global_functions.is_vpn_running(interface=f"wg0",route_table=f"wireguard"), "wireguard interface and rule is running"
 
         result = wait_for_ping(WG_REMOTE["lanAddress"],0)
         assert result, "received ping from remote lan"
 
         assert True is global_functions.is_vpn_routing(route_table=f"wireguard", expected_route=WG_REMOTE["networks"].split(",")[0]), "wireguard routing on wireguard table"
+        self._app.setSettings(org_wg_settings)
 
     def test_021_no_static_route_conflict(self):
         """
@@ -195,14 +246,15 @@ class WireGuardVpnTests(NGFWTestCase):
         """
         if (vpnHostResult != 0):
             raise unittest.SkipTest("No paired VPN server available")
+    
+        appData = self._app.getSettings()
+        org_wg_settings = copy.deepcopy( appData )
         
         #get and overwrite local service settings to match tunnel settings on the remote/static test box
-        appData = self._app.getSettings()
-        appData["publicKey"] = WG_LOCAL["publicKey"]
-        appData["privateKey"] = WG_LOCAL["privateKey"]
-        appData["addressPool"] = WG_LOCAL["addressPool"]
+        set_local_wg_config(self)
 
         #set new tunnel settings
+        appData = self._app.getSettings()
         appData["tunnels"]["list"].append(build_wireguard_tunnel())
 
         self._app.setSettings(appData)
@@ -232,6 +284,7 @@ class WireGuardVpnTests(NGFWTestCase):
         # Set network settings back to normal
         global_functions.uvmContext.networkManager().setNetworkSettings( original_network_settings )
 
+        self._app.setSettings(org_wg_settings)
 
     def test_031_network_settings_and_default_wireguard_networks(self):
         """
@@ -397,7 +450,7 @@ class WireGuardVpnTests(NGFWTestCase):
 
     @pytest.mark.failure_in_podman
     @pytest.mark.slow
-    def test_020_verify_wg_non_roaming_on_disconnect(self):
+    def test_041_verify_wg_non_roaming_on_disconnect(self):
         '''
         Verify Following
         1. Roaming Tunnels in NGFW, after disconnection don't generate events
@@ -478,7 +531,7 @@ class WireGuardVpnTests(NGFWTestCase):
         newAppSettings = copy.deepcopy( appSettings )
 
         # Create roaming client tunnel and set new tunnel in settings.
-        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress']))
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress'],True))
         self._app.setSettings(newAppSettings)
 
         # Check if default search domain (i.e. NGFW domain name) is included in remote client config
@@ -490,8 +543,7 @@ class WireGuardVpnTests(NGFWTestCase):
             if(line.startswith("DNS") and domainName in line):
                 count += 1
                 break
-        if(count == 1): assert(True)
-        else: assert(False)
+        assert(count == 1)
 
         # Set search domain value to blank and check if its reflected in remote client config
         newAppSettings["dnsSearchDomain"] = ""
@@ -503,8 +555,50 @@ class WireGuardVpnTests(NGFWTestCase):
             if(line.startswith("DNS") and "," in line):
                 count += 1
                 break
-        if(count == 0): assert(True)
-        else: assert(False)
+        assert(count == 0)
+
+        self._app.setSettings(appSettings)
+
+    def test_045_verify_assign_dns_config(self):
+        """
+        Check assign dns server checkbox works as expected.
+        """
+        # get app settings and deepcopy it
+        appSettings = self._app.getSettings()
+        newAppSettings = copy.deepcopy( appSettings )
+
+        # Create roaming client tunnel and set new tunnel in settings with default assignDnsServer value False
+        newAppSettings["tunnels"]["list"] = []
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress']))
+        self._app.setSettings(newAppSettings)
+
+        # DNS config should not be present in wireguard config generated.
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert("DNS=" not in remoteConfig)
+
+        # Change assignDnsServer value to True
+        newAppSettings["tunnels"]["list"][0]['assignDnsServer'] = True
+        self._app.setSettings(newAppSettings)
+
+        # DNS config should be present in wireguard config generated.
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert("DNS=" in remoteConfig)
+
+        # Create static client tunnel with default assignDnsServer value False
+        newAppSettings["tunnels"]["list"] = []
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel())
+        self._app.setSettings(newAppSettings)
+
+        # DNS should be present regardless of assignDnsServer flag
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert("DNS=" in remoteConfig)
+
+        # Change assignDnsServer value to True
+        newAppSettings["tunnels"]["list"][0]['assignDnsServer'] = True
+        self._app.setSettings(newAppSettings)
+
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert("DNS=" in remoteConfig)
 
         self._app.setSettings(appSettings)
 

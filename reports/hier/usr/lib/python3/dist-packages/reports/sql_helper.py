@@ -292,13 +292,14 @@ def create_schema(schema):
 def clean_table(tablename, cutoff):
     print("clean_table " + str(tablename) + " < " + str(cutoff))
     
+    cutoff_date = cutoff
     if type(cutoff) is datetime.datetime:
         # Convert cutoff to date
-        cutoff = cutoff.date()
+        cutoff_date = cutoff.date()
     for t, date in find_table_partitions(tablename):
         # if the entire table is before the date specified, just drop it
         # but only if the *entire* table is before the the cutoff
-        if date < cutoff:
+        if date < cutoff_date:
             print("DROP TABLE " + str(t))
             drop_table( t )
 
