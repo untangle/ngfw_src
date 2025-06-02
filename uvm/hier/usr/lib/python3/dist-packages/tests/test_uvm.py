@@ -19,6 +19,7 @@ import urllib3
 import fnmatch
 import base64
 
+from urllib.parse import urlparse, parse_qs
 from tests.common import NGFWTestCase
 import tests.global_functions as global_functions
 import runtests.test_registry as test_registry
@@ -1437,5 +1438,35 @@ class UvmTests(NGFWTestCase):
 
         # Set old settings
         global_functions.uvmContext.deviceTable().setDevicesSettings(oldDevicesSettings)
+
+    def test_320_google_drive_authorization_url(self):
+        """ Test to check if the google drive authorization URL contains valid google drive connector oauth2 credentials"""
+
+        creds_file = '/var/lib/google-drive/.gd/credentials.json'
+        auth_url = global_functions.uvmContext.googleManager().getAuthorizationUrl('http:', global_functions.get_lan_ip())
+
+        with open(creds_file, 'r') as f:
+            creds = json.load(f)
+        
+        expected = creds["web"]  # expected['client_id'], expected['redirect_uri']
+        
+        # Parse the URL
+        parsed = urlparse(auth_url)
+        query = parse_qs(parsed.query)
+
+        # Extract values from query parameters
+        client_id = query.get("client_id", [None])[0]
+        redirect_uri = query.get("redirect_uri", [None])[0]
+
+        result = True
+        if client_id != expected.get("client_id"):
+            result = False
+            print(f"Expected client_id: {expected.get('client_id')}, actual: {client_id}")
+
+        if redirect_uri != expected.get("redirect_uri"):
+            result = False
+            print(f"Expected redirect_uri: {expected.get('redirect_uri')}, actual: {redirect_uri}")
+
+        assert(result)
 
 test_registry.register_module("uvm", UvmTests)

@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.Constants;
 import com.untangle.app.openvpn.OpenVpnAppImpl;
 
 /**
@@ -39,6 +41,8 @@ import com.untangle.app.openvpn.OpenVpnAppImpl;
 public class UploadConfig extends HttpServlet
 {
     private static ServletFileUpload SERVLET_FILE_UPLOAD;
+    private final static  String ZIP_EXTENSION = ".zip";
+    private final static  String OVPN_EXTENSION = ".ovpn";
 
     private final Logger logger = LogManager.getLogger(this.getClass());
 
@@ -103,10 +107,11 @@ public class UploadConfig extends HttpServlet
         }
 
         InputStream inputStream = null;
-
+        String fileName = null, finalName =null,extension = null;
         for (FileItem item : items) {
             if (!"uploadConfigFileName".equals(item.getFieldName())) continue;
             inputStream = item.getInputStream();
+            fileName = item.getName();
             break;
         }
 
@@ -115,12 +120,27 @@ public class UploadConfig extends HttpServlet
             writer.write("{ \"success\" : false, \"code\" : \"client error\", \"type\" : 4 }");
             return;
         }
+        if (StringUtils.isNotBlank(fileName)){
+            int dotIndex = fileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+                finalName = fileName.substring(0, dotIndex) + Constants.HYPHEN;
+                extension = fileName.substring(dotIndex);
+            } else {
+                logger.warn("Please upload file with valid extention.");
+                return;
+            }
+        }
 
         /* Write out the file. */
         File temp = null;
         OutputStream outputStream = null;
         try {
-            temp = File.createTempFile("openvpn-newconfig-", ".zip");
+            if(ZIP_EXTENSION.equals(extension))
+                temp = File.createTempFile(finalName, extension);
+            else if(OVPN_EXTENSION.equals(extension))
+                temp = File.createTempFile(finalName, extension);
+            else 
+                temp = File.createTempFile(finalName, extension);
             temp.deleteOnExit();
             outputStream = new FileOutputStream(temp);
 

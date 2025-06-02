@@ -18,6 +18,10 @@ public class GoogleCloudApp extends CloudApp {
 
     private String relayServerUrl;
 
+    private String authUri;
+
+    private String tokenUri;
+
     /**
      * Default constructor
      */
@@ -26,20 +30,39 @@ public class GoogleCloudApp extends CloudApp {
     }
 
     /**
-     * Parameterized constructor
+     * Parameterized constructor (decrypts the encrypted params and initialize their plaintext counterparts)
      * @param appId
-     * @param apiKey
+     * @param encryptedApiKey
      * @param clientId
-     * @param clientSecret
+     * @param encryptedClientSecret
      * @param scopes
-     * @param redirectUrl
+     * @param redirectUri
      * @param relayServerUrl
      */
-    public GoogleCloudApp(String appId, String apiKey, String clientId, String clientSecret, String scopes, String redirectUrl, String relayServerUrl) {
-        super(clientId, clientSecret, scopes, redirectUrl);
+    public GoogleCloudApp(String appId, String encryptedApiKey, String clientId, String encryptedClientSecret, String scopes, String redirectUri, String relayServerUrl) {
+        super(clientId, PasswordUtil.getDecryptPassword(encryptedClientSecret), scopes, redirectUri);
         this.appId = appId;
-        this.apiKey = apiKey;
+        this.apiKey = PasswordUtil.getDecryptPassword(encryptedApiKey);
         this.relayServerUrl = relayServerUrl;
+    }
+
+
+    /**
+     * Parameterized constructor (decrypts the encrypted params and initialize their plaintext counterparts)
+     * @param appId
+     * @param encryptedApiKey
+     * @param clientId
+     * @param encryptedClientSecret
+     * @param scopes
+     * @param redirectUri
+     * @param relayServerUrl
+     * @param authUri
+     * @param tokenUri
+     */
+    public GoogleCloudApp(String appId, String encryptedApiKey, String clientId, String encryptedClientSecret, String scopes, String redirectUri, String relayServerUrl, String authUri, String tokenUri) {
+        this(appId, encryptedApiKey, clientId, encryptedClientSecret, scopes, redirectUri, relayServerUrl);
+        this.authUri = authUri;
+        this.tokenUri = tokenUri;
     }
 
     /**
@@ -75,6 +98,14 @@ public class GoogleCloudApp extends CloudApp {
     }
 
     /**
+     * Set apiKey by decrypting the param value
+     * @param encryptedApiKey
+     */
+    public void decryptAndSetApiKey(String encryptedApiKey) {
+        this.apiKey = PasswordUtil.getDecryptPassword(encryptedApiKey);
+    }
+
+    /**
      * Get relay server
      * @return
      */
@@ -88,5 +119,37 @@ public class GoogleCloudApp extends CloudApp {
      */
     public void setRelayServerUrl(String relayServerUrl) {
         this.relayServerUrl = relayServerUrl;
+    }
+
+    /**
+     * Get auth uri
+     * @return
+     */
+    public String getAuthUri() {
+        return authUri;
+    }
+
+    /**
+     * Set auth uri
+     * @param authUri
+     */
+    public void setAuthUri(String authUri) {
+        this.authUri = authUri;
+    }
+
+    /**
+     * get token uri
+     * @return
+     */
+    public String getTokenUri() {
+        return tokenUri;
+    }
+
+    /**
+     * set token uri
+     * @param tokenUri
+     */
+    public void setTokenUri(String tokenUri) {
+        this.tokenUri = tokenUri;
     }
 }

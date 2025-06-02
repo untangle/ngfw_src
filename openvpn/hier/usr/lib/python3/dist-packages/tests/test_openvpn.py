@@ -23,10 +23,19 @@ vpnFullClientName = "atsfullclient"
 vpnHostResult = 0
 vpnClientResult = 0 
 vpnServerResult = 0
-vpnSite2SiteFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip"
-vpnSite2SiteHostname = "untangle-ats-vpn-8251"
-vpnSite2SiteUserPassFile = "http://test.untangle.com/test/openvpn-site2siteUserPass-config.zip"
-vpnSite2SiteUserPassHostname = "untangle93-6105"
+
+vpnSite2SiteZipFile = "http://test.untangle.com/test/openvpn-site2site10-config.zip"
+vpnSite2SiteZipHostname = "untangle-ats-vpn-8251"
+
+vpnSite2SiteInlineFile = "http://test.untangle.com/test/openvpn-site2site10-inline.ovpn"
+vpnSite2SiteInlineHostname = "openvpn-site2site10-inline"
+
+vpnSite2SiteUserPassZipFile = "http://test.untangle.com/test/openvpn-site2siteUserPass-config.zip"
+vpnSite2SiteUserPassZipHostname = "untangle93-6105"
+
+vpnSite2SiteUserPassInlineFile = "http://test.untangle.com/test/openvpn-site2siteUserPass-inline.ovpn"
+vpnSite2SiteUserPassInlineHostname = "openvpn-site2siteUserPass-inline"
+
 vpn_tunnel_file = "http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip"
 tunnelApp = None
 tunnelUp = False
@@ -242,13 +251,13 @@ class OpenVpnTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
-    def test_020_createVPNTunnel(self):
+    def test_020_createVPNTunnelWith_zipConfig(self):
         global tunnelUp
         tunnelUp = False
         if (vpnHostResult != 0):
             raise unittest.SkipTest("No paried VPN server available")
         # Download remote system VPN config
-        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteFile, output_file="/tmp/config.zip"), shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteZipFile, output_file="/tmp/config.zip"), shell=True)
         assert (result == 0) # verify the download was successful
         self._app.importClientConfig("/tmp/config.zip")
         # wait for vpn tunnel to form
@@ -260,10 +269,10 @@ class OpenVpnTests(NGFWTestCase):
         assert (remoteHostResult)
         listOfServers = self._app.getRemoteServersStatus()
         # print(listOfServers)
-        assert(listOfServers['list'][0]['name'] == vpnSite2SiteHostname)
+        assert(listOfServers['list'][0]['name'] == vpnSite2SiteZipHostname)
         tunnelUp = True
 
-    def test_030_disableRemoteClientVPNTunnel(self):
+    def test_021_disableRemoteClientVPNTunnel_zip(self):
         global tunnelUp 
         if (not tunnelUp):
             raise unittest.SkipTest("previous test test_020_createVPNTunnel failed")
@@ -272,7 +281,7 @@ class OpenVpnTests(NGFWTestCase):
         i=0
         found = False
         for remoteGuest in appData['remoteServers']['list']:
-            if (remoteGuest['name'] == vpnSite2SiteHostname):
+            if (remoteGuest['name'] == vpnSite2SiteZipHostname):
                 found = True 
             if (not found):
                 i+=1
@@ -288,13 +297,61 @@ class OpenVpnTests(NGFWTestCase):
         appData["remoteServers"]["list"][:] = []
         self._app.setSettings(appData)
 
-    def test_035_createVPNTunnel_userpass(self):
-        """Create Site-to-Site connection with local username/password authentication"""
+    def test_022_createVPNTunnelWith_inlineConfig(self):
+        global tunnelUp
+        tunnelUp = False
+        if (vpnHostResult != 0):
+            raise unittest.SkipTest("No paried VPN server available")
+        # Download remote system VPN config
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteInlineFile, output_file="/tmp/config.zip"), shell=True)
+        if (result != 0):
+            raise unittest.SkipTest("Currenlty no inline config file is present in test server skipping the test")
+        assert (result == 0) # verify the download was successful
+        self._app.importClientConfig("/tmp/inline.ovpn")
+        # wait for vpn tunnel to form
+        timeout = waitForServerVPNtoConnect(self._app)
+        # If VPN tunnel has failed to connect, fail the test,
+        assert(timeout > 0)
+
+        remoteHostResult = waitForPing(global_functions.VPN_SERVER_LAN_IP,0)
+        assert (remoteHostResult)
+        listOfServers = self._app.getRemoteServersStatus()
+        # print(listOfServers)
+        assert(listOfServers['list'][0]['name'] == vpnSite2SiteInlineHostname)
+        tunnelUp = True
+
+    def test_023_disableRemoteClientVPNTunnel_inline(self):
+        global tunnelUp 
+        if (not tunnelUp):
+            raise unittest.SkipTest("previous test test_022_createVPNTunnel failed")
+        appData = self._app.getSettings()
+        # print(appData)
+        i=0
+        found = False
+        for remoteGuest in appData['remoteServers']['list']:
+            if (remoteGuest['name'] == vpnSite2SiteInlineHostname):
+                found = True 
+            if (not found):
+                i+=1
+        assert (found) # test profile not found in remoteServers list
+        appData['remoteServers']['list'][i]['enabled'] = False
+        self._app.setSettings(appData)
+        remoteHostResult = waitForPing(global_functions.VPN_SERVER_LAN_IP,1)
+        assert (remoteHostResult)
+        tunnelUp = False
+
+        #remove server from remoteServers so it doesn't interfere with later tests
+        appData = self._app.getSettings()
+        appData["remoteServers"]["list"][:] = []
+        self._app.setSettings(appData)
+
+    def test_024_createVPNTunnelWithConfig_userpass(self):
+        """Create Site-to-Site connection with local username/password authentication with zip config"""
         if (vpnUserPassHostResult != 0):
             raise unittest.SkipTest("User/Pass VPN server not available")
 
         # Download remote system VPN config
-        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteUserPassFile, output_file="/tmp/UserPassConfig.zip"), shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteUserPassZipFile, output_file="/tmp/UserPassConfig.zip"), shell=True)
         assert(result == 0) #verify download was successful
         self._app.importClientConfig("/tmp/UserPassConfig.zip")
 
@@ -332,7 +389,55 @@ class OpenVpnTests(NGFWTestCase):
         assert(remoteHostResultUserPass)  # NGFW-13424
         assert (result == 0) # if web site found
         #print(listOfServers)
-        assert(listOfServers["list"][0]['name'] == vpnSite2SiteUserPassHostname)
+        assert(listOfServers["list"][0]['name'] == vpnSite2SiteUserPassZipHostname)
+
+    def test_025_createVPNTunnelWithInline_userpass(self):
+        """Create Site-to-Site connection with local username/password authentication with inline config"""
+        if (vpnUserPassHostResult != 0):
+            raise unittest.SkipTest("User/Pass VPN server not available")
+
+        # Download remote system VPN config
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteUserPassInlineFile, output_file="/tmp/UserPassConfig.zip"), shell=True)
+        if (result != 0):
+            raise unittest.SkipTest("Currenlty no inline config file is present in test server skipping the test")
+        assert(result == 0) #verify download was successful
+        self._app.importClientConfig("/tmp/UserPassInline.ovpn")
+
+        #set username/password in remoteServer settings
+        appData = self._app.getSettings()
+        appData["serverEnabled"]=True
+        appData["remoteServers"]["list"][0]["authUserPass"]=True
+        appData["remoteServers"]["list"][0]["authUsername"]=ovpnlocaluser
+        appData["remoteServers"]["list"][0]["authPassword"]=ovpnPasswd
+        #enable user/password authentication, set to local directory
+        appData['authUserPass']=True
+        appData["authenticationType"]="LOCAL_DIRECTORY"
+        self._app.setSettings(appData)
+
+        #wait for vpn tunnel to form
+        timeout = waitForServerVPNtoConnect(self._app)
+        # If VPN tunnel has failed to connect, fail the test,
+        assert(timeout > 0)
+
+        remoteHostResultUserPass = waitForPing(global_functions.VPN_SERVER_USER_PASS_LAN_IP,0)
+        wanIP = global_functions.uvmContext.networkManager().getFirstWanAddress()
+        if global_functions.is_bridged(wanIP):
+            # skip http test on bridged configurations since 10.111.0.0 network
+            result = 0
+        else:
+            result = remote_control.run_command(global_functions.build_wget_command(uri=global_functions.VPN_SERVER_USER_PASS_LAN_IP, output_file="-") + " 2>&1 | grep -q Debian")
+        listOfServers = self._app.getRemoteServersStatus()
+
+        #remove server from remoteServers so it doesn't interfere with later tests
+        appData = self._app.getSettings()
+        appData['authUserPass']=False
+        appData["remoteServers"]["list"][:] = []
+        self._app.setSettings(appData)
+
+        assert(remoteHostResultUserPass)  # NGFW-13424
+        assert (result == 0) # if web site found
+        #print(listOfServers)
+        assert(listOfServers["list"][0]['name'] == vpnSite2SiteUserPassInlineHostname)
 
 
     def test_040_createClientVPNTunnel(self):

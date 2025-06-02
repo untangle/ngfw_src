@@ -21,6 +21,9 @@ Ext.define('Ung.apps.webfilter.Main', {
             passedUrls:    { data: '{settings.passedUrls.list}' },
             passedClients: { data: '{settings.passedClients.list}' },
             filterRules:   { data: '{settings.filterRules.list}' }
+        },
+        data: {
+            isAddAction: false 
         }
     },
 

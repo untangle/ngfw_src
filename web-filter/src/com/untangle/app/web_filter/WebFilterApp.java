@@ -6,6 +6,8 @@ package com.untangle.app.web_filter;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.io.IOException;
+import java.nio.file.Files;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +25,7 @@ import com.untangle.app.web_filter.WebFilterBase;
 import com.untangle.app.web_filter.WebFilterReplacementGenerator;
 import com.untangle.app.web_filter.DecisionEngine;
 import com.untangle.app.web_filter.WebFilterSettings;
+import com.untangle.uvm.app.App;
 
 /**
  * The Web Filter application. The bulk of the functionality lives in the
@@ -133,6 +136,36 @@ public class WebFilterApp extends WebFilterBase
         getDecisionEngine().stop();
 
         super.postStop(isPermanentTransition);
+    }
+
+    /**
+     * Called after the application is started.
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    @Override
+    protected void postStart(boolean isPermanentTransition)
+    {
+        loadAllGlobalSettings(); //To load global setting 
+        super.postStart(isPermanentTransition);
+
+    }
+
+    /**
+     * Remove the globalSettings file when the last web-filter instance is destroyed.
+     */
+    @Override
+    protected void postDestroy()
+    {
+        List<App> webFilterList = UvmContextFactory.context().appManager().appInstances("web-filter");
+        if(webFilterList.size() == 1 && Files.exists(globalSettingFilePath)){
+            try {
+                Files.delete(globalSettingFilePath);
+            } catch (IOException e) {
+                logger.warn("Failed to delete global settings.", e);
+            }        
+        }
     }
 
     /**
