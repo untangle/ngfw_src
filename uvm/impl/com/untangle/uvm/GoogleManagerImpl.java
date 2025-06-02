@@ -214,12 +214,12 @@ public class GoogleManagerImpl implements GoogleManager
     /**
      * Check if previously configured google drive has disconnected abruptly
      * We must have a valid access token to be able to stay connected to google drive.
-     * A true validity test includes /tokeninfo API call google to check if it is really valid.
-     * But this API call will be expensive to make frequently. Instead we can rely on token's expiry time to check validity.
-     *  a. If we identify token has expired that means the token refresh job fails must have failed. Conclude abrupt disconnection.
+     * A true validity test includes google's /tokeninfo API call to check if it is really valid.
+     * But this API call would be expensive to make frequently. Instead, we can rely on token's expiry time to check validity.
+     *  a. If we identify token has expired that means the token refresh job must have failed. Conclude abrupt disconnection.
      *  b. If there are no tokens in the settings then that means either google drive was never configured or was disconnected by the admin.
      *     Don't treat this as abrupt disconnection.
-     * @return true for aburpt disconnection, false otherwise
+     * @return true for abrupt disconnection, false otherwise
      */
     @Override
     public boolean isGoogleDriveDisconnectedAbruptly() {
