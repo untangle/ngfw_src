@@ -12,6 +12,9 @@ public interface GoogleManager
 
     GoogleSettings getSettings();
     void setSettings(GoogleSettings settings);
+
+    boolean isGoogleDriveDisconnectedAbruptly();
+
     public boolean isGoogleDriveConnected();
 
     String getAppSpecificGoogleDrivePath(String appDirectory);
