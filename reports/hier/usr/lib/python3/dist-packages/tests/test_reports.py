@@ -890,10 +890,13 @@ class ReportsTests(NGFWTestCase):
                 break
         # Setup syslog to send events to syslog host in /config/events/syslog
         syslogSettings = global_functions.uvmContext.eventManager().getSettings()
-        syslogSettings["syslogEnabled"] = True
-        syslogSettings["syslogPort"] = 514
-        syslogSettings["syslogProtocol"] = "UDP"
-        syslogSettings["syslogHost"] = syslog_server_host
+        orig_syslogsettings = copy.deepcopy(syslogSettings)
+        SYSLOG_SERVER1 = {"enabled": True, "description":syslog_server_host, "host": syslog_server_host, "javaClass": "com.untangle.uvm.event.SyslogServer", "port": 514, "protocol": "UDP", "serverId": -1, "tag": "uvm-to-"+syslog_server_host }
+        syslogSettings['syslogServers']['list'].append(SYSLOG_SERVER1)
+        for rule in syslogSettings['syslogRules']['list']:
+            if rule.get('ruleId') == 1:
+                rule['syslogServers']['list'] = [1]
+                break
         global_functions.uvmContext.eventManager().setSettings( syslogSettings )
 
         # create some traffic (blocked by firewall and thus create a syslog event)
@@ -909,8 +912,8 @@ class ReportsTests(NGFWTestCase):
 
         # remove the firewall rule aet syslog back to original settings
         self._app.setSettings(orig_settings)
-        rules["list"]=[];
-        firewall_app.setRules(rules);
+        rules["list"]=[]
+        firewall_app.setRules(rules)
 
         # remove firewall
         if firewall_app != None:
@@ -951,10 +954,8 @@ class ReportsTests(NGFWTestCase):
                     break
             time.sleep(2)
 
-        # Disable syslog
-        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
-        syslogSettings["syslogEnabled"] = False
-        global_functions.uvmContext.eventManager().setSettings( syslogSettings )
+        # revert syslog settings to original settings
+        global_functions.uvmContext.eventManager().setSettings( orig_syslogsettings )
             
         assert(found_count == num_string_find)
 
