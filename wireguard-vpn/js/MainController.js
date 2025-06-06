@@ -39,16 +39,6 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
             vm.set('warning', warning);
             vm.set('hostname', networkSettings['hostName']);
 
-            var networks = result[0]['networks']['list'];
-            var netlist = "";
-            if(networks != null){
-                for(x = 0;x < networks.length;x++) {
-                    if (x != 0) netlist += ", ";
-                    netlist += networks[x].address;
-                }
-            }
-            vm.set('localNetworkList', netlist);
-
             v.setLoading(false);
         },function(ex){
             if(!Util.isDestroyed(v, vm)){
@@ -103,6 +93,17 @@ Ext.define('Ung.apps.wireguard-vpn.MainController', {
                 // Delete tunnel commands inserted before settings commit.
                 var recordObj = JSON.parse(jsonRecord);
                 sequence.unshift(Rpc.directPromise(v.appManager, 'deleteTunnel', recordObj['publicKey']));
+            });
+
+            // Format routedNetworkProfiles checkbox list value to java compatible object
+            vm.get('settings.tunnels.list').forEach(function(tunnel) {
+                if(tunnel.routedNetworkProfiles && !tunnel.routedNetworkProfiles.javaClass) {
+                    tunnel.routedNetworkProfiles.javaClass = 'java.util.LinkedList';
+                    if(!tunnel.routedNetworkProfiles.list)
+                        tunnel.routedNetworkProfiles.list = [];
+                    if(typeof tunnel.routedNetworkProfiles.list === 'string')
+                        tunnel.routedNetworkProfiles.list = [ tunnel.routedNetworkProfiles.list ];
+                }
             });
         }
 
@@ -358,6 +359,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditor', {
     extend: 'Ung.cmp.RecordEditor',
     xtype: 'ung.cmp.unwireguardvpntunnelrecordeditor',
     alias: 'widget.unwireguardvpntunnelrecordeditor',
+    itemId: 'unwireguardvpntunnelrecordeditor',
 
     controller: 'unwireguardvpntunnelrecordeditorcontroller'
 });
@@ -366,9 +368,15 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
     extend: 'Ung.cmp.RecordEditorController',
     alias: 'controller.unwireguardvpntunnelrecordeditorcontroller',
 
+    control: {
+        '#unwireguardvpntunnelrecordeditor': {
+            afterrender: 'afterTunnelsEditorRender'
+        }
+    },
+
     pasteTunnel: function(component){
         if(!component.target ||
-           !component.target.dataset.componentid ||
+           !component.target.dataset ||
            !component.target.dataset.componentid){
             return;
         }
@@ -431,6 +439,12 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
 
         this.callParent([view]);
 
+        // Set routed networks from the profiles selected for a tunnel dynamically
+        var rnProfileList;
+        if(record.get('routedNetworkProfiles')) {
+            rnProfileList = record.get('routedNetworkProfiles').list;
+        }
+        me.setRoutedNetworksFromProfiles(rnProfileList, vm, record);
         view.down('form').add(
             Ung.apps['wireguard-vpn'].Main.hostDisplayFields(true, !record.get('markedForNew'), true)
         );
@@ -458,5 +472,80 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.WireGuardVpnTunnelRecordEditorController'
                 }
             }
         }
+    },
+
+    afterTunnelsEditorRender: function() {
+        var v = this.getView(),
+            vm = this.getViewModel(),
+            items = [],
+            routedNetworks = v.down('#routednetworkscbgroup'),
+            localNetProfiles = vm.get('settings.networkProfiles.list');
+
+        // Add all the Local Networks Profiles from settings page as checkboxes
+        // to be selected as Routed Network Profiles on tunnel add/edit window
+        localNetProfiles.forEach(function(profile) {
+            items.push({
+                boxLabel: profile.profileName,
+                name: 'list', 
+                inputValue: profile.profileName,
+                autoEl: {
+                    tag: 'div',
+                    'data-qtip': profile.subnetsAsString
+                }
+            });
+        });
+        routedNetworks.add(items);
+    },
+
+    /**
+     * listener for Routed Network Profiles change 
+     */
+    onRoutednetworkscbgroupChange: function(checkboxgroup, newValue, oldValue, eOpts) {
+        var editor = checkboxgroup.up('unwireguardvpntunnelrecordeditor'),
+            record = editor.record,
+            form = editor.down('form'),
+            localServiceInfo = form && form.down('#localserviceinfo');
+
+        if (localServiceInfo) {
+            form.remove(localServiceInfo, true);  // autoDestroy = true
+        }
+
+        this.setRoutedNetworksFromProfiles(newValue.list, record);
+        var newCmp = Ung.apps['wireguard-vpn'].Main.hostDisplayFields(true, false, true );
+
+        if (form) form.add(newCmp);
+
+    },
+
+    /**
+     * Sets the routedNetworks from selected profile names in tunnel store
+     */
+    setRoutedNetworksFromProfiles: function(profiles, record) {
+        var vm = this.getViewModel(),
+            localNetProfiles = vm.get('settings.networkProfiles.list'),
+            routedNetworks = "",
+            networksList = [];
+
+        if(profiles) {
+            if(typeof profiles === 'string') {
+                profiles = [ profiles ];
+            }
+
+            localNetProfiles.forEach(function(profile) {
+                if(profiles.indexOf(profile.profileName) !== -1) {
+                    var newList = profile.subnetsAsString.split(',');
+                    for (var i = 0; i < newList.length; i++) {
+                        var net = newList[i].trim();
+                        if (net && networksList.indexOf(net) === -1) {
+                            networksList.push(net);
+                        }
+                    }
+                }
+            });
+            routedNetworks = networksList.join(',');
+        }   
+
+        vm.set('localNetworkList', routedNetworks);
+        record.set('routedNetworks', routedNetworks);
     }
 });

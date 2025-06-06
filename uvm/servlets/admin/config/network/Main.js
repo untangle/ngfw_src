@@ -6,12 +6,11 @@ Ext.define('Ung.config.network.Main', {
     requires: [
         'Ung.config.network.MainController',
         'Ung.config.network.MainModel',
-        'Ung.config.network.Interface',
-
         'Ung.store.Rule',
         'Ung.model.Rule',
         'Ung.cmp.Grid',
-        'Ung.util.Renderer'
+        'Ung.util.Renderer',
+        'Ung.cmp.IframePanel'
     ],
     /* requires-end */
     controller: 'config-network',
@@ -33,7 +32,7 @@ Ext.define('Ung.config.network.Main', {
     // tabStretchMax: false,
 
     items: [
-        { xtype: 'config-network-interfaces' },
+        { xtype: 'iframe-panel', itemId: 'interfaces', title: 'Interfaces'.t(), iframeUrl: '/console/settings/network/interfaces/' },
         { xtype: 'config-network-hostname' },
         { xtype: 'config-network-services' },
         { xtype: 'config-network-port-forward-rules' },

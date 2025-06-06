@@ -1308,6 +1308,193 @@ def user_quota_give(username, bytes_size, seconds):
 def random_email(length=10):
    return ''.join(random.choice(string.ascii_lowercase) for i in range(length)) + "@" + TEST_SERVER_HOST
     
+def createPolicySingleConditionRule( conditionType, value, targetPolicy, blocked=True ):
+    conditionTypeStr = str(conditionType)
+    valueStr = str(value)
+    return {
+        "javaClass": "com.untangle.app.policy_manager.PolicyRule", 
+        "ruleId": 1, 
+        "enabled": True, 
+        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
+        "targetPolicy" : targetPolicy,
+        "conditions": {
+            "javaClass": "java.util.LinkedList", 
+            "list": [
+                {
+                    "invert": False, 
+                    "javaClass": "com.untangle.app.policy_manager.PolicyRuleCondition", 
+                    "conditionType": conditionTypeStr, 
+                    "value": valueStr
+                    }
+                ]
+            }
+        }
+
+def appendRule(app, newRule):
+    settings = app.getSettings()
+    settings['rules']['list'].append(newRule)
+    app.setSettings(settings)
+
+def nukeRules(app):
+    settings = app.getSettings()
+    settings['rules']['list'] = []
+    app.setSettings(settings)
+
+def addRack(app, name="New Rack", description="", parentId=None):
+    currentSettings = app.getSettings()
+    currentPolicies = currentSettings['policies']
+    maxIdFound = 0
+    for policy in currentPolicies['list']:
+        if policy['policyId'] > maxIdFound:
+            maxIdFound = policy['policyId']
+    newPolicy = { "javaClass" : "com.untangle.app.policy_manager.PolicySettings", "policyId" : maxIdFound+1, "name": name, "description" : description, "parentId" : parentId }
+    currentPolicies['list'].append(newPolicy)
+    app.setSettings(currentSettings)
+    return newPolicy['policyId']
+
+def removeRack(app, id):
+    currentSettings = app.getSettings()
+    currentPolicies = currentSettings['policies']
+    i = 0
+    removed = False
+    for policy in currentPolicies['list']:
+        if policy['policyId'] == id:
+            del currentPolicies['list'][i]
+            removed = True
+            break
+        i = i + 1
+    if removed:
+        app.setSettings(currentSettings)
+    return removed
+
+def  get_network_interface():
+    # Run the "ip addr" command remotely 
+    output = remote_control.run_command("sudo ip addr", stdout=True)
+
+    interfaces = []
+    for line in output.splitlines():
+        if 'lo' in line:
+            continue  # Skip loopback interface
+        if re.match(r'^\d+:', line):
+            interface_name = line.split(":")[1].strip()
+            interfaces.append(interface_name)
+
+    # Return the first non-loopback interface
+    return interfaces[0] if interfaces else None
+
+def get_primary_ip(interface):
+    # Get the primary IP address of the interface using "ip addr show"
+    output = remote_control.run_command(f"sudo ip addr show {interface}", stdout=True)
+
+    primary_ip = None
+    for line in output.splitlines():
+        if "inet" in line:
+            primary_ip = line.split()[1].split('/')[0]
+            break
+
+    return primary_ip
+
+def get_gateway():
+    # Get the gatway of remote client
+    lan_interface = None
+    netsettings = uvmContext.networkManager().getNetworkSettings()
+    for interface in netsettings['interfaces']['list']:
+        if interface.get("configType") != 'ADDRESSED':
+            continue
+        if interface.get("isWan"):
+            continue
+        lan_interface = interface
+        break
+    gateway = lan_interface["v4StaticAddress"]
+    return gateway
+
+def create_route_table_entry(route_table_name):
+    # Ensure the route table entry exists in /etc/iproute2/rt_tables on the remote server
+    # Read the current contents of the /etc/iproute2/rt_tables file remotely
+    command = "cat /etc/iproute2/rt_tables"
+    tables = remote_control.run_command(command, stdout=True)
+
+    # Check if the table already exists
+    if route_table_name not in tables:
+        # Find a unique ID for the new routing table
+        next_id = str(len(tables.splitlines()) + 1)  # or use a specific algorithm to avoid collisions
+        # Append the new route table entry remotely
+        command = f"echo '{next_id} {route_table_name}' | sudo tee -a /etc/iproute2/rt_tables"
+        remote_control.run_command(command)
+
+def delete_route_table_entry(route_table_name):
+    # Read the existing remote route tables
+    command = "cat /etc/iproute2/rt_tables"
+    tables = remote_control.run_command(command, stdout=True)
+    # Remove the line containing the route_table_name
+    updated_lines = []
+    for line in tables.splitlines():
+        if route_table_name not in line:
+            updated_lines.append(line)
+
+    if len(updated_lines) == len(tables.splitlines()):
+        return
+    # Construct the new content
+    new_table_contents = "\n".join(updated_lines)
+    #  Push the updated content remotely using a heredoc and sudo tee
+    heredoc = f"""sudo tee /etc/iproute2/rt_tables > /dev/null <<EOF
+    {new_table_contents}
+    """
+    remote_control.run_command(heredoc)
+
+def add_secondary_ip(interface, primary_ip):
+    # Calculate secondary IP by modifying the last octet of the primary IP
+    ip_parts = primary_ip.split('.')
+    ip_parts[-1] = str(int(ip_parts[-1]) + 1)  # Add 1 to the last octet for secondary IP
+    secondary_ip = ".".join(ip_parts)
+    # Check if the secondary IP already exists
+    output = remote_control.run_command(f"sudo ip addr show {interface}", stdout=True)
+    if secondary_ip in output:
+        print("PRIMARY IP : ",primary_ip)
+        print("SECONDARY IP : ",secondary_ip)
+        return primary_ip, secondary_ip  # Skip adding if the IP already exists
+    # Add the secondary IP to the network interface
+    command = f"sudo ip addr add {secondary_ip}/24 dev {interface}"
+    remote_control.run_command(command)
+    route_table_name = f"rt{ip_parts[-1]}"
+    create_route_table_entry(route_table_name)
+    # Add the rule for the secondary IP
+    route_table_command = f"sudo ip rule add from {secondary_ip} table {route_table_name}"
+    remote_control.run_command(route_table_command)
+    # Check if the route already exists
+    check_command = f"sudo ip route show table {route_table_name}"
+    route_output = remote_control.run_command(check_command, stdout=True)
+
+    gateway = get_gateway()
+    expected_route = f"default via {gateway} dev {interface}"
+
+    if expected_route not in route_output:
+        # Add the route since it does not exist
+        route_command = f"sudo ip route add default via {gateway} dev {interface} table {route_table_name}"
+        remote_control.run_command(route_command)
+    print("PRIMARY IP : ",primary_ip)
+    print("SECONDARY IP : ",secondary_ip)
+    return primary_ip, secondary_ip
+
+def remove_secondary_ip(interface, primary_ip):
+    # Calculate secondary IP by modifying the last octet of the primary IP
+    ip_parts = primary_ip.split('.')
+    ip_parts[-1] = str(int(ip_parts[-1]) + 1)  # Add 1 to the last octet for secondary IP
+    secondary_ip = ".".join(ip_parts)
+    # Remove the secondary IP from the network interface
+    command = f"sudo ip addr del {secondary_ip}/24 dev {interface}"
+    remote_control.run_command(command)
+    # Remove the secondary IP from the routing table
+    route_table_command = f"sudo ip rule del from {secondary_ip} table rt{ip_parts[-1]}"
+    remote_control.run_command(route_table_command)
+    # Remove the default route from the custom table
+    gateway = get_gateway()
+    route_table_name = f"rt{ip_parts[-1]}"
+    route_command = f"sudo ip route del default via {gateway} dev {interface} table {route_table_name}"
+    remote_control.run_command(route_command)
+    # Ensure the routing table entry is deleted
+    delete_route_table_entry(route_table_name)
+
 def __get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -1349,7 +1536,7 @@ def check_clamd_ready():
 
     return True
 
-def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=None, cookies_save_file=None, cookies_load_file=None, header=None, user_agent=None, post_data=None, override_arguments=None, extra_arguments=None, ignore_certificate=True, user=None, password=None, quiet=True, all_parameters=False, content_on_error=False):
+def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=None, cookies_save_file=None, cookies_load_file=None, header=None, user_agent=None, post_data=None, override_arguments=None, extra_arguments=None, ignore_certificate=True, user=None, password=None, quiet=True, all_parameters=False, content_on_error=False, bind_address=None):
     """
     Build wget command
 
@@ -1406,6 +1593,8 @@ def build_wget_command(uri=None, tries=2, timeout=5, log_file=None, output_file=
         optional_arguments.append(f"--user='{user}'")
     if password is not None:
         optional_arguments.append(f"--password='{password}'")
+    if bind_address is not None:
+        optional_arguments.append(f"--bind-address='{bind_address}'")
 
     if extra_arguments is not None:
         optional_arguments.append(extra_arguments)
