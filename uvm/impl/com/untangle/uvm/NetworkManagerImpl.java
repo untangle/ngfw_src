@@ -90,6 +90,7 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ADDRESS = "static-address";
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
+    private final static String GET_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/hostapd-logfile";
 
     // creating a cache for the lookedup mac addresses and vendors
     private static ConcurrentMap<String,String> cachedMacAddrVendorList = new ConcurrentHashMap<>();
@@ -3117,6 +3118,18 @@ public class NetworkManagerImpl implements NetworkManager
         // For 17.1, peform "free" conversion to set the new dhcpMaxLeases setting to its default value
         this.networkSettings.setVersion( currentVersion );
         this.setNetworkSettings( this.networkSettings, false );
+    }
+
+    /**
+     * Gets the contents of the hostapd log file
+     * @param device - the device name to filter the logs
+     *
+     * @return The contents of the IPsec log file
+     */
+    public String getLogFile(String device)
+    {
+        logger.debug("hostapd.log getLogFile()");
+        return UvmContextFactory.context().execManager().execOutput(String.format("%s %s", GET_LOGFILE_SCRIPT, device));
     }
 
     /**

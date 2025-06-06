@@ -1,0 +1,23 @@
+#!/bin/dash
+
+LOGFILE=/var/log/hostapd.log
+device_name=$1
+
+if [ ! -e "$LOGFILE" ]; then
+    echo "hostapd not running"
+    exit 0
+fi
+
+if [ ! -s "$LOGFILE" ]; then
+    echo "The hostapd log file is empty"
+    exit 0
+fi
+
+# Grab hostapd output from the log file
+if [ -n "$device_name" ]; then
+    tail -n 1024 "$LOGFILE" | grep "$device_name" | /usr/bin/tac
+else
+    tail -n 1024 "$LOGFILE" | /usr/bin/tac
+fi
+
+exit 0
