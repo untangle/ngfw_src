@@ -16,7 +16,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Random;
 
 import com.untangle.uvm.logging.ConfigurationBackupEvent;
 import org.apache.commons.lang3.StringUtils;
@@ -36,11 +38,12 @@ import com.untangle.uvm.util.I18nUtil;
 public class ConfigurationBackupApp extends AppBase
 {
     private final Logger logger = LogManager.getLogger(ConfigurationBackupApp.class);
+    private static final Random random = new Random();
 
     private static final String CRON_STRING = "* * * root /usr/share/untangle/bin/configuration-backup-send-backup.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-configuration-backup-nightly");
 
-    private static final String BACKUP_URL = UvmContextFactory.context().uriManager().getUri("https://boxbackup.untangle.com/boxbackup/backup.php");
+    private static final String BACKUP_URL = UvmContextFactory.context().uriManager().getUri("https://boxbackup.edge.arista.com/boxbackup/backup.php");
     private static final String TIMEOUT_SEC = "1200";
 
     private final PipelineConnector[] connectors = new PipelineConnector[] { };
@@ -111,15 +114,14 @@ public class ConfigurationBackupApp extends AppBase
     @Override
     public void initializeSettings()
     {
-        ConfigurationBackupSettings settings = new ConfigurationBackupSettings();
+        settings = new ConfigurationBackupSettings();
         logger.info("Initializing Settings...");
 
         //Doesn't really matter when the backup takes place, but we
         //want it to be random so all customers do not post-back
         //their data files concurrently.
-        java.util.Random r = new java.util.Random();
-        settings.setHourInDay(r.nextInt(24));
-        settings.setMinuteInHour(r.nextInt(60));
+        settings.setHourInDay(random.nextInt(24));
+        settings.setMinuteInHour(random.nextInt(60));
 
         setSettings( settings );
     }
@@ -145,7 +147,7 @@ public class ConfigurationBackupApp extends AppBase
         }
 
         /**
-         * Upload to untangle.com
+         * Upload to edge.arista.com
          */
         uploadBackup( backupFile );
 
@@ -161,7 +163,7 @@ public class ConfigurationBackupApp extends AppBase
         }
 
         try {
-            backupFile.delete();
+            Files.delete(backupFile.toPath());
         } catch (Exception e) {
             logger.warn("Failed to delete backup file",e);
         }
@@ -177,7 +179,7 @@ public class ConfigurationBackupApp extends AppBase
         String settingsFileName = System.getProperty("uvm.settings.dir") + "/configuration-backup/settings_" + appID + ".js";
 
         ConfigurationBackupSettings readSettings = null;
-        logger.info("Loading settings from " + settingsFileName );
+        logger.info("Loading settings from {}", settingsFileName );
 
         try {
             // first we try to read our json settings
@@ -195,7 +197,7 @@ public class ConfigurationBackupApp extends AppBase
 
             // otherwise apply the loaded or imported settings from the file
             else {
-                logger.info("Loaded settings from " + settingsFileName);
+                logger.info("Loaded settings from {}", settingsFileName);
                 this.settings = readSettings;
             }
         } catch (Exception exn) {
@@ -246,7 +248,7 @@ public class ConfigurationBackupApp extends AppBase
     }
 
     /**
-     * Upload the backup to untangle.com
+     * Upload the backup to edge.arista.com
      *
      * @param backupFile
      *  Handle of file to backup.
@@ -266,9 +268,11 @@ public class ConfigurationBackupApp extends AppBase
         logger.info("Backup command: {}", Arrays.toString(cmd));
 
         Integer exitCode = 0;
+        String result = null;
         try {
             ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
             exitCode = reader.waitFor();
+            result = reader.readFromOutput();
         } catch (Exception e) {
             exitCode = 99;
             logger.warn("Exception running backup",e);
@@ -301,6 +305,7 @@ public class ConfigurationBackupApp extends AppBase
                 reason = "Unknown error";
             }
             logger.error("Backup failed: {}", reason);
+            logger.error("Execution details:\n{}", result);
             this.logEvent( new ConfigurationBackupEvent(false, reason, I18nUtil.marktr("My Account")) );
         }
         else {

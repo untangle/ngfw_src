@@ -6,7 +6,7 @@ Ext.define('Ung.config.network.view.DhcpServer', {
     scrollable: true,
     layout: 'fit',
     title: 'DHCP Server'.t(),
-    withValidation: false,
+    withValidation: true,
     items: [{
         xtype: 'tabpanel',
         itemId: 'dhcpserver',
@@ -31,7 +31,9 @@ Ext.define('Ung.config.network.view.DhcpServer', {
                         allowBlank: false,
                         blankText: 'Maxiumum leases must be specified.'.t(),
                         bind: '{settings.dhcpMaxLeases}',
-                        maskRe: /[0-9]/
+                        maskRe: /[0-9]/,
+                        regex: /^(?:[1-9][0-9]{0,4})$/,
+                        invalidText: 'Please enter a value between 1 and 99999'
                     }]
                 }]
             },{

@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from tests.common import NGFWTestCase
-from tests.global_functions import uvmContext
+import tests.global_functions as global_functions
 import runtests.test_registry as test_registry
 
 
@@ -31,7 +31,7 @@ class UpgradeTests(NGFWTestCase):
         """ Check disk health check error, pass and fail result impact on upgrade """
 
         # We don't want to upgrade VM from test, so skip test if upgrade available.
-        available = uvmContext.systemManager().upgradesAvailable()
+        available = global_functions.uvmContext.systemManager().upgradesAvailable()
         if available:
             raise unittest.SkipTest('Upgrade available, skipping test')   
 
@@ -60,23 +60,23 @@ class UpgradeTests(NGFWTestCase):
         assert ("Aborting Upgrade" in result.stdout)
 
 
-    def test_010_skip_disk_health_check_on_upgrade(self):
+    def test_015_skip_disk_health_check_on_upgrade(self):
         """ Check if disk check is skipped if user want's to force upgrade on disk check failure """
 
         # We don't want to upgrade VM from test, so skip test if upgrade available.
-        available = uvmContext.systemManager().upgradesAvailable()
+        available = global_functions.uvmContext.systemManager().upgradesAvailable()
         if available:
             raise unittest.SkipTest('Upgrade available, skipping test')
 
         # Set skipDiskCheck flag True
-        uvmContext.systemManager().setSkipDiskCheck(True)
+        global_functions.uvmContext.systemManager().setSkipDiskCheck(True)
         result = subprocess.run( [sys.executable, UPGRADE_SCRIPT], capture_output=True, text=True )
 
         assert (result.returncode == 0)
         assert ("Skipping drive health checks" in result.stdout)
 
         # Set skipDiskCheck flag False
-        uvmContext.systemManager().setSkipDiskCheck(False)
+        global_functions.uvmContext.systemManager().setSkipDiskCheck(False)
         result = subprocess.run( [sys.executable, UPGRADE_SCRIPT], capture_output=True, text=True )
 
         assert ("disk health status" in result.stdout)

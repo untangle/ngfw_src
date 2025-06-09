@@ -3,7 +3,7 @@
 # see the following intranet page for more instructions and current
 # limitations:
 #
-#   https://intranet.untangle.com/display/ngfw/Next+Generation+Firewall+Development
+#   https://awakesecurity.atlassian.net/wiki/spaces/ngfw/pages/2075525133/Next+Generation+Firewall+Development
 
 set -e
 

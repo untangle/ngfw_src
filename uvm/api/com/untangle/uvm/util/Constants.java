@@ -9,7 +9,20 @@ package com.untangle.uvm.util;
  */
 public class Constants {
 
+    /**
+     * Private constructor to hide implicit constructor of utility class (RSPEC-1118)
+     */
+    private Constants() {
+        // no-op
+    }
+
+
     // Symbols
+    public static final String DOT = ".";
+    public static final String UNDERSCORE = "_";
+    public static final String SPACE = " ";
+    public static final String COMMA_STRING = ",";
+
     public static final String EQUALS_TO = "=";
 
     // Boolean

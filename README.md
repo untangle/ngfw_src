@@ -3,4 +3,4 @@
 For developer build: rake && ./dist/etc/init.d/untangle-vm restart
 Building with Docker: docker-compose build
 For Debian packages: debuild -us -uc
-For more information: http://wiki.untangle.com/index.php/Developer_Wiki
+For more information: http://wiki.edge.arista.com/index.php/Developer_Wiki

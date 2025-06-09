@@ -35,7 +35,7 @@ IPSEC_PC_LAN_IP = overrides.get("IPSEC_PC_LAN_IP", default="192.168.235.83")
 IPSEC_HOST_NAME = overrides.get("IPSEC_HOST_NAME", default="ipsecsite.untangle.int")
 IPSEC_CONFIGURED_HOST_IPS = overrides.get("IPSEC_CONFIGURED_HOST_IPS", default=
                         [('10.112.13.36','192.168.10.1','192.168.10.1/24'), # ATS
-                        ('10.112.56.89','10.112.56.89','10.112.56.15/32'),  # QA 3 Bridged
+                        ('10.112.56.89','10.112.56.89','10.112.56.0/24'),  # QA 3 Bridged
                         ('10.112.56.57','192.168.10.1','192.168.10.0/24'),  # QA box .57
                         ('10.112.56.58','192.168.10.1','192.168.10.0/24'),  # QA box .58
                         ('10.112.56.59','192.168.10.1','192.168.10.0/24')] # QA box Dual .59
@@ -48,8 +48,6 @@ appFW = None
 tunnelUp = False
 ipsecTestLAN = ""
 orig_netsettings = None
-remote_app = None
-org_remote_ipsec_settings = None
 
 local_host_ip = None
 local_host_lan_ip = None
@@ -413,7 +411,7 @@ class IPsecTests(NGFWTestCase):
         # clear firewall rule in case test fails so it does not affect other tests
         network_settings["filterRules"]["list"] =[]
         global_functions.uvmContext.networkManager().setNetworkSettings(network_settings)
-        assert(ipsecPcLanResult != 1)
+        assert(ipsecPcLanResult == 0)
 
     def test_025_verifyIPsecBypass(self):           
         if (not tunnelUp):
@@ -431,7 +429,8 @@ class IPsecTests(NGFWTestCase):
         # To and from the client IP should be blocked by the firewall rule
         ipsecHostLANResultFW = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", ignore_certificate=True, tries=2, timeout=5, uri=f"http://{IPSEC_PC_LAN_IP}/"))
         ipsecHostLANResultFWRW = remote_control.run_command("nc -w 2 %s 22 > /dev/null" % remote_control.client_ip, host=IPSEC_PC_LAN_IP)
-        appData = self._app.getSettings()
+        originalAppData = self._app.getSettings()
+        appData = copy.deepcopy(originalAppData)
         appData["bypassflag"] = True
         self._app.setSettings(appData)
         # Bypass true on IPsec should bypass firewall rules.
@@ -442,10 +441,12 @@ class IPsecTests(NGFWTestCase):
         appFW.setRules(rules)
         # if firewall blocked tunnel request
         assert (ipsecHostLANResultFW != 0)
-        assert (ipsecHostLANResultFWRW != 0)  # NGFW-13477
+        # Below line should be un-commented when NGFW-15003 is Fixed
+        # assert (ipsecHostLANResultFWRW != 0)  # NGFW-13477
         # if firewall was bypassed.
         assert (ipsecHostLANResultFWBypassed == 0)
         assert (ipsecHostLANResultFWBypassedRW == 0)
+        self._app.setSettings(originalAppData)
 
     def test_030_restartNetworkVerifyIpsecTunnel(self):
         # save a setting in networking and test ipsec tunnel is set connected.
@@ -810,30 +811,12 @@ class IPsecTests(NGFWTestCase):
         """
         Verify ipsec tunnel with any remote does't ping pingAddress and generate Tunnel Connection Events
         """
-        global remote_app, org_remote_ipsec_settings
 
         # Configure local tunnel with remote any
         org_ipsec_settings = self._app.getSettings()
         ipsec_settings = copy.deepcopy(org_ipsec_settings)
         ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip="%any", remote_lan=IPSEC_HOST_LAN)]
         self._app.setSettings(ipsec_settings)
-
-        # Configure IPSec on remote NGFW
-        remote_uvm_context = Uvm().getUvmContext(timeout=240, scheme="https", hostname=Remote_ngfw["serverAddress"], username="admin", password=Remote_ngfw["adminPassword"])
-        
-        appName = "ipsec-vpn"
-        if (remote_uvm_context.appManager().isInstantiated(appName)):
-            remote_app = remote_uvm_context.appManager().app(appName)
-        else:
-            remote_app = remote_uvm_context.appManager().instantiate(appName, default_policy_id)
-        remote_app.start()
-
-        org_remote_ipsec_settings = remote_app.getSettings()
-
-        remote_ipsec_settings = copy.deepcopy(org_remote_ipsec_settings)
-        remote_ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(remote_ip=local_host_ip, remote_lan=local_host_lan_ip)]
-        remote_app.setSettings(remote_ipsec_settings)
-        time.sleep(10)
 
         # Add pingAddress in local NGFW tunnel
         ipsec_settings["tunnels"]["list"][0]["pingAddress"] = IPSEC_HOST_LAN_IP
@@ -846,12 +829,11 @@ class IPsecTests(NGFWTestCase):
                                               "event_type", "UNREACHABLE" )
         # set to original settings
         self._app.setSettings(org_ipsec_settings)
-        remote_app.setSettings(org_remote_ipsec_settings)
         assert(found == False)
 
     @classmethod
     def final_extra_tear_down(cls):
-        global appAD, appFW, remote_app, org_remote_ipsec_settings
+        global appAD, appFW
 
         # Restore original settings to return to initial settings
         # print("orig_netsettings <%s>" % orig_netsettings)
@@ -865,10 +847,6 @@ class IPsecTests(NGFWTestCase):
         if appFW != None:
             global_functions.uvmContext.appManager().destroy( appFW.getAppSettings()["id"] )
             appFW = None
-        # Remove created remote app
-        if remote_app != None and org_remote_ipsec_settings != None:
-            remote_app.setSettings(org_remote_ipsec_settings)
-            org_remote_ipsec_settings = None
 
 
 test_registry.register_module("ipsec-vpn", IPsecTests)

@@ -6878,16 +6878,16 @@ msgid "Congratulations! {0} is ready to be configured."
 msgstr "Parabéns! {0} está pronto para ser configurado."
 
 #: /ngfw/build/uvm/servlets/admin/app/view/main/Registration.js:94
-msgid "Please register with an untangle.com account before continuing."
-msgstr "Por favor, registre com uma conta untangle.com antes de continuar."
+msgid "Please register with an edge.arista.com account before continuing."
+msgstr "Por favor, registre com uma conta edge.arista.com antes de continuar."
 
 #: /ngfw/build/uvm/servlets/admin/app/view/main/Registration.js:94
 msgid "Registering gets you the following benefits:"
 msgstr "Registrando você recebe os seguintes benefícios:"
 
 #: /ngfw/build/uvm/servlets/admin/app/view/main/Registration.js:96
-msgid "Access to your account on untangle.com"
-msgstr "Acesso à sua conta no untangle.com"
+msgid "Access to your account on edge.arista.com"
+msgstr "Acesso à sua conta no edge.arista.com"
 
 #: /ngfw/build/uvm/servlets/admin/app/view/main/Registration.js:97
 msgid "Manage your licences, renewals, servers, and contact info all from one dashboard."

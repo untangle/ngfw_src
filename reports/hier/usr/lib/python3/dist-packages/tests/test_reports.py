@@ -11,6 +11,7 @@ import os
 import re
 import requests
 import runtests
+import random
 import subprocess
 import sys
 import unittest
@@ -36,8 +37,8 @@ from PIL import Image as Image
 default_policy_id = 1
 apps_list_short = ["firewall", "web-filter", "spam-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn", "threat-prevention"]
 apps_name_list_short = ['Daily','Firewall','Web Filter','Spam Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN', 'Threat Prevention']
-apps_list = ["firewall", "web-filter", "virus-blocker", "spam-blocker", "phish-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "virus-blocker-lite", "spam-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn", "threat-prevention"]
-apps_name_list = ['Daily','Firewall','Web Filter','Virus Blocker','Spam Blocker','Phish Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Virus Blocker Lite','Spam Blocker Lite','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN', 'Threat Prevention']
+apps_list = ["firewall", "web-filter", "virus-blocker", "spam-blocker", "phish-blocker", "ad-blocker", "web-cache", "bandwidth-control", "application-control", "ssl-inspector", "captive-portal", "web-monitor", "virus-blocker-lite", "application-control-lite", "policy-manager", "directory-connector", "wan-failover", "wan-balancer", "configuration-backup", "intrusion-prevention", "ipsec-vpn", "openvpn", "threat-prevention"]
+apps_name_list = ['Daily','Firewall','Web Filter','Virus Blocker','Spam Blocker','Phish Blocker','Ad Blocker','Web Cache','Bandwidth Control','Application Control','SSL Inspector','Web Monitor','Captive Portal','Virus Blocker Lite','Application Control Lite','Policy Manager','Directory Connector','WAN Failover','WAN Balancer','Configuration Backup','Intrusion Prevention','IPsec VPN','OpenVPN', 'Threat Prevention']
 app = None
 web_app = None
 can_relay = None
@@ -46,6 +47,7 @@ orig_settings = None
 orig_mailsettings = None
 syslog_server_host = ""
 test_email_address = ""
+reports_clean_tables_script = "/usr/share/untangle/bin/reports-clean-tables.py"
 # pdb.set_trace()
 
 
@@ -58,8 +60,21 @@ class ContentIdParser(HTMLParser):
                 if attr[0] == "src":
                     matches = self.cid_src_regex.match(attr[1])
                     if matches is not None and len(matches.groups()) > 0:
-                        self.content_ids.append(matches.group(1))                    
+                        self.content_ids.append(matches.group(1))
 
+def set_wan_weight(app, interfaceId, weight):
+    if interfaceId == None or interfaceId == 0:
+        print("Invalid interface: " + str(interfaceId))
+        return
+    app_data = app.getSettings()
+    if (interfaceId == "all"):
+        i = 0
+        for intefaceIndex in app_data["weights"]:
+            app_data["weights"][i] = weight
+            i += 1
+    else:
+        app_data["weights"][interfaceId-1] = weight
+    app.setSettings(app_data)
 
 def configure_mail_relay():
     global orig_mailsettings, test_email_address
@@ -875,10 +890,13 @@ class ReportsTests(NGFWTestCase):
                 break
         # Setup syslog to send events to syslog host in /config/events/syslog
         syslogSettings = global_functions.uvmContext.eventManager().getSettings()
-        syslogSettings["syslogEnabled"] = True
-        syslogSettings["syslogPort"] = 514
-        syslogSettings["syslogProtocol"] = "UDP"
-        syslogSettings["syslogHost"] = syslog_server_host
+        orig_syslogsettings = copy.deepcopy(syslogSettings)
+        SYSLOG_SERVER1 = {"enabled": True, "description":syslog_server_host, "host": syslog_server_host, "javaClass": "com.untangle.uvm.event.SyslogServer", "port": 514, "protocol": "UDP", "serverId": -1, "tag": "uvm-to-"+syslog_server_host }
+        syslogSettings['syslogServers']['list'].append(SYSLOG_SERVER1)
+        for rule in syslogSettings['syslogRules']['list']:
+            if rule.get('ruleId') == 1:
+                rule['syslogServers']['list'] = [1]
+                break
         global_functions.uvmContext.eventManager().setSettings( syslogSettings )
 
         # create some traffic (blocked by firewall and thus create a syslog event)
@@ -894,8 +912,8 @@ class ReportsTests(NGFWTestCase):
 
         # remove the firewall rule aet syslog back to original settings
         self._app.setSettings(orig_settings)
-        rules["list"]=[];
-        firewall_app.setRules(rules);
+        rules["list"]=[]
+        firewall_app.setRules(rules)
 
         # remove firewall
         if firewall_app != None:
@@ -936,10 +954,8 @@ class ReportsTests(NGFWTestCase):
                     break
             time.sleep(2)
 
-        # Disable syslog
-        syslogSettings = global_functions.uvmContext.eventManager().getSettings()
-        syslogSettings["syslogEnabled"] = False
-        global_functions.uvmContext.eventManager().setSettings( syslogSettings )
+        # revert syslog settings to original settings
+        global_functions.uvmContext.eventManager().setSettings( orig_syslogsettings )
             
         assert(found_count == num_string_find)
 
@@ -1089,7 +1105,7 @@ class ReportsTests(NGFWTestCase):
         subprocess.call(('/bin/rm -f %s' % csv_tmp), shell=True)
 
         remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://test.untangle.com"))
-        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.untangle.com"))
+        remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://edge.arista.com"))
         remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://news.google.com"))
         remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.yahoo.com"))
         remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", uri="http://www.reddit.com"))
@@ -1341,11 +1357,15 @@ class ReportsTests(NGFWTestCase):
             apps_list = apps_list_short
             apps_name_list = apps_name_list_short
         apps = []
+        wan_balancer_app = None
         for name in apps_list:
             if (global_functions.uvmContext.appManager().isInstantiated(name)):
                 print("App %s already installed" % name)
             else:
-                apps.append( global_functions.uvmContext.appManager().instantiate(name, default_policy_id) )
+                app = global_functions.uvmContext.appManager().instantiate(name, default_policy_id)
+                if "wan-balancer" in name:
+                    wan_balancer_app = app
+                apps.append(app )
             
         # create some traffic 
         result = remote_control.is_online(tries=1)
@@ -1353,11 +1373,27 @@ class ReportsTests(NGFWTestCase):
         # flush out events
         self._app.flushEvents()
 
+        index_of_wans = global_functions.get_wan_tuples()
+        """
+        1) This test breaks for Dual wan set up, it checks whether email is present at particular URL
+        2) wget is used to check for generated email, it breaks with two wan interfaces possibly due to assymetric replies.
+        3) Added a check for dual wan setup and setting up single wan interface to serve 100% traffic.
+        4) wan-balancer is uninstalled at end of test, hence restored to default values.
+        5) This logic will be applicable only for multiple wan setup
+        """
+        if (len(index_of_wans) >=2):
+            for index, (interface_id, ip1, ip2, ip3, intf_name) in enumerate(index_of_wans):
+                #set weight 100 for first and rest 0
+                if index == 0:
+                    set_wan_weight(wan_balancer_app, interface_id, 100)
+                else:
+                    set_wan_weight(wan_balancer_app, interface_id, 0)
+
         # send emails
         subprocess.call([global_functions.get_prefix()+"/usr/share/untangle/bin/reports-generate-fixed-reports.py"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
         # look for email
-        email_found = fetch_email( "/tmp/test_103_email_report_admin_file", test_email_address )
+        email_found = fetch_email( "/tmp/test_103_email_report_admin_file", test_email_address)
 
         # look for all the appropriate sections in the report email
         results = []
@@ -1417,8 +1453,9 @@ class ReportsTests(NGFWTestCase):
         result = subprocess.check_output(global_functions.build_postgres_command(query="select count(*) from information_schema.tables where table_schema = 'reports'"), shell=True)
         start_count = int(result.decode("utf-8"))
 
-        # Run clean command from cron
-        result = subprocess.check_output('$(cat /etc/cron.daily/reports-cron | grep "reports-clean-tables.py")', shell=True)
+        # Create and run clean command 
+        clean_command = reports_clean_tables_script + " -d postgresql " + str(settings["dbRetention"]) + "| logger -t uvmreports"
+        result = subprocess.check_output(clean_command, shell=True)
 
         # Get post count of tables
         result = subprocess.check_output(global_functions.build_postgres_command(query="select count(*) from information_schema.tables where table_schema = 'reports'"), shell=True)
@@ -1475,20 +1512,22 @@ class ReportsTests(NGFWTestCase):
         print(f"new_early_time_stamp={new_early_time_stamp}")
         print(f"target_table={target_table_name}")
 
-        # Copy that original early record, update its timestamp to new early time.
-        populate_sql_commands = [
-                f"create temporary table temp_table as (select * from reports.{original_table_name} where time_stamp = '{original_early_time_stamp_string}')",
-                f"update temp_table set time_stamp = '{new_early_time_stamp}'",
-        ]
+        # NGFW-14964: No longer copying an existing record by setting an earlier timestamp as insertion of the new record was failing 
+        # due to unique constraint on session_id despite providing a random session_id.
+        # This failure was occurring intermittently on either of the ATS environment and on random dates of the execution
+        # Hence just modifying an existing record's timestamp and will hope to clean that as part of the data retention test
         try:
-            # Attempt to make record copy in original table.
-            commands = populate_sql_commands[:]
-            commands.append(f"insert into reports.{original_table_name} select * from temp_table")
+            # Modify an existing record's timestamp.
+            commands = [
+                f"update reports.{original_table_name} set time_stamp = '{new_early_time_stamp}' where time_stamp = '{original_early_time_stamp_string}'"
+            ]
             result = subprocess.check_output(global_functions.build_postgres_command(query=commands),shell=True, stderr=subprocess.STDOUT)
         except Exception as e:
-            # Unable to record copy in original table; do in previous day.
-            commands = populate_sql_commands[:]
-            commands.append(f"insert into reports.{target_table_name} select * from temp_table")
+            # Unable to modify existing record, do in previous day.
+            print(e.output.decode('utf-8'))
+            commands = [
+                f"update reports.{target_table_name} set time_stamp = '{new_early_time_stamp}' where time_stamp = '{original_early_time_stamp_string}'"
+            ]
             result = subprocess.check_output(global_functions.build_postgres_command(query=commands),shell=True, stderr=subprocess.STDOUT)
             pass
 
@@ -1496,8 +1535,9 @@ class ReportsTests(NGFWTestCase):
         result = subprocess.check_output(global_functions.build_postgres_command(query=f"select count(*) from reports.sessions where time_stamp < '{original_latest_time_stamp_string}'"), shell=True)
         start_count = int(result.decode("utf-8"))
 
-        # Run clean
-        result = subprocess.check_output('$(cat /etc/cron.hourly/reports-cron | grep "reports-clean-tables.py")', shell=True)
+        # Create and run clean command 
+        clean_command = reports_clean_tables_script + " -d postgresql -h " + str(settings["dbRetentionHourly"]) + " " + str(settings["dbRetentionHourly"])
+        result = subprocess.check_output(clean_command, shell=True)
 
         # Get post clean record count
         result = subprocess.check_output(global_functions.build_postgres_command(query=f"select count(*) from reports.sessions where time_stamp < '{original_latest_time_stamp_string}'"), shell=True)

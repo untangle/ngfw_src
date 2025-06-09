@@ -67,7 +67,7 @@ function doHelp() {
 # (is that "continue?) then a "404", so we choose the *last*
 # response code as the status.
 function getHTTPStatus() {
-  cat ${1} | sed -n "/HTTP\/1.1/ p" | awk '{ print $2; }' | tail -1
+  sed -n -E '/^HTTP\/[0-9]\.?[0-9]? [0-9]+/p' "$1" | awk '{ print $2; }' | tail -1
 }
 
 

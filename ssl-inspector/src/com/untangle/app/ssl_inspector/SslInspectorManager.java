@@ -112,12 +112,6 @@ class SslInspectorManager
     public static final byte IPC_DESTROY_MESSAGE[] = "SSL_INSPECTOR_IPC_DESTROY".getBytes();
     public static final byte IPC_WAKEUP_MESSAGE[] = "SSL_INSPECTOR_IPC_WAKEUP".getBytes();
 
-    // these are used while extracting the SNI from the SSL ClientHello packet
-    private static int TLS_HANDSHAKE = 0x16;
-    private static int CLIENT_HELLO = 0x01;
-    private static int SERVER_NAME = 0x0000;
-    private static int HOST_NAME = 0x00;
-
     public boolean tlsFlagClient;
     public boolean tlsFlagServer;
 
@@ -176,7 +170,7 @@ class SslInspectorManager
         }
 
         catch (Exception exn) {
-            logger.error("Unable to initialize " + (clientSide ? "client" : "server") + " encryption engine", exn);
+            logger.error("Unable to initialize {} encryption engine {}", clientSide ? "client" : "server", exn);
         }
     }
 
@@ -246,12 +240,12 @@ class SslInspectorManager
 
                 // if file not found, invalid, or stale we call the external script to generate a new cert
                 if ((tester.exists() == false) || (tester.length() == 0) || ((currStamp - certStamp) > 365)) {
-                    logger.info("Creating new MitM certificate for " + certHostName + " in " + certFileName);
+                    logger.info("Creating new MitM certificate for {} in {} ", certHostName, certFileName);
                     generateFakeCertificate(baseCert, certFileName);
                 }
 
                 else {
-                    logger.debug("Loading existing MitM certificate " + certPathFile);
+                    logger.debug("Loading existing MitM certificate {}", certPathFile);
                 }
             }
 
@@ -399,7 +393,7 @@ class SslInspectorManager
         argList[1] = certSubject.toString();
         argList[2] = certSANlist.toString();
         String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-        logger.debug("SCRIPT_ARGS = " + argString);
+        logger.debug("SCRIPT_ARGS = {}", argString);
         UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
     }
 

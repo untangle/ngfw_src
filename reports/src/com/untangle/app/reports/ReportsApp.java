@@ -64,7 +64,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
     private static final Logger logger = LogManager.getLogger(ReportsApp.class);
 
-    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd";
     private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-tables.py";
     private static final String REPORTS_CLEAN_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-clean-tables.py";
     private static final String REPORTS_VACUUM_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-vacuum-yesterdays-tables.sh";
@@ -112,7 +111,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             UvmContextFactory.context().servletFileManager().registerDownloadHandler( new EventLogExportDownloadHandler() );
         } catch (Throwable e) {
             // this is ignored because it is removed from demo
-            logger.warn("Error registering event log export helper.",e);
+            logger.warn("Error registering event log export helper.", e);
         }
         UvmContextFactory.context().servletFileManager().registerDownloadHandler( new ImageDownloadHandler() );
         UvmContextFactory.context().servletFileManager().registerUploadHandler( new ReportsDataRestoreUploadHandler() );
@@ -163,7 +162,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             String name = entry.getCategory() + "/" + entry.getTitle();
             ReportEntry existing = names.get( name );
             if ( existing != null ) {
-                logger.warn("REMOVING Duplicate report entry title: " + name);
+                logger.warn("REMOVING Duplicate report entry title: {}", name);
                 i.remove();
                 continue;
             }
@@ -207,7 +206,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         try {
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "reports/" + "settings_"  + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
+            logger.warn("Failed to save settings.", e);
             return;
         }
 
@@ -220,7 +219,13 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
          * Change current settings
          */
         this.settings = newSettings;
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
+        if (logger.isDebugEnabled()) {
+            try {
+                logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
+            } catch (Exception e) {
+                logger.error(e);
+            }
+        }
 
         /**
          * Sync settings to disk
@@ -263,13 +268,13 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
 
                 if (result.getResult() != 0) {
-                    logger.warn("Failed to create tables: \"" + cmd + "\" -> "  + result.getResult());
+                    logger.warn("Failed to create tables:  \" {} \" -> {}", cmd, result.getResult());
                 }
                 try {
-                    String lines[] = result.getOutput().split("\\r?\\n");
+                    String[] lines = result.getOutput().split("\\r?\\n");
                     logger.info("Creating Tables: ");
                     for ( String line : lines )
-                        logger.info("Tables: " + line);
+                        logger.info("Tables: {}", line);
                 } catch (Exception e) {}
 
                 /**
@@ -287,13 +292,13 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 String cmd = REPORTS_GENERATE_TABLES_SCRIPT + " -d sqlite";
                 ExecManagerResult result = UvmContextFactory.context().execManager().exec( cmd );
                 if (result.getResult() != 0) {
-                    logger.warn("Failed to create tables: \"" + cmd + "\" -> "  + result.getResult());
+                    logger.warn("Failed to create tables: \" {} \" -> {}", cmd, result.getResult());
                 }
                 try {
-                    String lines[] = result.getOutput().split("\\r?\\n");
+                    String[] lines = result.getOutput().split("\\r?\\n");
                     logger.info("Creating Tables: ");
                     for ( String line : lines )
-                        logger.info("Tables: " + line);
+                        logger.info("Tables: {}", line);
                 } catch (Exception e) {}
 
                 /**
@@ -552,7 +557,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 Class.forName("org.sqlite.JDBC");
                 url = "jdbc:" + ReportsApp.dbDriver + ":" + "/var/lib/sqlite/reports.db";
             } else {
-                logger.warn("Unknown driver: " + ReportsApp.dbDriver );
+                logger.warn("Unknown driver: {}", ReportsApp.dbDriver );
                 return null;
             }
 
@@ -602,7 +607,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         try {
             readSettings = settingsManager.load( ReportsSettings.class, settingsFileName );
         } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to load settings:",e);
+            logger.warn("Failed to load settings:", e);
         }
 
         /**
@@ -616,13 +621,16 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         else {
             logger.info("Loading Settings...");
             this.settings = readSettings;
-            logger.debug("Settings: " + this.settings.toJSONString());
+            if (logger.isDebugEnabled())
+                logger.debug("Settings: {}", this.settings.toJSONString());
         }
 
-        /**
-         * Report updates
-         */
-        ReportsManagerImpl.getInstance().updateSystemReportEntries( settings.getReportEntries(), true );
+        try {
+            // Report updates
+            ReportsManagerImpl.getInstance().updateSystemReportEntries(settings.getReportEntries(), true);
+        } catch (RuntimeException ex) {
+            logger.error(ex);
+        }
 
         /*
          * 13.0 conversion
@@ -693,7 +701,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         try{
             this.fixedReportsQueue.stop();
         }catch( Exception e ){
-            logger.warn( "Error disabling Fixed Reports queue", e );
+            logger.warn("Error disabling Fixed Reports queue", e );
         }
 
         ReportsApp.eventWriter.stop();
@@ -830,7 +838,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 case "postgresql":
                     break;
                 default:
-                    logger.warn("Unknown database driver: " + value);
+                    logger.warn("Unknown database driver: {}", value);
                     logger.warn("Using postgresql driver...");
                     value = "postgresql";
                 }
@@ -907,7 +915,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             reader = UvmContextFactory.context().execManager().execEvil(cmd);
             reader.waitFor();
         } catch (Exception e) {
-            logger.warn("Exception occurred while running command",e);
+            logger.warn("Exception occurred while running command", e);
         }
         return reader;
     }
@@ -1178,12 +1186,12 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 String name = entry.getCategory() + "/" + entry.getTitle();
                 ReportEntry existing = names.get( name );
                 if ( existing != null ) {
-                    logger.warn("Duplicate report entry title: " + entry.getTitle());
+                    logger.warn("Duplicate report entry title: {}", entry.getTitle());
                     for ( int i=2; i < 100; i++ ) {
                         String newTitle = entry.getTitle() + " " + i;
                         String newName = entry.getCategory() + "/" + newTitle;
                         if ( names.get( newName ) == null ) {
-                            logger.warn("Changing title to: " + newTitle);
+                            logger.warn("Changing title to: {}", newTitle);
                             entry.setTitle( newTitle );
                             names.put( entry.getTitle(), entry );
                             break;
@@ -1195,7 +1203,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             }
 
         } catch (Exception e) {
-            logger.warn("Conversion Exception",e);
+            logger.warn("Conversion Exception", e);
         }
 
         setSettings( settings, false );
@@ -1227,7 +1235,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 s_client = InetAddress.getByName("4.3.2.1");
                 s_server = InetAddress.getByName("1.2.3.4");
             } catch (Exception e) {
-                logger.warn("Failed to run tests.",e);
+                logger.warn("Failed to run tests.", e);
                 return;
             }
         
@@ -1345,7 +1353,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                     resp.getWriter().write(LINE_BREAK);
                 }
             } catch (Exception e) {
-                logger.warn("Failed to export CSV.",e);
+                logger.warn("Failed to export CSV.", e);
             } finally {
                 resultSetReader.closeConnection();
             }
@@ -1407,11 +1415,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 }
 
                 if (name == null || query == null || columnListStr == null) {
-                    logger.warn("Invalid parameters: " + name + " , " + query + " , " + columnListStr);
+                    logger.warn("Invalid parameters: {} , {} , {}", name , query , columnListStr);
                     return;
                 }
 
-                logger.info("Export CSV( name:" + name + " query: " + query + " columnList: " + columnListStr + " startDate: " + startDate + " endDate: " + endDate + " )");
+                logger.info("Export CSV( name:{} query: {} columnList: {} startDate: {} endDate: {} )", name , query , columnListStr , startDate , endDate );
 
                 ReportsApp reports = (ReportsApp) UvmContextFactory.context().appManager().app("reports");
                 if (reports == null) {
@@ -1421,7 +1429,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 ResultSetReader resultSetReader = ReportsManagerImpl.getInstance().getEventsForDateRangeResultSet( query, conditions, -1, startDate, endDate);
                 toCsv( resultSetReader, resp, columnListStr, name );
             } catch (Exception e) {
-                logger.warn( "Failed to build CSV.", e );
+                logger.warn("Failed to build CSV.", e );
                 throw new RuntimeException(e);
             }
         }
@@ -1471,7 +1479,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 out.flush();
                 out.close();
             } catch (Exception e) {
-                logger.warn("Failed to download image",e);
+                logger.warn("Failed to download image", e);
             }
         }
     }

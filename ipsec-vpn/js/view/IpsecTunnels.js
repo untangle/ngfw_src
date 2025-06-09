@@ -260,7 +260,11 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
         },
         items: [{
             xtype: 'textfield',
-            bind: '{record.right}',
+        bind: {
+            value: '{record.right}',
+            hidden: '{record.rightAny == true}',
+            disabled: '{record.rightAny == true}'
+        },
             fieldLabel: 'Remote Host'.t(),
             labelWidth: 180,
             allowBlank: false,
@@ -408,8 +412,8 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'textfield',
             bind: {
                 value: '{record.rightSubnet}',
-                hidden: '{record.ikeVersion !== 1}',
-                disabled: '{record.ikeVersion !== 1}'
+                hidden: '{record.ikeVersion !== 1 || record.rightAny == true}',
+                disabled: '{record.ikeVersion !== 1 || record.rightAny == true}'
             },
             fieldLabel: 'Remote Network'.t(),
             labelWidth: 180,
@@ -420,8 +424,8 @@ Ext.define('Ung.apps.ipsecvpn.view.IpsecTunnels', {
             xtype: 'textfield',
             bind: {
                 value: '{record.rightSubnet}',
-                hidden: '{record.ikeVersion !== 2}',
-                disabled: '{record.ikeVersion !== 2}'
+                hidden: '{record.ikeVersion !== 2 || record.rightAny == true}',
+                disabled: '{record.ikeVersion !== 2 || record.rightAny == true}'
             },
             fieldLabel: 'Remote Network'.t(),
             labelWidth: 180,

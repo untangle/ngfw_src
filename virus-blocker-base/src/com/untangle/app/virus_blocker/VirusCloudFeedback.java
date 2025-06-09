@@ -23,7 +23,7 @@ public class VirusCloudFeedback extends Thread
 {
     private final Logger logger = LogManager.getLogger(VirusBlockerBaseApp.class);
 
-    private static final String CLOUD_FEEDBACK_URL = UvmContextFactory.context().uriManager().getUri("https://telemetry.untangle.com/ngfw/v1/infection");
+    private static final String CLOUD_FEEDBACK_URL = UvmContextFactory.context().uriManager().getUri("https://telemetry.edge.arista.com/ngfw/v1/infection");
     private static final String CLOUD_SCANNER_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
 
     VirusBlockerState virusState = null;

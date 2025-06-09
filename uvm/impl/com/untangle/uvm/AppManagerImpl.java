@@ -137,7 +137,7 @@ public class AppManagerImpl implements AppManager
                 try {
                     keyFile.createNewFile();
                 } catch (Exception e) {
-                    logger.error("Failed to create file: " + filename, e);
+                    logger.error("Failed to create file: {}", filename, e);
                 }
             }
         }else{
@@ -146,7 +146,7 @@ public class AppManagerImpl implements AppManager
                 try {
                     keyFile.delete();
                 } catch (Exception e) {
-                    logger.error("Failed to remove file: " + filename, e);
+                    logger.error("Failed to remove file: {}" , filename, e);
                 }
             }
         }
@@ -190,7 +190,7 @@ public class AppManagerImpl implements AppManager
                     appSettings.setTargetState(appState);
                     break;
                 } else {
-                    logger.info("ignore saveTargetState(): already in state " + appState);
+                    logger.info("ignore saveTargetState(): already in state {}" , appState);
                 }
             }
         }
@@ -589,11 +589,11 @@ public class AppManagerImpl implements AppManager
     {
         appName = fixupName(appName); // handle old names
 
-        logger.info("instantiate( name:" + appName + " , policy:" + policyId + " )");
+        logger.info("instantiate( name: {} , policy: {}  )", appName, policyId);
 
         if (!UvmContextFactory.context().licenseManager().isLicenseValid(appName)) {
-            logger.info("No valid license for: " + appName);
-            logger.info("Requesting trial for: " + appName);
+            logger.info("No valid license for: {}" , appName);
+            logger.info("Requesting trial for: {}" , appName);
             UvmContextFactory.context().licenseManager().requestTrialLicense(appName);
         }
 
@@ -604,11 +604,11 @@ public class AppManagerImpl implements AppManager
         synchronized (this) {
             if (!live) throw new Exception("AppManager is shut down");
 
-            logger.info("initializing app: " + appName);
+            logger.info("initializing app: {}" , appName);
             appProperties = getAppProperties(appName);
 
             if (appProperties == null) {
-                logger.error("Missing app properties for " + appName);
+                logger.error("Missing app properties for {}" , appName);
                 throw new Exception("Missing app properties for " + appName);
             }
 
@@ -655,7 +655,7 @@ public class AppManagerImpl implements AppManager
                 loadedAppsMap.put(appSettings.getId(), app);
                 saveNewAppSettings(appSettings);
             } else {
-                logger.error("Failed to initialize app: " + appProperties.getName());
+                logger.error("Failed to initialize app: {}" , appProperties.getName());
             }
 
         }
@@ -918,7 +918,13 @@ public class AppManagerImpl implements AppManager
         installableAppsMap.remove("Web Filter Lite"); /*
                                                        * hide web filter lite
                                                        * from left hand nav
-                                                       */
+        /**
+         * SPECIAL CASE: Spam Blocker Lite is being deprecated - hide it
+         */
+        installableAppsMap.remove("Spam Blocker Lite"); /*
+                                                       * hide spam blocker lite
+                                                       * from left hand nav
+                                                       */                                        
 
         /**
          * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for
@@ -941,29 +947,6 @@ public class AppManagerImpl implements AppManager
             }
         }
 
-        /**
-         * SPECIAL CASE: If Spam Blocker is installed in this rack OR licensed
-         * for non-trial, hide Spam Blocker Lite
-         */
-        List<App> spamBlockerApps = UvmContextFactory.context().appManager().appInstances("spam-blocker", policyId);
-        if (spamBlockerApps != null && spamBlockerApps.size() > 0) {
-            installableAppsMap.remove("Spam Blocker Lite"); /*
-                                                             * hide spam blocker
-                                                             * lite from left
-                                                             * hand nav
-                                                             */
-        }
-        if (!UvmContextFactory.context().isDevel()) {
-            License spamBlockerLicense = lm.getLicense(License.SPAM_BLOCKER);
-            if (spamBlockerLicense != null && spamBlockerLicense.getValid() && !spamBlockerLicense.getTrial()) {
-                installableAppsMap.remove("Spam Blocker Lite"); /*
-                                                                 * hide spam
-                                                                 * blocker lite
-                                                                 * from left
-                                                                 * hand nav
-                                                                 */
-            }
-        }
 
         /**
          * Build the list of apps to show on the left hand nav
@@ -1103,13 +1086,13 @@ public class AppManagerImpl implements AppManager
                     String name = app.getAppProperties().getName();
                     Long id = app.getAppSettings().getId();
 
-                    logger.info("Stopping  : " + name + " [" + id + "]");
+                    logger.info("Stopping  : {} [ {} ]", name, id);
 
                     long startTime = System.currentTimeMillis();
                     ((AppBase) app).stopIfRunning();
                     long endTime = System.currentTimeMillis();
 
-                    logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
+                    logger.info("Stopped   : {} [{}] [ {} seconds]", name , id, (((float) (endTime - startTime)) / 1000.0f));
 
                     loadedAppsMap.remove(app.getAppSettings().getId());
                 }
@@ -1164,13 +1147,13 @@ public class AppManagerImpl implements AppManager
 
                     if (!UvmContextFactory.context().licenseManager().isLicenseValid(name)) {
 
-                        logger.info("Stopping  : " + name + " [" + id + "] because of invalid license");
+                        logger.info("Stopping  : {} [{}] because of invalid license", name , id);
 
                         long startTime = System.currentTimeMillis();
                         ((AppBase) app).stopIfRunning();
                         long endTime = System.currentTimeMillis();
 
-                        logger.info("Stopped   : " + name + " [" + id + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
+                        logger.info("Stopped   : {} [{}] [  {}  seconds]", name , id , (((float) (endTime - startTime)) / 1000.0f));
                     }
                 }
             };
@@ -1215,7 +1198,7 @@ public class AppManagerImpl implements AppManager
                     }
 
                 } catch (Exception exn) {
-                    logger.warn("could not deploy: " + appProps.getName(), exn);
+                    logger.warn("could not deploy: {} ", appProps.getName(), exn);
                     continue;
                 }
             } else {
@@ -1227,7 +1210,7 @@ public class AppManagerImpl implements AppManager
                     try {
                         app.start();
                     } catch (Exception exn) {
-                        logger.warn("could not start: " + appProps.getName(), exn);
+                        logger.warn("could not start: {}", appProps.getName(), exn);
                     }
                 }
             }
@@ -1283,19 +1266,19 @@ public class AppManagerImpl implements AppManager
 
         for (AppProperties appProps : appPropsToInstall) {
             if (!lm.isRestricted() && !appProps.getAutoInstall()) {
-                logger.info("App not able to be autoinstalled: " + appProps.getName());
+                logger.info("App not able to be autoinstalled: {}" , appProps.getName());
                 continue;
             }
             if(appProps.getAutoInstallMinMemory() > totalMemoryMb) {
-                logger.info("Not enough memory to install app " + appProps.getName());
+                logger.info("Not enough memory to install app {}", appProps.getName());
                 continue;
             }
             if(!lm.isRestricted() && appProps.getAutoInstallMinRequireInterfaces() > totalTnterfaceCount) {
-                logger.info("Not enough interfaces to install app: " + appProps.getName());
+                logger.info("Not enough interfaces to install app: {}", appProps.getName());
                 continue;
             }
             try {
-                logger.info("Auto-installing new app: " + appProps.getName());
+                logger.info("Auto-installing new app: {}", appProps.getName());
 
                 App app = null;
                 if (appInstances(appProps.getName()).size() >= 1) {
@@ -1313,7 +1296,7 @@ public class AppManagerImpl implements AppManager
                 }
 
             } catch (Exception exn) {
-                logger.warn("could not deploy: " + appProps.getName(), exn);
+                logger.warn("could not deploy: {}", appProps.getName(), exn);
                 continue;
             }
         }
@@ -1347,7 +1330,7 @@ public class AppManagerImpl implements AppManager
                         AppProperties np = getAppPropertiesFilename(f.getAbsolutePath());
                         appProps.add(np);
                     } catch (Exception e) {
-                        logger.warn("Ignoring bad app properties: " + f.getAbsolutePath(), e);
+                        logger.warn("Ignoring bad app properties: {}", f.getAbsolutePath(), e);
                     }
                 }
             }
@@ -1389,10 +1372,10 @@ public class AppManagerImpl implements AppManager
         logger.info("Restarting unloaded apps...");
 
         for (AppSettings appSettings : settings.getApps()) {
-            logger.debug("Restarting unloaded apps: " + appSettings.getAppName() + " [" + appSettings.getId() + "]");
+            logger.debug("Restarting unloaded apps: {} [{}]", appSettings.getAppName(), appSettings.getId());
             if (unloadedAppsMap.get(appSettings.getId()) != null) {
-                logger.error("DUPLICATE APP ID: " + appSettings.getId());
-                logger.error("DUPLICATE APPS: " + unloadedAppsMap.get(appSettings.getId()).getAppName() + " " + appSettings.getAppName());
+                logger.error("DUPLICATE APP ID: {}", appSettings.getId());
+                logger.error("DUPLICATE APPS: {} {} ",unloadedAppsMap.get(appSettings.getId()).getAppName(), appSettings.getAppName());
             } else {
                 unloadedAppsMap.put(appSettings.getId(), appSettings);
             }
@@ -1408,7 +1391,7 @@ public class AppManagerImpl implements AppManager
                     appsLoadingStr += appId + " ";
                 }
             }
-            logger.info("Loading pass[" + passCount + "]: " + "loadable.size(): " + loadable.size() + " unloadedAppsMap.size(): " + unloadedAppsMap.size() + " appsBeingLoaded: " + appsBeingLoaded.size() + appsLoadingStr);
+            logger.info("Loading pass[{}]: loadable.size(): {} unloadedAppsMap.size(): {} appsBeingLoaded: {}, {}", passCount, loadable.size(), unloadedAppsMap.size(), appsBeingLoaded.size(),  appsLoadingStr);
 
             if (appsBeingLoaded.size() < 1 && loadable.size() == 0 && unloadedAppsMap.size() > 0) {
                 // if nothing is being loaded and nothing is loadeable but there is more to be loaded
@@ -1419,7 +1402,7 @@ public class AppManagerImpl implements AppManager
 
             if (loadable.size() > 0) {
                 for (AppSettings ns : loadable)
-                    logger.info("Loading in this pass[" + passCount + "]: " + ns.getAppName() + " [" + ns.getId() + "]");
+                    logger.info("Loading in this pass[{}]: {} [{}]", passCount,  ns.getAppName(), ns.getId() );
                 startUnloaded(loadable);
             }
 
@@ -1429,10 +1412,10 @@ public class AppManagerImpl implements AppManager
                 continue;
             }
         }
-        logger.info("Loaded! pass[" + passCount + "]: unloadedAppsMap.size(): " + unloadedAppsMap.size() + " appsBeingLoaded: " + appsBeingLoaded.size());
+        logger.info("Loaded! pass[{}]: unloadedAppsMap.size(): {} appsBeingLoaded: {}" , passCount,  unloadedAppsMap.size(), appsBeingLoaded.size());
 
         long t1 = System.currentTimeMillis();
-        logger.info("Time to restart apps: " + (t1 - t0) + " millis");
+        logger.info("Time to restart apps: {} millis", (t1 - t0));
     }
 
     private static int startThreadNum = 0;
@@ -1452,9 +1435,9 @@ public class AppManagerImpl implements AppManager
             final AppProperties appProps = getAppProperties(appSettings);
 
             if (name == null) {
-                logger.error("Unable to load app \"" + name + "\": NULL name.");
+                logger.error("Unable to load app \"{}\": NULL name.", name);
             } else if (appProps == null) {
-                logger.error("Unable to load app \"" + name + "\": NULL app properties.");
+                logger.error("Unable to load app \"{}\": NULL app properties.", name);
             } else {
                 Runnable r = new Runnable()
                 {
@@ -1465,19 +1448,19 @@ public class AppManagerImpl implements AppManager
                     {
                         AppBase app = null;
                         try {
-                            logger.info("Restarting: " + name + " [" + appSettings.getId() + "]");
+                            logger.info("Restarting: {} [{}]", name, appSettings.getId());
                             long startTime = System.currentTimeMillis();
                             app = (AppBase) AppBase.loadClass(appProps, appSettings, false);
                             long endTime = System.currentTimeMillis();
-                            logger.info("Restarted : " + name + " [" + appSettings.getId() + "] [" + (((float) (endTime - startTime)) / 1000.0f) + " seconds]");
+                            logger.info("Restarted : {} [{}] [{} seconds]", name, appSettings.getId(), (((float) (endTime - startTime)) / 1000.0f) );
 
                             // add to loaded apps
                             loadedAppsMap.put(appSettings.getId(), app);
 
                         } catch (Exception exn) {
-                            logger.error("Could not restart: " + name, exn);
+                            logger.error("Could not restart: {}", name, exn);
                         } catch (LinkageError err) {
-                            logger.error("Could not restart: " + name, err);
+                            logger.error("Could not restart: {}", name, err);
                         } finally {
 
                             // alert the main thread that a app is done loading
@@ -1486,7 +1469,7 @@ public class AppManagerImpl implements AppManager
 
                         }
                         if (app == null) {
-                            logger.error("Failed to load app:" + name);
+                            logger.error("Failed to load app:{}", name);
                             loadedAppsMap.remove(appSettings);
                         }else{
                             UvmContextFactory.context().hookManager().callCallbacks( HookManager.APPLICATION_INSTANTIATE, name, app);
@@ -1523,20 +1506,20 @@ public class AppManagerImpl implements AppManager
         for (Iterator<AppSettings> i = unloadedAppsMap.values().iterator(); i.hasNext();) {
             AppSettings appSettings = i.next();
             if (appSettings == null) {
-                logger.error("Invalid settings: " + appSettings);
+                logger.error("Invalid settings: {}", appSettings);
                 i.remove(); // remove from unloadedAppsMap because we can never load this one
                 continue;
             }
-            logger.debug("Checking loadable status for " + appSettings.getAppName() + "...");
+            logger.debug("Checking loadable status for {} ...", appSettings.getAppName() );
             String name = appSettings.getAppName();
             if (name == null) {
-                logger.error("Missing name for: " + appSettings);
+                logger.error("Missing name for:{} ", appSettings);
                 i.remove(); // remove from unloadedAppsMap because we can never load this one
                 continue;
             }
             AppProperties appProps = getAppProperties(name);
             if (appProps == null) {
-                logger.error("Missing properties for: " + appSettings);
+                logger.error("Missing properties for: {}", appSettings);
                 i.remove(); // remove from unloadedAppsMap because we can never load this one
                 continue;
             }
@@ -1623,6 +1606,7 @@ public class AppManagerImpl implements AppManager
             for (AppSettings item : readSettings.getApps()) {
                 if (item.getAppName().equals("webfilter-lite")) continue;
                 if (item.getAppName().equals("ips")) continue;
+                if (item.getAppName().equals("spam-blocker-lite")) continue;
                 if (item.getAppName().equals("idps")) continue;
                 cleanList.add(item);
             }
@@ -1634,7 +1618,7 @@ public class AppManagerImpl implements AppManager
             }
 
             this.settings = readSettings;
-            logger.debug("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: {}", this.settings.toJSONString());
         }
 
         return this.settings;
@@ -1659,7 +1643,7 @@ public class AppManagerImpl implements AppManager
         this.restrictedHasPolicyManager = false;
         for (AppProperties appProps : nm.getAllAppProperties()) {
             if (lmLicenses.containsKey(appProps.getName())) {
-                logger.debug("Found restricted app to install: " + appProps.getName());
+                logger.debug("Found restricted app to install: {}", appProps.getName());
                 this.restrictedAllowedApps.add(appProps);
                 if (appProps.getName().equals("policy-manager")) {
                     this.restrictedHasPolicyManager = true;
@@ -1907,7 +1891,7 @@ public class AppManagerImpl implements AppManager
          */
         this.settings = newSettings;
         try {
-            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
+            logger.debug("New Settings: \n {}", new org.json.JSONObject(this.settings).toString(2));
         } catch (Exception e) {
         }
     }

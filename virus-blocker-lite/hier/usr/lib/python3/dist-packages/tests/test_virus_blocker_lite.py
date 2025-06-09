@@ -38,7 +38,15 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
         verify clamd is running and also that signatures are done downloading
         """
         result = global_functions.check_clamd_ready()
-        assert (result)
+        assert(result)
+        #PPPOE ATS fails intermittently sometimes wait till socket is ready.
+        data_to_scan = b"This is normal data"
+        for attempt in range(5):
+            response = global_functions.is_clamav_receive_ready(data_to_scan)
+            if response and "OK" in response:
+                print(f"clamav daemon is ready after {attempt} attempts: Response - {response}")
+                break
+            time.sleep(5)
 
 
 test_registry.register_module("virus-blocker-lite", VirusBlockerLiteTests)

@@ -62,13 +62,13 @@ public class CaptivePortalHttpsHandler extends AbstractEventHandler
             return;
         }
 
-        logger.debug("Performing HTTPS processing for " + special.getHostAddress().toString());
+        logger.debug("Performing HTTPS processing for {}", special.getHostAddress().toString());
 
         // first we remove the attachment
         sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_REDIRECT, null);
 
         // create the SSL
-        CaptivePortalSSLEngine engine = new CaptivePortalSSLEngine(app.getAppSettings().getId().toString(), captureApp);
+        CaptivePortalSSLEngine engine = new CaptivePortalSSLEngine(captureApp);
         sessreq.globalAttach(AppSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE, engine);
     }
 
@@ -85,6 +85,6 @@ public class CaptivePortalHttpsHandler extends AbstractEventHandler
     {
         // use the attached SSLEngine to processes the session data
         CaptivePortalSSLEngine engine = (CaptivePortalSSLEngine) session.globalAttachment(AppSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE);
-        engine.handleClientData(session, data);
+        engine.handleClientData(session, data, AppSession.KEY_CAPTIVE_PORTAL_SSL_ENGINE);
     }
 }

@@ -17,7 +17,15 @@ Ext.define('Ung.config.network.Main', {
     controller: 'config-network',
 
     viewModel: {
-        type: 'config-network'
+        type: 'config-network',
+        data: {
+            allWanInterfaceNames: [],
+        },
+        stores: {
+            allWanInterfaceNamesStore: {
+                data: '{allWanInterfaceNames}',
+            },
+        },
     },
 
     // tabPosition: 'left',

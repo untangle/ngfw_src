@@ -23,7 +23,7 @@ public class VirusCloudScanner extends Thread
 {
     private final Logger logger = LogManager.getLogger(VirusBlockerBaseApp.class);
 
-    private static final String CLOUD_SCANNER_URL = "https://classify.untangle.com/v1/md5s";
+    private static final String CLOUD_SCANNER_URL = "https://classify.edge.arista.com/v1/md5s";
     private static final String CLOUD_SCANNER_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
     private static final String EICAR_TEST_MD5 = "44d88612fea8a8f36de82e1278abb02f";
 

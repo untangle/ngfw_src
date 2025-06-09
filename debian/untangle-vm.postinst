@@ -58,6 +58,13 @@ if [ -f /usr/share/untangle/bin/oem-apply.sh ] ; then
     /usr/share/untangle/bin/oem-apply.sh
 fi
 
+# Delete all files and directories related to the spam-blocker-lite.
+# This code can be removed after the release of version 17.4.
+if [ -d /usr/share/untangle/lib/spam-blocker-lite ] ; then
+   find / -depth -name "spam-blocker-lite*"  -exec rm -rf {} \;
+   rm -rf /usr/lib/python3/dist-packages/tests/test_spam_blocker_lite.py
+fi
+
 # untangle-vm does not yet have a service file
 # it still uses an init'd script
 # for now we need to raise the global tasks max

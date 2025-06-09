@@ -5,12 +5,12 @@ The xml files can be loaded at https://www.draw.io
 reports-generate-docs-db-schema.py:
 This generates a list of all tables and their schemas (in wiki format)
 instructions:
-run and upload output to https://wiki.untangle.com/index.php/Database_Schema
+run and upload output to https://wiki.edge.arista.com/index.php/Database_Schema
 
 reports-generate-docs-report-entries.py:
 This generates a list of all report entries (in wiki format)
 instructions:
-run and upload output to https://wiki.untangle.com/index.php/All_Reports
+run and upload output to https://wiki.edge.arista.com/index.php/All_Reports
 
 EventsDocumentationExtension:
 This generates a list of all events (in wiki format)
@@ -18,7 +18,7 @@ instructions:
 cp docs/EventsDocumentationExtensionImpl.java reports/src/com/untangle/app/reports/ExtensionImpl.java
 rake
 dist/etc/init.d/untangle-vm restart
-copy and edit output from /var/log/uvm/console.log and upload to https://wiki.untangle.com/index.php/Events
+copy and edit output from /var/log/uvm/console.log and upload to https://wiki.edge.arista.com/index.php/Events
 
 EventsDescriptionExtension:
 This generates a javascript definite of all events

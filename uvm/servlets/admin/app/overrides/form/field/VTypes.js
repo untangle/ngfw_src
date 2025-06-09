@@ -24,7 +24,8 @@ Ext.define('Ung.overrides.form.field.VTypes', {
     },
 
     isSinglePortValid: function(val) {
-        val = val.trim();
+        if (typeof val === "string")
+            val = val.trim();
         /* check for values between 0 and 65536 */
         if (val < 1 || val > 65535) { return false; }
         /* verify its an integer (not a float) */

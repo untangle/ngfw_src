@@ -108,6 +108,15 @@ class PhishBlockerTests(NGFWTestCase):
         """
         result = global_functions.check_clamd_ready()
         assert (result)
+        #PPPOE ATS fails intermittently sometimes wait till socket is ready.
+        data_to_scan = b"This is normal data"
+        for attempt in range(5):
+            response = global_functions.is_clamav_receive_ready(data_to_scan)
+            if response and "OK" in response:
+                print(f"clamav daemon is ready after {attempt} attempts: Response - {response}")
+                break
+            time.sleep(5)
+
         
     # verify client is online
     def test_010_clientIsOnline(self):
@@ -271,6 +280,19 @@ class PhishBlockerTests(NGFWTestCase):
                                             'addr', 'qa@test.untangle.com',
                                             'c_client_addr', remote_control.client_ip,
                                             'phish_blocker_action', 'D')
+
+    #This test to check 3310 clamv port is running and communicating        
+    def test_065_checkClamSocketCommunication(self):
+        if (not canRelay):
+            raise unittest.SkipTest('Unable to relay through ' + smtpServerHost)
+        if (not mail_app):
+            raise unittest.SkipTest('Unable download mailsendder app')
+        
+        #Adding test case of valid stream and virus data
+        response_msg = global_functions.is_clamav_receive_ready(b"This is normal data")
+        response_virus = global_functions.is_clamav_receive_ready(b'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*')
+        assert("OK" in response_msg)
+        assert("Win.Test.EICAR_HDB-1" in response_virus)
     
     @classmethod
     def final_extra_tear_down(cls):

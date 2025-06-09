@@ -63,7 +63,7 @@ def get_license_from_curl():
     try:
         # Run curl command and capture both stdout and stderr
         result = subprocess.run(
-            ['curl', '-s', '-w', '%{http_code}', 'https://downloads.untangle.com/bdam/config'],
+            ['curl', '-s', '-w', '%{http_code}', 'https://downloads.edge.arista.com/bdam/config'],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True

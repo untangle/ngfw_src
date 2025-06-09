@@ -20,7 +20,7 @@ Ext.define('Ung.apps.virusblockerlite.view.Status', {
                 '<h3>Virus Blocker Lite</h3>' +
                 '<p>' + 'Virus Blocker Lite provides basic virus protection and can be resource intensive in some environments.'.t() +
                 '<br><br>' + 'Upgrade to Virus Blocker which efficiently leverages signatures from Bitdefender&reg, the leader in speed and efficiency, whose threat lab experts work 24-hours a day, 365-days a year to identify emerging threats.'.t() +
-                ' <a target="_blank" href="' + rpc.uriManager.getUriWithPath('https://www.untangle.com/shop/virus-blocker') + '">LEARN MORE<a/></p>'
+                ' <a target="_blank" href="' + rpc.uriManager.getUriWithPath('https://edge.arista.com/shop/virus-blocker') + '">LEARN MORE<a/></p>'
         }, {
             xtype: 'appstate',
         }, {

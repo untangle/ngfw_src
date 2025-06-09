@@ -58,10 +58,10 @@ Ext.define('Ung.apps.livesupport.MainController', {
     // our Live-Support app page.
     learnMoreHandler: function(btn){
         var target = this.getViewModel().get('companyURL');
-        if ((target) && (target !== '') && (! target.includes('untangle.com'))) {
+        if ((target) && (target !== '') && (! target.includes('edge.arista.com'))) {
             window.open(target);
         } else {
-            window.open(rpc.uriManager.getUriWithPath("https://www.untangle.com/shop/Live-Support"));
+            window.open(rpc.uriManager.getUriWithPath("https://edge.arista.com/shop/Live-Support"));
         }
     }
 });

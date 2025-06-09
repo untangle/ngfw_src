@@ -3,7 +3,8 @@
  */
 package com.untangle.uvm.setup.servlet;
 
-import java.io.IOException;
+import com.untangle.uvm.UvmContext;
+import com.untangle.uvm.UvmContextFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -11,20 +12,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.UvmContextFactory;
+import java.io.IOException;
 
 /**
- * A servlet which will display the legacy start page
+ * A servlet which will display the start page of new setup wizard
  */
 @SuppressWarnings("serial")
-public class SetupServlet extends HttpServlet
+public class SetupWizardServlet extends HttpServlet
 {
-    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * doGet - handle GET requests
@@ -41,7 +36,7 @@ public class SetupServlet extends HttpServlet
         request.setAttribute( "skinName", context.skinManager().getSettings().getSkinName());
         request.setAttribute( "extjsTheme", context.skinManager().getSkinInfo().getExtjsTheme());
 
-        String url="/WEB-INF/jsp/setup.jsp";
+        String url="/WEB-INF/jsp/setup-wizard.jsp";
         ServletContext sc = getServletContext();
         RequestDispatcher rd = sc.getRequestDispatcher(url);
         rd.forward(request, response);

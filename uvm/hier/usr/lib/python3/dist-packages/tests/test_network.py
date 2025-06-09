@@ -2554,8 +2554,8 @@ server=dynupdate.no-ip.com
         Troubleshooting, connectivity
         """
         output = get_troubleshooting_output(command='CONNECTIVITY',arguments={
-                "DNS_TEST_HOST": "updates.untangle.com", 
-                "TCP_TEST_HOST": "updates.untangle.com"
+                "DNS_TEST_HOST": "updates.edge.arista.com", 
+                "TCP_TEST_HOST": "updates.edge.arista.com"
             })
 
         # Don't care about success/failure just that we see the test ran

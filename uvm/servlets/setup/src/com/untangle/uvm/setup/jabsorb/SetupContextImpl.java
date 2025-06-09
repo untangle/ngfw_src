@@ -3,11 +3,10 @@
  */
 package com.untangle.uvm.setup.jabsorb;
 
-import java.io.File;
 
 import java.net.Socket;
 import java.net.InetSocketAddress;
-
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -21,12 +20,12 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LanguageManager;
-import com.untangle.uvm.AdminManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.WizardSettings;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.AdminUserSettings;
 /** SetupContextImpl */
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
@@ -130,7 +129,6 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
     {
         boolean reachable = false;
         URIBuilder uriBuilder = null;
-        Socket socket = null;
         try{
             uriBuilder = new URIBuilder(this.context.getCmdUrl());
         }catch(Exception e){
@@ -143,18 +141,12 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
         if(port == -1){
             port = uriBuilder.getScheme().equals("https") ? 443 : 80;
         }
-        try {
-            socket = new Socket();
+        try (Socket socket = new Socket()) {
             reachable = true;
             socket.connect(new InetSocketAddress(host, port), 7000);
         } catch (Exception e) {
             reachable = false;
-            logger.warn("Failed to connect to cmd:" + " [" + host + ":" + Integer.toString(port) + "]");
-        } finally {
-            try {
-                if (socket != null) socket.close();
-            } catch (Exception e) {
-            }
+            logger.warn("Failed to connect to cmd: [{}:{}]", host, port);
         }
 
         return reachable;
@@ -203,11 +195,16 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
             json.put("adminEmail", this.context.adminManager().getAdminEmail());
             json.put("language", this.context.languageManager().getLanguageSettings().getLanguage());
             json.put("translations", this.context.languageManager().getTranslations("untangle"));
+
+            List<InterfaceSettings> interfaces = this.context.networkManager().getNetworkSettings().getInterfaces();
+            boolean isWirelessInterface = interfaces.stream().anyMatch(intf -> intf.getIsWirelessInterface());
+            
+            json.put("isWirelessInterface" , isWirelessInterface);
             json.put("wizardSettings", this.context.getWizardSettings());
             json.put("remote", getRemote());
             json.put("remoteUrl", this.context.getCmdUrl());
             json.put("serverUID", this.context.getServerUID());
-            json.put("licenseTestUrl", this.context.uriManager().getUriWithPath("https://www.edge.arista.com/favicon.ico"));
+            json.put("licenseTestUrl", this.context.uriManager().getUriWithPath("https://edge.arista.com/favicon.ico"));
 
         } catch (Exception e) {
             logger.error("Error generating WebUI startup object", e);

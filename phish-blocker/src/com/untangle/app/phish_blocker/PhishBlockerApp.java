@@ -191,6 +191,8 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     protected void postStop(boolean isPermanentTransition)
     {
         UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-daemon");
+        //This disables socket service, it has to be disables explicitly
+        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-daemon.socket");
         UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-freshclam");
         super.postStop(isPermanentTransition);
     }

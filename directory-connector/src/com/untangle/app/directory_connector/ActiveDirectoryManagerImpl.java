@@ -321,6 +321,8 @@ public class ActiveDirectoryManagerImpl
         }
 
         boolean azure = false;
+        //Check all the AD servers before failing the authentication. 
+        //If any AD server is available, allow the authentication to pass.
         for(ActiveDirectoryLdapAdapter adAdapter : this.adAdapters){
             if(adAdapter == null){
                 continue;
@@ -347,7 +349,6 @@ public class ActiveDirectoryManagerImpl
                 }
             } catch (ServiceUnavailableException x) {
                 logger.warn("Active Directory authenticate failed: ", x);
-                return false;
             }
         }
 

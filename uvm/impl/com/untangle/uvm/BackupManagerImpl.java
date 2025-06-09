@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
@@ -18,15 +16,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.DownloadHandler;
+
+import static com.untangle.uvm.util.Constants.DOT;
+import static com.untangle.uvm.util.Constants.SPACE;
+import static com.untangle.uvm.util.Constants.UNDERSCORE;
 
 /**
  * Helper class to do backup/restore
@@ -35,7 +36,7 @@ public class BackupManagerImpl implements BackupManager
 {
     private static final String DATE_FORMAT_NOW = "yyyy_MM_dd_HH_mm";
 
-    private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";;
+    private static final String BACKUP_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-backup.sh";
     private static final String RESTORE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-restore.sh";
 
     private final Logger logger = LogManager.getLogger(BackupManagerImpl.class);
@@ -94,20 +95,26 @@ public class BackupManagerImpl implements BackupManager
     public String restoreBackup(File restoreFile, String maintainRegex)
     {
         FileInputStream fileInputStream = null;
-        ExecManagerResult execResult;
         byte[] fileData = new byte[(int)restoreFile.length()];
 
         // read the raw backup data into a byte array
         try {
             fileInputStream = new FileInputStream(restoreFile);
             fileInputStream.read(fileData);
-            fileInputStream.close();
         } catch (Exception exn) {
             return exn.getMessage();
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    logger.error("Failed to close input stream", e);
+                }
+            }
         }
 
         try {
-            execResult = restoreBackup(fileData, maintainRegex);
+            restoreBackup(fileData, maintainRegex);
         } catch (Exception exn) {
             return exn.getMessage();
         }
@@ -130,9 +137,8 @@ public class BackupManagerImpl implements BackupManager
     {
         File restoreFile = new File(System.getProperty("uvm.conf.dir") + "/restore.tar.gz");
         ExecManagerResult checkResult = null;
-        ExecManagerResult result = null;
 
-        logger.info("restoreBackup( " + restoreFile + " , \"" + maintainRegex + "\" );");
+        logger.info("restoreBackup( {} \"{}\"", restoreFile, maintainRegex);
 
         try {
             //Copy the bytes to a temp file
@@ -144,10 +150,10 @@ public class BackupManagerImpl implements BackupManager
             throw ex;
         }
 
-        logger.info("Restore Backup: " + restoreFile);
+        logger.info("Restore Backup: {}", restoreFile);
 
         // just check the backup file
-        logger.info("Restore Backup: check file " + restoreFile);
+        logger.info("Restore Backup: check file {}", restoreFile);
         checkResult = UvmContextFactory.context().execManager().exec(RESTORE_SCRIPT + " -i " + restoreFile.getAbsolutePath() + " -v -c");
 
         // if the backup file is not legitimate then just return the results
@@ -156,7 +162,7 @@ public class BackupManagerImpl implements BackupManager
         }
 
         // run same command with nohup and without -c check-only flag
-        logger.info("Restore Backup: launching restore " + restoreFile);
+        logger.info("Restore Backup: launching restore {}", restoreFile);
         UvmContextFactory.context().execManager().execSafe(System.getProperty("uvm.bin.dir") + "/ut-backup-restore-helper.sh restore " + restoreFile.getAbsolutePath() + "  \"" + maintainRegex +"\"");
 
         logger.info("Restore Backup: returning");
@@ -170,13 +176,12 @@ public class BackupManagerImpl implements BackupManager
      */
     private static String createBackupFileName()
     {
-        String version = UvmContextFactory.context().version().replace(".", "_");
-        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(".", "_");
-        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName().replace(".", "_");
+        String version = UvmContextFactory.context().version().replace(DOT, UNDERSCORE);
+        // NGFW-14925 replace space with empty string
+        String hostName = UvmContextFactory.context().networkManager().getNetworkSettings().getHostName().replace(DOT, UNDERSCORE).replace(SPACE, StringUtils.EMPTY);
+        String domainName = UvmContextFactory.context().networkManager().getNetworkSettings().getDomainName().replace(DOT, UNDERSCORE).replace(SPACE, StringUtils.EMPTY);
         String dateStr = (new SimpleDateFormat(DATE_FORMAT_NOW)).format((Calendar.getInstance()).getTime());
-        String filename = hostName + "_" + domainName + "-" + "configuration_backup" + "_v" + version + "-" + dateStr + ".backup";
-
-        return filename;
+        return hostName + UNDERSCORE + domainName + "-" + "configuration_backup" + "_v" + version + "-" + dateStr + ".backup";
     }
 
     /**

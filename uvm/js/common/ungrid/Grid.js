@@ -334,6 +334,10 @@ Ext.define('Ung.cmp.Grid', {
                         menuDisabled: true,
                         hideable: false,
                         isDisabled: function (table, rowIndex, colIndex, item, record) {
+                            // NGFW-15005 Wireguard VPN Tunnels pushed from cloud should be readonly
+                            if (record.data.javaClass === 'com.untangle.app.wireguard_vpn.WireGuardVpnTunnel') {
+                                return record.data.description.startsWith('CCTunnel');
+                            }
                             return record.get('readOnly') || table.up('grid').getController().isRecordRestricted(record) || false;
                         }
                     };
