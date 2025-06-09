@@ -320,13 +320,12 @@ Depends: ${misc:Depends}, untangle-vm, openvpn, python3
 Description: Tunnel VPN
  The Tunnel VPN application.
 
-
 Package: untangle-app-dynamic-blocklists
 Architecture: all
 Depends: ${misc:Depends}, untangle-vm, openvpn, python3
 Description: Dynamic Blocklists
  The Dynamic Blocklists VPN application.
-
+ 
 Package: untangle-app-intrusion-prevention
 Architecture: all
 Conflicts: untangle-node-intrusion-prevention
