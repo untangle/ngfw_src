@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 64 64" fill="none">
+  <!-- Square background -->
+  <rect width="64" height="64" rx="8" fill="#00796B" />
+
+  <!-- Shield shape -->
+  <path d="M32 4L12 12V30C12 43.3333 20.5 52.5 32 56C43.5 52.5 52 43.3333 52 30V12L32 4Z" 
+        fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+  
+  <!-- Block symbol -->
+  <circle cx="32" cy="32" r="12" fill="white" />
+  <line x1="24" y1="24" x2="40" y2="40" stroke="#F44336" stroke-width="3" />
+  <line x1="40" y1="24" x2="24" y2="40" stroke="#F44336" stroke-width="3" />
+</svg>
