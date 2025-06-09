@@ -67,8 +67,8 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private static final String REPORTS_GENERATE_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-tables.py";
     private static final String REPORTS_CLEAN_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-clean-tables.py";
     private static final String REPORTS_VACUUM_TABLES_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-vacuum-yesterdays-tables.sh";
-    private static final String REPORTS_GOOGLE_DATA_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-data.sh";
-    private static final String REPORTS_GOOGLE_CSV_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-csv.sh";
+    private static final String REPORTS_GOOGLE_DATA_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-data.py";
+    private static final String REPORTS_GOOGLE_CSV_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-csv.py";
     private static final String REPORTS_LOG_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-log-data.py";
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
     private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
@@ -891,15 +891,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         String appGoogleDrivePath = getGoogleManager().getAppSpecificGoogleDrivePath(this.settings.getGoogleDriveDirectory());
         String[] cmd;
         if ( settings.getGoogleDriveUploadData() ) {
-            cmd = StringUtils.isNotEmpty(appGoogleDrivePath)
-                    ? new String[] {REPORTS_GOOGLE_DATA_BACKUP_SCRIPT, "-d", appGoogleDrivePath}
-                    : new String[] {REPORTS_GOOGLE_DATA_BACKUP_SCRIPT};
+            cmd = new String[] {REPORTS_GOOGLE_DATA_BACKUP_SCRIPT, "-d", appGoogleDrivePath};
             executeGoogleDriveCommand(cmd);
         }
         if ( settings.getGoogleDriveUploadCsv() ) {
-            cmd = StringUtils.isNotEmpty(appGoogleDrivePath)
-                    ? new String[] {REPORTS_GOOGLE_CSV_BACKUP_SCRIPT, "-d", appGoogleDrivePath}
-                    : new String[] {REPORTS_GOOGLE_CSV_BACKUP_SCRIPT};
+            cmd = new String[] {REPORTS_GOOGLE_CSV_BACKUP_SCRIPT, "-d", appGoogleDrivePath};
             executeGoogleDriveCommand(cmd);
         }
     }

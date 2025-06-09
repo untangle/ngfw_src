@@ -135,9 +135,6 @@ class NGFWTestCase(TestCase):
             uvmContext.appManager().destroy( app.getAppSettings()["id"] )
         cls.apps.clear()
 
-        if cls._app:
-            cls.final_extra_tear_down()
-
         if not cls.do_not_remove_app:
             name = cls.module_name()
             if cls._app or uvmContext.appManager().isInstantiated(name):

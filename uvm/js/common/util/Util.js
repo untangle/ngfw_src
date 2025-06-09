@@ -899,6 +899,84 @@ Ext.define('Ung.util.Util', {
         return ((ipInteger & netmaskInteger) == (networkInteger & netmaskInteger) );
     },
 
+    /**
+     * Define the styling for global entries. 
+     *
+     * @param record  The grid record to evaluate.
+     * @return Style to apply on global fields.
+     */
+    getGlobalRowClass: function(record) {
+        if (record.phantom === false && record.dirty && !record.get('markedForNew') && record.get('markedForDelete')) {
+            return 'mark-delete';
+        }
+        if (record.get('isGlobal') === true) {
+            return 'row-global-locked';
+        }
+    },
+
+    /**
+     * Determines whether the global checkbox for a given grid record should be clickable.
+     *
+     * @param column  checkBox global column
+     * @param rowIndex index of global field
+     * @return boolean  Returns false if the 'isGlobal' field is true (i.e., the record is global and should not be edited).
+     *                  Returns true if 'isGlobal' is false or not set (i.e., the checkbox can be clicked).
+     */
+    canToggleGlobalCheckbox: function (column, rowIndex) {
+        var grid = column.up('grid');
+        var store = column.getGridStore ? column.getGridStore() : grid.getStore();
+        var record = store.getAt(rowIndex);
+        if (!record) return true;
+    
+        var modified = record.modified || {};
+        var originalValue = modified.hasOwnProperty('isGlobal') ? !record.get('isGlobal') : record.get('isGlobal');
+        var canToggleIsGlobal = !(originalValue === true && !modified.hasOwnProperty('isGlobal'));
+        if (!canToggleIsGlobal && !record.get('markedForNew')) {
+            Ext.MessageBox.alert('Info', '<strong> Global Field </strong> cannot be edited!');
+            return false;
+        } else {
+            return true;
+        }
+    },
+
+    /**
+     * Checks whether a given CIDR block belongs to a private IP address space.
+     *
+     * Private IP ranges (as defined in RFC 1918) include:
+     * - 10.0.0.0/8
+     * - 172.16.0.0/12
+     * - 192.168.0.0/16
+     *
+     * @param {string} cidr - The CIDR notation string (e.g., "192.168.1.0/24") to validate.
+     * @returns {boolean} - Returns true if the CIDR is within a private IP range; false otherwise.
+     *
+     * @example
+     * isPrivateCIDR("192.168.1.0/24"); // true
+     * isPrivateCIDR("8.8.8.0/24");     // false
+     */
+    isPrivateCIDR: function(cidr) {
+        try {
+            var parts = cidr.split('/');
+            var ip = parts[0].split('.');
+            if (ip.length !== 4) return false;
+    
+            for (var i = 0; i < ip.length; i++) {
+                var num = parseInt(ip[i], 10);
+                if (isNaN(num) || num < 0 || num > 255) return false;
+                ip[i] = num; // Convert to integer for next checks
+            }
+    
+            if (ip[0] === 10) return true;
+            if (ip[0] === 172 && ip[1] >= 16 && ip[1] <= 31) return true;
+            if (ip[0] === 192 && ip[1] === 168) return true;
+    
+            return false; // Not private
+        } catch (e) {
+            return false;
+        }
+    },
+    
+
     isIPInRange: function (ip, network, netmask) {
         // Split the IP address into octets
         var nextPoolOctets = ip.split('.');
@@ -1084,6 +1162,9 @@ Ext.define('Ung.util.Util', {
         components.forEach(function(component) {
             var store = component.getStore();
             var listId = component.listProperty;
+            // Clear any filters applied on store
+            var filters = store.getFilters().clone();
+            store.clearFilter(true);
             if(listId == null){
                 return;
             }
@@ -1134,6 +1215,10 @@ Ext.define('Ung.util.Util', {
                 });
             });
             viewModel.set(listId, values);
+            // restore filters after data is processed
+            filters.each( function(filter){
+                store.addFilter(filter);
+            });
         });
         return changes;
     },
