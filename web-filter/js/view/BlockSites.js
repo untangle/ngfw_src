@@ -3,6 +3,7 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
     alias:  'widget.app-web-filter-blocksites',
     itemId: 'block-sites',
     title:  'Block Sites'.t(),
+    controller: 'blocksites',
     withValidation: false,
     dockedItems: [{
         xtype: 'toolbar',
@@ -30,6 +31,7 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
     emptyRow: {
         string: '',
         blocked: true,
+        isGlobal: false,
         flagged: true,
         description: '',
         javaClass: 'com.untangle.uvm.app.GenericRule'
@@ -37,6 +39,10 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
 
     bind: '{blockedUrls}',
 
+    viewConfig: {
+        getRowClass : Ung.util.Util.getGlobalRowClass
+    },
+    
     columns: [{
         header: 'Site'.t(),
         width: Renderer.uriWidth,
@@ -53,6 +59,15 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
         header: 'Block'.t(),
         dataIndex: 'blocked',
         resizable: false
+    }, {
+        xtype: 'checkcolumn',
+        width: Renderer.booleanWidth,
+        header: 'Global'.t(),
+        dataIndex: 'isGlobal',
+        resizable: false, 
+        listeners: {
+            beforecheckchange: Ung.util.Util.canToggleGlobalCheckbox
+        },
     }, {
         xtype: 'checkcolumn',
         width: Renderer.booleanWidth,
@@ -82,6 +97,13 @@ Ext.define('Ung.apps.webfilter.view.BlockSites', {
         bind: '{record.blocked}',
         fieldLabel: 'Block'.t()
     }, {
+        xtype: 'checkbox',
+        bind: {
+            value: '{record.isGlobal}',
+            hidden: '{!isAddAction}'
+        },    
+        fieldLabel: 'Global'.t(),
+    },  {
         xtype: 'checkbox',
         bind: '{record.flagged}',
         fieldLabel: 'Flag'.t(),

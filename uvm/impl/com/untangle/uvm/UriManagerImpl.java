@@ -338,6 +338,14 @@ public class UriManagerImpl implements UriManager
         uriTranslation.setUri("https://auth-relay.edge.arista.com");
         uriTranslations.add(uriTranslation);
 
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.googleapis.com/drive/v3/files");
+        uriTranslations.add(uriTranslation);
+
+        uriTranslation = new UriTranslation();
+        uriTranslation.setUri("https://www.googleapis.com/upload/drive/v3/files");
+        uriTranslations.add(uriTranslation);
+
         return uriTranslations;
     }
 
