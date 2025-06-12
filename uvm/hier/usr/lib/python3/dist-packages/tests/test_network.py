@@ -2946,6 +2946,45 @@ server=dynupdate.no-ip.com
         time.sleep(3)
         assert(execResult.getResult() == 0)
 
+    def test_740_arp_updates_over_wan(self):
+        """
+        Verify ARP updates cron script is executing for all active WANs
+        """
+        cron_script = '/etc/cron.hourly/arp-updates-cron'
+
+        # Enable sending ARP updates network settings
+        netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        netsettings['sendUnsolicitedArpUpdates'] = True
+        global_functions.uvmContext.networkManager().setNetworkSettings(netsettings)
+
+        try:
+            result = subprocess.run(
+                [cron_script],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+        except subprocess.CalledProcessError as e:
+            print(f"Cron script {cron_script} failed: {e.stderr.strip()}")
+            assert False, f"could not run cron script {cron_script}"
+
+        # Get WAN tuple
+        index_of_wans = global_functions.get_wan_tuples()
+        output = result.stdout
+
+        missing_ips = []
+        for wan in index_of_wans:
+            # Check if script output contains ARP update entry
+            if f"ARPING {wan[1]} from {wan[1]}" not in output:
+                missing_ips.append(wan[1])
+
+        if missing_ips:
+            print(f"Missing replies from: {', '.join(missing_ips)}")
+            assert(False)
+        else:
+            assert(True)
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings

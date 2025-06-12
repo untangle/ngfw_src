@@ -19,7 +19,7 @@ import com.untangle.uvm.app.IPMaskedAddress;
 @SuppressWarnings("serial")
 public class WireGuardVpnSettings implements Serializable, JSONString
 {
-    private Integer version = 5;
+    private Integer version = 6;
 
     private Integer keepaliveInterval = 25;
     private Integer listenPort = 51820;
@@ -31,6 +31,7 @@ public class WireGuardVpnSettings implements Serializable, JSONString
     private InetAddress dnsServer;
     private String dnsSearchDomain = "";
     private List<WireGuardVpnNetwork> networks;
+    private List<WireGuardVpnNetworkProfile> networkProfiles;
     private boolean autoAddressAssignment = true;
 
     private List<WireGuardVpnTunnel> tunnels;
@@ -67,6 +68,9 @@ public class WireGuardVpnSettings implements Serializable, JSONString
 
     public List<WireGuardVpnNetwork> getNetworks() { return networks; }
     public void setNetworks( List<WireGuardVpnNetwork> newValue ) { this.networks = newValue; }
+
+    public List<WireGuardVpnNetworkProfile> getNetworkProfiles() { return networkProfiles; }
+    public void setNetworkProfiles(List<WireGuardVpnNetworkProfile> networkProfiles) { this.networkProfiles = networkProfiles; }
 
     public boolean getAutoAddressAssignment() { return autoAddressAssignment; }
     public void setAutoAddressAssignment( boolean newValue ) { this.autoAddressAssignment = newValue; }
