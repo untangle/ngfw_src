@@ -9,11 +9,6 @@ import java.util.List;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.network.PortForwardRule;
-import com.untangle.uvm.network.NatRule;
-import com.untangle.uvm.network.BypassRule;
-import com.untangle.uvm.network.StaticRoute;
-
 /**
  * Network settings.
  */
@@ -53,6 +48,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean blockInvalidPackets = true;
     private boolean blockReplayPackets = false;
     private boolean strictArpMode = true;
+    private boolean sendUnsolicitedArpUpdates = false;
     private boolean stpEnabled = false;
     private boolean dhcpAuthoritative = true;
     private int     dhcpMaxLeases = 5000;
@@ -79,7 +75,9 @@ public class NetworkSettings implements Serializable, JSONString
     private String  publicUrlAddress;
     private Integer publicUrlPort;
 
-    public NetworkSettings() { }
+    public NetworkSettings() {
+        super();
+    }
 
     public Integer getVersion() { return this.version; }
     public void setVersion( Integer newValue ) { this.version = newValue ; }
@@ -164,7 +162,15 @@ public class NetworkSettings implements Serializable, JSONString
     
     public boolean getStrictArpMode() { return this.strictArpMode; }
     public void setStrictArpMode( boolean newValue ) { this.strictArpMode = newValue; }
-    
+
+    public boolean isSendUnsolicitedArpUpdates() {
+        return sendUnsolicitedArpUpdates;
+    }
+
+    public void setSendUnsolicitedArpUpdates(boolean sendUnsolicitedArpUpdates) {
+        this.sendUnsolicitedArpUpdates = sendUnsolicitedArpUpdates;
+    }
+
     public boolean getStpEnabled() { return this.stpEnabled; }
     public void setStpEnabled( boolean newValue ) { this.stpEnabled = newValue; }
     
