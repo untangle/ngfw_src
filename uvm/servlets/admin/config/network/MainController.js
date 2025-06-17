@@ -429,10 +429,6 @@ Ext.define('Ung.config.network.MainController', {
         });
     },
 
-    // interfacesGridReconfigure: function(){
-    //     this.getView().down('#interfacesGrid').getSelectionModel().select(0);
-    // },
-
     interfaceStatusLinkMap:{
         1: 'macAddress',
         2: 'rxbytes',
