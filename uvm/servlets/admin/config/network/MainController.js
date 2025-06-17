@@ -6,7 +6,7 @@ Ext.define('Ung.config.network.MainController', {
     control: {
         '#': { afterrender: 'loadSettings' },
         '#interfaces': { beforerender: 'onInterfaces' },
-        '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
+        // '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
         '#routes': { afterrender: 'refreshRoutes' },
         '#dynamic_routing': {
             activate: 'getDynamicRoutingOverview',
@@ -430,9 +430,9 @@ Ext.define('Ung.config.network.MainController', {
         });
     },
 
-    interfacesGridReconfigure: function(){
-        this.getView().down('#interfacesGrid').getSelectionModel().select(0);
-    },
+    // interfacesGridReconfigure: function(){
+    //     this.getView().down('#interfacesGrid').getSelectionModel().select(0);
+    // },
 
     interfaceStatusLinkMap:{
         1: 'macAddress',
