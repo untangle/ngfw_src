@@ -120,10 +120,10 @@ public class DynamicBlockListsApp extends AppBase
 
         // Change current settings
         this.settings = newSettings;
-        dynamicBlockListsManager.configure();
 
         // reconfigure only if settings have changed
         if (restart)
+            dynamicBlockListsManager.configure();
         try {
             if(logger.isDebugEnabled())
                 logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
