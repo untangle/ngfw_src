@@ -194,6 +194,12 @@ public class FixedReports
         ReservedReports.add("directory-connector-upl31dqKb1");
         // User Notification API Events
         ReservedReports.add("directory-connector-D6IabIxIrC");
+        // DBL blocked addresses
+        ReservedReports.add("dynamic-blocklists-8bTqxKxxUK");
+        // DBL Blocked IPs by time
+        ReservedReports.add("dynamic-blocklists-biCUnFjuBp");
+        // DBL top blocked addresses
+        ReservedReports.add("dynamic-blocklists-dGV53h7aa7");
         // Firewall Summary
         ReservedReports.add("firewall-upl31dqKb1");
         // Scanned Sessions

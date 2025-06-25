@@ -1,0 +1,16 @@
+{
+        "javaClass": "com.untangle.uvm.app.AppProperties",
+        "className" : "com.untangle.app.dynamic_blocklists.DynamicBlockListsApp",
+        "name" : "dynamic-blocklists",
+        "displayName" : "Dynamic Blocklists",
+        "type" : "SERVICE",
+        "viewPosition" : 1090,
+        "autoInstall" : true,
+        "autoStart" : "false",
+        "parents" : {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "license"
+            ]
+        }
+}
