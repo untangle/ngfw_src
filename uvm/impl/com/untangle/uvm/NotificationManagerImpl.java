@@ -12,14 +12,11 @@ import java.util.Iterator;
 import java.net.Socket;
 import java.net.InetSocketAddress;
 import java.io.File;
-import java.lang.reflect.Method;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.NotificationManager;
-import com.untangle.uvm.ExecManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppSettings;
@@ -30,9 +27,7 @@ import com.untangle.uvm.app.UserLicenseMessage;
 
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
-import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.ARecord;
-import org.xbill.DNS.Type;
 import org.xbill.DNS.SimpleResolver;
 
 /**
@@ -45,6 +40,8 @@ import org.xbill.DNS.SimpleResolver;
  */
 public class NotificationManagerImpl implements NotificationManager
 {
+    private static final String NOTIFICATION_TEST_EXCEPTION = "Notification test exception";
+    private static final String UVM_BIN_DIR = "uvm.bin.dir";
     private final Logger logger = LogManager.getLogger(this.getClass());
 
     private I18nUtil i18nUtil;
@@ -87,117 +84,122 @@ public class NotificationManagerImpl implements NotificationManager
         try {
             testUpgrades(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             dnsWorking = testDNS(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             if (dnsWorking) testConnectivity(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             if (dnsWorking) testConnector(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testDiskFree(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testDiskErrors(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testUpgradeErrors(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testDupeApps(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testRendundantApps(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testBridgeBackwards(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testInterfaceErrors(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testDnsmasqRunning(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testSpamDNSServers(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testEventWriteTime(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testEventWriteDelay(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testReportingDiskSpace(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testShieldEnabled(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testRoutesToReachableAddresses(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testLicenseCompliance(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testTimezoneChanged(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testUserPasswords(notificationList);
         } catch (Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testUserLicenseMessages(notificationList);
         } catch(Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
         try {
             testInterfacesOverloaded(notificationList);
         } catch(Exception e) {
-            logger.warn("Notification test exception", e);
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
+        }
+        try {
+            testConfiguredGoogleDriveDisconnection(notificationList);
+        } catch(Exception e) {
+            logger.warn(NOTIFICATION_TEST_EXCEPTION, e);
         }
 
         /**
@@ -209,6 +211,21 @@ public class NotificationManagerImpl implements NotificationManager
         this.execManager = null;
 
         return notificationList;
+    }
+
+    /**
+     *
+     * This test tests to see if configured google drive is now disconnected abruptly
+     *
+     * @param notificationList - the current list of notifications
+     */
+    private void testConfiguredGoogleDriveDisconnection(List<String> notificationList) {
+        try {
+            if (UvmContextFactory.context().googleManager().isGoogleDriveDisconnectedAbruptly()) {
+                notificationList.add(i18nUtil.tr("Google drive is disconnected. Please reconfigure the drive."));
+            }
+        } catch (Exception e) {
+        }
     }
 
     /**
@@ -248,12 +265,12 @@ public class NotificationManagerImpl implements NotificationManager
             if (dnsSecondary != null) if (!connectivityTester.isDnsWorking(dnsSecondary, null)) nonWorkingDns.add(dnsSecondary);
         }
 
-        if (nonWorkingDns.size() > 0) {
-            String notificationText = i18nUtil.tr("DNS connectivity failed:") + " ";
+        if (!nonWorkingDns.isEmpty()) {
+            StringBuilder notificationText = new StringBuilder(i18nUtil.tr("DNS connectivity failed:") + StringUtils.SPACE);
             for (InetAddress ia : nonWorkingDns) {
-                notificationText += ia.getHostAddress() + " ";
+                notificationText.append(ia.getHostAddress()).append(StringUtils.SPACE);
             }
-            notificationList.add(notificationText);
+            notificationList.add(notificationText.toString());
             return false;
         }
 
@@ -360,12 +377,12 @@ public class NotificationManagerImpl implements NotificationManager
     private void testDiskErrors(List<String> notificationList)
     {
         ExecManagerResult result;
-        result = this.execManager.exec(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskError1");
+        result = this.execManager.exec(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testDiskError1");
         if (result.getResult() == 0) {
             notificationList.add(i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n", "<br/>\n"));
         }
 
-        result = this.execManager.exec(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskError2");
+        result = this.execManager.exec(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testDiskError2");
         if (result.getResult() == 0) {
             notificationList.add(i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n", "<br/>\n"));
         }
@@ -380,7 +397,7 @@ public class NotificationManagerImpl implements NotificationManager
     {
         ExecManagerResult result;
 
-        result = this.execManager.exec(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testUpgradeErrors");
+        result = this.execManager.exec(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testUpgradeErrors");
         if (result.getResult() == 0) {
             notificationList.add(i18nUtil.tr("An upgrade process has been interrupted."));
         }
@@ -408,9 +425,9 @@ public class NotificationManagerImpl implements NotificationManager
                  * are dupes Check both for == and .equals so null is handled
                  */
                 if (n1.getPolicyId() == null || n2.getPolicyId() == null) {
-                    if (n1.getPolicyId() == n2.getPolicyId() && n1.getAppName().equals(n2.getAppName())) notificationList.add(i18nUtil.tr("Services contains two or more") + " " + n1.getAppName());
+                    if (n1.getPolicyId() == n2.getPolicyId() && n1.getAppName().equals(n2.getAppName())) notificationList.add(i18nUtil.tr("Services contains two or more") + StringUtils.SPACE + n1.getAppName());
                 } else {
-                    if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getAppName().equals(n2.getAppName())) notificationList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + " " + n1.getAppName());
+                    if (n1.getPolicyId().equals(n2.getPolicyId()) && n1.getAppName().equals(n2.getAppName())) notificationList.add(i18nUtil.tr("A policy/rack") + " [" + n1.getPolicyId() + "] " + i18nUtil.tr("contains two or more") + StringUtils.SPACE + n1.getAppName());
                 }
             }
         }
@@ -459,7 +476,7 @@ public class NotificationManagerImpl implements NotificationManager
 
             InterfaceSettings master = UvmContextFactory.context().networkManager().findInterfaceId(intf.getBridgedTo());
             if (master == null) {
-                logger.warn("Unable to locate bridge master: " + intf.getBridgedTo());
+                logger.warn("Unable to locate bridge master: {}", intf.getBridgedTo());
                 continue;
             }
 
@@ -470,8 +487,8 @@ public class NotificationManagerImpl implements NotificationManager
             }
             String bridgeName = master.getSymbolicDev();
 
-            String result = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testBridgeBackwards1");
-            if (result == null || "".equals(result)) {
+            String result = this.execManager.execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testBridgeBackwards1");
+            if (result == null || StringUtils.EMPTY.equals(result)) {
                 logger.warn("Unable to build bridge map");
                 continue;
             }
@@ -482,8 +499,8 @@ public class NotificationManagerImpl implements NotificationManager
              */
             Map<Integer, String> bridgeIdToSystemNameMap = new HashMap<>();
             for (String line : result.split("\n")) {
-                logger.debug("testBridgeBackwards: line: " + line);
-                String[] subline = line.split(" ");
+                logger.debug("testBridgeBackwards: line: {}", line);
+                String[] subline = line.split(StringUtils.SPACE);
                 if (subline.length < 2) {
                     logger.warn("Invalid brctl showstp line: \"{}\"", line);
                     break;
@@ -515,13 +532,13 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * Lookup gateway MAC using arp -a
              */
-            String gatewayMac = this.execManager.execOutput("arp -a " + gateway.getHostAddress()).split(" ")[3];
+            String gatewayMac = this.execManager.execOutput("arp -a " + gateway.getHostAddress()).split(StringUtils.SPACE)[3];
             if (gatewayMac == null) {
-                logger.warn("Unable to determine MAC for " + gateway.getHostAddress());
+                logger.warn("Unable to determine MAC for {}", gateway.getHostAddress());
                 return;
             }
-            gatewayMac = gatewayMac.replaceAll("\\s+", "");
-            if ("".equals(gatewayMac) || "entries".equals(gatewayMac)) {
+            gatewayMac = gatewayMac.replaceAll("\\s+", StringUtils.EMPTY);
+            if (StringUtils.EMPTY.equals(gatewayMac) || "entries".equals(gatewayMac)) {
                 logger.warn("Unable to determine MAC for {}", gateway.getHostAddress());
                 return;
             }
@@ -529,13 +546,13 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * Lookup gateway bridge port # using brctl showmacs
              */
-            String portNo = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testDiskFree");
+            String portNo = this.execManager.execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testDiskFree");
             if (portNo == null) {
                 logger.warn("Unable to find port number for MAC: {}", gatewayMac);
                 return;
             }
-            portNo = portNo.replaceAll("\\s+", "");
-            if ("".equals(portNo)) {
+            portNo = portNo.replaceAll("\\s+", StringUtils.EMPTY);
+            if (StringUtils.EMPTY.equals(portNo)) {
                 logger.warn("Unable to find port number for MAC: {}", gatewayMac);
                 return;
             }
@@ -576,13 +593,13 @@ public class NotificationManagerImpl implements NotificationManager
                 notificationText += intf.getName();
                 notificationText += ") ";
                 notificationText += i18nUtil.tr("may be backwards.");
-                notificationText += " ";
+                notificationText += StringUtils.SPACE;
                 notificationText += i18nUtil.tr("Gateway");
                 notificationText += " (";
                 notificationText += gateway.getHostAddress();
                 notificationText += ") ";
-                notificationText += i18nUtil.tr("is on") + " ";
-                notificationText += " ";
+                notificationText += i18nUtil.tr("is on") + StringUtils.SPACE;
+                notificationText += StringUtils.SPACE;
                 notificationText += gatewayIntf.getName();
                 notificationText += ".";
 
@@ -603,11 +620,11 @@ public class NotificationManagerImpl implements NotificationManager
         for (InterfaceSettings intf : UvmContextFactory.context().networkManager().getEnabledInterfaces()) {
             if (intf.getSystemDev() == null) continue;
 
-            String lines = this.execManager.execOutput(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testInterfaceErrors");
+            String lines = this.execManager.execOutput(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testInterfaceErrors");
             String type = "RX"; //first line is RX erros
 
             for (String line : lines.split("\n")) {
-                line = line.replaceAll("\\s+", "");
+                line = line.replaceAll("\\s+", StringUtils.EMPTY);
                 logger.debug("testInterfaceErrors line: {}", line);
 
                 String[] errorsLine = line.split(":");
@@ -626,11 +643,11 @@ public class NotificationManagerImpl implements NotificationManager
                  * sometimes happen in small numbers and should be ignored
                  */
                 if (errorsCount > 2500) {
-                    String notificationText = "";
+                    String notificationText = StringUtils.EMPTY;
                     notificationText += intf.getName();
-                    notificationText += " ";
+                    notificationText += StringUtils.SPACE;
                     notificationText += i18nUtil.tr("interface NIC card has a high number of");
-                    notificationText += " " + type + " ";
+                    notificationText += StringUtils.SPACE + type + StringUtils.SPACE;
                     notificationText += i18nUtil.tr("errors");
                     notificationText += " (";
                     notificationText += errorsCountStr;
@@ -656,7 +673,7 @@ public class NotificationManagerImpl implements NotificationManager
     {
         int result = this.execManager.execResult("/usr/bin/pgrep dnsmasq");
         if (result != 0) {
-            String notificationText = "";
+            String notificationText = StringUtils.EMPTY;
             notificationText += i18nUtil.tr("DNS and DHCP services are not functioning.");
             notificationList.add(notificationText);
         }
@@ -695,8 +712,8 @@ public class NotificationManagerImpl implements NotificationManager
                 "4.2.2.2".equals(dnsServer) || /* level3 */
                 "208.67.222.222".equals(dnsServer) || /* openDNS */
                 "208.67.222.220".equals(dnsServer) /* openDNS */) {
-                    String notificationText = "";
-                    notificationText += appName + " " + i18nUtil.tr("is installed but an unsupported DNS server is used");
+                    String notificationText = StringUtils.EMPTY;
+                    notificationText += appName + StringUtils.SPACE + i18nUtil.tr("is installed but an unsupported DNS server is used");
                     notificationText += " (";
                     notificationText += intf.getName();
                     notificationText += ", ";
@@ -740,8 +757,8 @@ public class NotificationManagerImpl implements NotificationManager
                     }
 
                     if (!found) {
-                        String notificationText = "";
-                        notificationText += appName + " " + i18nUtil.tr("is installed but a DNS server");
+                        String notificationText = StringUtils.EMPTY;
+                        notificationText += appName + StringUtils.SPACE + i18nUtil.tr("is installed but a DNS server");
                         notificationText += " (";
                         notificationText += intf.getName();
                         notificationText += ", ";
@@ -770,7 +787,7 @@ public class NotificationManagerImpl implements NotificationManager
 
         double avgTime = reports.getAvgWriteTimePerEvent();
         if (avgTime > MAX_AVG_TIME_WARN) {
-            String notificationText = "";
+            String notificationText = StringUtils.EMPTY;
             notificationText += i18nUtil.tr("Event processing is slow");
             notificationText += " (";
             notificationText += String.format("%.1f", avgTime) + " ms";
@@ -795,7 +812,7 @@ public class NotificationManagerImpl implements NotificationManager
 
         long delay = reports.getWriteDelaySec();
         if (delay > MAX_TIME_DELAY_SEC) {
-            String notificationText = "";
+            String notificationText = StringUtils.EMPTY;
             notificationText += i18nUtil.tr("Event processing is behind");
             notificationText += " (";
             notificationText += String.format("%.1f", (((float) delay) / 60.0)) + " minute delay";
@@ -818,7 +835,7 @@ public class NotificationManagerImpl implements NotificationManager
 
         boolean fullFlag = reports.getDiskFullFlag();
         if (fullFlag) {
-            String notificationText = "";
+            String notificationText = StringUtils.EMPTY;
             notificationText += i18nUtil.tr("Reports event processing disabled due to low disk space. <a href='/admin/index.do#service/reports/data'>Manage reports data here</a>");
             notificationList.add(notificationText);
         }
@@ -831,9 +848,9 @@ public class NotificationManagerImpl implements NotificationManager
      */
     private void testQueueFullMessages(List<String> notificationList)
     {
-        int result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testQueueFullMessages");
+        int result = this.execManager.execResult(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testQueueFullMessages");
         if (result == 0) {
-            String notificationText = "";
+            String notificationText = StringUtils.EMPTY;
             notificationText += i18nUtil.tr("Packet processing recently overloaded.");
 
             notificationList.add(notificationText);
@@ -848,7 +865,7 @@ public class NotificationManagerImpl implements NotificationManager
     private void testShieldEnabled(List<String> notificationList)
     {
         App shield = UvmContextFactory.context().appManager().app("shield");
-        String notificationText = "";
+        String notificationText = StringUtils.EMPTY;
         notificationText += i18nUtil.tr("The shield is disabled. This can cause performance and stability problems.");
 
         if (shield == null || shield.getRunState() != AppSettings.AppState.RUNNING) {
@@ -889,19 +906,19 @@ public class NotificationManagerImpl implements NotificationManager
             /**
              * If already in the ARP table, continue
              */
-            result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testRoutesToReachableAddresses1 " + route.getNextHop());
+            result = this.execManager.execResult(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testRoutesToReachableAddresses1 " + route.getNextHop());
             if (result == 0) continue;
 
             /**
              * If not, force arp resolution with ping Then recheck ARP table
              */
             result = this.execManager.execResult("ping -c1 -W1 " + route.getNextHop());
-            result = this.execManager.execResult(System.getProperty("uvm.bin.dir") + "/ut-notification-helpers.sh testRoutesToReachableAddresses2 " + route.getNextHop());
+            result = this.execManager.execResult(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testRoutesToReachableAddresses2 " + route.getNextHop());
             if (result == 0) continue;
 
-            String notificationText = "";
+            String notificationText = StringUtils.EMPTY;
             notificationText += i18nUtil.tr("Route to unreachable address:");
-            notificationText += " ";
+            notificationText += StringUtils.SPACE;
             notificationText += route.getNextHop();
 
             notificationList.add(notificationText);

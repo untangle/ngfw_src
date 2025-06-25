@@ -84,6 +84,8 @@ public interface NetworkManager
 
     boolean getInterfacesOverloadedFlag();
 
+    String getLogFile(String device);
+
     ConcurrentMap<String, String> lookupMacVendorList(List<String> macAddressList);
 
     public static enum StatusCommands {

@@ -41,6 +41,9 @@ Ext.define('Ung.config.network.view.Advanced', {
                 boxLabel: 'Enable Strict ARP mode'.t(),
                 bind: '{settings.strictArpMode}'
             }, {
+                boxLabel: 'Send unsolicited R/ARP updates on WANs'.t(),
+                bind: '{settings.sendUnsolicitedArpUpdates}'
+            }, {
                 boxLabel: 'DHCP Authoritative'.t(),
                 bind: '{settings.dhcpAuthoritative}'
             }, {

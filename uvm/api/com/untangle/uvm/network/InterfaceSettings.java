@@ -124,6 +124,7 @@ public class InterfaceSettings implements Serializable, JSONString
     public static enum WirelessMode { AP, CLIENT };
     private WirelessMode wirelessMode = WirelessMode.AP;
     private String wirelessPassword = null;
+    private int wirelessLoglevel = 2;
     private Integer wirelessChannel = null;
     private Integer wirelessVisibility = 0;
     private String wirelessCountryCode = "";
@@ -345,6 +346,9 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public String getWirelessCountryCode() { return this.wirelessCountryCode; }
     public void setWirelessCountryCode( String newValue ) { this.wirelessCountryCode = newValue; }
+
+    public int getWirelessLogLevel() { return this.wirelessLoglevel; }
+    public void setWirelessLogLevel( int newValue ) { this.wirelessLoglevel = newValue; }
 
     /**
      * Interface alias.

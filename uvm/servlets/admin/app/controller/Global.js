@@ -37,6 +37,19 @@ Ext.define('Ung.controller.Global', {
         'PoliciesTree'
     ],
 
+    init: function() {
+        var me = this;
+        me.callParent(arguments); // Always call parent init
+
+        // Listen for messages from the iframe
+        window.addEventListener('message', function(event) {
+
+            // Check if the message is from your Vue iframe app
+            if (event.data && event.data.source === 'vue-iframe-app' && event.data.type === 'isDirtyChange') {
+                me.isVueDirty = event.data.isDirty;
+            }
+        });
+    },
     listen: {
         controller: {
             '#': {
@@ -120,6 +133,7 @@ Ext.define('Ung.controller.Global', {
             'noexpert': 'setNoExpertMode'
         }
     },
+    isVueDirty: false,
 
     detectChanges: function () {
         var action = arguments[arguments.length - 1]; // arguments length vary, action being the last one
@@ -144,7 +158,7 @@ Ext.define('Ung.controller.Global', {
             }
         });
 
-        if (dirtyFields || dirtyGrids) {
+        if (dirtyFields || dirtyGrids || this.isVueDirty) {
             Ext.MessageBox.confirm('Warning'.t(), 'There are unsaved settings which will be lost. Do you want to continue?'.t(),
                 function(btn) {
                     if (btn === 'yes') {
