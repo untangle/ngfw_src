@@ -31,6 +31,16 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     public List<InterfaceSettingsGeneric> getInterfaces() { return interfaces; }
     public void setInterfaces(List<InterfaceSettingsGeneric> interfaces) { this.interfaces = interfaces; }
 
+    /**
+     * Populates the provided {@link NetworkSettings} instance with data from this
+     * {@link NetworkSettingsGeneric} instance.
+     * Each {@link InterfaceSettingsGeneric} is transformed into a corresponding
+     * {@link InterfaceSettings} and added to the target {@code networkSettings}.
+     * If an interface with the same ID already exists, it is updated in place.
+     *
+     * @param networkSettings the target {@link NetworkSettings} object to be updated.
+     *                        If {@code null}, a new instance should be created before use.
+     */
     public void transformGenericToNetworkSettings(NetworkSettings networkSettings) {
         if (networkSettings == null)
             networkSettings = new NetworkSettings();

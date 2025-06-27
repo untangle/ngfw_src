@@ -241,8 +241,12 @@ public class NetworkSettings implements Serializable, JSONString
     public Integer getPublicUrlPort() { return this.publicUrlPort; }
     public void setPublicUrlPort( Integer newValue ) { this.publicUrlPort = newValue; }
 
-    /*
-     * 
+    /**
+     * Transforms a {@link NetworkSettings} object (original interface configuration) 
+     * into its generic counterpart {@link NetworkSettingsGeneric},
+     * which is more portable and structured for UI use.     *
+     * @return a new {@link NetworkSettingsGeneric} instance containing the generic representation
+     *         of all interfaces and their settings from the current {@code NetworkSettings} instance.
      */
     public NetworkSettingsGeneric transformNetworkSettingsToGeneric() {
         NetworkSettingsGeneric netSettingsGen = new NetworkSettingsGeneric();

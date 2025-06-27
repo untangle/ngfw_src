@@ -29,7 +29,7 @@ public interface NetworkManager
 
     void setNetworkSettings( NetworkSettings newSettings );
 
-    void setNetworkSettings( NetworkSettingsGeneric newSettingsGen );
+    void setNetworkSettingsV2( NetworkSettingsGeneric newSettingsGen );
 
     void renewDhcpLease( int interfaceId );
     

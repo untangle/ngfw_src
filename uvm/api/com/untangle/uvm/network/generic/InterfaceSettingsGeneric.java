@@ -309,7 +309,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
         intfSettings.setIsWan(this.wan);
 
-        intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN);
+        intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN || this.type == InterfaceSettingsGeneric.Type.BRIDGE);
         intfSettings.setIsWirelessInterface(this.type == InterfaceSettingsGeneric.Type.WIFI);
 
         intfSettings.setVlanTag(this.vlanId);
@@ -382,6 +382,12 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setWirelessCountryCode(this.wirelessCountryCode);
     }
 
+    private DhcpType resolveDhcpType(InterfaceSettingsGeneric generic) {
+        if (generic.dhcpRelayEnabled) return DhcpType.RELAY;
+        if (generic.dhcpEnabled) return DhcpType.SERVER;
+        return DhcpType.DISABLED;
+    }
+
     private List<InterfaceAlias> convertToOriginalAliases(List<V4Alias> aliases) {
         if (aliases == null) return null;
         return aliases.stream().map(a -> {
@@ -400,12 +406,6 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
             alias.setStaticPrefix(a.getV6Prefix());
             return alias;
         }).collect(Collectors.toList());
-    }
-
-    private DhcpType resolveDhcpType(InterfaceSettingsGeneric generic) {
-        if (generic.dhcpRelayEnabled) return DhcpType.RELAY;
-        if (generic.dhcpEnabled) return DhcpType.SERVER;
-        return DhcpType.DISABLED;
     }
 
     /**

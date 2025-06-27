@@ -243,7 +243,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Set the network settings V2
      * @param newSettings
      */
-    public void setNetworkSettings( NetworkSettingsGeneric newSettings )
+    public void setNetworkSettingsV2( NetworkSettingsGeneric newSettings )
     {
         newSettings.transformGenericToNetworkSettings(this.networkSettings);
         setNetworkSettings( this.networkSettings, true );
