@@ -1,19 +1,23 @@
 /**
  * $Id$
  */
-package com.untangle.uvm.network.v2;
+package com.untangle.uvm.network.generic;
 
 import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.network.DhcpOption;
+import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
+import com.untangle.uvm.network.InterfaceSettings.DhcpType;
+import com.untangle.uvm.network.InterfaceSettings.InterfaceAlias;
 import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.WirelessEncryption;
@@ -23,7 +27,7 @@ import com.untangle.uvm.network.InterfaceSettings.WirelessMode;
  * Interface settings v2.
  */
 @SuppressWarnings("serial")
-public class InterfaceSettingsV2 implements Serializable, JSONString {
+public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
     private int interfaceId;        /* the ID of the physical interface (1-254) */
     private String name;            /* human name: ie External, Internal, Wireless */
@@ -289,6 +293,120 @@ public class InterfaceSettingsV2 implements Serializable, JSONString {
     public String getWirelessCountryCode() { return wirelessCountryCode; }
     public void setWirelessCountryCode(String wirelessCountryCode) { this.wirelessCountryCode = wirelessCountryCode; }
 
+
+    /**
+     * Transforms the current InterfaceSettingsGeneric instance into the original InterfaceSettings instance.
+     * This performs a field-to-field mapping, including IPv4/IPv6 addressing, NAT settings,
+     * DHCP/PPPoE configuration, VRRP, and wireless parameters.
+     *
+     * @param intfSettings the original InterfaceSettings instance to be populated.
+     */
+    public void transformGenericToInterfaceSettings(InterfaceSettings intfSettings) {
+        intfSettings.setInterfaceId(this.interfaceId);
+        intfSettings.setName(this.name);
+
+        intfSettings.setPhysicalDev(this.device);
+
+        intfSettings.setIsWan(this.wan);
+
+        intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN);
+        intfSettings.setIsWirelessInterface(this.type == InterfaceSettingsGeneric.Type.WIFI);
+
+        intfSettings.setVlanTag(this.vlanId);
+        intfSettings.setVlanParent(this.boundInterfaceId);
+
+        intfSettings.setConfigType(this.configType);
+        intfSettings.setBridgedTo(this.bridgedTo);
+
+        intfSettings.setV4ConfigType(this.v4ConfigType);
+        intfSettings.setV4StaticAddress(this.v4StaticAddress);
+        intfSettings.setV4StaticPrefix(this.v4StaticPrefix);
+        intfSettings.setV4StaticGateway(this.v4StaticGateway);
+        intfSettings.setV4StaticDns1(this.v4StaticDNS1);
+        intfSettings.setV4StaticDns2(this.v4StaticDNS2);
+
+        intfSettings.setV4AutoAddressOverride(this.v4DhcpAddressOverride);
+        intfSettings.setV4AutoPrefixOverride(this.v4DhcpPrefixOverride);
+        intfSettings.setV4AutoGatewayOverride(this.v4DhcpGatewayOverride);
+        intfSettings.setV4AutoDns1Override(this.v4DhcpDNS1Override);
+        intfSettings.setV4AutoDns2Override(this.v4DhcpDNS2Override);
+
+        intfSettings.setV4Aliases(convertToOriginalAliases(this.v4Aliases));
+        intfSettings.setV6Aliases(convertToOriginalAliasesV6(this.v6Aliases));
+
+        intfSettings.setV4PPPoEUsername(this.v4PPPoEUsername);
+        intfSettings.setV4PPPoEPassword(this.v4PPPoEPassword);
+        intfSettings.setV4PPPoEUsePeerDns(this.v4PPPoEUsePeerDNS);
+        intfSettings.setV4PPPoEDns1(this.v4PPPoEOverrideDNS1);
+        intfSettings.setV4PPPoEDns2(this.v4PPPoEOverrideDNS2);
+        intfSettings.setV4PPPoEPasswordEncrypted(this.v4PPPoEPasswordEncrypted);
+
+        intfSettings.setV4NatEgressTraffic(this.natEgress);
+        intfSettings.setV4NatIngressTraffic(this.natIngress);
+
+        intfSettings.setV6ConfigType(this.v6ConfigType);
+        intfSettings.setV6StaticAddress(this.v6StaticAddress);
+        intfSettings.setV6StaticPrefixLength(this.v6StaticPrefix);
+        intfSettings.setV6StaticGateway(this.v6StaticGateway);
+        intfSettings.setV6StaticDns1(this.v6StaticDNS1);
+        intfSettings.setV6StaticDns2(this.v6StaticDNS2);
+
+        intfSettings.setDhcpEnabled(this.dhcpEnabled || this.dhcpRelayEnabled);
+        intfSettings.setDhcpType(resolveDhcpType(this));
+        intfSettings.setDhcpRangeStart(this.dhcpRangeStart);
+        intfSettings.setDhcpRangeEnd(this.dhcpRangeEnd);
+        intfSettings.setDhcpLeaseDuration(this.dhcpLeaseDuration);
+        intfSettings.setDhcpGatewayOverride(this.dhcpGatewayOverride);
+        intfSettings.setDhcpPrefixOverride(this.dhcpPrefixOverride);
+        intfSettings.setDhcpDnsOverride(this.dhcpDNSOverride);
+        intfSettings.setDhcpOptions(this.dhcpOptions);
+        intfSettings.setDhcpRelayAddress(this.dhcpRelayAddress);
+
+        intfSettings.setRaEnabled(this.routerAdvertisements);
+
+        intfSettings.setDownloadBandwidthKbps(this.downloadKbps);
+        intfSettings.setUploadBandwidthKbps(this.uploadKbps);
+
+        intfSettings.setVrrpEnabled(this.vrrpEnabled);
+        intfSettings.setVrrpId(this.vrrpId);
+        intfSettings.setVrrpPriority(this.vrrpPriority);
+        intfSettings.setVrrpAliases(convertToOriginalAliases(this.vrrpV4Aliases));
+
+        intfSettings.setWirelessSsid(this.wirelessSsid);
+        intfSettings.setWirelessEncryption(this.wirelessEncryption);
+        intfSettings.setWirelessMode(this.wirelessMode);
+        intfSettings.setWirelessPassword(this.wirelessPassword);
+        intfSettings.setWirelessLogLevel(this.wirelessLoglevel);
+        intfSettings.setWirelessChannel(this.wirelessChannel);
+        intfSettings.setWirelessVisibility(this.hidden ? 1 : 0);
+        intfSettings.setWirelessCountryCode(this.wirelessCountryCode);
+    }
+
+    private List<InterfaceAlias> convertToOriginalAliases(List<V4Alias> aliases) {
+        if (aliases == null) return null;
+        return aliases.stream().map(a -> {
+            InterfaceAlias alias = new InterfaceAlias();
+            alias.setStaticAddress(a.getV4Address());
+            alias.setStaticPrefix(a.getV4Prefix());
+            return alias;
+        }).collect(Collectors.toList());
+    }
+
+    private List<InterfaceAlias> convertToOriginalAliasesV6(List<V6Alias> aliases) {
+        if (aliases == null) return null;
+        return aliases.stream().map(a -> {
+            InterfaceAlias alias = new InterfaceAlias();
+            alias.setStaticAddress(a.getV6Address());
+            alias.setStaticPrefix(a.getV6Prefix());
+            return alias;
+        }).collect(Collectors.toList());
+    }
+
+    private DhcpType resolveDhcpType(InterfaceSettingsGeneric generic) {
+        if (generic.dhcpRelayEnabled) return DhcpType.RELAY;
+        if (generic.dhcpEnabled) return DhcpType.SERVER;
+        return DhcpType.DISABLED;
+    }
 
     /**
      * Interface V4 alias.

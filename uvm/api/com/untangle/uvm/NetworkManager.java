@@ -15,6 +15,7 @@ import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 
 /**
  * NetworkManager interface
@@ -23,8 +24,12 @@ import com.untangle.uvm.network.NetworkSettings;
 public interface NetworkManager
 {
     NetworkSettings getNetworkSettings();
+    
+    NetworkSettingsGeneric getNetworkSettingsV2();
 
     void setNetworkSettings( NetworkSettings newSettings );
+
+    void setNetworkSettings( NetworkSettingsGeneric newSettingsGen );
 
     void renewDhcpLease( int interfaceId );
     
