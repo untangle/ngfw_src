@@ -28,6 +28,8 @@ import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
+import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.network.NetflowSettings;
@@ -221,12 +223,30 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Get the v2 network settings
+     * @return NetworkSettingsV2
+     */
+    public NetworkSettingsGeneric getNetworkSettingsV2() {
+        return this.networkSettings.transformNetworkSettingsToGeneric();
+    }
+
+    /**
      * Set the network settings
      * @param newSettings
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
         setNetworkSettings( newSettings, true );
+    }
+
+    /**
+     * Set the network settings V2
+     * @param newSettings
+     */
+    public void setNetworkSettingsV2( NetworkSettingsGeneric newSettings )
+    {
+        newSettings.transformGenericToNetworkSettings(this.networkSettings);
+        setNetworkSettings( this.networkSettings, true );
     }
 
     /**
