@@ -15,6 +15,7 @@ import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 
 /**
@@ -50,6 +51,8 @@ public interface NetworkManager
     InterfaceSettings findInterfaceFirstWan( );
 
     InterfaceStatus getInterfaceStatus( int interfaceId );
+
+    List<InterfaceStatusGeneric> getAllInterfacesStatus();
 
     List<InterfaceStatus> getInterfaceStatus( );
 

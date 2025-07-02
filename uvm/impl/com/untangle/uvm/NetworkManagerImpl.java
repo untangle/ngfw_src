@@ -29,6 +29,7 @@ import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
+import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
@@ -588,6 +589,74 @@ public class NetworkManagerImpl implements NetworkManager
         status.setInterfaceId(interfaceId); //Interface id must be set in all cases. It is not stored in interface-<interfaceId>-status.js file
         return status;
     }
+
+    /**
+     * Method to get all interfaces status
+     * @return InterfaceStatusGeneric
+     */
+    public List<InterfaceStatusGeneric> getAllInterfacesStatus() {
+        List<InterfaceStatusGeneric> intfStatuses = new LinkedList<>();
+        for(InterfaceSettings intf : this.networkSettings.getInterfaces()) {
+            
+            InterfaceStatusGeneric intfStatus = new InterfaceStatusGeneric();
+            intfStatus.setDevice(intf.getSymbolicDev());
+
+            String intfTransfer = this.getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSystemDev());
+            String[] stats = intfTransfer.trim().split("\\s+");
+            for (int i = 0; i < stats.length; i++) {
+                switch (i) {
+                    case 1:
+                        intfStatus.setMacAddress(stats[i]);
+                        break;
+                    case 2:
+                        intfStatus.setRxbytes(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
+                        break;
+                    case 3:
+                        intfStatus.setRxpkts(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
+                        break;
+                    case 4:
+                        intfStatus.setRxerr(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
+                        break;
+                    case 5:
+                        intfStatus.setRxdrop(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
+                        break;
+                    case 8:
+                        intfStatus.setTxbytes(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
+                        break;
+                    case 9:
+                        intfStatus.setTxpkts(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
+                        break;
+                    case 10:
+                        intfStatus.setTxerr(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
+                        break;
+                    case 11:
+                        intfStatus.setTxdrop(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            String intfIpAddr = this.getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSystemDev());
+            stats = intfIpAddr.trim().split("\\s+");
+            String getNext = "";
+            for (int i = 0; i < stats.length; i++) {
+                if (getNext == "inet")
+                    intfStatus.getIp4Addr().add(stats[i]);
+                else if(getNext == "inet6")
+                    intfStatus.getIp6Addr().add(stats[i]);
+
+                getNext = "";
+                if (stats[i].equals("inet"))
+                    getNext = "inet";
+                else if(stats[i].equals("inet6"))
+                    getNext = "inet6";
+            }
+
+            intfStatuses.add(intfStatus);
+        }
+        return intfStatuses;
+    };
 
     /**
      * Determines if the specified interface is currently the VRRP master
