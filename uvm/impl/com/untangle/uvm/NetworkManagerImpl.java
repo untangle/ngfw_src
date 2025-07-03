@@ -27,7 +27,10 @@ import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
+import com.untangle.uvm.network.DeviceStatus.ConnectedStatus;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
+import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
+import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
 import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
@@ -76,6 +79,10 @@ public class NetworkManagerImpl implements NetworkManager
 {
     public static final String MAC = "MAC";
     public static final String ORGANIZATION = "Organization";
+    private static final String INET = "inet";
+    private static final String INET6 = "inet6";
+    private static final String DHCP = "dhcp";
+    private static final String DHCPV6 = "dhcpv6";
     public static final String COMMA = ",";
     private final Logger logger = LogManager.getLogger(this.getClass());
 
@@ -591,72 +598,151 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Method to get all interfaces status
-     * @return InterfaceStatusGeneric
+     * Method to get all interfaces' status.
+     * @return List of InterfaceStatusGeneric
      */
     public List<InterfaceStatusGeneric> getAllInterfacesStatus() {
-        List<InterfaceStatusGeneric> intfStatuses = new LinkedList<>();
-        for(InterfaceSettings intf : this.networkSettings.getInterfaces()) {
-            
-            InterfaceStatusGeneric intfStatus = new InterfaceStatusGeneric();
-            intfStatus.setDevice(intf.getSymbolicDev());
+        List<InterfaceStatusGeneric> interfaceStatuses = new LinkedList<>();
+        List<DeviceStatus> deviceStatusList = getDeviceStatus();
 
-            String intfTransfer = this.getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSystemDev());
-            String[] stats = intfTransfer.trim().split("\\s+");
-            for (int i = 0; i < stats.length; i++) {
-                switch (i) {
-                    case 1:
-                        intfStatus.setMacAddress(stats[i]);
-                        break;
-                    case 2:
-                        intfStatus.setRxbytes(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
-                        break;
-                    case 3:
-                        intfStatus.setRxpkts(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
-                        break;
-                    case 4:
-                        intfStatus.setRxerr(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
-                        break;
-                    case 5:
-                        intfStatus.setRxdrop(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
-                        break;
-                    case 8:
-                        intfStatus.setTxbytes(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
-                        break;
-                    case 9:
-                        intfStatus.setTxpkts(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
-                        break;
-                    case 10:
-                        intfStatus.setTxerr(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
-                        break;
-                    case 11:
-                        intfStatus.setTxdrop(stats[i].matches("-?\\d+") ? Integer.parseInt(stats[i]) : 0);
-                        break;
-                    default:
-                        break;
-                }
-            }
+        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+            InterfaceStatusGeneric status = new InterfaceStatusGeneric();
 
-            String intfIpAddr = this.getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSystemDev());
-            stats = intfIpAddr.trim().split("\\s+");
-            String getNext = "";
-            for (int i = 0; i < stats.length; i++) {
-                if (getNext == "inet")
-                    intfStatus.getIp4Addr().add(stats[i]);
-                else if(getNext == "inet6")
-                    intfStatus.getIp6Addr().add(stats[i]);
+            status.setDevice(intf.getSymbolicDev());
+            populateTransferStats(status, intf);
+            populateMacVendor(status);
+            populateIpAddresses(status, intf);
+            populateConnectionStatus(status, intf, deviceStatusList);
+            populateGatewayAndDns(status, intf);
+            populateAddressSources(status, intf);
 
-                getNext = "";
-                if (stats[i].equals("inet"))
-                    getNext = "inet";
-                else if(stats[i].equals("inet6"))
-                    getNext = "inet6";
-            }
-
-            intfStatuses.add(intfStatus);
+            interfaceStatuses.add(status);
         }
-        return intfStatuses;
-    };
+
+        return interfaceStatuses;
+    }
+
+    /** 
+     * Populates transfer statistics such as rx/tx bytes, packets, errors, and drops. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateTransferStats(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSystemDev());
+        String[] stats = intfTransfer.trim().split("\\s+");
+
+        if (stats.length < 12) return;
+
+        status.setMacAddress(stats[1]);
+        status.setRxbytes(parseIntSafe(stats[2]));
+        status.setRxpkts(parseIntSafe(stats[3]));
+        status.setRxerr(parseIntSafe(stats[4]));
+        status.setRxdrop(parseIntSafe(stats[5]));
+        status.setTxbytes(parseIntSafe(stats[8]));
+        status.setTxpkts(parseIntSafe(stats[9]));
+        status.setTxerr(parseIntSafe(stats[10]));
+        status.setTxdrop(parseIntSafe(stats[11]));
+    }
+
+    /** 
+     * Adds vendor name based on MAC address to the InterfaceStatusGeneric object. 
+     * @param status InterfaceStatusGeneric
+     */
+    private void populateMacVendor(InterfaceStatusGeneric status) {
+        String vendor = UvmContextFactory.context()
+                          .deviceTable()
+                          .getMacVendorFromMacAddress(status.getMacAddress());
+        status.setMacVendor(vendor);
+    }
+
+    /** 
+     * Populates IPv4 and IPv6 addresses for the interface 
+     * in InterfaceStatusGeneric using Status - INTERFACE_IP_ADDRESSES. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateIpAddresses(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSystemDev());
+        String[] tokens = ipStatus.trim().split("\\s+");
+
+        String nextType = "";
+        for (String token : tokens) {
+            if (INET.equals(nextType)) {
+                status.getIp4Addr().add(token);
+            } else if (INET6.equals(nextType)) {
+                status.getIp6Addr().add(token);
+
+            }
+            nextType = "";
+            if (INET.equals(token)) nextType = INET;
+            else if (INET6.equals(token)) nextType = INET6;
+        }
+    }
+
+    /** 
+     * Populates connection state (connected/offline), duplex, and speed. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     * @param deviceStatusList List<DeviceStatus>
+     */
+    private void populateConnectionStatus(InterfaceStatusGeneric status, InterfaceSettings intf, List<DeviceStatus> deviceStatusList) {
+        for (DeviceStatus ds : deviceStatusList) {
+            if (ds.getDeviceName().equals(intf.getPhysicalDev())) {
+                boolean isConnected = ConnectedStatus.CONNECTED.equals(ds.getConnected());
+                status.setConnected(isConnected);
+                status.setOffline(!isConnected);
+                status.setEthDuplex(ds.getDuplex());
+                status.setEthSpeed(ds.getMbit());
+                return;
+            }
+        }
+    }
+
+    /** 
+     * Sets DNS and gateway information from interface status. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateGatewayAndDns(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        InterfaceStatus intfStatus = getInterfaceStatus(intf.getInterfaceId());
+        if (intfStatus.getV4Dns1() != null) status.getDnsServers().add(intfStatus.getV4Dns1());
+        if (intfStatus.getV4Dns2() != null) status.getDnsServers().add(intfStatus.getV4Dns2());
+        status.setIp4Gateway(intfStatus.getV4Gateway());
+        status.setIp6Gateway(intfStatus.getV6Gateway());
+    }
+
+    /** Populates IPv4/IPv6 address source (dhcp/static/pppoe
+    * @param status InterfaceStatusGeneric
+    * @param intf InterfaceSettings
+    */
+    private void populateAddressSources(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        if (intf.getConfigType() != ConfigType.ADDRESSED) return;
+
+        switch (intf.getV4ConfigType()) {
+            case AUTO:
+                status.getAddressSource().add(DHCP); break;
+            case PPPOE:
+                status.getAddressSource().add(V4ConfigType.PPPOE.name().toLowerCase()); break;
+            case STATIC:
+                status.getAddressSource().add(V4ConfigType.STATIC.name().toLowerCase()); break;
+        }
+
+        switch (intf.getV6ConfigType()) {
+            case AUTO:
+                status.getIp6addressSource().add(DHCPV6); break;
+            case STATIC:
+                status.getIp6addressSource().add(V6ConfigType.STATIC.name().toLowerCase()); break;
+        }
+    }
+
+    /** 
+     * Safely parses integer, returns 0 if invalid. 
+     * @param str String
+     * @return int 
+     */
+    private int parseIntSafe(String str) {
+        return str.matches("-?\\d+") ? Integer.parseInt(str) : 0;
+    }
 
     /**
      * Determines if the specified interface is currently the VRRP master

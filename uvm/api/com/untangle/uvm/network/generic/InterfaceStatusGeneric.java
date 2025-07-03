@@ -4,11 +4,14 @@
 package com.untangle.uvm.network.generic;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+
+import com.untangle.uvm.network.DeviceStatus.DuplexStatus;
 
 /**
  * Network settings v2.
@@ -18,18 +21,22 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
 
     private String device;
 
-    private String ethDuplex;
+    private boolean connected;
+    private boolean offline;
+
+    private DuplexStatus ethDuplex;
     private int ethSpeed;
 
     private List<String> ip4Addr = new LinkedList<>();
-    private String ip4Gateway;
+    private InetAddress ip4Gateway;
     private List<String> addressSource = new LinkedList<>();
     
     private List<String> ip6Addr = new LinkedList<>();
-    private String ip6Gateway;
+    private InetAddress ip6Gateway;
     private List<String> ip6addressSource = new LinkedList<>();
 
-    private List<String> dnsServers = new LinkedList<>();
+    private List<InetAddress> dnsServers = new LinkedList<>();
+    private List<InetAddress> ip6DnsServer = new LinkedList<>();
 
     private int rxbytes;
     private int rxpkts;
@@ -47,8 +54,14 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     public String getDevice() { return device; }
     public void setDevice(String device) { this.device = device; }
 
-    public String getEthDuplex() { return ethDuplex; }
-    public void setEthDuplex(String ethDuplex) { this.ethDuplex = ethDuplex; }
+    public boolean isConnected() { return connected; }
+    public void setConnected(boolean connected) { this.connected = connected; }
+
+    public boolean isOffline() { return offline; }
+    public void setOffline(boolean offline) { this.offline = offline; }
+
+    public DuplexStatus getEthDuplex() { return ethDuplex; }
+    public void setEthDuplex(DuplexStatus ethDuplex) { this.ethDuplex = ethDuplex; }
 
     public int getEthSpeed() { return ethSpeed; }
     public void setEthSpeed(int ethSpeed) { this.ethSpeed = ethSpeed; }
@@ -56,8 +69,8 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     public List<String> getIp4Addr() { return ip4Addr; }
     public void setIp4Addr(List<String> ip4Addr) { this.ip4Addr = ip4Addr; }
 
-    public String getIp4Gateway() { return ip4Gateway; }
-    public void setIp4Gateway(String ip4Gateway) { this.ip4Gateway = ip4Gateway; }
+    public InetAddress getIp4Gateway() { return ip4Gateway; }
+    public void setIp4Gateway(InetAddress ip4Gateway) { this.ip4Gateway = ip4Gateway; }
 
     public List<String> getAddressSource() { return addressSource; }
     public void setAddressSource(List<String> addressSource) { this.addressSource = addressSource; }
@@ -65,14 +78,14 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     public List<String> getIp6Addr() { return ip6Addr; }
     public void setIp6Addr(List<String> ip6Addr) { this.ip6Addr = ip6Addr; }
 
-    public String getIp6Gateway() { return ip6Gateway; }
-    public void setIp6Gateway(String ip6Gateway) { this.ip6Gateway = ip6Gateway; }
+    public InetAddress getIp6Gateway() { return ip6Gateway; }
+    public void setIp6Gateway(InetAddress ip6Gateway) { this.ip6Gateway = ip6Gateway; }
 
     public List<String> getIp6addressSource() { return ip6addressSource; }
     public void setIp6addressSource(List<String> ip6addressSource) { this.ip6addressSource = ip6addressSource; }
 
-    public List<String> getDnsServers() { return dnsServers; }
-    public void setDnsServers(List<String> dnsServers) { this.dnsServers = dnsServers; }
+    public List<InetAddress> getDnsServers() { return dnsServers; }
+    public void setDnsServers(List<InetAddress> dnsServers) { this.dnsServers = dnsServers; }
 
     public int getRxbytes() { return rxbytes; }
     public void setRxbytes(int rxbytes) { this.rxbytes = rxbytes; }
