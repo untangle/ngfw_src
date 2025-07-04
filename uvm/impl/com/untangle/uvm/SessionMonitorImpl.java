@@ -28,6 +28,8 @@ import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.SessionTuple;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.app.SessionEvent;
+import org.jabsorb.serializer.MarshallingMode;
+import org.jabsorb.serializer.MarshallingModeContext;
 
 /**
  * SessionMonitor is a utility class that provides some convenient
@@ -359,12 +361,17 @@ public class SessionMonitorImpl implements SessionMonitor
 
         try {
             String output = SessionMonitorImpl.execManager.execOutput(execStr);
+
+            // Expect command output to be serialized as per jabsorb style
+            MarshallingModeContext.push(MarshallingMode.JABSORB);
             List<SessionMonitorEntry> entryList = (List<SessionMonitorEntry>) ((UvmContextImpl)UvmContextFactory.context()).getSerializer().fromJSON(output);
             return entryList;
 
         } catch (org.jabsorb.serializer.UnmarshallException exc) {
             logger.error("Unable to read jnettop - invalid JSON",exc);
             return null;
+        } finally {
+            MarshallingModeContext.pop();
         }
     }
 

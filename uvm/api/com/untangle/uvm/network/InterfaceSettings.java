@@ -6,12 +6,19 @@ package com.untangle.uvm.network;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.net.InetAddress;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
+
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.Type;
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.V4Alias;
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.V6Alias;
 
 /**
  * Interface settings.
@@ -474,5 +481,138 @@ public class InterfaceSettings implements Serializable, JSONString
             };
         } catch (Exception e) {}
 
+    }
+
+    /**
+     * Transforms this interface configuration into a generic representation
+     * suitable for Vue UI.
+     * <p>
+     * This method performs a field-by-field mapping from the internal
+     * {@code InterfaceSettings} structure generalized vue specific POJO:
+     * {@link InterfaceSettingsGeneric}.
+     * </p>
+     * 
+     * @return a new {@link InterfaceSettingsGeneric} instance populated with
+     *         the corresponding fields from this interface
+     */
+    public InterfaceSettingsGeneric transformInterfaceSettingsToGeneric() {
+        InterfaceSettingsGeneric intfSettingsGen = new InterfaceSettingsGeneric();
+
+        intfSettingsGen.setInterfaceId(this.interfaceId);
+        intfSettingsGen.setName(this.name);
+        intfSettingsGen.setDevice(this.symbolicDev);
+        intfSettingsGen.setWan(this.isWan);
+        intfSettingsGen.setType(resolveGenericType());
+        intfSettingsGen.setVlanId(this.vlanTag);
+        intfSettingsGen.setBoundInterfaceId(this.vlanParent);
+        intfSettingsGen.setConfigType(this.configType);
+        intfSettingsGen.setBridgedTo(this.bridgedTo);
+
+        intfSettingsGen.setV4ConfigType(this.v4ConfigType);
+        intfSettingsGen.setV4StaticAddress(this.v4StaticAddress);
+        intfSettingsGen.setV4StaticPrefix(this.v4StaticPrefix);
+        intfSettingsGen.setV4StaticGateway(this.v4StaticGateway);
+        intfSettingsGen.setV4StaticDNS1(this.v4StaticDns1);
+        intfSettingsGen.setV4StaticDNS2(this.v4StaticDns2);
+        intfSettingsGen.setV4DhcpAddressOverride(this.v4AutoAddressOverride);
+        intfSettingsGen.setV4DhcpPrefixOverride(this.v4AutoPrefixOverride);
+        intfSettingsGen.setV4DhcpGatewayOverride(this.v4AutoGatewayOverride);
+        intfSettingsGen.setV4DhcpDNS1Override(this.v4AutoDns1Override);
+        intfSettingsGen.setV4DhcpDNS2Override(this.v4AutoDns2Override);
+
+        intfSettingsGen.setV4Aliases(convertToV4Aliases(this.v4Aliases));
+        intfSettingsGen.setV6Aliases(convertToV6Aliases(this.v6Aliases));
+
+        intfSettingsGen.setV4PPPoEUsername(this.v4PPPoEUsername);
+        intfSettingsGen.setV4PPPoEPassword(this.v4PPPoEPassword);
+        intfSettingsGen.setV4PPPoEUsePeerDNS(this.v4PPPoEUsePeerDns);
+        intfSettingsGen.setV4PPPoEOverrideDNS1(this.v4PPPoEDns1);
+        intfSettingsGen.setV4PPPoEOverrideDNS2(this.v4PPPoEDns2);
+        intfSettingsGen.setV4PPPoEPasswordEncrypted(this.v4PPPoEPasswordEncrypted);
+
+        intfSettingsGen.setNatEgress(this.v4NatEgressTraffic);
+        intfSettingsGen.setNatIngress(this.v4NatIngressTraffic);
+
+        intfSettingsGen.setV6ConfigType(this.v6ConfigType);
+        intfSettingsGen.setV6StaticAddress(this.v6StaticAddress);
+        intfSettingsGen.setV6StaticPrefix(this.v6StaticPrefixLength);
+        intfSettingsGen.setV6StaticGateway(this.v6StaticGateway);
+        intfSettingsGen.setV6StaticDNS1(this.v6StaticDns1);
+        intfSettingsGen.setV6StaticDNS2(this.v6StaticDns2);
+
+        intfSettingsGen.setDhcpEnabled(null != this.dhcpEnabled && false != this.dhcpEnabled && this.dhcpType == DhcpType.SERVER);
+        intfSettingsGen.setDhcpRelayEnabled(null != this.dhcpEnabled && false != this.dhcpEnabled && this.dhcpType == DhcpType.RELAY);
+
+        intfSettingsGen.setDhcpRangeStart(this.dhcpRangeStart);
+        intfSettingsGen.setDhcpRangeEnd(this.dhcpRangeEnd);
+        intfSettingsGen.setDhcpLeaseDuration(this.dhcpLeaseDuration);
+        intfSettingsGen.setDhcpGatewayOverride(this.dhcpGatewayOverride);
+        intfSettingsGen.setDhcpPrefixOverride(this.dhcpPrefixOverride);
+        intfSettingsGen.setDhcpDNSOverride(this.dhcpDnsOverride);
+        intfSettingsGen.setDhcpOptions(this.dhcpOptions);
+
+        intfSettingsGen.setDhcpRelayAddress(this.dhcpRelayAddress);
+        intfSettingsGen.setRouterAdvertisements(this.raEnabled);
+
+        intfSettingsGen.setDownloadKbps(this.downloadBandwidthKbps);
+        intfSettingsGen.setUploadKbps(this.uploadBandwidthKbps);
+
+        intfSettingsGen.setVrrpEnabled(this.vrrpEnabled);
+        intfSettingsGen.setVrrpId(this.vrrpId);
+        intfSettingsGen.setVrrpPriority(this.vrrpPriority);
+        intfSettingsGen.setVrrpV4Aliases(convertToV4Aliases(this.vrrpAliases));
+
+        intfSettingsGen.setWirelessSsid(this.wirelessSsid);
+        intfSettingsGen.setWirelessEncryption(this.wirelessEncryption);
+        intfSettingsGen.setWirelessMode(this.wirelessMode);
+        intfSettingsGen.setWirelessPassword(this.wirelessPassword);
+        intfSettingsGen.setWirelessLoglevel(this.wirelessLoglevel);
+        intfSettingsGen.setWirelessChannel(this.wirelessChannel);
+        intfSettingsGen.setHidden(this.wirelessVisibility == 1);
+        intfSettingsGen.setWirelessCountryCode(this.wirelessCountryCode);
+
+        return intfSettingsGen;
+    }
+
+    /**
+     * Determines the generic interface type based on the internal flags
+     * such as whether the interface is wireless, bridged, or VLAN.
+     * <p>
+     * This method is used during transformation to {@code InterfaceSettingsGeneric}
+     * to simplify internal-specific interface classifications to vue based API-compatible {@link InterfaceSettingsGeneric.Type}.
+     * </p>
+     * 
+     * @return the generic {@link InterfaceSettingsGeneric.Type} representing the interface category
+     */
+    private Type resolveGenericType() {
+        if (this.isWirelessInterface) return Type.WIFI;
+        if (!this.isVlanInterface) return Type.NIC;
+        if (this.isVlanInterface && this.configType == ConfigType.ADDRESSED) return Type.VLAN;
+        if (this.isVlanInterface && this.configType == ConfigType.BRIDGED) return Type.BRIDGE;
+        return null;
+    }
+
+    private List<V4Alias> convertToV4Aliases(List<InterfaceAlias> aliases) {
+        if (aliases == null) return null;
+        return aliases.stream()
+                    .map(a -> {
+                        V4Alias v4 = new V4Alias();
+                        v4.setV4Address(a.getStaticAddress());
+                        v4.setV4Prefix(a.getStaticPrefix());
+                        return v4;
+                    })
+                    .collect(Collectors.toList());
+    }
+
+    private List<V6Alias> convertToV6Aliases(List<InterfaceAlias> aliases) {
+        if (aliases == null) return null;
+        return aliases.stream()
+                    .map(a -> {
+                        V6Alias v6 = new V6Alias();
+                        v6.setV6Address(a.getStaticAddress());
+                        v6.setV6Prefix(a.getStaticPrefix());
+                        return v6;
+                    })
+                    .collect(Collectors.toList());
     }
 }

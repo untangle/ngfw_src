@@ -349,6 +349,29 @@ public class DeviceTableImpl implements DeviceTable
     }
 
     /**
+     * Gets the Mac Vendor String value using provided macAddress
+     * @param macAddress
+     * @return macVendor name
+     */
+    @Override
+    public String getMacVendorFromMacAddress(String macAddress) {
+        JSONArray macAddressVendor = lookupMacVendor(macAddress);
+        try {
+            if (macAddressVendor != null && macAddressVendor.length() > 0) {
+                JSONObject macAddrVendor = macAddressVendor.getJSONObject(0);
+                if (macAddrVendor.has(MAC) &&
+                    macAddrVendor.has(ORGANIZATION) &&
+                    StringUtils.isNotBlank(macAddrVendor.getString(ORGANIZATION))) {
+                    return macAddrVendor.getString(ORGANIZATION);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while fetching mac vendor for address {}", macAddress, e);
+        }
+        return null;
+    }
+
+    /**
      * Load the saved devices
      */
     @SuppressWarnings("unchecked")
