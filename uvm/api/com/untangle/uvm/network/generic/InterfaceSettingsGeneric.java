@@ -305,7 +305,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setInterfaceId(this.interfaceId);
         intfSettings.setName(this.name);
 
-        intfSettings.setPhysicalDev(this.device);
+        intfSettings.setSymbolicDev(this.device);
 
         intfSettings.setIsWan(this.wan);
 
