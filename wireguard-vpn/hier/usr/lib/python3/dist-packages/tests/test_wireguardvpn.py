@@ -5,6 +5,8 @@ import subprocess
 import runtests
 import unittest
 import pytest
+import ipaddress
+import re
 
 from tests.common import NGFWTestCase
 import runtests.remote_control as remote_control
@@ -143,7 +145,13 @@ def build_wireguard_tunnel_roaming(tunnel_enabled, description, endpointHostname
         "pingAddress": pingAddress,
         "privateKey": privateKey,
         "publicKey": publicKey,
-        "assignDnsServer": assignDnsServer
+        "assignDnsServer": assignDnsServer,
+        "routedNetworkProfiles": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "Default"
+            ]
+        }
     }
 
 def build_wireguard_tunnel(tunnel_enabled=True, remotePK=WG_REMOTE["publicKey"], remotePeer=WG_REMOTE["peerAddress"], description=WG_REMOTE["hostname"], endpointHostname=WG_REMOTE["serverAddress"], networks=WG_REMOTE["networks"]):
@@ -162,7 +170,36 @@ def build_wireguard_tunnel(tunnel_enabled=True, remotePK=WG_REMOTE["publicKey"],
         "pingUnreachableEvents": False,
         "privateKey": "",
         "publicKey": WG_REMOTE["publicKey"],
-        "assignDnsServer": False
+        "assignDnsServer": False,
+        "routedNetworkProfiles": {
+            "javaClass": "java.util.LinkedList",
+            "list": [
+                "Default"
+            ]
+        }
+    }
+
+def is_value_in_config_line(config, target_value, key_name):
+    """
+    Checks if the target_value is present in the comma-separated values of a specific config line.
+
+    :param config: The full config string.
+    :param target_value: The value to search for.
+    :param key_name: The name of the line key (e.g., 'AllowedIPs').
+    :return: True if found, False otherwise.
+    """
+    match = re.search(rf"{re.escape(key_name)}\s*=\s*(.+)", config)
+    if match:
+        values = match.group(1)
+        return target_value in values
+    else:
+        return False
+    
+def build_network_profile(profile_name, network_addresses):
+    return {
+        "javaClass": "com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile",
+        "profileName": profile_name,
+        "subnetsAsString": network_addresses
     }
 
 def wait_for_ping(target_IP="127.0.0.1",ping_result_expected=0):
@@ -286,6 +323,119 @@ class WireGuardVpnTests(NGFWTestCase):
 
         self._app.setSettings(org_wg_settings)
 
+    def test_026_tun_conn_with_default_and_full_tunnel_profile(self):
+        """
+        Verify static tunnel working with dafault and full tunnel profiles.
+        Also verify remote config change when different profiles are selected.
+        """
+        
+        # Pull out the current WG settings and the current Network Settings
+        origWGSettings = self._app.getSettings()
+        origNetSettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+
+        # deepcopy WG settings for manipulation
+        newWGSettings = copy.deepcopy( origWGSettings )
+
+        # Set new tunnel settings
+        newWGSettings["tunnels"]["list"] = []
+        newWGSettings["tunnels"]["list"].append(build_wireguard_tunnel())
+        self._app.setSettings(newWGSettings)
+
+        # ping test with default Profile
+        result = wait_for_ping(WG_REMOTE["lanAddress"],0)
+        assert result, "received ping from remote lan"
+
+        # Find a DHCP LAN device
+        lanAddress = None
+        for intf in origNetSettings['interfaces']['list']:
+            if not intf['isWan']:
+                lanAddress = intf['v4StaticAddress']
+                break
+
+        # AllowedIPs should have lan network in wireguard config generated.
+        remoteConfig = self._app.getRemoteConfig(WG_REMOTE['publicKey'])
+        lanNetwork = ipaddress.ip_network(f"{lanAddress}/24", strict=False)
+        assert(is_value_in_config_line(remoteConfig, str(lanNetwork), "AllowedIPs"))
+
+        # Change the Routed Network Profile for tunnel
+        newWGSettings["tunnels"]["list"][0]["routedNetworkProfiles"]["list"] = [ "Full Tunnel" ]
+        self._app.setSettings(newWGSettings)
+
+        # ping test with Full Tunnel Profile
+        result = wait_for_ping(WG_REMOTE["lanAddress"],0)
+        assert result, "received ping from remote lan"
+
+        # AllowedIPs should have 0.0.0.0/0 network in wireguard config generated.
+        remoteConfig = self._app.getRemoteConfig(WG_REMOTE['publicKey'])
+        assert(is_value_in_config_line(remoteConfig, "0.0.0.0/0", "AllowedIPs"))
+
+        # Set app back to normal
+        self._app.setSettings(origWGSettings)
+
+    def test_027_tunnel_conf_change_on_profile_edit_delete(self):
+        """
+        Verify if profile is used as routed network profile by a tunnel then
+        1. Editing the network addresses should reflect in tunnel routed profiles and routed networks.
+        2. Deleting the profile should remove it from tunnel configuration
+        """
+
+        # Declare constants
+        profileName = "MyProfile"
+        net1 = "10.12.35.0/18"
+        net2 = "10.20.36.0/18"
+        net3 = "10.32.37.0/18"
+
+        # Pull out the current WG settings and copy it
+        origWGSettings = self._app.getSettings()
+        newAppSettings = copy.deepcopy( origWGSettings )
+
+        # Add new profiles in settings
+        newAppSettings["networkProfiles"]["list"].append(build_network_profile(profileName, net1 + "," + net2))
+
+        # Empty tunnels and Create a new tunnel settings
+        newAppSettings["tunnels"]["list"] = []
+        tunnel = build_wireguard_tunnel()
+
+        # Set MyProfile as routedNetworkProfiles in tunnel and append it to tunnel list
+        tunnel["routedNetworkProfiles"]["list"].append(profileName)
+        newAppSettings["tunnels"]["list"].append(tunnel)
+
+        # Set settings and get updated settings from backend
+        self._app.setSettings(newAppSettings)
+        newAppSettings = self._app.getSettings()
+
+        # Verify if MyProfile addresses are present in tunnel routedNetworks
+        routedNetworks = newAppSettings["tunnels"]["list"][0]["routedNetworks"]
+        assert (net1 in routedNetworks) and (net2 in routedNetworks)
+
+        # Edit MyProfile addresses
+        newAppSettings["networkProfiles"]["list"][-1]["subnetsAsString"] = net1 + "," + net3
+
+        # Set settings and get updated settings from backend
+        self._app.setSettings(newAppSettings)
+        newAppSettings = self._app.getSettings()
+
+        # Verify that net2 is not in tunnel routedNetworks but net1 and net3 are
+        routedNetworks = newAppSettings["tunnels"]["list"][0]["routedNetworks"]
+        assert (net2 not in routedNetworks) and (net1 in routedNetworks) and (net3 in routedNetworks)
+        assert(profileName in newAppSettings["tunnels"]["list"][0]["routedNetworkProfiles"]["list"])
+
+        # Delete MyProfile from local network profiles
+        newAppSettings["networkProfiles"]["list"].pop()
+
+        # Set settings and get updated settings from backend
+        self._app.setSettings(newAppSettings)
+        newAppSettings = self._app.getSettings()
+
+        # Verify that net1, net2, net3 are not in tunnel routedNetworks
+        # and MyProfile is removed from routed network profiles
+        routedNetworks = newAppSettings["tunnels"]["list"][0]["routedNetworks"]
+        assert (net1 not in routedNetworks) and (net2 not in routedNetworks) and (net3 not in routedNetworks)
+        assert(profileName not in newAppSettings["tunnels"]["list"][0]["routedNetworkProfiles"]["list"])
+
+        # Set app back to normal
+        self._app.setSettings(origWGSettings)
+
     def test_031_network_settings_and_default_wireguard_networks(self):
         """
         Test if changing the Network Settings LAN address properly updates the wireguard local networks
@@ -308,8 +458,8 @@ class WireGuardVpnTests(NGFWTestCase):
         # deepcopy WG network settings for manipulation
         newNetSettings = copy.deepcopy( origNetSettings )
 
-        # Verify the WG settings don't already have this address stored
-        assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
+        # Verify the WG settings Default profile don't already have this address stored
+        assert(testingAddressNet not in wgSettings['networkProfiles']['list'][1]['subnetsAsString'])
 
         # Find a DHCP LAN device and set it's address to the testing address
         for intf in newNetSettings['interfaces']['list']:
@@ -327,7 +477,7 @@ class WireGuardVpnTests(NGFWTestCase):
         newWGSettings = self._app.getSettings()
 
         # Test that new WG LAN matches network LAN
-        assert(testingAddressNet in newWGSettings['networks']['list'][0]['address'])
+        assert(testingAddressNet in newWGSettings['networkProfiles']['list'][1]['subnetsAsString'])
 
         # Set network settings back to normal
         global_functions.uvmContext.networkManager().setNetworkSettings( origNetSettings )
@@ -338,7 +488,7 @@ class WireGuardVpnTests(NGFWTestCase):
         assert True is global_functions.is_vpn_running(interface=f"wg0",route_table=f"wireguard"), "wireguard interface and rule is running"
 
         # Assert that old settings were set back properly proper now
-        assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
+        assert(testingAddressNet not in wgSettings['networkProfiles']['list'][1]['subnetsAsString'])
 
     def test_032_network_settings_and_custom_wireguard_networks(self):
         """
@@ -360,8 +510,8 @@ class WireGuardVpnTests(NGFWTestCase):
         origWGSettings = self._app.getSettings()
         origNetSettings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
-        # Verify the WG settings don't already have this address stored
-        assert(testingAddressNet not in origWGSettings['networks']['list'][0]['address'])
+        # Verify the WG settings Default profile don't already have this address stored
+        assert(testingAddressNet not in origWGSettings['networkProfiles']['list'][1]['subnetsAsString'])
 
         # deepcopy network settings for manipulation
         newNetSettings = copy.deepcopy( origNetSettings )
@@ -369,22 +519,15 @@ class WireGuardVpnTests(NGFWTestCase):
         # deepcopy WG settings for manipulation
         newWGSettings = copy.deepcopy( origWGSettings )
 
-        # update WG settings with a custom configuration
-        newWGSettings['networks'] = {
-                                        "javaClass": "java.util.LinkedList", 
-                                        "list": [
-                                            {
-                                                "address": testingCustomWGAddr, 
-                                                "maskedAddress": testingCustomWGAddr, 
-                                                "javaClass": "com.untangle.app.wireguard_vpn.WireGuardVpnNetwork", 
-                                                "id": 1
-                                            }
-                                        ]
+        # update WG settings Default profile with a custom configuration
+        newWGSettings['networkProfiles']['list'][1] = {
+                                        "javaClass": "com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile",
+                                        "subnetsAsString": testingCustomWGAddr
                                     }
         self._app.setSettings(newWGSettings)
 
         # Verify custom configuration is returned with get settings
-        assert(testingCustomWGAddr in self._app.getSettings()['networks']['list'][0]['address'])
+        assert(testingCustomWGAddr in self._app.getSettings()['networkProfiles']['list'][1]['subnetsAsString'])
 
         # Find a DHCP LAN device and set it's address to the testing address
         for intf in newNetSettings['interfaces']['list']:
@@ -398,10 +541,10 @@ class WireGuardVpnTests(NGFWTestCase):
         # Set the settings to new config
         global_functions.uvmContext.networkManager().setNetworkSettings( newNetSettings )
 
-        # Test that the custom WG network exists in the latest WG networks list, and that the local networks are not
+        # Test that the custom WG network exists in the latest WG Default profile networks list, and that the local networks are not
         wgSettings = self._app.getSettings()
-        assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
-        assert(testingCustomWGAddr in wgSettings['networks']['list'][0]['address'])
+        assert(testingAddressNet not in wgSettings['networkProfiles']['list'][1]['subnetsAsString'])
+        assert(testingCustomWGAddr in wgSettings['networkProfiles']['list'][1]['subnetsAsString'])
 
         # Set app back to normal
         self._app.setSettings(origWGSettings)
@@ -415,8 +558,8 @@ class WireGuardVpnTests(NGFWTestCase):
         wgSettings = self._app.getSettings()
 
         # Assert that old settings were set back properly
-        assert(testingAddressNet not in wgSettings['networks']['list'][0]['address'])
-        assert(testingCustomWGAddr not in wgSettings['networks']['list'][0]['address'])
+        assert(testingAddressNet not in wgSettings['networkProfiles']['list'][1]['subnetsAsString'])
+        assert(testingCustomWGAddr not in wgSettings['networkProfiles']['list'][1]['subnetsAsString'])
 
     @pytest.mark.failure_in_podman
     def test_050_shutdown_app(self):
@@ -601,5 +744,44 @@ class WireGuardVpnTests(NGFWTestCase):
         assert("DNS=" in remoteConfig)
 
         self._app.setSettings(appSettings)
+
+    def test_046_roaming_tun_conf_with_default_and_full_tunnel_profile(self):
+        """
+        Verify roaming tunnel remote config with dafault and full tunnel profiles.
+        """
+        
+        # Pull out the current WG settings and the current Network Settings
+        origWGSettings = self._app.getSettings()
+        origNetSettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+
+        newAppSettings = copy.deepcopy( origWGSettings )
+
+        # Create roaming client tunnel and set new tunnel in settings with default assignDnsServer value False
+        newAppSettings["tunnels"]["list"] = []
+        newAppSettings["tunnels"]["list"].append(build_wireguard_tunnel_roaming(WG_ROAMING['enabled'],  WG_ROAMING['description'], "", WG_ROAMING['endpointDynamic'],WG_ROAMING['endpointPort'],WG_ROAMING['publicKey'],WG_ROAMING['privateKey'],"","172.16.1.3",WG_ROAMING['pingUnreachableEvents'],WG_ROAMING['pingInterval'],WG_ROAMING['pingConnectionEvents'],WG_ROAMING['pingAddress']))
+        self._app.setSettings(newAppSettings)
+
+        # Find a DHCP LAN device and set it's address to the testing address
+        lanAddress = None
+        for intf in origNetSettings['interfaces']['list']:
+            if not intf['isWan']:
+                lanAddress = intf['v4StaticAddress']
+                break
+
+        # AllowedIPs should have lan network in wireguard config generated.
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        lanNetwork = ipaddress.ip_network(f"{lanAddress}/24", strict=False)
+        assert(is_value_in_config_line(remoteConfig, str(lanNetwork), "AllowedIPs"))
+
+        # Change the Routed Network Profile for tunnel
+        newAppSettings["tunnels"]["list"][0]["routedNetworkProfiles"]["list"] = [ "Full Tunnel" ]
+        self._app.setSettings(newAppSettings)
+
+        # AllowedIPs should have 0.0.0.0/0 network in wireguard config generated.
+        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
+        assert(is_value_in_config_line(remoteConfig, "0.0.0.0/0", "AllowedIPs"))
+
+        # Set app back to normal
+        self._app.setSettings(origWGSettings)
 
 test_registry.register_module("wireguard-vpn", WireGuardVpnTests)
