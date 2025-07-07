@@ -52,7 +52,7 @@ public interface NetworkManager
 
     InterfaceStatus getInterfaceStatus( int interfaceId );
 
-    List<InterfaceStatusGeneric> getAllInterfacesStatus();
+    List<InterfaceStatusGeneric> getAllInterfacesStatusV2();
 
     List<InterfaceStatus> getInterfaceStatus( );
 

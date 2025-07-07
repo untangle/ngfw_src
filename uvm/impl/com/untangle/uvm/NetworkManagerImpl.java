@@ -601,7 +601,7 @@ public class NetworkManagerImpl implements NetworkManager
      * Method to get all interfaces' status.
      * @return List of InterfaceStatusGeneric
      */
-    public List<InterfaceStatusGeneric> getAllInterfacesStatus() {
+    public List<InterfaceStatusGeneric> getAllInterfacesStatusV2() {
         List<InterfaceStatusGeneric> interfaceStatuses = new LinkedList<>();
         List<DeviceStatus> deviceStatusList = getDeviceStatus();
 
