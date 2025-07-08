@@ -28,6 +28,7 @@ import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
 import com.untangle.uvm.network.DeviceStatus.ConnectedStatus;
+import com.untangle.uvm.network.DeviceStatus.DuplexStatus;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
@@ -609,6 +610,7 @@ public class NetworkManagerImpl implements NetworkManager
             InterfaceStatusGeneric status = new InterfaceStatusGeneric();
 
             status.setDevice(intf.getSymbolicDev());
+            status.setWan(intf.getIsWan());
             populateTransferStats(status, intf);
             populateMacVendor(status);
             populateIpAddresses(status, intf);
@@ -689,10 +691,16 @@ public class NetworkManagerImpl implements NetworkManager
         for (DeviceStatus ds : deviceStatusList) {
             if (ds.getDeviceName().equals(intf.getPhysicalDev())) {
                 boolean isConnected = ConnectedStatus.CONNECTED.equals(ds.getConnected());
+                DuplexStatus duplex = ds.getDuplex();
+
                 status.setConnected(isConnected);
                 status.setOffline(!isConnected);
-                status.setEthDuplex(ds.getDuplex());
                 status.setEthSpeed(ds.getMbit());
+
+                if (duplex == DuplexStatus.FULL_DUPLEX) status.setEthDuplex("full");
+                else if(duplex == DuplexStatus.HALF_DUPLEX) status.setEthDuplex("half");
+                else status.setEthDuplex(DuplexStatus.UNKNOWN.toString().toLowerCase());
+                
                 return;
             }
         }
