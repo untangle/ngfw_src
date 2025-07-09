@@ -28,16 +28,16 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     private String ethDuplex;
     private int ethSpeed;
 
-    private List<String> ip4Addr = new LinkedList<>();
+    private List<String> ip4Addr;
     private InetAddress ip4Gateway;
-    private List<String> addressSource = new LinkedList<>();
+    private List<String> addressSource;
     
-    private List<String> ip6Addr = new LinkedList<>();
+    private List<String> ip6Addr;
     private InetAddress ip6Gateway;
-    private List<String> ip6addressSource = new LinkedList<>();
+    private List<String> ip6addressSource;
 
-    private List<InetAddress> dnsServers = new LinkedList<>();
-    private List<InetAddress> ip6DnsServer = new LinkedList<>();
+    private List<InetAddress> dnsServers;
+    private List<InetAddress> ip6DnsServer;
 
     private int rxbytes;
     private int rxpkts;

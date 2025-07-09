@@ -65,12 +65,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.Iterator;
 
 /**
@@ -670,10 +672,13 @@ public class NetworkManagerImpl implements NetworkManager
         String nextType = "";
         for (String token : tokens) {
             if (INET.equals(nextType)) {
+                if(status.getIp4Addr() == null)
+                    status.setIp4Addr(new LinkedList<>());
                 status.getIp4Addr().add(token);
             } else if (INET6.equals(nextType)) {
+                if(status.getIp6Addr() == null)
+                    status.setIp6Addr(new LinkedList<>());
                 status.getIp6Addr().add(token);
-
             }
             nextType = "";
             if (INET.equals(token)) nextType = INET;
@@ -713,8 +718,14 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void populateGatewayAndDns(InterfaceStatusGeneric status, InterfaceSettings intf) {
         InterfaceStatus intfStatus = getInterfaceStatus(intf.getInterfaceId());
-        if (intfStatus.getV4Dns1() != null) status.getDnsServers().add(intfStatus.getV4Dns1());
-        if (intfStatus.getV4Dns2() != null) status.getDnsServers().add(intfStatus.getV4Dns2());
+        List<InetAddress> dns = Stream.of(intfStatus.getV4Dns1(), intfStatus.getV4Dns2())
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
+        if (!dns.isEmpty()) {
+            if (status.getDnsServers() == null)
+                status.setDnsServers(new LinkedList<>());
+            status.getDnsServers().addAll(dns);
+        }
         status.setIp4Gateway(intfStatus.getV4Gateway());
         status.setIp6Gateway(intfStatus.getV6Gateway());
     }
@@ -726,20 +737,24 @@ public class NetworkManagerImpl implements NetworkManager
     private void populateAddressSources(InterfaceStatusGeneric status, InterfaceSettings intf) {
         if (intf.getConfigType() != ConfigType.ADDRESSED) return;
 
-        switch (intf.getV4ConfigType()) {
-            case AUTO:
-                status.getAddressSource().add(DHCP); break;
-            case PPPOE:
-                status.getAddressSource().add(V4ConfigType.PPPOE.name().toLowerCase()); break;
-            case STATIC:
-                status.getAddressSource().add(V4ConfigType.STATIC.name().toLowerCase()); break;
+        // Ensure lists are initialized
+        if(status.getAddressSource() == null)
+            status.setAddressSource(new LinkedList<>());
+        if(status.getIp6addressSource() == null && intf.getV6ConfigType() != V6ConfigType.DISABLED)
+            status.setIp6addressSource(new LinkedList<>());
+        
+        // Handle IPv4 address source
+        V4ConfigType v4Type = intf.getV4ConfigType();
+        switch (v4Type) {
+            case AUTO: status.getAddressSource().add(DHCP); break;
+            case PPPOE, STATIC: status.getAddressSource().add(v4Type.name().toLowerCase()); break;
         }
 
-        switch (intf.getV6ConfigType()) {
-            case AUTO:
-                status.getIp6addressSource().add(DHCPV6); break;
-            case STATIC:
-                status.getIp6addressSource().add(V6ConfigType.STATIC.name().toLowerCase()); break;
+        // Handle IPv6 address source
+        V6ConfigType v6Type = intf.getV6ConfigType();
+        switch (v6Type) {
+            case AUTO: status.getIp6addressSource().add(DHCPV6); break;
+            case STATIC: status.getIp6addressSource().add(v6Type.name().toLowerCase()); break;
         }
     }
 
