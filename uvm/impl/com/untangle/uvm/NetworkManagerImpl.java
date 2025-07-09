@@ -746,15 +746,21 @@ public class NetworkManagerImpl implements NetworkManager
         // Handle IPv4 address source
         V4ConfigType v4Type = intf.getV4ConfigType();
         switch (v4Type) {
-            case AUTO: status.getAddressSource().add(DHCP); break;
-            case PPPOE, STATIC: status.getAddressSource().add(v4Type.name().toLowerCase()); break;
+            case AUTO: 
+                status.getAddressSource().add(DHCP); break;
+            case PPPOE: 
+            case STATIC: {
+                status.getAddressSource().add(v4Type.name().toLowerCase()); break;
+            }
         }
 
         // Handle IPv6 address source
         V6ConfigType v6Type = intf.getV6ConfigType();
         switch (v6Type) {
-            case AUTO: status.getIp6addressSource().add(DHCPV6); break;
-            case STATIC: status.getIp6addressSource().add(v6Type.name().toLowerCase()); break;
+            case AUTO: 
+                status.getIp6addressSource().add(DHCPV6); break;
+            case STATIC: 
+                status.getIp6addressSource().add(v6Type.name().toLowerCase()); break;
         }
     }
 
