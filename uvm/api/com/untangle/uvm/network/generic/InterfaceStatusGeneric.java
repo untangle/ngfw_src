@@ -23,20 +23,21 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
 
     private boolean connected;
     private boolean offline;
+    private boolean wan;
 
-    private DuplexStatus ethDuplex;
+    private String ethDuplex;
     private int ethSpeed;
 
-    private List<String> ip4Addr = new LinkedList<>();
+    private List<String> ip4Addr;
     private InetAddress ip4Gateway;
-    private List<String> addressSource = new LinkedList<>();
+    private List<String> addressSource;
     
-    private List<String> ip6Addr = new LinkedList<>();
+    private List<String> ip6Addr;
     private InetAddress ip6Gateway;
-    private List<String> ip6addressSource = new LinkedList<>();
+    private List<String> ip6addressSource;
 
-    private List<InetAddress> dnsServers = new LinkedList<>();
-    private List<InetAddress> ip6DnsServer = new LinkedList<>();
+    private List<InetAddress> dnsServers;
+    private List<InetAddress> ip6DnsServer;
 
     private int rxbytes;
     private int rxpkts;
@@ -60,8 +61,11 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     public boolean isOffline() { return offline; }
     public void setOffline(boolean offline) { this.offline = offline; }
 
-    public DuplexStatus getEthDuplex() { return ethDuplex; }
-    public void setEthDuplex(DuplexStatus ethDuplex) { this.ethDuplex = ethDuplex; }
+    public boolean isWan() { return wan; }
+    public void setWan(boolean wan) { this.wan = wan; }
+
+    public String getEthDuplex() { return ethDuplex; }
+    public void setEthDuplex(String ethDuplex) { this.ethDuplex = ethDuplex; }
 
     public int getEthSpeed() { return ethSpeed; }
     public void setEthSpeed(int ethSpeed) { this.ethSpeed = ethSpeed; }

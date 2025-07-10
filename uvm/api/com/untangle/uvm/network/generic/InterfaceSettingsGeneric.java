@@ -29,6 +29,8 @@ import com.untangle.uvm.network.InterfaceSettings.WirelessMode;
 @SuppressWarnings("serial")
 public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
+    private boolean enabled;        /* enabled/disabled status of interface */
+
     private int interfaceId;        /* the ID of the physical interface (1-254) */
     private String name;            /* human name: ie External, Internal, Wireless */
 
@@ -109,6 +111,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private boolean hidden;
     private String wirelessCountryCode = "";
 
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     public int getInterfaceId() { return interfaceId; }
     public void setInterfaceId(int interfaceId) { this.interfaceId = interfaceId; }
