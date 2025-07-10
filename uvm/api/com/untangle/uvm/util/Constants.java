@@ -50,6 +50,9 @@ public class Constants {
     // Escape sequence
     public static final String NEW_LINE = "\n";
 
+    //encoding Key
+    public static final String BASE64 = "Base64";
+
     // Empty string
     public static final String EMPTY_STRING = "\" \"";
 }
