@@ -1210,6 +1210,7 @@ public class ReportsManagerImpl implements ReportsManager
         try {
             //Need to stop EventWriter thread to avoid DB write failures
             if (app.getEventWriter() != null) {
+                logger.info("Stopping EventWriter thread to avoid DB write failures");
                 app.getEventWriter().stop();
             }
             String pgCleanupCmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
@@ -1222,6 +1223,7 @@ public class ReportsManagerImpl implements ReportsManager
             UvmContextFactory.context().execManager().execOutput(pgCleanupCmd);
             UvmContextFactory.context().execManager().execResult(pgStartCmd);
             pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd);
+            logger.info("Postgress Status Response {}", pgStatus);
             if (pgStatus == 0) {
                 UvmContextFactory.context().execManager().execOutput(generateReportTablesCmd);
                 String username = null;
@@ -1237,6 +1239,7 @@ public class ReportsManagerImpl implements ReportsManager
                     OperationsEvent event = new OperationsEvent(DELETE_ALL_REPORTS, username, hostname);
                     //Start EventWriter after successful completion of DELETE_ALL_REPORTS data
                     if (app.getEventWriter() != null) {
+                        logger.info("Starting EventWriter after successful completion of DELETE_ALL_REPORTS data");
                         app.getEventWriter().start(app);
                         //Added additional wait, EventWriter yet to be ready
                         try {
@@ -1245,6 +1248,8 @@ public class ReportsManagerImpl implements ReportsManager
                             logger.warn("Interrupted during wait....");
                         }
                         UvmContextFactory.context().logEvent(event);
+                    } else{
+                        logger.info("EventWriter is null");
                     }
                     } else {
                         logger.info("Operation event generation failed, EventWriter not ready, Restart is required ");
