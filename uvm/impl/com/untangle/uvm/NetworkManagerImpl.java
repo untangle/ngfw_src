@@ -32,7 +32,7 @@ import com.untangle.uvm.network.DeviceStatus.DuplexStatus;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
-import com.untangle.uvm.network.generic.ArpGeneric;
+import com.untangle.uvm.network.generic.ARPEntry;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
 import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
@@ -45,6 +45,7 @@ import com.untangle.uvm.network.DynamicRouteNetwork;
 import com.untangle.uvm.network.DynamicRouteOspfArea;
 import com.untangle.uvm.network.DynamicRouteOspfInterface;
 import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.ObjectMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,6 +65,7 @@ import java.net.InetAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -772,36 +774,22 @@ public class NetworkManagerImpl implements NetworkManager
     */
     private void populateArpEntries(InterfaceStatusGeneric status, InterfaceSettings intf) {
         String arpStatus = getStatus(StatusCommands.INTERFACE_ARP_TABLE, intf.getSymbolicDev());
-        List<ArpGeneric> arpEntries = new LinkedList<>();
 
-        String[] rows = arpStatus.split("\n");
-        for (String row : rows) {
-            row = row.trim();
-            if (row.isEmpty()) {
-                continue;
-            }
-
-            String[] items = row.split(" ");
-            String address = null;
-            String macAddress = null;
-
-            for (int i = 0; i < items.length; i++) {
-                if (i == 0) {
-                    address = items[i];
-                } else if (i == 2) {
-                    macAddress = items[i];
-                }
-            }
-
-            String vendor = UvmContextFactory.context()
-                            .deviceTable()
-                            .getMacVendorFromMacAddress(macAddress);
-
-            ArpGeneric arpEntry = new ArpGeneric();
-            arpEntry.setAddress(address);
-            arpEntry.setMacAddress(macAddress);
-            arpEntry.setVendor(vendor);
-            arpEntries.add(arpEntry);
+        List<ARPEntry> arpEntries = null;
+        if(arpStatus != null && !arpStatus.isBlank()) {
+            arpEntries = Arrays.stream(arpStatus.split(Constants.NEW_LINE))
+                .map(String::trim)
+                .filter(row -> !row.isEmpty())
+                .map(row -> {
+                    String[] items = row.split(Constants.SPACE);
+                    String address = items.length > 0 ? items[0] : null;
+                    String macAddress = items.length > 2 ? items[2] : null;
+                    String vendor = UvmContextFactory.context()
+                                        .deviceTable()
+                                        .getMacVendorFromMacAddress(macAddress);
+                    return new ARPEntry(address, macAddress, vendor);
+                })
+                .collect(Collectors.toList());
         }
 
         status.setArpEntries(arpEntries);
