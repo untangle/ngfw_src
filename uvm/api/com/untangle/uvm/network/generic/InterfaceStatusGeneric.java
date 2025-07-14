@@ -51,6 +51,7 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     private String macAddress;
     private String macVendor;
 
+    private List<ArpGeneric> arpEntries;
 
     public String getDevice() { return device; }
     public void setDevice(String device) { this.device = device; }
@@ -120,6 +121,9 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     
     public String getMacVendor() { return macVendor; }
     public void setMacVendor(String macVendor) { this.macVendor = macVendor; }
+
+    public List<ArpGeneric> getArpEntries() { return arpEntries; }
+    public void setArpEntries(List<ArpGeneric> arpEntries) { this.arpEntries = arpEntries; }
 
     public String toJSONString()
     {

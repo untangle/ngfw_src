@@ -32,6 +32,7 @@ import com.untangle.uvm.network.DeviceStatus.DuplexStatus;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
+import com.untangle.uvm.network.generic.ArpGeneric;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
 import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
@@ -619,6 +620,7 @@ public class NetworkManagerImpl implements NetworkManager
             populateConnectionStatus(status, intf, deviceStatusList);
             populateGatewayAndDns(status, intf);
             populateAddressSources(status, intf);
+            populateArpEntries(status, intf);
 
             interfaceStatuses.add(status);
         }
@@ -632,7 +634,7 @@ public class NetworkManagerImpl implements NetworkManager
      * @param intf InterfaceSettings
      */
     private void populateTransferStats(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSystemDev());
+        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSymbolicDev());
         String[] stats = intfTransfer.trim().split("\\s+");
 
         if (stats.length < 12) return;
@@ -666,7 +668,7 @@ public class NetworkManagerImpl implements NetworkManager
      * @param intf InterfaceSettings
      */
     private void populateIpAddresses(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSystemDev());
+        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSymbolicDev());
         String[] tokens = ipStatus.trim().split("\\s+");
 
         String nextType = "";
@@ -730,7 +732,7 @@ public class NetworkManagerImpl implements NetworkManager
         status.setIp6Gateway(intfStatus.getV6Gateway());
     }
 
-    /** Populates IPv4/IPv6 address source (dhcp/static/pppoe
+    /** Populates IPv4/IPv6 address source (dhcp/static/pppoe)
     * @param status InterfaceStatusGeneric
     * @param intf InterfaceSettings
     */
@@ -762,6 +764,47 @@ public class NetworkManagerImpl implements NetworkManager
             case STATIC: 
                 status.getIp6addressSource().add(v6Type.name().toLowerCase()); break;
         }
+    }
+
+    /** Populates arp entries in status object of the interface
+    * @param status InterfaceStatusGeneric
+    * @param intf InterfaceSettings
+    */
+    private void populateArpEntries(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        String arpStatus = getStatus(StatusCommands.INTERFACE_ARP_TABLE, intf.getSymbolicDev());
+        List<ArpGeneric> arpEntries = new LinkedList<>();
+
+        String[] rows = arpStatus.split("\n");
+        for (String row : rows) {
+            row = row.trim();
+            if (row.isEmpty()) {
+                continue;
+            }
+
+            String[] items = row.split(" ");
+            String address = null;
+            String macAddress = null;
+
+            for (int i = 0; i < items.length; i++) {
+                if (i == 0) {
+                    address = items[i];
+                } else if (i == 2) {
+                    macAddress = items[i];
+                }
+            }
+
+            String vendor = UvmContextFactory.context()
+                            .deviceTable()
+                            .getMacVendorFromMacAddress(macAddress);
+
+            ArpGeneric arpEntry = new ArpGeneric();
+            arpEntry.setAddress(address);
+            arpEntry.setMacAddress(macAddress);
+            arpEntry.setVendor(vendor);
+            arpEntries.add(arpEntry);
+        }
+
+        status.setArpEntries(arpEntries);
     }
 
     /** 
