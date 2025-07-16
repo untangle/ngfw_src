@@ -638,14 +638,14 @@ public class NetworkManagerImpl implements NetworkManager
         if (stats.length < 12) return;
 
         status.setMacAddress(stats[1]);
-        status.setRxbytes(parseIntSafe(stats[2]));
-        status.setRxpkts(parseIntSafe(stats[3]));
-        status.setRxerr(parseIntSafe(stats[4]));
-        status.setRxdrop(parseIntSafe(stats[5]));
-        status.setTxbytes(parseIntSafe(stats[8]));
-        status.setTxpkts(parseIntSafe(stats[9]));
-        status.setTxerr(parseIntSafe(stats[10]));
-        status.setTxdrop(parseIntSafe(stats[11]));
+        status.setRxbytes(parseLongSafe(stats[2]));
+        status.setRxpkts(parseLongSafe(stats[3]));
+        status.setRxerr(parseLongSafe(stats[4]));
+        status.setRxdrop(parseLongSafe(stats[5]));
+        status.setTxbytes(parseLongSafe(stats[8]));
+        status.setTxpkts(parseLongSafe(stats[9]));
+        status.setTxerr(parseLongSafe(stats[10]));
+        status.setTxdrop(parseLongSafe(stats[11]));
     }
 
     /** 
@@ -769,8 +769,8 @@ public class NetworkManagerImpl implements NetworkManager
      * @param str String
      * @return int 
      */
-    private int parseIntSafe(String str) {
-        return str.matches("-?\\d+") ? Integer.parseInt(str) : 0;
+    private long parseLongSafe(String str) {
+        return str.matches("-?\\d+") ? Long.parseLong(str) : 0;
     }
 
     /**
