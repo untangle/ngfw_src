@@ -59,6 +59,12 @@ Ext.define('Ung.Application', {
                 Ung.app.redirectTo(hashStart);
             }
         });
+
+        Ung.AppIframe = Ext.create('Ung.cmp.IframePanel', {
+            itemId: 'globalIframe',
+            iframeUrl: '/console/home/',
+            hidden: true
+        });
     },
 
     /**

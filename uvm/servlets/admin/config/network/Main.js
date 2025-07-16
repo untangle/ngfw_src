@@ -32,9 +32,8 @@ Ext.define('Ung.config.network.Main', {
     // tabStretchMax: false,
 
     items: [
-        { xtype: 'iframe-panel', itemId: 'interfaces', title: 'Interfaces'.t(), iframeUrl: '/console/settings/network/interfaces/' },
-        { xtype: 'iframe-panel', itemId: 'hostname', title: 'Hostname'.t(), iframeUrl: '/console/settings/network/hostname/' },
-        // { xtype: 'config-network-hostname' },
+        { xtype: 'config-network-interfaces' },
+        { xtype: 'config-network-hostname' },
         { xtype: 'config-network-services' },
         { xtype: 'config-network-port-forward-rules' },
         { xtype: 'config-network-nat-rules' },
