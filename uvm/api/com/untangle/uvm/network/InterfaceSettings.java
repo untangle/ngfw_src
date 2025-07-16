@@ -501,6 +501,11 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setEnabled(true);
         intfSettingsGen.setInterfaceId(this.interfaceId);
         intfSettingsGen.setName(this.name);
+        intfSettingsGen.setPhysicalDev(this.physicalDev);
+        intfSettingsGen.setSystemDev(this.systemDev);
+        intfSettingsGen.setSymbolicDev(this.symbolicDev);
+        intfSettingsGen.setImqDev(this.imqDev);
+        intfSettingsGen.setDevice(this.isVlanInterface ? this.systemDev : this.physicalDev);
         intfSettingsGen.setDevice(this.symbolicDev);
         intfSettingsGen.setWan(this.isWan);
         intfSettingsGen.setType(resolveGenericType());

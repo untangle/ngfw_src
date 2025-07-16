@@ -22,6 +22,7 @@ import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.WirelessEncryption;
 import com.untangle.uvm.network.InterfaceSettings.WirelessMode;
+import com.untangle.uvm.util.StringUtil;
 
 /**
  * Interface settings v2.
@@ -34,6 +35,10 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private int interfaceId;        /* the ID of the physical interface (1-254) */
     private String name;            /* human name: ie External, Internal, Wireless */
 
+    private String  physicalDev;    /* physical interface name: eth0, etc */
+    private String  systemDev;      /* iptables interface name: eth0, eth0:0, eth0.1, etc */
+    private String  symbolicDev;    /* symbolic interface name: eth0, eth0:0, eth0.1, br.eth0 etc */
+    private String  imqDev;         /* IMQ device name: imq0, imq1, etc (only applies to WANs) */
     private String device;          /* physical interface name: eth0, etc */
 
     private boolean wan = false;    /* is a WAN interface? */
@@ -119,6 +124,18 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getPhysicalDev( ) { return this.physicalDev; }
+    public void setPhysicalDev( String newValue ) { this.physicalDev = newValue; }
+
+    public String getSystemDev( ) { return this.systemDev; }
+    public void setSystemDev( String newValue ) { this.systemDev = newValue; }
+
+    public String getSymbolicDev( ) { return this.symbolicDev; }
+    public void setSymbolicDev( String newValue ) { this.symbolicDev = newValue; }
+
+    public String getImqDev( ) { return this.imqDev; }
+    public void setImqDev( String newValue ) { this.imqDev = newValue; }
 
     public String getDevice() { return device; }
     public void setDevice(String device) { this.device = device; }
@@ -309,7 +326,10 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setInterfaceId(this.interfaceId);
         intfSettings.setName(this.name);
 
-        intfSettings.setSymbolicDev(this.device);
+        if(!StringUtil.isEmpty(this.physicalDev)) intfSettings.setPhysicalDev(this.physicalDev);
+        if(!StringUtil.isEmpty(this.systemDev)) intfSettings.setSystemDev(this.systemDev);
+        if(!StringUtil.isEmpty(this.symbolicDev)) intfSettings.setSymbolicDev(this.symbolicDev);
+        if(!StringUtil.isEmpty(this.imqDev)) intfSettings.setImqDev(this.imqDev);
 
         intfSettings.setIsWan(this.wan);
 
