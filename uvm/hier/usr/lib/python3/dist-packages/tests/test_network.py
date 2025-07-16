@@ -532,6 +532,10 @@ def get_troubleshooting_output(command=None, arguments={}):
     except:
         assert False, "could not run command"
 
+
+    if output_reader is None:
+        return "runTroubleshooting returned None (likely blocked or errored)"
+    
     all_output = ""
     output = None
     while True:
@@ -2635,6 +2639,18 @@ server=dynupdate.no-ip.com
 
         # Don't care about success/failure just that we see the test ran
         assert "tcpdump:" in output, "trace test"
+
+    def test_607_troubleshooting_connection_reverse_shell(self):
+        """
+        Test should pass ONLY if get_troubleshooting_output returns specific failure output for an invalid entry.
+        """
+        output = get_troubleshooting_output(command='CONNECTION', arguments={
+            "HOST": "-e /bin/bash www.google.com",
+            "HOST_PORT": "80"
+        })
+
+        assert output == "runTroubleshooting returned None (likely blocked or errored)", \
+            "Expected get_troubleshooting_output to fail, but it succeeded"
 
     def test_701_remove_dpkg_files(self):
         """

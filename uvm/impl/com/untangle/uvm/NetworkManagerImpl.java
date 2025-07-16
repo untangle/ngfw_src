@@ -71,6 +71,7 @@ import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.Iterator;
@@ -3274,20 +3275,42 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public ExecManagerResultReader runTroubleshooting(TroubleshootingCommands command, JSONObject arguments)
     {
-        List<String> environment_variables = new ArrayList<String>();
-        try{
-            if(arguments != null){
+        List<String> environment_variables = new ArrayList<>();
+        List<String> suspiciousEntries = new ArrayList<>();
+        // Define regex patterns
+        Pattern hostnamePattern = Pattern.compile("^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*\\.?$");
+        Pattern ipv4Pattern = Pattern.compile("^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.|$)){4}$");
+        Pattern ipv6Pattern = Pattern.compile("^(?:[\\da-fA-F]{1,4}:){7}[\\da-fA-F]{1,4}$");
+        Pattern urlPattern = Pattern.compile("^(https?://)([\\w\\-\\.]+)(:\\d+)?(/\\S*)?$");
+
+        try {
+            if (arguments != null) {
                 Iterator<?> keys = arguments.keys();
-                while(keys.hasNext()) {
+                while (keys.hasNext()) {
                     String key = (String) keys.next();
-                    environment_variables.add(key + "=" + arguments.get(key));
+                    String value = String.valueOf(arguments.get(key)).trim();
+
+                    if ("HOST".equalsIgnoreCase(key)) {
+                        boolean validHost = hostnamePattern.matcher(value).matches() ||
+                                            ipv4Pattern.matcher(value).matches() ||
+                                            ipv6Pattern.matcher(value).matches();
+                        if (!validHost) {
+                            suspiciousEntries.add(key + "=" + value);
+                        }
+                    } else if ("URL".equalsIgnoreCase(key)) {
+                        if (!urlPattern.matcher(value).matches()) {
+                            suspiciousEntries.add(key + "=" + value);
+                        }
+                    }
+
+                    environment_variables.add(key + "=" + value);
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.warn("runTroubleshooting, parsing arguments: ", e);
         }
 
-        switch(command){
+        switch (command) {
             case CONNECTIVITY:
             case REACHABLE:
             case DNS:
@@ -3295,15 +3318,24 @@ public class NetworkManagerImpl implements NetworkManager
             case PATH:
             case DOWNLOAD:
             case TRACE:
-                try{
-                    for(String var : environment_variables) {
+                try {
+                    for (String var : environment_variables) {
                         if (var.contains(";") || var.contains("&") || var.contains("|")
                                 || var.contains(">") || var.contains("$(")) {
                             throw new RuntimeException("runTroubleshooting suspicious command: (" + environment_variables + "), blocked");
                         }
                     }
-                    return UvmContextFactory.context().execManager().execEvil(new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()}, environment_variables.toArray(new String[0]));
-                }catch(Exception e){
+
+                    if (!suspiciousEntries.isEmpty()) {
+                        throw new RuntimeException("runTroubleshooting suspicious entry: " + suspiciousEntries + ", blocked");
+                    }
+
+                    return UvmContextFactory.context().execManager().execEvil(
+                        new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()},
+                        environment_variables.toArray(new String[0])
+                    );
+
+                } catch (Exception e) {
                     logger.warn("runTroubleshooting executing:", e);
                     return null;
                 }

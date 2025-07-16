@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.File;
+import java.lang.Thread.State;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -344,13 +345,21 @@ public class EventWriterImpl implements Runnable
     public void logEvent(LogEvent event)
     {
         if ( this.thread == null ) {
+            logger.warn("Event Writer Thread is null returning without writing logs");
             return;
+        }
+        // Logs to check if thread is working fine #NGFW-15214
+        State threadState = this.thread.getState();
+        if( threadState != State.RUNNABLE && threadState != State.TIMED_WAITING ) {
+            logger.warn("Thread State: {}", threadState);
+            logger.warn("InputQueue Size: {}", inputQueue.size());
         }
         if ( this.overloadedFlag || this.diskFullFlag ) {
             if ( System.currentTimeMillis() - this.lastLoggedWarningTime > 10000 ) {
                 if (this.overloadedFlag) { logger.warn("Event Writer overloaded, discarding event"); }
                 this.lastLoggedWarningTime = System.currentTimeMillis();
             }
+            logger.warn("Override flag: {}, Disk Full flag: {}", this.overloadedFlag, this.diskFullFlag);
             return;
         }
         

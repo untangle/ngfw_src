@@ -28,10 +28,10 @@ def index(req):
     file.close()
 
     # load the app settings
-    captureSettings = load_capture_settings(req)
+    captureSettings = _load_capture_settings(req)
 
     # setup the uvm and app objects so we can make the RPC call
-    captureList = load_rpc_manager_list()
+    captureList = _load_rpc_manager_list()
 
     # track the number of successful calls to userLogout
     exitCount = 0
@@ -52,14 +52,14 @@ def index(req):
             exitCount = exitCount + 1
 
     if (exitCount == 0):
-        page = replace_marker(page,'$.ExitMessage.$', _('You were already logged out') )
-        page = replace_marker(page,'$.ExitStyle.$', 'styleProblem')
+        page = _replace_marker(page,'$.ExitMessage.$', _('You were already logged out') )
+        page = _replace_marker(page,'$.ExitStyle.$', 'styleProblem')
     else:
-        page = replace_marker(page,'$.ExitMessage.$', _('You have successfully logged out') )
-        page = replace_marker(page,'$.ExitStyle.$', 'styleNormal')
+        page = _replace_marker(page,'$.ExitMessage.$', _('You have successfully logged out') )
+        page = _replace_marker(page,'$.ExitStyle.$', 'styleNormal')
 
-    page = replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])
-    page = replace_marker(page,'$.PageTitle.$', captureSettings['basicLoginPageTitle'])
+    page = _replace_marker(page,'$.CompanyName.$', captureSettings['companyName'])
+    page = _replace_marker(page,'$.PageTitle.$', captureSettings['basicLoginPageTitle'])
 
     # return the logout page we just created
     return(page)
@@ -67,7 +67,7 @@ def index(req):
 #-----------------------------------------------------------------------------
 # loads and returns the app RPC objects needed for the authentication calls
 
-def load_rpc_manager_list(appid=None):
+def _load_rpc_manager_list(appid=None):
 
     # create a list for all of the apps we discover
     captureList = list()
@@ -96,7 +96,7 @@ def load_rpc_manager_list(appid=None):
 #-----------------------------------------------------------------------------
 # loads the app settings
 
-def load_capture_settings(req,appid=None):
+def _load_capture_settings(req,appid=None):
 
     companyName = 'Arista'
 
@@ -127,7 +127,7 @@ def load_capture_settings(req,appid=None):
 # forces stuff loaded from settings files to be UTF-8 when plugged
 # into the page template files
 
-def replace_marker(page,marker,output):
+def _replace_marker(page,marker,output):
     if type(marker) == bytes:
         marker = marker.decode("utf-8")
     if type(output) == bytes:
