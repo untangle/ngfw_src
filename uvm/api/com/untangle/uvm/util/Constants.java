@@ -19,11 +19,14 @@ public class Constants {
 
     // Symbols
     public static final String DOT = ".";
+    public static final String HYPHEN = "-";
     public static final String UNDERSCORE = "_";
     public static final String SPACE = " ";
     public static final String COMMA_STRING = ",";
 
     public static final String EQUALS_TO = "=";
+    public static final String SLASH = "/";
+    public static final String DOUBLE_SLASH = "//";
 
     // Boolean
     public static final String FALSE = "False";
@@ -46,6 +49,9 @@ public class Constants {
 
     // Escape sequence
     public static final String NEW_LINE = "\n";
+
+    //encoding Key
+    public static final String BASE64 = "Base64";
 
     // Empty string
     public static final String EMPTY_STRING = "\" \"";

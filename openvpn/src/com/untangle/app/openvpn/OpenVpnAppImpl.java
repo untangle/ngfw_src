@@ -16,6 +16,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 
+import java.io.FileOutputStream;
+import java.util.Base64;
+import com.untangle.uvm.util.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
@@ -319,6 +322,9 @@ public class OpenVpnAppImpl extends AppBase
          * any time settings are saved
          */
         this.settings = newSettings;
+        if (newSettings.getRemoteServers() != null && !newSettings.getRemoteServers().isEmpty()) {
+            configureRemoteServers(newSettings.getRemoteServers());
+        }
         updateNetworkReservations(newSettings.getAddressSpace(), newSettings.getRemoteClients());
         try {
             logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
@@ -356,6 +362,46 @@ public class OpenVpnAppImpl extends AppBase
             logger.warn("Exception during client/server cleanup", exn);
         }
     }
+
+    /**
+     * Configures OpenVPN remote servers by decoding and saving their VPN config files.
+     *
+     * <p>Creates the directory {@code ${uvm.settings.dir}/openvpn/remote-servers} if it doesn't exist.
+     * Iterates through each {@link OpenVpnRemoteServer}, decodes its VPN file content (supports Base64),
+     * and writes it to a {@code .conf} file named after the server.
+     *
+     * @param openVpnRemoteServers List of remote servers.
+     */
+    private void configureRemoteServers(List<OpenVpnRemoteServer> openVpnRemoteServers) {
+        String directoryPath = System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers";
+        UvmContextFactory.context().execManager().exec("mkdir -p " + directoryPath);
+        for (OpenVpnRemoteServer server : openVpnRemoteServers) {
+            try {
+                String name = server.getName();
+                String encodedContent = server.getOpenvpnConfFile().getContents();
+                String encoding = server.getOpenvpnConfFile().getEncoding();
+
+                byte[] decodedContent;
+                // Currently, we only receive data in Base64-encoded format, 
+                // so the decoder is implemented specifically for Base64.
+                if (Constants.BASE64.equalsIgnoreCase(encoding)) {
+                    decodedContent = Base64.getDecoder().decode(encodedContent);
+                } else {
+                    throw new IllegalArgumentException("Unsupported encoding: " + encoding);
+                }
+
+                File outputFile = new File(directoryPath, name + ".conf");
+
+                try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                    fos.write(decodedContent);
+                }
+
+            } catch (Exception e) {
+                logger.warn("Failed to configure remote server: " , e);
+            }
+        }
+    }
+
 
     /**
      * Encrypt the password for Remote Servers

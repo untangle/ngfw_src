@@ -217,6 +217,39 @@ Ext.define('Ung.apps.webfilter.MainController', {
 
 });
 
+Ext.define('Ung.apps.webfilter.cmp.BlockSitesController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.blocksites',
+
+    addRecord: function () {
+        var vm = this.getViewModel();
+        if (vm) vm.set('isAddAction', true);
+        this.callParent(arguments);
+    },
+    editRecord: function () {
+        var vm = this.getViewModel();
+        if (vm) vm.set('isAddAction', false);
+        this.callParent(arguments); 
+    }
+});
+
+Ext.define('Ung.apps.webfilter.cmp.PassSitesController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.passsites',
+
+    addRecord: function () {
+        var vm = this.getViewModel();
+        if (vm) vm.set('isAddAction', true);
+        this.callParent(arguments);
+    },
+    editRecord: function () {
+        var vm = this.getViewModel();
+        if (vm) vm.set('isAddAction', false);
+        this.callParent(arguments); 
+    }
+});
+
+
 Ext.define('Ung.apps.webfilter.cmp.SearchTermsGridController', {
     extend: 'Ung.cmp.GridController',
     alias: 'controller.unwebfiltersearchtermsgrid',

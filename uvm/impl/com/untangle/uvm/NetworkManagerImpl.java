@@ -27,7 +27,14 @@ import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.UpnpSettings;
+import com.untangle.uvm.network.DeviceStatus.ConnectedStatus;
+import com.untangle.uvm.network.DeviceStatus.DuplexStatus;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
+import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
+import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
+import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
+import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.network.NetflowSettings;
@@ -58,6 +65,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,6 +73,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.Iterator;
 
 /**
@@ -74,6 +83,10 @@ public class NetworkManagerImpl implements NetworkManager
 {
     public static final String MAC = "MAC";
     public static final String ORGANIZATION = "Organization";
+    private static final String INET = "inet";
+    private static final String INET6 = "inet6";
+    private static final String DHCP = "dhcp";
+    private static final String DHCPV6 = "dhcpv6";
     public static final String COMMA = ",";
     private final Logger logger = LogManager.getLogger(this.getClass());
 
@@ -91,6 +104,7 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ADDRESS = "static-address";
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
+    private final static String GET_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/hostapd-logfile";
 
     // creating a cache for the lookedup mac addresses and vendors
     private static ConcurrentMap<String,String> cachedMacAddrVendorList = new ConcurrentHashMap<>();
@@ -221,12 +235,30 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Get the v2 network settings
+     * @return NetworkSettingsV2
+     */
+    public NetworkSettingsGeneric getNetworkSettingsV2() {
+        return this.networkSettings.transformNetworkSettingsToGeneric();
+    }
+
+    /**
      * Set the network settings
      * @param newSettings
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
         setNetworkSettings( newSettings, true );
+    }
+
+    /**
+     * Set the network settings V2
+     * @param newSettings
+     */
+    public void setNetworkSettingsV2( NetworkSettingsGeneric newSettings )
+    {
+        newSettings.transformGenericToNetworkSettings(this.networkSettings);
+        setNetworkSettings( this.networkSettings, true );
     }
 
     /**
@@ -567,6 +599,179 @@ public class NetworkManagerImpl implements NetworkManager
         }
         status.setInterfaceId(interfaceId); //Interface id must be set in all cases. It is not stored in interface-<interfaceId>-status.js file
         return status;
+    }
+
+    /**
+     * Method to get all interfaces' status.
+     * @return List of InterfaceStatusGeneric
+     */
+    public List<InterfaceStatusGeneric> getAllInterfacesStatusV2() {
+        List<InterfaceStatusGeneric> interfaceStatuses = new LinkedList<>();
+        List<DeviceStatus> deviceStatusList = getDeviceStatus();
+
+        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
+            InterfaceStatusGeneric status = new InterfaceStatusGeneric();
+
+            status.setDevice(intf.getSymbolicDev());
+            status.setWan(intf.getIsWan());
+            populateTransferStats(status, intf);
+            populateMacVendor(status);
+            populateIpAddresses(status, intf);
+            populateConnectionStatus(status, intf, deviceStatusList);
+            populateGatewayAndDns(status, intf);
+            populateAddressSources(status, intf);
+
+            interfaceStatuses.add(status);
+        }
+
+        return interfaceStatuses;
+    }
+
+    /** 
+     * Populates transfer statistics such as rx/tx bytes, packets, errors, and drops. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateTransferStats(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSystemDev());
+        String[] stats = intfTransfer.trim().split("\\s+");
+
+        if (stats.length < 12) return;
+
+        status.setMacAddress(stats[1]);
+        status.setRxbytes(parseLongSafe(stats[2]));
+        status.setRxpkts(parseLongSafe(stats[3]));
+        status.setRxerr(parseLongSafe(stats[4]));
+        status.setRxdrop(parseLongSafe(stats[5]));
+        status.setTxbytes(parseLongSafe(stats[8]));
+        status.setTxpkts(parseLongSafe(stats[9]));
+        status.setTxerr(parseLongSafe(stats[10]));
+        status.setTxdrop(parseLongSafe(stats[11]));
+    }
+
+    /** 
+     * Adds vendor name based on MAC address to the InterfaceStatusGeneric object. 
+     * @param status InterfaceStatusGeneric
+     */
+    private void populateMacVendor(InterfaceStatusGeneric status) {
+        String vendor = UvmContextFactory.context()
+                          .deviceTable()
+                          .getMacVendorFromMacAddress(status.getMacAddress());
+        status.setMacVendor(vendor);
+    }
+
+    /** 
+     * Populates IPv4 and IPv6 addresses for the interface 
+     * in InterfaceStatusGeneric using Status - INTERFACE_IP_ADDRESSES. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateIpAddresses(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSystemDev());
+        String[] tokens = ipStatus.trim().split("\\s+");
+
+        String nextType = "";
+        for (String token : tokens) {
+            if (INET.equals(nextType)) {
+                if(status.getIp4Addr() == null)
+                    status.setIp4Addr(new LinkedList<>());
+                status.getIp4Addr().add(token);
+            } else if (INET6.equals(nextType)) {
+                if(status.getIp6Addr() == null)
+                    status.setIp6Addr(new LinkedList<>());
+                status.getIp6Addr().add(token);
+            }
+            nextType = "";
+            if (INET.equals(token)) nextType = INET;
+            else if (INET6.equals(token)) nextType = INET6;
+        }
+    }
+
+    /** 
+     * Populates connection state (connected/offline), duplex, and speed. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     * @param deviceStatusList List<DeviceStatus>
+     */
+    private void populateConnectionStatus(InterfaceStatusGeneric status, InterfaceSettings intf, List<DeviceStatus> deviceStatusList) {
+        for (DeviceStatus ds : deviceStatusList) {
+            if (ds.getDeviceName().equals(intf.getPhysicalDev())) {
+                boolean isConnected = ConnectedStatus.CONNECTED.equals(ds.getConnected());
+                DuplexStatus duplex = ds.getDuplex();
+
+                status.setConnected(isConnected);
+                status.setOffline(!isConnected);
+                status.setEthSpeed(ds.getMbit());
+
+                if (duplex == DuplexStatus.FULL_DUPLEX) status.setEthDuplex("full");
+                else if(duplex == DuplexStatus.HALF_DUPLEX) status.setEthDuplex("half");
+                else status.setEthDuplex(DuplexStatus.UNKNOWN.toString().toLowerCase());
+                
+                return;
+            }
+        }
+    }
+
+    /** 
+     * Sets DNS and gateway information from interface status. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateGatewayAndDns(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        InterfaceStatus intfStatus = getInterfaceStatus(intf.getInterfaceId());
+        List<InetAddress> dns = Stream.of(intfStatus.getV4Dns1(), intfStatus.getV4Dns2())
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
+        if (!dns.isEmpty()) {
+            if (status.getDnsServers() == null)
+                status.setDnsServers(new LinkedList<>());
+            status.getDnsServers().addAll(dns);
+        }
+        status.setIp4Gateway(intfStatus.getV4Gateway());
+        status.setIp6Gateway(intfStatus.getV6Gateway());
+    }
+
+    /** Populates IPv4/IPv6 address source (dhcp/static/pppoe
+    * @param status InterfaceStatusGeneric
+    * @param intf InterfaceSettings
+    */
+    private void populateAddressSources(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        if (intf.getConfigType() != ConfigType.ADDRESSED) return;
+
+        // Ensure lists are initialized
+        if(status.getAddressSource() == null)
+            status.setAddressSource(new LinkedList<>());
+        if(status.getIp6addressSource() == null && intf.getV6ConfigType() != V6ConfigType.DISABLED)
+            status.setIp6addressSource(new LinkedList<>());
+        
+        // Handle IPv4 address source
+        V4ConfigType v4Type = intf.getV4ConfigType();
+        switch (v4Type) {
+            case AUTO: 
+                status.getAddressSource().add(DHCP); break;
+            case PPPOE: 
+            case STATIC: {
+                status.getAddressSource().add(v4Type.name().toLowerCase()); break;
+            }
+        }
+
+        // Handle IPv6 address source
+        V6ConfigType v6Type = intf.getV6ConfigType();
+        switch (v6Type) {
+            case AUTO: 
+                status.getIp6addressSource().add(DHCPV6); break;
+            case STATIC: 
+                status.getIp6addressSource().add(v6Type.name().toLowerCase()); break;
+        }
+    }
+
+    /** 
+     * Safely parses integer, returns 0 if invalid. 
+     * @param str String
+     * @return int 
+     */
+    private long parseLongSafe(String str) {
+        return str.matches("-?\\d+") ? Long.parseLong(str) : 0;
     }
 
     /**
@@ -3149,6 +3354,18 @@ public class NetworkManagerImpl implements NetworkManager
         // For 17.1, peform "free" conversion to set the new dhcpMaxLeases setting to its default value
         this.networkSettings.setVersion( currentVersion );
         this.setNetworkSettings( this.networkSettings, false );
+    }
+
+    /**
+     * Gets the contents of the hostapd log file
+     * @param device - the device name to filter the logs
+     *
+     * @return The contents of the IPsec log file
+     */
+    public String getLogFile(String device)
+    {
+        logger.debug("hostapd.log getLogFile()");
+        return UvmContextFactory.context().execManager().execOutput(String.format("%s %s", GET_LOGFILE_SCRIPT, device));
     }
 
     /**
