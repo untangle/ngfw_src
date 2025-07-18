@@ -26,7 +26,7 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     private boolean wan;
 
     private String ethDuplex;
-    private int ethSpeed;
+    private long ethSpeed;
 
     private List<String> ip4Addr;
     private InetAddress ip4Gateway;
@@ -39,14 +39,14 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     private List<InetAddress> dnsServers;
     private List<InetAddress> ip6DnsServer;
 
-    private int rxbytes;
-    private int rxpkts;
-    private int rxerr;
-    private int rxdrop;
-    private int txbytes;
-    private int txpkts;
-    private int txerr;
-    private int txdrop;
+    private long rxbytes;
+    private long rxpkts;
+    private long rxerr;
+    private long rxdrop;
+    private long txbytes;
+    private long txpkts;
+    private long txerr;
+    private long txdrop;
 
     private String macAddress;
     private String macVendor;
@@ -67,8 +67,8 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     public String getEthDuplex() { return ethDuplex; }
     public void setEthDuplex(String ethDuplex) { this.ethDuplex = ethDuplex; }
 
-    public int getEthSpeed() { return ethSpeed; }
-    public void setEthSpeed(int ethSpeed) { this.ethSpeed = ethSpeed; }
+    public long getEthSpeed() { return ethSpeed; }
+    public void setEthSpeed(long ethSpeed) { this.ethSpeed = ethSpeed; }
 
     public List<String> getIp4Addr() { return ip4Addr; }
     public void setIp4Addr(List<String> ip4Addr) { this.ip4Addr = ip4Addr; }
@@ -91,29 +91,29 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     public List<InetAddress> getDnsServers() { return dnsServers; }
     public void setDnsServers(List<InetAddress> dnsServers) { this.dnsServers = dnsServers; }
 
-    public int getRxbytes() { return rxbytes; }
-    public void setRxbytes(int rxbytes) { this.rxbytes = rxbytes; }
+    public long getRxbytes() { return rxbytes; }
+    public void setRxbytes(long rxbytes) { this.rxbytes = rxbytes; }
 
-    public int getRxpkts() { return rxpkts; }
-    public void setRxpkts(int rxpkts) { this.rxpkts = rxpkts; }
+    public long getRxpkts() { return rxpkts; }
+    public void setRxpkts(long rxpkts) { this.rxpkts = rxpkts; }
 
-    public int getRxerr() { return rxerr; }
-    public void setRxerr(int rxerr) { this.rxerr = rxerr; }
+    public long getRxerr() { return rxerr; }
+    public void setRxerr(long rxerr) { this.rxerr = rxerr; }
 
-    public int getRxdrop() { return rxdrop; }
-    public void setRxdrop(int rxdrop) { this.rxdrop = rxdrop; }
+    public long getRxdrop() { return rxdrop; }
+    public void setRxdrop(long rxdrop) { this.rxdrop = rxdrop; }
 
-    public int getTxbytes() { return txbytes; }
-    public void setTxbytes(int txbytes) { this.txbytes = txbytes; }
+    public long getTxbytes() { return txbytes; }
+    public void setTxbytes(long txbytes) { this.txbytes = txbytes; }
 
-    public int getTxpkts() { return txpkts; }
-    public void setTxpkts(int txpkts) { this.txpkts = txpkts; }
+    public long getTxpkts() { return txpkts; }
+    public void setTxpkts(long txpkts) { this.txpkts = txpkts; }
 
-    public int getTxerr() { return txerr; }
-    public void setTxerr(int txerr) { this.txerr = txerr; }
+    public long getTxerr() { return txerr; }
+    public void setTxerr(long txerr) { this.txerr = txerr; }
 
-    public int getTxdrop() { return txdrop; }
-    public void setTxdrop(int txdrop) { this.txdrop = txdrop; }
+    public long getTxdrop() { return txdrop; }
+    public void setTxdrop(long txdrop) { this.txdrop = txdrop; }
 
     public String getMacAddress() { return macAddress; }
     public void setMacAddress(String macAddress) { this.macAddress = macAddress; }
