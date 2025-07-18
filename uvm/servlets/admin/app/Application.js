@@ -62,7 +62,7 @@ Ext.define('Ung.Application', {
 
         Ung.AppIframe = Ext.create('Ung.view.main.IframePanel', {
             itemId: 'globalIframe',
-            iframeUrl: '/console/home/',
+            iframeUrl: '/console',
             hidden: true
         });
     },
