@@ -8,11 +8,9 @@ Ext.define('Ung.config.network.view.Interfaces', {
     layout: 'border',
 
     listeners: {
-        afterrender: function () {
-            if (Ung.AppIframe) {
-                Ung.AppIframe.updateIframe('/console/settings/network/interfaces', false);
-                // Ung.AppIframe.updateIframeUrl('/console/settings/network/interfaces');
-            }
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/network/interfaces', false);
         }
     },
 
@@ -32,11 +30,8 @@ Ext.define('Ung.config.network.view.Interfaces', {
         html: '<br/><strong style="color:#FF0000">' + 'Maximum number of interfaces reached.'.t() + '</strong>'
     }],
 
-    // items: [{
-    //     region: 'center',
-    //     xtype: 'container',
-    //     itemId: 'iframeWrapper',
-    //     layout: 'fit',
-    //     items: [Ung.AppIframe]
-    // }]
+    items: [
+        Field.iframeHolder
+    ]
+
 });

@@ -41,6 +41,7 @@ Ext.define('Ung.view.main.IframePanel', {
             this.setHidden(hidden);
         }
 
+        // Message Data to post message to Iframe
         if (messageData) {
             this.messageData = messageData;
 

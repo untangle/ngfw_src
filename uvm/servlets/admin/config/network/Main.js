@@ -9,8 +9,7 @@ Ext.define('Ung.config.network.Main', {
         'Ung.store.Rule',
         'Ung.model.Rule',
         'Ung.cmp.Grid',
-        'Ung.util.Renderer',
-        'Ung.cmp.IframePanel'
+        'Ung.util.Renderer'
     ],
     /* requires-end */
     controller: 'config-network',
