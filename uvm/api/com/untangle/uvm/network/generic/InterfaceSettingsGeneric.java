@@ -99,6 +99,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
     private Boolean routerAdvertisements;       /* are IPv6 router advertisements available? */
 
+    private boolean qosEnabled;         /* QOS enabled status for WAN interfaces */
     private Integer downloadKbps;       /* Download Bandwidth available on this WAN interface (for QoS) */
     private Integer uploadKbps;         /* Upload Bandwidth available on this WAN interface (for QoS) */
 
@@ -272,6 +273,9 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public Boolean getRouterAdvertisements() { return routerAdvertisements; }
     public void setRouterAdvertisements(Boolean routerAdvertisements) { this.routerAdvertisements = routerAdvertisements; }
 
+    public boolean isQosEnabled() { return qosEnabled; }
+    public void setQosEnabled(boolean qosEnabled) { this.qosEnabled = qosEnabled; }
+
     public Integer getDownloadKbps() { return downloadKbps; }
     public void setDownloadKbps(Integer downloadKbps) { this.downloadKbps = downloadKbps; }
 
@@ -388,8 +392,9 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
         intfSettings.setRaEnabled(this.routerAdvertisements);
 
-        intfSettings.setDownloadBandwidthKbps(this.downloadKbps);
-        intfSettings.setUploadBandwidthKbps(this.uploadKbps);
+        intfSettings.setQosEnabled(this.qosEnabled);
+        intfSettings.setDownloadBandwidthKbps(this.qosEnabled ? this.downloadKbps : 0);
+        intfSettings.setUploadBandwidthKbps(this.qosEnabled ? this.uploadKbps : 0);
 
         intfSettings.setVrrpEnabled(this.vrrpEnabled);
         intfSettings.setVrrpId(this.vrrpId);
