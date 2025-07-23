@@ -54,6 +54,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         Map<Integer, InterfaceSettings> interfaceMap = existingInterfaces.stream()
             .collect(Collectors.toMap(InterfaceSettings::getInterfaceId, Function.identity()));
 
+        boolean qosEnabled = false;
         for (InterfaceSettingsGeneric intfSettingsGen : this.interfaces) {
             InterfaceSettings matchingIntf = interfaceMap.get(intfSettingsGen.getInterfaceId());
 
@@ -64,6 +65,16 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
             // Transform data from generic to original InterfaceSettings
             intfSettingsGen.transformGenericToInterfaceSettings(matchingIntf);
+
+            // Track if any WAN interface has QoS enabled
+            if (intfSettingsGen.isWan() && intfSettingsGen.isQosEnabled()) {
+                qosEnabled = true;
+            }
+        }
+
+        // QOS Settings
+        if(networkSettings.getQosSettings() != null) {
+            networkSettings.getQosSettings().setQosEnabled(qosEnabled);
         }
 
         // Write other transformations below

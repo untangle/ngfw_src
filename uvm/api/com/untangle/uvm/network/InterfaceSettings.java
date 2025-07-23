@@ -116,7 +116,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress dhcpRelayAddress; /* DHCP relay server IP address */
 
     private Boolean raEnabled; /* are IPv6 router advertisements available? */
-    
+
+    private boolean qosEnabled;         /* QOS enabled status for WAN interfaces */
     private Integer downloadBandwidthKbps; /* Download Bandwidth available on this WAN interface (for QoS) */
     private Integer uploadBandwidthKbps; /* Upload Bandwidth available on this WAN interface (for QoS) */
 
@@ -314,6 +315,9 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public Boolean getRaEnabled() { return this.raEnabled; }
     public void setRaEnabled( Boolean newValue ) { this.raEnabled = newValue; }
+
+    public boolean isQosEnabled() { return qosEnabled; }
+    public void setQosEnabled(boolean qosEnabled) { this.qosEnabled = qosEnabled; }
 
     public Integer getDownloadBandwidthKbps() { return this.downloadBandwidthKbps; }
     public void setDownloadBandwidthKbps( Integer newValue ) { this.downloadBandwidthKbps = newValue; }
@@ -560,6 +564,7 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setDhcpRelayAddress(this.dhcpRelayAddress);
         intfSettingsGen.setRouterAdvertisements(this.raEnabled);
 
+        intfSettingsGen.setQosEnabled(this.qosEnabled);
         intfSettingsGen.setDownloadKbps(this.downloadBandwidthKbps);
         intfSettingsGen.setUploadKbps(this.uploadBandwidthKbps);
 
