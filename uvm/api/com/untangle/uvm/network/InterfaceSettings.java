@@ -3,22 +3,20 @@
  */
 package com.untangle.uvm.network;
 
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.net.InetAddress;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.json.JSONObject;
-import org.json.JSONString;
-
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.Type;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.V4Alias;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.V6Alias;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+import org.json.JSONString;
+
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Interface settings.
@@ -510,7 +508,6 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setSymbolicDev(this.symbolicDev);
         intfSettingsGen.setImqDev(this.imqDev);
         intfSettingsGen.setDevice(this.isVlanInterface ? this.systemDev : this.physicalDev);
-        intfSettingsGen.setDevice(this.symbolicDev);
         intfSettingsGen.setWan(this.isWan);
         intfSettingsGen.setType(resolveGenericType());
         intfSettingsGen.setVlanId(this.vlanTag);
@@ -518,7 +515,7 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setConfigType(this.configType);
         intfSettingsGen.setBridgedTo(this.bridgedTo);
 
-        intfSettingsGen.setV4ConfigType(this.v4ConfigType);
+        intfSettingsGen.setV4ConfigType(transformV4ConfigTypeEnum(this.v4ConfigType));
         intfSettingsGen.setV4StaticAddress(this.v4StaticAddress);
         intfSettingsGen.setV4StaticPrefix(this.v4StaticPrefix);
         intfSettingsGen.setV4StaticGateway(this.v4StaticGateway);
@@ -543,15 +540,15 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setNatEgress(this.v4NatEgressTraffic);
         intfSettingsGen.setNatIngress(this.v4NatIngressTraffic);
 
-        intfSettingsGen.setV6ConfigType(this.v6ConfigType);
+        intfSettingsGen.setV6ConfigType(transformV6ConfigTypeEnum(this.v6ConfigType));
         intfSettingsGen.setV6StaticAddress(this.v6StaticAddress);
         intfSettingsGen.setV6StaticPrefix(this.v6StaticPrefixLength);
         intfSettingsGen.setV6StaticGateway(this.v6StaticGateway);
         intfSettingsGen.setV6StaticDNS1(this.v6StaticDns1);
         intfSettingsGen.setV6StaticDNS2(this.v6StaticDns2);
 
-        intfSettingsGen.setDhcpEnabled(null != this.dhcpEnabled && false != this.dhcpEnabled && this.dhcpType == DhcpType.SERVER);
-        intfSettingsGen.setDhcpRelayEnabled(null != this.dhcpEnabled && false != this.dhcpEnabled && this.dhcpType == DhcpType.RELAY);
+        intfSettingsGen.setDhcpEnabled(null != this.dhcpEnabled && this.dhcpEnabled && this.dhcpType == DhcpType.SERVER);
+        intfSettingsGen.setDhcpRelayEnabled(null != this.dhcpEnabled && this.dhcpEnabled && this.dhcpType == DhcpType.RELAY);
 
         intfSettingsGen.setDhcpRangeStart(this.dhcpRangeStart);
         intfSettingsGen.setDhcpRangeEnd(this.dhcpRangeEnd);
@@ -559,7 +556,7 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setDhcpGatewayOverride(this.dhcpGatewayOverride);
         intfSettingsGen.setDhcpPrefixOverride(this.dhcpPrefixOverride);
         intfSettingsGen.setDhcpDNSOverride(this.dhcpDnsOverride);
-        intfSettingsGen.setDhcpOptions(this.dhcpOptions);
+        intfSettingsGen.setDhcpOptions(this.dhcpOptions != null ? new LinkedList<>(this.dhcpOptions) : null);
 
         intfSettingsGen.setDhcpRelayAddress(this.dhcpRelayAddress);
         intfSettingsGen.setRouterAdvertisements(this.raEnabled);
@@ -586,6 +583,26 @@ public class InterfaceSettings implements Serializable, JSONString
     }
 
     /**
+     * Transforms InterfaceSettings.V4ConfigType to InterfaceSettingsGeneric.V4ConfigType
+     * @param v4ConfigType InterfaceSettings.V4ConfigType
+     * @return InterfaceSettingsGeneric.V4ConfigType
+     */
+    private InterfaceSettingsGeneric.V4ConfigType transformV4ConfigTypeEnum(V4ConfigType v4ConfigType) {
+        return  (this.v4ConfigType == V4ConfigType.AUTO) ? InterfaceSettingsGeneric.V4ConfigType.DHCP
+                : InterfaceSettingsGeneric.V4ConfigType.valueOf(this.v4ConfigType.name());
+    }
+
+    /**
+     * Transforms InterfaceSettings.V6ConfigType to InterfaceSettingsGeneric.V6ConfigType
+     * @param v6ConfigType InterfaceSettings.V6ConfigType
+     * @return InterfaceSettingsGeneric.V6ConfigType
+     */
+    private InterfaceSettingsGeneric.V6ConfigType transformV6ConfigTypeEnum(V6ConfigType v6ConfigType) {
+        return  (this.v6ConfigType == v6ConfigType.AUTO) ? InterfaceSettingsGeneric.V6ConfigType.SLAAC
+                : InterfaceSettingsGeneric.V6ConfigType.valueOf(this.v6ConfigType.name());
+    }
+
+    /**
      * Determines the generic interface type based on the internal flags
      * such as whether the interface is wireless, bridged, or VLAN.
      * <p>
@@ -603,7 +620,7 @@ public class InterfaceSettings implements Serializable, JSONString
         return null;
     }
 
-    private List<V4Alias> convertToV4Aliases(List<InterfaceAlias> aliases) {
+    private LinkedList<V4Alias> convertToV4Aliases(List<InterfaceAlias> aliases) {
         if (aliases == null) return null;
         return aliases.stream()
                     .map(a -> {
@@ -612,10 +629,10 @@ public class InterfaceSettings implements Serializable, JSONString
                         v4.setV4Prefix(a.getStaticPrefix());
                         return v4;
                     })
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    private List<V6Alias> convertToV6Aliases(List<InterfaceAlias> aliases) {
+    private LinkedList<V6Alias> convertToV6Aliases(List<InterfaceAlias> aliases) {
         if (aliases == null) return null;
         return aliases.stream()
                     .map(a -> {
@@ -624,6 +641,6 @@ public class InterfaceSettings implements Serializable, JSONString
                         v6.setV6Prefix(a.getStaticPrefix());
                         return v6;
                     })
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toCollection(LinkedList::new));
     }
 }

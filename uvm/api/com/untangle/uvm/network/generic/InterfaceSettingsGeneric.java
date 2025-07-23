@@ -3,26 +3,23 @@
  */
 package com.untangle.uvm.network.generic;
 
-import java.io.Serializable;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.json.JSONObject;
-import org.json.JSONString;
-
 import com.untangle.uvm.network.DhcpOption;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.DhcpType;
 import com.untangle.uvm.network.InterfaceSettings.InterfaceAlias;
-import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.WirelessEncryption;
 import com.untangle.uvm.network.InterfaceSettings.WirelessMode;
 import com.untangle.uvm.util.StringUtil;
+import org.json.JSONObject;
+import org.json.JSONString;
+
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Interface settings v2.
@@ -52,7 +49,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
     private Integer bridgedTo;      /* device to bridge to in "bridged" case */
 
-    private V4ConfigType v4ConfigType = V4ConfigType.AUTO;  /* IPv4 config type */
+    public static enum V4ConfigType { STATIC, DHCP, PPPOE };
+    private V4ConfigType v4ConfigType = V4ConfigType.DHCP;  /* IPv4 config type */
     private InetAddress v4StaticAddress;                    /* the address  of this interface if configured static, or dhcp override */
     private Integer v4StaticPrefix;                         /* the netmask of this interface if configured static, or dhcp override */
     private InetAddress v4StaticGateway;                    /* the gateway  of this interface if configured static, or dhcp override */
@@ -64,8 +62,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private InetAddress v4DhcpDNS1Override;                 /* the dhcp override dns1 (null means don't override) */
     private InetAddress v4DhcpDNS2Override;                 /* the dhcp override dns2 (null means don't override) */
 
-    private List<V4Alias> v4Aliases = new LinkedList<>();
-    private List<V6Alias> v6Aliases = new LinkedList<>();
+    private LinkedList<V4Alias> v4Aliases = new LinkedList<>();     /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
+    private LinkedList<V6Alias> v6Aliases = new LinkedList<>();     /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
 
     private String v4PPPoEUsername;             /* PPPoE Username */
     private String v4PPPoEPassword;             /* PPPoE Password */
@@ -77,6 +75,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private Boolean natEgress;
     private Boolean natIngress;
 
+    public static enum V6ConfigType { STATIC, SLAAC, DISABLED };
     private V6ConfigType v6ConfigType = V6ConfigType.DISABLED;  /* IPv6 config type */
     private InetAddress v6StaticAddress;                        /* the address  of this interface if configured static, or dhcp override */ 
     private Integer v6StaticPrefix;                             /* the netmask  of this interface if configured static, or dhcp override */
@@ -93,7 +92,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private InetAddress dhcpGatewayOverride;    /* DHCP gateway override, if null defaults to this interface's IP */
     private Integer dhcpPrefixOverride;         /* DHCP netmask override, if null defaults to this interface's netmask */
     private String dhcpDNSOverride;             /* DHCP DNS override, if null defaults to this interface's IP */
-    private List<DhcpOption> dhcpOptions;       /* DHCP dnsmasq options */
+    private LinkedList<DhcpOption> dhcpOptions;       /* DHCP dnsmasq options */ /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
 
     private InetAddress dhcpRelayAddress;       /* DHCP relay server IP address */
 
@@ -106,7 +105,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private Boolean vrrpEnabled;            /* Is VRRP enabled */
     private Integer vrrpId;                 /* VRRP ID 1-255 */
     private Integer vrrpPriority;           /* VRRP priority 1-255, highest priority is master */
-    private List<V4Alias> vrrpV4Aliases = new LinkedList<>();
+    private LinkedList<V4Alias> vrrpV4Aliases = new LinkedList<>();     /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
 
     private String wirelessSsid;
     private WirelessEncryption wirelessEncryption = WirelessEncryption.NONE;
@@ -192,11 +191,11 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public InetAddress getV4DhcpDNS2Override() { return v4DhcpDNS2Override; }
     public void setV4DhcpDNS2Override(InetAddress v4DhcpDNS2Override) { this.v4DhcpDNS2Override = v4DhcpDNS2Override; }
 
-    public List<V4Alias> getV4Aliases() { return v4Aliases; }
-    public void setV4Aliases(List<V4Alias> v4Aliases) { this.v4Aliases = v4Aliases; }
+    public LinkedList<V4Alias> getV4Aliases() { return v4Aliases; }
+    public void setV4Aliases(LinkedList<V4Alias> v4Aliases) { this.v4Aliases = v4Aliases; }
 
-    public List<V6Alias> getV6Aliases() { return v6Aliases; }
-    public void setV6Aliases(List<V6Alias> v6Aliases) { this.v6Aliases = v6Aliases; }
+    public LinkedList<V6Alias> getV6Aliases() { return v6Aliases; }
+    public void setV6Aliases(LinkedList<V6Alias> v6Aliases) { this.v6Aliases = v6Aliases; }
 
     public String getV4PPPoEUsername() { return v4PPPoEUsername; }
     public void setV4PPPoEUsername(String v4ppPoEUsername) { v4PPPoEUsername = v4ppPoEUsername; }
@@ -264,8 +263,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public String getDhcpDNSOverride() { return dhcpDNSOverride; }
     public void setDhcpDNSOverride(String dhcpDNSOverride) { this.dhcpDNSOverride = dhcpDNSOverride; }
 
-    public List<DhcpOption> getDhcpOptions() { return dhcpOptions; }
-    public void setDhcpOptions(List<DhcpOption> dhcpOptions) { this.dhcpOptions = dhcpOptions; }
+    public LinkedList<DhcpOption> getDhcpOptions() { return dhcpOptions; }
+    public void setDhcpOptions(LinkedList<DhcpOption> dhcpOptions) { this.dhcpOptions = dhcpOptions; }
 
     public InetAddress getDhcpRelayAddress() { return dhcpRelayAddress; }
     public void setDhcpRelayAddress(InetAddress dhcpRelayAddress) { this.dhcpRelayAddress = dhcpRelayAddress; }
@@ -291,8 +290,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public Integer getVrrpPriority() { return vrrpPriority; }
     public void setVrrpPriority(Integer vrrpPriority) { this.vrrpPriority = vrrpPriority; }
 
-    public List<V4Alias> getVrrpV4Aliases() { return vrrpV4Aliases; }
-    public void setVrrpV4Aliases(List<V4Alias> vrrpV4Aliases) { this.vrrpV4Aliases = vrrpV4Aliases; }
+    public LinkedList<V4Alias> getVrrpV4Aliases() { return vrrpV4Aliases; }
+    public void setVrrpV4Aliases(LinkedList<V4Alias> vrrpV4Aliases) { this.vrrpV4Aliases = vrrpV4Aliases; }
 
     public String getWirelessSsid() { return wirelessSsid; }
     public void setWirelessSsid(String wirelessSsid) { this.wirelessSsid = wirelessSsid; }
@@ -346,7 +345,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setConfigType(this.configType);
         intfSettings.setBridgedTo(this.bridgedTo);
 
-        intfSettings.setV4ConfigType(this.v4ConfigType);
+        intfSettings.setV4ConfigType(transformV4ConfigTypeEnum(this.v4ConfigType));
         intfSettings.setV4StaticAddress(this.v4StaticAddress);
         intfSettings.setV4StaticPrefix(this.v4StaticPrefix);
         intfSettings.setV4StaticGateway(this.v4StaticGateway);
@@ -372,7 +371,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setV4NatEgressTraffic(this.natEgress);
         intfSettings.setV4NatIngressTraffic(this.natIngress);
 
-        intfSettings.setV6ConfigType(this.v6ConfigType);
+        intfSettings.setV6ConfigType(transformV6ConfigTypeEnum(this.v6ConfigType));
         intfSettings.setV6StaticAddress(this.v6StaticAddress);
         intfSettings.setV6StaticPrefixLength(this.v6StaticPrefix);
         intfSettings.setV6StaticGateway(this.v6StaticGateway);
@@ -411,6 +410,26 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setWirelessCountryCode(this.wirelessCountryCode);
     }
 
+    /**
+     * Transforms InterfaceSettingsGeneric.V4ConfigType to InterfaceSettings.V4ConfigType
+     * @param v4ConfigType InterfaceSettingsGeneric.V4ConfigType
+     * @return InterfaceSettings.V4ConfigType
+     */
+    private InterfaceSettings.V4ConfigType transformV4ConfigTypeEnum(V4ConfigType v4ConfigType) {
+        return (this.v4ConfigType == V4ConfigType.DHCP) ? InterfaceSettings.V4ConfigType.AUTO
+                : InterfaceSettings.V4ConfigType.valueOf(this.v4ConfigType.name());
+    }
+
+    /**
+     * Transforms InterfaceSettingsGeneric.V6ConfigType to InterfaceSettings.V6ConfigType
+     * @param v6ConfigType InterfaceSettingsGeneric.V6ConfigType
+     * @return InterfaceSettings.V6ConfigType
+     */
+    private InterfaceSettings.V6ConfigType transformV6ConfigTypeEnum(V6ConfigType v6ConfigType) {
+        return (this.v6ConfigType == V6ConfigType.SLAAC) ? InterfaceSettings.V6ConfigType.AUTO
+                : InterfaceSettings.V6ConfigType.valueOf(this.v6ConfigType.name());
+    }
+
     private DhcpType resolveDhcpType(InterfaceSettingsGeneric generic) {
         if (generic.dhcpRelayEnabled) return DhcpType.RELAY;
         if (generic.dhcpEnabled) return DhcpType.SERVER;
@@ -424,7 +443,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
             alias.setStaticAddress(a.getV4Address());
             alias.setStaticPrefix(a.getV4Prefix());
             return alias;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toCollection(LinkedList::new));
     }
 
     private List<InterfaceAlias> convertToOriginalAliasesV6(List<V6Alias> aliases) {
@@ -434,7 +453,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
             alias.setStaticAddress(a.getV6Address());
             alias.setStaticPrefix(a.getV6Prefix());
             return alias;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**

@@ -3,6 +3,11 @@
  */
 package com.untangle.uvm.network.generic;
 
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.NetworkSettings;
+import org.json.JSONObject;
+import org.json.JSONString;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,26 +15,20 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.json.JSONObject;
-import org.json.JSONString;
-
-import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.network.NetworkSettings;
-
 /**
  * Network settings v2.
  */
 @SuppressWarnings("serial")
 public class NetworkSettingsGeneric implements Serializable, JSONString {
 
-    private List<InterfaceSettingsGeneric> interfaces = null;
+    private LinkedList<InterfaceSettingsGeneric> interfaces = null;     /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
 
     public NetworkSettingsGeneric() {
         super();
     }
 
-    public List<InterfaceSettingsGeneric> getInterfaces() { return interfaces; }
-    public void setInterfaces(List<InterfaceSettingsGeneric> interfaces) { this.interfaces = interfaces; }
+    public LinkedList<InterfaceSettingsGeneric> getInterfaces() { return interfaces; }
+    public void setInterfaces(LinkedList<InterfaceSettingsGeneric> interfaces) { this.interfaces = interfaces; }
 
     /**
      * Populates the provided {@link NetworkSettings} instance with data from this

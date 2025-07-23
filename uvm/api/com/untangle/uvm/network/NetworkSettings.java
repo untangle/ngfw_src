@@ -251,7 +251,7 @@ public class NetworkSettings implements Serializable, JSONString
     public NetworkSettingsGeneric transformNetworkSettingsToGeneric() {
         NetworkSettingsGeneric netSettingsGen = new NetworkSettingsGeneric();
 
-        List<InterfaceSettingsGeneric> interfacesGen = new LinkedList<>();
+        LinkedList<InterfaceSettingsGeneric> interfacesGen = new LinkedList<>();
         for(InterfaceSettings intfSettings : this.getInterfaces()) {
             interfacesGen.add(intfSettings.transformInterfaceSettingsToGeneric());
         }
