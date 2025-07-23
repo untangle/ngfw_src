@@ -51,10 +51,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         List<InterfaceSettings> existingInterfaces = networkSettings.getInterfaces();
 
         // CLEANUP: Remove deleted interfaces first
-        Set<Integer> incomingIds = this.interfaces.stream()
-                .map(InterfaceSettingsGeneric::getInterfaceId)
-                .collect(Collectors.toSet());
-        existingInterfaces.removeIf(intf -> !incomingIds.contains(intf.getInterfaceId()));
+        deleteOrphanInterfaces(existingInterfaces);
 
         // Build a map for quick lookup by interfaceId
         Map<Integer, InterfaceSettings> interfaceMap = existingInterfaces.stream()
@@ -85,6 +82,17 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
         // Write other transformations below
         
+    }
+
+    /**
+     * deletes the orphan interfaces
+     * @param existingInterfaces List<InterfaceSettings>
+     */
+    private void deleteOrphanInterfaces(List<InterfaceSettings> existingInterfaces) {
+        Set<Integer> incomingIds = this.interfaces.stream()
+                .map(InterfaceSettingsGeneric::getInterfaceId)
+                .collect(Collectors.toSet());
+        existingInterfaces.removeIf(intf -> !incomingIds.contains(intf.getInterfaceId()));
     }
 
     public String toJSONString()
