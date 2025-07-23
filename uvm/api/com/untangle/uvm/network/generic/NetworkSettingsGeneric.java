@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,12 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         if (networkSettings.getInterfaces() == null)
             networkSettings.setInterfaces(new LinkedList<>());
         List<InterfaceSettings> existingInterfaces = networkSettings.getInterfaces();
+
+        // CLEANUP: Remove deleted interfaces first
+        Set<Integer> incomingIds = this.interfaces.stream()
+                .map(InterfaceSettingsGeneric::getInterfaceId)
+                .collect(Collectors.toSet());
+        existingInterfaces.removeIf(intf -> !incomingIds.contains(intf.getInterfaceId()));
 
         // Build a map for quick lookup by interfaceId
         Map<Integer, InterfaceSettings> interfaceMap = existingInterfaces.stream()
