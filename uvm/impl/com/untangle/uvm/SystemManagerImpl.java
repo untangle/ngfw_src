@@ -57,7 +57,7 @@ import com.untangle.uvm.util.StringUtil;
  */
 public class SystemManagerImpl implements SystemManager
 {
-    private static final int SETTINGS_VERSION = 5;
+    private static final int SETTINGS_VERSION = 6;
     private static final String ZIP_FILE = "system_logs.zip";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
@@ -105,6 +105,11 @@ public class SystemManagerImpl implements SystemManager
 
     private List<FileDirectoryMetadata> logFiles;
 
+    private static final String CRITICAL_DEVICE_TEMPERATURE = "CRITICAL_DEVICE_TEMPERATURE";
+    private final static String GET_DEVICE_TEMPERATURE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-temperature-status.sh";
+    private static final String CRON_TEMPERATURE_STRING = "*/15 * * * * root /usr/share/untangle/bin/ut-temperature-status.py >/dev/null 2>&1";
+    private static final File CRON_TEMPERATURE_FILE = new File("/etc/cron.d/ut-temperature-status-cron");
+
     /**
      * Constructor
      */
@@ -137,6 +142,7 @@ public class SystemManagerImpl implements SystemManager
             if (this.settings.getVersion() < SETTINGS_VERSION) {
                 this.settings.setVersion(SETTINGS_VERSION);
                 this.settings.setLogRetention(7);
+                this.getSettings().setThresholdTemperature(105.0);
                 this.setSettings(this.settings, false);
             }
 
@@ -194,6 +200,11 @@ public class SystemManagerImpl implements SystemManager
         radiusServerSync();
         radiusProxySync();
 
+        /**
+         * Write ut-temperature-status-cron to check if device temperature reached critical threshold
+         */
+        if (!CRON_TEMPERATURE_FILE.exists())
+            writeCRONTemperatureFile();
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new SystemSupportLogDownloadHandler());
         initLogFilesMetadata();
 
@@ -1403,6 +1414,35 @@ can look deeper. - mahotz
         UvmContextFactory.context().execManager().execResult( "chmod 755 " + BDAM_LICENSE_UPDATE_SCRIPT);
     }
 
+    /** 
+     * Write device temperaure cronjob file.
+     */
+    private void writeCRONTemperatureFile()
+    {
+        // write the cron file for 15 minute runs
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(CRON_TEMPERATURE_FILE));
+            out.write(CRON_TEMPERATURE_STRING, 0, CRON_TEMPERATURE_STRING.length());
+            out.write(Constants.NEW_LINE);
+        } catch (IOException ex) {
+            logger.error("Unable to write file", ex);
+            return;
+        }finally{
+            if(out != null){
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    logger.error("Unable to close file", ex);
+                }
+            }
+        }
+
+        // Make files executable
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + CRON_TEMPERATURE_FILE);
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + GET_DEVICE_TEMPERATURE_SCRIPT);
+    }
+
     /**
      * Handler for Admin requests to download the support log
      */
@@ -1629,6 +1669,30 @@ can look deeper. - mahotz
     {
         logger.warn("Logging CriticalAlertEvent for Disk Check Failure. Errors: {}", diskCheckErrors);
         CriticalAlertEvent alert = new CriticalAlertEvent("DISK_CHECK_FAILURE", "Disk health checks failed, Upgrade aborted", "Errors: " + diskCheckErrors);
+        UvmContextFactory.context().logEvent(alert);
+    }
+
+    /**
+     * Get device temperature information.
+     * 
+     * @return The device temperature string
+     */
+    public String getDeviceTemperatureInfo()
+    {
+        logger.debug(" Getting device temparature getDeviceTemperatureInfo()");
+        return UvmContextFactory.context().execManager().execOutput(String.format("%s", GET_DEVICE_TEMPERATURE_SCRIPT));
+    }
+
+    /**
+     * Send Temperature Exceeded Critical Threshold event log.
+     * 
+     * @param temperatureErrors
+     *        String temperatureErrors
+     */
+    public void logCriticalTemperature( String temperatureErrors )
+    {
+        logger.warn("Logging CriticalAlertEvent for Device temparature reaching critical level. Errors: {}", temperatureErrors);
+        CriticalAlertEvent alert = new CriticalAlertEvent(CRITICAL_DEVICE_TEMPERATURE, "Temperature Exceeded Critical Threshold", "Errors: " + temperatureErrors);
         UvmContextFactory.context().logEvent(alert);
     }
 }

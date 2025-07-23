@@ -208,4 +208,9 @@ public class SystemSettings implements Serializable, JSONString
     /* DEPRECATED in 12.2 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
+
+    private Double thresholdTemperature = 105.0;
+    public void setThresholdTemperature( Double newValue ) { this.thresholdTemperature = newValue; }
+    public Double getThresholdTemperature() { return this.thresholdTemperature; }
+
 }
