@@ -112,7 +112,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
-    private Integer currentVersion = 11;
+    private Integer currentVersion = 12;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
@@ -3319,7 +3319,18 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void convertSettings()
     {
-        // For 17.1, peform "free" conversion to set the new dhcpMaxLeases setting to its default value
+        // For 17.5 Vue Migration Changes
+        // If QOS is enabled and interface have non zero band width set qosEnabled true for that interface
+        if(this.networkSettings.getQosSettings() != null && this.networkSettings.getQosSettings().getQosEnabled()) {
+            for(InterfaceSettings intfSettings: this.networkSettings.getInterfaces()) {
+                if(intfSettings.getIsWan()) {
+                    boolean qosEnabled = intfSettings.getDownloadBandwidthKbps() != null && intfSettings.getDownloadBandwidthKbps() != 0
+                            && intfSettings.getUploadBandwidthKbps() != null && intfSettings.getUploadBandwidthKbps() != 0;
+                    intfSettings.setQosEnabled(qosEnabled);
+                }
+            }
+        }
+        // Set new version
         this.networkSettings.setVersion( currentVersion );
         this.setNetworkSettings( this.networkSettings, false );
     }
