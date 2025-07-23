@@ -612,7 +612,7 @@ public class NetworkManagerImpl implements NetworkManager
         for (InterfaceSettings intf : networkSettings.getInterfaces()) {
             InterfaceStatusGeneric status = new InterfaceStatusGeneric();
 
-            status.setDevice(intf.getSymbolicDev());
+            status.setDevice(intf.getIsVlanInterface() ? intf.getSystemDev() : intf.getPhysicalDev());
             status.setWan(intf.getIsWan());
             populateTransferStats(status, intf);
             populateMacVendor(status);
