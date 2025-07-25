@@ -3320,14 +3320,20 @@ public class NetworkManagerImpl implements NetworkManager
     private void convertSettings()
     {
         // For 17.5 Vue Migration Changes
-        // If QOS is enabled and interface have non zero band width set qosEnabled true for that interface
-        if(this.networkSettings.getQosSettings() != null && this.networkSettings.getQosSettings().getQosEnabled()) {
-            for(InterfaceSettings intfSettings: this.networkSettings.getInterfaces()) {
-                if(intfSettings.getIsWan()) {
-                    boolean qosEnabled = intfSettings.getDownloadBandwidthKbps() != null && intfSettings.getDownloadBandwidthKbps() != 0
-                            && intfSettings.getUploadBandwidthKbps() != null && intfSettings.getUploadBandwidthKbps() != 0;
-                    intfSettings.setQosEnabled(qosEnabled);
-                }
+        boolean globalQosEnabled = this.networkSettings.getQosSettings() != null && this.networkSettings.getQosSettings().getQosEnabled();
+        for(InterfaceSettings intfSettings: this.networkSettings.getInterfaces()) {
+            // Set generic config type for Vue response config type.
+            InterfaceSettingsGeneric.ConfigType configTypeGeneric =
+                    (intfSettings.getConfigType() != ConfigType.DISABLED)
+                            ? InterfaceSettingsGeneric.ConfigType.valueOf(intfSettings.getConfigType().name())
+                            : InterfaceSettingsGeneric.ConfigType.ADDRESSED;
+            intfSettings.setConfigTypeGeneric(configTypeGeneric);
+
+            // If global QOS is enabled and interface have non zero band width set qosEnabled true for that interface
+            if(intfSettings.getIsWan() && globalQosEnabled) {
+                boolean qosEnabled = intfSettings.getDownloadBandwidthKbps() != null && intfSettings.getDownloadBandwidthKbps() != 0
+                        && intfSettings.getUploadBandwidthKbps() != null && intfSettings.getUploadBandwidthKbps() != 0;
+                intfSettings.setQosEnabled(qosEnabled);
             }
         }
         // Set new version
