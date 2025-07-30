@@ -56,6 +56,7 @@ public class InterfaceSettings implements Serializable, JSONString
 
     public static enum ConfigType { ADDRESSED, BRIDGED, DISABLED };
     private ConfigType configType = ConfigType.DISABLED; /* config type */
+    private InterfaceSettingsGeneric.ConfigType configTypeGeneric = InterfaceSettingsGeneric.ConfigType.ADDRESSED;
     private ConfigType[] supportedConfigTypes = null; /* supported config types, null means all */
 
     private Integer bridgedTo; /* device to bridge to in "bridged" case */
@@ -199,6 +200,9 @@ public class InterfaceSettings implements Serializable, JSONString
     
     public V4ConfigType getV4ConfigType( ) { return this.v4ConfigType; }
     public void setV4ConfigType( V4ConfigType newValue ) { this.v4ConfigType = newValue; }
+
+    public InterfaceSettingsGeneric.ConfigType getConfigTypeGeneric() { return configTypeGeneric; }
+    public void setConfigTypeGeneric(InterfaceSettingsGeneric.ConfigType configTypeGeneric) { this.configTypeGeneric = configTypeGeneric; }
 
     public InetAddress getV4StaticAddress( ) { return this.v4StaticAddress; }
     public void setV4StaticAddress( InetAddress newValue ) { this.v4StaticAddress = newValue; }
@@ -500,7 +504,7 @@ public class InterfaceSettings implements Serializable, JSONString
     public InterfaceSettingsGeneric transformInterfaceSettingsToGeneric() {
         InterfaceSettingsGeneric intfSettingsGen = new InterfaceSettingsGeneric();
 
-        intfSettingsGen.setEnabled(true);
+        transformEnabledAndConfigType(intfSettingsGen);
         intfSettingsGen.setInterfaceId(this.interfaceId);
         intfSettingsGen.setName(this.name);
         intfSettingsGen.setPhysicalDev(this.physicalDev);
@@ -512,7 +516,6 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setType(resolveGenericType());
         intfSettingsGen.setVlanId(this.vlanTag);
         intfSettingsGen.setBoundInterfaceId(this.vlanParent);
-        intfSettingsGen.setConfigType(this.configType);
         intfSettingsGen.setBridgedTo(this.bridgedTo);
 
         intfSettingsGen.setV4ConfigType(transformV4ConfigTypeEnum(this.v4ConfigType));
@@ -583,6 +586,18 @@ public class InterfaceSettings implements Serializable, JSONString
     }
 
     /**
+     * Logic to transform enabled and configType. Legacy to Generic
+     * @param intfSettingsGen InterfaceSettingsGeneric
+     */
+    private void transformEnabledAndConfigType(InterfaceSettingsGeneric intfSettingsGen) {
+        boolean isEnabled = this.configType != ConfigType.DISABLED;
+        intfSettingsGen.setEnabled(isEnabled);
+        intfSettingsGen.setConfigType(isEnabled
+                ? InterfaceSettingsGeneric.ConfigType.valueOf(this.configType.name())
+                : this.configTypeGeneric);
+    }
+
+    /**
      * Transforms InterfaceSettings.V4ConfigType to InterfaceSettingsGeneric.V4ConfigType
      * @param v4ConfigType InterfaceSettings.V4ConfigType
      * @return InterfaceSettingsGeneric.V4ConfigType
@@ -615,9 +630,13 @@ public class InterfaceSettings implements Serializable, JSONString
     private Type resolveGenericType() {
         if (this.isWirelessInterface) return Type.WIFI;
         if (!this.isVlanInterface) return Type.NIC;
-        if (this.isVlanInterface && this.configType == ConfigType.ADDRESSED) return Type.VLAN;
-        if (this.isVlanInterface && this.configType == ConfigType.BRIDGED) return Type.BRIDGE;
-        return null;
+        if (this.configType == ConfigType.ADDRESSED) return Type.VLAN;
+        if (this.configType == ConfigType.BRIDGED) return Type.BRIDGE;
+        if (this.configType == ConfigType.DISABLED) {
+            if (this.configTypeGeneric == InterfaceSettingsGeneric.ConfigType.ADDRESSED) return Type.VLAN;
+            if (this.configTypeGeneric == InterfaceSettingsGeneric.ConfigType.BRIDGED) return Type.BRIDGE;
+        }
+        return Type.VLAN;
     }
 
     private LinkedList<V4Alias> convertToV4Aliases(List<InterfaceAlias> aliases) {

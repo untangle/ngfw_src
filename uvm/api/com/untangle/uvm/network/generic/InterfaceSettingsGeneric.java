@@ -45,7 +45,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private Integer vlanId = null;                  /* vlan 802.1q tag */
     private Integer boundInterfaceId = null;        /* The parent interface of this vlan alias */
 
-    private ConfigType configType = ConfigType.DISABLED;    /* config type */
+    public static enum ConfigType { ADDRESSED, BRIDGED };
+    private ConfigType configType = ConfigType.ADDRESSED;    /* config type */
 
     private Integer bridgedTo;      /* device to bridge to in "bridged" case */
 
@@ -342,7 +343,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setVlanTag(this.vlanId);
         intfSettings.setVlanParent(this.boundInterfaceId);
 
-        intfSettings.setConfigType(this.configType);
+        transformEnabledAndConfigType(intfSettings);
         intfSettings.setBridgedTo(this.bridgedTo);
 
         intfSettings.setV4ConfigType(transformV4ConfigTypeEnum(this.v4ConfigType));
@@ -408,6 +409,17 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setWirelessChannel(this.wirelessChannel);
         intfSettings.setWirelessVisibility(this.hidden ? 1 : 0);
         intfSettings.setWirelessCountryCode(this.wirelessCountryCode);
+    }
+
+    /**
+     * Logic to transform enabled and configType. Generic to Legacy
+     * @param intfSettings InterfaceSettings
+     */
+    private void transformEnabledAndConfigType(InterfaceSettings intfSettings) {
+        intfSettings.setConfigType(this.enabled
+                ? InterfaceSettings.ConfigType.valueOf(this.configType.name())
+                : InterfaceSettings.ConfigType.DISABLED);
+        intfSettings.setConfigTypeGeneric(this.configType);
     }
 
     /**
