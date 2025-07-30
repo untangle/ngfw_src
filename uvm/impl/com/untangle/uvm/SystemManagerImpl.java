@@ -33,6 +33,9 @@ import java.util.zip.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.untangle.uvm.generic.SystemSettingsGeneric;
+import com.untangle.uvm.network.NetworkSettings;
 import org.apache.commons.lang3.StringUtils;
 
 import org.apache.logging.log4j.Logger;
@@ -264,6 +267,34 @@ public class SystemManagerImpl implements SystemManager
     */
     public void setSettings(final SystemSettings newSettings) {
         setSettings(newSettings, false);
+    }
+
+    /**
+     * Get SystemSettingsGeneric for Vue UI
+     * @return SystemSettingsGeneric
+     */
+    public SystemSettingsGeneric getSystemSettingsV2() {
+        // Get current network settings
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        // transform the systemSettings and networkSettings to systemSettingsGeneric
+        return this.settings.transformLegacyToGenericSettings(networkSettings);
+    }
+
+    /**
+     * Sets the SystemSettings and NetworkSettings (Hostname/Services)
+     * @param systemSettingsGeneric SystemSettingsGeneric
+     */
+    public void setSystemSettingsV2(final SystemSettingsGeneric systemSettingsGeneric) {
+        // Get current network settings
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+
+        // update hostname and web services fields with value coming from postData
+        systemSettingsGeneric.transformGenericToLegacySettings(this.settings, networkSettings);
+
+        // Set Network Settings with updated values.
+        UvmContextFactory.context().networkManager().setNetworkSettings(networkSettings);
+
+        // TODO Set SystemSettings when those fields will be transformed in future
     }
 
     /**
