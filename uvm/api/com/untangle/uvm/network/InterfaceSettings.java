@@ -366,7 +366,7 @@ public class InterfaceSettings implements Serializable, JSONString
     /**
      * Interface alias.
      */
-    public static class InterfaceAlias
+    public static class InterfaceAlias implements Serializable
     {
         private InetAddress staticAddress; /* the address  of this interface if configured static, or dhcp override */ 
         private Integer     staticPrefix; /* the netmask of this interface if configured static, or dhcp override */
@@ -511,7 +511,7 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setSystemDev(this.systemDev);
         intfSettingsGen.setSymbolicDev(this.symbolicDev);
         intfSettingsGen.setImqDev(this.imqDev);
-        intfSettingsGen.setDevice(this.isVlanInterface ? this.systemDev : this.physicalDev);
+        intfSettingsGen.setDevice(resolveDeviceName());
         intfSettingsGen.setWan(this.isWan);
         intfSettingsGen.setType(resolveGenericType());
         intfSettingsGen.setVlanId(this.vlanTag);
@@ -615,6 +615,13 @@ public class InterfaceSettings implements Serializable, JSONString
     private InterfaceSettingsGeneric.V6ConfigType transformV6ConfigTypeEnum(V6ConfigType v6ConfigType) {
         return  (this.v6ConfigType == V6ConfigType.AUTO) ? InterfaceSettingsGeneric.V6ConfigType.SLAAC
                 : InterfaceSettingsGeneric.V6ConfigType.valueOf(this.v6ConfigType.name());
+    }
+
+    /**
+     * Helper: Resolve device name (vlan vs physical)
+     */
+    public String resolveDeviceName() {
+        return this.isVlanInterface ? this.systemDev : this.physicalDev;
     }
 
     /**
