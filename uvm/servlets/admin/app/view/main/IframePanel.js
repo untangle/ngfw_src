@@ -14,7 +14,6 @@ Ext.define('Ung.view.main.IframePanel', {
         this.callParent(arguments);
 
         this.on('afterrender', function (panel) {
-            console.log("Iframe Panel Loaded");
             var iframe = document.createElement('iframe');
 
             iframe.src = panel.iframeUrl || '';

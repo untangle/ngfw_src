@@ -613,7 +613,7 @@ public class InterfaceSettings implements Serializable, JSONString
      * @return InterfaceSettingsGeneric.V6ConfigType
      */
     private InterfaceSettingsGeneric.V6ConfigType transformV6ConfigTypeEnum(V6ConfigType v6ConfigType) {
-        return  (this.v6ConfigType == v6ConfigType.AUTO) ? InterfaceSettingsGeneric.V6ConfigType.SLAAC
+        return  (this.v6ConfigType == V6ConfigType.AUTO) ? InterfaceSettingsGeneric.V6ConfigType.SLAAC
                 : InterfaceSettingsGeneric.V6ConfigType.valueOf(this.v6ConfigType.name());
     }
 
