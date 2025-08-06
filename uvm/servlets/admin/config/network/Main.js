@@ -6,6 +6,8 @@ Ext.define('Ung.config.network.Main', {
     requires: [
         'Ung.config.network.MainController',
         'Ung.config.network.MainModel',
+        'Ung.config.network.Interface',
+
         'Ung.store.Rule',
         'Ung.model.Rule',
         'Ung.cmp.Grid',
