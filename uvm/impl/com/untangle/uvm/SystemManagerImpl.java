@@ -283,7 +283,7 @@ public class SystemManagerImpl implements SystemManager
         SystemSettings clonedSystemSettings = SerializationUtils.clone(this.settings);
 
         // update network (Hostname|Services) and system settings with value coming from postData
-        systemSettingsGeneric.transformGenericToLegacySettings(clonedSystemSettings, networkSettings);
+        systemSettingsGeneric.transformGenericToLegacySettings(clonedSystemSettings, clonedNetworkSettings);
 
         // Set Network Settings with updated values.
         UvmContextFactory.context().networkManager().setNetworkSettings(clonedNetworkSettings);

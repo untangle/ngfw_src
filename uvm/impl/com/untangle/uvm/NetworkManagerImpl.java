@@ -608,25 +608,48 @@ public class NetworkManagerImpl implements NetworkManager
      * @return List of InterfaceStatusGeneric
      */
     public List<InterfaceStatusGeneric> getAllInterfacesStatusV2() {
-        List<InterfaceStatusGeneric> interfaceStatuses = new LinkedList<>();
         List<DeviceStatus> deviceStatusList = getDeviceStatus();
 
-        for (InterfaceSettings intf : networkSettings.getInterfaces()) {
-            InterfaceStatusGeneric status = new InterfaceStatusGeneric();
+        return networkSettings.getInterfaces().stream()
+                .map(intf -> buildInterfaceStatus(intf.resolveDeviceName(), intf, deviceStatusList))
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
 
-            status.setDevice(intf.getIsVlanInterface() ? intf.getSystemDev() : intf.getPhysicalDev());
-            status.setWan(intf.getIsWan());
-            populateTransferStats(status, intf);
-            populateMacVendor(status);
-            populateIpAddresses(status, intf);
-            populateConnectionStatus(status, intf, deviceStatusList);
-            populateGatewayAndDns(status, intf);
-            populateAddressSources(status, intf);
+    /**
+     * Method to get status for a specific interface by device name.
+     * @param device the resolved device name (e.g., eth0, eth1.12, wlan0)
+     * @return InterfaceStatusGeneric for the device, or null if not found
+     */
+    public InterfaceStatusGeneric getInterfaceStatusV2(String device) {
+        List<DeviceStatus> deviceStatusList = getDeviceStatus();
 
-            interfaceStatuses.add(status);
-        }
+        return networkSettings.getInterfaces().stream()
+                .filter(intf -> device.equals(intf.resolveDeviceName()))
+                .findFirst()
+                .map(intf -> buildInterfaceStatus(device, intf, deviceStatusList))
+                .orElse(null);
+    }
 
-        return interfaceStatuses;
+    /**
+     * Helper: Build populated InterfaceStatusGeneric
+     * @param device device name
+     * @param intf InterfaceSettings
+     * @param deviceStatusList List<DeviceStatus>
+     * @return InterfaceStatusGeneric
+     */
+    private InterfaceStatusGeneric buildInterfaceStatus(String device, InterfaceSettings intf, List<DeviceStatus> deviceStatusList) {
+        InterfaceStatusGeneric status = new InterfaceStatusGeneric();
+
+        status.setDevice(device);
+        status.setWan(intf.getIsWan());
+        populateTransferStats(status, intf);
+        populateMacVendor(status);
+        populateIpAddresses(status, intf);
+        populateConnectionStatus(status, intf, deviceStatusList);
+        populateGatewayAndDns(status, intf);
+        populateAddressSources(status, intf);
+
+        return status;
     }
 
     /** 
