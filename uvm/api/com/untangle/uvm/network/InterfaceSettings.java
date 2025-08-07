@@ -637,12 +637,6 @@ public class InterfaceSettings implements Serializable, JSONString
     private Type resolveGenericType() {
         if (this.isWirelessInterface) return Type.WIFI;
         if (!this.isVlanInterface) return Type.NIC;
-        if (this.configType == ConfigType.ADDRESSED) return Type.VLAN;
-        if (this.configType == ConfigType.BRIDGED) return Type.BRIDGE;
-        if (this.configType == ConfigType.DISABLED) {
-            if (this.configTypeGeneric == InterfaceSettingsGeneric.ConfigType.ADDRESSED) return Type.VLAN;
-            if (this.configTypeGeneric == InterfaceSettingsGeneric.ConfigType.BRIDGED) return Type.BRIDGE;
-        }
         return Type.VLAN;
     }
 

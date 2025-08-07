@@ -39,8 +39,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private String device;          /* physical interface name: eth0, etc */
 
     private boolean wan = false;    /* is a WAN interface? */
-    public static enum Type { NIC, VLAN, BRIDGE, WIFI };
-    private Type type = Type.NIC;   // TODO Investigate and add all possible types
+    public static enum Type { NIC, VLAN, WIFI };
+    private Type type = Type.NIC;
 
     private Integer vlanId = null;                  /* vlan 802.1q tag */
     private Integer boundInterfaceId = null;        /* The parent interface of this vlan alias */
@@ -337,7 +337,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
         intfSettings.setIsWan(this.wan);
 
-        intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN || this.type == InterfaceSettingsGeneric.Type.BRIDGE);
+        intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN);
         intfSettings.setIsWirelessInterface(this.type == InterfaceSettingsGeneric.Type.WIFI);
 
         intfSettings.setVlanTag(this.vlanId);
