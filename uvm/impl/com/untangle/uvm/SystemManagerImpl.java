@@ -4,53 +4,46 @@
 
 package com.untangle.uvm;
 
+import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.generic.SystemSettingsGeneric;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.util.Constants;
+import com.untangle.uvm.util.FileDirectoryMetadata;
+import com.untangle.uvm.util.IOUtil;
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Scanner;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.TimeZone;
-import java.util.zip.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.SystemManager;
-import com.untangle.uvm.SystemSettings;
-import com.untangle.uvm.SnmpSettings;
-import com.untangle.uvm.ExecManagerResultReader;
-import com.untangle.uvm.app.DayOfWeekMatcher;
-import com.untangle.uvm.event.AdminLoginEvent;
-import com.untangle.uvm.servlet.DownloadHandler;
-import com.untangle.uvm.util.Constants;
-import com.untangle.uvm.util.FileDirectoryMetadata;
-import com.untangle.uvm.util.IOUtil;
-import com.untangle.uvm.util.StringUtil;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * The Manager for system-related settings
@@ -264,6 +257,38 @@ public class SystemManagerImpl implements SystemManager
     */
     public void setSettings(final SystemSettings newSettings) {
         setSettings(newSettings, false);
+    }
+
+    /**
+     * Get SystemSettingsGeneric for Vue UI
+     * @return SystemSettingsGeneric
+     */
+    public SystemSettingsGeneric getSystemSettingsV2() {
+        // Get current network settings
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        // transform the systemSettings and networkSettings to systemSettingsGeneric
+        return this.settings.transformLegacyToGenericSettings(networkSettings);
+    }
+
+    /**
+     * Sets the SystemSettings and NetworkSettings (Hostname/Services)
+     * @param systemSettingsGeneric SystemSettingsGeneric
+     */
+    public void setSystemSettingsV2(final SystemSettingsGeneric systemSettingsGeneric) {
+        // Get current network settings and clone it.
+        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
+        NetworkSettings clonedNetworkSettings = SerializationUtils.clone(networkSettings);
+
+        // Deep clone current System Settings to transform in New System Settings
+        SystemSettings clonedSystemSettings = SerializationUtils.clone(this.settings);
+
+        // update network (Hostname|Services) and system settings with value coming from postData
+        systemSettingsGeneric.transformGenericToLegacySettings(clonedSystemSettings, clonedNetworkSettings);
+
+        // Set Network Settings with updated values.
+        UvmContextFactory.context().networkManager().setNetworkSettings(clonedNetworkSettings);
+
+        // TODO Set SystemSettings (clonedSystemSettings) when those fields will be transformed in future
     }
 
     /**

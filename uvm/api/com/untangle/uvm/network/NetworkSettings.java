@@ -4,15 +4,14 @@
 package com.untangle.uvm.network;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.network.PortForwardRule;
-import com.untangle.uvm.network.NatRule;
-import com.untangle.uvm.network.BypassRule;
-import com.untangle.uvm.network.StaticRoute;
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
+import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 
 /**
  * Network settings.
@@ -53,6 +52,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean blockInvalidPackets = true;
     private boolean blockReplayPackets = false;
     private boolean strictArpMode = true;
+    private boolean sendUnsolicitedArpUpdates = false;
     private boolean stpEnabled = false;
     private boolean dhcpAuthoritative = true;
     private int     dhcpMaxLeases = 5000;
@@ -79,7 +79,9 @@ public class NetworkSettings implements Serializable, JSONString
     private String  publicUrlAddress;
     private Integer publicUrlPort;
 
-    public NetworkSettings() { }
+    public NetworkSettings() {
+        super();
+    }
 
     public Integer getVersion() { return this.version; }
     public void setVersion( Integer newValue ) { this.version = newValue ; }
@@ -164,7 +166,15 @@ public class NetworkSettings implements Serializable, JSONString
     
     public boolean getStrictArpMode() { return this.strictArpMode; }
     public void setStrictArpMode( boolean newValue ) { this.strictArpMode = newValue; }
-    
+
+    public boolean isSendUnsolicitedArpUpdates() {
+        return sendUnsolicitedArpUpdates;
+    }
+
+    public void setSendUnsolicitedArpUpdates(boolean sendUnsolicitedArpUpdates) {
+        this.sendUnsolicitedArpUpdates = sendUnsolicitedArpUpdates;
+    }
+
     public boolean getStpEnabled() { return this.stpEnabled; }
     public void setStpEnabled( boolean newValue ) { this.stpEnabled = newValue; }
     
@@ -230,6 +240,27 @@ public class NetworkSettings implements Serializable, JSONString
      */
     public Integer getPublicUrlPort() { return this.publicUrlPort; }
     public void setPublicUrlPort( Integer newValue ) { this.publicUrlPort = newValue; }
+
+    /**
+     * Transforms a {@link NetworkSettings} object (original interface configuration) 
+     * into its generic counterpart {@link NetworkSettingsGeneric},
+     * which is more portable and structured for UI use.     *
+     * @return a new {@link NetworkSettingsGeneric} instance containing the generic representation
+     *         of all interfaces and their settings from the current {@code NetworkSettings} instance.
+     */
+    public NetworkSettingsGeneric transformNetworkSettingsToGeneric() {
+        NetworkSettingsGeneric netSettingsGen = new NetworkSettingsGeneric();
+
+        LinkedList<InterfaceSettingsGeneric> interfacesGen = new LinkedList<>();
+        for(InterfaceSettings intfSettings : this.getInterfaces()) {
+            interfacesGen.add(intfSettings.transformInterfaceSettingsToGeneric());
+        }
+        netSettingsGen.setInterfaces(interfacesGen);
+
+        // Write other transformtions below
+
+        return netSettingsGen;
+    }
 
     public String toJSONString()
     {

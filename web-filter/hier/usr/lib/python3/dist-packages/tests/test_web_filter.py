@@ -9,11 +9,17 @@ import copy
 
 import unittest
 import pytest
+import glob
+import os
+import datetime
+import time
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
 
 from .test_web_filter_base import WebFilterBaseTests
+from uvm import Uvm
+from concurrent.futures import ThreadPoolExecutor
 
 
 def setHttpHttpsPorts(httpPort, httpsPort):
@@ -43,6 +49,75 @@ class WebFilterTests(WebFilterBaseTests):
     @staticmethod
     def displayName():
         return "Web Filter"
+    
+    @staticmethod
+    def policyAppName():
+        return "policy-manager"
+
+    @classmethod
+    def initial_extra_setup(cls):
+        global orig_settings, web_app_1, web_app_2,web_app_1_id, web_app_2_id, secondRackId, thirdRackId, policy_app, primary_ip, secondary_ip, interface, default_policy_id, web_app_3
+        default_policy_id = 1
+        web_app_3 = None
+        interface = None
+        primary_ip = None
+        secondary_ip = None
+        thirdRackId = None
+        secondRackId = None
+        web_app_2 = None
+        web_app_1 = cls._app
+        webFilterSettings = cls._app.getSettings()
+        orig_settings = copy.deepcopy(webFilterSettings)
+        web_app_1_id = web_app_1.getAppSettings()["id"]
+        if (global_functions.uvmContext.appManager().isInstantiated(cls.policyAppName())):
+            raise Exception('app %s already instantiated' % cls.policyAppName())
+        policy_app = global_functions.uvmContext.appManager().instantiate(cls.policyAppName())
+        secondRackId = global_functions.addRack(policy_app, name= "Second Rack")
+        web_app_2 = global_functions.uvmContext.appManager().instantiate(cls.module_name(), secondRackId)
+        #Add secondary IP to client to test blocked/Passed traffic 
+        web_app_2_id = web_app_2.getAppSettings()["id"]
+        interface = global_functions.get_network_interface()
+        if interface:
+            # Get the primary IP of the interface
+            primary_ip = global_functions.get_primary_ip(interface)
+            if primary_ip:
+                # Add secondary IP to the remote server
+                primary_ip,secondary_ip = global_functions.add_secondary_ip(interface, primary_ip)
+        default_policy_rule = global_functions.appendRule(policy_app, global_functions.createPolicySingleConditionRule("SRC_ADDR",primary_ip, default_policy_id))
+        second_policy_rule = global_functions.appendRule(policy_app, global_functions.createPolicySingleConditionRule("SRC_ADDR",secondary_ip, secondRackId))
+
+
+    def worker(self, app_id):
+        print(f"Worker thread running for app_id: {app_id}")
+        try:
+            app = Uvm().getUvmContext(timeout=300).appManager().app(int(app_id))
+
+            if app is None:
+                print(f"App with ID {app_id} is not installed.")
+                return
+
+            print(app.getAppSettings())  #RPC CALL
+            print()
+            # Generate dynamic rule name
+            rule_base = f"Rule-{app_id}"
+
+            # Build new rule
+            newRule = {
+                "javaClass": "java.util.LinkedList",
+                "list": [
+                    {
+                        "blocked": True,
+                        "flagged": True,
+                        "string": f"{rule_base}-B",
+                        "javaClass": "com.untangle.uvm.app.GenericRule",
+                        "isGlobal": True,
+                        "description": "",
+                    }
+                ]
+            }
+            app.setBlockedUrls(newRule)  #RPC CALL
+        except Exception as e:
+            print(f"Exception in app_id {app_id}: {e}")
 
     def test_016_block_url(self):
         """verify basic URL blocking the the url block list"""
@@ -293,6 +368,281 @@ class WebFilterTests(WebFilterBaseTests):
             loop -= 1
         assert (site_returned == True)
 
+
+    def test_202_url_filtering_global_vs_instance_specific_rules_reflection(self):
+        """
+        Verify that:
+        - Global block/pass rules apply across all web apps
+        - Instance-specific (non-global) rules apply only to the originating web app
+        - Clearing global rules does not remove instance-specific rules
+        """
+
+        # Initial state: check that both web app blocked URL lists are empty
+        web_app_2_blocked_rules = web_app_2.getBlockedUrls()
+        web_app_1_blocked_rules = self._app.getBlockedUrls()
+        self.assertEquals(len(web_app_1_blocked_rules['list']),0)
+        self.assertEquals(len(web_app_2_blocked_rules['list']), 0)
+
+        # Add blocked URLs
+        self.block_url_list_add("http://www.amazon.com", blocked=True, flagged=True, isGlobal=True, description="description")
+        self.block_url_list_add("http://www.google.com", blocked=True, flagged=True, description="description")
+
+        # Check the blocked URL lists again
+        web_app_2_blocked_rules = web_app_2.getBlockedUrls()
+        web_app_1_blocked_rules = self._app.getBlockedUrls()
+
+        self.assertEquals(len(web_app_1_blocked_rules['list']), 2)  # web_app_1 should have 2 blocked URLs
+        self.assertEquals(len(web_app_2_blocked_rules['list']), 1)  # web_app_2 should have 1 blocked URL
+
+        # Clear global blocked URLs
+        self.block_global_url_list_clear()
+
+        # Check the blocked URL lists after clearing global block
+        web_app_2_blocked_rules = web_app_2.getBlockedUrls()
+        web_app_1_blocked_rules = self._app.getBlockedUrls()
+
+        self.assertEquals(len(web_app_1_blocked_rules['list']), 1)  # web_app_1 should still have 1 blocked URL
+        self.assertEquals(len(web_app_2_blocked_rules['list']), 0)  # web_app_2 should have 0 blocked URLs
+
+        # Revert to original settings
+        self.block_url_list_clear()
+
+        # Initial state: check that both web app passed URL lists are empty
+        web_app_2_passed_rules = web_app_2.getPassedUrls()
+        web_app_1_passed_rules = self._app.getPassedUrls()
+        
+        # Verify that both lists are empty initially
+        self.assertEquals(len(web_app_1_passed_rules['list']), 0)
+        self.assertEquals(len(web_app_2_passed_rules['list']), 0)
+    
+        # Add passed URLs
+        self.pass_url_list_add("http://www.amazon.com", enabled=True, isGlobal=True, description="description")
+        self.pass_url_list_add("http://www.google.com", enabled=True, isGlobal=False, description="description")
+
+        # Check the passed URL lists again
+        web_app_2_passed_rules = web_app_2.getPassedUrls()
+        web_app_1_passed_rules = self._app.getPassedUrls()
+
+        # Verify the passed URL counts after addition
+        self.assertEquals(len(web_app_1_passed_rules['list']), 2)  # Web App 1 should have 2 passed URLs
+        self.assertEquals(len(web_app_2_passed_rules['list']), 1)  # Web App 2 should have 1 passed URL
+
+        # Clear global passed URLs
+        self.pass_global_url_list_clear()
+
+        # Check the passed URL lists again after clearing
+        web_app_2_passed_rules = web_app_2.getPassedUrls()
+        web_app_1_passed_rules = self._app.getPassedUrls()
+
+        # Verify the passed URL counts after clearing global passed URLs
+        self.assertEquals(len(web_app_1_passed_rules['list']), 1)  # Web App 1 should still have 1 passed URL
+        self.assertEquals(len(web_app_2_passed_rules['list']), 0)  # Web App 2 should have 0 passed URLs
+
+        # Revert to original settings
+        self.pass_url_list_clear()
+
+    def test_203_url_filtering_respects_pass_and_block_rules_per_ip(self):
+        """
+        Verify that a global block rule applies only when a corresponding per-instance pass rule is NOT present.
+        - The URL 'test.untangle.com/test/testPage1.html' is globally blocked.
+        - A non-global pass rule is added (expected to apply only to the instance with `primary_ip`).
+        - Requests from the primary IP (with pass rule) should NOT be blocked.
+        - Requests from the secondary IP (without pass rule) SHOULD be blocked.
+        """
+        global primary_ip, secondary_ip, web_app_1, web_app_2
+        print("PRIMARY IP : ",primary_ip)
+        print("SECONDARY IP : ",secondary_ip)
+        self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=True, flagged=False, isGlobal=True, description="description")
+        self.pass_url_list_add("test.untangle.com/test/testPage1.html", enabled=True, isGlobal=False, description="description")
+        # Verify requests from the primary IP (with pass rule) should NOT be blocked.
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage",bind_address=primary_ip)
+        assert result == 1, f"Test failed: blockpage detected for primary IP ({primary_ip})"
+        # Verify requests from the secondary IP (without pass rule) SHOULD be blocked.
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage",bind_address=secondary_ip)
+        assert result == 0, f"Test failed: blockpage NOT detected for secondary IP ({secondary_ip})"
+        # Revert to original settings
+        self.block_url_list_clear()
+        self.pass_url_list_clear()
+
+    def test_204_flagged_logs_only_without_pass(self):
+        """
+        Verify that a globally flagged (not blocked) URL logs a flagged event only 
+        for the instance which does NOT have an explicit pass rule. 
+        The instance with a local pass rule for the same URL should NOT log a flagged event.
+
+        - Add a global flagged rule (blocked=False, flagged=True) for a specific URL.
+        - Add a local pass rule for the same URL on one instance (primary).
+        - Perform web requests to the URL from both primary and secondary IPs.
+        - Verify that:
+            - The flagged event is NOT logged for the instance with the local pass rule (primary).
+            - The flagged event IS logged for the instance without the pass rule (secondary).
+        """
+        global primary_ip, secondary_ip, web_app_1, web_app_2
+        self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=False, flagged=True, isGlobal=True, description="description")
+        self.pass_url_list_add("test.untangle.com/test/testPage1.html", enabled=True, isGlobal=False, description="description")
+        self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html",bind_address=primary_ip)
+        self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html",bind_address=secondary_ip)
+        # get flagged event
+        event_list = "Flagged Web Events"
+        events = global_functions.get_events(self._app.getAppTitle(), event_list, None, 1)
+        assert(events != None)
+        # Check flagged event should not logged for the primary IP when pass rule is present
+        found = global_functions.check_events( events.get('list'), 3,
+                                            "host", "test.untangle.com",
+                                            "uri", "/test/testdef test_803_flagged_logs_only_without_pass(self):Page1.html",
+                                            'web_filter_blocked', False,
+                                            'web_filter_flagged', True,
+                                            'c_client_addr', primary_ip)
+        assert found == False, "Flagged event was incorrectly logged for primary IP (pass rule present)."
+        # Check if a flagged event is logged for the secondary IP when no pass rule is present
+        found = global_functions.check_events( events.get('list'), 3,
+                                            "host", "test.untangle.com",
+                                            "uri", "/test/testPage1.html",
+                                            'web_filter_blocked', False,
+                                            'web_filter_flagged', True,
+                                            'c_client_addr', secondary_ip)
+        assert found == True, "Flagged event was not logged for secondary IP (no pass rule present)."
+        # Revert to original settings
+        self.block_url_list_clear()
+        self.pass_url_list_clear()
+
+    def test_205_global_settings_consistency_under_concurrent_updates(self):
+        """
+        Verifies that during concurrent setSettings calls across multiple web filter instances,
+        the global settings persist correctly and the last completed update is reflected.
+        Ensures that when multiple threads apply global block/pass rules, 
+        the final instance reflects the latest changes.
+        """
+        global policy_app, web_app_1_id, web_app_2_id, web_app_3, thirdRackId
+
+        # Add initial global rules (block + pass) to be present before concurrent updates
+        self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=True, flagged=True, isGlobal=True, description="description")
+        self.pass_url_list_add("http://test.untangle.com/test/test.html", enabled=True, isGlobal=True, description="description")
+
+        # Instantiate a new web app in a new rack to participate in concurrent updates
+        thirdRackId = global_functions.addRack(policy_app, name="Third Rack")
+        web_app_3 = global_functions.uvmContext.appManager().instantiate(self.module_name(), thirdRackId)
+        web_app_3_id = web_app_3.getAppSettings()["id"]
+
+        # Validate initial global rules are present in the new instance
+        web_app_3_blocked_rules = web_app_3.getBlockedUrls()
+        web_app_3_passed_rules =  web_app_3.getPassedUrls()
+        self.assertEquals(len(web_app_3_blocked_rules['list']), 1)
+        self.assertEquals(len(web_app_3_passed_rules['list']), 1)
+
+        # Clear global block/pass rules before concurrent modifications
+        self.block_url_list_clear()
+        self.pass_url_list_clear()
+
+        # Run concurrent workers to apply different rule sets
+        app_ids_to_run = [web_app_2_id, web_app_3_id, web_app_1_id]
+
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            futures = {
+                executor.submit(self.worker, app_id): app_id for app_id in app_ids_to_run
+            }
+        #Rpc call may take time to complete the process hence wating to finish all rpc call
+        time.sleep(60)
+        # Check if the blocked rule applied matches the last file id written on disk
+        appFolder = "/usr/share/untangle/settings/web-filter"
+        latest_file = None
+        latest_mtime = 0
+        pattern = re.compile(r"settings_(\d+)\.js-version-.*\.js$")
+
+        for fname in os.listdir(appFolder):
+            full_path = os.path.join(appFolder, fname)
+            if pattern.match(fname) and os.path.isfile(full_path):
+                mtime = os.path.getmtime(full_path)
+                if mtime > latest_mtime:
+                    latest_mtime = mtime
+                    latest_file = fname
+
+        if latest_file:
+            match = pattern.match(latest_file)
+            app_id = match.group(1)
+            print(f" \n Last modified settings file: {latest_file} \n  Corresponding app_id: {app_id} \n")
+        # Verify web_app_3 received the latest global rule updates
+        web_app_3_blocked_rules = web_app_3.getBlockedUrls()
+        self.assertEquals(len(web_app_3_blocked_rules['list']), 1)
+        print("web_app_3_blocked_rules['list']  ==>   ", web_app_3_blocked_rules['list'])
+        expected_prefix = f"Rule-{app_id}"
+        match_found = any(rule.get("string", "").startswith(expected_prefix) for rule in web_app_3_blocked_rules['list'])
+        assert match_found, f"No rule starting with '{expected_prefix}' found in blocked rules."
+
+        # Revert to original setting
+        self.block_url_list_clear()
+
+
+    def test_206_global_block_rule_ignored_when_web_filter_disabled_in_policy(self):
+        """
+        Verifies that when Policy Manager routes traffic to a policy that does not have 
+        the Web Filter app enabled, the global block rule is not enforced. The traffic 
+        bypasses the Web Filter entirely and is not blocked for that specific policy instance,
+        even if a global block rule exists.
+        """
+        global web_app_3
+        
+        # Ensure web_app_3 exists, otherwise skip the test
+        if not web_app_3:
+            raise unittest.SkipTest("Test test_205_global_settings_consistency_under_concurrent_updates success required")
+        
+        # Nuke existing rules and create a new policy rule for a specific condition (SRC_ADDR)
+        global_functions.nukeRules(policy_app)
+        third_policy_rule = global_functions.appendRule(policy_app, global_functions.createPolicySingleConditionRule("SRC_ADDR", secondary_ip, thirdRackId))
+
+        # Add a global block rule
+        self.block_url_list_add("test.untangle.com/test/testPage1.html", blocked=True, flagged=True, isGlobal=True, description="description")
+        # Stop the web_app_3
+        web_app_3.stop()
+
+        # Verify that the blockpage is detected for the primary IP (should be blocked)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage", bind_address=primary_ip)
+        assert result == 0, f"Test failed: blockpage NOT detected for primary IP ({primary_ip})"
+
+        # Verify that the blockpage is not detected for the secondary IP (bypasses Web Filter)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage", bind_address=secondary_ip)
+        assert result == 1, f"Test failed: blockpage detected for secondary IP ({secondary_ip})"
+
+        # Restart web_app_3 and verify both IPs should be blocked now
+        web_app_3.start()
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage", bind_address=primary_ip)
+        assert result == 0, f"Test failed: blockpage NOT detected for primary IP ({primary_ip})"
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage", bind_address=secondary_ip)
+        assert result == 0, f"Test failed: blockpage NOT detected for secondary IP ({secondary_ip})"
+
+        # Stop web_app_3 again, and destroy it from app manager
+        web_app_3.stop()
+        global_functions.uvmContext.appManager().destroy(web_app_3.getAppSettings()["id"])
+
+        # Verify that the blockpage is still not detected for the primary IP (no Web Filter app)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage", bind_address=primary_ip)
+        assert result == 0, f"Test failed: blockpage NOT detected for primary IP ({primary_ip})"
+
+        # Verify that the blockpage is not detected for the secondary IP (bypasses Web Filter)
+        result = self.get_web_request_results(url="http://test.untangle.com/test/testPage1.html", expected="blockpage", bind_address=secondary_ip)
+        assert result == 1, f"Test failed: blockpage detected for secondary IP ({secondary_ip})"
+        
+        # Revert to original setting
+        web_app_3 = None
+        self.block_url_list_clear()
+
+    def test_207_backup_includes_global_settings_file(self):
+        """
+        Verify that the Untangle system backup includes the `globalSettings.js` file from Web Filter configuration.
+        """
+        globalSettingsFile = "usr/share/untangle/settings/web-filter/globalSettings.js"
+        full_path = os.path.join("/tmp/untangleBackup", globalSettingsFile)
+        subprocess.call("rm -rf /tmp/untangleBackup*", shell=True)
+        result = subprocess.call(global_functions.build_wget_command(output_file='/tmp/untangleBackup.backup', post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        subprocess.call("mkdir /tmp/untangleBackup", shell=True)
+        subprocess.call("tar -xf /tmp/untangleBackup.backup -C /tmp/untangleBackup", shell=True)
+        subprocess.call("tar -xf "+glob.glob("/tmp/untangleBackup/files*.tar.gz")[0] + " -C /tmp/untangleBackup", shell=True)
+        print(result)
+        if os.path.isfile(full_path):
+            assert True
+        else:
+            assert False
+    
     def test_010_0000_rule_condition_src_addr(self):
         "test SRC_ADDR"
         self.rule_add("SRC_ADDR",remote_control.client_ip)
@@ -1421,5 +1771,24 @@ class WebFilterTests(WebFilterBaseTests):
         # setting back original settings and deleting the previous added ru;e
         self._app.setSettings(original_settings)
         self.rules_clear()
+
+    @classmethod
+    def final_extra_tear_down(cls):
+        global web_app_2, policy_app, secondRackId, interface, primary_ip, thirdRackId, web_app_3
+        if interface and primary_ip:
+                # Remove secondary IP from the remote server
+                global_functions.remove_secondary_ip(interface, primary_ip)
+        if web_app_3 != None:
+            global_functions.uvmContext.appManager().destroy(web_app_3.getAppSettings()["id"])
+        # Remove all other web instances, policy racks and rules
+        if web_app_2 != None and policy_app != None:
+            global_functions.uvmContext.appManager().destroy(web_app_2.getAppSettings()["id"])
+            global_functions.nukeRules(policy_app)
+            global_functions.removeRack(policy_app, secondRackId)
+            global_functions.removeRack(policy_app, thirdRackId)
+            global_functions.uvmContext.appManager().destroy(policy_app.getAppSettings()["id"])
+            web_app_2 = None
+            policy_app = None
+
 
 test_registry.register_module("web-filter", WebFilterTests)

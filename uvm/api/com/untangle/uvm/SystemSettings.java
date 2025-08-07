@@ -5,6 +5,8 @@ package com.untangle.uvm;
 
 import java.io.Serializable;
 
+import com.untangle.uvm.generic.SystemSettingsGeneric;
+import com.untangle.uvm.network.NetworkSettings;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -213,4 +215,35 @@ public class SystemSettings implements Serializable, JSONString
     public void setThresholdTemperature( Double newValue ) { this.thresholdTemperature = newValue; }
     public Double getThresholdTemperature() { return this.thresholdTemperature; }
 
+    /**
+     * Transforms a {@link SystemSettings} and {@link NetworkSettings} object
+     * into its generic counterpart {@link SystemSettingsGeneric},
+     * @param networkSettings {@link NetworkSettings} object to populate hostname and services fields
+     * @return a new {@link SystemSettingsGeneric} instance containing the generic representation of systemSettings for vue UI
+     */
+    public SystemSettingsGeneric transformLegacyToGenericSettings(NetworkSettings networkSettings) {
+        SystemSettingsGeneric systemSettingsGeneric = new SystemSettingsGeneric();
+        if (networkSettings != null) {
+            // Local Services Settings
+            systemSettingsGeneric.setHttpPort(networkSettings.getHttpPort());
+            systemSettingsGeneric.setHttpsPort(networkSettings.getHttpsPort());
+
+            // Hostname Settings
+            systemSettingsGeneric.setHostName(networkSettings.getHostName());
+            systemSettingsGeneric.setDomainName(networkSettings.getDomainName());
+
+            systemSettingsGeneric.setDynamicDnsServiceEnabled(networkSettings.getDynamicDnsServiceEnabled());
+            systemSettingsGeneric.setDynamicDnsServiceUsername(networkSettings.getDynamicDnsServiceUsername());
+            systemSettingsGeneric.setDynamicDnsServiceName(networkSettings.getDynamicDnsServiceName());
+            systemSettingsGeneric.setDynamicDnsServiceHostnames(networkSettings.getDynamicDnsServiceHostnames());
+            systemSettingsGeneric.setDynamicDnsServicePassword(networkSettings.getDynamicDnsServicePassword());
+            systemSettingsGeneric.setDynamicDnsServiceZone(networkSettings.getDynamicDnsServiceZone());
+            systemSettingsGeneric.setDynamicDnsServiceWan(networkSettings.getDynamicDnsServiceWan());
+
+            systemSettingsGeneric.setPublicUrlAddress(networkSettings.getPublicUrlAddress());
+            systemSettingsGeneric.setPublicUrlMethod(networkSettings.getPublicUrlMethod());
+            systemSettingsGeneric.setPublicUrlPort(networkSettings.getPublicUrlPort());
+        }
+        return systemSettingsGeneric;
+    }
 }
