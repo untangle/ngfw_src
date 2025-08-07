@@ -6,6 +6,7 @@ Ext.define('Ung.config.network.MainController', {
     control: {
         '#': { afterrender: 'loadSettings' },
         '#interfaces': { beforerender: 'onInterfaces' },
+        '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
         '#routes': { afterrender: 'refreshRoutes' },
         '#dynamic_routing': {
             activate: 'getDynamicRoutingOverview',
@@ -144,27 +145,27 @@ Ext.define('Ung.config.network.MainController', {
         }
 
         // update interfaces data
-        // var interfacesStore = view.down('#interfacesGrid').getStore();
-        // if (interfacesStore.getModifiedRecords().length > 0 ||
-        //     interfacesStore.getNewRecords().length > 0 ||
-        //     interfacesStore.getRemovedRecords().length > 0) {
-        //         for (var i =0 ; i < interfacesStore.getRemovedRecords().length; i++) {
-        //             if(interfacesStore.getRemovedRecords()[i].data.name === vm.get('settings').dynamicDnsServiceWan){
-        //                 Ext.MessageBox.alert("Failed".t(), "This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before removing this WAN.".t());
-        //                 view.setLoading(false);
-        //                 return;
-        //             }
-        //         }
-        //         for ( i =0 ; i < interfacesStore.getModifiedRecords().length; i++) {
-        //             if((interfacesStore.getModifiedRecords()[i].data.name === vm.get('settings').dynamicDnsServiceWan) && interfacesStore.getModifiedRecords()[i].data.configType === "DISABLED"){
-        //                 Ext.MessageBox.alert("Failed".t(), "This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before disabling this WAN.".t());
-        //                 view.setLoading(false);
-        //                 return;
-        //             }
-        //         }
+        var interfacesStore = view.down('#interfacesGrid').getStore();
+        if (interfacesStore.getModifiedRecords().length > 0 ||
+            interfacesStore.getNewRecords().length > 0 ||
+            interfacesStore.getRemovedRecords().length > 0) {
+                for (var i =0 ; i < interfacesStore.getRemovedRecords().length; i++) {
+                    if(interfacesStore.getRemovedRecords()[i].data.name === vm.get('settings').dynamicDnsServiceWan){
+                        Ext.MessageBox.alert("Failed".t(), "This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before removing this WAN.".t());
+                        view.setLoading(false);
+                        return;
+                    }
+                }
+                for ( i =0 ; i < interfacesStore.getModifiedRecords().length; i++) {
+                    if((interfacesStore.getModifiedRecords()[i].data.name === vm.get('settings').dynamicDnsServiceWan) && interfacesStore.getModifiedRecords()[i].data.configType === "DISABLED"){
+                        Ext.MessageBox.alert("Failed".t(), "This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before disabling this WAN.".t());
+                        view.setLoading(false);
+                        return;
+                    }
+                }
                 
-        //     vm.set('settings.interfaces.list', Ext.Array.pluck(interfacesStore.getRange(), 'data'));
-        // }
+            vm.set('settings.interfaces.list', Ext.Array.pluck(interfacesStore.getRange(), 'data'));
+        }
 
         // update static DHCP data
         var dhcpStore = view.down('#dhcpEntries').getStore();
@@ -427,6 +428,10 @@ Ext.define('Ung.config.network.MainController', {
                 me.getInterfaceArp();
             }
         });
+    },
+
+    interfacesGridReconfigure: function(){
+        this.getView().down('#interfacesGrid').getSelectionModel().select(0);
     },
 
     interfaceStatusLinkMap:{
