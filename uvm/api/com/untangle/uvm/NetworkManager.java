@@ -54,6 +54,8 @@ public interface NetworkManager
 
     List<InterfaceStatusGeneric> getAllInterfacesStatusV2();
 
+    InterfaceStatusGeneric getInterfaceStatusV2(String device);
+
     List<InterfaceStatus> getInterfaceStatus( );
 
     List<InterfaceStatus> getLocalInterfaceStatuses();
