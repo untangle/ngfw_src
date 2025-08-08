@@ -679,9 +679,15 @@ public class NetworkManagerImpl implements NetworkManager
      * @param status InterfaceStatusGeneric
      */
     private void populateMacVendor(InterfaceStatusGeneric status) {
-        String vendor = UvmContextFactory.context()
+        String vendor = null;
+        if (cachedMacAddrVendorList.containsKey(status.getMacAddress())) {
+            vendor = cachedMacAddrVendorList.get(status.getMacAddress());
+        } else {
+            vendor = UvmContextFactory.context()
                           .deviceTable()
                           .getMacVendorFromMacAddress(status.getMacAddress());
+            cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
+        }
         status.setMacVendor(vendor);
     }
 
