@@ -42,7 +42,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public static enum Type { NIC, VLAN, WIFI };
     private Type type = Type.NIC;
 
-    private Integer vlanId = null;                  /* vlan 802.1q tag */
+    private String vlanId = null;                  /* vlan 802.1q tag */
     private Integer boundInterfaceId = null;        /* The parent interface of this vlan alias */
 
     public static enum ConfigType { ADDRESSED, BRIDGED };
@@ -147,8 +147,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public Type getType() { return type; }
     public void setType(Type type) { this.type = type; }
 
-    public Integer getVlanId() { return vlanId; }
-    public void setVlanId(Integer vlanId) { this.vlanId = vlanId; }
+    public String getVlanId() { return vlanId; }
+    public void setVlanId(String vlanId) { this.vlanId = vlanId; }
 
     public Integer getBoundInterfaceId() { return boundInterfaceId; }
     public void setBoundInterfaceId(Integer boundInterfaceId) { this.boundInterfaceId = boundInterfaceId; }
@@ -340,7 +340,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN);
         intfSettings.setIsWirelessInterface(this.type == InterfaceSettingsGeneric.Type.WIFI);
 
-        intfSettings.setVlanTag(this.vlanId);
+        intfSettings.setVlanTag(parseIntSafe(this.vlanId));
         intfSettings.setVlanParent(this.boundInterfaceId);
 
         transformEnabledAndConfigType(intfSettings);
@@ -408,6 +408,15 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setWirelessChannel(this.wirelessChannel);
         intfSettings.setWirelessVisibility(this.hidden ? 1 : 0);
         intfSettings.setWirelessCountryCode(this.wirelessCountryCode);
+    }
+
+    /**
+     * Convert String to Integer safely.
+     * @param str String
+     * @return parsed Integer
+     */
+    private Integer parseIntSafe(String str) {
+        return str != null && str.matches("-?\\d+") ? Integer.parseInt(str) : null;
     }
 
     /**
