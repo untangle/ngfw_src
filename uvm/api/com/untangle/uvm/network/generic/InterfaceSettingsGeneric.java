@@ -5,10 +5,8 @@ package com.untangle.uvm.network.generic;
 
 import com.untangle.uvm.network.DhcpOption;
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.DhcpType;
 import com.untangle.uvm.network.InterfaceSettings.InterfaceAlias;
-import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.WirelessEncryption;
 import com.untangle.uvm.network.InterfaceSettings.WirelessMode;
 import com.untangle.uvm.util.StringUtil;
@@ -42,7 +40,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public static enum Type { NIC, VLAN, WIFI };
     private Type type = Type.NIC;
 
-    private String vlanId = null;                  /* vlan 802.1q tag */
+    private String vlanid = null;                  /* vlan 802.1q tag */
     private Integer boundInterfaceId = null;        /* The parent interface of this vlan alias */
 
     public static enum ConfigType { ADDRESSED, BRIDGED };
@@ -147,8 +145,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public Type getType() { return type; }
     public void setType(Type type) { this.type = type; }
 
-    public String getVlanId() { return vlanId; }
-    public void setVlanId(String vlanId) { this.vlanId = vlanId; }
+    public String getVlanid() { return vlanid; }
+    public void setVlanid(String vlanid) { this.vlanid = vlanid; }
 
     public Integer getBoundInterfaceId() { return boundInterfaceId; }
     public void setBoundInterfaceId(Integer boundInterfaceId) { this.boundInterfaceId = boundInterfaceId; }
@@ -340,7 +338,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN);
         intfSettings.setIsWirelessInterface(this.type == InterfaceSettingsGeneric.Type.WIFI);
 
-        intfSettings.setVlanTag(parseIntSafe(this.vlanId));
+        intfSettings.setVlanTag(parseIntSafe(this.vlanid));
         intfSettings.setVlanParent(this.boundInterfaceId);
 
         transformEnabledAndConfigType(intfSettings);
