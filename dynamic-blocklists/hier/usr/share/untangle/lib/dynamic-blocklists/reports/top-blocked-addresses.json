@@ -1,0 +1,26 @@
+{
+    "uniqueId": "dynamic-blocklists-dGV53h7aa7",
+    "category": "Dynamic Blocklists",
+    "description": "The number of blocked sessions grouped by server (destination) address.",
+    "displayOrder": 101,
+    "enabled": true,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "orderByColumn": "value",
+    "orderDesc": true,
+    "units": "sessions",
+    "pieGroupColumn": "s_server_addr",
+    "pieSumColumn": "count(*)",
+    "conditions": [
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "filter_prefix",
+            "operator": "=",
+            "value": "dynamic_block_list_blocked"
+        }
+    ],
+    "readOnly": true,
+    "table": "sessions",
+    "title": "Top Addresses by Blocked Count",
+    "pieStyle": "PIE",
+    "type": "PIE_GRAPH"
+}
