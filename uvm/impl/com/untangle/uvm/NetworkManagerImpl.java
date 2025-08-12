@@ -45,6 +45,8 @@ import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.ObjectMatcher;
+import com.untangle.uvm.util.StringUtil;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -686,7 +688,9 @@ public class NetworkManagerImpl implements NetworkManager
             vendor = UvmContextFactory.context()
                           .deviceTable()
                           .getMacVendorFromMacAddress(status.getMacAddress());
-            cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
+            if (!StringUtil.isEmpty(vendor)) {
+                cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
+            }
         }
         status.setMacVendor(vendor);
     }
