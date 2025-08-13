@@ -682,14 +682,16 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void populateMacVendor(InterfaceStatusGeneric status) {
         String vendor = null;
-        if (cachedMacAddrVendorList.containsKey(status.getMacAddress())) {
-            vendor = cachedMacAddrVendorList.get(status.getMacAddress());
-        } else {
-            vendor = UvmContextFactory.context()
-                          .deviceTable()
-                          .getMacVendorFromMacAddress(status.getMacAddress());
-            if (!StringUtil.isEmpty(vendor)) {
-                cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
+        if(status.getMacAddress() != null) {
+            if (cachedMacAddrVendorList.containsKey(status.getMacAddress())) {
+                vendor = cachedMacAddrVendorList.get(status.getMacAddress());
+            } else {
+                vendor = UvmContextFactory.context()
+                            .deviceTable()
+                            .getMacVendorFromMacAddress(status.getMacAddress());
+                if (!StringUtil.isEmpty(vendor)) {
+                    cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
+                }
             }
         }
         status.setMacVendor(vendor);

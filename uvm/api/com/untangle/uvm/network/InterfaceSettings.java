@@ -110,7 +110,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private InetAddress dhcpGatewayOverride; /* DHCP gateway override, if null defaults to this interface's IP */
     private Integer     dhcpPrefixOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
     private String dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
-    private List<DhcpOption> dhcpOptions; /* DHCP dnsmasq options */
+    private List<DhcpOption> dhcpOptions = new LinkedList<>(); /* DHCP dnsmasq options */
 
     private InetAddress dhcpRelayAddress; /* DHCP relay server IP address */
 
