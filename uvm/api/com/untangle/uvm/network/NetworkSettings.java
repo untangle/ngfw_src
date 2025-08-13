@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.generic.RuleActionGeneric;
+import com.untangle.uvm.generic.RuleConditionGeneric;
+import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.util.Constants;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -251,15 +255,97 @@ public class NetworkSettings implements Serializable, JSONString
     public NetworkSettingsGeneric transformNetworkSettingsToGeneric() {
         NetworkSettingsGeneric netSettingsGen = new NetworkSettingsGeneric();
 
+        // Transform Interfaces
         LinkedList<InterfaceSettingsGeneric> interfacesGen = new LinkedList<>();
         for(InterfaceSettings intfSettings : this.getInterfaces()) {
             interfacesGen.add(intfSettings.transformInterfaceSettingsToGeneric());
         }
         netSettingsGen.setInterfaces(interfacesGen);
 
+        // Transform Port Forward Rules
+        List<PortForwardRule> portForwardRuleList = this.getPortForwardRules();
+        if (portForwardRuleList != null && !portForwardRuleList.isEmpty())
+            netSettingsGen.setPortForwardRules(transformPortForwardRulesToGeneric(portForwardRuleList));
+
+        // Transform NAT Rules
+        List<NatRule> natRulesList = this.getNatRules();
+        if(natRulesList != null && !natRulesList.isEmpty())
+            netSettingsGen.setNatRules(transformNatRulesToGeneric(natRulesList));
+
         // Write other transformtions below
 
         return netSettingsGen;
+    }
+
+    /**
+     * Transforms a list of PortForwardRule objects into their generic RuleGeneric representation.
+     * @param portForwardRuleList List<PortForwardRule>
+     * @return LinkedList<RuleGeneric>
+     */
+    private LinkedList<RuleGeneric> transformPortForwardRulesToGeneric(List<PortForwardRule> portForwardRuleList) {
+        LinkedList<RuleGeneric> portForwardRulesGenList = new LinkedList<>();
+        for (PortForwardRule rule : portForwardRuleList) {
+            // Transform enabled and ruleId
+            boolean enabled = Boolean.TRUE.equals(rule.getEnabled());
+            String ruleId = rule.getRuleId() != null ? String.valueOf(rule.getRuleId()) : null;
+
+            // Transform Action
+            RuleActionGeneric ruleActionGen = new RuleActionGeneric();
+            ruleActionGen.setType(RuleActionGeneric.Type.DNAT);
+            ruleActionGen.setDnat_address(rule.getNewDestination());
+            ruleActionGen.setDnat_port(rule.getNewPort() != null ? String.valueOf(rule.getNewPort()) : null);
+
+            // Transform Conditions
+            LinkedList<RuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+            for (PortForwardRuleCondition ruleCondition : rule.getConditions()) {
+                String op = ruleCondition.getInvert() ? Constants.IS_NOT_EQUALS_TO : Constants.IS_EQUALS_TO;
+                RuleConditionGeneric ruleConditionGen = new RuleConditionGeneric(op, ruleCondition.getConditionType(), ruleCondition.getValue());
+                ruleConditionGenList.add(ruleConditionGen);
+            }
+
+            // Create Generic Rule
+            RuleGeneric portForwardRulesGen = new RuleGeneric(enabled, rule.getDescription(), ruleId);
+            portForwardRulesGen.setAction(ruleActionGen);
+            portForwardRulesGen.setConditions(ruleConditionGenList);
+
+            portForwardRulesGenList.add(portForwardRulesGen);
+        }
+        return portForwardRulesGenList;
+    }
+
+    /**
+     * Transforms a list of NatRule objects into their generic RuleGeneric representation.
+     * @param natRulesList List<NatRule>
+     * @return LinkedList<RuleGeneric>
+     */
+    private LinkedList<RuleGeneric> transformNatRulesToGeneric(List<NatRule> natRulesList) {
+        LinkedList<RuleGeneric> natRulesGenList = new LinkedList<>();
+        for (NatRule rule : natRulesList) {
+            // Transform enabled and ruleId
+            boolean enabled = Boolean.TRUE.equals(rule.getEnabled());
+            String ruleId = rule.getRuleId() != null ? String.valueOf(rule.getRuleId()) : null;
+
+            // Transform Action
+            RuleActionGeneric ruleActionGen = new RuleActionGeneric();
+            ruleActionGen.setType(rule.getAuto() ? RuleActionGeneric.Type.MASQUERADE : RuleActionGeneric.Type.SNAT);
+            ruleActionGen.setSnat_address(rule.getNewSource());
+
+            // Transform Conditions
+            LinkedList<RuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+            for (NatRuleCondition ruleCondition : rule.getConditions()) {
+                String op = ruleCondition.getInvert() ? Constants.IS_NOT_EQUALS_TO : Constants.IS_EQUALS_TO;
+                RuleConditionGeneric ruleConditionGen = new RuleConditionGeneric(op, ruleCondition.getConditionType(), ruleCondition.getValue());
+                ruleConditionGenList.add(ruleConditionGen);
+            }
+
+            // Create Generic Rule
+            RuleGeneric natRulesGen = new RuleGeneric(enabled, rule.getDescription(), ruleId);
+            natRulesGen.setAction(ruleActionGen);
+            natRulesGen.setConditions(ruleConditionGenList);
+
+            natRulesGenList.add(natRulesGen);
+        }
+        return natRulesGenList;
     }
 
     public String toJSONString()
