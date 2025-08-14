@@ -12,6 +12,7 @@ import java.util.LinkedList;
 
 /**
  * This in the Generic Rule Class
+ * Used for vue model transformations
  */
 @SuppressWarnings("serial")
 public class RuleGeneric implements JSONString, Serializable {

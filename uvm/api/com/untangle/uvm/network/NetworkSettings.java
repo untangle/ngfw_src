@@ -279,6 +279,7 @@ public class NetworkSettings implements Serializable, JSONString
 
     /**
      * Transforms a list of PortForwardRule objects into their generic RuleGeneric representation.
+     * Used for get api calls
      * @param portForwardRuleList List<PortForwardRule>
      * @return LinkedList<RuleGeneric>
      */
@@ -315,6 +316,7 @@ public class NetworkSettings implements Serializable, JSONString
 
     /**
      * Transforms a list of NatRule objects into their generic RuleGeneric representation.
+     * Used for get api calls
      * @param natRulesList List<NatRule>
      * @return LinkedList<RuleGeneric>
      */

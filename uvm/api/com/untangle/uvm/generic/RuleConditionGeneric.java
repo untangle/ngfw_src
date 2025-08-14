@@ -11,7 +11,8 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 /**
- * This in the Generic Rule Class
+ * This in the Generic Rule Condition Class
+ * Used for vue model transformations
  */
 @SuppressWarnings("serial")
 public class RuleConditionGeneric implements JSONString, Serializable {

@@ -3,10 +3,12 @@
  */
 package com.untangle.uvm.network.generic;
 
+import com.untangle.uvm.generic.RuleActionGeneric;
 import com.untangle.uvm.generic.RuleConditionGeneric;
 import com.untangle.uvm.generic.RuleGeneric;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NatRule;
+import com.untangle.uvm.network.NatRuleCondition;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.PortForwardRule;
 import com.untangle.uvm.network.PortForwardRuleCondition;
@@ -101,7 +103,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
         // Transform NAT Rules
         if (this.natRules != null)
-            transformGenericToLegacyNatRules(networkSettings);
+            networkSettings.setNatRules(transformGenericToLegacyNatRules(networkSettings.getNatRules()));
 
         // Write other transformations below
         
@@ -119,6 +121,8 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     }
 
     /**
+     * Transforms a list of PortForward RuleGeneric objects into their v1 PortForwardRule representation.
+     * Used for set api calls
      * @param legacyRules List<PortForwardRule>
      * @return List<PortForwardRule>
      */
@@ -174,25 +178,65 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     }
 
     /**
-     *
-     * @param networkSettings NetworkSettings
+     * Transforms a list of NAT RuleGeneric objects into their v1 NatRule representation.
+     * Used for set api calls
+     * @param legacyRules List<NatRule>
+     * @return List<NatRule>
      */
-    private void transformGenericToLegacyNatRules(NetworkSettings networkSettings) {
+    private List<NatRule> transformGenericToLegacyNatRules(List<NatRule> legacyRules) {
+        if (legacyRules == null)
+            legacyRules = new LinkedList<>();
+
+        // CLEANUP: Remove deleted rules first
+        deleteOrphanRules(
+                this.natRules,
+                legacyRules,
+                RuleGeneric::getRuleId,
+                r -> String.valueOf(r.getRuleId())
+        );
+
+        // Build a map for quick lookup by ruleId
+        Map<Integer, NatRule> rulesMap = legacyRules.stream()
+                .collect(Collectors.toMap(NatRule::getRuleId, Function.identity()));
+
+        for (RuleGeneric ruleGeneric : getPortForwardRules()) {
+            NatRule natRule = rulesMap.get(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), 0));
+
+            if (natRule == null) {
+                natRule = new NatRule();
+                legacyRules.add(natRule);
+            }
+
+            // Transform enabled, ruleId, description
+            natRule.setEnabled(ruleGeneric.isEnabled());
+            natRule.setDescription(ruleGeneric.getDescription());
+            natRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
+
+            // Transform Action
+            if(ruleGeneric.getAction() != null) {
+                natRule.setAuto(ruleGeneric.getAction().getType() == RuleActionGeneric.Type.MASQUERADE);
+                natRule.setNewSource(ruleGeneric.getAction().getSnat_address());
+            }
+
+            // Transform Conditions
+            List<NatRuleCondition> ruleConditions = new LinkedList<>();
+            for (RuleConditionGeneric ruleConditionGen : ruleGeneric.getConditions()) {
+                NatRuleCondition natRuleCondition = new NatRuleCondition();
+
+                natRuleCondition.setInvert(ruleConditionGen.getOp().equals(Constants.IS_NOT_EQUALS_TO));
+                natRuleCondition.setConditionType(ruleConditionGen.getType());
+                natRuleCondition.setValue(ruleConditionGen.getValue());
+
+                ruleConditions.add(natRuleCondition);
+            }
+            natRule.setConditions(ruleConditions);
+        }
+
+        return legacyRules;
     }
 
-//    /**
-//     *
-//     * @param legacyRules
-//     */
-//    private void deleteOrphanRules(List<PortForwardRule> legacyRules) {
-//        Set<String> incomingIds = this.portForwardRules.stream()
-//                .map(RuleGeneric::getRuleId)
-//                .collect(Collectors.toSet());
-//        legacyRules.removeIf(rule -> !incomingIds.contains(String.valueOf(rule.getRuleId())));
-//    }
-
     /**
-     *
+     * Common method to delete the orphan rules
      * @param newRules
      * @param legacyRules
      * @param currentIdExtractor
