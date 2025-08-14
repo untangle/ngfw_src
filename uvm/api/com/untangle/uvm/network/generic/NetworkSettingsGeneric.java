@@ -32,8 +32,8 @@ import java.util.stream.Collectors;
 public class NetworkSettingsGeneric implements Serializable, JSONString {
 
     private LinkedList<InterfaceSettingsGeneric> interfaces = null;     /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
-    private LinkedList<RuleGeneric> natRules = null;
-    private LinkedList<RuleGeneric> portForwardRules = null;
+    private LinkedList<RuleGeneric> port_forward_rules = null;
+    private LinkedList<RuleGeneric> nat_rules = null;
 
     public NetworkSettingsGeneric() {
         super();
@@ -42,11 +42,10 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     public LinkedList<InterfaceSettingsGeneric> getInterfaces() { return interfaces; }
     public void setInterfaces(LinkedList<InterfaceSettingsGeneric> interfaces) { this.interfaces = interfaces; }
 
-    public LinkedList<RuleGeneric> getNatRules() { return natRules; }
-    public void setNatRules(LinkedList<RuleGeneric> natRules) { this.natRules = natRules; }
-
-    public LinkedList<RuleGeneric> getPortForwardRules() { return portForwardRules; }
-    public void setPortForwardRules(LinkedList<RuleGeneric> portForwardRules) { this.portForwardRules = portForwardRules; }
+    public LinkedList<RuleGeneric> getPort_forward_rules() { return port_forward_rules; }
+    public void setPort_forward_rules(LinkedList<RuleGeneric> port_forward_rules) { this.port_forward_rules = port_forward_rules; }
+    public LinkedList<RuleGeneric> getNat_rules() { return nat_rules; }
+    public void setNat_rules(LinkedList<RuleGeneric> nat_rules) { this.nat_rules = nat_rules; }
 
     /**
      * Populates the provided {@link NetworkSettings} instance with data from this
@@ -98,11 +97,11 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         }
 
         // Transform Port Forward Rules
-        if (this.portForwardRules != null)
+        if (this.port_forward_rules != null)
             networkSettings.setPortForwardRules(transformGenericToLegacyPortForwardRules(networkSettings.getPortForwardRules()));
 
         // Transform NAT Rules
-        if (this.natRules != null)
+        if (this.nat_rules != null)
             networkSettings.setNatRules(transformGenericToLegacyNatRules(networkSettings.getNatRules()));
 
         // Write other transformations below
@@ -132,7 +131,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
         // CLEANUP: Remove deleted rules first
         deleteOrphanRules(
-                this.portForwardRules,
+                this.port_forward_rules,
                 legacyRules,
                 RuleGeneric::getRuleId,
                 r -> String.valueOf(r.getRuleId())
@@ -142,13 +141,12 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         Map<Integer, PortForwardRule> rulesMap = legacyRules.stream()
                 .collect(Collectors.toMap(PortForwardRule::getRuleId, Function.identity()));
 
-        for (RuleGeneric ruleGeneric : getPortForwardRules()) {
+        List<PortForwardRule> portForwardRules = new LinkedList<>();
+        for (RuleGeneric ruleGeneric : getPort_forward_rules()) {
             PortForwardRule portForwardRule = rulesMap.get(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), 0));
 
-            if (portForwardRule == null) {
+            if (portForwardRule == null)
                 portForwardRule = new PortForwardRule();
-                legacyRules.add(portForwardRule);
-            }
 
             // Transform enabled, ruleId, description
             portForwardRule.setEnabled(ruleGeneric.isEnabled());
@@ -173,8 +171,10 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
                 ruleConditions.add(portForwardRuleCondition);
             }
             portForwardRule.setConditions(ruleConditions);
+
+            portForwardRules.add(portForwardRule);
         }
-        return legacyRules;
+        return portForwardRules;
     }
 
     /**
@@ -189,7 +189,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
         // CLEANUP: Remove deleted rules first
         deleteOrphanRules(
-                this.natRules,
+                this.nat_rules,
                 legacyRules,
                 RuleGeneric::getRuleId,
                 r -> String.valueOf(r.getRuleId())
@@ -199,13 +199,12 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         Map<Integer, NatRule> rulesMap = legacyRules.stream()
                 .collect(Collectors.toMap(NatRule::getRuleId, Function.identity()));
 
-        for (RuleGeneric ruleGeneric : getPortForwardRules()) {
+        List<NatRule> natRules = new LinkedList<>();
+        for (RuleGeneric ruleGeneric : getNat_rules()) {
             NatRule natRule = rulesMap.get(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), 0));
 
-            if (natRule == null) {
+            if (natRule == null)
                 natRule = new NatRule();
-                legacyRules.add(natRule);
-            }
 
             // Transform enabled, ruleId, description
             natRule.setEnabled(ruleGeneric.isEnabled());
@@ -230,17 +229,18 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
                 ruleConditions.add(natRuleCondition);
             }
             natRule.setConditions(ruleConditions);
-        }
 
-        return legacyRules;
+            natRules.add(natRule);
+        }
+        return natRules;
     }
 
     /**
      * Common method to delete the orphan rules
-     * @param newRules
-     * @param legacyRules
-     * @param currentIdExtractor
-     * @param legacyIdExtractor
+     * @param newRules List<T>
+     * @param legacyRules List<U>
+     * @param currentIdExtractor Function<T, String>
+     * @param legacyIdExtractor Function<U, String>
      */
     private <T, U> void deleteOrphanRules(
             List<T> newRules,

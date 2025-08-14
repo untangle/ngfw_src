@@ -265,12 +265,12 @@ public class NetworkSettings implements Serializable, JSONString
         // Transform Port Forward Rules
         List<PortForwardRule> portForwardRuleList = this.getPortForwardRules();
         if (portForwardRuleList != null && !portForwardRuleList.isEmpty())
-            netSettingsGen.setPortForwardRules(transformPortForwardRulesToGeneric(portForwardRuleList));
+            netSettingsGen.setPort_forward_rules(transformPortForwardRulesToGeneric(portForwardRuleList));
 
         // Transform NAT Rules
         List<NatRule> natRulesList = this.getNatRules();
         if(natRulesList != null && !natRulesList.isEmpty())
-            netSettingsGen.setNatRules(transformNatRulesToGeneric(natRulesList));
+            netSettingsGen.setNat_rules(transformNatRulesToGeneric(natRulesList));
 
         // Write other transformtions below
 
