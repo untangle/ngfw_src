@@ -91,7 +91,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private InetAddress dhcpGatewayOverride;    /* DHCP gateway override, if null defaults to this interface's IP */
     private Integer dhcpPrefixOverride;         /* DHCP netmask override, if null defaults to this interface's netmask */
     private String dhcpDNSOverride;             /* DHCP DNS override, if null defaults to this interface's IP */
-    private LinkedList<DhcpOption> dhcpOptions;       /* DHCP dnsmasq options */ /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
+    private LinkedList<DhcpOption> dhcpOptions = new LinkedList<>();       /* DHCP dnsmasq options */ /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
 
     private InetAddress dhcpRelayAddress;       /* DHCP relay server IP address */
 
