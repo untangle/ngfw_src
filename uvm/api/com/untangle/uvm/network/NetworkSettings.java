@@ -264,13 +264,20 @@ public class NetworkSettings implements Serializable, JSONString
 
         // Transform Port Forward Rules
         List<PortForwardRule> portForwardRuleList = this.getPortForwardRules();
-        if (portForwardRuleList != null && !portForwardRuleList.isEmpty())
+        if (portForwardRuleList != null)
             netSettingsGen.setPort_forward_rules(transformPortForwardRulesToGeneric(portForwardRuleList));
 
         // Transform NAT Rules
         List<NatRule> natRulesList = this.getNatRules();
-        if(natRulesList != null && !natRulesList.isEmpty())
+        if(natRulesList != null)
             netSettingsGen.setNat_rules(transformNatRulesToGeneric(natRulesList));
+
+        // Transform Virtual Interfaces
+        LinkedList<InterfaceSettingsGeneric> virtualInterfacesGen = new LinkedList<>();
+        for(InterfaceSettings virtualIntfSettings: this.getVirtualInterfaces()) {
+            virtualInterfacesGen.add(virtualIntfSettings.transformInterfaceSettingsToGeneric());
+        }
+        netSettingsGen.setVirtualInterfaces(virtualInterfacesGen);
 
         // Write other transformtions below
 

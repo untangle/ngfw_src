@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 public class NetworkSettingsGeneric implements Serializable, JSONString {
 
     private LinkedList<InterfaceSettingsGeneric> interfaces = null;     /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
+    private LinkedList<InterfaceSettingsGeneric> virtualInterfaces = null;
     private LinkedList<RuleGeneric> port_forward_rules = null;
     private LinkedList<RuleGeneric> nat_rules = null;
 
@@ -41,6 +42,9 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
     public LinkedList<InterfaceSettingsGeneric> getInterfaces() { return interfaces; }
     public void setInterfaces(LinkedList<InterfaceSettingsGeneric> interfaces) { this.interfaces = interfaces; }
+
+    public LinkedList<InterfaceSettingsGeneric> getVirtualInterfaces() { return virtualInterfaces; }
+    public void setVirtualInterfaces(LinkedList<InterfaceSettingsGeneric> virtualInterfaces) { this.virtualInterfaces = virtualInterfaces; }
 
     public LinkedList<RuleGeneric> getPort_forward_rules() { return port_forward_rules; }
     public void setPort_forward_rules(LinkedList<RuleGeneric> port_forward_rules) { this.port_forward_rules = port_forward_rules; }
