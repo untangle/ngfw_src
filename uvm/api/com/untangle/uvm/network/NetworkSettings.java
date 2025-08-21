@@ -279,6 +279,10 @@ public class NetworkSettings implements Serializable, JSONString
         }
         netSettingsGen.setVirtualInterfaces(virtualInterfacesGen);
 
+        // Transform Static Routes
+        if(this.getStaticRoutes() != null)
+            netSettingsGen.setStaticRoutes(StaticRoute.transformStaticRoutesToGeneric(this.getStaticRoutes()));
+
         // Write other transformtions below
 
         return netSettingsGen;
