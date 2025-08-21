@@ -121,7 +121,7 @@ def index(req):
             port = ""
             if ut['port'] != -1:
                 ut['port'] = ":" + str(ut['port'])
-            uri_base = ut['scheme'] + '://' + ut['host'] + port + "/cgi-bin/getClientToken?authPlatform={authPlatform}&authCode={authCode}"
+            uri_base = ut['scheme'] + '://' + ut['host'] + port + "/cgi-bin/getClientToken?authPlatform={authPlatform}&authCode={authCode}&authRelay=true"
 
             alt_raw = None
             if authmode in OAUTH_PROVIDERS and OAUTH_PROVIDERS[authmode] is not None and OAUTH_PROVIDERS[authmode]["platform"] is not None:
