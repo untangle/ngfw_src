@@ -5,10 +5,8 @@ package com.untangle.uvm.network.generic;
 
 import com.untangle.uvm.network.DhcpOption;
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.network.InterfaceSettings.ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.DhcpType;
 import com.untangle.uvm.network.InterfaceSettings.InterfaceAlias;
-import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
 import com.untangle.uvm.network.InterfaceSettings.WirelessEncryption;
 import com.untangle.uvm.network.InterfaceSettings.WirelessMode;
 import com.untangle.uvm.util.StringUtil;
@@ -39,10 +37,10 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private String device;          /* physical interface name: eth0, etc */
 
     private boolean wan = false;    /* is a WAN interface? */
-    public static enum Type { NIC, VLAN, BRIDGE, WIFI };
-    private Type type = Type.NIC;   // TODO Investigate and add all possible types
+    public static enum Type { NIC, VLAN, WIFI };
+    private Type type = Type.NIC;
 
-    private Integer vlanId = null;                  /* vlan 802.1q tag */
+    private String vlanid = null;                  /* vlan 802.1q tag */
     private Integer boundInterfaceId = null;        /* The parent interface of this vlan alias */
 
     public static enum ConfigType { ADDRESSED, BRIDGED };
@@ -93,7 +91,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private InetAddress dhcpGatewayOverride;    /* DHCP gateway override, if null defaults to this interface's IP */
     private Integer dhcpPrefixOverride;         /* DHCP netmask override, if null defaults to this interface's netmask */
     private String dhcpDNSOverride;             /* DHCP DNS override, if null defaults to this interface's IP */
-    private LinkedList<DhcpOption> dhcpOptions;       /* DHCP dnsmasq options */ /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
+    private LinkedList<DhcpOption> dhcpOptions = new LinkedList<>();       /* DHCP dnsmasq options */ /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
 
     private InetAddress dhcpRelayAddress;       /* DHCP relay server IP address */
 
@@ -147,8 +145,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     public Type getType() { return type; }
     public void setType(Type type) { this.type = type; }
 
-    public Integer getVlanId() { return vlanId; }
-    public void setVlanId(Integer vlanId) { this.vlanId = vlanId; }
+    public String getVlanid() { return vlanid; }
+    public void setVlanid(String vlanid) { this.vlanid = vlanid; }
 
     public Integer getBoundInterfaceId() { return boundInterfaceId; }
     public void setBoundInterfaceId(Integer boundInterfaceId) { this.boundInterfaceId = boundInterfaceId; }
@@ -337,10 +335,10 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
         intfSettings.setIsWan(this.wan);
 
-        intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN || this.type == InterfaceSettingsGeneric.Type.BRIDGE);
+        intfSettings.setIsVlanInterface(this.type == InterfaceSettingsGeneric.Type.VLAN);
         intfSettings.setIsWirelessInterface(this.type == InterfaceSettingsGeneric.Type.WIFI);
 
-        intfSettings.setVlanTag(this.vlanId);
+        intfSettings.setVlanTag(parseIntSafe(this.vlanid));
         intfSettings.setVlanParent(this.boundInterfaceId);
 
         transformEnabledAndConfigType(intfSettings);
@@ -408,6 +406,15 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setWirelessChannel(this.wirelessChannel);
         intfSettings.setWirelessVisibility(this.hidden ? 1 : 0);
         intfSettings.setWirelessCountryCode(this.wirelessCountryCode);
+    }
+
+    /**
+     * Convert String to Integer safely.
+     * @param str String
+     * @return parsed Integer
+     */
+    private Integer parseIntSafe(String str) {
+        return str != null && str.matches("-?\\d+") ? Integer.parseInt(str) : null;
     }
 
     /**
