@@ -35,6 +35,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     private LinkedList<InterfaceSettingsGeneric> virtualInterfaces = null;
     private LinkedList<RuleGeneric> port_forward_rules = null;
     private LinkedList<RuleGeneric> nat_rules = null;
+    private LinkedList<StaticRouteGeneric> staticRoutes = null;
 
     public NetworkSettingsGeneric() {
         super();
@@ -50,6 +51,9 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     public void setPort_forward_rules(LinkedList<RuleGeneric> port_forward_rules) { this.port_forward_rules = port_forward_rules; }
     public LinkedList<RuleGeneric> getNat_rules() { return nat_rules; }
     public void setNat_rules(LinkedList<RuleGeneric> nat_rules) { this.nat_rules = nat_rules; }
+
+    public LinkedList<StaticRouteGeneric> getStaticRoutes() { return staticRoutes; }
+    public void setStaticRoutes(LinkedList<StaticRouteGeneric> staticRoutes) { this.staticRoutes = staticRoutes; }
 
     /**
      * Populates the provided {@link NetworkSettings} instance with data from this
@@ -107,6 +111,10 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         // Transform NAT Rules
         if (this.nat_rules != null)
             networkSettings.setNatRules(transformGenericToLegacyNatRules(networkSettings.getNatRules()));
+
+        // Transform Static Routes
+        if (this.staticRoutes != null)
+            networkSettings.setStaticRoutes(StaticRouteGeneric.transformGenericToStaticRoutes(this.staticRoutes, networkSettings.getStaticRoutes()));
 
         // Write other transformations below
         

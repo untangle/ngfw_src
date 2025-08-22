@@ -379,7 +379,6 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
         intfSettings.setV6StaticDns1(this.v6StaticDNS1);
         intfSettings.setV6StaticDns2(this.v6StaticDNS2);
 
-        intfSettings.setDhcpEnabled(this.dhcpEnabled || this.dhcpRelayEnabled);
         intfSettings.setDhcpType(resolveDhcpType(this));
         intfSettings.setDhcpRangeStart(this.dhcpRangeStart);
         intfSettings.setDhcpRangeEnd(this.dhcpRangeEnd);
