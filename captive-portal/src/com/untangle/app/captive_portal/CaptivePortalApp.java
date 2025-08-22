@@ -1047,6 +1047,22 @@ public class CaptivePortalApp extends AppBase
         entry.setCaptivePortalAuthenticated(false);
     }
 
+     /**
+     * Fetch nonce required for direct static page
+     * 
+     * @param host
+     *        The host address for the traffic
+     * @param uri
+     *        The uri for the traffic
+     * @param method
+     *        The http method for the traffic
+     * @return String Nonce
+     */
+    public String generateNonce(String host, String uri, String method)
+    {
+        return replacementGenerator.getCaptivePortalParams(host,uri,method);
+    }
+
     /**
      * Called by the traffic handlers to allow passing traffic for authenticated
      * users.
