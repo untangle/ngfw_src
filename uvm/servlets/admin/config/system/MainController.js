@@ -3,7 +3,33 @@ Ext.define('Ung.config.system.MainController', {
     alias: 'controller.config-system',
 
     control: {
-        '#': { afterrender: 'loadSettings' }
+        '#': {
+            render: 'onRender',
+            afterrender: 'loadSettings',
+            hide: 'onHide'
+        },
+    },
+
+    onHide: function () {
+        if (this._boundHandler) {
+            window.removeEventListener('message', this._boundHandler);
+            this._boundHandler = null;
+        }
+    },
+
+    onRender: function () {
+         this._boundHandler = this.handleMessage.bind(this);
+         window.addEventListener('message', this._boundHandler);
+    },
+
+    handleMessage: function(event) {
+        // Check the origin of the message for security
+        if (event.origin !== window.location.origin) {
+          return;
+        }
+        if (event && event.data && event.data.action === Util.ACTION_EVENTS.REFRESH_SYSTEM_SETTINGS) {
+            this.loadSettings();
+        }
     },
 
     loadSettings: function () {
