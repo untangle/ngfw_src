@@ -590,6 +590,8 @@ public class InterfaceSettings implements Serializable, JSONString
      * @param intfSettingsGen InterfaceSettingsGeneric
      */
     private void transformEnabledAndConfigType(InterfaceSettingsGeneric intfSettingsGen) {
+        if (this.configType == null) this.configType = ConfigType.DISABLED;
+
         boolean isEnabled = this.configType != ConfigType.DISABLED;
         intfSettingsGen.setEnabled(isEnabled);
         intfSettingsGen.setConfigType(isEnabled
