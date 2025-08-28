@@ -11,7 +11,6 @@ Ext.define('Ung.config.network.MainController', {
         },
         '#interfaces': { beforerender: 'onInterfaces' },
         '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
-        '#routes': { afterrender: 'refreshRoutes' },
         '#dynamic_routing': {
             activate: 'getDynamicRoutingOverview',
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
