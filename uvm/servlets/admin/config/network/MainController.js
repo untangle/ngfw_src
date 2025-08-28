@@ -4,7 +4,11 @@ Ext.define('Ung.config.network.MainController', {
     alias: 'controller.config-network',
 
     control: {
-        '#': { afterrender: 'loadSettings' },
+        '#': {
+            render: 'onRender',
+            afterrender: 'loadSettings',
+            hide: 'onHide'
+        },
         '#interfaces': { beforerender: 'onInterfaces' },
         '#routes': { afterrender: 'refreshRoutes' },
         '#dynamic_routing': {
@@ -53,9 +57,21 @@ Ext.define('Ung.config.network.MainController', {
         },
     },
 
+    onHide: function () {
+        if (this._boundHandler) {
+            window.removeEventListener('message', this._boundHandler);
+            this._boundHandler = null;
+        }
+    },
+
     validateRange: function () {
         var rangeEnd = this.getView().down('container[itemId=intfdhcpserver]').down('[itemId=rangeEnd]');
         if(rangeEnd.getValue() !== "" ) rangeEnd.isValid();
+    },
+
+    onRender: function () {
+        this._boundHandler = this.handleMessage.bind(this);
+        window.addEventListener('message', this._boundHandler);
     },
 
     loadSettings: function () {
@@ -132,6 +148,16 @@ Ext.define('Ung.config.network.MainController', {
                 v.setLoading(false);
             }
         });
+    },
+
+    handleMessage: function(event) {
+        // Check the origin of the message for security
+        if (event.origin !== window.location.origin) {
+          return;
+        }
+        if (event && event.data && event.data.action === Util.ACTION_EVENTS.REFRESH_NETWORK_SETTINGS) {
+            this.loadSettings();
+        }
     },
 
     saveSettings: function () {

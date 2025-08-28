@@ -550,8 +550,8 @@ public class InterfaceSettings implements Serializable, JSONString
         intfSettingsGen.setV6StaticDNS1(this.v6StaticDns1);
         intfSettingsGen.setV6StaticDNS2(this.v6StaticDns2);
 
-        intfSettingsGen.setDhcpEnabled(null != this.dhcpEnabled && this.dhcpEnabled && this.dhcpType == DhcpType.SERVER);
-        intfSettingsGen.setDhcpRelayEnabled(null != this.dhcpEnabled && this.dhcpEnabled && this.dhcpType == DhcpType.RELAY);
+        intfSettingsGen.setDhcpEnabled(this.dhcpType == DhcpType.SERVER);
+        intfSettingsGen.setDhcpRelayEnabled(this.dhcpType == DhcpType.RELAY);
 
         intfSettingsGen.setDhcpRangeStart(this.dhcpRangeStart);
         intfSettingsGen.setDhcpRangeEnd(this.dhcpRangeEnd);
@@ -590,6 +590,8 @@ public class InterfaceSettings implements Serializable, JSONString
      * @param intfSettingsGen InterfaceSettingsGeneric
      */
     private void transformEnabledAndConfigType(InterfaceSettingsGeneric intfSettingsGen) {
+        if (this.configType == null) this.configType = ConfigType.DISABLED;
+
         boolean isEnabled = this.configType != ConfigType.DISABLED;
         intfSettingsGen.setEnabled(isEnabled);
         intfSettingsGen.setConfigType(isEnabled
