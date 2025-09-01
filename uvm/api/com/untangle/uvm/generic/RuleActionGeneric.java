@@ -16,8 +16,14 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class RuleActionGeneric implements JSONString, Serializable {
 
+    /**
+     * DNAT - Required for Port Forward Rules
+     * SNAT, MASQUERADE - Required for NAT Rules
+     * BYPASS, PROCESS - Required for Bypass Rules
+     * ACCEPT, REJECT - Required for Filter Rules
+     */
+    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT }
     // Common To All Rules
-    public enum Type { DNAT, SNAT, MASQUERADE }
     private Type type;
 
     public Type getType() { return type; }
