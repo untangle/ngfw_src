@@ -31,6 +31,8 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     private LinkedList<RuleGeneric> filter_rules = null;
     private LinkedList<StaticRouteGeneric> staticRoutes = null;
 
+    private DnsSettingsGeneric dnsSettings;
+
     public NetworkSettingsGeneric() {
         super();
     }
@@ -52,6 +54,9 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
     public LinkedList<StaticRouteGeneric> getStaticRoutes() { return staticRoutes; }
     public void setStaticRoutes(LinkedList<StaticRouteGeneric> staticRoutes) { this.staticRoutes = staticRoutes; }
+
+    public DnsSettingsGeneric getDnsSettings() { return dnsSettings; }
+    public void setDnsSettings(DnsSettingsGeneric dnsSettings) { this.dnsSettings = dnsSettings; }
 
     /**
      * Populates the provided {@link NetworkSettings} instance with data from this
@@ -121,6 +126,10 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         // Transform Static Routes
         if (this.getStaticRoutes() != null)
             networkSettings.setStaticRoutes(StaticRouteGeneric.transformGenericToStaticRoutes(this.getStaticRoutes(), networkSettings.getStaticRoutes()));
+
+        // Transform DNS Settings
+        if (this.getDnsSettings() != null)
+            networkSettings.setDnsSettings(this.getDnsSettings().transformGenericToDnsSettings(networkSettings.getDnsSettings()));
 
         // Write other transformations below
         
