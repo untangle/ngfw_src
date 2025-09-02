@@ -19,7 +19,7 @@ public class DnsSettings implements Serializable, JSONString
 {
     private List<DnsStaticEntry> staticEntries = new LinkedList<>();
     private List<DnsLocalServer> localServers = new LinkedList<>();
-
+    
     public DnsSettings() {}
 
     public List<DnsStaticEntry> getStaticEntries() { return this.staticEntries; }

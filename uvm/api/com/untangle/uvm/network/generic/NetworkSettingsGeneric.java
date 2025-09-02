@@ -4,7 +4,6 @@
 package com.untangle.uvm.network.generic;
 
 import com.untangle.uvm.generic.RuleGeneric;
-import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
 import org.json.JSONObject;
