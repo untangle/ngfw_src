@@ -286,7 +286,7 @@ public class NetworkSettings implements Serializable, JSONString
 
         // Transform DNS Settings
         if(this.getDnsSettings() != null)
-            netSettingsGen.setDnsSettings((DnsSettings.transformDnsSettingsToGeneric(this.getDnsSettings())));
+            netSettingsGen.setDnsSettings((this.getDnsSettings().transformDnsSettingsToGeneric()));
 
         // Write other transformtions below
 

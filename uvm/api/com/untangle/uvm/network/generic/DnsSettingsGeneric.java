@@ -33,15 +33,14 @@ public class DnsSettingsGeneric implements Serializable, JSONString {
 
     /**
      * Transforms a {@link DnsSettingsGeneric} object into its v1 DnsSettings representation.
-     * @param dnsSettings DnsSettingsGeneric
      * @param legacyDnsSettings DnsSettings
      * @return DnsSettings
      */
-    public static DnsSettings transformGenericToDnsSettings(DnsSettingsGeneric dnsSettings, DnsSettings legacyDnsSettings) {
+    public DnsSettings transformGenericToDnsSettings(DnsSettings legacyDnsSettings) {
         if (legacyDnsSettings == null)
             legacyDnsSettings = new DnsSettings();
-        legacyDnsSettings.setLocalServers(dnsSettings.getLocalServers() != null ? dnsSettings.getLocalServers() : new LinkedList<>());
-        legacyDnsSettings.setStaticEntries(dnsSettings.getStaticEntries() != null ? dnsSettings.getStaticEntries() : new LinkedList<>());
+        legacyDnsSettings.setLocalServers(this.getLocalServers() != null ? this.getLocalServers() : new LinkedList<>());
+        legacyDnsSettings.setStaticEntries(this.getStaticEntries() != null ? this.getStaticEntries() : new LinkedList<>());
         return legacyDnsSettings;
     }
 }

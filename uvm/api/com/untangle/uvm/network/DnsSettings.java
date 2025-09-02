@@ -19,7 +19,7 @@ public class DnsSettings implements Serializable, JSONString
 {
     private List<DnsStaticEntry> staticEntries = new LinkedList<>();
     private List<DnsLocalServer> localServers = new LinkedList<>();
-    
+
     public DnsSettings() {}
 
     public List<DnsStaticEntry> getStaticEntries() { return this.staticEntries; }
@@ -36,19 +36,18 @@ public class DnsSettings implements Serializable, JSONString
 
     /**
      * Transforms a {@link DnsSettings} object into its generic representation.
-     * @param dnsSettings DnsSettings
      * @return DnsSettingsGeneric
      */
-    public static DnsSettingsGeneric transformDnsSettingsToGeneric(DnsSettings dnsSettings) {
+    public DnsSettingsGeneric transformDnsSettingsToGeneric() {
         DnsSettingsGeneric dnsSettingsGeneric = new DnsSettingsGeneric();
         dnsSettingsGeneric.setLocalServers(
-                dnsSettings.getLocalServers() != null
-                        ? new LinkedList<>(dnsSettings.getLocalServers())
+                this.getLocalServers() != null
+                        ? new LinkedList<>(this.getLocalServers())
                         : new LinkedList<>()
         );
         dnsSettingsGeneric.setStaticEntries(
-                dnsSettings.getStaticEntries() != null
-                        ? new LinkedList<>(dnsSettings.getStaticEntries())
+                this.getStaticEntries() != null
+                        ? new LinkedList<>(this.getStaticEntries())
                         : new LinkedList<>()
         );
         return dnsSettingsGeneric;
