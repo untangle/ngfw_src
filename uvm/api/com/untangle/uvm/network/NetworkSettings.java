@@ -284,6 +284,10 @@ public class NetworkSettings implements Serializable, JSONString
         if(this.getStaticRoutes() != null)
             netSettingsGen.setStaticRoutes(StaticRoute.transformStaticRoutesToGeneric(this.getStaticRoutes()));
 
+        // Transform DNS Settings
+        if(this.getDnsSettings() != null)
+            netSettingsGen.setDnsSettings((DnsSettings.transformDnsSettingsToGeneric(this.getDnsSettings())));
+
         // Write other transformtions below
 
         return netSettingsGen;
