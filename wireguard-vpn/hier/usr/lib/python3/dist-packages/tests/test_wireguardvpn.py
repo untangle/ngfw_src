@@ -179,21 +179,40 @@ def build_wireguard_tunnel(tunnel_enabled=True, remotePK=WG_REMOTE["publicKey"],
         }
     }
 
-def is_value_in_config_line(config, target_value, key_name):
+def is_value_in_config_line(config, target_values, key_name):
     """
-    Checks if the target_value is present in the comma-separated values of a specific config line.
+    Checks if any of the target_values are present in the comma-separated values of a specific config line.
 
     :param config: The full config string.
-    :param target_value: The value to search for.
+    :param target_values: A list of values to search for.
     :param key_name: The name of the line key (e.g., 'AllowedIPs').
-    :return: True if found, False otherwise.
+    :return: True if any value is found, False otherwise.
     """
     match = re.search(rf"{re.escape(key_name)}\s*=\s*(.+)", config)
     if match:
-        values = match.group(1)
-        return target_value in values
+        values_str = match.group(1)
+        values_list = [v.strip() for v in values_str.split(',')]
+        return any(val in values_list for val in target_values)
     else:
         return False
+
+def extract_lan_networks(interfaces):
+    lan_networks = []
+    for intf in interfaces:
+        if not intf.get('isWan', False):
+            address = intf.get('v4StaticAddress')
+            if address:
+                try:
+                    lan_network = ipaddress.ip_network(f"{address}/24", strict=False)
+                    lan_networks.append(str(lan_network))
+                except ValueError as e:
+                    print(f"Skipping invalid IP address '{address}': {e}")
+    return lan_networks
+
+def verify_allowed_ips_in_remote_config(app, public_key, expected_ips):
+    remote_config = app.getRemoteConfig(public_key)
+    assert is_value_in_config_line(remote_config, expected_ips, "AllowedIPs"), f"Expected IPs {expected_ips} not found in config"
+
     
 def build_network_profile(profile_name, network_addresses):
     return {
@@ -328,12 +347,15 @@ class WireGuardVpnTests(NGFWTestCase):
         Verify static tunnel working with dafault and full tunnel profiles.
         Also verify remote config change when different profiles are selected.
         """
-        
         # Pull out the current WG settings and the current Network Settings
         origWGSettings = self._app.getSettings()
         origNetSettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        
+        #get and overwrite local service settings to match tunnel settings on the remote/static test box
+        set_local_wg_config(self)
 
-        # deepcopy WG settings for manipulation
+        #set new tunnel settings
+        origWGSettings = self._app.getSettings()
         newWGSettings = copy.deepcopy( origWGSettings )
 
         # Set new tunnel settings
@@ -342,32 +364,23 @@ class WireGuardVpnTests(NGFWTestCase):
         self._app.setSettings(newWGSettings)
 
         # ping test with default Profile
-        result = wait_for_ping(WG_REMOTE["lanAddress"],0)
-        assert result, "received ping from remote lan"
+        assert wait_for_ping(WG_REMOTE["lanAddress"], 0), "received ping from remote lan"
 
         # Find a DHCP LAN device
-        lanAddress = None
-        for intf in origNetSettings['interfaces']['list']:
-            if not intf['isWan']:
-                lanAddress = intf['v4StaticAddress']
-                break
+        lan_networks = extract_lan_networks(origNetSettings['interfaces']['list'])
 
         # AllowedIPs should have lan network in wireguard config generated.
-        remoteConfig = self._app.getRemoteConfig(WG_REMOTE['publicKey'])
-        lanNetwork = ipaddress.ip_network(f"{lanAddress}/24", strict=False)
-        assert(is_value_in_config_line(remoteConfig, str(lanNetwork), "AllowedIPs"))
+        verify_allowed_ips_in_remote_config(self._app, WG_REMOTE['publicKey'], lan_networks)
 
         # Change the Routed Network Profile for tunnel
         newWGSettings["tunnels"]["list"][0]["routedNetworkProfiles"]["list"] = [ "Full Tunnel" ]
         self._app.setSettings(newWGSettings)
 
         # ping test with Full Tunnel Profile
-        result = wait_for_ping(WG_REMOTE["lanAddress"],0)
-        assert result, "received ping from remote lan"
+        assert wait_for_ping(WG_REMOTE["lanAddress"], 0), "received ping from remote lan"
 
         # AllowedIPs should have 0.0.0.0/0 network in wireguard config generated.
-        remoteConfig = self._app.getRemoteConfig(WG_REMOTE['publicKey'])
-        assert(is_value_in_config_line(remoteConfig, "0.0.0.0/0", "AllowedIPs"))
+        verify_allowed_ips_in_remote_config(self._app, WG_REMOTE['publicKey'], ["0.0.0.0/0"])
 
         # Set app back to normal
         self._app.setSettings(origWGSettings)
@@ -754,6 +767,11 @@ class WireGuardVpnTests(NGFWTestCase):
         origWGSettings = self._app.getSettings()
         origNetSettings = global_functions.uvmContext.networkManager().getNetworkSettings()
 
+        #get and overwrite local service settings to match tunnel settings on the remote/static test box
+        set_local_wg_config(self)
+
+        #set new tunnel settings
+        origWGSettings = self._app.getSettings()
         newAppSettings = copy.deepcopy( origWGSettings )
 
         # Create roaming client tunnel and set new tunnel in settings with default assignDnsServer value False
@@ -762,24 +780,17 @@ class WireGuardVpnTests(NGFWTestCase):
         self._app.setSettings(newAppSettings)
 
         # Find a DHCP LAN device and set it's address to the testing address
-        lanAddress = None
-        for intf in origNetSettings['interfaces']['list']:
-            if not intf['isWan']:
-                lanAddress = intf['v4StaticAddress']
-                break
+        lan_networks = extract_lan_networks(origNetSettings['interfaces']['list'])
 
         # AllowedIPs should have lan network in wireguard config generated.
-        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
-        lanNetwork = ipaddress.ip_network(f"{lanAddress}/24", strict=False)
-        assert(is_value_in_config_line(remoteConfig, str(lanNetwork), "AllowedIPs"))
+        verify_allowed_ips_in_remote_config(self._app, WG_ROAMING['publicKey'], lan_networks)
 
         # Change the Routed Network Profile for tunnel
         newAppSettings["tunnels"]["list"][0]["routedNetworkProfiles"]["list"] = [ "Full Tunnel" ]
         self._app.setSettings(newAppSettings)
 
         # AllowedIPs should have 0.0.0.0/0 network in wireguard config generated.
-        remoteConfig = self._app.getRemoteConfig(WG_ROAMING['publicKey'])
-        assert(is_value_in_config_line(remoteConfig, "0.0.0.0/0", "AllowedIPs"))
+        verify_allowed_ips_in_remote_config(self._app, WG_ROAMING['publicKey'], ["0.0.0.0/0"])
 
         # Set app back to normal
         self._app.setSettings(origWGSettings)
