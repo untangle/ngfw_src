@@ -112,6 +112,7 @@ public class RuleGeneric implements JSONString, Serializable {
         // Transform enabled, ruleId, description
         portForwardRule.setEnabled(ruleGeneric.isEnabled());
         portForwardRule.setDescription(ruleGeneric.getDescription());
+        // For new rules added UI send uuid string as ruleId. Here its set to -1
         portForwardRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
 
         // Transform Action
@@ -179,6 +180,7 @@ public class RuleGeneric implements JSONString, Serializable {
         // Transform enabled, ruleId, description
         natRule.setEnabled(ruleGeneric.isEnabled());
         natRule.setDescription(ruleGeneric.getDescription());
+        // For new rules added UI send uuid string as ruleId. Here its set to -1
         natRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
 
         // Transform Action
@@ -247,6 +249,7 @@ public class RuleGeneric implements JSONString, Serializable {
         // Transform enabled, ruleId, description
         bypassRule.setEnabled(ruleGeneric.isEnabled());
         bypassRule.setDescription(ruleGeneric.getDescription());
+        // For new rules added UI send uuid string as ruleId. Here its set to -1
         bypassRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
 
         // Transform Action
@@ -313,6 +316,7 @@ public class RuleGeneric implements JSONString, Serializable {
         // Transform enabled, ruleId, description
         filterRule.setEnabled(ruleGeneric.isEnabled());
         filterRule.setDescription(ruleGeneric.getDescription());
+        // For new rules added UI send uuid string as ruleId. Here its set to -1
         filterRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
         filterRule.setIpv6Enabled(ruleGeneric.isIpv6Enabled());
 
