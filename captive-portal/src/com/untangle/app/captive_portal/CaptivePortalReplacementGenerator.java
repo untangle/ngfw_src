@@ -111,4 +111,20 @@ class CaptivePortalReplacementGenerator extends ReplacementGenerator<CaptivePort
 
         return super.buildRedirectUri(redirectDetails, redirectUri, redirectParameters);
     }
+
+     /**
+     * Fetch nonce required for direct static page
+     * 
+     * @param host
+     *        The host address for the traffic
+     * @param uri
+     *        The uri for the traffic
+     * @param method
+     *        The http method for the traffic
+     * @return Nonce
+     */
+    protected String getCaptivePortalParams(String host, String uri, String method){
+        CaptivePortalBlockDetails captivePortalBlockDetails =  new CaptivePortalBlockDetails(host, uri, method);
+        return super.generateNonce(captivePortalBlockDetails);
+    }
 }
