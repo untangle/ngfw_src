@@ -288,6 +288,15 @@ public class NetworkSettings implements Serializable, JSONString
         if(this.getDnsSettings() != null)
             netSettingsGen.setDnsSettings((this.getDnsSettings().transformDnsSettingsToGeneric()));
 
+        // Transform Static DHCP Entries
+        netSettingsGen.setDhcpMaxLeases(this.getDhcpMaxLeases());
+        if (this.getStaticDhcpEntries() != null)
+            netSettingsGen.setStaticDhcpEntries(new LinkedList<>(this.getStaticDhcpEntries()));
+
+        // Transform DHCP Relays
+        if (this.getDhcpRelays() != null)
+            netSettingsGen.setDhcpRelays(new LinkedList<>(this.getDhcpRelays()));
+
         // Write other transformtions below
 
         return netSettingsGen;

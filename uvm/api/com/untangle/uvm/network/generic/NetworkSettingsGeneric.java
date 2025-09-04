@@ -4,6 +4,9 @@
 package com.untangle.uvm.network.generic;
 
 import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.network.DhcpOption;
+import com.untangle.uvm.network.DhcpRelay;
+import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetworkSettings;
 import org.json.JSONObject;
@@ -32,6 +35,10 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     private LinkedList<StaticRouteGeneric> staticRoutes = null;
 
     private DnsSettingsGeneric dnsSettings;
+    private LinkedList<DhcpStaticEntry> staticDhcpEntries = null;
+    private LinkedList<DhcpRelay> dhcpRelays = null;
+
+    private int dhcpMaxLeases = 5000;
 
     public NetworkSettingsGeneric() {
         super();
@@ -57,6 +64,13 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
     public DnsSettingsGeneric getDnsSettings() { return dnsSettings; }
     public void setDnsSettings(DnsSettingsGeneric dnsSettings) { this.dnsSettings = dnsSettings; }
+    public LinkedList<DhcpStaticEntry> getStaticDhcpEntries() { return staticDhcpEntries; }
+    public void setStaticDhcpEntries(LinkedList<DhcpStaticEntry> staticDhcpEntries) { this.staticDhcpEntries = staticDhcpEntries; }
+    public LinkedList<DhcpRelay> getDhcpRelays() { return dhcpRelays; }
+    public void setDhcpRelays(LinkedList<DhcpRelay> dhcpRelays) { this.dhcpRelays = dhcpRelays; }
+
+    public int getDhcpMaxLeases() { return dhcpMaxLeases; }
+    public void setDhcpMaxLeases(int dhcpMaxLeases) { this.dhcpMaxLeases = dhcpMaxLeases; }
 
     /**
      * Populates the provided {@link NetworkSettings} instance with data from this
@@ -130,6 +144,15 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         // Transform DNS Settings
         if (this.getDnsSettings() != null)
             networkSettings.setDnsSettings(this.getDnsSettings().transformGenericToDnsSettings(networkSettings.getDnsSettings()));
+
+        // Transform Static DHCP Entries
+        networkSettings.setDhcpMaxLeases(this.getDhcpMaxLeases());
+        if (this.getStaticDhcpEntries() != null)
+            networkSettings.setStaticDhcpEntries(this.getStaticDhcpEntries());
+
+        // Transform DHCP Relays
+        if (this.getDhcpRelays() != null)
+            networkSettings.setDhcpRelays(DhcpRelay.transformGenericToDhcpRelay(this.getDhcpRelays()));
 
         // Write other transformations below
         

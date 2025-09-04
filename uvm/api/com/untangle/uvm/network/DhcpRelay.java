@@ -63,4 +63,18 @@ public class DhcpRelay implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
+
+    /**
+     * Transforms the given list of {@link DhcpRelay} objects by ensuring that
+     * each relay's options list is initialized as a {@link LinkedList}.
+     * @param dhcpRelays the list of DhcpRelay objects to transform
+     * @return the same list with updated options lists
+     */
+    public static List<DhcpRelay> transformGenericToDhcpRelay(LinkedList<DhcpRelay> dhcpRelays) {
+        for (DhcpRelay relay : dhcpRelays) {
+            List<DhcpOption> opts = relay.getOptions();
+            relay.setOptions(opts != null ? new LinkedList<>(opts) : new LinkedList<>());
+        }
+        return dhcpRelays;
+    }
 }
