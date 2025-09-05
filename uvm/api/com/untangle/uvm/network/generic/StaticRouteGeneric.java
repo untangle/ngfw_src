@@ -73,21 +73,30 @@ public class StaticRouteGeneric implements JSONString, Serializable {
         List<StaticRoute> staticRoutes = new LinkedList<>();
         for (StaticRouteGeneric staticRouteGeneric : staticRouteGenList) {
             StaticRoute staticRoute = routesMap.get(staticRouteGeneric.getRuleId());
-
-            if (staticRoute == null)
-                staticRoute = new StaticRoute();
-
-            staticRoute.setRuleId(staticRouteGeneric.getRuleId());
-            staticRoute.setDescription(staticRouteGeneric.getDescription());
-            if (staticRouteGeneric.getNetwork() != null) {
-                IPMaskedAddress ipMaskedAddress = new IPMaskedAddress(staticRouteGeneric.getNetwork());
-                staticRoute.setNetwork(ipMaskedAddress.getAddress());
-                staticRoute.setPrefix(ipMaskedAddress.getPrefixLength());
-            }
-            staticRoute.setNextHop(staticRouteGeneric.getNextHop());
-
+            staticRoute = StaticRouteGeneric.transformStaticRoute(staticRouteGeneric, staticRoute);
             staticRoutes.add(staticRoute);
         }
         return staticRoutes;
+    }
+
+    /**
+     * Transforms Static Routes Generic entity to Static Routes for vue UI set API
+     * @param staticRouteGeneric StaticRouteGeneric
+     * @param staticRoute StaticRoute
+     * @return StaticRoute
+     */
+    private static StaticRoute transformStaticRoute(StaticRouteGeneric staticRouteGeneric, StaticRoute staticRoute) {
+        if (staticRoute == null)
+            staticRoute = new StaticRoute();
+
+        staticRoute.setRuleId(staticRouteGeneric.getRuleId());
+        staticRoute.setDescription(staticRouteGeneric.getDescription());
+        if (staticRouteGeneric.getNetwork() != null) {
+            IPMaskedAddress ipMaskedAddress = new IPMaskedAddress(staticRouteGeneric.getNetwork());
+            staticRoute.setNetwork(ipMaskedAddress.getAddress());
+            staticRoute.setPrefix(ipMaskedAddress.getPrefixLength());
+        }
+        staticRoute.setNextHop(staticRouteGeneric.getNextHop());
+        return staticRoute;
     }
 }

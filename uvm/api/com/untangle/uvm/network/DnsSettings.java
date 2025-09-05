@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.network.generic.DnsSettingsGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -31,5 +32,24 @@ public class DnsSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms a {@link DnsSettings} object into its generic representation.
+     * @return DnsSettingsGeneric
+     */
+    public DnsSettingsGeneric transformDnsSettingsToGeneric() {
+        DnsSettingsGeneric dnsSettingsGeneric = new DnsSettingsGeneric();
+        dnsSettingsGeneric.setLocalServers(
+                this.getLocalServers() != null
+                        ? new LinkedList<>(this.getLocalServers())
+                        : new LinkedList<>()
+        );
+        dnsSettingsGeneric.setStaticEntries(
+                this.getStaticEntries() != null
+                        ? new LinkedList<>(this.getStaticEntries())
+                        : new LinkedList<>()
+        );
+        return dnsSettingsGeneric;
     }
 }
