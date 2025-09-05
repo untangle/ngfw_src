@@ -45,6 +45,8 @@ import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.ObjectMatcher;
+import com.untangle.uvm.util.StringUtil;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -658,7 +660,7 @@ public class NetworkManagerImpl implements NetworkManager
      * @param intf InterfaceSettings
      */
     private void populateTransferStats(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSystemDev());
+        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSymbolicDev());
         String[] stats = intfTransfer.trim().split("\\s+");
 
         if (stats.length < 12) return;
@@ -679,9 +681,19 @@ public class NetworkManagerImpl implements NetworkManager
      * @param status InterfaceStatusGeneric
      */
     private void populateMacVendor(InterfaceStatusGeneric status) {
-        String vendor = UvmContextFactory.context()
-                          .deviceTable()
-                          .getMacVendorFromMacAddress(status.getMacAddress());
+        String vendor = null;
+        if(status.getMacAddress() != null) {
+            if (cachedMacAddrVendorList.containsKey(status.getMacAddress())) {
+                vendor = cachedMacAddrVendorList.get(status.getMacAddress());
+            } else {
+                vendor = UvmContextFactory.context()
+                            .deviceTable()
+                            .getMacVendorFromMacAddress(status.getMacAddress());
+                if (!StringUtil.isEmpty(vendor)) {
+                    cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
+                }
+            }
+        }
         status.setMacVendor(vendor);
     }
 
@@ -692,7 +704,7 @@ public class NetworkManagerImpl implements NetworkManager
      * @param intf InterfaceSettings
      */
     private void populateIpAddresses(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSystemDev());
+        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSymbolicDev());
         String[] tokens = ipStatus.trim().split("\\s+");
 
         String nextType = "";

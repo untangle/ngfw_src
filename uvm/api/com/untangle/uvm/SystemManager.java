@@ -5,6 +5,9 @@ package com.untangle.uvm;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+
+import com.untangle.uvm.generic.SystemSettingsGeneric;
+
 import java.util.Set;
 
 /**
@@ -25,6 +28,10 @@ public interface SystemManager
     void setSettings(SystemSettings settings);
 
     void setSettings(SystemSettings settings, boolean dirtyRadiusFields);
+
+    SystemSettingsGeneric getSystemSettingsV2();
+
+    void setSystemSettingsV2(SystemSettingsGeneric systemSettingsGeneric);
 
     /**
      * Returns the time zone that the UVM is currently set to
