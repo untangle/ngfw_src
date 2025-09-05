@@ -660,7 +660,7 @@ public class NetworkManagerImpl implements NetworkManager
      * @param intf InterfaceSettings
      */
     private void populateTransferStats(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSystemDev());
+        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSymbolicDev());
         String[] stats = intfTransfer.trim().split("\\s+");
 
         if (stats.length < 12) return;
@@ -704,7 +704,7 @@ public class NetworkManagerImpl implements NetworkManager
      * @param intf InterfaceSettings
      */
     private void populateIpAddresses(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSystemDev());
+        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSymbolicDev());
         String[] tokens = ipStatus.trim().split("\\s+");
 
         String nextType = "";
