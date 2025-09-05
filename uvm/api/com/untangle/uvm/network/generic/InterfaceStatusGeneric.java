@@ -19,6 +19,7 @@ import com.untangle.uvm.network.DeviceStatus.DuplexStatus;
 @SuppressWarnings("serial")
 public class InterfaceStatusGeneric implements Serializable, JSONString {
 
+    private int interfaceId;
     private String device;
 
     private boolean connected;
@@ -29,6 +30,7 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     private long ethSpeed;
 
     private List<String> ip4Addr;
+    private InetAddress v4Address;
     private InetAddress ip4Gateway;
     private List<String> addressSource;
     
@@ -51,6 +53,8 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
     private String macAddress;
     private String macVendor;
 
+    public int getInterfaceId() { return interfaceId; }
+    public void setInterfaceId(int interfaceId) { this.interfaceId = interfaceId; }
 
     public String getDevice() { return device; }
     public void setDevice(String device) { this.device = device; }
@@ -72,6 +76,9 @@ public class InterfaceStatusGeneric implements Serializable, JSONString {
 
     public List<String> getIp4Addr() { return ip4Addr; }
     public void setIp4Addr(List<String> ip4Addr) { this.ip4Addr = ip4Addr; }
+
+    public InetAddress getV4Address() { return v4Address; }
+    public void setV4Address(InetAddress v4Address) { this.v4Address = v4Address; }
 
     public InetAddress getIp4Gateway() { return ip4Gateway; }
     public void setIp4Gateway(InetAddress ip4Gateway) { this.ip4Gateway = ip4Gateway; }
