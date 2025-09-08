@@ -644,6 +644,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         status.setDevice(device);
         status.setWan(intf.getIsWan());
+        status.setInterfaceId(intf.getInterfaceId());
         populateTransferStats(status, intf);
         populateMacVendor(status);
         populateIpAddresses(status, intf);
@@ -764,6 +765,7 @@ public class NetworkManagerImpl implements NetworkManager
                 status.setDnsServers(new LinkedList<>());
             status.getDnsServers().addAll(dns);
         }
+        status.setV4Address(intfStatus.getV4Address());
         status.setIp4Gateway(intfStatus.getV4Gateway());
         status.setIp6Gateway(intfStatus.getV6Gateway());
     }
