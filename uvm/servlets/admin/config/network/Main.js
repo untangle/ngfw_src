@@ -32,8 +32,6 @@ Ext.define('Ung.config.network.Main', {
 
     items: [
         { xtype: 'config-network-interfaces' },
-        { xtype: 'config-network-hostname' },
-        { xtype: 'config-network-services' },
         { xtype: 'config-network-port-forward-rules' },
         { xtype: 'config-network-nat-rules' },
         { xtype: 'config-network-bypass-rules' },
