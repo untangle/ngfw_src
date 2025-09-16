@@ -223,6 +223,8 @@ public class SystemSettings implements Serializable, JSONString
      */
     public SystemSettingsGeneric transformLegacyToGenericSettings(NetworkSettings networkSettings) {
         SystemSettingsGeneric systemSettingsGeneric = new SystemSettingsGeneric();
+        systemSettingsGeneric.setCCHidden(UvmContextFactory.context().isCCHidden());
+
         if (networkSettings != null) {
             // Local Services Settings
             systemSettingsGeneric.setHttpPort(networkSettings.getHttpPort());
@@ -244,6 +246,9 @@ public class SystemSettings implements Serializable, JSONString
             systemSettingsGeneric.setPublicUrlMethod(networkSettings.getPublicUrlMethod());
             systemSettingsGeneric.setPublicUrlPort(networkSettings.getPublicUrlPort());
         }
+
+        systemSettingsGeneric.setCloudEnabled(this.getCloudEnabled());
+        systemSettingsGeneric.setSupportEnabled(this.getSupportEnabled());
         return systemSettingsGeneric;
     }
 }

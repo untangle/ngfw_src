@@ -17,6 +17,11 @@ import java.io.Serializable;
 public class SystemSettingsGeneric implements Serializable, JSONString {
 
     /**
+     * Refers to {@link com.untangle.uvm.UvmContextImpl#isCCHidden()} .
+     */
+    private boolean isCCHidden;
+
+    /**
      * These are required for Web Admin Ports
      */
     private int httpPort  = 80;
@@ -27,6 +32,9 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
      */
     private String hostName;
     private String domainName;
+
+    private boolean supportEnabled = false;
+    private boolean cloudEnabled = true;
 
     private boolean dynamicDnsServiceEnabled = false;
     private String  dynamicDnsServiceName = null;
@@ -40,6 +48,14 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private String  publicUrlAddress;
     private Integer publicUrlPort;
 
+    public boolean isCCHidden() {
+        return isCCHidden;
+    }
+
+    public void setCCHidden(boolean isCCHidden) {
+        this.isCCHidden = isCCHidden;
+    }
+
     /**
      * These are required for Web Admin Ports
      */
@@ -51,6 +67,21 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     /**
      * These are required for Hostname Settings
      */
+    public boolean isCloudEnabled() {
+        return cloudEnabled;
+    }
+
+    public void setCloudEnabled(boolean cloudEnabled) {
+        this.cloudEnabled = cloudEnabled;
+    }
+
+    public boolean isSupportEnabled() {
+        return supportEnabled;
+    }
+
+    public void setSupportEnabled(boolean supportEnabled) {
+        this.supportEnabled = supportEnabled;
+    }
     public String getHostName() { return hostName; }
     public void setHostName(String hostName) { this.hostName = hostName; }
     public String getDomainName() { return domainName; }
@@ -108,6 +139,11 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             networkSettings.setPublicUrlAddress(this.publicUrlAddress);
             networkSettings.setPublicUrlMethod(this.publicUrlMethod);
             networkSettings.setPublicUrlPort(this.publicUrlPort);
+        }
+
+        if (systemSettings != null) {
+            systemSettings.setCloudEnabled(this.isCloudEnabled());
+            systemSettings.setSupportEnabled(this.isSupportEnabled());
         }
     }
 }
