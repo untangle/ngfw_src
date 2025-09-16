@@ -10,7 +10,6 @@ Ext.define('Ung.config.network.MainController', {
             hide: 'onHide'
         },
         '#interfaces': { beforerender: 'onInterfaces' },
-        '#interfacesGrid': { reconfigure: 'interfacesGridReconfigure'},
         '#dynamic_routing': {
             activate: 'getDynamicRoutingOverview',
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
@@ -167,37 +166,6 @@ Ext.define('Ung.config.network.MainController', {
 
         if (!Util.validateForms(view)) {
             return;
-        }
-
-        // update interfaces data
-        var interfacesStore = view.down('#interfacesGrid').getStore();
-        if (interfacesStore.getModifiedRecords().length > 0 ||
-            interfacesStore.getNewRecords().length > 0 ||
-            interfacesStore.getRemovedRecords().length > 0) {
-                for (var i =0 ; i < interfacesStore.getRemovedRecords().length; i++) {
-                    if(interfacesStore.getRemovedRecords()[i].data.name === vm.get('settings').dynamicDnsServiceWan){
-                        Ext.MessageBox.alert("Failed".t(), "This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before removing this WAN.".t());
-                        view.setLoading(false);
-                        return;
-                    }
-                }
-                for ( i =0 ; i < interfacesStore.getModifiedRecords().length; i++) {
-                    if((interfacesStore.getModifiedRecords()[i].data.name === vm.get('settings').dynamicDnsServiceWan) && interfacesStore.getModifiedRecords()[i].data.configType === "DISABLED"){
-                        Ext.MessageBox.alert("Failed".t(), "This WAN is used by the DDNS service. Please change the WAN from the DDNS configuration before disabling this WAN.".t());
-                        view.setLoading(false);
-                        return;
-                    }
-                }
-                
-            vm.set('settings.interfaces.list', Ext.Array.pluck(interfacesStore.getRange(), 'data'));
-        }
-
-        // update static DHCP data
-        var dhcpStore = view.down('#dhcpEntries').getStore();
-        if(dhcpStore.getModifiedRecords().length > 0 ||
-            dhcpStore.getNewRecords().length > 0 ||
-            dhcpStore.getRemovedRecords().length > 0) {
-            vm.set('settings.staticDhcpEntries.list', Ext.Array.pluck(dhcpStore.getRange(), 'data'));
         }
 
         // used to update all tabs data
@@ -453,10 +421,6 @@ Ext.define('Ung.config.network.MainController', {
                 me.getInterfaceArp();
             }
         });
-    },
-
-    interfacesGridReconfigure: function(){
-        this.getView().down('#interfacesGrid').getSelectionModel().select(0);
     },
 
     interfaceStatusLinkMap:{
@@ -832,16 +796,6 @@ Ext.define('Ung.config.network.MainController', {
             v.setLoading(false);
         });
 
-    },
-    addStaticDhcpLease: function (view, rowIndex, colIndex, item, e, record) {
-        var me = this, staticDhcpGrid = me.getView().down('#dhcpEntries');
-        var newDhcpEntry = {
-            macAddress: record.get('macAddress'),
-            address: record.get('address'),
-            description: record.get('hostname'),
-            javaClass: 'com.untangle.uvm.network.DhcpStaticEntry'
-        };
-        staticDhcpGrid.getStore().add(newDhcpEntry);
     },
 
     getExportData: function (useId) {
