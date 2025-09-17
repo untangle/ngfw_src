@@ -649,6 +649,16 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
             settings.setVersion(6);
         }
 
+        /*
+         * NGFW-15341: when getDbRetentionHourly is set along with the dbRetention, then hourly was taking precedence.
+         * Ideally when hourly value is set then days value should be set to 0.
+         */
+        if ( settings.getVersion() == null || settings.getVersion() < 7 ) {
+            // if dbRetentionHourly was changed from its default value 0, reset the days value to 0.
+            if (settings.getDbRetentionHourly() > 0) settings.setDbRetention(0);
+            settings.setVersion(7);
+        }
+
         /* sync settings to disk if necessary */
         File settingsFile = new File( settingsFileName );
         if (settingsFile.lastModified() > CRON_FILE.lastModified()){
@@ -802,7 +812,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private ReportsSettings defaultSettings()
     {
         ReportsSettings settings = new ReportsSettings();
-        settings.setVersion( 6 );
+        settings.setVersion(7);
         settings.setEmailTemplates( defaultEmailTemplates() );
         settings.setReportsUsers( defaultReportsUsers( null ) );
 
