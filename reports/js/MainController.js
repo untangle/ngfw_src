@@ -110,6 +110,15 @@ Ext.define('Ung.apps.reports.MainController', {
 
         v.setLoading(true);
 
+         if (vm.get('dbRetentionInDays')) {
+            // We will be setting daily retention. Zero-out hourly retention so that it isn't set later.
+            vm.set('settings.dbRetentionHourly', 0);
+         } else {
+            // using hourly retention instead of daily
+            // We will be setting hourly retention. Zero-out daily retention so that it isn't set later.
+            vm.set('settings.dbRetention', 0);
+         }
+
         Rpc.asyncData(v.appManager, 'setSettings', vm.get('settings'))
         .then(function(result){
             if(Util.isDestroyed(v, vm)){

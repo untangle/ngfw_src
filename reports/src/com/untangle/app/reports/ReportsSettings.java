@@ -17,7 +17,7 @@ import com.untangle.uvm.event.AlertRule;
 @SuppressWarnings("serial")
 public class ReportsSettings implements Serializable, JSONString
 {
-    private Integer version = 2;
+    private Integer version = 7;
     
     private Integer dbRetention = 7; // days
     private Integer dbRetentionHourly = 0;
