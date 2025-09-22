@@ -35,6 +35,7 @@ public class SystemSettings implements Serializable, JSONString
     private SnmpSettings snmpSettings;
 
     private String timeSource = "ntp";
+    private String timeZone = null;
 
     private int logRetention = 7;
     
@@ -131,6 +132,12 @@ public class SystemSettings implements Serializable, JSONString
      */
     public int getAutoUpgradeMinute() { return autoUpgradeMinute; }
     public void setAutoUpgradeMinute( int newValue) { this.autoUpgradeMinute = newValue; }
+    
+    /**
+     * Get the current timeZone
+     */
+    public String getTimeZone() { return timeZone; }
+    public void setTimeZone(String timeZone) { this.timeZone = timeZone; }
 
     /**
      * Get the current settings version
@@ -244,6 +251,7 @@ public class SystemSettings implements Serializable, JSONString
             systemSettingsGeneric.setPublicUrlMethod(networkSettings.getPublicUrlMethod());
             systemSettingsGeneric.setPublicUrlPort(networkSettings.getPublicUrlPort());
         }
+        systemSettingsGeneric.setTimeZone(new SystemSettingsGeneric.TimeZone(this.timeZone, StringUtils.EMPTY));
         return systemSettingsGeneric;
     }
 }
