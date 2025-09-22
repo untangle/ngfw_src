@@ -228,8 +228,8 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         elapsed_time: {
-            col: { text: 'Elapsed'.t(), filter: Rndr.filters.numeric, width: 160 }, // converter
-            fld: { type: 'integer', convert: Converter.timestamp }
+            col: { text: 'Elapsed'.t(), width: 160 }, // converter
+            fld: { type: 'string' }
         },
         end_time: {
             col: { text: 'End Time'.t(), filter: Rndr.filters.date, renderer: Renderer.timestampUnixRenderer, width: 160 }, // converter
@@ -424,7 +424,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string', sortType: 'asIp' }
         },
         protocol: {
-            col: { text: 'Protocol'.t(), filter: Rndr.filters.numeric, width: 80 },
+            col: { text: 'Protocol'.t(), width: 80 },
             fld: { type: 'integer', convert: Converter.protocol }
         },
         protocol_name: {
