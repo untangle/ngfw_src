@@ -297,9 +297,31 @@ public class NetworkSettings implements Serializable, JSONString
         if (this.getDhcpRelays() != null)
             netSettingsGen.setDhcpRelays(new LinkedList<>(this.getDhcpRelays()));
 
+        // Transform advanced options values
+        AdvsancedOptionsValues(netSettingsGen);
+
         // Write other transformtions below
 
         return netSettingsGen;
+    }
+
+    /**
+     * Sets advanced options values from NetworkSettings to NetworkSettingsGeneric.
+     * @param netSettingsGen The NetworkSettingsGeneric object to set values to.
+     */
+    public void AdvsancedOptionsValues (NetworkSettingsGeneric netSettingsGen){
+        netSettingsGen.setEnableSipNatHelper(this.getEnableSipNatHelper());
+        netSettingsGen.setSendIcmpRedirects(this.getSendIcmpRedirects());
+        netSettingsGen.setStpEnabled(this.getStpEnabled());
+        netSettingsGen.setStrictArpMode(this.getStrictArpMode());
+        netSettingsGen.setSendUnsolicitedArpUpdates(this.isSendUnsolicitedArpUpdates());
+        netSettingsGen.setDhcpAuthoritative(this.getDhcpAuthoritative());
+        netSettingsGen.setBlockDuringRestarts(this.getBlockDuringRestarts());
+        netSettingsGen.setBlockReplayPackets(this.getBlockReplayPackets());
+        netSettingsGen.setLogBypassedSessions(this.getLogBypassedSessions());
+        netSettingsGen.setLogLocalOutboundSessions(this.getLogLocalOutboundSessions());
+        netSettingsGen.setLogLocalInboundSessions(this.getLogLocalInboundSessions());
+        netSettingsGen.setLogBlockedSessions(this.getLogBlockedSessions());
     }
 
     public String toJSONString()
