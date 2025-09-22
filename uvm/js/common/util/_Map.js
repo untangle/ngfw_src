@@ -228,7 +228,7 @@ Ext.define('Ung.util.Map', {
             fld: { type: 'string' }
         },
         elapsed_time: {
-            col: { text: 'Elapsed'.t(), width: 160 }, // converter
+            col: { text: 'Elapsed'.t(), width: 160 },
             fld: { type: 'string' }
         },
         end_time: {
