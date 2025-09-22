@@ -7,28 +7,13 @@ Ext.define('Ung.config.system.MainModel', {
         title: 'System'.t(),
         iconName: 'system',
 
-        time: null,
         languageSettings: null,
         languagesList: null,
         systemSettings: null,
-        timeZone: null,
-        timeZonesList: null,
 
         shieldSettings: null
     },
     formulas: {
-        timeSource: function (get) {
-            return get('systemSettings.timeSource') === 'manual' ? 'Time was set manually'.t() : 'Time is automatically synchronized via NTP'.t();
-        },
-        manualDate: {
-            get: function (get) {
-                // to fix because rpc.systemManager.getDate() returns an invalid date string
-                return get('time') ? new Date(get('time').replace('EET', '(EET)')) : new Date();
-            },
-            set: function (val) {
-                return;
-            }
-        },
         // used for setting the date/time
         manualDateFormat: function (get) { return get('languageSettings.overrideTimestampFmt') || 'timestamp_fmt'.t(); },
 
@@ -64,10 +49,6 @@ Ext.define('Ung.config.system.MainModel', {
 
     },
     stores: {
-        timeZones: {
-            fields: ['name', 'value'],
-            data: '{timeZonesList}'
-        },
         languages: {
             fields: [
             'code',

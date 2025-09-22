@@ -38,9 +38,6 @@ Ext.define('Ung.config.system.MainController', {
         var rpcSequence = [
             Rpc.asyncPromise('rpc.languageManager.getLanguageSettings'),
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
-            Rpc.asyncPromise('rpc.systemManager.getDate'),
-            Rpc.asyncPromise('rpc.systemManager.getTimeZone'),
-            Rpc.asyncPromise('rpc.systemManager.getTimeZones'),
             Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode'),
             Rpc.directPromise('rpc.UvmContext.isCCHidden')
@@ -49,9 +46,6 @@ Ext.define('Ung.config.system.MainController', {
         var dataNames = [
             'languageSettings',
             'systemSettings',
-            'time',
-            'timeZone',
-            'timeZonesList',
             'logDirectorySize',
             'isExpertMode',
             'isCCHidden'
@@ -80,13 +74,6 @@ Ext.define('Ung.config.system.MainController', {
                 return;
             }
 
-            var timeZones = [];
-            if (result[4]) {
-                eval(result[4]).forEach(function (tz) {
-                    timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]});
-                });
-            }
-            vm.set('timeZonesList', timeZones);
 
             // Massage language to include the appropriate source.
             var languageSettings = result[0];
@@ -128,27 +115,6 @@ Ext.define('Ung.config.system.MainController', {
         });
     },
 
-    syncTime: function () {
-        Ext.MessageBox.confirm(
-            'Force Time Synchronization'.t(),
-            'Forced time synchronization can cause problems if the current date is far in the future.'.t() + '<br/>' +
-            'A reboot is suggested after time sychronization.'.t() + '<br/><br/>' +
-            'Continue?'.t(),
-            function(btn) {
-                if (btn === 'yes') {
-                    Ext.MessageBox.wait('Synchronizing time with the internet...'.t(), 'Please wait'.t());
-                    Rpc.asyncData('rpc.UvmContext.forceTimeSync')
-                    .then(function(result){
-                        Ext.MessageBox.hide();
-                        if (result !== 0) {
-                            Util.handleException('Time synchronization failed. Return code:'.t() + ' ' + result);
-                        } else {
-                            Util.successToast('Time was synchronized!');
-                        }
-                    });
-                }
-            });
-    },
 
     syncLanguage: function () {
         Ext.MessageBox.wait('Synchronizing languages with the internet...'.t(), 'Please wait'.t());
@@ -204,7 +170,6 @@ Ext.define('Ung.config.system.MainController', {
         var rpcSequence = [
             Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', languageSettings),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
-            Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')),
         ];
 
         if(Rpc.directData('rpc.appManager.app', 'http')){

@@ -135,6 +135,7 @@ public class SystemManagerImpl implements SystemManager
             if (this.settings.getVersion() < SETTINGS_VERSION) {
                 this.settings.setVersion(SETTINGS_VERSION);
                 this.settings.setLogRetention(7);
+                this.settings.setTimeZone(getTimeZone().getID());
                 this.getSettings().setThresholdTemperature(105.0);
                 this.setSettings(this.settings, false);
             }
@@ -287,6 +288,7 @@ public class SystemManagerImpl implements SystemManager
 
         // Set Network Settings with updated values.
         UvmContextFactory.context().networkManager().setNetworkSettings(clonedNetworkSettings);
+        UvmContextFactory.context().systemManager().setSettings(clonedSystemSettings);
 
         // TODO Set SystemSettings (clonedSystemSettings) when those fields will be transformed in future
     }
@@ -333,6 +335,9 @@ public class SystemManagerImpl implements SystemManager
             newSettings.setRadiusProxyPassword(null);
         }
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+        if(!this.settings.getTimeZone().equals(newSettings.getTimeZone())){
+            setTimeZone(TimeZone.getTimeZone(newSettings.getTimeZone()));
+        }
         try {
             settingsManager.save(this.SettingsFileName, newSettings);
         } catch (SettingsManager.SettingsException e) {
@@ -1023,7 +1028,7 @@ can look deeper. - mahotz
         newSettings.setAutoUpgradeHour(23);
         newSettings.setAutoUpgradeMinute((new java.util.Random()).nextInt(60));
         newSettings.setAutoUpgradeDays(DayOfWeekMatcher.getAnyMatcher());
-
+        newSettings.setTimeZone(getTimeZone().getID());
         // pass the settings to the OEM override function and return the override settings
         SystemSettings overrideSettings = (SystemSettings)UvmContextFactory.context().oemManager().applyOemOverrides(newSettings);
         return overrideSettings;
