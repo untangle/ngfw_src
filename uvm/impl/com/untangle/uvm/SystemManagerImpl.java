@@ -335,7 +335,7 @@ public class SystemManagerImpl implements SystemManager
             newSettings.setRadiusProxyPassword(null);
         }
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        if(!this.settings.getTimeZone().equals(newSettings.getTimeZone())){
+        if(this.settings != null && !this.settings.getTimeZone().equals(newSettings.getTimeZone())){
             setTimeZone(TimeZone.getTimeZone(newSettings.getTimeZone()));
         }
         try {
