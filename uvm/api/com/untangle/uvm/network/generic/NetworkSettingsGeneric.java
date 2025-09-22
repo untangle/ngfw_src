@@ -202,6 +202,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         if (this.getDhcpRelays() != null)
             networkSettings.setDhcpRelays(DhcpRelay.transformGenericToDhcpRelay(this.getDhcpRelays()));
 
+        // Transform Settings Advanced Options
         setAdvancedOptions(networkSettings);
 
         // Write other transformations below
