@@ -132,7 +132,7 @@ public class SystemSettings implements Serializable, JSONString
      */
     public int getAutoUpgradeMinute() { return autoUpgradeMinute; }
     public void setAutoUpgradeMinute( int newValue) { this.autoUpgradeMinute = newValue; }
-    
+
     /**
      * Get the current timeZone
      */
@@ -230,6 +230,8 @@ public class SystemSettings implements Serializable, JSONString
      */
     public SystemSettingsGeneric transformLegacyToGenericSettings(NetworkSettings networkSettings) {
         SystemSettingsGeneric systemSettingsGeneric = new SystemSettingsGeneric();
+        systemSettingsGeneric.setCCHidden(UvmContextFactory.context().isCCHidden());
+
         if (networkSettings != null) {
             // Local Services Settings
             systemSettingsGeneric.setHttpPort(networkSettings.getHttpPort());
@@ -252,6 +254,9 @@ public class SystemSettings implements Serializable, JSONString
             systemSettingsGeneric.setPublicUrlPort(networkSettings.getPublicUrlPort());
         }
         systemSettingsGeneric.setTimeZone(new SystemSettingsGeneric.TimeZone(this.timeZone, StringUtils.EMPTY));
+
+        systemSettingsGeneric.setCloudEnabled(this.getCloudEnabled());
+        systemSettingsGeneric.setSupportEnabled(this.getSupportEnabled());
         return systemSettingsGeneric;
     }
 }

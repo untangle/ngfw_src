@@ -25,7 +25,6 @@ Ext.define('Ung.config.system.Main', {
     items: [
         { xtype: 'config-system-settings' },
         { xtype: 'config-system-regional' },
-        { xtype: 'config-system-support' },
         { xtype: 'config-system-logs' },
         { xtype: 'config-system-backup' },
         { xtype: 'config-system-restore' },
