@@ -8,7 +8,9 @@ import com.untangle.uvm.network.DhcpOption;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.NetflowSettings;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.QosSettings;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -37,6 +39,8 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     private DnsSettingsGeneric dnsSettings;
     private LinkedList<DhcpStaticEntry> staticDhcpEntries = null;
     private LinkedList<DhcpRelay> dhcpRelays = null;
+    private NetflowSettings netflowSettings;
+    private QosSettingsGeneric qosSettings;
 
     private int dhcpMaxLeases = 5000;
     private boolean enableSipNatHelper = false;
@@ -80,43 +84,35 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     public void setStaticDhcpEntries(LinkedList<DhcpStaticEntry> staticDhcpEntries) { this.staticDhcpEntries = staticDhcpEntries; }
     public LinkedList<DhcpRelay> getDhcpRelays() { return dhcpRelays; }
     public void setDhcpRelays(LinkedList<DhcpRelay> dhcpRelays) { this.dhcpRelays = dhcpRelays; }
+    public NetflowSettings getNetflowSettings() { return netflowSettings; }
+    public void setNetflowSettings(NetflowSettings netflowSettings) { this.netflowSettings = netflowSettings; }
+    public QosSettingsGeneric getQosSettings() { return qosSettings; }
+    public void setQosSettings(QosSettingsGeneric qosSettings) { this.qosSettings = qosSettings; }
 
     public int getDhcpMaxLeases() { return dhcpMaxLeases; }
     public void setDhcpMaxLeases(int dhcpMaxLeases) { this.dhcpMaxLeases = dhcpMaxLeases; }
-
     public boolean getEnableSipNatHelper() { return enableSipNatHelper; }
     public void setEnableSipNatHelper(boolean enableSipNatHelper) { this.enableSipNatHelper = enableSipNatHelper; }
-
     public boolean getSendIcmpRedirects() { return sendIcmpRedirects; }
     public void setSendIcmpRedirects(boolean sendIcmpRedirects) { this.sendIcmpRedirects = sendIcmpRedirects; }
-
     public boolean getStpEnabled() { return stpEnabled; }
     public void setStpEnabled(boolean stpEnabled) { this.stpEnabled = stpEnabled; }
-
     public boolean getStrictArpMode() { return strictArpMode; }
     public void setStrictArpMode(boolean strictArpMode) { this.strictArpMode = strictArpMode; }
-
     public boolean getSendUnsolicitedArpUpdates() { return sendUnsolicitedArpUpdates; }
     public void setSendUnsolicitedArpUpdates(boolean sendUnsolicitedArpUpdates) { this.sendUnsolicitedArpUpdates = sendUnsolicitedArpUpdates; }
-
     public boolean getDhcpAuthoritative() { return dhcpAuthoritative; }
     public void setDhcpAuthoritative(boolean dhcpAuthoritative) { this.dhcpAuthoritative = dhcpAuthoritative; }
-
     public boolean getBlockDuringRestarts() { return blockDuringRestarts; }
     public void setBlockDuringRestarts(boolean blockDuringRestarts) { this.blockDuringRestarts = blockDuringRestarts; }
-
     public boolean getBlockReplayPackets() { return blockReplayPackets; }
     public void setBlockReplayPackets(boolean blockReplayPackets) { this.blockReplayPackets = blockReplayPackets; }
-
     public boolean getLogBypassedSessions() { return logBypassedSessions; }
     public void setLogBypassedSessions(boolean logBypassedSessions) { this.logBypassedSessions = logBypassedSessions; }
-
     public boolean getLogLocalOutboundSessions() { return logLocalOutboundSessions; }
     public void setLogLocalOutboundSessions(boolean logLocalOutboundSessions) { this.logLocalOutboundSessions = logLocalOutboundSessions; }
-
     public boolean getLogLocalInboundSessions() { return logLocalInboundSessions; }
     public void setLogLocalInboundSessions(boolean logLocalInboundSessions) { this.logLocalInboundSessions = logLocalInboundSessions; }
-
     public boolean getLogBlockedSessions() { return logBlockedSessions; }
     public void setLogBlockedSessions(boolean logBlockedSessions) { this.logBlockedSessions = logBlockedSessions; }
 
@@ -204,6 +200,14 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
         // Transform Settings Advanced Options
         setAdvancedOptions(networkSettings);
+
+        // Transform QoS Settings
+        if (this.getQosSettings() != null)
+            networkSettings.setQosSettings(this.getQosSettings().transformGenericToQosSettings(networkSettings.getQosSettings()));
+
+        // Set Netflow Settings
+        if (this.getNetflowSettings() != null)
+            networkSettings.setNetflowSettings(this.getNetflowSettings());
 
         // Write other transformations below
 

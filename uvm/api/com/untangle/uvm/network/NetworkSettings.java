@@ -300,6 +300,14 @@ public class NetworkSettings implements Serializable, JSONString
         // Transform advanced options values
         setAdvancedOptionsValues(netSettingsGen);
 
+        // Transform QoS Settings
+        if (this.getQosSettings() != null)
+            netSettingsGen.setQosSettings(this.getQosSettings().transformQosSettingsToGeneric());
+
+        // Set Netflow Settings
+        if (this.getNetflowSettings() != null)
+            netSettingsGen.setNetflowSettings(this.getNetflowSettings());
+
         // Write other transformtions below
 
         return netSettingsGen;

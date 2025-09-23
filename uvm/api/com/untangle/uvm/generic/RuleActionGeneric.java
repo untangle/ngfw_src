@@ -21,8 +21,9 @@ public class RuleActionGeneric implements JSONString, Serializable {
      * SNAT, MASQUERADE - Required for NAT Rules
      * BYPASS, PROCESS - Required for Bypass Rules
      * ACCEPT, REJECT - Required for Filter Rules
+     * PRIORITY - Required for QoS Rules
      */
-    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT }
+    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, PRIORITY }
     // Common To All Rules
     private Type type;
 
@@ -43,6 +44,12 @@ public class RuleActionGeneric implements JSONString, Serializable {
 
     public InetAddress getSnat_address() { return snat_address; }
     public void setSnat_address(InetAddress snat_address) { this.snat_address = snat_address; }
+
+    // Required for QoS Rules
+    private int priority;
+
+    public int getPriority() { return priority; }
+    public void setPriority(int priority) { this.priority = priority; }
 
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);
