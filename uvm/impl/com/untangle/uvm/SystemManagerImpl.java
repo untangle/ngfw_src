@@ -288,7 +288,6 @@ public class SystemManagerImpl implements SystemManager
 
         // Set Network Settings with updated values.
         UvmContextFactory.context().networkManager().setNetworkSettings(clonedNetworkSettings);
-        UvmContextFactory.context().systemManager().setSettings(clonedSystemSettings);
 
         // Set System settings
         this.setSettings(clonedSystemSettings);

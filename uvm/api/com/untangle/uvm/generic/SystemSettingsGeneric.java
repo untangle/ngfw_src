@@ -148,11 +148,10 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             networkSettings.setPublicUrlAddress(this.publicUrlAddress);
             networkSettings.setPublicUrlMethod(this.publicUrlMethod);
             networkSettings.setPublicUrlPort(this.publicUrlPort);
-        }if(systemSettings != null){
-            systemSettings.setTimeZone(this.timeZone.getDisplayName());
         }
 
         if (systemSettings != null) {
+            systemSettings.setTimeZone(this.timeZone.getDisplayName());
             systemSettings.setCloudEnabled(this.isCloudEnabled());
             systemSettings.setSupportEnabled(this.isSupportEnabled());
         }
