@@ -298,7 +298,7 @@ public class NetworkSettings implements Serializable, JSONString
             netSettingsGen.setDhcpRelays(new LinkedList<>(this.getDhcpRelays()));
 
         // Transform advanced options values
-        AdvsancedOptionsValues(netSettingsGen);
+        setAdvancedOptionsValues(netSettingsGen);
 
         // Write other transformtions below
 
@@ -309,7 +309,7 @@ public class NetworkSettings implements Serializable, JSONString
      * Sets advanced options values from NetworkSettings to NetworkSettingsGeneric.
      * @param netSettingsGen The NetworkSettingsGeneric object to set values to.
      */
-    public void AdvsancedOptionsValues (NetworkSettingsGeneric netSettingsGen){
+    public void setAdvancedOptionsValues (NetworkSettingsGeneric netSettingsGen){
         netSettingsGen.setEnableSipNatHelper(this.getEnableSipNatHelper());
         netSettingsGen.setSendIcmpRedirects(this.getSendIcmpRedirects());
         netSettingsGen.setStpEnabled(this.getStpEnabled());
