@@ -7,6 +7,7 @@ import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.network.NetworkSettings;
 import org.json.JSONObject;
 import org.json.JSONString;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -47,6 +48,14 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private String  publicUrlMethod;
     private String  publicUrlAddress;
     private Integer publicUrlPort;
+    private TimeZone timeZone = null;
+
+
+    /**
+     * These are required for TimeZone settings
+     */
+    public void setTimeZone(TimeZone timeZone) { this.timeZone = timeZone; }
+    public TimeZone getTimeZone() { return timeZone; }
 
     public boolean isCCHidden() {
         return isCCHidden;
@@ -139,6 +148,8 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             networkSettings.setPublicUrlAddress(this.publicUrlAddress);
             networkSettings.setPublicUrlMethod(this.publicUrlMethod);
             networkSettings.setPublicUrlPort(this.publicUrlPort);
+        }if(systemSettings != null){
+            systemSettings.setTimeZone(this.timeZone.getDisplayName());
         }
 
         if (systemSettings != null) {
@@ -146,4 +157,36 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             systemSettings.setSupportEnabled(this.isSupportEnabled());
         }
     }
+    /**
+     * Represents the TimeZone data structure received from the Vue UI.
+     */
+        public static class TimeZone implements Serializable{
+        private String displayName= StringUtils.EMPTY;
+        private String value = StringUtils.EMPTY;
+
+        public TimeZone() {
+        }
+
+        public TimeZone(String displayName, String value) {
+            this.displayName = displayName;
+            this.value = value;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public void setDisplayName(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
 }

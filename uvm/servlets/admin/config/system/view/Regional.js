@@ -15,40 +15,6 @@ Ext.define('Ung.config.system.view.Regional', {
     },
 
     items: [{
-        title: 'Current Time'.t(),
-        hidden: true,
-        bind: {
-            hidden: '{!time}'
-        },
-        items: [{
-            xtype: 'component',
-            bind: '{timeSource}'
-        }, {
-            xtype: 'component',
-            margin: '10 0 0 0',
-            bind: '<i class="fa fa-clock-o"></i> <strong>{time}</strong>'
-        }]
-    }, {
-        title: 'Force Sync Time'.t(),
-        hidden: true,
-        bind: {
-            hidden: '{isExpertMode || systemSettings.timeSource === "manual" || !time}'
-        },
-        layout: {
-            type: 'hbox'
-        },
-        magin: 5,
-        items: [{
-            xtype: 'button',
-            margin: '0 10 0 0',
-            text: 'Synchronize Time'.t(),
-            iconCls: 'fa fa-refresh',
-            handler: 'syncTime'
-        }, {
-            xtype: 'displayfield',
-            value: 'Click to force instant time synchronization.'.t()
-        }]
-    }, {
         title: 'Time Settings'.t(),
         hidden: true,
         bind: {
@@ -104,33 +70,6 @@ Ext.define('Ung.config.system.view.Regional', {
                     hidden: '{systemSettings.timeSource !== "manual"}'
                 }
             }]
-        }]
-    }, {
-        title: 'Timezone'.t(),
-        hidden: true,
-        bind: {
-            hidden: '{!timeZonesList || !timeZone}'
-        },
-        items: [{
-            xtype: 'combo',
-            width: 350,
-            bind: {
-                store: '{timeZones}',
-                value: '{timeZone.ID}'
-            },
-            listeners: {
-                change: function (ck, newValue) {
-                    // warn if changing timezone but dont warn on initial render
-                    if (ck.initialized) {
-                        Ext.MessageBox.alert('Timezone changed'.t(),"A reboot is required after changing the timezone!".t());
-                    }
-                    ck.initialized = true;
-                }
-            },
-            displayField: 'name',
-            valueField: 'value',
-            editable: false,
-            queryMode: 'local'
         }]
     }, {
         title: 'Language'.t(),
