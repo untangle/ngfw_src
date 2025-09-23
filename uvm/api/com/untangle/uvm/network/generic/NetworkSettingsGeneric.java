@@ -39,6 +39,18 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     private LinkedList<DhcpRelay> dhcpRelays = null;
 
     private int dhcpMaxLeases = 5000;
+    private boolean enableSipNatHelper = false;
+    private boolean sendIcmpRedirects = true;
+    private boolean stpEnabled = false;
+    private boolean strictArpMode = true;
+    private boolean sendUnsolicitedArpUpdates = false;
+    private boolean dhcpAuthoritative = true;
+    private boolean blockDuringRestarts = false;
+    private boolean blockReplayPackets = false;
+    private boolean logBypassedSessions = true;
+    private boolean logLocalOutboundSessions = true;
+    private boolean logLocalInboundSessions = false;
+    private boolean logBlockedSessions = false;
 
     public NetworkSettingsGeneric() {
         super();
@@ -71,6 +83,42 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
     public int getDhcpMaxLeases() { return dhcpMaxLeases; }
     public void setDhcpMaxLeases(int dhcpMaxLeases) { this.dhcpMaxLeases = dhcpMaxLeases; }
+
+    public boolean getEnableSipNatHelper() { return enableSipNatHelper; }
+    public void setEnableSipNatHelper(boolean enableSipNatHelper) { this.enableSipNatHelper = enableSipNatHelper; }
+
+    public boolean getSendIcmpRedirects() { return sendIcmpRedirects; }
+    public void setSendIcmpRedirects(boolean sendIcmpRedirects) { this.sendIcmpRedirects = sendIcmpRedirects; }
+
+    public boolean getStpEnabled() { return stpEnabled; }
+    public void setStpEnabled(boolean stpEnabled) { this.stpEnabled = stpEnabled; }
+
+    public boolean getStrictArpMode() { return strictArpMode; }
+    public void setStrictArpMode(boolean strictArpMode) { this.strictArpMode = strictArpMode; }
+
+    public boolean getSendUnsolicitedArpUpdates() { return sendUnsolicitedArpUpdates; }
+    public void setSendUnsolicitedArpUpdates(boolean sendUnsolicitedArpUpdates) { this.sendUnsolicitedArpUpdates = sendUnsolicitedArpUpdates; }
+
+    public boolean getDhcpAuthoritative() { return dhcpAuthoritative; }
+    public void setDhcpAuthoritative(boolean dhcpAuthoritative) { this.dhcpAuthoritative = dhcpAuthoritative; }
+
+    public boolean getBlockDuringRestarts() { return blockDuringRestarts; }
+    public void setBlockDuringRestarts(boolean blockDuringRestarts) { this.blockDuringRestarts = blockDuringRestarts; }
+
+    public boolean getBlockReplayPackets() { return blockReplayPackets; }
+    public void setBlockReplayPackets(boolean blockReplayPackets) { this.blockReplayPackets = blockReplayPackets; }
+
+    public boolean getLogBypassedSessions() { return logBypassedSessions; }
+    public void setLogBypassedSessions(boolean logBypassedSessions) { this.logBypassedSessions = logBypassedSessions; }
+
+    public boolean getLogLocalOutboundSessions() { return logLocalOutboundSessions; }
+    public void setLogLocalOutboundSessions(boolean logLocalOutboundSessions) { this.logLocalOutboundSessions = logLocalOutboundSessions; }
+
+    public boolean getLogLocalInboundSessions() { return logLocalInboundSessions; }
+    public void setLogLocalInboundSessions(boolean logLocalInboundSessions) { this.logLocalInboundSessions = logLocalInboundSessions; }
+
+    public boolean getLogBlockedSessions() { return logBlockedSessions; }
+    public void setLogBlockedSessions(boolean logBlockedSessions) { this.logBlockedSessions = logBlockedSessions; }
 
     /**
      * Populates the provided {@link NetworkSettings} instance with data from this
@@ -154,8 +202,31 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         if (this.getDhcpRelays() != null)
             networkSettings.setDhcpRelays(DhcpRelay.transformGenericToDhcpRelay(this.getDhcpRelays()));
 
+        // Transform Settings Advanced Options
+        setAdvancedOptions(networkSettings);
+
         // Write other transformations below
-        
+
+    }
+
+    /**
+     * Sets advanced options values from NetworkSettingsGeneric to NetworkSettings.
+     * This method transfers the boolean flags related to advanced network settings
+     * from this generic object to the provided NetworkSettings object.
+     */
+    public void setAdvancedOptions(NetworkSettings networkSettings) {
+        networkSettings.setEnableSipNatHelper(this.getEnableSipNatHelper());
+        networkSettings.setSendIcmpRedirects(this.getSendIcmpRedirects());
+        networkSettings.setStpEnabled(this.getStpEnabled());
+        networkSettings.setStrictArpMode(this.getStrictArpMode());
+        networkSettings.setSendUnsolicitedArpUpdates(this.getSendUnsolicitedArpUpdates());
+        networkSettings.setDhcpAuthoritative(this.getDhcpAuthoritative());
+        networkSettings.setBlockDuringRestarts(this.getBlockDuringRestarts());
+        networkSettings.setBlockReplayPackets(this.getBlockReplayPackets());
+        networkSettings.setLogBypassedSessions(this.getLogBypassedSessions());
+        networkSettings.setLogLocalOutboundSessions(this.getLogLocalOutboundSessions());
+        networkSettings.setLogLocalInboundSessions(this.getLogLocalInboundSessions());
+        networkSettings.setLogBlockedSessions(this.getLogBlockedSessions());
     }
 
     /**
