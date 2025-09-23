@@ -40,15 +40,13 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
             Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode'),
-            Rpc.directPromise('rpc.UvmContext.isCCHidden')
         ];
 
         var dataNames = [
             'languageSettings',
             'systemSettings',
             'logDirectorySize',
-            'isExpertMode',
-            'isCCHidden'
+            'isExpertMode'
         ];
         if(Rpc.directData('rpc.appManager.app', 'http')){
             rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("http").getHttpSettings'));
