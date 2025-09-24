@@ -288,6 +288,12 @@ public class NetworkSettings implements Serializable, JSONString
         if(this.getDnsSettings() != null)
             netSettingsGen.setDnsSettings((this.getDnsSettings().transformDnsSettingsToGeneric()));
 
+        // Transform Dynamic Routing Settings
+        if(this.getDynamicRoutingSettings() != null)
+            netSettingsGen.setDynamicRoutingSettings(this.getDynamicRoutingSettings().transformDynamicRoutingSettingsToGeneric());
+
+        netSettingsGen.setEnableSipNatHelper(this.getEnableSipNatHelper());
+
         // Transform Static DHCP Entries
         netSettingsGen.setDhcpMaxLeases(this.getDhcpMaxLeases());
         if (this.getStaticDhcpEntries() != null)
@@ -309,7 +315,7 @@ public class NetworkSettings implements Serializable, JSONString
      * Sets advanced options values from NetworkSettings to NetworkSettingsGeneric.
      * @param netSettingsGen The NetworkSettingsGeneric object to set values to.
      */
-    public void setAdvancedOptionsValues (NetworkSettingsGeneric netSettingsGen){
+    public void setAdvancedOptionsValues(NetworkSettingsGeneric netSettingsGen){
         netSettingsGen.setEnableSipNatHelper(this.getEnableSipNatHelper());
         netSettingsGen.setSendIcmpRedirects(this.getSendIcmpRedirects());
         netSettingsGen.setStpEnabled(this.getStpEnabled());
