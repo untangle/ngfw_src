@@ -199,13 +199,15 @@ Ext.define('Ung.cmp.ConditionsEditor', {
                 switch (type) {
                     case 'SRC_INTF':
                     case 'DST_INTF':
-                        value.toString().split(',').forEach(function (intfff) {
-                                Util.getInterfaceList(true, true).forEach(function(intf){
-                                if(intf[0] == intfff){
-                                    valueRenderer.push(intf[1]);
-                                }
+                        if (value != null) {
+                            value.toString().split(',').forEach(function (intfff) {
+                                    Util.getInterfaceList(true, true).forEach(function(intf){
+                                    if(intf[0] == intfff){
+                                        valueRenderer.push(intf[1]);
+                                    }
+                                });
                             });
-                        });
+                        }
                     break;
                     case 'DST_LOCAL':
                     case 'WEB_FILTER_FLAGGED':
