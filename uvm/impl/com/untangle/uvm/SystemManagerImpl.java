@@ -50,7 +50,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class SystemManagerImpl implements SystemManager
 {
-    private static final int SETTINGS_VERSION = 6;
+    private static final int SETTINGS_VERSION = 7;
     private static final String ZIP_FILE = "system_logs.zip";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
@@ -133,8 +133,10 @@ public class SystemManagerImpl implements SystemManager
             this.settings = readSettings;
 
             if (this.settings.getVersion() < SETTINGS_VERSION) {
+                if(this.settings.getVersion() < 5){
+                    this.settings.setLogRetention(7);
+                }
                 this.settings.setVersion(SETTINGS_VERSION);
-                this.settings.setLogRetention(7);
                 this.settings.setTimeZone(getTimeZone().getID());
                 this.getSettings().setThresholdTemperature(105.0);
                 this.setSettings(this.settings, false);
