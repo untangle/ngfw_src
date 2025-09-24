@@ -35,6 +35,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     private LinkedList<StaticRouteGeneric> staticRoutes = null;
 
     private DnsSettingsGeneric dnsSettings;
+    private DynamicRoutingSettingsGeneric dynamicRoutingSettings;
     private LinkedList<DhcpStaticEntry> staticDhcpEntries = null;
     private LinkedList<DhcpRelay> dhcpRelays = null;
 
@@ -76,6 +77,8 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
     public DnsSettingsGeneric getDnsSettings() { return dnsSettings; }
     public void setDnsSettings(DnsSettingsGeneric dnsSettings) { this.dnsSettings = dnsSettings; }
+    public DynamicRoutingSettingsGeneric getDynamicRoutingSettings() { return dynamicRoutingSettings; }
+    public void setDynamicRoutingSettings(DynamicRoutingSettingsGeneric dynamicRoutingSettings) { this.dynamicRoutingSettings = dynamicRoutingSettings; }
     public LinkedList<DhcpStaticEntry> getStaticDhcpEntries() { return staticDhcpEntries; }
     public void setStaticDhcpEntries(LinkedList<DhcpStaticEntry> staticDhcpEntries) { this.staticDhcpEntries = staticDhcpEntries; }
     public LinkedList<DhcpRelay> getDhcpRelays() { return dhcpRelays; }
@@ -193,6 +196,14 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         if (this.getDnsSettings() != null)
             networkSettings.setDnsSettings(this.getDnsSettings().transformGenericToDnsSettings(networkSettings.getDnsSettings()));
 
+        // Transform Dynamic Routing Settings
+        if(this.getDynamicRoutingSettings() != null) {
+            networkSettings.setDynamicRoutingSettings(
+                    this.getDynamicRoutingSettings().transformGenericToDynamicRoutingSettings(
+                            networkSettings.getDynamicRoutingSettings()
+                    )
+            );
+        }
         // Transform Static DHCP Entries
         networkSettings.setDhcpMaxLeases(this.getDhcpMaxLeases());
         if (this.getStaticDhcpEntries() != null)
