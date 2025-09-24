@@ -20,7 +20,7 @@ public class RuleActionGeneric implements JSONString, Serializable {
      * DNAT - Required for Port Forward Rules
      * SNAT, MASQUERADE - Required for NAT Rules
      * BYPASS, PROCESS - Required for Bypass Rules
-     * ACCEPT, REJECT - Required for Filter Rules
+     * ACCEPT, REJECT - Required for Filter, Access and UPnP Rules
      * PRIORITY - Required for QoS Rules
      */
     public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, PRIORITY }

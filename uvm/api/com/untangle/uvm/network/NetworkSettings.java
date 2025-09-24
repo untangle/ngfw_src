@@ -304,6 +304,18 @@ public class NetworkSettings implements Serializable, JSONString
         if (this.getQosSettings() != null)
             netSettingsGen.setQosSettings(this.getQosSettings().transformQosSettingsToGeneric());
 
+        // Transform Access Rules
+        if (this.getAccessRules() != null)
+            netSettingsGen.setAccess_rules(FilterRule.transformFilterRulesToGeneric(this.getAccessRules()));
+
+        // Transform UPnP Settings
+        if (this.getUpnpSettings() != null)
+            netSettingsGen.setUpnpSettings(this.getUpnpSettings().transformUnpnSettingsToGeneric());
+
+        // Set Devices Settings
+        if (this.getDevices() != null)
+            netSettingsGen.setDevices(new LinkedList<>(this.getDevices()));
+
         // Set Netflow Settings
         if (this.getNetflowSettings() != null)
             netSettingsGen.setNetflowSettings(this.getNetflowSettings());
@@ -330,6 +342,8 @@ public class NetworkSettings implements Serializable, JSONString
         netSettingsGen.setLogLocalOutboundSessions(this.getLogLocalOutboundSessions());
         netSettingsGen.setLogLocalInboundSessions(this.getLogLocalInboundSessions());
         netSettingsGen.setLogBlockedSessions(this.getLogBlockedSessions());
+        // Custom dnsmasq options for Advanced --> DNS & DHCP Tab
+        netSettingsGen.setDnsmasqOptions(this.getDnsmasqOptions());
     }
 
     public String toJSONString()

@@ -5,14 +5,12 @@ package com.untangle.uvm.network.generic;
 
 import com.untangle.uvm.generic.RuleGeneric;
 import com.untangle.uvm.network.QosPriority;
-import com.untangle.uvm.network.QosRule;
 import com.untangle.uvm.network.QosSettings;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * QoS Settings Generic
@@ -66,6 +64,9 @@ public class QosSettingsGeneric implements Serializable, JSONString {
      * @return QosSettings
      */
     public QosSettings transformGenericToQosSettings(QosSettings qosSettings) {
+        if (qosSettings == null)
+            qosSettings = new QosSettings();
+
         qosSettings.setQueueDiscipline(this.getQueueDiscipline());
         qosSettings.setQosEnabled(this.isQosEnabled());
 

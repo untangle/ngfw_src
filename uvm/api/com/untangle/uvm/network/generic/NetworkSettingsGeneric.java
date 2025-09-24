@@ -4,13 +4,12 @@
 package com.untangle.uvm.network.generic;
 
 import com.untangle.uvm.generic.RuleGeneric;
-import com.untangle.uvm.network.DhcpOption;
+import com.untangle.uvm.network.DeviceSettings;
 import com.untangle.uvm.network.DhcpRelay;
 import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.network.NetflowSettings;
 import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.network.QosSettings;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -34,13 +33,18 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     private LinkedList<RuleGeneric> nat_rules = null;
     private LinkedList<RuleGeneric> bypass_rules = null;
     private LinkedList<RuleGeneric> filter_rules = null;
+    private LinkedList<RuleGeneric> access_rules = null;
     private LinkedList<StaticRouteGeneric> staticRoutes = null;
+    private LinkedList<DeviceSettings> devices = null;
 
     private DnsSettingsGeneric dnsSettings;
     private LinkedList<DhcpStaticEntry> staticDhcpEntries = null;
     private LinkedList<DhcpRelay> dhcpRelays = null;
     private NetflowSettings netflowSettings;
     private QosSettingsGeneric qosSettings;
+    private UpnpSettingsGeneric upnpSettings;
+
+    private String dnsmasqOptions;
 
     private int dhcpMaxLeases = 5000;
     private boolean enableSipNatHelper = false;
@@ -74,9 +78,13 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     public void setBypass_rules(LinkedList<RuleGeneric> bypass_rules) { this.bypass_rules = bypass_rules; }
     public LinkedList<RuleGeneric> getFilter_rules() { return filter_rules; }
     public void setFilter_rules(LinkedList<RuleGeneric> filter_rules) { this.filter_rules = filter_rules; }
+    public LinkedList<RuleGeneric> getAccess_rules() { return access_rules; }
+    public void setAccess_rules(LinkedList<RuleGeneric> access_rules) { this.access_rules = access_rules; }
 
     public LinkedList<StaticRouteGeneric> getStaticRoutes() { return staticRoutes; }
     public void setStaticRoutes(LinkedList<StaticRouteGeneric> staticRoutes) { this.staticRoutes = staticRoutes; }
+    public LinkedList<DeviceSettings> getDevices() { return devices; }
+    public void setDevices(LinkedList<DeviceSettings> devices) { this.devices = devices; }
 
     public DnsSettingsGeneric getDnsSettings() { return dnsSettings; }
     public void setDnsSettings(DnsSettingsGeneric dnsSettings) { this.dnsSettings = dnsSettings; }
@@ -88,6 +96,11 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     public void setNetflowSettings(NetflowSettings netflowSettings) { this.netflowSettings = netflowSettings; }
     public QosSettingsGeneric getQosSettings() { return qosSettings; }
     public void setQosSettings(QosSettingsGeneric qosSettings) { this.qosSettings = qosSettings; }
+    public UpnpSettingsGeneric getUpnpSettings() { return upnpSettings; }
+    public void setUpnpSettings(UpnpSettingsGeneric upnpSettings) { this.upnpSettings = upnpSettings; }
+
+    public String getDnsmasqOptions() { return dnsmasqOptions; }
+    public void setDnsmasqOptions(String dnsmasqOptions) { this.dnsmasqOptions = dnsmasqOptions; }
 
     public int getDhcpMaxLeases() { return dhcpMaxLeases; }
     public void setDhcpMaxLeases(int dhcpMaxLeases) { this.dhcpMaxLeases = dhcpMaxLeases; }
@@ -205,6 +218,18 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         if (this.getQosSettings() != null)
             networkSettings.setQosSettings(this.getQosSettings().transformGenericToQosSettings(networkSettings.getQosSettings()));
 
+        // Transform Access Rules
+        if (this.getAccess_rules() != null)
+            networkSettings.setAccessRules(RuleGeneric.transformGenericToLegacyFilterRules(this.getAccess_rules(), networkSettings.getAccessRules()));
+
+        // Transform UPnP Settings
+        if (this.getUpnpSettings() != null)
+            networkSettings.setUpnpSettings(this.getUpnpSettings().transformGenericToUnpnSettings(networkSettings.getUpnpSettings()));
+
+        // Set Devices Settings
+        if (this.getDevices() != null)
+            networkSettings.setDevices(this.getDevices());
+
         // Set Netflow Settings
         if (this.getNetflowSettings() != null)
             networkSettings.setNetflowSettings(this.getNetflowSettings());
@@ -231,6 +256,8 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         networkSettings.setLogLocalOutboundSessions(this.getLogLocalOutboundSessions());
         networkSettings.setLogLocalInboundSessions(this.getLogLocalInboundSessions());
         networkSettings.setLogBlockedSessions(this.getLogBlockedSessions());
+        // Custom dnsmasq options for Advanced --> DNS & DHCP Tab
+        networkSettings.setDnsmasqOptions(this.getDnsmasqOptions());
     }
 
     /**
