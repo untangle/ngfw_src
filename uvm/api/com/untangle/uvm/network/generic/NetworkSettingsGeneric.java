@@ -198,12 +198,9 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
 
         // Transform Dynamic Routing Settings
         if(this.getDynamicRoutingSettings() != null) {
-            networkSettings.setDynamicRoutingSettings(
-                    this.getDynamicRoutingSettings().transformGenericToDynamicRoutingSettings(
-                            networkSettings.getDynamicRoutingSettings()
-                    )
-            );
+            networkSettings.setDynamicRoutingSettings(this.getDynamicRoutingSettings().transformGenericToDynamicRoutingSettings(networkSettings.getDynamicRoutingSettings()));
         }
+
         // Transform Static DHCP Entries
         networkSettings.setDhcpMaxLeases(this.getDhcpMaxLeases());
         if (this.getStaticDhcpEntries() != null)

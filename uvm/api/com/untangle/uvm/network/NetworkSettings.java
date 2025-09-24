@@ -292,6 +292,8 @@ public class NetworkSettings implements Serializable, JSONString
         if(this.getDynamicRoutingSettings() != null)
             netSettingsGen.setDynamicRoutingSettings(this.getDynamicRoutingSettings().transformDynamicRoutingSettingsToGeneric());
 
+        netSettingsGen.setEnableSipNatHelper(this.getEnableSipNatHelper());
+
         // Transform Static DHCP Entries
         netSettingsGen.setDhcpMaxLeases(this.getDhcpMaxLeases());
         if (this.getStaticDhcpEntries() != null)
@@ -326,10 +328,6 @@ public class NetworkSettings implements Serializable, JSONString
         netSettingsGen.setLogLocalOutboundSessions(this.getLogLocalOutboundSessions());
         netSettingsGen.setLogLocalInboundSessions(this.getLogLocalInboundSessions());
         netSettingsGen.setLogBlockedSessions(this.getLogBlockedSessions());
-    }
-
-    public void transformDynamicRouting(NetworkSettingsGeneric netSettingsGen) {
-        netSettingsGen.setEnableSipNatHelper(this.getEnableSipNatHelper());
     }
 
     public String toJSONString()
