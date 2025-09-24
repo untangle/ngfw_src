@@ -35,7 +35,6 @@ public class SystemSettings implements Serializable, JSONString
     private SnmpSettings snmpSettings;
 
     private String timeSource = "ntp";
-    private String timeZone = null;
 
     private int logRetention = 7;
     
@@ -134,12 +133,6 @@ public class SystemSettings implements Serializable, JSONString
     public void setAutoUpgradeMinute( int newValue) { this.autoUpgradeMinute = newValue; }
 
     /**
-     * Get the current timeZone
-     */
-    public String getTimeZone() { return timeZone; }
-    public void setTimeZone(String timeZone) { this.timeZone = timeZone; }
-
-    /**
      * Get the current settings version
      */
     public int getVersion() { return version; }
@@ -229,8 +222,9 @@ public class SystemSettings implements Serializable, JSONString
      * @return a new {@link SystemSettingsGeneric} instance containing the generic representation of systemSettings for vue UI
      */
     public SystemSettingsGeneric transformLegacyToGenericSettings(NetworkSettings networkSettings) {
+        UvmContext context =  UvmContextFactory.context();
         SystemSettingsGeneric systemSettingsGeneric = new SystemSettingsGeneric();
-        systemSettingsGeneric.setCCHidden(UvmContextFactory.context().isCCHidden());
+        systemSettingsGeneric.setCCHidden(context.isCCHidden());
 
         if (networkSettings != null) {
             // Local Services Settings
@@ -253,7 +247,7 @@ public class SystemSettings implements Serializable, JSONString
             systemSettingsGeneric.setPublicUrlMethod(networkSettings.getPublicUrlMethod());
             systemSettingsGeneric.setPublicUrlPort(networkSettings.getPublicUrlPort());
         }
-        systemSettingsGeneric.setTimeZone(new SystemSettingsGeneric.TimeZone(this.timeZone, StringUtils.EMPTY));
+        systemSettingsGeneric.setTimeZone(new SystemSettingsGeneric.TimeZone(context.systemManager().getTimeZone().getID(), StringUtils.EMPTY));
 
         systemSettingsGeneric.setCloudEnabled(this.getCloudEnabled());
         systemSettingsGeneric.setSupportEnabled(this.getSupportEnabled());

@@ -50,7 +50,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class SystemManagerImpl implements SystemManager
 {
-    private static final int SETTINGS_VERSION = 7;
+    private static final int SETTINGS_VERSION = 6;
     private static final String ZIP_FILE = "system_logs.zip";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
@@ -137,7 +137,6 @@ public class SystemManagerImpl implements SystemManager
                     this.settings.setLogRetention(7);
                 }
                 this.settings.setVersion(SETTINGS_VERSION);
-                this.settings.setTimeZone(getTimeZone().getID());
                 this.getSettings().setThresholdTemperature(105.0);
                 this.setSettings(this.settings, false);
             }
@@ -287,6 +286,9 @@ public class SystemManagerImpl implements SystemManager
 
         // update network (Hostname|Services) and system settings with value coming from postData
         systemSettingsGeneric.transformGenericToLegacySettings(clonedSystemSettings, clonedNetworkSettings);
+        
+        //Set TimeZone with updated values.
+        setTimeZone(TimeZone.getTimeZone(systemSettingsGeneric.getTimeZone().getDisplayName()));
 
         // Set Network Settings with updated values.
         UvmContextFactory.context().networkManager().setNetworkSettings(clonedNetworkSettings);
@@ -337,9 +339,6 @@ public class SystemManagerImpl implements SystemManager
             newSettings.setRadiusProxyPassword(null);
         }
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
-        if(this.settings != null && !this.settings.getTimeZone().equals(newSettings.getTimeZone())){
-            setTimeZone(TimeZone.getTimeZone(newSettings.getTimeZone()));
-        }
         try {
             settingsManager.save(this.SettingsFileName, newSettings);
         } catch (SettingsManager.SettingsException e) {
@@ -1030,7 +1029,6 @@ can look deeper. - mahotz
         newSettings.setAutoUpgradeHour(23);
         newSettings.setAutoUpgradeMinute((new java.util.Random()).nextInt(60));
         newSettings.setAutoUpgradeDays(DayOfWeekMatcher.getAnyMatcher());
-        newSettings.setTimeZone(getTimeZone().getID());
         // pass the settings to the OEM override function and return the override settings
         SystemSettings overrideSettings = (SystemSettings)UvmContextFactory.context().oemManager().applyOemOverrides(newSettings);
         return overrideSettings;

@@ -151,7 +151,6 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
         }
 
         if (systemSettings != null) {
-            systemSettings.setTimeZone(this.timeZone.getDisplayName());
             systemSettings.setCloudEnabled(this.isCloudEnabled());
             systemSettings.setSupportEnabled(this.isSupportEnabled());
         }
