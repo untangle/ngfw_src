@@ -956,7 +956,7 @@ class UvmTests(NGFWTestCase):
         global_functions.uvmContext.appManager().destroy( application.getAppSettings()["id"] )
 
     def test_100_account_login(self):
-        untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
+        untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle2")
         if untangleEmail == "message":
             raise unittest.SkipTest('Skipping no accound found:' + str(untanglePassword))
 
