@@ -5,46 +5,55 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.RuleCondition;
-import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.network.InterfaceStatus;
-import com.untangle.uvm.network.DeviceStatus;
-import com.untangle.uvm.network.DeviceSettings;
 import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.BypassRuleCondition;
-import com.untangle.uvm.network.StaticRoute;
-import com.untangle.uvm.network.NatRule;
-import com.untangle.uvm.network.NatRuleCondition;
-import com.untangle.uvm.network.PortForwardRule;
-import com.untangle.uvm.network.PortForwardRuleCondition;
-import com.untangle.uvm.network.FilterRule;
-import com.untangle.uvm.network.FilterRuleCondition;
-import com.untangle.uvm.network.QosSettings;
-import com.untangle.uvm.network.QosRule;
-import com.untangle.uvm.network.QosRuleCondition;
-import com.untangle.uvm.network.QosPriority;
-import com.untangle.uvm.network.DnsSettings;
-import com.untangle.uvm.network.DhcpStaticEntry;
+import com.untangle.uvm.network.DeviceSettings;
+import com.untangle.uvm.network.DeviceStatus;
+import com.untangle.uvm.network.DeviceStatus.ConnectedStatus;
+import com.untangle.uvm.network.DeviceStatus.DuplexStatus;
 import com.untangle.uvm.network.DhcpRelay;
-import com.untangle.uvm.network.UpnpSettings;
-import com.untangle.uvm.network.InterfaceSettings.ConfigType;
-import com.untangle.uvm.network.UpnpRule;
-import com.untangle.uvm.network.UpnpRuleCondition;
-import com.untangle.uvm.network.NetflowSettings;
-import com.untangle.uvm.network.DynamicRoutingSettings;
+import com.untangle.uvm.network.DhcpStaticEntry;
+import com.untangle.uvm.network.DnsSettings;
 import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
 import com.untangle.uvm.network.DynamicRouteNetwork;
 import com.untangle.uvm.network.DynamicRouteOspfArea;
 import com.untangle.uvm.network.DynamicRouteOspfInterface;
+import com.untangle.uvm.network.DynamicRoutingSettings;
+import com.untangle.uvm.network.FilterRule;
+import com.untangle.uvm.network.FilterRuleCondition;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.InterfaceSettings.ConfigType;
+import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
+import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
+import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.network.NatRule;
+import com.untangle.uvm.network.NatRuleCondition;
+import com.untangle.uvm.network.NetflowSettings;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.PortForwardRule;
+import com.untangle.uvm.network.PortForwardRuleCondition;
+import com.untangle.uvm.network.QosPriority;
+import com.untangle.uvm.network.QosRule;
+import com.untangle.uvm.network.QosRuleCondition;
+import com.untangle.uvm.network.QosSettings;
+import com.untangle.uvm.network.StaticRoute;
+import com.untangle.uvm.network.UpnpRule;
+import com.untangle.uvm.network.UpnpRuleCondition;
+import com.untangle.uvm.network.UpnpSettings;
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
+import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
+import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.ObjectMatcher;
+import com.untangle.uvm.util.StringUtil;
+
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jabsorb.serializer.UnmarshallException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,15 +65,18 @@ import java.net.InetAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.Iterator;
+import java.util.stream.Stream;
 
 /**
  * The Network Manager handles all the network configuration
@@ -73,6 +85,10 @@ public class NetworkManagerImpl implements NetworkManager
 {
     public static final String MAC = "MAC";
     public static final String ORGANIZATION = "Organization";
+    private static final String INET = "inet";
+    private static final String INET6 = "inet6";
+    private static final String DHCP = "dhcp";
+    private static final String DHCPV6 = "dhcpv6";
     public static final String COMMA = ",";
     private final Logger logger = LogManager.getLogger(this.getClass());
 
@@ -99,7 +115,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
-    private Integer currentVersion = 11;
+    private Integer currentVersion = 12;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
@@ -221,12 +237,32 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
+     * Get the v2 network settings
+     * @return NetworkSettingsV2
+     */
+    public NetworkSettingsGeneric getNetworkSettingsV2() {
+        return this.networkSettings.transformNetworkSettingsToGeneric();
+    }
+
+    /**
      * Set the network settings
      * @param newSettings
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
         setNetworkSettings( newSettings, true );
+    }
+
+    /**
+     * Set the network settings V2
+     * @param newSettings
+     */
+    public void setNetworkSettingsV2( NetworkSettingsGeneric newSettings )
+    {
+        // Deep clone current Network Settings to transform in New Network Settings
+        NetworkSettings clonedNetworkSettings = SerializationUtils.clone(this.networkSettings);
+        newSettings.transformGenericToNetworkSettings(clonedNetworkSettings);
+        setNetworkSettings( clonedNetworkSettings, true );
     }
 
     /**
@@ -567,6 +603,214 @@ public class NetworkManagerImpl implements NetworkManager
         }
         status.setInterfaceId(interfaceId); //Interface id must be set in all cases. It is not stored in interface-<interfaceId>-status.js file
         return status;
+    }
+
+    /**
+     * Method to get all interfaces' status.
+     * @return List of InterfaceStatusGeneric
+     */
+    public List<InterfaceStatusGeneric> getAllInterfacesStatusV2() {
+        List<DeviceStatus> deviceStatusList = getDeviceStatus();
+
+        return networkSettings.getInterfaces().stream()
+                .map(intf -> buildInterfaceStatus(intf.resolveDeviceName(), intf, deviceStatusList))
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    /**
+     * Method to get status for a specific interface by device name.
+     * @param device the resolved device name (e.g., eth0, eth1.12, wlan0)
+     * @return InterfaceStatusGeneric for the device, or null if not found
+     */
+    public InterfaceStatusGeneric getInterfaceStatusV2(String device) {
+        List<DeviceStatus> deviceStatusList = getDeviceStatus();
+
+        return networkSettings.getInterfaces().stream()
+                .filter(intf -> device.equals(intf.resolveDeviceName()))
+                .findFirst()
+                .map(intf -> buildInterfaceStatus(device, intf, deviceStatusList))
+                .orElse(null);
+    }
+
+    /**
+     * Helper: Build populated InterfaceStatusGeneric
+     * @param device device name
+     * @param intf InterfaceSettings
+     * @param deviceStatusList List<DeviceStatus>
+     * @return InterfaceStatusGeneric
+     */
+    private InterfaceStatusGeneric buildInterfaceStatus(String device, InterfaceSettings intf, List<DeviceStatus> deviceStatusList) {
+        InterfaceStatusGeneric status = new InterfaceStatusGeneric();
+
+        status.setDevice(device);
+        status.setWan(intf.getIsWan());
+        status.setInterfaceId(intf.getInterfaceId());
+        populateTransferStats(status, intf);
+        populateMacVendor(status);
+        populateIpAddresses(status, intf);
+        populateConnectionStatus(status, intf, deviceStatusList);
+        populateGatewayAndDns(status, intf);
+        populateAddressSources(status, intf);
+
+        return status;
+    }
+
+    /** 
+     * Populates transfer statistics such as rx/tx bytes, packets, errors, and drops. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateTransferStats(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSymbolicDev());
+        String[] stats = intfTransfer.trim().split("\\s+");
+
+        if (stats.length < 12) return;
+
+        status.setMacAddress(stats[1]);
+        status.setRxbytes(parseLongSafe(stats[2]));
+        status.setRxpkts(parseLongSafe(stats[3]));
+        status.setRxerr(parseLongSafe(stats[4]));
+        status.setRxdrop(parseLongSafe(stats[5]));
+        status.setTxbytes(parseLongSafe(stats[8]));
+        status.setTxpkts(parseLongSafe(stats[9]));
+        status.setTxerr(parseLongSafe(stats[10]));
+        status.setTxdrop(parseLongSafe(stats[11]));
+    }
+
+    /** 
+     * Adds vendor name based on MAC address to the InterfaceStatusGeneric object. 
+     * @param status InterfaceStatusGeneric
+     */
+    private void populateMacVendor(InterfaceStatusGeneric status) {
+        String vendor = null;
+        if(status.getMacAddress() != null) {
+            if (cachedMacAddrVendorList.containsKey(status.getMacAddress())) {
+                vendor = cachedMacAddrVendorList.get(status.getMacAddress());
+            } else {
+                vendor = UvmContextFactory.context()
+                            .deviceTable()
+                            .getMacVendorFromMacAddress(status.getMacAddress());
+                if (!StringUtil.isEmpty(vendor)) {
+                    cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
+                }
+            }
+        }
+        status.setMacVendor(vendor);
+    }
+
+    /** 
+     * Populates IPv4 and IPv6 addresses for the interface 
+     * in InterfaceStatusGeneric using Status - INTERFACE_IP_ADDRESSES. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateIpAddresses(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSymbolicDev());
+        String[] tokens = ipStatus.trim().split("\\s+");
+
+        String nextType = "";
+        for (String token : tokens) {
+            if (INET.equals(nextType)) {
+                if(status.getIp4Addr() == null)
+                    status.setIp4Addr(new LinkedList<>());
+                status.getIp4Addr().add(token);
+            } else if (INET6.equals(nextType)) {
+                if(status.getIp6Addr() == null)
+                    status.setIp6Addr(new LinkedList<>());
+                status.getIp6Addr().add(token);
+            }
+            nextType = "";
+            if (INET.equals(token)) nextType = INET;
+            else if (INET6.equals(token)) nextType = INET6;
+        }
+    }
+
+    /** 
+     * Populates connection state (connected/offline), duplex, and speed. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     * @param deviceStatusList List<DeviceStatus>
+     */
+    private void populateConnectionStatus(InterfaceStatusGeneric status, InterfaceSettings intf, List<DeviceStatus> deviceStatusList) {
+        for (DeviceStatus ds : deviceStatusList) {
+            if (ds.getDeviceName().equals(intf.getPhysicalDev())) {
+                boolean isConnected = ConnectedStatus.CONNECTED.equals(ds.getConnected());
+                DuplexStatus duplex = ds.getDuplex();
+
+                status.setConnected(isConnected);
+                status.setOffline(!isConnected);
+                status.setEthSpeed(ds.getMbit());
+
+                if (duplex == DuplexStatus.FULL_DUPLEX) status.setEthDuplex("full");
+                else if(duplex == DuplexStatus.HALF_DUPLEX) status.setEthDuplex("half");
+                else status.setEthDuplex(DuplexStatus.UNKNOWN.toString().toLowerCase());
+                
+                return;
+            }
+        }
+    }
+
+    /** 
+     * Sets DNS and gateway information from interface status. 
+     * @param status InterfaceStatusGeneric
+     * @param intf InterfaceSettings
+     */
+    private void populateGatewayAndDns(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        InterfaceStatus intfStatus = getInterfaceStatus(intf.getInterfaceId());
+        List<InetAddress> dns = Stream.of(intfStatus.getV4Dns1(), intfStatus.getV4Dns2())
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
+        if (!dns.isEmpty()) {
+            if (status.getDnsServers() == null)
+                status.setDnsServers(new LinkedList<>());
+            status.getDnsServers().addAll(dns);
+        }
+        status.setV4Address(intfStatus.getV4Address());
+        status.setIp4Gateway(intfStatus.getV4Gateway());
+        status.setIp6Gateway(intfStatus.getV6Gateway());
+    }
+
+    /** Populates IPv4/IPv6 address source (dhcp/static/pppoe
+    * @param status InterfaceStatusGeneric
+    * @param intf InterfaceSettings
+    */
+    private void populateAddressSources(InterfaceStatusGeneric status, InterfaceSettings intf) {
+        if (intf.getConfigType() != ConfigType.ADDRESSED) return;
+
+        // Ensure lists are initialized
+        if(status.getAddressSource() == null)
+            status.setAddressSource(new LinkedList<>());
+        if(status.getIp6addressSource() == null && intf.getV6ConfigType() != V6ConfigType.DISABLED)
+            status.setIp6addressSource(new LinkedList<>());
+        
+        // Handle IPv4 address source
+        V4ConfigType v4Type = intf.getV4ConfigType();
+        switch (v4Type) {
+            case AUTO: 
+                status.getAddressSource().add(DHCP); break;
+            case PPPOE: 
+            case STATIC: {
+                status.getAddressSource().add(v4Type.name().toLowerCase()); break;
+            }
+        }
+
+        // Handle IPv6 address source
+        V6ConfigType v6Type = intf.getV6ConfigType();
+        switch (v6Type) {
+            case AUTO: 
+                status.getIp6addressSource().add(DHCPV6); break;
+            case STATIC: 
+                status.getIp6addressSource().add(v6Type.name().toLowerCase()); break;
+        }
+    }
+
+    /** 
+     * Safely parses integer, returns 0 if invalid. 
+     * @param str String
+     * @return int 
+     */
+    private long parseLongSafe(String str) {
+        return str.matches("-?\\d+") ? Long.parseLong(str) : 0;
     }
 
     /**
@@ -3070,20 +3314,42 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public ExecManagerResultReader runTroubleshooting(TroubleshootingCommands command, JSONObject arguments)
     {
-        List<String> environment_variables = new ArrayList<String>();
-        try{
-            if(arguments != null){
+        List<String> environment_variables = new ArrayList<>();
+        List<String> suspiciousEntries = new ArrayList<>();
+        // Define regex patterns
+        Pattern hostnamePattern = Pattern.compile("^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*\\.?$");
+        Pattern ipv4Pattern = Pattern.compile("^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.|$)){4}$");
+        Pattern ipv6Pattern = Pattern.compile("^(?:[\\da-fA-F]{1,4}:){7}[\\da-fA-F]{1,4}$");
+        Pattern urlPattern = Pattern.compile("^(https?://)([\\w\\-\\.]+)(:\\d+)?(/\\S*)?$");
+
+        try {
+            if (arguments != null) {
                 Iterator<?> keys = arguments.keys();
-                while(keys.hasNext()) {
+                while (keys.hasNext()) {
                     String key = (String) keys.next();
-                    environment_variables.add(key + "=" + arguments.get(key));
+                    String value = String.valueOf(arguments.get(key)).trim();
+
+                    if ("HOST".equalsIgnoreCase(key)) {
+                        boolean validHost = hostnamePattern.matcher(value).matches() ||
+                                            ipv4Pattern.matcher(value).matches() ||
+                                            ipv6Pattern.matcher(value).matches();
+                        if (!validHost) {
+                            suspiciousEntries.add(key + "=" + value);
+                        }
+                    } else if ("URL".equalsIgnoreCase(key)) {
+                        if (!urlPattern.matcher(value).matches()) {
+                            suspiciousEntries.add(key + "=" + value);
+                        }
+                    }
+
+                    environment_variables.add(key + "=" + value);
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.warn("runTroubleshooting, parsing arguments: ", e);
         }
 
-        switch(command){
+        switch (command) {
             case CONNECTIVITY:
             case REACHABLE:
             case DNS:
@@ -3091,15 +3357,24 @@ public class NetworkManagerImpl implements NetworkManager
             case PATH:
             case DOWNLOAD:
             case TRACE:
-                try{
-                    for(String var : environment_variables) {
+                try {
+                    for (String var : environment_variables) {
                         if (var.contains(";") || var.contains("&") || var.contains("|")
                                 || var.contains(">") || var.contains("$(")) {
                             throw new RuntimeException("runTroubleshooting suspicious command: (" + environment_variables + "), blocked");
                         }
                     }
-                    return UvmContextFactory.context().execManager().execEvil(new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()}, environment_variables.toArray(new String[0]));
-                }catch(Exception e){
+
+                    if (!suspiciousEntries.isEmpty()) {
+                        throw new RuntimeException("runTroubleshooting suspicious entry: " + suspiciousEntries + ", blocked");
+                    }
+
+                    return UvmContextFactory.context().execManager().execEvil(
+                        new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()},
+                        environment_variables.toArray(new String[0])
+                    );
+
+                } catch (Exception e) {
                     logger.warn("runTroubleshooting executing:", e);
                     return null;
                 }
@@ -3115,7 +3390,24 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void convertSettings()
     {
-        // For 17.1, peform "free" conversion to set the new dhcpMaxLeases setting to its default value
+        // For 17.5 Vue Migration Changes
+        boolean globalQosEnabled = this.networkSettings.getQosSettings() != null && this.networkSettings.getQosSettings().getQosEnabled();
+        for(InterfaceSettings intfSettings: this.networkSettings.getInterfaces()) {
+            // Set generic config type for Vue response config type.
+            InterfaceSettingsGeneric.ConfigType configTypeGeneric =
+                    (intfSettings.getConfigType() != ConfigType.DISABLED)
+                            ? InterfaceSettingsGeneric.ConfigType.valueOf(intfSettings.getConfigType().name())
+                            : InterfaceSettingsGeneric.ConfigType.ADDRESSED;
+            intfSettings.setConfigTypeGeneric(configTypeGeneric);
+
+            // If global QOS is enabled and interface have non zero band width set qosEnabled true for that interface
+            if(intfSettings.getIsWan() && globalQosEnabled) {
+                boolean qosEnabled = intfSettings.getDownloadBandwidthKbps() != null && intfSettings.getDownloadBandwidthKbps() != 0
+                        && intfSettings.getUploadBandwidthKbps() != null && intfSettings.getUploadBandwidthKbps() != 0;
+                intfSettings.setQosEnabled(qosEnabled);
+            }
+        }
+        // Set new version
         this.networkSettings.setVersion( currentVersion );
         this.setNetworkSettings( this.networkSettings, false );
     }

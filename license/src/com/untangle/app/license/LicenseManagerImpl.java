@@ -61,7 +61,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private static final int    LIENENCY_CONSTANT = 5; /* the enforced seat limit is the license seat limit PLUS this value */
     private static final String LIENENCY_GIFT_FILE = System.getProperty("uvm.conf.dir") + "/gift"; /* the file that defines the gift value */
     private static final int    LIENENCY_GIFT = getLienencyGift(); /* and extra lienency constant */
-    private static final int    LICENSE_FILES_COUNT = 5; /* no of License files to keep */
+    private static final long LICENSE_DAYS_COUNT = 5 * 24 * 60 * 60 * 1000; /* last no of days License files to keep */
 
     public static final String DIRECTORY_CONNECTOR_OLDNAME = "adconnector";
     public static final String BANDWIDTH_CONTROL_OLDNAME = "bandwidth";
@@ -1002,10 +1002,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         try {
             if (licenseDirectory.isDirectory()) {
                 File[] files = licenseDirectory.listFiles();
-                if (files != null && files.length > LICENSE_FILES_COUNT) {
+                if (files != null) {
+                    long fiveDaysAgo = System.currentTimeMillis() - LICENSE_DAYS_COUNT;
                     Arrays.stream(files)
-                          .sorted((f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified()))
-                          .skip(LICENSE_FILES_COUNT)
+                          .filter(f -> f.lastModified() < fiveDaysAgo)
                           .forEach(File::delete);
                 }
                 logger.info ("Cleaning old license files... Done");

@@ -1508,7 +1508,7 @@ class FactoryDefaults(Form):
 
         uvm = UvmContext()
         try:
-            uvm.execute("nohup /usr/share/untangle/bin/ut-factory-defaults")
+            uvm.context.configManager().doFactoryReset()
         except:
             pass
         uvm = None

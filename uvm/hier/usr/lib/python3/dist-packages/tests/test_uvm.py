@@ -114,7 +114,7 @@ def check_javascript_exceptions(errors):
 
 def find_files(dir_path, search_string):
     license_files = []
-    for root, dirs, files in os.walk(dir_path):
+    for root, dirs, files in os.walk(dir_path, followlinks=False):
         for filename in fnmatch.filter(files, search_string):
             license_files.append(os.path.join(root, filename))
     return license_files
@@ -957,7 +957,7 @@ class UvmTests(NGFWTestCase):
         global_functions.uvmContext.appManager().destroy( application.getAppSettings()["id"] )
 
     def test_100_account_login(self):
-        untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle")
+        untangleEmail, untanglePassword = global_functions.get_live_account_info("Untangle2")
         if untangleEmail == "message":
             raise unittest.SkipTest('Skipping no accound found:' + str(untanglePassword))
 
@@ -1292,17 +1292,30 @@ class UvmTests(NGFWTestCase):
     @pytest.mark.slow
     def test_302_cleanup_license_files(self):
         """
-        Ensure that last 5 license files are present
+        Ensure that license files older than 5 days are removed.
         """
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
-        # This should prune no of license files to 5
-        # Executing  reload license 6 times
-        for _ in range(6):
-            global_functions.uvmContext.licenseManager().reloadLicenses(False)
-        license_files = find_files("/usr/share/untangle/conf/licenses/", "*licenses.js*")
-        # verify pruned no of license files to <=5
-        assert len(license_files) <= 5
+
+        license_dir = "/usr/share/untangle/conf/licenses/"
+        now = time.time()
+        five_days_ago = now - (5 * 24 * 60 * 60)
+        # Create some dummy files
+        open(os.path.join(license_dir, "license_9_days_ago.js"), 'w').close()
+        os.utime(os.path.join(license_dir, "license_9_days_ago.js"), (now - (9 * 24 * 60 * 60), now - (9 * 24 * 60 * 60)))
+        open(os.path.join(license_dir, "license_12_days_ago.js"), 'w').close()
+        os.utime(os.path.join(license_dir, "license_12_days_ago.js"), (now - (12 * 24 * 60 * 60), now - (12 * 24 * 60 * 60)))
+
+
+        # Trigger the cleanup
+        global_functions.uvmContext.licenseManager().reloadLicenses(False)
+        time.sleep(2) # Give it a moment to process
+
+        # Verify the files
+        license_files = find_files(license_dir, "*license*.js*")
+        
+        for lic_file in license_files:
+            assert os.lstat(lic_file).st_mtime > five_days_ago
 
 
     @pytest.mark.slow

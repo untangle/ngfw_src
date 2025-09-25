@@ -21,6 +21,8 @@ public interface DeviceTable
     public DeviceTableEntry getDevice( String macAddress );
     
     public JSONArray lookupMacVendor( String macAddress );
+    
+    String getMacVendorFromMacAddress(String macAddress);
 
     public void saveDevicesSettings(boolean lastSaveTimeCheck);
 }

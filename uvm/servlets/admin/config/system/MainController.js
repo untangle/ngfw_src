@@ -3,7 +3,33 @@ Ext.define('Ung.config.system.MainController', {
     alias: 'controller.config-system',
 
     control: {
-        '#': { afterrender: 'loadSettings' }
+        '#': {
+            render: 'onRender',
+            afterrender: 'loadSettings',
+            hide: 'onHide'
+        },
+    },
+
+    onHide: function () {
+        if (this._boundHandler) {
+            window.removeEventListener('message', this._boundHandler);
+            this._boundHandler = null;
+        }
+    },
+
+    onRender: function () {
+         this._boundHandler = this.handleMessage.bind(this);
+         window.addEventListener('message', this._boundHandler);
+    },
+
+    handleMessage: function(event) {
+        // Check the origin of the message for security
+        if (event.origin !== window.location.origin) {
+          return;
+        }
+        if (event && event.data && event.data.action === Util.ACTION_EVENTS.REFRESH_SYSTEM_SETTINGS) {
+            this.loadSettings();
+        }
     },
 
     loadSettings: function () {
@@ -12,23 +38,15 @@ Ext.define('Ung.config.system.MainController', {
         var rpcSequence = [
             Rpc.asyncPromise('rpc.languageManager.getLanguageSettings'),
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
-            Rpc.asyncPromise('rpc.systemManager.getDate'),
-            Rpc.asyncPromise('rpc.systemManager.getTimeZone'),
-            Rpc.asyncPromise('rpc.systemManager.getTimeZones'),
             Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode'),
-            Rpc.directPromise('rpc.UvmContext.isCCHidden')
         ];
 
         var dataNames = [
             'languageSettings',
             'systemSettings',
-            'time',
-            'timeZone',
-            'timeZonesList',
             'logDirectorySize',
-            'isExpertMode',
-            'isCCHidden'
+            'isExpertMode'
         ];
         if(Rpc.directData('rpc.appManager.app', 'http')){
             rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("http").getHttpSettings'));
@@ -54,13 +72,6 @@ Ext.define('Ung.config.system.MainController', {
                 return;
             }
 
-            var timeZones = [];
-            if (result[4]) {
-                eval(result[4]).forEach(function (tz) {
-                    timeZones.push({name: '(' + tz[1] + ') ' + tz[0], value: tz[0]});
-                });
-            }
-            vm.set('timeZonesList', timeZones);
 
             // Massage language to include the appropriate source.
             var languageSettings = result[0];
@@ -102,27 +113,6 @@ Ext.define('Ung.config.system.MainController', {
         });
     },
 
-    syncTime: function () {
-        Ext.MessageBox.confirm(
-            'Force Time Synchronization'.t(),
-            'Forced time synchronization can cause problems if the current date is far in the future.'.t() + '<br/>' +
-            'A reboot is suggested after time sychronization.'.t() + '<br/><br/>' +
-            'Continue?'.t(),
-            function(btn) {
-                if (btn === 'yes') {
-                    Ext.MessageBox.wait('Synchronizing time with the internet...'.t(), 'Please wait'.t());
-                    Rpc.asyncData('rpc.UvmContext.forceTimeSync')
-                    .then(function(result){
-                        Ext.MessageBox.hide();
-                        if (result !== 0) {
-                            Util.handleException('Time synchronization failed. Return code:'.t() + ' ' + result);
-                        } else {
-                            Util.successToast('Time was synchronized!');
-                        }
-                    });
-                }
-            });
-    },
 
     syncLanguage: function () {
         Ext.MessageBox.wait('Synchronizing languages with the internet...'.t(), 'Please wait'.t());
@@ -178,7 +168,6 @@ Ext.define('Ung.config.system.MainController', {
         var rpcSequence = [
             Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', languageSettings),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
-            Rpc.asyncPromise('rpc.systemManager.setTimeZone', vm.get('timeZone')),
         ];
 
         if(Rpc.directData('rpc.appManager.app', 'http')){
@@ -219,75 +208,6 @@ Ext.define('Ung.config.system.MainController', {
         var downloadForm = document.getElementById('downloadForm');
         downloadForm.type.value = 'SystemSupportLogs';
         downloadForm.submit();
-    },
-
-    manualReboot: function () {
-        var companyName = Rpc.directData('rpc.companyName');
-
-        Ext.MessageBox.confirm('Manual Reboot Warning'.t(),
-            Ext.String.format('The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete.'.t(), companyName),
-            function (btn) {
-                if (btn === 'yes') {
-                    rpc.UvmContext.rebootBox(function (result, ex) {
-                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to reboot {0} Server', companyName)); return; }
-                        Ext.MessageBox.wait(
-                            Ext.String.format('The {0} Server is rebooting.'.t(), companyName),
-                            'Please wait'.t(), {
-                                interval: 20, //bar will move fast!
-                                increment: 500,
-                                animate: true,
-                                text: ''
-                            });
-                    });
-                }
-            });
-    },
-
-    manualShutdown: function () {
-        var companyName = Rpc.directData('rpc.companyName');
-
-        Ext.MessageBox.confirm('Manual Shutdown Warning'.t(),
-            Ext.String.format('The {0} Server is about to shutdown.  This will stop all network operations.'.t(), companyName),
-            function (btn) {
-                if (btn === 'yes') {
-                    rpc.UvmContext.shutdownBox(function (result, ex) {
-                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to shutdown {0} Server', companyName)); return; }
-                        Ext.MessageBox.wait(
-                            Ext.String.format('The {0} Server is shutting down.'.t(), companyName),
-                            'Please wait'.t(), {
-                                interval: 20,
-                                increment: 500,
-                                animate: true,
-                                text: ''
-                            });
-                    });
-                }
-            });
-    },
-
-    factoryDefaults: function () {
-        Ext.MessageBox.confirm('Reset to Factory Defaults Warning'.t(),
-            'THIS WILL RESET ALL SETTINGS TO FACTORY DEFAULTS'.t() +
-            '<br><br>' +
-            'ALL CURRENT SETTINGS WILL BE LOST.'.t() +
-            '<br><br>' +
-            'AFTER IT IS FINISHED, YOU WILL NEED TO ACCESS THE SYSTEM LOCALLY TO RECONFIGURE.'.t(),
-            function (btn) {
-                if (btn === 'yes') {
-                    var me = this;
-                    Ext.MessageBox.wait('Resetting to factory defaults...'.t(), 'Please wait'.t(), {
-                        interval: 20,
-                        increment: 500,
-                        duration: 1000,
-                        animate: true,
-                        text: '',
-                        fn: function(){
-                            me.location = "/error/factoryDefaults";
-                        }
-                    });
-                    rpc.UvmContext.configManager().doFactoryReset();
-                }
-            });
     },
 
     // Backup method(s)

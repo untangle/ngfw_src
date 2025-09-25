@@ -3,16 +3,14 @@
  */
 package com.untangle.uvm.network;
 
-import java.io.Serializable;
-import java.util.List;
-
+import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
+import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.network.PortForwardRule;
-import com.untangle.uvm.network.NatRule;
-import com.untangle.uvm.network.BypassRule;
-import com.untangle.uvm.network.StaticRoute;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Network settings.
@@ -53,6 +51,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean blockInvalidPackets = true;
     private boolean blockReplayPackets = false;
     private boolean strictArpMode = true;
+    private boolean sendUnsolicitedArpUpdates = false;
     private boolean stpEnabled = false;
     private boolean dhcpAuthoritative = true;
     private int     dhcpMaxLeases = 5000;
@@ -79,7 +78,9 @@ public class NetworkSettings implements Serializable, JSONString
     private String  publicUrlAddress;
     private Integer publicUrlPort;
 
-    public NetworkSettings() { }
+    public NetworkSettings() {
+        super();
+    }
 
     public Integer getVersion() { return this.version; }
     public void setVersion( Integer newValue ) { this.version = newValue ; }
@@ -164,7 +165,15 @@ public class NetworkSettings implements Serializable, JSONString
     
     public boolean getStrictArpMode() { return this.strictArpMode; }
     public void setStrictArpMode( boolean newValue ) { this.strictArpMode = newValue; }
-    
+
+    public boolean isSendUnsolicitedArpUpdates() {
+        return sendUnsolicitedArpUpdates;
+    }
+
+    public void setSendUnsolicitedArpUpdates(boolean sendUnsolicitedArpUpdates) {
+        this.sendUnsolicitedArpUpdates = sendUnsolicitedArpUpdates;
+    }
+
     public boolean getStpEnabled() { return this.stpEnabled; }
     public void setStpEnabled( boolean newValue ) { this.stpEnabled = newValue; }
     
@@ -230,6 +239,96 @@ public class NetworkSettings implements Serializable, JSONString
      */
     public Integer getPublicUrlPort() { return this.publicUrlPort; }
     public void setPublicUrlPort( Integer newValue ) { this.publicUrlPort = newValue; }
+
+    /**
+     * Transforms a {@link NetworkSettings} object (original interface configuration) 
+     * into its generic counterpart {@link NetworkSettingsGeneric},
+     * which is more portable and structured for UI use.     *
+     * @return a new {@link NetworkSettingsGeneric} instance containing the generic representation
+     *         of all interfaces and their settings from the current {@code NetworkSettings} instance.
+     */
+    public NetworkSettingsGeneric transformNetworkSettingsToGeneric() {
+        NetworkSettingsGeneric netSettingsGen = new NetworkSettingsGeneric();
+
+        // Transform Interfaces
+        LinkedList<InterfaceSettingsGeneric> interfacesGen = new LinkedList<>();
+        for(InterfaceSettings intfSettings : this.getInterfaces()) {
+            interfacesGen.add(intfSettings.transformInterfaceSettingsToGeneric());
+        }
+        netSettingsGen.setInterfaces(interfacesGen);
+
+        // Transform Port Forward Rules
+        if (this.getPortForwardRules() != null)
+            netSettingsGen.setPort_forward_rules(PortForwardRule.transformPortForwardRulesToGeneric(this.getPortForwardRules()));
+
+        // Transform NAT Rules
+        if(this.getNatRules() != null)
+            netSettingsGen.setNat_rules(NatRule.transformNatRulesToGeneric(this.getNatRules()));
+
+        // Transform Bypass Rules
+        if(this.getBypassRules() != null)
+            netSettingsGen.setBypass_rules(BypassRule.transformBypassRulesToGeneric(this.getBypassRules()));
+
+        // Transform Filter Rules
+        if(this.getFilterRules() != null)
+            netSettingsGen.setFilter_rules(FilterRule.transformFilterRulesToGeneric(this.getFilterRules()));
+
+        // Transform Virtual Interfaces
+        LinkedList<InterfaceSettingsGeneric> virtualInterfacesGen = new LinkedList<>();
+        for(InterfaceSettings virtualIntfSettings: this.getVirtualInterfaces()) {
+            virtualInterfacesGen.add(virtualIntfSettings.transformInterfaceSettingsToGeneric());
+        }
+        netSettingsGen.setVirtualInterfaces(virtualInterfacesGen);
+
+        // Transform Static Routes
+        if(this.getStaticRoutes() != null)
+            netSettingsGen.setStaticRoutes(StaticRoute.transformStaticRoutesToGeneric(this.getStaticRoutes()));
+
+        // Transform DNS Settings
+        if(this.getDnsSettings() != null)
+            netSettingsGen.setDnsSettings((this.getDnsSettings().transformDnsSettingsToGeneric()));
+
+        // Transform Dynamic Routing Settings
+        if(this.getDynamicRoutingSettings() != null)
+            netSettingsGen.setDynamicRoutingSettings(this.getDynamicRoutingSettings().transformDynamicRoutingSettingsToGeneric());
+
+        netSettingsGen.setEnableSipNatHelper(this.getEnableSipNatHelper());
+
+        // Transform Static DHCP Entries
+        netSettingsGen.setDhcpMaxLeases(this.getDhcpMaxLeases());
+        if (this.getStaticDhcpEntries() != null)
+            netSettingsGen.setStaticDhcpEntries(new LinkedList<>(this.getStaticDhcpEntries()));
+
+        // Transform DHCP Relays
+        if (this.getDhcpRelays() != null)
+            netSettingsGen.setDhcpRelays(new LinkedList<>(this.getDhcpRelays()));
+
+        // Transform advanced options values
+        setAdvancedOptionsValues(netSettingsGen);
+
+        // Write other transformtions below
+
+        return netSettingsGen;
+    }
+
+    /**
+     * Sets advanced options values from NetworkSettings to NetworkSettingsGeneric.
+     * @param netSettingsGen The NetworkSettingsGeneric object to set values to.
+     */
+    public void setAdvancedOptionsValues(NetworkSettingsGeneric netSettingsGen){
+        netSettingsGen.setEnableSipNatHelper(this.getEnableSipNatHelper());
+        netSettingsGen.setSendIcmpRedirects(this.getSendIcmpRedirects());
+        netSettingsGen.setStpEnabled(this.getStpEnabled());
+        netSettingsGen.setStrictArpMode(this.getStrictArpMode());
+        netSettingsGen.setSendUnsolicitedArpUpdates(this.isSendUnsolicitedArpUpdates());
+        netSettingsGen.setDhcpAuthoritative(this.getDhcpAuthoritative());
+        netSettingsGen.setBlockDuringRestarts(this.getBlockDuringRestarts());
+        netSettingsGen.setBlockReplayPackets(this.getBlockReplayPackets());
+        netSettingsGen.setLogBypassedSessions(this.getLogBypassedSessions());
+        netSettingsGen.setLogLocalOutboundSessions(this.getLogLocalOutboundSessions());
+        netSettingsGen.setLogLocalInboundSessions(this.getLogLocalInboundSessions());
+        netSettingsGen.setLogBlockedSessions(this.getLogBlockedSessions());
+    }
 
     public String toJSONString()
     {

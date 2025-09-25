@@ -3,6 +3,11 @@ Ext.define('Ung.util.Util', {
     singleton: true,
     ignoreExceptions: false,
 
+    ACTION_EVENTS: {
+        REFRESH_NETWORK_SETTINGS: 'REFRESH_NETWORK_SETTINGS',
+        REFRESH_SYSTEM_SETTINGS: 'REFRESH_SYSTEM_SETTINGS'
+    },
+
     // defaultColors: ['#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1'],
     defaultColors: ['#00b000', '#3030ff', '#009090', '#00ffff', '#707070', '#b000b0', '#fff000', '#b00000', '#ff0000', '#ff6347', '#c0c0c0'], // from old UI
 
@@ -1502,5 +1507,34 @@ Ext.define('Ung.util.Util', {
     
         // If no intersection found, return true
         return true;
+    },
+
+    /**
+     * Attaches a global iframe panel (`Ung.AppIframe`) to the specified container,
+     * reusing or recreating it if necessary, and updates the iframe's URL.
+     *
+     * @param {Ext.container.Container} target - The ExtJS container (usually a panel) where the iframe panel should be added.
+     * @param {String} url - The URL to load in the iframe.
+     * @param {Boolean} - Flag to indicate whether the iframe should initially be hidden.
+     */
+    attachIframeToTarget: function (target, url, hidden) {
+        var iframePanel = Ung.AppIframe;
+        
+        // Recreate iframePanel if it's null or destroyed
+        if (!iframePanel || iframePanel.isDestroyed) {
+            iframePanel = Ext.create('Ung.view.main.IframePanel');
+            Ung.AppIframe = iframePanel;
+        }
+
+        // Detach from old parent if needed
+        if (iframePanel.ownerCt) {
+            iframePanel.ownerCt.remove(iframePanel, false);
+        }
+
+        // Add iframe to target
+        if (target) {
+            target.add(iframePanel);
+            iframePanel.updateIframe(url, hidden);
+        }
     }
 });

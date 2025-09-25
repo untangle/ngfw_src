@@ -28,6 +28,8 @@ public class Constants {
     public static final String COMMA = ",";
     public static final String SLASH = "/";
     public static final String DOUBLE_SLASH = "//";
+    public static final String IS_EQUALS_TO = "==";
+    public static final String IS_NOT_EQUALS_TO = "!=";
 
     // Boolean
     public static final String FALSE = "False";
@@ -50,6 +52,9 @@ public class Constants {
 
     // Escape sequence
     public static final String NEW_LINE = "\n";
+
+    //encoding Key
+    public static final String BASE64 = "Base64";
 
     // Empty string
     public static final String EMPTY_STRING = "\" \"";

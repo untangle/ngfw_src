@@ -5,8 +5,11 @@ package com.untangle.uvm.network;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import com.untangle.uvm.network.generic.StaticRouteGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.logging.log4j.Logger;
@@ -83,6 +86,22 @@ public class StaticRoute implements JSONString, Serializable
         }
         
     }
-    
+
+    /**
+     * Transforms Static Routes List to Static Routes Generic List for vue UI
+     * @param staticRoutes List<StaticRoute>
+     * @return LinkedList<StaticRouteGeneric>
+     */
+    public static LinkedList<StaticRouteGeneric> transformStaticRoutesToGeneric(List<StaticRoute> staticRoutes) {
+        LinkedList<StaticRouteGeneric> staticRouteGenList = new LinkedList<>();
+        for (StaticRoute staticRoute : staticRoutes) {
+            int prefix = staticRoute.getPrefix() != null ? staticRoute.getPrefix() : 24;
+            String network = new IPMaskedAddress(staticRoute.getNetwork(), prefix).toString();
+            StaticRouteGeneric staticRouteGeneric = new StaticRouteGeneric(staticRoute.getRuleId(), staticRoute.getDescription(), network, staticRoute.getNextHop());
+
+            staticRouteGenList.add(staticRouteGeneric);
+        }
+        return staticRouteGenList;
+    }
 }
 

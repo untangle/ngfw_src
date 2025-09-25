@@ -3,9 +3,14 @@
  */
 package com.untangle.uvm.network;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.io.Serializable;
 
+import com.untangle.uvm.generic.RuleActionGeneric;
+import com.untangle.uvm.generic.RuleConditionGeneric;
+import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.util.Constants;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +46,7 @@ public class FilterRule implements JSONString, Serializable
         this.setBlocked(blocked);
         this.setDescription(description);
     }
-    
+
     public List<FilterRuleCondition> getConditions() { return this.conditions; }
     public void setConditions( List<FilterRuleCondition> conditions ) { this.conditions = conditions; }
 
@@ -67,6 +72,51 @@ public class FilterRule implements JSONString, Serializable
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms a list of FilterRule objects into their generic RuleGeneric representation.
+     * Used for get api calls
+     * @param filterRuleList List<FilterRule>
+     * @return LinkedList<RuleGeneric>
+     */
+    public static LinkedList<RuleGeneric> transformFilterRulesToGeneric(List<FilterRule> filterRuleList) {
+        LinkedList<RuleGeneric> filterRulesGenList = new LinkedList<>();
+        for (FilterRule rule : filterRuleList) {
+            RuleGeneric filterRulesGen = FilterRule.getFilterRuleGeneric(rule);
+            filterRulesGenList.add(filterRulesGen);
+        }
+        return filterRulesGenList;
+    }
+
+    /**
+     * Transforms a FilterRule object into its generic RuleGeneric representation.
+     * @param rule FilterRule
+     * @return RuleGeneric
+     */
+    private static RuleGeneric getFilterRuleGeneric(FilterRule rule) {
+        // Transform enabled and ruleId
+        boolean enabled = Boolean.TRUE.equals(rule.getEnabled());
+        String ruleId = rule.getRuleId() != null ? String.valueOf(rule.getRuleId()) : null;
+
+        // Transform Action
+        RuleActionGeneric ruleActionGen = new RuleActionGeneric();
+        ruleActionGen.setType(rule.getBlocked() ? RuleActionGeneric.Type.REJECT : RuleActionGeneric.Type.ACCEPT);
+
+        // Transform Conditions
+        LinkedList<RuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+        for (FilterRuleCondition ruleCondition : rule.getConditions()) {
+            String op = ruleCondition.getInvert() ? Constants.IS_NOT_EQUALS_TO : Constants.IS_EQUALS_TO;
+            RuleConditionGeneric ruleConditionGen = new RuleConditionGeneric(op, ruleCondition.getConditionType(), ruleCondition.getValue());
+            ruleConditionGenList.add(ruleConditionGen);
+        }
+
+        // Create Generic Rule
+        RuleGeneric filterRulesGen = new RuleGeneric(enabled, rule.getDescription(), ruleId);
+        filterRulesGen.setIpv6Enabled(rule.getIpv6Enabled());
+        filterRulesGen.setAction(ruleActionGen);
+        filterRulesGen.setConditions(ruleConditionGenList);
+        return filterRulesGen;
     }
 }
 

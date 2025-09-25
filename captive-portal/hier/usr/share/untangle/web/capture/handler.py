@@ -51,9 +51,9 @@ class HandlerCookie:
     def __init__(self,req,appid=None):
         self.req = req
         if appid == None:
-            args = split_args(self.req.args);
+            args = _split_args(self.req.args);
             appid = args['APPID']
-        self.captureSettings = load_capture_settings(self.req,appid)
+        self.captureSettings = _load_capture_settings(self.req,appid)
         self.cookie = Cookie.get_cookies(self.req, Class=Cookie.MarshalCookie, secret=str(self.captureSettings["secretKey"]))
 
     def is_valid(self):
@@ -95,7 +95,7 @@ def index(req):
     # get the original destination and other arguments passed
     # in the URL when the redirect was generated
     args_keys = ['AUTHCODE', 'AUTHMODE', 'APPID', 'METHOD', 'NONCE', 'HOST','URI']
-    args = split_args(req.args);
+    args = _split_args(req.args);
     for key in args_keys:
         if not key in args:
             args[key] = "Empty"
@@ -105,7 +105,7 @@ def index(req):
 
     # load the configuration data
     appid = args['APPID']
-    captureSettings = load_capture_settings(req,appid)
+    captureSettings = _load_capture_settings(req,appid)
     captureApp = None
 
     authcode = args['AUTHCODE']
@@ -121,7 +121,7 @@ def index(req):
             port = ""
             if ut['port'] != -1:
                 ut['port'] = ":" + str(ut['port'])
-            uri_base = ut['scheme'] + '://' + ut['host'] + port + "/cgi-bin/getClientToken?authPlatform={authPlatform}&authCode={authCode}"
+            uri_base = ut['scheme'] + '://' + ut['host'] + port + "/cgi-bin/getClientToken?authPlatform={authPlatform}&authCode={authCode}&authRelay=true"
 
             alt_raw = None
             if authmode in OAUTH_PROVIDERS and OAUTH_PROVIDERS[authmode] is not None and OAUTH_PROVIDERS[authmode]["platform"] is not None:
@@ -143,7 +143,7 @@ def index(req):
             raw = urllib.parse.unquote(uri)
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
             if captureApp == None:
-                captureApp = load_rpc_manager(appid)
+                captureApp = _load_rpc_manager(appid)
 
             # Notify app of authentication success
             loginMethod=getattr(captureApp,OAUTH_PROVIDERS[authmode]["method"])
@@ -172,7 +172,7 @@ def index(req):
 
     # if configured for any OAuth provider create and return the selection page
     if (captureSettings.get("authenticationType") == "ANY_OAUTH"):
-        page = generate_page(req,captureSettings,args)
+        page = _generate_page(req,captureSettings,args)
         return(page)
 
     if captureSettings.get("sessionCookiesEnabled") == True and 'Cookie' in req.headers_in:
@@ -182,7 +182,7 @@ def index(req):
             address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
             if captureApp == None:
-                captureApp = load_rpc_manager(appid)
+                captureApp = _load_rpc_manager(appid)
             if captureApp.isUserInCookieTable(address,cookie.get_field("username")):
                 # User was found in expired cookie table.
                 captureApp.removeUserFromCookieTable(address)
@@ -211,7 +211,7 @@ def index(req):
 
     # if not using a custom capture page we generate and return a standard page
     if (captureSettings.get('pageType') != 'CUSTOM'):
-        page = generate_page(req,captureSettings,args)
+        page = _generate_page(req,captureSettings,args)
         return(page)
 
     # if we make it here they are using a custom page so we have to
@@ -233,7 +233,7 @@ def index(req):
         page = func(req,rawpath,webpath,str(args['APPID']),str(args['HOST']),str(args['URI']))
     # no custom.py file so we generate the capture page ourselves
     else:
-        page = generate_page(req,captureSettings,args)
+        page = _generate_page(req,captureSettings,args)
 
     # return the capture page we just created
     return(page)
@@ -261,10 +261,10 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
     # load the app settings
-    captureSettings = load_capture_settings(req,appid)
+    captureSettings = _load_capture_settings(req,appid)
 
     # setup the uvm and retrieve the app object so we can make the RPC call
-    captureApp = load_rpc_manager(appid)
+    captureApp = _load_rpc_manager(appid)
 
     # call the app to authenticate the user
     authResult = captureApp.userAuthenticate(address, username, urllib.parse.quote(password))
@@ -302,11 +302,11 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
 
     # pass the request object and post arguments to the page generator
     if (authResult == 1):
-        page = generate_page(req,captureSettings,args, _("Invalid username or password. Please try again.") )
+        page = _generate_page(req,captureSettings,args, _("Invalid username or password. Please try again.") )
     elif (authResult == 2):
-        page = generate_page(req,captureSettings,args, _("You are already logged in from another location.") )
+        page = _generate_page(req,captureSettings,args, _("You are already logged in from another location.") )
     else:
-        page = generate_page(req,captureSettings,args, _("The server returned an unexpected error.") )
+        page = _generate_page(req,captureSettings,args, _("The server returned an unexpected error.") )
 
     # return the login page we just created
     return(page)
@@ -339,7 +339,7 @@ def infopost(req,method,nonce,appid,host,uri,agree=b'empty'):
     address = req.get_remote_host(apache.REMOTE_NOLOOKUP,None)
 
     # load the app settings
-    captureSettings = load_capture_settings(req,appid)
+    captureSettings = _load_capture_settings(req,appid)
 
     args = {}
     args['METHOD'] = method
@@ -349,18 +349,18 @@ def infopost(req,method,nonce,appid,host,uri,agree=b'empty'):
     args['URI'] = uri
 
     # setup the uvm and app objects so we can make the RPC call
-    captureApp = load_rpc_manager(appid)
+    captureApp = _load_rpc_manager(appid)
 
     if agree != "agree":
-        page = generate_page(req,captureSettings,args, _("You must enable the checkbox above to continue.") )
+        page = _generate_page(req,captureSettings,args, _("You must enable the checkbox above to continue.") )
         return page
 
     authentication_type = captureSettings.get("authenticationType")
     if authentication_type in list(OAUTH_PROVIDERS.keys()):
         if authentication_type == "ANY_OAUTH":
-            page = generate_page(req,captureSettings,args,"",page=None,template_name="pickpage.html")
+            page = _generate_page(req,captureSettings,args,"",page=None,template_name="pickpage.html")
         else:
-            target = generate_page(req,captureSettings,args,"",OAUTH_PROVIDERS[authentication_type]["uri"])
+            target = _generate_page(req,captureSettings,args,"",OAUTH_PROVIDERS[authentication_type]["uri"])
             req.log_error(f"handler.py: target={target}")
             util.redirect(req, target)
             return
@@ -394,7 +394,7 @@ def infopost(req,method,nonce,appid,host,uri,agree=b'empty'):
 #-----------------------------------------------------------------------------
 # This function generates the actual captive portal page
 
-def generate_page(req,captureSettings,args,extra='',page=None,template_name=None):
+def _generate_page(req,captureSettings,args,extra='',page=None,template_name=None):
 
     # We use the path from the request filename to locate the correct template
     # and start with the OAuth selection page if that authentication type is
@@ -425,43 +425,43 @@ def generate_page(req,captureSettings,args,extra='',page=None,template_name=None
         captureSettings['certificateDetection'] = 'DISABLE_DETECTION'
 
     if captureSettings['certificateDetection'] == 'CHECK_CERTIFICATE':
-        page = replace_marker(page,'$.SecureEndpointCheck.$','checkSecureEndpoint(false);')
+        page = _replace_marker(page,'$.SecureEndpointCheck.$','checkSecureEndpoint(false);')
     elif captureSettings['certificateDetection'] == 'REQUIRE_CERTIFICATE':
-        page = replace_marker(page,'$.SecureEndpointCheck.$','checkSecureEndpoint(true);')
+        page = _replace_marker(page,'$.SecureEndpointCheck.$','checkSecureEndpoint(true);')
     else:
-        page = replace_marker(page,'$.SecureEndpointCheck.$','')
+        page = _replace_marker(page,'$.SecureEndpointCheck.$','')
 
 
     is_google_auth = "false"
     if (captureSettings.get("authenticationType") == 'GOOGLE'):
         is_google_auth = "true"
-    page = replace_marker(page,'$.GOOGLEAUTH.$', is_google_auth)
+    page = _replace_marker(page,'$.GOOGLEAUTH.$', is_google_auth)
     if (captureSettings.get('pageType') == 'BASIC_LOGIN'):
-        page = replace_marker(page,'$.CompanyName.$', captureSettings.get('companyName'))
-        page = replace_marker(page,'$.PageTitle.$', captureSettings.get('basicLoginPageTitle'))
-        page = replace_marker(page,'$.WelcomeText.$', captureSettings.get('basicLoginPageWelcome'))
-        page = replace_marker(page,'$.MessageText.$', captureSettings.get('basicLoginMessageText'))
-        page = replace_marker(page,'$.UserLabel.$', captureSettings.get('basicLoginUsername'))
-        page = replace_marker(page,'$.PassLabel.$', captureSettings.get('basicLoginPassword'))
-        page = replace_marker(page,'$.FooterText.$', captureSettings.get('basicLoginFooter'))
+        page = _replace_marker(page,'$.CompanyName.$', captureSettings.get('companyName'))
+        page = _replace_marker(page,'$.PageTitle.$', captureSettings.get('basicLoginPageTitle'))
+        page = _replace_marker(page,'$.WelcomeText.$', captureSettings.get('basicLoginPageWelcome'))
+        page = _replace_marker(page,'$.MessageText.$', captureSettings.get('basicLoginMessageText'))
+        page = _replace_marker(page,'$.UserLabel.$', captureSettings.get('basicLoginUsername'))
+        page = _replace_marker(page,'$.PassLabel.$', captureSettings.get('basicLoginPassword'))
+        page = _replace_marker(page,'$.FooterText.$', captureSettings.get('basicLoginFooter'))
 
     if (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
-        page = replace_marker(page,'$.CompanyName.$', captureSettings.get('companyName'))
-        page = replace_marker(page,'$.PageTitle.$', captureSettings.get('basicMessagePageTitle'))
-        page = replace_marker(page,'$.WelcomeText.$', captureSettings.get('basicMessagePageWelcome'))
-        page = replace_marker(page,'$.MessageText.$', captureSettings.get('basicMessageMessageText'))
-        page = replace_marker(page,'$.FooterText.$', captureSettings.get('basicMessageFooter'))
+        page = _replace_marker(page,'$.CompanyName.$', captureSettings.get('companyName'))
+        page = _replace_marker(page,'$.PageTitle.$', captureSettings.get('basicMessagePageTitle'))
+        page = _replace_marker(page,'$.WelcomeText.$', captureSettings.get('basicMessagePageWelcome'))
+        page = _replace_marker(page,'$.MessageText.$', captureSettings.get('basicMessageMessageText'))
+        page = _replace_marker(page,'$.FooterText.$', captureSettings.get('basicMessageFooter'))
 
         if (captureSettings.get('basicMessageAgreeBox') == True):
-            page = replace_marker(page,'$.AgreeText.$', captureSettings.get('basicMessageAgreeText'))
-            page = replace_marker(page,'$.AgreeBox.$','checkbox')
+            page = _replace_marker(page,'$.AgreeText.$', captureSettings.get('basicMessageAgreeText'))
+            page = _replace_marker(page,'$.AgreeBox.$','checkbox')
         else:
-            page = replace_marker(page,'$.AgreeText.$', '')
-            page = replace_marker(page,'$.AgreeBox.$','hidden')
+            page = _replace_marker(page,'$.AgreeText.$', '')
+            page = _replace_marker(page,'$.AgreeBox.$','hidden')
 
     if (captureSettings.get('pageType') == 'CUSTOM'):
         path = "/capture/custom_" + str(args['APPID'])
-        page = replace_marker(page,'$.CustomPath.$',path)
+        page = _replace_marker(page,'$.CustomPath.$',path)
 
     if captureSettings.get("authenticationType") in list(OAUTH_PROVIDERS.keys()):
         uvmContext = Uvm().getUvmContext()
@@ -485,25 +485,25 @@ def generate_page(req,captureSettings,args,extra='',page=None,template_name=None
 
         target = f"{schema}{req.hostname}{port}/capture/handler.py/index?nonce={args['NONCE']}&method={args['METHOD']}&appid={args['APPID']}&host={args['HOST']}&uri={args['URI']}"
 
-        page = replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE"))
-        page = replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT"))
+        page = _replace_marker(page,'$.GoogleState.$', urllib.parse.quote(target + "&authmode=GOOGLE"))
+        page = _replace_marker(page,'$.MicrosoftState.$', urllib.parse.quote(target + "&authmode=MICROSOFT"))
 
-        page = replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.edge.arista.com/callback.php"))
+        page = _replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.edge.arista.com/callback.php"))
 
     # plug the values into the hidden form fields of the authentication page
     # page by doing  search and replace for each of the placeholder text tags
-    page = replace_marker(page,'$.method.$', args['METHOD'])
-    page = replace_marker(page,'$.nonce.$', args['NONCE'])
-    page = replace_marker(page,'$.appid.$', args['APPID'])
-    page = replace_marker(page,'$.host.$', args['HOST'])
-    page = replace_marker(page,'$.uri.$', args['URI'])
+    page = _replace_marker(page,'$.method.$', args['METHOD'])
+    page = _replace_marker(page,'$.nonce.$', args['NONCE'])
+    page = _replace_marker(page,'$.appid.$', args['APPID'])
+    page = _replace_marker(page,'$.host.$', args['HOST'])
+    page = _replace_marker(page,'$.uri.$', args['URI'])
 
     # replace the text in the problem section with the agumented value
-    page = replace_marker(page,'$.ProblemText.$',extra)
+    page = _replace_marker(page,'$.ProblemText.$',extra)
 
     # debug = create_debug(args,captureSettings)
     debug = ""
-    page = replace_marker(page,'<!--DEBUG-->',debug)
+    page = _replace_marker(page,'<!--DEBUG-->',debug)
 
     # return the login page we just created
     return(page)
@@ -511,7 +511,7 @@ def generate_page(req,captureSettings,args,extra='',page=None,template_name=None
 #-----------------------------------------------------------------------------
 # Pulls page arguments out of a URI and stores them in a list.
 
-def split_args(args):
+def _split_args(args):
 
     canon_args = {}                     # Start an empty list
     if args == None:                    # Return the empty list if no args
@@ -530,7 +530,7 @@ def split_args(args):
 #-----------------------------------------------------------------------------
 # loads and returns the app RPC object needed for the authentication calls
 
-def load_rpc_manager(appid=None):
+def _load_rpc_manager(appid=None):
 
     # first we get the uvm context
     uvmContext = Uvm().getUvmContext()
@@ -551,7 +551,7 @@ def load_rpc_manager(appid=None):
 #-----------------------------------------------------------------------------
 # loads the app settings
 
-def load_capture_settings(req,appid=None):
+def _load_capture_settings(req,appid=None):
 
     captureSettings = None
 
@@ -623,7 +623,7 @@ def extjs_reply(status,message,filename=""):
 # forces stuff loaded from settings files to be UTF-8 when plugged
 # into the page template files
 
-def replace_marker(page,marker,output):
+def _replace_marker(page,marker,output):
 
     if type(marker) == bytes:
         marker = marker.decode("utf-8")
@@ -642,7 +642,7 @@ def replace_marker(page,marker,output):
 def custom_handler(req):
 
     # first we need to extract the args so we can find the appid
-    args = split_args(req.args);
+    args = _split_args(req.args);
 
     # make sure we have a valid appid
     if (not 'APPID' in args):
