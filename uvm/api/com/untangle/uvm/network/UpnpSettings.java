@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.network.generic.UpnpSettingsGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -38,5 +39,22 @@ public class UpnpSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms a {@link UpnpSettings} object into its generic representation.
+     * @return UpnpSettingsGeneric
+     */
+    public UpnpSettingsGeneric transformUnpnSettingsToGeneric() {
+        UpnpSettingsGeneric upnpSettingsGen = new UpnpSettingsGeneric();
+
+        upnpSettingsGen.setUpnpEnabled(this.getUpnpEnabled());
+        upnpSettingsGen.setSecureMode(this.getSecureMode());
+        upnpSettingsGen.setListenPort(this.getListenPort());
+
+        if (this.getUpnpRules() != null)
+            upnpSettingsGen.setUpnp_rules(UpnpRule.transformUpnpRulesToGeneric(this.getUpnpRules()));
+
+        return upnpSettingsGen;
     }
 }

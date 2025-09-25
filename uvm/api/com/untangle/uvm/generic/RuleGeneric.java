@@ -11,6 +11,10 @@ import com.untangle.uvm.network.NatRule;
 import com.untangle.uvm.network.NatRuleCondition;
 import com.untangle.uvm.network.PortForwardRule;
 import com.untangle.uvm.network.PortForwardRuleCondition;
+import com.untangle.uvm.network.QosRule;
+import com.untangle.uvm.network.QosRuleCondition;
+import com.untangle.uvm.network.UpnpRule;
+import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.StringUtil;
 import org.json.JSONObject;
@@ -327,16 +331,150 @@ public class RuleGeneric implements JSONString, Serializable {
         // Transform Conditions
         List<FilterRuleCondition> ruleConditions = new LinkedList<>();
         for (RuleConditionGeneric ruleConditionGen : ruleGeneric.getConditions()) {
-            FilterRuleCondition bypassRuleCondition = new FilterRuleCondition();
+            FilterRuleCondition filterRuleCondition = new FilterRuleCondition();
 
-            bypassRuleCondition.setInvert(ruleConditionGen.getOp().equals(Constants.IS_NOT_EQUALS_TO));
-            bypassRuleCondition.setConditionType(ruleConditionGen.getType());
-            bypassRuleCondition.setValue(ruleConditionGen.getValue());
+            filterRuleCondition.setInvert(ruleConditionGen.getOp().equals(Constants.IS_NOT_EQUALS_TO));
+            filterRuleCondition.setConditionType(ruleConditionGen.getType());
+            filterRuleCondition.setValue(ruleConditionGen.getValue());
 
-            ruleConditions.add(bypassRuleCondition);
+            ruleConditions.add(filterRuleCondition);
         }
         filterRule.setConditions(ruleConditions);
         return filterRule;
+    }
+
+    /**
+     * Transforms a list of QoS RuleGeneric objects into their v1 QosRule representation.
+     * Used for set api calls
+     * @param qosRulesGen LinkedList<RuleGeneric>
+     * @param legacyRules List<QosRule>
+     * @return List<QosRule>
+     */
+    public static List<QosRule> transformGenericToQoSRules(LinkedList<RuleGeneric> qosRulesGen, List<QosRule> legacyRules) {
+        if (legacyRules == null)
+            legacyRules = new LinkedList<>();
+
+        // CLEANUP: Remove deleted rules first
+        RuleGeneric.deleteOrphanRules(
+                qosRulesGen,
+                legacyRules,
+                RuleGeneric::getRuleId,
+                r -> String.valueOf(r.getRuleId())
+        );
+
+        // Build a map for quick lookup by ruleId
+        Map<Integer, QosRule> rulesMap = legacyRules.stream()
+                .collect(Collectors.toMap(QosRule::getRuleId, Function.identity()));
+
+        List<QosRule> qosRules = new LinkedList<>();
+        for (RuleGeneric ruleGeneric : qosRulesGen) {
+            QosRule qosRule = rulesMap.get(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), 0));
+            qosRule = RuleGeneric.transformQosRule(ruleGeneric, qosRule);
+            qosRules.add(qosRule);
+        }
+        return qosRules;
+    }
+
+    /**
+     * Transforms a QoS Rule Generic object into v1 QosRule representation.
+     * @param ruleGeneric RuleGeneric
+     * @param qosRule QosRule
+     * @return QosRule
+     */
+    private static QosRule transformQosRule(RuleGeneric ruleGeneric, QosRule qosRule) {
+        if (qosRule == null)
+            qosRule = new QosRule();
+
+        // Transform enabled, ruleId, description
+        qosRule.setEnabled(ruleGeneric.isEnabled());
+        qosRule.setDescription(ruleGeneric.getDescription());
+        // For new rules added UI send uuid string as ruleId. Here its set to -1
+        qosRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
+
+        // Transform Action
+        if (ruleGeneric.getAction() != null)
+            qosRule.setPriority(ruleGeneric.getAction().getPriority());
+
+        // Transform Conditions
+        List<QosRuleCondition> ruleConditions = new LinkedList<>();
+        for (RuleConditionGeneric ruleConditionGen : ruleGeneric.getConditions()) {
+            QosRuleCondition qosRuleCondition = new QosRuleCondition();
+
+            qosRuleCondition.setInvert(ruleConditionGen.getOp().equals(Constants.IS_NOT_EQUALS_TO));
+            qosRuleCondition.setConditionType(ruleConditionGen.getType());
+            qosRuleCondition.setValue(ruleConditionGen.getValue());
+
+            ruleConditions.add(qosRuleCondition);
+        }
+        qosRule.setConditions(ruleConditions);
+        return qosRule;
+    }
+
+    /**
+     * Transforms a list of Upnp RuleGeneric objects into their v1 UpnpRule representation.
+     * Used for set api calls
+     * @param upnpRulesGen LinkedList<RuleGeneric>
+     * @param legacyRules List<UpnpRule>
+     * @return List<UpnpRule>
+     */
+    public static List<UpnpRule> transformGenericToUpnpRules(LinkedList<RuleGeneric> upnpRulesGen, List<UpnpRule> legacyRules) {
+        if (legacyRules == null)
+            legacyRules = new LinkedList<>();
+
+        // CLEANUP: Remove deleted rules first
+        RuleGeneric.deleteOrphanRules(
+                upnpRulesGen,
+                legacyRules,
+                RuleGeneric::getRuleId,
+                r -> String.valueOf(r.getRuleId())
+        );
+
+        // Build a map for quick lookup by ruleId
+        Map<Integer, UpnpRule> rulesMap = legacyRules.stream()
+                .collect(Collectors.toMap(UpnpRule::getRuleId, Function.identity()));
+
+        List<UpnpRule> upnpRules = new LinkedList<>();
+        for (RuleGeneric ruleGeneric : upnpRulesGen) {
+            UpnpRule upnpRule = rulesMap.get(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), 0));
+            upnpRule = RuleGeneric.transformUpnpRule(ruleGeneric, upnpRule);
+            upnpRules.add(upnpRule);
+        }
+        return upnpRules;
+    }
+
+    /**
+     * Transforms a Upnp Rule Generic object into v1 UpnpRule representation.
+     * @param ruleGeneric RuleGeneric
+     * @param upnpRule UpnpRule
+     * @return UpnpRule
+     */
+    private static UpnpRule transformUpnpRule(RuleGeneric ruleGeneric, UpnpRule upnpRule) {
+        if (upnpRule == null)
+            upnpRule = new UpnpRule();
+
+        // Transform enabled, ruleId, description
+        upnpRule.setEnabled(ruleGeneric.isEnabled());
+        upnpRule.setDescription(ruleGeneric.getDescription());
+        // For new rules added UI send uuid string as ruleId. Here its set to -1
+        upnpRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
+
+        // Transform Action
+        if (ruleGeneric.getAction() != null)
+            upnpRule.setAllow(ruleGeneric.getAction().getType() == RuleActionGeneric.Type.ACCEPT);
+
+        // Transform Conditions
+        List<UpnpRuleCondition> ruleConditions = new LinkedList<>();
+        for (RuleConditionGeneric ruleConditionGen : ruleGeneric.getConditions()) {
+            UpnpRuleCondition upnpRuleCondition = new UpnpRuleCondition();
+
+            upnpRuleCondition.setInvert(ruleConditionGen.getOp().equals(Constants.IS_NOT_EQUALS_TO));
+            upnpRuleCondition.setConditionType(ruleConditionGen.getType());
+            upnpRuleCondition.setValue(ruleConditionGen.getValue());
+
+            ruleConditions.add(upnpRuleCondition);
+        }
+        upnpRule.setConditions(ruleConditions);
+        return upnpRule;
     }
 
     /**
