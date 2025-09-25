@@ -14,7 +14,6 @@ import com.untangle.uvm.network.DynamicRoutingSettings;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Dynamic Routing settings generic.
@@ -47,11 +46,11 @@ public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
     private String bgpRouterAs = "";
     private String ospfRouterId = "";
 
-    private List<DynamicRouteBgpNeighbor> bgpNeighbors = new LinkedList<>();
-    private List<DynamicRouteNetwork> bgpNetworks = new LinkedList<>();
-    private List<DynamicRouteNetwork> ospfNetworks = new LinkedList<>();
-    private List<DynamicRouteOspfArea> ospfAreas = new LinkedList<>();
-    private List<DynamicRouteOspfInterface> ospfInterfaces = new LinkedList<>();
+    private LinkedList<DynamicRouteBgpNeighbor> bgpNeighbors = new LinkedList<>();
+    private LinkedList<DynamicRouteNetwork> bgpNetworks = new LinkedList<>();
+    private LinkedList<DynamicRouteNetwork> ospfNetworks = new LinkedList<>();
+    private LinkedList<DynamicRouteOspfArea> ospfAreas = new LinkedList<>();
+    private LinkedList<DynamicRouteOspfInterface> ospfInterfaces = new LinkedList<>();
 
     public Boolean getEnabled() { return this.enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
@@ -65,11 +64,11 @@ public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
     public String getBgpRouterAs() { return this.bgpRouterAs; }
     public void setBgpRouterAs( String newValue ) { this.bgpRouterAs = newValue; }
 
-    public List<DynamicRouteBgpNeighbor> getBgpNeighbors() { return this.bgpNeighbors; }
-    public void setBgpNeighbors( List<DynamicRouteBgpNeighbor> newValue ) { this.bgpNeighbors = newValue; }
+    public LinkedList<DynamicRouteBgpNeighbor> getBgpNeighbors() { return this.bgpNeighbors; }
+    public void setBgpNeighbors( LinkedList<DynamicRouteBgpNeighbor> newValue ) { this.bgpNeighbors = newValue; }
 
-    public List<DynamicRouteNetwork> getBgpNetworks() { return this.bgpNetworks; }
-    public void setBgpNetworks( List<DynamicRouteNetwork> newValue ) { this.bgpNetworks = newValue; }
+    public LinkedList<DynamicRouteNetwork> getBgpNetworks() { return this.bgpNetworks; }
+    public void setBgpNetworks( LinkedList<DynamicRouteNetwork> newValue ) { this.bgpNetworks = newValue; }
 
     public Boolean getOspfEnabled() { return this.ospfEnabled; }
     public void setOspfEnabled( Boolean newValue ) { this.ospfEnabled = newValue; }
@@ -125,14 +124,14 @@ public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
     public Integer getOspfRedistBgpExternalType() { return this.ospfRedistBgpExternalType; }
     public void setOspfRedistBgpExternalType( Integer newValue ) { this.ospfRedistBgpExternalType = newValue; }
 
-    public List<DynamicRouteNetwork> getOspfNetworks() { return this.ospfNetworks; }
-    public void setOspfNetworks( List<DynamicRouteNetwork> newValue ) { this.ospfNetworks = newValue; }
+    public LinkedList<DynamicRouteNetwork> getOspfNetworks() { return this.ospfNetworks; }
+    public void setOspfNetworks( LinkedList<DynamicRouteNetwork> newValue ) { this.ospfNetworks = newValue; }
 
-    public List<DynamicRouteOspfArea> getOspfAreas() { return this.ospfAreas; }
-    public void setOspfAreas( List<DynamicRouteOspfArea> newValue ) { this.ospfAreas = newValue; }
+    public LinkedList<DynamicRouteOspfArea> getOspfAreas() { return this.ospfAreas; }
+    public void setOspfAreas( LinkedList<DynamicRouteOspfArea> newValue ) { this.ospfAreas = newValue; }
 
-    public List<DynamicRouteOspfInterface> getOspfInterfaces() { return this.ospfInterfaces; }
-    public void setOspfInterfaces( List<DynamicRouteOspfInterface> newValue ) { this.ospfInterfaces = newValue; }
+    public LinkedList<DynamicRouteOspfInterface> getOspfInterfaces() { return this.ospfInterfaces; }
+    public void setOspfInterfaces( LinkedList<DynamicRouteOspfInterface> newValue ) { this.ospfInterfaces = newValue; }
 
 
     public String toJSONString()
