@@ -38,14 +38,12 @@ Ext.define('Ung.config.system.MainController', {
         var rpcSequence = [
             Rpc.asyncPromise('rpc.languageManager.getLanguageSettings'),
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
-            Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode'),
         ];
 
         var dataNames = [
             'languageSettings',
             'systemSettings',
-            'logDirectorySize',
             'isExpertMode'
         ];
         if(Rpc.directData('rpc.appManager.app', 'http')){
