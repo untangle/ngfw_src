@@ -12,21 +12,12 @@ Ext.define('Ung.config.system.Main', {
 
     viewModel: {
         type: 'config-system',
-        localizationChanged: false,
-        formulas: {
-            logDirectorySizeHuman: {
-                get: function(get){
-                    return Util.bytesToHumanReadable(get('logDirectorySize'), true);
-                }
-            }
-        }
+        localizationChanged: false
     },
 
     items: [
         { xtype: 'config-system-settings' },
         { xtype: 'config-system-regional' },
-        { xtype: 'config-system-support' },
-        { xtype: 'config-system-logs' },
         { xtype: 'config-system-backup' },
         { xtype: 'config-system-restore' },
         { xtype: 'config-system-protocols' },

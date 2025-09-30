@@ -38,17 +38,13 @@ Ext.define('Ung.config.system.MainController', {
         var rpcSequence = [
             Rpc.asyncPromise('rpc.languageManager.getLanguageSettings'),
             Rpc.asyncPromise('rpc.systemManager.getSettings'),
-            Rpc.asyncPromise('rpc.systemManager.getLogDirectorySize'),
             Rpc.directPromise('rpc.isExpertMode'),
-            Rpc.directPromise('rpc.UvmContext.isCCHidden')
         ];
 
         var dataNames = [
             'languageSettings',
             'systemSettings',
-            'logDirectorySize',
-            'isExpertMode',
-            'isCCHidden'
+            'isExpertMode'
         ];
         if(Rpc.directData('rpc.appManager.app', 'http')){
             rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("http").getHttpSettings'));
@@ -210,75 +206,6 @@ Ext.define('Ung.config.system.MainController', {
         var downloadForm = document.getElementById('downloadForm');
         downloadForm.type.value = 'SystemSupportLogs';
         downloadForm.submit();
-    },
-
-    manualReboot: function () {
-        var companyName = Rpc.directData('rpc.companyName');
-
-        Ext.MessageBox.confirm('Manual Reboot Warning'.t(),
-            Ext.String.format('The server is about to manually reboot.  This will interrupt normal network operations until the {0} Server is finished automatically restarting. This may take up to several minutes to complete.'.t(), companyName),
-            function (btn) {
-                if (btn === 'yes') {
-                    rpc.UvmContext.rebootBox(function (result, ex) {
-                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to reboot {0} Server', companyName)); return; }
-                        Ext.MessageBox.wait(
-                            Ext.String.format('The {0} Server is rebooting.'.t(), companyName),
-                            'Please wait'.t(), {
-                                interval: 20, //bar will move fast!
-                                increment: 500,
-                                animate: true,
-                                text: ''
-                            });
-                    });
-                }
-            });
-    },
-
-    manualShutdown: function () {
-        var companyName = Rpc.directData('rpc.companyName');
-
-        Ext.MessageBox.confirm('Manual Shutdown Warning'.t(),
-            Ext.String.format('The {0} Server is about to shutdown.  This will stop all network operations.'.t(), companyName),
-            function (btn) {
-                if (btn === 'yes') {
-                    rpc.UvmContext.shutdownBox(function (result, ex) {
-                        if (ex) { console.error(ex); Util.handleException(Ext.String.format('Error: Unable to shutdown {0} Server', companyName)); return; }
-                        Ext.MessageBox.wait(
-                            Ext.String.format('The {0} Server is shutting down.'.t(), companyName),
-                            'Please wait'.t(), {
-                                interval: 20,
-                                increment: 500,
-                                animate: true,
-                                text: ''
-                            });
-                    });
-                }
-            });
-    },
-
-    factoryDefaults: function () {
-        Ext.MessageBox.confirm('Reset to Factory Defaults Warning'.t(),
-            'THIS WILL RESET ALL SETTINGS TO FACTORY DEFAULTS'.t() +
-            '<br><br>' +
-            'ALL CURRENT SETTINGS WILL BE LOST.'.t() +
-            '<br><br>' +
-            'AFTER IT IS FINISHED, YOU WILL NEED TO ACCESS THE SYSTEM LOCALLY TO RECONFIGURE.'.t(),
-            function (btn) {
-                if (btn === 'yes') {
-                    var me = this;
-                    Ext.MessageBox.wait('Resetting to factory defaults...'.t(), 'Please wait'.t(), {
-                        interval: 20,
-                        increment: 500,
-                        duration: 1000,
-                        animate: true,
-                        text: '',
-                        fn: function(){
-                            me.location = "/error/factoryDefaults";
-                        }
-                    });
-                    rpc.UvmContext.configManager().doFactoryReset();
-                }
-            });
     },
 
     // Backup method(s)

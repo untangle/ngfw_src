@@ -1,27 +1,25 @@
 /**
- * $Id: NetflowSettings.java 37267 2016-07-25 23:42:19Z cblaise $
+ * $Id$
  */
-package com.untangle.uvm.network;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.LinkedList;
+package com.untangle.uvm.network.generic;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.network.generic.DynamicRoutingSettingsGeneric;
+import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
+import com.untangle.uvm.network.DynamicRouteNetwork;
+import com.untangle.uvm.network.DynamicRouteOspfArea;
+import com.untangle.uvm.network.DynamicRouteOspfInterface;
+import com.untangle.uvm.network.DynamicRoutingSettings;
+
+import java.io.Serializable;
+import java.util.LinkedList;
 
 /**
- * Dynamic Routing settings
+ * Dynamic Routing settings generic.
  */
 @SuppressWarnings("serial")
-public class DynamicRoutingSettings implements Serializable, JSONString
-{
-    private final Logger logger = LogManager.getLogger(this.getClass());
+public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
 
     private Boolean enabled = false;
     private Boolean bgpEnabled = false;
@@ -48,11 +46,11 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     private String bgpRouterAs = "";
     private String ospfRouterId = "";
 
-    private List<DynamicRouteBgpNeighbor> bgpNeighbors = new LinkedList<>();
-    private List<DynamicRouteNetwork> bgpNetworks = new LinkedList<>();
-    private List<DynamicRouteNetwork> ospfNetworks = new LinkedList<>();
-    private List<DynamicRouteOspfArea> ospfAreas = new LinkedList<>();
-    private List<DynamicRouteOspfInterface> ospfInterfaces = new LinkedList<>();
+    private LinkedList<DynamicRouteBgpNeighbor> bgpNeighbors = new LinkedList<>();
+    private LinkedList<DynamicRouteNetwork> bgpNetworks = new LinkedList<>();
+    private LinkedList<DynamicRouteNetwork> ospfNetworks = new LinkedList<>();
+    private LinkedList<DynamicRouteOspfArea> ospfAreas = new LinkedList<>();
+    private LinkedList<DynamicRouteOspfInterface> ospfInterfaces = new LinkedList<>();
 
     public Boolean getEnabled() { return this.enabled; }
     public void setEnabled( Boolean newValue ) { this.enabled = newValue; }
@@ -66,12 +64,11 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     public String getBgpRouterAs() { return this.bgpRouterAs; }
     public void setBgpRouterAs( String newValue ) { this.bgpRouterAs = newValue; }
 
-    public List<DynamicRouteBgpNeighbor> getBgpNeighbors() { return this.bgpNeighbors; }
-    public void setBgpNeighbors( List<DynamicRouteBgpNeighbor> newValue ) { this.bgpNeighbors = newValue; }
+    public LinkedList<DynamicRouteBgpNeighbor> getBgpNeighbors() { return this.bgpNeighbors; }
+    public void setBgpNeighbors( LinkedList<DynamicRouteBgpNeighbor> newValue ) { this.bgpNeighbors = newValue; }
 
-    public List<DynamicRouteNetwork> getBgpNetworks() { return this.bgpNetworks; }
-    public void setBgpNetworks( List<DynamicRouteNetwork> newValue ) { this.bgpNetworks = newValue; }
-
+    public LinkedList<DynamicRouteNetwork> getBgpNetworks() { return this.bgpNetworks; }
+    public void setBgpNetworks( LinkedList<DynamicRouteNetwork> newValue ) { this.bgpNetworks = newValue; }
 
     public Boolean getOspfEnabled() { return this.ospfEnabled; }
     public void setOspfEnabled( Boolean newValue ) { this.ospfEnabled = newValue; }
@@ -127,14 +124,14 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     public Integer getOspfRedistBgpExternalType() { return this.ospfRedistBgpExternalType; }
     public void setOspfRedistBgpExternalType( Integer newValue ) { this.ospfRedistBgpExternalType = newValue; }
 
-    public List<DynamicRouteNetwork> getOspfNetworks() { return this.ospfNetworks; }
-    public void setOspfNetworks( List<DynamicRouteNetwork> newValue ) { this.ospfNetworks = newValue; }
+    public LinkedList<DynamicRouteNetwork> getOspfNetworks() { return this.ospfNetworks; }
+    public void setOspfNetworks( LinkedList<DynamicRouteNetwork> newValue ) { this.ospfNetworks = newValue; }
 
-    public List<DynamicRouteOspfArea> getOspfAreas() { return this.ospfAreas; }
-    public void setOspfAreas( List<DynamicRouteOspfArea> newValue ) { this.ospfAreas = newValue; }
+    public LinkedList<DynamicRouteOspfArea> getOspfAreas() { return this.ospfAreas; }
+    public void setOspfAreas( LinkedList<DynamicRouteOspfArea> newValue ) { this.ospfAreas = newValue; }
 
-    public List<DynamicRouteOspfInterface> getOspfInterfaces() { return this.ospfInterfaces; }
-    public void setOspfInterfaces( List<DynamicRouteOspfInterface> newValue ) { this.ospfInterfaces = newValue; }
+    public LinkedList<DynamicRouteOspfInterface> getOspfInterfaces() { return this.ospfInterfaces; }
+    public void setOspfInterfaces( LinkedList<DynamicRouteOspfInterface> newValue ) { this.ospfInterfaces = newValue; }
 
 
     public String toJSONString()
@@ -142,60 +139,43 @@ public class DynamicRoutingSettings implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-    
+
     /**
-     * Transforms a {@link DynamicRoutingSettings} object into its generic representation.
-     * @return DynamicRoutingSettingsGeneric
+     * Transforms a {@link DynamicRoutingSettingsGeneric} object into its v1 DynamicRoutingSettings representation.
+     * @param legacyDynamicRoutingSettings DynamicRoutingSettings
+     * @return legacyDynamicRoutingSettings
      */
-    public DynamicRoutingSettingsGeneric transformDynamicRoutingSettingsToGeneric() {
-        DynamicRoutingSettingsGeneric dynamicRoutingSettingsGeneric = new DynamicRoutingSettingsGeneric();
-        dynamicRoutingSettingsGeneric.setEnabled(this.getEnabled());
-        dynamicRoutingSettingsGeneric.setBgpEnabled(this.getBgpEnabled());
-        dynamicRoutingSettingsGeneric.setBgpRouterAs(this.getBgpRouterAs());
-        dynamicRoutingSettingsGeneric.setBgpNeighbors(
-                this.getBgpNeighbors() != null
-                        ? new LinkedList<>(this.getBgpNeighbors())
-                        : new LinkedList<>()
-        );
-        dynamicRoutingSettingsGeneric.setBgpNetworks(
-                this.getBgpNetworks() != null
-                        ? new LinkedList<>(this.getBgpNetworks())
-                        : new LinkedList<>()
-        );
-        dynamicRoutingSettingsGeneric.setBgpRouterId(this.getBgpRouterId());
-        dynamicRoutingSettingsGeneric.setOspfEnabled(this.getOspfEnabled());
-        dynamicRoutingSettingsGeneric.setOspfRouterId(this.getOspfRouterId());
-        dynamicRoutingSettingsGeneric.setOspfUseDefaultMetricEnabled(this.getOspfUseDefaultMetricEnabled());
-        dynamicRoutingSettingsGeneric.setOspfDefaultMetric(this.getOspfDefaultMetric());
-        dynamicRoutingSettingsGeneric.setOspfAbrType(this.getOspfAbrType());
-        dynamicRoutingSettingsGeneric.setOspfAutoCost(this.getOspfAutoCost());
-        dynamicRoutingSettingsGeneric.setOspfDefaultInformationOriginateType(this.getOspfDefaultInformationOriginateType());
-        dynamicRoutingSettingsGeneric.setOspfDefaultInformationOriginateMetric(this.getOspfDefaultInformationOriginateMetric());
-        dynamicRoutingSettingsGeneric.setOspfDefaultInformationOriginateExternalType(this.getOspfDefaultInformationOriginateExternalType());
-        dynamicRoutingSettingsGeneric.setOspfRedistConnectedEnabled(this.getOspfRedistConnectedEnabled());
-        dynamicRoutingSettingsGeneric.setOspfRedistConnectedMetric(this.getOspfRedistConnectedMetric());
-        dynamicRoutingSettingsGeneric.setOspfRedistConnectedExternalType(this.getOspfRedistConnectedExternalType());
-        dynamicRoutingSettingsGeneric.setOspfRedistStaticEnabled(this.getOspfRedistStaticEnabled());
-        dynamicRoutingSettingsGeneric.setOspfRedistStaticMetric(this.getOspfRedistStaticMetric());
-        dynamicRoutingSettingsGeneric.setOspfRedistStaticExternalType(this.getOspfRedistStaticExternalType());
-        dynamicRoutingSettingsGeneric.setOspfRedistBgpEnabled(this.getOspfRedistBgpEnabled());
-        dynamicRoutingSettingsGeneric.setOspfRedistBgpMetric(this.getOspfRedistBgpMetric());
-        dynamicRoutingSettingsGeneric.setOspfRedistBgpExternalType(this.getOspfRedistBgpExternalType());
-        dynamicRoutingSettingsGeneric.setOspfNetworks(
-                this.getOspfNetworks() != null
-                        ? new LinkedList<>(this.getOspfNetworks())
-                        : new LinkedList<>()
-        );
-        dynamicRoutingSettingsGeneric.setOspfAreas(
-                this.getOspfAreas() != null
-                        ? new LinkedList<>(this.getOspfAreas())
-                        : new LinkedList<>()
-        );
-        dynamicRoutingSettingsGeneric.setOspfInterfaces(
-                this.getOspfInterfaces() != null
-                        ? new LinkedList<>(this.getOspfInterfaces())
-                        : new LinkedList<>()
-        );
-        return dynamicRoutingSettingsGeneric;
+    public DynamicRoutingSettings transformGenericToDynamicRoutingSettings(DynamicRoutingSettings legacyDynamicRoutingSettings) {
+        if (legacyDynamicRoutingSettings == null)
+            legacyDynamicRoutingSettings = new DynamicRoutingSettings();
+
+        legacyDynamicRoutingSettings.setBgpNeighbors(this.getBgpNeighbors() != null ? this.getBgpNeighbors() : new LinkedList<>());
+        legacyDynamicRoutingSettings.setBgpNetworks(this.getBgpNetworks() != null ? this.getBgpNetworks() : new LinkedList<>());
+        legacyDynamicRoutingSettings.setOspfAreas(this.getOspfAreas() != null ? this.getOspfAreas() : new LinkedList<>());
+        legacyDynamicRoutingSettings.setOspfInterfaces(this.getOspfInterfaces() != null ? this.getOspfInterfaces() : new LinkedList<>());
+        legacyDynamicRoutingSettings.setOspfNetworks(this.getOspfNetworks() != null ? this.getOspfNetworks() : new LinkedList<>());
+        legacyDynamicRoutingSettings.setBgpRouterAs(this.getBgpRouterAs());
+        legacyDynamicRoutingSettings.setBgpRouterId(this.getBgpRouterId());
+        legacyDynamicRoutingSettings.setBgpEnabled(this.getBgpEnabled());
+        legacyDynamicRoutingSettings.setEnabled(this.getEnabled());
+        legacyDynamicRoutingSettings.setOspfAbrType(this.getOspfAbrType());
+        legacyDynamicRoutingSettings.setOspfAutoCost(this.getOspfAutoCost());
+        legacyDynamicRoutingSettings.setOspfDefaultInformationOriginateExternalType(this.getOspfDefaultInformationOriginateExternalType());
+        legacyDynamicRoutingSettings.setOspfDefaultInformationOriginateMetric(this.getOspfDefaultInformationOriginateMetric());
+        legacyDynamicRoutingSettings.setOspfDefaultInformationOriginateType(this.getOspfDefaultInformationOriginateType());
+        legacyDynamicRoutingSettings.setOspfDefaultMetric(this.getOspfDefaultMetric());
+        legacyDynamicRoutingSettings.setOspfEnabled(this.getOspfEnabled());
+        legacyDynamicRoutingSettings.setOspfRedistBgpEnabled(this.getOspfRedistBgpEnabled());
+        legacyDynamicRoutingSettings.setOspfRedistBgpExternalType(this.getOspfRedistBgpExternalType());
+        legacyDynamicRoutingSettings.setOspfRedistBgpMetric(this.getOspfRedistBgpMetric());
+        legacyDynamicRoutingSettings.setOspfRedistConnectedEnabled(this.getOspfRedistConnectedEnabled());
+        legacyDynamicRoutingSettings.setOspfRedistConnectedExternalType(this.getOspfRedistConnectedExternalType());
+        legacyDynamicRoutingSettings.setOspfRedistConnectedMetric(this.getOspfRedistConnectedMetric());
+        legacyDynamicRoutingSettings.setOspfRedistStaticEnabled(this.getOspfRedistStaticEnabled());
+        legacyDynamicRoutingSettings.setOspfRedistStaticExternalType(this.getOspfRedistStaticExternalType());
+        legacyDynamicRoutingSettings.setOspfRedistStaticMetric(this.getOspfRedistStaticMetric());
+        legacyDynamicRoutingSettings.setOspfRouterId(this.getOspfRouterId());
+        legacyDynamicRoutingSettings.setOspfUseDefaultMetricEnabled(this.getOspfUseDefaultMetricEnabled());
+        return legacyDynamicRoutingSettings;
     }
 }
