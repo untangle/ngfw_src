@@ -25,6 +25,7 @@ public class Constants {
     public static final String COMMA_STRING = ",";
 
     public static final String EQUALS_TO = "=";
+    public static final String COMMA = ",";
     public static final String SLASH = "/";
     public static final String DOUBLE_SLASH = "//";
     public static final String IS_EQUALS_TO = "==";
@@ -57,4 +58,8 @@ public class Constants {
 
     // Empty string
     public static final String EMPTY_STRING = "\" \"";
+
+    // Numbers
+    public static final String FOUR = "4";
+    public static final String SEVEN = "7";
 }

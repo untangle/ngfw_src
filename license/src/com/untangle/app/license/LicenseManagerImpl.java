@@ -78,7 +78,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     public static final String APPLICATION_CONTROL_OLDNAME = "classd";
     public static final String SSL_INSPECTOR_OLDNAME = "https";
     public static final String LIVE_SUPPORT_OLDNAME = "support";
-
+    public static final String  DYNAMIC_BLOCK_LISTS_OLDNAME = "dynamic-lists";
+    
     private static final String NO_LICENSE_SERVER_CONNECTION_MESSAGE = 
         "<strong>" + I18nUtil.marktr("Unable to establish connection to the License Service!") + "</strong> " + 
         I18nUtil.marktr("Installation of apps is disabled. Please ensure connectivity and ") + "<a href=\"/admin\">" + I18nUtil.marktr("try again") + "</a>";
@@ -456,6 +457,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         switch ( appName ) {
         case License.DIRECTORY_CONNECTOR:
             oldName = DIRECTORY_CONNECTOR_OLDNAME; break;
+        case License.DYNAMIC_BLOCK_LISTS:
+            oldName = DYNAMIC_BLOCK_LISTS_OLDNAME; break;
         case License.BANDWIDTH_CONTROL:
             oldName = BANDWIDTH_CONTROL_OLDNAME; break;
         case License.CONFIGURATION_BACKUP:
