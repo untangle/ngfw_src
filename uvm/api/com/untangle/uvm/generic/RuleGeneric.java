@@ -49,6 +49,7 @@ public class RuleGeneric implements JSONString, Serializable {
     private String ruleId;
     private RuleActionGeneric action;
     private LinkedList<RuleConditionGeneric> conditions;
+    private Boolean readOnlyRule;
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
@@ -60,6 +61,8 @@ public class RuleGeneric implements JSONString, Serializable {
     public void setAction(RuleActionGeneric action) { this.action = action; }
     public LinkedList<RuleConditionGeneric> getConditions() { return conditions; }
     public void setConditions(LinkedList<RuleConditionGeneric> conditions) { this.conditions = conditions; }
+    public Boolean getReadOnlyRule() { return readOnlyRule; }
+    public void setReadOnlyRule(Boolean readOnlyRule) { this.readOnlyRule = readOnlyRule; }
 
     // Required for Filter Rules
     private boolean ipv6Enabled;
@@ -323,6 +326,7 @@ public class RuleGeneric implements JSONString, Serializable {
         // For new rules added UI send uuid string as ruleId. Here its set to -1
         filterRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
         filterRule.setIpv6Enabled(ruleGeneric.isIpv6Enabled());
+        filterRule.setReadOnly(ruleGeneric.getReadOnlyRule());
 
         // Transform Action
         if (ruleGeneric.getAction() != null)
