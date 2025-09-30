@@ -225,6 +225,8 @@ public class SystemSettings implements Serializable, JSONString
         UvmContext context =  UvmContextFactory.context();
         SystemSettingsGeneric systemSettingsGeneric = new SystemSettingsGeneric();
         systemSettingsGeneric.setCCHidden(context.isCCHidden());
+        systemSettingsGeneric.setLogDirectorySize(context.systemManager().getLogDirectorySize());
+        systemSettingsGeneric.setLogRetention(this.getLogRetention());
 
         if (networkSettings != null) {
             // Local Services Settings

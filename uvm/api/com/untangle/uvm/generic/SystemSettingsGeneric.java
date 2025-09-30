@@ -22,6 +22,13 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
      */
     private boolean isCCHidden;
 
+    private int logRetention;
+
+    /**
+     * Refers to {@link com.untangle.uvm.SystemManagerImpl#getLogDirectorySize()} .
+     */
+    private Long logDirectorySize;
+
     /**
      * These are required for Web Admin Ports
      */
@@ -50,6 +57,19 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private Integer publicUrlPort;
     private TimeZone timeZone = null;
 
+    /**
+     * Get log retention
+     */
+    public Integer getLogRetention(){ return this.logRetention; }
+    public void setLogRetention( Integer newValue) { this.logRetention = newValue; }
+
+    public Long getLogDirectorySize() {
+        return logDirectorySize;
+    }
+
+    public void setLogDirectorySize(Long logDirectorySize) {
+        this.logDirectorySize = logDirectorySize;
+    }
 
     /**
      * These are required for TimeZone settings
@@ -153,6 +173,7 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
         if (systemSettings != null) {
             systemSettings.setCloudEnabled(this.isCloudEnabled());
             systemSettings.setSupportEnabled(this.isSupportEnabled());
+            systemSettings.setLogRetention(this.getLogRetention());
         }
     }
     /**

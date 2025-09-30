@@ -114,6 +114,7 @@ public class FilterRule implements JSONString, Serializable
         // Create Generic Rule
         RuleGeneric filterRulesGen = new RuleGeneric(enabled, rule.getDescription(), ruleId);
         filterRulesGen.setIpv6Enabled(rule.getIpv6Enabled());
+        filterRulesGen.setReadOnlyRule(rule.getReadOnly());
         filterRulesGen.setAction(ruleActionGen);
         filterRulesGen.setConditions(ruleConditionGenList);
         return filterRulesGen;
