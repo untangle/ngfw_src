@@ -36,9 +36,9 @@ public class DynamicBlockListsManager {
      * Start the dbl setup
      */
     protected void start() {
+        this.app.start();
         logger.info("Staring the Dynamic Blocklist Setup Process");
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_SETUP_SCRIPT);
-        configure();
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_SETUP_SCRIPT); 
         logger.info("DBL setup script result: {}", result.getOutput());
     }
 
@@ -46,6 +46,7 @@ public class DynamicBlockListsManager {
      * Stop the filter chain
      */
     protected void stop() {
+        this.app.stop();
         logger.info("Staring the Dynamic Blocklist Cleanup Process");
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_CLEAN_UP_SCRIPT );
         logger.info("DBL cleanup script result: {}", result.getOutput());

@@ -104,7 +104,7 @@ public class DynamicBlockListsApp extends AppBase
     public void setSettings(final DynamicBlockListsSettings newSettings, boolean restart) {
         logger.info("Saving the settings. Restart: {}", restart);
         // Set id for new blocklists
-        newSettings.getDynamicBlockList().stream()
+        newSettings.getConfigurations().stream()
                 .filter(blockList -> StringUtil.isEmpty(blockList.getId()))
                 .forEach(blockList -> {
                     blockList.setId(generateUniqueId());
@@ -133,6 +133,61 @@ public class DynamicBlockListsApp extends AppBase
     }
 
     /**
+     * Get the current application settings 
+     * @return settings
+     */
+    public DynamicBlockListsSettings getDynamicBlockListsSettingsV2(){
+        return this.settings;
+    }
+
+    
+    /**
+     * Updates the dynamic block list settings based on the provided configuration.
+     * This method compares the enabled state of the current settings with the new settings.
+     * If the enabled state changes, it starts or stops the dynamic block lists manager accordingly.
+     * Finally, it updates the settings to the new configuration.
+     *
+     * @param newSettings The new settings to apply. If null, no changes will be made.
+     */
+    public void setDynamicBlockListSettingsV2(DynamicBlockListsSettings newSettings) {
+        // Return early if the new settings are null (no changes to apply)
+        if (newSettings == null) {
+            return;
+        }
+        
+        // Store the enabled state of the new settings and the current settings (default to false if null)
+        boolean newEnabled = newSettings.getEnabled();
+        boolean currentEnabled = this.settings != null ? this.settings.getEnabled() : false;
+
+        // Check if the enabled state has changed
+        if (newEnabled != currentEnabled) {
+            // If the new settings enable the app, start the dynamic block lists manager
+            if (newEnabled) {
+                dynamicBlockListsManager.start();
+            } else {
+                // If the new settings disable the app, stop the dynamic block lists manager
+                dynamicBlockListsManager.stop();
+            }
+        }
+
+        // Apply the new settings with the updated enabled state
+        setSettings(newSettings, newEnabled);
+    }
+
+    /**
+     * Set the application settings to the default settings
+     * @return Default settings
+     */
+    public DynamicBlockListsSettings onResetDefaultsV2(){
+        DynamicBlockListsSettings defaultSettings = getDefaultSettings();
+        setSettings(defaultSettings, false);
+        dynamicBlockListsManager.stop(); 
+        return defaultSettings;
+    }
+
+
+
+    /**
      * Get the list of pipeline connectors
      * 
      * @return List of pipeline connectors
@@ -140,38 +195,6 @@ public class DynamicBlockListsApp extends AppBase
     @Override
     protected PipelineConnector[] getConnectors() { return this.connectors; }
 
-    /**
-     * Called after the application is started
-     * 
-     * @param isPermanentTransition
-     *        Permanent transition flag
-     */
-    @Override
-    protected void postStart(boolean isPermanentTransition) {
-        dynamicBlockListsManager.start();
-    }
-
-    /**
-     * Called before the application is started
-     * 
-     * @param isPermanentTransition
-     *        Permanent transition flag
-     */
-    @Override
-    protected void preStart(boolean isPermanentTransition) {
-
-    }
-
-    /**
-     * Called before the application is stopped
-     * 
-     * @param isPermanentTransition
-     *        Permanent transition flag
-     */
-    @Override
-    protected void preStop(boolean isPermanentTransition) {
-        dynamicBlockListsManager.stop();
-    }
 
     /**
      * Called after application initialization
@@ -239,7 +262,7 @@ public class DynamicBlockListsApp extends AppBase
         logger.info("Creating the default settings...");
 
         DynamicBlockListsSettings settings = new DynamicBlockListsSettings();
-        List<DynamicBlockList> list = new LinkedList<>();
+        LinkedList<DynamicBlockList> list = new LinkedList<>();
 
         DynamicBlockList dynamicBlockList = new DynamicBlockList();
         dynamicBlockList.setId(generateUniqueId());
@@ -265,7 +288,8 @@ public class DynamicBlockListsApp extends AppBase
         dynamicBlockList.setType("IPList");
         list.add(dynamicBlockList);
 
-        settings.setDynamicBlockList(list);
+        settings.setConfigurations(list);
+        settings.setEnabled(false);
         return settings;
     }
 
