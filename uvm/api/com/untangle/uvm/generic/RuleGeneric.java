@@ -488,7 +488,7 @@ public class RuleGeneric implements JSONString, Serializable {
      * @param currentIdExtractor Function<T, String>
      * @param legacyIdExtractor Function<U, String>
      */
-    private static <T, U> void deleteOrphanRules(
+    public static <T, U> void deleteOrphanRules(
             List<T> newRules,
             List<U> legacyRules,
             Function<T, String> currentIdExtractor,
