@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 import java.io.Serializable;
 
+import com.untangle.app.shield.generic.ShieldSettingsGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -39,5 +40,20 @@ public class ShieldSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms a {@link ShieldSettings} object into its generic representation.
+     * @return QosSettingsGeneric
+     */
+    public ShieldSettingsGeneric transformShieldSettingsToGeneric() {
+        ShieldSettingsGeneric shieldSettingsGen = new ShieldSettingsGeneric();
+
+        shieldSettingsGen.setEnabled(this.isShieldEnabled());
+        // Set Shield Rules
+        if (this.getRules() != null)
+            shieldSettingsGen.setShield_rules(ShieldRule.transformShieldRulesToGeneric(this.getRules()));
+
+        return  shieldSettingsGen;
     }
 }

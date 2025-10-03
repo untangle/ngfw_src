@@ -3,9 +3,10 @@
  */
 package com.untangle.app.shield;
 
-import java.util.Set;
 import java.io.File;
 
+import com.untangle.app.shield.generic.ShieldSettingsGeneric;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -87,6 +88,29 @@ public class ShieldApp extends AppBase
             logger.error("Settings not yet initialized. State: " + this.getRunState() );
 
         return settings;
+    }
+
+    /**
+     * Set the shield settings V2
+     * @param newSettings ShieldSettingsGeneric
+     */
+    public void setSettingsV2(ShieldSettingsGeneric newSettings) {
+        if (this.getSettings() != null) {
+            // Deep clone current Shield Settings to transform in New Shield Settings
+            ShieldSettings clonedShieldSettings = SerializationUtils.clone(this.settings);
+            newSettings.transformGenericToQosSettings(clonedShieldSettings);
+            setSettings(clonedShieldSettings);
+        }
+    }
+
+    /**
+     * Get the v2 shield settings
+     * @return ShieldSettingsGeneric
+     */
+    public ShieldSettingsGeneric getSettingsV2() {
+        if (this.getSettings() != null)
+            return this.settings.transformShieldSettingsToGeneric();
+        return new ShieldSettingsGeneric();
     }
 
     /**
