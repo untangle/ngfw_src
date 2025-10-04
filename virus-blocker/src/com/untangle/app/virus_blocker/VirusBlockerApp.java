@@ -30,26 +30,9 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     public VirusBlockerApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
-
-        // if the bdamserver package is not installed we set our special flag
-        try {
-            // if entitled to "virus-blocker" enable BD
-            if (UvmContextFactory.context().licenseManager().isLicenseValid("virus-blocker")) {
-                this.fileScannerAvailable = true;
-            } else {
-                // otherwise - BD not available
-                this.fileScannerAvailable = false;
-            }
-
-            if (!isBdamInstalled()) {
-                this.fileScannerAvailable = false;
-            }
-
-        } catch (Exception exn) {
-            this.fileScannerAvailable = false;
-        }
-
         this.setScanner(new VirusBlockerScanner(this));
+        // logger.warn("Cloudscan enabled: " + this.getSettings().getEnableCloudScan());
+        // logger.warn("Local Scan enabled: " + this.getSettings().getEnableLocalScan());
     }
 
     /**
@@ -124,7 +107,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     @Override
     public boolean isPremium()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -150,19 +133,10 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        // skip the daemon stuff if package is not installed
-        if (isBdamInstalled()) {
-            UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bdamserver");
-
-            // we only need to enable the monitoring since it will be disabled
-            // automatically when the daemon count reaches zero
-            String transmit = "INFO 1\r\n";
-            String search = "200 1";
-            UvmContextFactory.context().daemonManager().enableRequestMonitoring("untangle-bdamserver", 1200, "127.0.0.1", 1344, transmit, search);
-        } else {
-            logger.info("Skipping DaemonManager initialization because the package is not installed.");
-        }
-
+        UvmContextFactory.context().daemonManager().incrementUsageCount("clamav-daemon");
+        UvmContextFactory.context().daemonManager().incrementUsageCount("clamav-freshclam");
+        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-daemon", 300, "clamd");
+        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-freshclam", 3600, "freshclam");
         super.preStart(isPermanentTransition);
     }
 
@@ -175,22 +149,10 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
-        // skip the daemon stuff if the package is not installed
-        if (isBdamInstalled()) {
-            UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bdamserver");
-        }
-
+        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-daemon");
+        //This disables socket service, it has to be disables explicitly
+        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-daemon.socket");
+        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-freshclam");
         super.postStop(isPermanentTransition);
-    }
-
-    /**
-     * Check to see if the BDAM service is installed
-     * 
-     * @return True if installed, otherwise false
-     */
-    protected boolean isBdamInstalled()
-    {
-        File daemonCheck = new File("/lib/systemd/system/untangle-bdamserver.service");
-        return daemonCheck.exists();
     }
 }
