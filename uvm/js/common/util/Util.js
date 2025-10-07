@@ -947,7 +947,17 @@ Ext.define('Ung.util.Util', {
         return Util.isIPInRange(nextPoolAddr, network, netMask)? nextPoolAddr : '';
     },
 
-    
+    /**  Helper function to convert netmask string to prefix length
+     * @param {*} netmask
+     */
+    netmaskToPrefix: function(netmask) {
+        var binaryStr = netmask.split('.')
+            .map(function(octet) {
+                return ("00000000" + parseInt(octet, 10).toString(2)).slice(-8);
+            })
+            .join('');
+        return binaryStr.split('1').length - 1;
+    },
 
     /**
      * From the specified IP address and netmask, return the network.

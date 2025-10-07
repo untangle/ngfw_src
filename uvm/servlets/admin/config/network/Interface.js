@@ -440,8 +440,12 @@ Ext.define('Ung.config.network.Interface', {
                         try {
                             var staticPrefix = this.up('window').down('#intfcNetmask').getValue(),
                                 intfcNetMask = Util.getV4NetmaskMap()[staticPrefix];
-                            if(value == Util.getNetwork(value, intfcNetMask) || value == Util.getBroadcast(value, intfcNetMask)) {
-                                return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}.'.t(), intfcNetMask);
+                            var prefixLength = Util.netmaskToPrefix(intfcNetMask);
+                            // Allow /31 subnets – no need for broadcast and network address validation, as both IPs are usable.
+                            if (prefixLength !== 31) {
+                                if(value == Util.getNetwork(value, intfcNetMask) || value == Util.getBroadcast(value, intfcNetMask)) {
+                                    return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}.'.t(), intfcNetMask);
+                                }
                             }
                         } catch(er) {
                             console.log(er);
@@ -632,8 +636,11 @@ Ext.define('Ung.config.network.Interface', {
                                 var selection = this.up("ungrid").getSelectionModel().getSelection()[0],
                                     staticPrefix = selection ? selection.get('staticPrefix') : 24,
                                     aliasNetMask = Util.getV4NetmaskMap()[staticPrefix];
-                                if(value == Util.getNetwork(value, aliasNetMask) || value == Util.getBroadcast(value, aliasNetMask)) {
-                                    return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}'.t(), aliasNetMask);
+                                var prefixLength = Util.netmaskToPrefix(intfcNetMask);
+                                if (prefixLength !== 31) {
+                                    if(value == Util.getNetwork(value, aliasNetMask) || value == Util.getBroadcast(value, aliasNetMask)) {
+                                        return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}'.t(), aliasNetMask);
+                                    }
                                 }
                             } catch(err) {
                                 console.log(err);
