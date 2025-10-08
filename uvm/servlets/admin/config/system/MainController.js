@@ -58,10 +58,6 @@ Ext.define('Ung.config.system.MainController', {
             rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("smtp").getSmtpSettings'));
             dataNames.push('smtpSettings');
         }
-        if(Rpc.directData('rpc.appManager.app', 'shield')){
-            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("shield").getSettings'));
-            dataNames.push('shieldSettings');
-        }
 
         v.setLoading(true);
         Ext.Deferred.sequence(rpcSequence, this)
@@ -177,9 +173,6 @@ Ext.define('Ung.config.system.MainController', {
         if(Rpc.directData('rpc.appManager.app', 'smtp')){
             rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("smtp").setSettings', vm.get('smtpSettings')));
         }
-        if(Rpc.directData('rpc.appManager.app', 'shield')){
-            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("shield").setSettings', vm.get('shieldSettings')));
-        }
 
         Ext.Deferred.sequence(rpcSequence, this)
         .then(function () {
@@ -245,19 +238,6 @@ Ext.define('Ung.config.system.MainController', {
             ( newValue != oldValue ) ){
             vm.set('localizationChanged', true);
         }
-    },
-
-    statics: {
-        shieldActionRenderer: function(value){
-            var action;
-            switch (value) {
-                case 'SCAN': action = 'Scan'.t(); break;
-                case 'PASS': action = 'Pass'.t(); break;
-                default: action = 'Unknown Action'.t() + ': ' + value;
-            }
-            return action;
-        }
-
     }
 
 });
