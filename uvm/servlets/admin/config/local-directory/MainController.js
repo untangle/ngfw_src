@@ -103,6 +103,9 @@ Ext.define('Ung.config.local-directory.MainController', {
             if (user.localForever == true) {
                 user.expirationTime = 0;
             } else {
+                if (!(user.localExpires instanceof Date)) {
+                    user.localExpires = new Date(user.localExpires);
+                }
                 user.expirationTime = user.localExpires.getTime();
             }
         }
