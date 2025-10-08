@@ -50,6 +50,7 @@ public class ShieldSettings implements Serializable, JSONString
         ShieldSettingsGeneric shieldSettingsGen = new ShieldSettingsGeneric();
 
         shieldSettingsGen.setEnabled(this.isShieldEnabled());
+        shieldSettingsGen.setRequestPerSecondLimit(this.getRequestPerSecondLimit());
         // Set Shield Rules
         if (this.getRules() != null)
             shieldSettingsGen.setShield_rules(ShieldRule.transformShieldRulesToGeneric(this.getRules()));

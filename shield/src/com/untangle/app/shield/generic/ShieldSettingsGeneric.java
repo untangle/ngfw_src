@@ -19,10 +19,13 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class ShieldSettingsGeneric implements Serializable, JSONString {
     private boolean enabled = true;
+    private int requestPerSecondLimit = 30;
     private LinkedList<RuleGeneric> shield_rules = new LinkedList<>();
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public int getRequestPerSecondLimit() { return requestPerSecondLimit; }
+    public void setRequestPerSecondLimit(int requestPerSecondLimit) { this.requestPerSecondLimit = requestPerSecondLimit; }
     public LinkedList<RuleGeneric> getShield_rules() { return shield_rules; }
     public void setShield_rules(LinkedList<RuleGeneric> shield_rules) { this.shield_rules = shield_rules; }
 
@@ -41,6 +44,7 @@ public class ShieldSettingsGeneric implements Serializable, JSONString {
             shieldSettings = new ShieldSettings();
 
         shieldSettings.setShieldEnabled(this.isEnabled());
+        shieldSettings.setRequestPerSecondLimit(this.getRequestPerSecondLimit());
         // Set Shield Rules
         if (this.getShield_rules() != null)
             shieldSettings.setRules(ShieldRule.transformGenericToShieldRules(this.getShield_rules(), shieldSettings.getRules()));
