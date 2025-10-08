@@ -44,6 +44,16 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>UploadServletExtended</servlet-name>
+    <servlet-class>com.untangle.uvm.admin.servlet.UploadServletExtended</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>UploadServletExtended</servlet-name>
+    <url-pattern>/v2/upload</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>DownloadServlet</servlet-name>
     <servlet-class>com.untangle.uvm.admin.servlet.DownloadServlet</servlet-class>
   </servlet>

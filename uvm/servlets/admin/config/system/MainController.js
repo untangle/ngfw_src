@@ -208,35 +208,6 @@ Ext.define('Ung.config.system.MainController', {
         downloadForm.submit();
     },
 
-    // Backup method(s)
-    backupToFile: function () {
-        var downloadForm = document.getElementById('downloadForm');
-        downloadForm.type.value = 'backup';
-        downloadForm.submit();
-    },
-
-    // Restore method(s)
-    restoreFromFile: function (btn) {
-        var restoreFile = this.getView().down('#restoreFile').getValue();
-        if (!restoreFile || restoreFile.length === 0) {
-            Util.handleException('Please select a file to upload.'.t());
-            return;
-        }
-        btn.up('form').submit({
-            waitMsg: 'Restoring from File...'.t(),
-            success: function (form, action) {
-                Ext.MessageBox.alert('Restore'.t(), action.result.msg);
-            },
-            failure: function (form, action) {
-                var errorMsg = 'The File restore procedure failed.'.t();
-                if (action.result && action.result.msg) {
-                    errorMsg = action.result.msg;
-                }
-                Ext.MessageBox.alert('Failed', errorMsg);
-            }
-        });
-    },
-
     languageChange: function(combo, newValue, oldValue){
         var me = this,
             vm = me.getViewModel();
