@@ -1,0 +1,6 @@
+#!/bin/dash
+
+## Ignore errors
+@PREFIX@/usr/share/untangle/bin/ut-get-last-update /var/lib/clamav/
+
+exit 0

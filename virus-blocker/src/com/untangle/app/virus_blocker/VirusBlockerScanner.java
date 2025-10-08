@@ -27,7 +27,7 @@ public class VirusBlockerScanner implements VirusScanner
 
     private static final int timeout = 29500; /* XXX should be user configurable */
 
-    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty("uvm.bin.dir") + "/virus-blocker-lite-get-last-update";
+    private static final String GET_LAST_SIGNATURE_UPDATE = System.getProperty("uvm.bin.dir") + "/virus-blocker-get-last-update";
 
     private static final String VERSION_ARG = "-V";
 

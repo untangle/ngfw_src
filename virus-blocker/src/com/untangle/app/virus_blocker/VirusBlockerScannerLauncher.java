@@ -59,41 +59,53 @@ public class VirusBlockerScannerLauncher
     {
         VirusBlockerState virusState = (VirusBlockerState) session.attachment();
         VirusCloudScanner cloudScanner = null;
+        VirusCloudFeedback feedback = null;
 
         if (cloudScan && virusState.fileHash != null) {
             cloudScanner = new VirusCloudScanner(virusState);
             cloudScanner.start();
         }
-
-        if (localScan) {
+        VirusScannerResult result = VirusScannerResult.CLEAN;
+        if (this.localScan) {
             ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
-            localResult = scan.doScan(timeout);
+            result = scan.doScan(timeout);
 
-            if (localResult != null) {
-                logger.debug("Local Scan result" + localResult.getVirusName() + localResult.toString());
+            if (result != null) {
+                logger.debug("Local Scan result" + result.getVirusName() + result.toString());
             }
-            return localResult;
         }
 
         if (cloudScanner != null && virusState.fileHash != null) {
             try {
                 synchronized (cloudScanner) {
-                    cloudScanner.wait(CLOUD_SCAN_MAX_MILLISECONDS);
+                    cloudResult = cloudScanner.getCloudResult();
+                    // if the result is not known, wait up to CLOUD_SCAN_MAX_MILLISECONDS for a result
+                    if (cloudResult == null) {
+                        cloudScanner.wait(CLOUD_SCAN_MAX_MILLISECONDS);
+                        cloudResult = cloudScanner.getCloudResult();
+                    }
                 }
             } catch (InterruptedException e) {
                 logger.warn("Cloud scanner was interrupted.");
             }
-            cloudResult = cloudScanner.getCloudResult();
-            if (cloudResult != null && cloudResult.getItemCategory() != null) {
-                VirusScannerResult result = new VirusScannerResult(false, cloudResult.getItemCategory());
+           
+            if (this.cloudScan && cloudResult != null && cloudResult.getItemCategory() != null) {
                 
-                if (localScan) {
-                    VirusCloudFeedback feedback = new VirusCloudFeedback(virusState, "CLAM", localResult.getVirusName(), "U", scanfile.length(), session, cloudResult);
-                    feedback.start();
+
+                // if clam scan returned positive result we send the feedback
+                if (localScan && !result.isClean()) {
+                    feedback = new VirusCloudFeedback(virusState, "CLAM", result.getVirusName(), "U", scanfile.length(), session, cloudResult);
                 }
-                return result;
+
+                // if no clam scan feedback and cloud returned positive result we also send feedback
+                if ((feedback == null) && (cloudResult != null) && (cloudResult.getItemCategory() != null) && (cloudResult.getItemClass() != null) && (cloudResult.getItemConfidence() == 100)) {
+                    feedback = new VirusCloudFeedback(virusState, "UT", cloudResult.getItemCategory(), cloudResult.getItemClass(),  scanfile.length(), session, cloudResult);
+                    result = new VirusScannerResult(false, cloudResult.getItemCategory());
+                }
+                
+                if (feedback != null) feedback.start();
             }
         }
-        return VirusScannerResult.CLEAN;
+        return result;
     }
 }
