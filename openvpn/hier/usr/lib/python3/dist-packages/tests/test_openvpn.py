@@ -303,11 +303,11 @@ class OpenVpnTests(NGFWTestCase):
         if (vpnHostResult != 0):
             raise unittest.SkipTest("No paried VPN server available")
         # Download remote system VPN config
-        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteInlineFile, output_file="/tmp/config.zip"), shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteInlineFile, output_file="/tmp/openvpn-site2site10-inline.ovpn"), shell=True)
         if (result != 0):
             raise unittest.SkipTest("Currenlty no inline config file is present in test server skipping the test")
         assert (result == 0) # verify the download was successful
-        self._app.importClientConfig("/tmp/inline.ovpn")
+        self._app.importClientConfig("/tmp/openvpn-site2site10-inline.ovpn")
         # wait for vpn tunnel to form
         timeout = waitForServerVPNtoConnect(self._app)
         # If VPN tunnel has failed to connect, fail the test,
@@ -397,11 +397,11 @@ class OpenVpnTests(NGFWTestCase):
             raise unittest.SkipTest("User/Pass VPN server not available")
 
         # Download remote system VPN config
-        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteUserPassInlineFile, output_file="/tmp/UserPassConfig.zip"), shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteUserPassInlineFile, output_file="/tmp/openvpn-site2siteUserPass-inline.ovpn"), shell=True)
         if (result != 0):
             raise unittest.SkipTest("Currenlty no inline config file is present in test server skipping the test")
         assert(result == 0) #verify download was successful
-        self._app.importClientConfig("/tmp/UserPassInline.ovpn")
+        self._app.importClientConfig("/tmp/openvpn-site2siteUserPass-inline.ovpn")
 
         #set username/password in remoteServer settings
         appData = self._app.getSettings()
