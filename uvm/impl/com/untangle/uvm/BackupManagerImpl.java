@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ import com.untangle.uvm.util.IOUtil;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.DownloadHandler;
 
+import static com.untangle.uvm.util.Constants.COMMA;
 import static com.untangle.uvm.util.Constants.DOT;
 import static com.untangle.uvm.util.Constants.SPACE;
 import static com.untangle.uvm.util.Constants.UNDERSCORE;
@@ -189,6 +191,10 @@ public class BackupManagerImpl implements BackupManager
      */
     private class RestoreUploadHandler implements UploadHandler
     {
+
+        private static final String EXCEPTIONS = "exceptions";
+        private static final String NETWORK_REGEX = ".*/network.*";
+
         /**
          * Get the name of our handler
          * 
@@ -201,7 +207,7 @@ public class BackupManagerImpl implements BackupManager
         }
 
         /**
-         * Handle a file upladed via the Admin interface
+         * Handle a file uploaded via the Admin interface
          * 
          * @param fileItem
          *        The file
@@ -214,6 +220,57 @@ public class BackupManagerImpl implements BackupManager
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
             return restoreBackup(fileItem.get(), argument);
+        }
+
+        /**
+         * Handle a file bytes uploaded via the Admin interface
+         * Transforms the arguments map and calls restoreBackup
+         *
+         * @param backupFileBytes
+         *        The file
+         * @param arguments
+         *        Upload argument
+         * @return The upload result
+         * @throws Exception
+         */
+        @Override
+        public ExecManagerResult handleV2File(byte[] backupFileBytes, Map<String, String> arguments) throws Exception
+        {
+            return restoreBackup(backupFileBytes, getRegExFromExceptions(arguments));
+        }
+
+        /**
+         * Get regex from arguments map
+         * @param arguments
+         * @return
+         */
+        private String getRegExFromExceptions(Map<String, String> arguments) {
+            if (arguments == null || !arguments.containsKey(EXCEPTIONS))
+                return StringUtils.EMPTY;
+            return getRegExFromExceptions(arguments.get(EXCEPTIONS));
+        }
+
+        /**
+         * Generates a regular expression string based on the provided exception list.
+         * <p>
+         * This method splits the given comma-separated {@code exceptions} string and checks
+         * whether it contains the keyword {@code "network"} (case-insensitive). If the keyword
+         * is found, it returns a predefined {@code NETWORK_REGEX}. Otherwise, it returns an
+         * empty string.
+         * </p>
+         *
+         * @param exceptions a comma-separated list of exception keywords; may be {@code null} or empty
+         * @return the {@code NETWORK_REGEX} string if "network" is present in the list,
+         * otherwise an empty string
+         */
+        private String getRegExFromExceptions(String exceptions) {
+            if (StringUtils.isNotEmpty(exceptions)) {
+                boolean found = Arrays.stream(exceptions.split(COMMA))
+                        .map(String::trim)
+                        .anyMatch("network"::equalsIgnoreCase);
+                return found ? NETWORK_REGEX : StringUtils.EMPTY;
+            }
+            return StringUtils.EMPTY;
         }
 
     }
