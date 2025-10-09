@@ -30,9 +30,9 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     public VirusBlockerApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
+        //clamav should be always running. covers the scenario where localscan is disabled
+        this.fileScannerAvailable = true;
         this.setScanner(new VirusBlockerScanner(this));
-        // logger.warn("Cloudscan enabled: " + this.getSettings().getEnableCloudScan());
-        // logger.warn("Local Scan enabled: " + this.getSettings().getEnableLocalScan());
     }
 
     /**
