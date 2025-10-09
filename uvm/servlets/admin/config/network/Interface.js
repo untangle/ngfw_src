@@ -438,10 +438,9 @@ Ext.define('Ung.config.network.Interface', {
                     validator: function(value) {
                         // Validation for not allowing network and broadcast address of selected netmask
                         try {
-                            var staticPrefix = this.up('window').down('#intfcNetmask').getValue(),
-                                intfcNetMask = Util.getV4NetmaskMap()[staticPrefix];
-                            if(value == Util.getNetwork(value, intfcNetMask) || value == Util.getBroadcast(value, intfcNetMask)) {
-                                return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}.'.t(), intfcNetMask);
+                            var staticPrefix = this.up('window').down('#intfcNetmask').getValue();
+                            if (Util.isNetworkOrBroadcast(value, staticPrefix)) {
+                                return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}.'.t(), Util.getV4NetmaskMap()[staticPrefix]);
                             }
                         } catch(er) {
                             console.log(er);
@@ -630,17 +629,16 @@ Ext.define('Ung.config.network.Interface', {
                             // Validation for not allowing network and broadcast address of selected netmask                           
                             try {
                                 var selection = this.up("ungrid").getSelectionModel().getSelection()[0],
-                                    staticPrefix = selection ? selection.get('staticPrefix') : 24,
-                                    aliasNetMask = Util.getV4NetmaskMap()[staticPrefix];
-                                if(value == Util.getNetwork(value, aliasNetMask) || value == Util.getBroadcast(value, aliasNetMask)) {
-                                    return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}'.t(), aliasNetMask);
-                                }
+                                    staticPrefix = selection ? selection.get('staticPrefix') : 24;
+                            if (Util.isNetworkOrBroadcast(value, staticPrefix)) {
+                                return Ext.String.format('Address cannot be a network or broadcast address with netmask {0}.'.t(), Util.getV4NetmaskMap()[staticPrefix]);
+                            }
                             } catch(err) {
                                 console.log(err);
                             }
                             // Validation for not allowing duplicate IP Addresses
                             if(this.dirty) {
-                                // Check if current value is eqaul to original value
+                                // Check if current value is equal to original value
                                 if(this.value === this.originalValue) return true;
 
                                 var aliasStore = this.up('grid').getStore(),

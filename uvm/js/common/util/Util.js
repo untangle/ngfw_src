@@ -1071,6 +1071,17 @@ Ext.define('Ung.util.Util', {
     },
 
     /**
+     * From the specified IP address and netmask, validate the ip.
+     * @param {*} ip
+     * @param {*} prefix
+     */
+    isNetworkOrBroadcast: function(ip, prefix) {
+        if (prefix === 31) return false;
+        var netmask = Util.getV4NetmaskMap()[prefix];
+        return ip === Util.getNetwork(ip, netmask) || ip === Util.getBroadcast(ip, netmask);
+    },
+
+    /**
      * Increment the passed IP
      * @param  string ip      IP address to increment.
      * @param  int inc        Number to increment by.
