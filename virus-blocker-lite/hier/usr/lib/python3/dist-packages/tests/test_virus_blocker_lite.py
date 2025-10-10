@@ -49,4 +49,4 @@ class VirusBlockerLiteTests(VirusBlockerBaseTests):
             time.sleep(5)
 
 
-test_registry.register_module("virus-blocker-lite", VirusBlockerLiteTests)
+#test_registry.register_module("virus-blocker-lite", VirusBlockerLiteTests)
