@@ -18,6 +18,8 @@ import com.untangle.app.virus_blocker.VirusBlockerBaseApp;
 public class VirusBlockerApp extends VirusBlockerBaseApp
 {
     private final Logger logger = LogManager.getLogger(VirusBlockerApp.class);
+    private static final String CLAM_DAEMON_START = System.getProperty("uvm.bin.dir") + "/clamav-daemon-start start";
+    private static final String CLAM_DAEMON_STOP = System.getProperty("uvm.bin.dir") + "/clamav-daemon-start stop";
 
     /**
      * Constructor
@@ -133,10 +135,15 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        UvmContextFactory.context().daemonManager().incrementUsageCount("clamav-daemon");
-        UvmContextFactory.context().daemonManager().incrementUsageCount("clamav-freshclam");
-        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-daemon", 300, "clamd");
-        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-freshclam", 3600, "freshclam");
+        
+        try {
+            // ClamAV is dependant on daily.cvd and main.cvd files, those need to be downloaded first before starting the clamav daemon
+            // updates and downloads is taken care by separate daemon fresh-clam. 
+            UvmContextFactory.context().execManager().execEvilProcess(CLAM_DAEMON_START);
+
+        } catch (Exception e) {
+            logger.warn("Error while starting ClamAV Daemons", e);
+        }
         super.preStart(isPermanentTransition);
     }
 
@@ -149,10 +156,13 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-daemon");
-        //This disables socket service, it has to be disables explicitly
-        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-daemon.socket");
-        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-freshclam");
+        try {
+            // use the same script of preStart method for stopping ClamAV related daemon services
+            UvmContextFactory.context().execManager().execEvilProcess(CLAM_DAEMON_STOP);
+
+        } catch (Exception e) {
+            logger.warn("Error while stopping ClamAV Daemons", e);
+        }
         super.postStop(isPermanentTransition);
     }
 }

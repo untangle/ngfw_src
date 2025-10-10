@@ -13,7 +13,10 @@ import com.untangle.uvm.vnet.AppSession;
 import com.untangle.app.clam.ClamScannerClientLauncher;
 
 /**
- * The virus blocker scanner launcher
+ * Launches a virus scanner
+ *
+ * @author mahotz
+ *
  */
 public class VirusBlockerScannerLauncher
 {
@@ -29,7 +32,7 @@ public class VirusBlockerScannerLauncher
     private VirusCloudResult cloudResult = null;
 
     /**
-     * Constructor
+     * Create a Launcher for the give file
      * 
      * @param scanfile
      *        The file to scan
