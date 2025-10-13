@@ -52,7 +52,7 @@ public class DynamicRoutingOspfAreaGeneric implements JSONString, Serializable {
 
     /**
      * Transforms a {@link DynamicRoutingOspfAreaGeneric} object into its v1 DynamicRouteOspfArea representation.
-     * @param legacyDynamicRouteOspfArea DynamicRouteOspfArea
+     * @param genericDynamicRouteOspfArea DynamicRouteOspfArea
      * @return DynamicRouteOspfArea
      */
     public static DynamicRouteOspfArea transformGenericToDynamicRoutingOspfAreas(DynamicRouteOspfArea genericDynamicRouteOspfArea) {
