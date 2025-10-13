@@ -55,20 +55,20 @@ public class DynamicRoutingOspfAreaGeneric implements JSONString, Serializable {
      * @param legacyDynamicRouteOspfArea DynamicRouteOspfArea
      * @return DynamicRouteOspfArea
      */
-    public static DynamicRouteOspfArea transformGenericToDynamicRoutingOspfAreas(DynamicRouteOspfArea legacyDynamicRouteOspfArea) {
-        if (legacyDynamicRouteOspfArea == null) {
+    public static DynamicRouteOspfArea transformGenericToDynamicRoutingOspfAreas(DynamicRouteOspfArea genericDynamicRouteOspfArea) {
+        if (genericDynamicRouteOspfArea == null) {
             return null;
         }
         DynamicRouteOspfArea dynamicRouteOspfArea = new DynamicRouteOspfArea();
 
-        dynamicRouteOspfArea.setArea(legacyDynamicRouteOspfArea.getArea());
-        dynamicRouteOspfArea.setAuthentication(legacyDynamicRouteOspfArea.getAuthentication());
-        dynamicRouteOspfArea.setDescription(legacyDynamicRouteOspfArea.getDescription());
-        dynamicRouteOspfArea.setRuleId(legacyDynamicRouteOspfArea.getRuleId());
-        dynamicRouteOspfArea.setType(legacyDynamicRouteOspfArea.getType());
+        dynamicRouteOspfArea.setArea(genericDynamicRouteOspfArea.getArea());
+        dynamicRouteOspfArea.setAuthentication(genericDynamicRouteOspfArea.getAuthentication());
+        dynamicRouteOspfArea.setDescription(genericDynamicRouteOspfArea.getDescription());
+        dynamicRouteOspfArea.setRuleId(genericDynamicRouteOspfArea.getRuleId());
+        dynamicRouteOspfArea.setType(genericDynamicRouteOspfArea.getType());
         dynamicRouteOspfArea.setVirtualLinks(
-            legacyDynamicRouteOspfArea.getVirtualLinks() != null 
-                ? new LinkedList<>(legacyDynamicRouteOspfArea.getVirtualLinks()) 
+            genericDynamicRouteOspfArea.getVirtualLinks() != null 
+                ? new LinkedList<>(genericDynamicRouteOspfArea.getVirtualLinks()) 
                 : new LinkedList<>());
         return dynamicRouteOspfArea;
     }
