@@ -184,13 +184,13 @@ public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
         return legacyDynamicRoutingSettings;
     }
 
-    private List<DynamicRouteOspfArea> convertToOriginalOspfAreas(List<DynamicRouteOspfArea> legacyDynamicRouteOspfArea) {
+    private List<DynamicRouteOspfArea> convertToOriginalOspfAreas(List<DynamicRouteOspfArea> genericDynamicRouteOspfArea) {
         List<DynamicRouteOspfArea> dynamicRouteOspfAreas = new LinkedList<>();
 
-        if(legacyDynamicRouteOspfArea == null)  {
+        if(genericDynamicRouteOspfArea == null)  {
             return dynamicRouteOspfAreas;
         }
-        for(DynamicRouteOspfArea dynamicRouteOspfAreaGeneric : legacyDynamicRouteOspfArea) {
+        for(DynamicRouteOspfArea dynamicRouteOspfAreaGeneric : genericDynamicRouteOspfArea) {
             dynamicRouteOspfAreas.add(DynamicRoutingOspfAreaGeneric.transformGenericToDynamicRoutingOspfAreas(dynamicRouteOspfAreaGeneric));
         }
         return dynamicRouteOspfAreas;
