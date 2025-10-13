@@ -37,7 +37,7 @@ public class VirusBlockerScanner implements VirusScanner
      * Constructor
      * 
      * @param app
-     *        The virus blocker lite application
+     *        The virus blocker application
      */
     public VirusBlockerScanner(VirusBlockerApp app)
     {
@@ -51,7 +51,7 @@ public class VirusBlockerScanner implements VirusScanner
      */
     public String getVendorName()
     {
-        return "virus_blocker_lite";
+        return "virus_blocker";
     }
 
     /**
