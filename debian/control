@@ -119,7 +119,6 @@ Architecture: all
 Conflicts: untangle-node-virus-blocker
 Replaces: untangle-node-virus-blocker
 Provides: untangle-node-virus-blocker
-Section: non-free/net
 Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-clamav-config | untangle-kernel-modules-buster | untangle-kernel-modules-bullseye, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
 Description: Virus Blocker
  The Virus Blocker application.
