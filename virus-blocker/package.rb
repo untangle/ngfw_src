@@ -7,6 +7,6 @@ virus = BuildEnv::SRC['untangle-base-virus-blocker']
 
 deps = [smtp['src'], http['src'], ftp['src'], virus['src']]
 
-AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-virus-blocker', 'virus-blocker', deps )
+AppBuilder.makeApp(BuildEnv::SRC, 'untangle-app-virus-blocker', 'virus-blocker', deps, { 'clam-base' => BuildEnv::SRC['clam-base'] })
 
 

@@ -18,6 +18,8 @@ import com.untangle.app.virus_blocker.VirusBlockerBaseApp;
 public class VirusBlockerApp extends VirusBlockerBaseApp
 {
     private final Logger logger = LogManager.getLogger(VirusBlockerApp.class);
+    private static final String CLAM_DAEMON_START = System.getProperty("uvm.bin.dir") + "/clamav-daemon-start start";
+    private static final String CLAM_DAEMON_STOP = System.getProperty("uvm.bin.dir") + "/clamav-daemon-start stop";
 
     /**
      * Constructor
@@ -30,25 +32,8 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     public VirusBlockerApp(AppSettings appSettings, AppProperties appProperties)
     {
         super(appSettings, appProperties);
-
-        // if the bdamserver package is not installed we set our special flag
-        try {
-            // if entitled to "virus-blocker" enable BD
-            if (UvmContextFactory.context().licenseManager().isLicenseValid("virus-blocker")) {
-                this.fileScannerAvailable = true;
-            } else {
-                // otherwise - BD not available
-                this.fileScannerAvailable = false;
-            }
-
-            if (!isBdamInstalled()) {
-                this.fileScannerAvailable = false;
-            }
-
-        } catch (Exception exn) {
-            this.fileScannerAvailable = false;
-        }
-
+        //clamav should be always running. covers the scenario where localscan is disabled
+        this.fileScannerAvailable = true;
         this.setScanner(new VirusBlockerScanner(this));
     }
 
@@ -124,7 +109,7 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     @Override
     public boolean isPremium()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -150,19 +135,15 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        // skip the daemon stuff if package is not installed
-        if (isBdamInstalled()) {
-            UvmContextFactory.context().daemonManager().incrementUsageCount("untangle-bdamserver");
+        
+        try {
+            // ClamAV is dependant on daily.cvd and main.cvd files, those need to be downloaded first before starting the clamav daemon
+            // updates and downloads is taken care by separate daemon fresh-clam. 
+            UvmContextFactory.context().execManager().execEvilProcess(CLAM_DAEMON_START);
 
-            // we only need to enable the monitoring since it will be disabled
-            // automatically when the daemon count reaches zero
-            String transmit = "INFO 1\r\n";
-            String search = "200 1";
-            UvmContextFactory.context().daemonManager().enableRequestMonitoring("untangle-bdamserver", 1200, "127.0.0.1", 1344, transmit, search);
-        } else {
-            logger.info("Skipping DaemonManager initialization because the package is not installed.");
+        } catch (Exception e) {
+            logger.warn("Error while starting ClamAV Daemons", e);
         }
-
         super.preStart(isPermanentTransition);
     }
 
@@ -175,22 +156,13 @@ public class VirusBlockerApp extends VirusBlockerBaseApp
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
-        // skip the daemon stuff if the package is not installed
-        if (isBdamInstalled()) {
-            UvmContextFactory.context().daemonManager().decrementUsageCount("untangle-bdamserver");
+        try {
+            // use the same script of preStart method for stopping ClamAV related daemon services
+            UvmContextFactory.context().execManager().execEvilProcess(CLAM_DAEMON_STOP);
+
+        } catch (Exception e) {
+            logger.warn("Error while stopping ClamAV Daemons", e);
         }
-
         super.postStop(isPermanentTransition);
-    }
-
-    /**
-     * Check to see if the BDAM service is installed
-     * 
-     * @return True if installed, otherwise false
-     */
-    protected boolean isBdamInstalled()
-    {
-        File daemonCheck = new File("/lib/systemd/system/untangle-bdamserver.service");
-        return daemonCheck.exists();
     }
 }

@@ -38,29 +38,23 @@ class VirusBlockTests(VirusBlockerBaseTests):
     def displayName():
         return "Virus Blocker"
 
-    # on every platform except ARM verify the bit defender daemon is running
-    @pytest.mark.slow
-    def test_009_bdamserverIsRunning(self):
-        if platform.machine().startswith('arm'):
-            return
-
-        # check that server is running
-        time.sleep(1)
-        result = subprocess.call("pidof bdamserver >/dev/null 2>&1", shell=True)
-        assert ( result == 0 )
-
-        # give it up to 20 minutes to download signatures for the first time
-        print("Waiting for server to start...")
-        for i in range(1200):
-            time.sleep(1)
-            result = subprocess.call("netcat -n -z 127.0.0.1 1344 >/dev/null 2>&1", shell=True)
-            if result == 0:
+    @pytest.mark.very_slow
+    def test_009_clamdIsRunning(self):
+        """
+        test_009_clamdIsRunning runs the check_clamd_ready function to 
+        verify clamd is running and also that signatures are done downloading
+        """
+        result = global_functions.check_clamd_ready()
+        assert(result)
+        #PPPOE ATS fails intermittently sometimes wait till socket is ready.
+        data_to_scan = b"This is normal data"
+        for attempt in range(5):
+            response = global_functions.is_clamav_receive_ready(data_to_scan)
+            if response and "OK" in response:
+                print(f"clamav daemon is ready after {attempt} attempts: Response - {response}")
                 break
-        print("Number of sleep cycles waiting for bdamserver %d" % i)
+            time.sleep(5)
 
-        # do a scan - this forces it to wait until the signatures are done downloading
-        result = subprocess.call("touch /tmp/bdamtest ; bdamclient -p 127.0.0.1:1344 /tmp/bdamtest >/dev/null 2>&1", shell=True)
-        assert (result == 0)
 
 #
 # All of the tests below this point are run using memory mode instead of file mode scanning.

@@ -119,8 +119,7 @@ Architecture: all
 Conflicts: untangle-node-virus-blocker
 Replaces: untangle-node-virus-blocker
 Provides: untangle-node-virus-blocker
-Section: non-free/net
-Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-bdamserver | untangle-kernel-modules-buster | untangle-kernel-modules-bullseye, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-clamav-config | untangle-kernel-modules-buster | untangle-kernel-modules-bullseye, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
 Description: Virus Blocker
  The Virus Blocker application.
 
@@ -241,15 +240,6 @@ Provides: untangle-node-web-monitor
 Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-base-web-filter, untangle-bctid, untangle-app-webroot
 Description: Web Monitor
  The Web Monitor application.
-
-Package: untangle-app-virus-blocker-lite
-Architecture: all
-Conflicts: untangle-node-virus-blocker-lite
-Replaces: untangle-node-virus-blocker-lite
-Provides: untangle-node-virus-blocker-lite
-Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-clamav-config, untangle-app-http, untangle-app-ftp, untangle-app-smtp
-Description: Virus Blocker Lite
- The Virus Blocker Lite application.
 
 Package: untangle-app-application-control-lite
 Architecture: all

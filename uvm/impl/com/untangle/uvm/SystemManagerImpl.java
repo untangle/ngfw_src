@@ -70,7 +70,7 @@ public class SystemManagerImpl implements SystemManager
 
     private static final String CRON_STRING = " root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
-    private static final String BDAM_LICENSE_UPDATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-bdam-license-update.py";
+    private static final File BDAM_LICENSE_UPDATE_SCRIPT = new File(System.getProperty("uvm.bin.dir") + "/ut-bdam-license-update.py");
     private static final File BDAM_CRON_FILE = new File("/etc/cron.daily/bdam-cron");
 
     // 850K .......... .......... .......... .......... .......... 96% 46.6K 6s
@@ -175,11 +175,15 @@ public class SystemManagerImpl implements SystemManager
         if (settings.getAutoUpgrade() && settingsFile.lastModified() > CRON_FILE.lastModified()) writeCronFile();
 
         /**
-         * Write bdam_cron to auto update license 
+         * Remove  bdam_cron file as its deprecated
          */
-        if (!BDAM_CRON_FILE.exists())
-            writeBDAMCronFile();
-
+        if (BDAM_CRON_FILE.exists())
+            BDAM_CRON_FILE.delete();
+        /**
+         * Remove bdam_cron license update script as its deprecated
+        */
+        if (BDAM_LICENSE_UPDATE_SCRIPT.exists())
+            BDAM_LICENSE_UPDATE_SCRIPT.delete();
         /**
          * If auto-upgrade is disabled and cron file exists, delete it
          */
@@ -215,8 +219,6 @@ public class SystemManagerImpl implements SystemManager
         logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^auth[.]log.*"));
         // matches 'bctid.log*' at the start of the string
         logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^bctid[.]log.*"));
-        // matches 'bdadmserver.log*' at the start of the string
-        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^bdamserver[.]log.*"));
         // matches '*'
         logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/clamav", ".*"));
         // matches 'dhcp.log*' at the start of the string
@@ -1412,36 +1414,6 @@ can look deeper. - mahotz
                 return;
             }
         }
-    }
-
-    /** 
-     * Write BDAM licence update cronjob file.
-     */
-    private void writeBDAMCronFile()
-    {
-        // write the cron file for nightly runs
-        String cronStr =  "#!/bin/sh" + Constants.NEW_LINE + BDAM_LICENSE_UPDATE_SCRIPT;
-        BufferedWriter out = null;
-        try {
-            out = new BufferedWriter(new FileWriter(BDAM_CRON_FILE));
-            out.write(cronStr, 0, cronStr.length());
-            out.write(Constants.NEW_LINE);
-        } catch (IOException ex) {
-            logger.error("Unable to write file", ex);
-            return;
-        }finally{
-            if(out != null){
-                try {
-                    out.close();
-                } catch (IOException ex) {
-                    logger.error("Unable to close file", ex);
-                }
-            }
-        }
-
-        // Make files executable
-        UvmContextFactory.context().execManager().execResult( "chmod 755 " + BDAM_CRON_FILE);
-        UvmContextFactory.context().execManager().execResult( "chmod 755 " + BDAM_LICENSE_UPDATE_SCRIPT);
     }
 
     /** 

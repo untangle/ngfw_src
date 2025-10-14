@@ -193,7 +193,7 @@ public class DefaultLicenseManagerImpl implements LicenseManager
     private boolean isGPLApp(String identifier)
     {
         if ("ad-blocker".equals(identifier)) return true;
-        else if ("virus-blocker-lite".equals(identifier)) return true;
+        else if ("virus-blocker".equals(identifier)) return true;
         else if ("captive-portal".equals(identifier)) return true;
         else if ("firewall".equals(identifier)) return true;
         else if ("intrusion-prevention".equals(identifier)) return true;
