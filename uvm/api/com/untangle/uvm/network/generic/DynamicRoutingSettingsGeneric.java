@@ -14,6 +14,7 @@ import com.untangle.uvm.network.DynamicRoutingSettings;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Dynamic Routing settings generic.
@@ -45,6 +46,7 @@ public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
     private String bgpRouterId = "";
     private String bgpRouterAs = "";
     private String ospfRouterId = "";
+    private DynamicRoutingOspfAreaGeneric dynamicRoutingOspfAreaGeneric;
 
     private LinkedList<DynamicRouteBgpNeighbor> bgpNeighbors = new LinkedList<>();
     private LinkedList<DynamicRouteNetwork> bgpNetworks = new LinkedList<>();
@@ -133,6 +135,9 @@ public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
     public LinkedList<DynamicRouteOspfInterface> getOspfInterfaces() { return this.ospfInterfaces; }
     public void setOspfInterfaces( LinkedList<DynamicRouteOspfInterface> newValue ) { this.ospfInterfaces = newValue; }
 
+    public DynamicRoutingOspfAreaGeneric getDynamicRouteOspfArea(){ return dynamicRoutingOspfAreaGeneric; }
+    public void setDynamicRouteOspfArea(DynamicRoutingOspfAreaGeneric dynamicRoutingOspfAreaGeneric) { this.dynamicRoutingOspfAreaGeneric = dynamicRoutingOspfAreaGeneric; }
+
 
     public String toJSONString()
     {
@@ -151,7 +156,7 @@ public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
 
         legacyDynamicRoutingSettings.setBgpNeighbors(this.getBgpNeighbors() != null ? this.getBgpNeighbors() : new LinkedList<>());
         legacyDynamicRoutingSettings.setBgpNetworks(this.getBgpNetworks() != null ? this.getBgpNetworks() : new LinkedList<>());
-        legacyDynamicRoutingSettings.setOspfAreas(this.getOspfAreas() != null ? this.getOspfAreas() : new LinkedList<>());
+        legacyDynamicRoutingSettings.setOspfAreas(this.convertToOriginalOspfAreas(this.getOspfAreas()));
         legacyDynamicRoutingSettings.setOspfInterfaces(this.getOspfInterfaces() != null ? this.getOspfInterfaces() : new LinkedList<>());
         legacyDynamicRoutingSettings.setOspfNetworks(this.getOspfNetworks() != null ? this.getOspfNetworks() : new LinkedList<>());
         legacyDynamicRoutingSettings.setBgpRouterAs(this.getBgpRouterAs());
@@ -177,5 +182,17 @@ public class DynamicRoutingSettingsGeneric implements Serializable, JSONString {
         legacyDynamicRoutingSettings.setOspfRouterId(this.getOspfRouterId());
         legacyDynamicRoutingSettings.setOspfUseDefaultMetricEnabled(this.getOspfUseDefaultMetricEnabled());
         return legacyDynamicRoutingSettings;
+    }
+
+    private List<DynamicRouteOspfArea> convertToOriginalOspfAreas(List<DynamicRouteOspfArea> genericDynamicRouteOspfArea) {
+        List<DynamicRouteOspfArea> dynamicRouteOspfAreas = new LinkedList<>();
+
+        if(genericDynamicRouteOspfArea == null)  {
+            return dynamicRouteOspfAreas;
+        }
+        for(DynamicRouteOspfArea dynamicRouteOspfAreaGeneric : genericDynamicRouteOspfArea) {
+            dynamicRouteOspfAreas.add(DynamicRoutingOspfAreaGeneric.transformGenericToDynamicRoutingOspfAreas(dynamicRouteOspfAreaGeneric));
+        }
+        return dynamicRouteOspfAreas;
     }
 }
