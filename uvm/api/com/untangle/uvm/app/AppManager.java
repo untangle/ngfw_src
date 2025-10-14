@@ -194,6 +194,11 @@ public interface AppManager
     void shutdownAppsWithInvalidLicense();
 
     /**
+     * Start any stoped apps that have an valid license and can't be start using enable button
+     */
+    void startAutoAppsWithoutPowerButton();
+
+    /**
      * Returns true if apps are to be auto installed
      *
      * @return a <code>boolean</code> value

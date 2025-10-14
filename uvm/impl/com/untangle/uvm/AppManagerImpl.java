@@ -1134,26 +1134,22 @@ public class AppManagerImpl implements AppManager
                 {
                     String name = app.getAppProperties().getName();
                     Long id = app.getAppSettings().getId();
+                    AppBase appBase = (AppBase) app;
 
                     boolean isLicenseValid = UvmContextFactory.context().licenseManager().isLicenseValid(name);
-                    boolean isStateInconsistent = !((AppBase) app).getRunState().equals(((AppBase) app).getAppSettings().getTargetState());
-
-                    if(isLicenseValid && isStateInconsistent) {
-                        if(app.getAppSettings().getTargetState().equals(AppState.RUNNING)){
-                            ((AppBase) app).syncStateForValidLicense();
-                        }
-
+                    boolean isStateInconsistent = !appBase.getRunState().equals(appBase.getAppSettings().getTargetState());
+                    // Stop app if license invalid
+                    if (!isLicenseValid) {
+                        logger.info("Stopping  : {} [{}] because of invalid license", name, id);
+                        long startTime = System.currentTimeMillis();
+                        appBase.stopIfRunning();
+                        long endTime = System.currentTimeMillis();
+                        logger.info("Stopped   : {} [{}] [  {}  seconds]", name, id, (((float) (endTime - startTime)) / 1000.0f));
                     }
 
-                    if (!UvmContextFactory.context().licenseManager().isLicenseValid(name)) {
-
-                        logger.info("Stopping  : {} [{}] because of invalid license", name , id);
-
-                        long startTime = System.currentTimeMillis();
-                        ((AppBase) app).stopIfRunning();
-                        long endTime = System.currentTimeMillis();
-
-                        logger.info("Stopped   : {} [{}] [  {}  seconds]", name , id , (((float) (endTime - startTime)) / 1000.0f));
+                    // Sync state if license valid but state inconsistent
+                    if (isLicenseValid && isStateInconsistent && appBase.getAppSettings().getTargetState().equals(AppState.RUNNING)) {
+                        appBase.syncStateForValidLicense();
                     }
                 }
             };
@@ -1170,9 +1166,39 @@ public class AppManagerImpl implements AppManager
             // Must wait for them to start before we can go on to next wave.
             for (Thread t : threads)
                 t.join();
-        } catch (InterruptedException exn) {
-            logger.error("Interrupted while starting apps");
+        } catch (InterruptedException ex) {
+            logger.error("Interrupted while processing apps", ex);
         }
+    }
+
+    /**
+    * Starts all apps that don't have a power button, are set to run,
+    *  have a valid license, and are not already running.
+    */
+    public void startAutoAppsWithoutPowerButton() {
+        loadedAppsMap.values().stream()
+            .filter(app -> {
+                AppBase appBase = (AppBase) app;
+                String name = app.getAppProperties().getName();
+
+                boolean hasNoPowerButton = !app.getAppProperties().getHasPowerButton();
+                boolean shouldBeRunning = !app.getAppSettings().getTargetState().equals(AppState.RUNNING);
+                boolean isNotRunning = !appBase.getRunState().equals(AppState.RUNNING);
+                boolean isLicenseValid = UvmContextFactory.context().licenseManager().isLicenseValid(name);
+
+                return hasNoPowerButton && shouldBeRunning && isNotRunning && isLicenseValid;
+            })
+            .map(app -> (AppBase) app)
+            .forEach(appBase -> {
+                String name = appBase.getAppProperties().getName();
+                logger.info("Starting auto-managed app (no power button): {}", name);
+                try {
+                    appBase.start();
+                    logger.info("Successfully started auto-managed app: {}", name);
+                } catch (Exception e) {
+                    logger.error("Error starting auto-managed app: {}", name, e);
+                }
+            });
     }
 
     /**
