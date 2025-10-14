@@ -1177,23 +1177,26 @@ public class AppManagerImpl implements AppManager
     */
     public void startAutoAppsWithoutPowerButton() {
         loadedAppsMap.values().stream()
-            .filter(app -> !app.getAppProperties().getHasPowerButton())
-            .forEach(app -> {
+            .filter(app -> {
                 AppBase appBase = (AppBase) app;
                 String name = app.getAppProperties().getName();
 
+                boolean hasNoPowerButton = !app.getAppProperties().getHasPowerButton();
                 boolean shouldBeRunning = !app.getAppSettings().getTargetState().equals(AppState.RUNNING);
-                boolean isRunning = appBase.getRunState().equals(AppState.RUNNING);
+                boolean isNotRunning = !appBase.getRunState().equals(AppState.RUNNING);
                 boolean isLicenseValid = UvmContextFactory.context().licenseManager().isLicenseValid(name);
 
-                if (isLicenseValid && !isRunning && shouldBeRunning) {
-                    logger.info("Starting auto-managed app (no power button): {}", name);
-                    try {
-                        appBase.start();
-                        logger.info("Successfully started auto-managed app: {}", name);
-                    } catch (Exception e) {
-                        logger.error("Error starting auto-managed app: {}", name, e);
-                    }
+                return hasNoPowerButton && shouldBeRunning && isNotRunning && isLicenseValid;
+            })
+            .map(app -> (AppBase) app)
+            .forEach(appBase -> {
+                String name = appBase.getAppProperties().getName();
+                logger.info("Starting auto-managed app (no power button): {}", name);
+                try {
+                    appBase.start();
+                    logger.info("Successfully started auto-managed app: {}", name);
+                } catch (Exception e) {
+                    logger.error("Error starting auto-managed app: {}", name, e);
                 }
             });
     }
