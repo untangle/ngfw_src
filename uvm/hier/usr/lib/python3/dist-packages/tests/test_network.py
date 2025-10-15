@@ -1146,10 +1146,14 @@ server=dynupdate.no-ip.com
 
         # verify that this NIC is connected (otherwise keepalive wont claim address)
         try:
-            result = subprocess.check_output("mii-tool " + interface.get('symbolicDev') + " 2>/dev/null", shell=True)
-            if not "link ok" in result:
+            result = subprocess.check_output(
+                "ethtool " + interface.get('symbolicDev') + " 2>/dev/null | grep 'Link detected:'",
+                shell=True,
+                text=True
+            )
+            if "yes" not in result:
                 raise unittest.SkipTest('LAN not connected')
-        except:
+        except Exception:
             raise unittest.SkipTest('LAN not connected')
 
         ipStep = 1

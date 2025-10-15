@@ -1038,7 +1038,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         }
 
         if(!appManager.isRestartingUnloaded()) {
+            //Enforce license compliance (stop invalid apps, fix states) 
             appManager.shutdownAppsWithInvalidLicense();
+            //Only start app if has valid license and no manual control
+            appManager.startAutoAppsWithoutPowerButton();
         }
     }
     
