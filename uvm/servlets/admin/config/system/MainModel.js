@@ -56,9 +56,6 @@ Ext.define('Ung.config.system.MainModel', {
             'statistics'
             ],
             data: '{languagesList.list}'
-        },
-        shieldRules: {
-            data: '{shieldSettings.rules.list}'
         }
     }
 

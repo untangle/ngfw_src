@@ -26,6 +26,7 @@ import static com.untangle.uvm.util.Constants.COMMA;
  * An extended servlet for uploading a base64 encoded file
  * Expects a 'file' parameter in form data
  */
+@SuppressWarnings({"serial","unchecked"})
 public class UploadServletExtended extends UploadServlet {
     private final Logger logger = LogManager.getLogger(getClass());
 
