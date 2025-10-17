@@ -92,7 +92,7 @@ public class QosRule implements JSONString, Serializable
 
         // Transform Action
         RuleActionGeneric ruleActionGen = new RuleActionGeneric();
-        ruleActionGen.setType(RuleActionGeneric.Type.PRIORITY);
+        ruleActionGen.setType(RuleActionGeneric.Type.SET_PRIORITY);
         ruleActionGen.setPriority(ruleLegacy.getPriority());
 
         // Transform Conditions
