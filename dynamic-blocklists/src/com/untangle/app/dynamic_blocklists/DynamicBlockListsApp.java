@@ -9,6 +9,9 @@ import com.untangle.uvm.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -242,6 +245,36 @@ public class DynamicBlockListsApp extends AppBase
     @Override
     protected void uninstall() {
 
+    }
+    /**
+     * Generates a status report for each configured Dynamic Block List.
+     *
+     * @return JSONArray representing the status of all configured dynamic block lists.
+     */
+    public JSONArray status() {
+        JSONArray statusArray = new JSONArray();
+
+        if (this.settings == null || this.settings.getConfigurations() == null) {
+            return statusArray;
+        }
+
+        for (DynamicBlockList item : this.settings.getConfigurations()) {
+            try {
+                //send status only for the entry update by cron job
+                if (item.getLastUpdated() != 0) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("uuid", item.getId());
+                    obj.put("last_updated_time", item.getLastUpdated());
+                    obj.put("num_entries", item.getCount());
+                    obj.put("status", true); // Since lastUpdated != 0, status is always true
+                    statusArray.put(obj);
+                }
+            } catch (JSONException e) {
+                logger.warn("Failed to build status object for ID: {}", item.getId(), e);
+            }
+        }
+
+        return statusArray;
     }
 
     /**
