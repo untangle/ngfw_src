@@ -46,18 +46,6 @@ Ext.define('Ung.config.system.MainController', {
             'systemSettings',
             'isExpertMode'
         ];
-        if(Rpc.directData('rpc.appManager.app', 'http')){
-            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("http").getHttpSettings'));
-            dataNames.push('httpSettings');
-        }
-        if(Rpc.directData('rpc.appManager.app', 'ftp')){
-            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("ftp").getFtpSettings'));
-            dataNames.push('ftpSettings');
-        }
-        if(Rpc.directData('rpc.appManager.app', 'smtp')){
-            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("smtp").getSmtpSettings'));
-            dataNames.push('smtpSettings');
-        }
 
         v.setLoading(true);
         Ext.Deferred.sequence(rpcSequence, this)
@@ -163,16 +151,6 @@ Ext.define('Ung.config.system.MainController', {
             Rpc.asyncPromise('rpc.languageManager.setLanguageSettings', languageSettings),
             Rpc.asyncPromise('rpc.systemManager.setSettings', vm.get('systemSettings')),
         ];
-
-        if(Rpc.directData('rpc.appManager.app', 'http')){
-            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("http").setSettings', vm.get('httpSettings')));
-        }
-        if(Rpc.directData('rpc.appManager.app', 'ftp')){
-            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("ftp").setSettings', vm.get('ftpSettings')));
-        }
-        if(Rpc.directData('rpc.appManager.app', 'smtp')){
-            rpcSequence.push(Rpc.asyncPromise('rpc.appManager.app("smtp").setSettings', vm.get('smtpSettings')));
-        }
 
         Ext.Deferred.sequence(rpcSequence, this)
         .then(function () {

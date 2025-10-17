@@ -408,12 +408,29 @@ public class SmtpImpl extends AppBase implements MailExport
     }
 
     /**
+     * Return smtp settings
+     * @return Smtp Settings object.
+     */
+    public Object getSettingsV2()
+    {
+        return getSettings();
+    }
+
+    /**
      * Write smtp settings.
      * @param settings Object of SMTP settings.
      */
     public void setSettings(Object settings)
     {
         setSmtpSettings((SmtpSettings) settings);
+    }
+    /**
+     * Write smtp settings.
+     * @param settings Object of SMTP settings.
+     */
+    public void setSettingsV2(Object settings)
+    {
+        setSettings(settings);
     }
 
     /**
