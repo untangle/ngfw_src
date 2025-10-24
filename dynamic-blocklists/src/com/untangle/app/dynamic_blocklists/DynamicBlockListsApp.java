@@ -21,7 +21,10 @@ import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppProperties;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import com.untangle.uvm.ExecManagerResult;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +39,7 @@ public class DynamicBlockListsApp extends AppBase
     private final Logger logger = LogManager.getLogger(getClass());
     private final String SettingsDirectory = "/dynamic-blocklists/";
 
+    private static final String CRON_FILE = "/etc/cron.d/dbl-crons";
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
     private DynamicBlockListsManager dynamicBlockListsManager;
@@ -139,7 +143,7 @@ public class DynamicBlockListsApp extends AppBase
      * Get the current application settings 
      * @return settings
      */
-    public DynamicBlockListsSettings getDynamicBlockListsSettingsV2(){
+    public DynamicBlockListsSettings getSettingsV2(){
         return this.settings;
     }
 
@@ -152,7 +156,7 @@ public class DynamicBlockListsApp extends AppBase
      *
      * @param newSettings The new settings to apply. If null, no changes will be made.
      */
-    public void setDynamicBlockListSettingsV2(DynamicBlockListsSettings newSettings) {
+    public void setSettingsV2(DynamicBlockListsSettings newSettings) {
         // Return early if the new settings are null (no changes to apply)
         if (newSettings == null) {
             return;
@@ -188,6 +192,44 @@ public class DynamicBlockListsApp extends AppBase
         return defaultSettings;
     }
 
+
+    /**
+        * Run the job for give configIds
+        * @param configIds the list of configuration IDs to process
+        * @throws IOException if an I/O error occurs during job execution
+        * @throws InterruptedException if the job execution is interrupted
+        * @return DynamicBlockListsSettings 
+     */
+    public DynamicBlockListsSettings runJobsByConfigIdsV2(LinkedList<String> configIds) throws IOException, InterruptedException {
+        List<String> cronLines = Files.readAllLines(Paths.get(CRON_FILE));
+
+        for (String configId : configIds) {
+            boolean found = false;
+
+            for (String line : cronLines) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                if (line.contains(configId)) {
+                    String[] parts = line.split("\\s+", 7);
+                    if (parts.length < 7) {
+                        logger.error("Invalid cron line format: "+ line);
+                        continue;
+                    }
+                    String command = parts[6];
+                    logger.info("Running command for config ID " + configId + ": " + command);
+                    ExecManagerResult result = UvmContextFactory.context().execManager().exec(command);
+                    logger.info("Command finished with exit code result.getOutput(){} : result.getResult()  {}", result.getOutput(),result.getResult());
+                    found = true;
+                }
+            }
+            if (!found) {
+                logger.info("No cron job found for config ID " + configId);
+            }
+        }
+        return getSettingsV2();
+    }
 
 
     /**
