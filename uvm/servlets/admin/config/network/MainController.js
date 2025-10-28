@@ -26,7 +26,6 @@ Ext.define('Ung.config.network.MainController', {
         '#dynamic_routing #ospf #interfaces':{
             activate: 'getOspfInterfaces'
         },
-        '#qos_statistics': { afterrender: 'refreshQosStatistics' },
         '#upnp_status': { afterrender: 'refreshUpnpStatus' },
         '#dhcpLeases': { afterrender: 'refreshDhcpLeases' },
         'networktest': { afterrender: 'networkTestRender' },
@@ -41,10 +40,6 @@ Ext.define('Ung.config.network.MainController', {
         },
         '#advanced #upnp': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        },
-        '#advanced #networkCardsGrid': {
-            reconfigure: 'networkCardsGridReconfigure',
-            select: 'networkCardsGridSelect'
         },
         '#troubleshooting': {
             activate: Ung.controller.Global.onSubtabActivate,
@@ -572,11 +567,6 @@ Ext.define('Ung.config.network.MainController', {
             vm.set('siArp', connections);
             v.setLoading(false);
         });
-    },
-
-    // After device grid reconfigure, ensure first row is selected
-    networkCardsGridReconfigure: function(){
-        this.getView().down('#networkCardsGrid').getSelectionModel().select(0);
     },
 
     // After device selecting row, update status
