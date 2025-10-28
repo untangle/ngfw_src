@@ -68,10 +68,7 @@ public class QosSettingsGeneric implements Serializable, JSONString {
             qosSettings = new QosSettings();
 
         qosSettings.setQueueDiscipline(this.getQueueDiscipline());
-        qosSettings.setQosEnabled(this.isQosEnabled());
-
         qosSettings.setDefaultPriority(this.getDefaultPriority());
-
         qosSettings.setPingPriority(this.getPingPriority());
         qosSettings.setDnsPriority(this.getDnsPriority());
         qosSettings.setSshPriority(this.getSshPriority());
