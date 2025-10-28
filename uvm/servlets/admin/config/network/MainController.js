@@ -41,10 +41,6 @@ Ext.define('Ung.config.network.MainController', {
         '#advanced #upnp': {
             beforetabchange: Ung.controller.Global.onBeforeSubtabChange
         },
-        // '#advanced #networkCardsGrid': {
-        //     reconfigure: 'networkCardsGridReconfigure',
-        //     select: 'networkCardsGridSelect'
-        // },
         '#troubleshooting': {
             activate: Ung.controller.Global.onSubtabActivate,
         },
