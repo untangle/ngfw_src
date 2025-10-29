@@ -28,6 +28,7 @@ import com.untangle.uvm.ExecManagerResult;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.nio.file.Path;
 
 
 /**
@@ -40,6 +41,7 @@ public class DynamicBlockListsApp extends AppBase
     private final String SettingsDirectory = "/dynamic-blocklists/";
 
     private static final String CRON_FILE = "/etc/cron.d/dbl-crons";
+    private static final String BLOCK_LISTS_DIR = "/etc/config/blocklists";
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
     private DynamicBlockListsManager dynamicBlockListsManager;
@@ -231,6 +233,23 @@ public class DynamicBlockListsApp extends AppBase
         return getSettingsV2();
     }
 
+
+    /**
+     * Get the ip lists for specific block-list
+     * @param confId
+     * @return String
+     */
+    public String exportCsvV2(String confId) {
+        String filename = "dynamic_ip_addresses_list_" + confId + ".txt";
+        Path filePath = Paths.get(BLOCK_LISTS_DIR, filename);
+
+        try {
+            return Files.readString(filePath);
+        } catch (IOException e) {
+            logger.error("Error reading file: " + e.getMessage());
+            return "";
+        }
+    }
 
     /**
      * Get the list of pipeline connectors
