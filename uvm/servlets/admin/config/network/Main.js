@@ -1,47 +1,17 @@
 Ext.define('Ung.config.network.Main', {
-    extend: 'Ung.cmp.ConfigPanel',
+    extend: 'Ext.panel.Panel',
     alias: 'widget.config-network',
     itemId: 'network',
-    /* requires-start */
-    requires: [
-        'Ung.config.network.MainController',
-        'Ung.config.network.MainModel',
-        'Ung.store.Rule',
-        'Ung.model.Rule',
-        'Ung.cmp.Grid',
-        'Ung.util.Renderer'
-    ],
-    /* requires-end */
-    controller: 'config-network',
+    layout: 'border',
 
-    viewModel: {
-        type: 'config-network',
-        data: {
-            allWanInterfaceNames: [],
-        },
-        stores: {
-            allWanInterfaceNamesStore: {
-                data: '{allWanInterfaceNames}',
-            },
-        },
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/network', false);
+        }
     },
 
-    // tabPosition: 'left',
-    // tabRotation: 0,
-    // tabStretchMax: false,
-
     items: [
-        { xtype: 'config-network-interfaces' },
-        { xtype: 'config-network-port-forward-rules' },
-        { xtype: 'config-network-nat-rules' },
-        { xtype: 'config-network-bypass-rules' },
-        { xtype: 'config-network-filter-rules' },
-        { xtype: 'config-network-access-rules' },
-        { xtype: 'config-network-routes' },
-        { xtype: 'config-network-dynamicrouting' },
-        { xtype: 'config-network-dns-server' },
-        { xtype: 'config-network-dhcp-server' },
-        { xtype: 'config-network-advanced' },
-        { xtype: 'config-network-troubleshooting' }
+        Field.iframeHolder
     ]
 });
