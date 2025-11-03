@@ -1,15 +1,22 @@
 Ext.define('Ung.apps.dynamic-blocklists.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-dynamic-blocklists',
+    layout: 'border',
+    
     viewModel: {
-        stores: {
-        },
         data: {
-        },
-        formulas: {
+            vueMigrated: true
         }
     },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/dynamic-blocklist', false);
+        }
+    },
+
     items: [
-        { xtype: 'app-dynamic-blocklists-configuration' }
+        Field.iframeHolder
     ]
 });

@@ -23,22 +23,7 @@ Ext.define('Ung.cmp.AppPanel', {
                 html: '<img src="/icons/apps/{props.name}.svg" style="vertical-align: middle;" width="16" height="16"/> <strong>{props.displayName}</strong>' +
                     ' <i class="fa fa-circle {state.colorCls}"></i>'
             }
-        }]
-    }, {
-        xtype: 'toolbar',
-        dock: 'bottom',
-        items: ['->', {
-            text: '<strong>' + 'Save'.t() + '</strong>',
-            bind:{
-                disabled: '{panel.saveDisabled}'
-            },
-            iconCls: 'fa fa-floppy-o fa-lg',
-            handler: 'setSettings'
-        }]
-    }],
-
-    tabBar: {
-        items: [{
+        }, '->', {
             xtype: 'button',
             itemId: 'reportsBtn',
             ui: 'none',
@@ -52,7 +37,19 @@ Ext.define('Ung.cmp.AppPanel', {
                 hidden: '{!reportsAppStatus.installed || !reportsAppStatus.enabled || !state.on}'
             }
         }]
-    },
+    }, {
+        xtype: 'toolbar',
+        dock: 'bottom',
+        items: ['->', {
+            text: '<strong>' + 'Save'.t() + '</strong>',
+            bind:{
+                disabled: '{panel.saveDisabled}',
+                hidden: '{vueMigrated}'
+            },
+            iconCls: 'fa fa-floppy-o fa-lg',
+            handler: 'setSettings'
+        }]
+    }],
 
     listeners: {
         // generic listener for all tabs in Apps, redirection
@@ -70,6 +67,9 @@ Ext.define('Ung.cmp.AppPanel', {
         },
 
         afterrender: function (appPanel) {
+            if (appPanel.tabBar && appPanel.getViewModel().get('vueMigrated')) {
+                appPanel.tabBar.hide();
+            }
             // code used for detecting user manual data change
             Ung.app.hashBackup = window.location.hash; // keep track of hash for changes detection
             Ext.Array.each(appPanel.query('field'), function (field) {
