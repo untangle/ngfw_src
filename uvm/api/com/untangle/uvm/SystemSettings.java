@@ -227,6 +227,7 @@ public class SystemSettings implements Serializable, JSONString
         systemSettingsGeneric.setCCHidden(context.isCCHidden());
         systemSettingsGeneric.setLogDirectorySize(context.systemManager().getLogDirectorySize());
         systemSettingsGeneric.setLogRetention(this.getLogRetention());
+        systemSettingsGeneric.setThresholdTemperature(this.getThresholdTemperature());
 
         if (networkSettings != null) {
             // Local Services Settings

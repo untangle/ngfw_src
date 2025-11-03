@@ -1681,7 +1681,7 @@ can look deeper. - mahotz
      */
     public String getDeviceTemperatureInfo()
     {
-        logger.debug(" Getting device temparature getDeviceTemperatureInfo()");
+        logger.debug(" Getting device temperature getDeviceTemperatureInfo()");
         return UvmContextFactory.context().execManager().execOutput(String.format("%s", GET_DEVICE_TEMPERATURE_SCRIPT));
     }
 

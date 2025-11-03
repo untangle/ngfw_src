@@ -56,6 +56,10 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private String  publicUrlAddress;
     private Integer publicUrlPort;
     private TimeZone timeZone = null;
+    private Double thresholdTemperature = 105.0;
+
+    public void setThresholdTemperature( Double newValue ) { this.thresholdTemperature = newValue; }
+    public Double getThresholdTemperature() { return this.thresholdTemperature; }
 
     /**
      * Get log retention
@@ -174,6 +178,7 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             systemSettings.setCloudEnabled(this.isCloudEnabled());
             systemSettings.setSupportEnabled(this.isSupportEnabled());
             systemSettings.setLogRetention(this.getLogRetention());
+            systemSettings.setThresholdTemperature(this.getThresholdTemperature());
         }
     }
     /**
