@@ -23,7 +23,7 @@ Ext.define('Ung.cmp.AppPanel', {
                 html: '<img src="/icons/apps/{props.name}.svg" style="vertical-align: middle;" width="16" height="16"/> <strong>{props.displayName}</strong>' +
                     ' <i class="fa fa-circle {state.colorCls}"></i>'
             }
-        }, '->', {
+        }, {
             xtype: 'button',
             itemId: 'reportsBtn',
             ui: 'none',
