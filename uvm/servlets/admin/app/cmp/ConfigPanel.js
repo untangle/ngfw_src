@@ -24,7 +24,8 @@ Ext.define('Ung.cmp.ConfigPanel', {
         items: ['->', {
             text: '<strong>' + 'Save'.t() + '</strong>',
             bind:{
-                disabled: '{panel.saveDisabled}'
+                disabled: '{panel.saveDisabled}',
+                hidden: '{vueMigrated}'
             },
             iconCls: 'fa fa-floppy-o fa-lg',
             handler: 'saveSettings'
@@ -42,6 +43,9 @@ Ext.define('Ung.cmp.ConfigPanel', {
         },
 
         afterrender: function (configPanel) {
+            if (configPanel.tabBar && configPanel.getViewModel().get('vueMigrated')) {
+                configPanel.tabBar.hide();
+            }
             // code used for detecting user manual data change
             Ung.app.hashBackup = window.location.hash; // keep track of hash for changes detection
             Ext.Array.each(configPanel.query('field'), function (field) {
