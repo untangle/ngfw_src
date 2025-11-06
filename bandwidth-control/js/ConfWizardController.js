@@ -76,6 +76,12 @@ Ext.define('Ung.apps.bandwidthcontrol.ConfWizardController', {
             } else {
                 if (grid.getStore().getModifiedRecords().length > 0 || !this.networkSettings.qosSettings.qosEnabled) {
                     this.networkSettings.qosSettings.qosEnabled = true;
+                    for(var i = 0; i < this.networkSettings.interfaces.list.length; i++) {
+                        var intf = this.networkSettings.interfaces.list[i];
+                        if(intf.isWan) {
+                            intf.qosEnabled = true;
+                        }
+                    }
 
                     // the download/upload values were modified via binding
                     Ext.MessageBox.wait('Configuring WAN...'.t(), 'Please wait'.t());
