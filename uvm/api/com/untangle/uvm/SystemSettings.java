@@ -4,11 +4,16 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.untangle.uvm.generic.SystemSettingsGeneric;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.util.Constants;
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONObject;
 import org.json.JSONString;
+import java.util.stream.Collectors;
 
 import com.untangle.uvm.app.DayOfWeekMatcher;
 
@@ -254,6 +259,20 @@ public class SystemSettings implements Serializable, JSONString
 
         systemSettingsGeneric.setCloudEnabled(this.getCloudEnabled());
         systemSettingsGeneric.setSupportEnabled(this.getSupportEnabled());
+
+        LanguageSettings languageSettings = SerializationUtils.clone(context.languageManager().getLanguageSettings());
+        List<LocaleInfo> languagesList = context.languageManager().getLanguagesList();
+        
+        if (languageSettings != null) {
+            languageSettings.setLanguage(languageSettings.getSource() + Constants.HYPHEN + languageSettings.getLanguage());
+            systemSettingsGeneric.setLanguageSettings(languageSettings);
+        }
+        if (languagesList != null) {
+            systemSettingsGeneric.setLanguagesList(languagesList.stream()
+                .filter(language -> (language.getEnabled() && StringUtils.isNotBlank(language.getName())) || language.getLanguageCode().equals(languageSettings.getLanguage()))
+                .collect(Collectors.toCollection(LinkedList::new)));
+        }
+
         return systemSettingsGeneric;
     }
 }
