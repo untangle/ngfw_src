@@ -27,7 +27,6 @@ Ext.define('Ung.view.config.Config', {
             { name: 'Local Directory'.t(), url: 'local-directory', icon: 'local-directory.svg' },
             { name: 'Upgrade'.t(), url: 'upgrade', icon: 'upgrade.svg' },
             { name: 'System'.t(), url: 'system', icon: 'system.svg' },
-            { name: 'About'.t(), url: 'about', icon: 'about.svg' }
         ]},
         tpl: '<p class="apps-title">' + 'Configuration'.t() + '</p>' +
              '<tpl for=".">' +
