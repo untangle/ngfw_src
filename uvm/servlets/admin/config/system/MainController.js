@@ -2,6 +2,10 @@ Ext.define('Ung.config.system.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.config-system',
 
+    control: {
+        '#': { afterrender: 'loadSettings' }
+    },
+
     loadSettings: function () {
         var me = this, v= me.getView(), vm = me.getViewModel();
 
