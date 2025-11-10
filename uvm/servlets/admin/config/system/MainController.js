@@ -2,36 +2,6 @@ Ext.define('Ung.config.system.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.config-system',
 
-    control: {
-        '#': {
-            render: 'onRender',
-            afterrender: 'loadSettings',
-            hide: 'onHide'
-        },
-    },
-
-    onHide: function () {
-        if (this._boundHandler) {
-            window.removeEventListener('message', this._boundHandler);
-            this._boundHandler = null;
-        }
-    },
-
-    onRender: function () {
-         this._boundHandler = this.handleMessage.bind(this);
-         window.addEventListener('message', this._boundHandler);
-    },
-
-    handleMessage: function(event) {
-        // Check the origin of the message for security
-        if (event.origin !== window.location.origin) {
-          return;
-        }
-        if (event && event.data && event.data.action === Util.ACTION_EVENTS.REFRESH_SYSTEM_SETTINGS) {
-            this.loadSettings();
-        }
-    },
-
     loadSettings: function () {
         var me = this, v= me.getView(), vm = me.getViewModel();
 
@@ -92,15 +62,6 @@ Ext.define('Ung.config.system.MainController', {
                 vm.set('panel.saveDisabled', true);
                 v.setLoading(false);
             }
-        });
-    },
-
-
-    syncLanguage: function () {
-        Ext.MessageBox.wait('Synchronizing languages with the internet...'.t(), 'Please wait'.t());
-        Rpc.asyncData('rpc.languageManager.synchronizeLanguage')
-        .then(function(result, ex){
-           document.location.reload();
         });
     },
 
@@ -177,16 +138,5 @@ Ext.define('Ung.config.system.MainController', {
         var downloadForm = document.getElementById('downloadForm');
         downloadForm.type.value = 'SystemSupportLogs';
         downloadForm.submit();
-    },
-
-    languageChange: function(combo, newValue, oldValue){
-        var me = this,
-            vm = me.getViewModel();
-
-        if( ( oldValue != null ) &&
-            ( newValue != oldValue ) ){
-            vm.set('localizationChanged', true);
-        }
     }
-
 });
