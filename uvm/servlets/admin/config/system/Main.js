@@ -1,23 +1,26 @@
 Ext.define('Ung.config.system.Main', {
     extend: 'Ung.cmp.ConfigPanel',
     alias: 'widget.config-system',
-
-    /* requires-start */
-    requires: [
-        'Ung.config.system.MainController',
-        'Ung.config.system.MainModel',
-    ],
-    /* requires-end */
-    controller: 'config-system',
+    itemId: 'system',
+    layout: 'border',
 
     viewModel: {
-        type: 'config-system',
-        localizationChanged: false
+        data: {
+            title: 'System'.t(),
+            iconName: 'system',
+            vueMigrated: true
+        }
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/system', false);
+        }
     },
 
     items: [
-        { xtype: 'config-system-settings' },
-        { xtype: 'config-system-regional' }
+        Field.iframeHolder
     ]
 
 });

@@ -3,13 +3,17 @@
  */
 package com.untangle.uvm.generic;
 
+import com.untangle.uvm.LanguageSettings;
+import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.util.Constants;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 
 /**
  * Generic (v2) System Settings.
@@ -57,6 +61,9 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private Integer publicUrlPort;
     private TimeZone timeZone = null;
     private Double thresholdTemperature = 105.0;
+
+    private LanguageSettings languageSettings = null;
+    private LinkedList<LocaleInfo> languagesList = null;
 
     public void setThresholdTemperature( Double newValue ) { this.thresholdTemperature = newValue; }
     public Double getThresholdTemperature() { return this.thresholdTemperature; }
@@ -140,18 +147,24 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     public Integer getPublicUrlPort() { return publicUrlPort; }
     public void setPublicUrlPort(Integer publicUrlPort) { this.publicUrlPort = publicUrlPort; }
 
+    public LanguageSettings getLanguageSettings() { return languageSettings;}
+    public void setLanguageSettings(LanguageSettings languageSettings) { this.languageSettings = languageSettings; }
+    public LinkedList<LocaleInfo> getLanguagesList() { return languagesList; }
+    public void setLanguagesList(LinkedList<LocaleInfo> languagesList) { this.languagesList = languagesList; }
+
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
 
     /**
-     * Populates the provided {@link SystemSettings} and {@link NetworkSettings} instance with data from this
-     * {@link SystemSettingsGeneric} instance.
+     * Populates the provided {@link SystemSettings}, {@link NetworkSettings} and {@link LanguageSettings}
+     * instance with data from this {@link SystemSettingsGeneric} instance.
      * @param systemSettings the target {@link SystemSettings} object to be updated.
      * @param networkSettings the target {@link NetworkSettings} object to be updated.
+     * @param languageSettings the target {@link LanguageSettings} object to be updated.
      */
-    public void transformGenericToLegacySettings(SystemSettings systemSettings, NetworkSettings networkSettings) {
+    public void transformGenericToLegacySettings(SystemSettings systemSettings, NetworkSettings networkSettings, LanguageSettings languageSettings) {
         if(networkSettings != null) {
             // Local Services Settings
             networkSettings.setHttpPort(this.getHttpPort());
@@ -179,6 +192,25 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             systemSettings.setSupportEnabled(this.isSupportEnabled());
             systemSettings.setLogRetention(this.getLogRetention());
             systemSettings.setThresholdTemperature(this.getThresholdTemperature());
+        }
+
+        if (languageSettings != null && this.getLanguageSettings() != null) {
+            boolean isDefaultFormat = this.getLanguageSettings().getRegionalFormats().equals("default");
+            String[] languageSplit = this.getLanguageSettings().getLanguage().split(Constants.HYPHEN);
+
+            if(!languageSplit[0].equals("official")) {
+                // Something bad has happened; refer to known good language.
+                languageSplit[0] = "official";
+                languageSplit[1] = "en";
+            }
+            languageSettings.setSource(languageSplit[0]);
+            languageSettings.setLanguage(languageSplit[1]);
+            languageSettings.setRegionalFormats(this.getLanguageSettings().getRegionalFormats());
+            languageSettings.setOverrideDecimalSep(isDefaultFormat ? StringUtils.EMPTY : this.getLanguageSettings().getOverrideDecimalSep());
+            languageSettings.setOverrideThousandSep(isDefaultFormat ? StringUtils.EMPTY : this.getLanguageSettings().getOverrideThousandSep());
+            languageSettings.setOverrideDateFmt(isDefaultFormat ? StringUtils.EMPTY : this.getLanguageSettings().getOverrideDateFmt());
+            languageSettings.setOverrideTimestampFmt(isDefaultFormat ? StringUtils.EMPTY : this.getLanguageSettings().getOverrideTimestampFmt());
+            languageSettings.setLastSynchronized(this.getLanguageSettings().getLastSynchronized());
         }
     }
     /**

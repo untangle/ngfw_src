@@ -282,18 +282,23 @@ public class SystemManagerImpl implements SystemManager
         // Get current network settings and clone it.
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         NetworkSettings clonedNetworkSettings = SerializationUtils.clone(networkSettings);
+        // Get current language settings and clone it.
+        LanguageSettings languageSettings = UvmContextFactory.context().languageManager().getLanguageSettings();
+        LanguageSettings clonedLanguageSettings = SerializationUtils.clone(languageSettings);
 
         // Deep clone current System Settings to transform in New System Settings
         SystemSettings clonedSystemSettings = SerializationUtils.clone(this.settings);
 
         // update network (Hostname|Services) and system settings with value coming from postData
-        systemSettingsGeneric.transformGenericToLegacySettings(clonedSystemSettings, clonedNetworkSettings);
+        systemSettingsGeneric.transformGenericToLegacySettings(clonedSystemSettings, clonedNetworkSettings, clonedLanguageSettings);
         
         //Set TimeZone with updated values.
         setTimeZone(TimeZone.getTimeZone(systemSettingsGeneric.getTimeZone().getDisplayName()));
 
         // Set Network Settings with updated values.
         UvmContextFactory.context().networkManager().setNetworkSettings(clonedNetworkSettings);
+        // Set Language Settings with updated values.
+        UvmContextFactory.context().languageManager().setLanguageSettings(clonedLanguageSettings);
 
         // Set System settings
         this.setSettings(clonedSystemSettings);
