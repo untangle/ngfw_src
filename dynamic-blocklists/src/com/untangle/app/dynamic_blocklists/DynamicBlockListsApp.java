@@ -25,8 +25,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import com.untangle.uvm.ExecManagerResult;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.nio.file.Path;
 
@@ -203,19 +206,22 @@ public class DynamicBlockListsApp extends AppBase
         return defaultSettings;
     }
 
-
     /**
-        * Run the job for give configIds
-        * @param configIds the list of configuration IDs to process
-        * @throws IOException if an I/O error occurs during job execution
-        * @throws InterruptedException if the job execution is interrupted
-        * @return DynamicBlockListsSettings 
+     * Executes the cron job commands associated with the given list of configuration IDs.
+     *
+     * @param configIds A list of configuration IDs whose jobs should be executed.
+     * @return If none of config ID runs successfully, returns a map with
+     *         type "Error" and appropriate  messages. else returns
+     *         a map containing the list of successful config IDs and messages.
+     * @throws Exception if the job execution is interrupted.
      */
-    public DynamicBlockListsSettings runJobsByConfigIdsV2(LinkedList<String> configIds) throws IOException, InterruptedException {
+    public Object runJobsByConfigIdsV2(LinkedList<String> configIds) throws Exception {
         List<String> cronLines = Files.readAllLines(Paths.get(CRON_FILE));
+        List<String> successfulIds = new ArrayList<>();
 
         for (String configId : configIds) {
             boolean found = false;
+            boolean success = false;
 
             for (String line : cronLines) {
                 line = line.trim();
@@ -223,25 +229,59 @@ public class DynamicBlockListsApp extends AppBase
                     continue;
                 }
                 if (line.contains(configId)) {
+                    found = true;
                     String[] parts = line.split("\\s+", 7);
                     if (parts.length < 7) {
-                        logger.error("Invalid cron line format: "+ line);
+                        logger.error("Invalid cron line format: {}", line);
                         continue;
                     }
                     String command = parts[6];
-                    logger.info("Running command for config ID " + configId + ": " + command);
-                    ExecManagerResult result = UvmContextFactory.context().execManager().exec(command);
-                    logger.info("Command finished with exit code result.getOutput(){} : result.getResult()  {}", result.getOutput(),result.getResult());
-                    found = true;
+
+                    if (StringUtils.isNotBlank(command)) {
+                        command = command.replace("2>&1 | logger -t dynamic_list_manager", "").trim();
+                    }
+                    try {
+                        ExecManagerResult result = UvmContextFactory.context().execManager().exec(command);
+                        String resultOutput = result.getOutput();
+                        // Mark as failed if output contains [ERROR]/[WARNING]
+                        if ( (resultOutput != null && (resultOutput.contains("[ERROR]") || resultOutput.contains("[WARNING]")))) {
+                            logger.error("Command failed for configId {}: Error :{}", configId, resultOutput);
+                            success = false;
+                        } else {
+                            successfulIds.add(configId);
+                            success = true;
+                        }
+
+                    } catch (Exception e) {
+                        logger.warn("Exception running command for configId {}: {}", configId, e.getMessage());
+                        success = false;
+                    }
+
+                    break;
                 }
             }
             if (!found) {
-                logger.info("No cron job found for config ID " + configId);
+                logger.info("No cron job found for config ID {}", configId);
+                success = false;
             }
         }
-        return getSettingsV2();
-    }
+        //if none of sourcelist is run sucessfully without error send the error response
+        if (successfulIds.size() == 0) {
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("message", "download_blocklist_to_appliance_failure");
+            messageMap.put("vars", null);
 
+            return Map.of(
+                "type", "Error",
+                "success", false,
+                "messages", List.of(messageMap)
+            );
+        }
+        return Map.of(
+            "result", successfulIds,
+            "messages", ""
+        );
+    }
 
     /**
      * Get the ip lists for specific block-list
@@ -330,13 +370,19 @@ public class DynamicBlockListsApp extends AppBase
 
         for (DynamicBlockList item : this.settings.getConfigurations()) {
             try {
+                JSONObject obj = new JSONObject();
+                obj.put("uuid", item.getId());
                 //send status only for the entry update by cron job
-                if (item.getLastUpdated() != 0) {
-                    JSONObject obj = new JSONObject();
-                    obj.put("uuid", item.getId());
+                if (item.getLastUpdated() == 0 && item.getCount() == -1 ) {
+                    obj.put("status", false);
+                    statusArray.put(obj);
+                }else if(item.getCount() != 0){
                     obj.put("last_updated_time", item.getLastUpdated());
                     obj.put("num_entries", item.getCount());
-                    obj.put("status", true); // Since lastUpdated != 0, status is always true
+                    obj.put("status", true); 
+                    statusArray.put(obj);
+                }
+                else{
                     statusArray.put(obj);
                 }
             } catch (JSONException e) {
