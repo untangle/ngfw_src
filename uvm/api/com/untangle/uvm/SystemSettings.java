@@ -259,6 +259,8 @@ public class SystemSettings implements Serializable, JSONString
 
         systemSettingsGeneric.setCloudEnabled(this.getCloudEnabled());
         systemSettingsGeneric.setSupportEnabled(this.getSupportEnabled());
+        systemSettingsGeneric.setHttpAdministrationAllowed(this.getHttpAdministrationAllowed());
+        systemSettingsGeneric.setAdministrationSubnets(this.getAdministrationSubnets());
 
         LanguageSettings languageSettings = SerializationUtils.clone(context.languageManager().getLanguageSettings());
         List<LocaleInfo> languagesList = context.languageManager().getLanguagesList();
