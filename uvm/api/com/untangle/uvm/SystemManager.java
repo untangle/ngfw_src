@@ -93,6 +93,8 @@ public interface SystemManager
 
     boolean upgradesAvailable( boolean forceUpdate );
 
+    String getUvmLogs();
+
     void upgrade();
 
     void activateApacheCertificate();
