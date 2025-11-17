@@ -47,6 +47,8 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
 
     private boolean supportEnabled = false;
     private boolean cloudEnabled = true;
+    private boolean httpAdministrationAllowed = true;
+    private String administrationSubnets = null;
 
     private boolean dynamicDnsServiceEnabled = false;
     private String  dynamicDnsServiceName = null;
@@ -107,21 +109,15 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     /**
      * These are required for Hostname Settings
      */
-    public boolean isCloudEnabled() {
-        return cloudEnabled;
-    }
+    public boolean isCloudEnabled() { return cloudEnabled; }
+    public void setCloudEnabled(boolean cloudEnabled) { this.cloudEnabled = cloudEnabled; }
+    public boolean isSupportEnabled() { return supportEnabled; }
+    public void setSupportEnabled(boolean supportEnabled) { this.supportEnabled = supportEnabled; }
+    public boolean isHttpAdministrationAllowed() { return httpAdministrationAllowed; }
+    public void setHttpAdministrationAllowed(boolean httpAdministrationAllowed) { this.httpAdministrationAllowed = httpAdministrationAllowed; }
+    public String getAdministrationSubnets() { return administrationSubnets; }
+    public void setAdministrationSubnets(String administrationSubnets) { this.administrationSubnets = administrationSubnets; }
 
-    public void setCloudEnabled(boolean cloudEnabled) {
-        this.cloudEnabled = cloudEnabled;
-    }
-
-    public boolean isSupportEnabled() {
-        return supportEnabled;
-    }
-
-    public void setSupportEnabled(boolean supportEnabled) {
-        this.supportEnabled = supportEnabled;
-    }
     public String getHostName() { return hostName; }
     public void setHostName(String hostName) { this.hostName = hostName; }
     public String getDomainName() { return domainName; }
@@ -190,6 +186,8 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
         if (systemSettings != null) {
             systemSettings.setCloudEnabled(this.isCloudEnabled());
             systemSettings.setSupportEnabled(this.isSupportEnabled());
+            systemSettings.setHttpAdministrationAllowed(this.isHttpAdministrationAllowed());
+            systemSettings.setAdministrationSubnets(this.getAdministrationSubnets());
             systemSettings.setLogRetention(this.getLogRetention());
             systemSettings.setThresholdTemperature(this.getThresholdTemperature());
         }
