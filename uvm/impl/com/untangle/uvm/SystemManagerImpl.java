@@ -52,6 +52,7 @@ public class SystemManagerImpl implements SystemManager
 {
     private static final int SETTINGS_VERSION = 6;
     private static final String ZIP_FILE = "system_logs.zip";
+    public static final String UVM_LOG = "/var/log/uvm/uvm.log";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
     private static final String TWO_LINES = BLANK_LINE + EOL;
@@ -794,6 +795,33 @@ can look deeper. - mahotz
             logger.error("Error generating WebUI startup object", e);
         }
         return json;
+    }
+
+    /**
+     * Get UVM logs
+     * @return
+     */
+    @Override
+    public String getUvmLogs() {
+        return getLogFile(UVM_LOG, 500);
+    }
+
+    /**
+     * Private method to get specific number of logs from a file.
+     * @param file
+     * @param numberOfLines
+     * @return
+     */
+    private String getLogFile(String file, int numberOfLines) {
+        if (StringUtils.isEmpty(file)) return null;
+
+        File f = new File(file);
+        if (f.exists()) {
+            return UvmContextFactory.context().execManager().execOutput(String.format("tail -n %d %s", numberOfLines, file));
+        } else {
+            logger.warn("Unable to get logs, file {} does not exist", file);
+            return null;
+        }
     }
 
     /**
