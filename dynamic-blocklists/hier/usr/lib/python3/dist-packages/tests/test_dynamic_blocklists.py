@@ -2,7 +2,7 @@ import subprocess
 import copy
 import re
 from datetime import datetime, timezone, timedelta
-
+import time
 import pytest
 import requests
 
@@ -128,7 +128,7 @@ class DynamicBlocklistsTests(NGFWTestCase):
     def test_014_on_demand_job_run_for_specific_confId(self):
         """
         Verify DBL job runs and fetches latest IPs for a specific config ID.
-        Checks 'count' and 'lastUpdated' fields against source data.
+        Checks 'count' and 'lastUpdated' fields against current UTC time.
         """
         global app, orig_dbl_settings
 
@@ -140,23 +140,18 @@ class DynamicBlocklistsTests(NGFWTestCase):
         conf = app.getSettingsV2()['configurations'][0]
         assert conf['enabled'] and conf['count'] == 0 and conf['lastUpdated'] == 0
 
-        # Fetch live IP list and timestamp
+        # Fetch live IP list
         url = "http://opendbl.net/lists/etknown.list"
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         content = response.text.strip().splitlines()
 
-        # Parse timestamp from first line
-        ts_match = re.search(r"#\s*Last\s+updated\s+(\d{4}-\d{2}-\d{2} \d{2}:\d{2})", content[0])
-        expected_last_updated = None
-        if ts_match:
-            dt_local = datetime.strptime(ts_match.group(1), "%Y-%m-%d %H:%M")
-            dt_utc = dt_local - timedelta(hours=5, minutes=30)  # adjust to UTC
-            expected_last_updated = int(dt_utc.replace(tzinfo=timezone.utc).timestamp())
-
         ip_lines = [line for line in content if re.match(r"^\d{1,3}(?:\.\d{1,3}){3}$", line)]
         expected_ip_count = len(ip_lines)
         assert expected_ip_count > 0, "Expected some IP addresses in the source list."
+
+        # Record current UTC time before running the job
+        before_run_ts = int(time.time())
 
         app.runJobsByConfigIdsV2([conf['id']])
 
@@ -164,9 +159,12 @@ class DynamicBlocklistsTests(NGFWTestCase):
         assert updated_conf['enabled']
         assert updated_conf['count'] == expected_ip_count
 
-        if expected_last_updated:
-            assert abs(updated_conf['lastUpdated'] - expected_last_updated) < 300, \
-                "lastUpdated timestamp differs from source by more than 5 minutes."
+        # Record UTC time again after running job
+        after_run_ts = int(time.time())
+
+        # Acceptable range: must fall between before_run_ts and after_run_ts
+        assert before_run_ts <= updated_conf['lastUpdated'] <= after_run_ts, \
+            f"lastUpdated timestamp {updated_conf['lastUpdated']} not within expected UTC range ({before_run_ts}-{after_run_ts})"
 
         app.setSettingsV2(orig_dbl_settings)
         print(f"Verified on-demand DBL job for conf_id={conf['id']}: "
