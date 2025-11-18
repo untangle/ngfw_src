@@ -262,6 +262,9 @@ public class SystemSettings implements Serializable, JSONString
         systemSettingsGeneric.setHttpAdministrationAllowed(this.getHttpAdministrationAllowed());
         systemSettingsGeneric.setAdministrationSubnets(this.getAdministrationSubnets());
 
+        if (this.getSnmpSettings() != null)
+            systemSettingsGeneric.setSnmpSettings(this.getSnmpSettings());
+
         LanguageSettings languageSettings = SerializationUtils.clone(context.languageManager().getLanguageSettings());
         List<LocaleInfo> languagesList = context.languageManager().getLanguagesList();
         
