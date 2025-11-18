@@ -5,6 +5,7 @@ package com.untangle.uvm.generic;
 
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocaleInfo;
+import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.Constants;
@@ -49,6 +50,8 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private boolean cloudEnabled = true;
     private boolean httpAdministrationAllowed = true;
     private String administrationSubnets = null;
+
+    private SnmpSettings snmpSettings;
 
     private boolean dynamicDnsServiceEnabled = false;
     private String  dynamicDnsServiceName = null;
@@ -117,6 +120,9 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     public void setHttpAdministrationAllowed(boolean httpAdministrationAllowed) { this.httpAdministrationAllowed = httpAdministrationAllowed; }
     public String getAdministrationSubnets() { return administrationSubnets; }
     public void setAdministrationSubnets(String administrationSubnets) { this.administrationSubnets = administrationSubnets; }
+
+    public SnmpSettings getSnmpSettings() { return snmpSettings; }
+    public void setSnmpSettings(SnmpSettings snmpSettings) { this.snmpSettings = snmpSettings; }
 
     public String getHostName() { return hostName; }
     public void setHostName(String hostName) { this.hostName = hostName; }
@@ -190,6 +196,7 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             systemSettings.setAdministrationSubnets(this.getAdministrationSubnets());
             systemSettings.setLogRetention(this.getLogRetention());
             systemSettings.setThresholdTemperature(this.getThresholdTemperature());
+            systemSettings.setSnmpSettings(this.getSnmpSettings() != null ? this.getSnmpSettings() : new SnmpSettings());
         }
 
         if (languageSettings != null && this.getLanguageSettings() != null) {
