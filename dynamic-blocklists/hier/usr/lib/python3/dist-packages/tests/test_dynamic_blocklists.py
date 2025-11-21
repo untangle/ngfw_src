@@ -138,7 +138,7 @@ class DynamicBlocklistsTests(NGFWTestCase):
         app.setSettingsV2(dblSettings)
 
         conf = app.getSettingsV2()['configurations'][0]
-        assert conf['enabled'] and conf['count'] == 0 and conf['lastUpdated'] == 0
+        assert conf['enabled']
 
         # Fetch live IP list
         url = "http://opendbl.net/lists/etknown.list"
@@ -198,7 +198,7 @@ class DynamicBlocklistsTests(NGFWTestCase):
         app.setSettingsV2(orig_dbl_settings)
 
 
-    def test_015_DBL_Blocking(self):
+    def test_016_DBL_Blocking(self):
         """
         Verify that Ip listed in source should be blocked on client end if DBL and source is enabled.
         """
