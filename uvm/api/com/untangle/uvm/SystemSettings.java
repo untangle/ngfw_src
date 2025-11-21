@@ -233,6 +233,10 @@ public class SystemSettings implements Serializable, JSONString
         systemSettingsGeneric.setLogDirectorySize(context.systemManager().getLogDirectorySize());
         systemSettingsGeneric.setLogRetention(this.getLogRetention());
         systemSettingsGeneric.setThresholdTemperature(this.getThresholdTemperature());
+        systemSettingsGeneric.setEnabled(this.autoUpgrade);
+        systemSettingsGeneric.setAutoUpgradeDays(this.autoUpgradeDays);
+        systemSettingsGeneric.setHourOfDay(this.autoUpgradeHour);
+        systemSettingsGeneric.setMinuteOfHour(this.autoUpgradeMinute);
 
         if (networkSettings != null) {
             // Local Services Settings

@@ -7,6 +7,7 @@ import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocaleInfo;
 import com.untangle.uvm.SnmpSettings;
 import com.untangle.uvm.SystemSettings;
+import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.Constants;
 import org.json.JSONObject;
@@ -66,6 +67,11 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private Integer publicUrlPort;
     private TimeZone timeZone = null;
     private Double thresholdTemperature = 105.0;
+
+    private boolean enabled; // auto upgrade enabled
+    private DayOfWeekMatcher autoUpgradeDays;
+    private int hourOfDay   = 2;
+    private int minuteOfHour = 0;
 
     private LanguageSettings languageSettings = null;
     private LinkedList<LocaleInfo> languagesList = null;
@@ -149,6 +155,15 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     public Integer getPublicUrlPort() { return publicUrlPort; }
     public void setPublicUrlPort(Integer publicUrlPort) { this.publicUrlPort = publicUrlPort; }
 
+    public boolean getEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public DayOfWeekMatcher getAutoUpgradeDays() { return autoUpgradeDays; }
+    public void setAutoUpgradeDays(DayOfWeekMatcher autoUpgradeDays) { this.autoUpgradeDays = autoUpgradeDays; }
+    public int getHourOfDay() { return hourOfDay; }
+    public void setHourOfDay(int hourOfDay) { this.hourOfDay = hourOfDay; }
+    public int getMinuteOfHour() { return minuteOfHour; }
+    public void setMinuteOfHour(int minuteOfHour) { this.minuteOfHour = minuteOfHour; }
+
     public LanguageSettings getLanguageSettings() { return languageSettings;}
     public void setLanguageSettings(LanguageSettings languageSettings) { this.languageSettings = languageSettings; }
     public LinkedList<LocaleInfo> getLanguagesList() { return languagesList; }
@@ -197,6 +212,10 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             systemSettings.setLogRetention(this.getLogRetention());
             systemSettings.setThresholdTemperature(this.getThresholdTemperature());
             systemSettings.setSnmpSettings(this.getSnmpSettings() != null ? this.getSnmpSettings() : new SnmpSettings());
+            systemSettings.setAutoUpgrade(this.enabled);
+            systemSettings.setAutoUpgradeDays(this.autoUpgradeDays);
+            systemSettings.setAutoUpgradeHour(this.hourOfDay);
+            systemSettings.setAutoUpgradeMinute(this.minuteOfHour);
         }
 
         if (languageSettings != null && this.getLanguageSettings() != null) {
