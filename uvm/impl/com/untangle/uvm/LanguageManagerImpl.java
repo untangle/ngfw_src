@@ -434,6 +434,9 @@ public class LanguageManagerImpl implements LanguageManager
                 if(map.get("timestamp_fmt") == null){
                     map.put("timestamp_fmt", "Y-m-d h:i:s a");
                 }
+                if(map.get("timestamp_fmt") != null && locale.getLanguage().equals("de")){
+                    map.put("timestamp_fmt", "Y-m-d H:i:s");
+                }
             }
             translationsLastAccessed.put(translationKey, System.currentTimeMillis());
             return map;
