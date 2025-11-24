@@ -409,6 +409,15 @@ public class LocalDirectoryImpl implements LocalDirectory
     }
 
     /**
+     * Get the list of local directory users (V2)
+     * @return The list of local directory users (V2)
+     */
+    public LinkedList<LocalDirectoryUser> getUsersV2()
+    {
+        return getUsers();
+    }
+
+    /**
      * Set the list of local directory users
      * 
      * @param users
@@ -442,6 +451,16 @@ public class LocalDirectoryImpl implements LocalDirectory
             }
         }
         saveUsersList(users);
+    }
+
+    /**
+     * Set the list of local directory users (v2)
+     * 
+     * @param users
+     *        The list of users
+     */
+    public void setUsersV2(LinkedList<LocalDirectoryUser> users) {
+        setUsers(users);
     }
 
     /**
