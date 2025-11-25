@@ -407,7 +407,7 @@ Ext.define('Ung.controller.Global', {
         var subViews = [];
 
         // config must be one of those defined in array, otherwise route is invalid
-        if (config && !Ext.Array.contains(['network', 'administration', 'events', 'email', 'local-directory', 'upgrade', 'system', 'about'], config)) {
+        if (config && !Ext.Array.contains(['network', 'administration', 'events', 'email', 'local-directory', 'system', 'about'], config)) {
             Ext.fireEvent('invalidquery');
             return;
         }
