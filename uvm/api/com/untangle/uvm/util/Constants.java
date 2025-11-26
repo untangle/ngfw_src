@@ -62,4 +62,8 @@ public class Constants {
     // Numbers
     public static final String FOUR = "4";
     public static final String SEVEN = "7";
+
+    //clamav daemons
+    public static final String CLAMAV_DAEMON = "clamav-daemon";
+    public static final String FRESHCLAM = "clamav-freshclam";
 }
