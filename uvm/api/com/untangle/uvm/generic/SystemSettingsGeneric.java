@@ -73,6 +73,23 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private int hourOfDay   = 2;
     private int minuteOfHour = 0;
 
+    /**
+     * These are used for LocalDirectory RADIUS server support
+     */
+    private boolean radiusServerEnabled = false;
+    private String radiusServerSecret = "SharedSecret";
+
+    /**
+     * These are used for RADIUS proxy support
+     */
+    private boolean radiusProxyEnabled = false;
+    private String radiusProxyServer = StringUtils.EMPTY;
+    private String radiusProxyWorkgroup = StringUtils.EMPTY;
+    private String radiusProxyRealm = StringUtils.EMPTY;
+    private String radiusProxyUsername = StringUtils.EMPTY;
+    private String radiusProxyPassword = StringUtils.EMPTY;
+    private String radiusProxyEncryptedPassword = StringUtils.EMPTY;
+
     private LanguageSettings languageSettings = null;
     private LinkedList<LocaleInfo> languagesList = null;
 
@@ -164,6 +181,28 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     public int getMinuteOfHour() { return minuteOfHour; }
     public void setMinuteOfHour(int minuteOfHour) { this.minuteOfHour = minuteOfHour; }
 
+    /**
+     * These are required for Local Directory Settings
+     */
+    public boolean isRadiusServerEnabled() { return radiusServerEnabled; } 
+    public void setRadiusServerEnabled(boolean radiusServerEnabled) { this.radiusServerEnabled = radiusServerEnabled; }
+    public String getRadiusServerSecret() { return radiusServerSecret; }
+    public void setRadiusServerSecret(String radiusServerSecret) { this.radiusServerSecret = radiusServerSecret; } 
+    public boolean isRadiusProxyEnabled() { return radiusProxyEnabled; }
+    public void setRadiusProxyEnabled(boolean radiusProxyEnabled) { this.radiusProxyEnabled = radiusProxyEnabled; }
+    public String getRadiusProxyServer() { return radiusProxyServer; }
+    public void setRadiusProxyServer(String radiusProxyServer) { this.radiusProxyServer = radiusProxyServer; }
+    public String getRadiusProxyWorkgroup() { return radiusProxyWorkgroup; }
+    public void setRadiusProxyWorkgroup(String radiusProxyWorkgroup) { this.radiusProxyWorkgroup = radiusProxyWorkgroup; }
+    public String getRadiusProxyRealm() { return radiusProxyRealm; }
+    public void setRadiusProxyRealm(String radiusProxyRealm) { this.radiusProxyRealm = radiusProxyRealm; }
+    public String getRadiusProxyUsername() { return radiusProxyUsername; }
+    public void setRadiusProxyUsername(String radiusProxyUsername) { this.radiusProxyUsername = radiusProxyUsername; }
+    public String getRadiusProxyPassword() { return radiusProxyPassword; }
+    public void setRadiusProxyPassword(String radiusProxyPassword) { this.radiusProxyPassword = radiusProxyPassword; }
+    public String getRadiusProxyEncryptedPassword() { return radiusProxyEncryptedPassword; }
+    public void setRadiusProxyEncryptedPassword(String radiusProxyEncryptedPassword) { this.radiusProxyEncryptedPassword = radiusProxyEncryptedPassword; }
+
     public LanguageSettings getLanguageSettings() { return languageSettings;}
     public void setLanguageSettings(LanguageSettings languageSettings) { this.languageSettings = languageSettings; }
     public LinkedList<LocaleInfo> getLanguagesList() { return languagesList; }
@@ -216,6 +255,15 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             systemSettings.setAutoUpgradeDays(this.autoUpgradeDays);
             systemSettings.setAutoUpgradeHour(this.hourOfDay);
             systemSettings.setAutoUpgradeMinute(this.minuteOfHour);
+            systemSettings.setRadiusServerEnabled(this.radiusServerEnabled);
+            systemSettings.setRadiusServerSecret(this.radiusServerSecret);
+            systemSettings.setRadiusProxyEnabled(this.radiusProxyEnabled);
+            systemSettings.setRadiusProxyServer(this.radiusProxyServer);
+            systemSettings.setRadiusProxyWorkgroup(this.radiusProxyWorkgroup);
+            systemSettings.setRadiusProxyRealm(this.radiusProxyRealm);
+            systemSettings.setRadiusProxyUsername(this.radiusProxyUsername);
+            systemSettings.setRadiusProxyPassword(this.radiusProxyPassword);
+            systemSettings.setRadiusProxyEncryptedPassword(this.radiusProxyEncryptedPassword);
         }
 
         if (languageSettings != null && this.getLanguageSettings() != null) {
