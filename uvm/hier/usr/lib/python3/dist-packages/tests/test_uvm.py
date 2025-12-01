@@ -1100,25 +1100,54 @@ class UvmTests(NGFWTestCase):
 
     def test_165_password_encryption_decryption_process(self):
         """
-        Verify password encryption decryption process
+        Verify password encryption/decryption process for multiple permutations
+        and combinations of characters.
         """
-        password = 'passwd'
-        # Test 1: Valid password - it should pass if encrypted and decrypted correctly
-        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
-        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+        # List of diverse passwords (add more as needed)
+        test_passwords = [
+        "",                                     # empty password
+        " ",                                    # blank password
+        "  ",                                   # multiple spaces
+        "passwd",                               # simple password
+        "PASSWORD",                             # all uppercase
+        "password",                             # all lowercase
+        "123456",                               # numbers only
+        "abcABC123",                            # letters (both cases) + numbers
+        "!96q$57p",                             # letters + numbers + special characters
+        "K96q$!@57p",                           # stronger mix: uppercase, numbers, multiple special chars
+        "K96q$!@'57p",                          # includes single quote
+        'shsk/"@sjjs/',                         # contains double quote and slash
+        "K96q$!@5|7p",                           # includes pipe '|' (shell-sensitive)
+        "P@ssw0rd!",                             # typical strong password
+        "!@ab#$%^&*()",                           # only special characters
+        "Aa1!Aa1!",                              # repeating pattern
+        "~space+inside ",                          # complex pass
+        "混合Password123!",                       # Unicode + ASCII
+        "!StarPassword*",                        # starts with special char
+        "long_password_" + "x" * 50,            # very long password
+        r"Quotes\"Slash\\Test",                  # quotes and backslashes
+        "<HTML>tag</HTML>",                       # HTML-like
+        "*user|admin&root>test<",                # shell-sensitive combination
+        "=lsj$sn",                               # short password with special chars
+        "=l!s$j#$^s(n)!h&&#%*",                  # complex special-char heavy password
+        "`~{}[]:;'<>,.?/!@#$%^&*()-_=+",         # almost all special characters
+        "中文密码123",                             # Chinese characters + numbers
+        "пароль123",                             # Cyrillic letters + numbers
+        "1234567890"*5,                           # very long numeric password
+        "Aa1!Aa1!Aa1!Aa1!",                       # repeating complex pattern
+        ]
+        for idx, password in enumerate(test_passwords):
 
-        # Compare original password with decrypted password
-        self.assertEqual(password, decrypted_password, "Password encryption/decryption failed.")
+            with self.subTest(password=password):
+                encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+                decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+                self.assertEqual(
+                    password,
+                    decrypted_password,
+                    f"Encryption/Decryption failed for password index {idx}: {password} && {decrypted_password}"
+                )
 
-        # Test 2: Empty password - it should pass if encrypted and decrypted correctly
-        password = " "
-        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
-        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
-
-        # Password should match after encryption and decryption
-        self.assertEqual(password, decrypted_password, "Empty password encryption/decryption failed.")
-
-        # Test 3: None (null) password - should return None or raise an exception
+        # Test: None input should return None
         password = None
         encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
 
