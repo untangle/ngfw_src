@@ -75,9 +75,9 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
         "ruleId": 1
     }
 
-def create_local_directory_user(directory_user='test',expire_time=0):
+def create_local_directory_user(directory_user='test',expire_time=0, password="passwd"):
     user_email = directory_user + "@test.untangle.com"
-    passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
+    passwd_encoded = base64.b64encode(password.encode("utf-8"))
     return {'javaClass': 'java.util.LinkedList',
         'list': [{
             'username': directory_user,
@@ -1154,24 +1154,55 @@ class UvmTests(NGFWTestCase):
         # Check if encryption of None returns None or raises an exception
         self.assertIsNone(encrypted_password, "Encrypted password should be None when input is None.")
 
+    def test_167_radius_ad_complex_password_encrypt_decrypt(self):
+        """verify radius user encryption/decryption"""
+        # Enable cloud connection  
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
+        original_password = "$a!P9%Zx!4t$Q7&'Km|(3)R"
+        org_system_settings = copy.deepcopy(system_settings)
+        system_settings['radiusServerEnabled'] = False
+        system_settings['radiusProxyServer'] = 'PROXY_AD'
+        system_settings['radiusProxyWorkgroup'] = 'PROXY_AD'
+        system_settings['radiusProxyUsername'] = 'ad_radius_user'
+        system_settings['radiusProxyPassword'] = original_password
+        system_settings['radiusProxyRealm'] = 'ats.untangle.com'
+        system_settings['radiusProxyEnabled']= False
+        
+        print()
+        print(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings, True)
+        print()
+        print(org_system_settings)
+        radius_ad_enc_password= global_functions.uvmContext.systemManager().getSettings()["radiusProxyEncryptedPassword"]
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(radius_ad_enc_password)
+        assert decrypted_password == original_password, \
+            "Decrypted password does not match original! (%s != %s)" % (decrypted_password, original_password)
+        global_functions.uvmContext.systemManager().setSettings(org_system_settings, True)
 
-    def test_168_password_encryption_setting_process(self):
-        """
-        Verify password encryption setting process
-        """
-        # Create local directory user 'test'
-        global_functions.uvmContext.localDirectory().setUsers(create_local_directory_user())
 
-        # Get local directory users 
+    def test_168_local_user_complex_password_encrypt_decrypt(self):
+        """
+        Verify password encryption setting process for local_user
+        """
+        original_password = "Tg#48L%p!cR9$^sM2z"
+
+        global_functions.uvmContext.localDirectory().setUsers(
+            create_local_directory_user(password=original_password)
+        )
+
         users = global_functions.uvmContext.localDirectory().getUsers()
-
-        # Extract the user object
         user = users['list'][0]
 
-        # Assert that encryptedPassword is present and password is None
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(
+            user.get('encryptedPassword')
+        )
         assert user.get('encryptedPassword') is not None, "encryptedPassword is missing"
         assert user.get('password') is None, "password is not None"
-        #Clear the created user
+
+        # Password match assertion (ASCII only message)
+        assert decrypted_password == original_password, \
+            "Decrypted password does not match original! (%s != %s)" % (decrypted_password, original_password)
+
         global_functions.uvmContext.localDirectory().setUsers(remove_local_directory_user())
 
     def test_169_test_local_user_deletion(self):
