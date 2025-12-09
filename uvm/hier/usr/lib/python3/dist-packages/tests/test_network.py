@@ -588,6 +588,101 @@ class NetworkTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
         
+    def test_011_pppoe_complex_password_encrypt_decrypt(self):
+        """Verify pppoe connection with complex password"""
+        network_manager = global_functions.uvmContext.networkManager()
+        system_manager = global_functions.uvmContext.systemManager()
+        netsettings = copy.deepcopy(orig_netsettings)
+
+        plain_text_password = "test!1$4@2%5"
+        
+        # Find a physical interface to base the VLAN on
+        physicalDev = None
+        for interface in netsettings['interfaces']['list']:
+            if interface['configType'] == 'ADDRESSED' and not interface['isVlanInterface']:
+                physicalDev = interface['physicalDev']
+                break
+
+        if not physicalDev:
+            raise unittest.SkipTest("No suitable physical interface found for VLAN")
+
+        # Create a new VLAN ID (e.g., 200) and an IP address for it
+        testVLANID = 200
+        testVlanIdDev = f"{physicalDev}.{testVLANID}"
+        testPPPoEUsername = "testuser"
+
+        # Create a VLAN interface configured for PPPoE with the plain text password
+        pppoe_vlan_intf = {
+            "addressed": True,
+            "bridged": False,
+            "configType": "ADDRESSED",
+            "dhcpEnabled": False,
+            "dhcpOptions": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "disabled": False,
+            "interfaceId": -100, # A unique, negative ID for new interfaces
+            "isVlanInterface": True,
+            "isWan": True, # PPPoE is typically a WAN interface
+            "javaClass": "com.untangle.uvm.network.InterfaceSettings",
+            "name": f"pppoe_vlan_{testVLANID}",
+            "physicalDev": physicalDev,
+            "raEnabled": False,
+            "symbolicDev": testVlanIdDev,
+            "systemDev": testVlanIdDev,
+            "v4Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v4ConfigType": "PPPOE",
+            "v4NatEgressTraffic": False,
+            "v4NatIngressTraffic": False,
+            "v4PPPoEPassword": plain_text_password, # Pass plain text password to be encrypted by setNetworkSettings
+            "v4PPPoEUsePeerDns": True,
+            "v4PPPoEUsername": testPPPoEUsername,
+            "v4StaticAddress": "", # Not applicable for PPPoE
+            "v4StaticNetmask": "", # Not applicable for PPPoE
+            "v4StaticPrefix": 0,   # Not applicable for PPPoE
+            "v6Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v6ConfigType": "STATIC",
+            "vlanParent": 2, # Assuming a default parent
+            "vlanTag": testVLANID,
+            "vrrpAliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "vrrpEnabled": False
+        }
+
+        # Add the new VLAN interface
+        netsettings['interfaces']['list'].append(pppoe_vlan_intf)
+        network_manager.setNetworkSettings(netsettings)
+
+        # Verify password in saved settings after setting
+        current_netsettings = network_manager.getNetworkSettings()
+        print(current_netsettings['interfaces']['list'])
+        for interface_entry in current_netsettings['interfaces']['list']:
+            if interface_entry.get('name') == "pppoe_vlan_200":
+                assert interface_entry.get('v4ConfigType') == 'PPPOE'
+                assert interface_entry.get('v4PPPoEUsername') == testPPPoEUsername
+                
+                # Retrieve the stored (encrypted) password and decrypt it
+                # stored_v4pppoe_password = interface_entry.get('v4PPPoEPassword')
+                stored_encrypted_password = interface_entry.get('v4PPPoEPasswordEncrypted')
+                stored_decrypted_password = system_manager.getDecryptedPassword(stored_encrypted_password)
+                # print("stored_v4pppoe_password :"+ stored_v4pppoe_password)
+                print("stored_encrypted_password :"+ stored_encrypted_password)
+                print("stored_decrypted_password :"+ stored_decrypted_password)
+                assert stored_decrypted_password == plain_text_password, "Stored encrypted password could not be decrypted to original"
+                break
+        
+        # Clean up: restore original network settings
+        network_manager.setNetworkSettings(orig_netsettings)
+
     def test_014_add_vlan(self):
         raise unittest.SkipTest("Review changes in test")
         # Add a test static VLAN
