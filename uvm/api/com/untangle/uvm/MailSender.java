@@ -13,12 +13,16 @@ import java.util.Map;
  */
 public interface MailSender
 {
+    void setSettingsV2(MailSettings newSettings);
+
     /**
      * Set the mail settings.
      *
      * @param settings the new mail settings.
      */
     void setSettings(MailSettings settings);
+
+    MailSettings getSettingsV2();
 
     /**
      * Get the mail settings.
