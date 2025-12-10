@@ -1249,6 +1249,15 @@ Ext.define('Ung.config.network.MainController', {
         var me = this;
 
         if (!resultReader) {
+            btn.setDisabled(false);
+            text.push('' + (new Date()) + ' - ' + 'Test failed. Please verify your input for possible invalid or suspicious entries.'.t());
+            text.push('\n\n--------------------------------------------------------\n\n');
+            if(vm.get('exportRunFilename') !== '' ){
+                vm.set('exportFilename', vm.get('exportRunFilename'));
+                vm.set('exportRunFilename', '');
+            }
+            output.setValue(text.join(''));
+            output.getEl().down('textarea').dom.scrollTop = 99999;
             return;
         }
 
