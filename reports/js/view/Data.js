@@ -157,9 +157,15 @@ Ext.define('Ung.apps.reports.view.Data', {
         title: 'Import / Restore Data Backup Files'.t(),
         labelWidth: 150,
         items: [{
+             xtype: 'container',
+             margin: '5 0 15 0',
+             html: 'The data restore feature is temporarily unavailable. Please contact support to restore your data.'.t()
+        }, {
             xtype: 'form',
             url: 'upload',
             border: false,
+            disabled: true,
+            hidden: true,
             items: [{
                 xtype: 'filefield',
                 fieldLabel: 'File'.t(),

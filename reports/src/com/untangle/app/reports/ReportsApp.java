@@ -1091,18 +1091,19 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     {
         try {
             //validate zip
-            if (!item.getName().endsWith(".gz")) {
-                throw new RuntimeException("Invalid name: " + item.getName());
-            }
+            // if (!item.getName().endsWith(".gz")) {
+            //     throw new RuntimeException("Invalid name: " + item.getName());
+            // }
 
-            String filename = "/tmp/reports_restore_data.sql.gz";
-            File file = new File(filename);
-            if (file.exists())
-                file.delete();
-            item.write( file );
+            // String filename = "/tmp/reports_restore_data.sql.gz";
+            // File file = new File(filename);
+            // if (file.exists())
+            //     file.delete();
+            // item.write( file );
 
-            String cmd = REPORTS_RESTORE_DATA_SCRIPT + " -f " + filename;
-            return UvmContextFactory.context().execManager().execResult(cmd);
+            // String cmd = REPORTS_RESTORE_DATA_SCRIPT + " -f " + filename;
+            // return UvmContextFactory.context().execManager().execResult(cmd);
+            throw new Exception("Restore data functionality is disabled temporarily");
         } catch (Exception e) {
             logger.error(e);
             throw new RuntimeException("Restore Data Failed");
