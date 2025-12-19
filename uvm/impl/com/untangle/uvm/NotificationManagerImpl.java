@@ -206,6 +206,7 @@ public class NotificationManagerImpl implements NotificationManager
         //try { testQueueFullMessages(notificationList); } catch (Exception e) { logger.warn("Notification test exception",e); }
 
         this.execManager.close();
+        this.execManager.closeSafe();
         this.execManager = null;
 
         return notificationList;

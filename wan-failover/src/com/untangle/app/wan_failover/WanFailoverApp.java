@@ -248,6 +248,7 @@ public class WanFailoverApp extends AppBase
         }
         if (WanFailoverApp.execManager != null) {
             WanFailoverApp.execManager.close();
+            WanFailoverApp.execManager.closeSafe();
             WanFailoverApp.execManager = null;
         }
     }
