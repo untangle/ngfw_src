@@ -532,6 +532,7 @@ public class IpsecVpnApp extends AppBase
 
         if (IpsecVpnApp.execManager != null) {
             IpsecVpnApp.execManager.close();
+            IpsecVpnApp.execManager.closeSafe();
             IpsecVpnApp.execManager = null;
         }
 

@@ -6,6 +6,7 @@ package com.untangle.app.ipsec_vpn;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Formatter;
 import java.io.FileWriter;
 
@@ -795,12 +796,33 @@ public class IpsecVpnManager
      */
     public void deleteTunnel(String workName)
     {
-        UvmContextFactory.context().execManager().exec(
-            IPSEC_APP + " down " + workName );
-        UvmContextFactory.context().execManager().exec(
-            IPSEC_APP + " stroke down-nb " + workName );
-        UvmContextFactory.context().execManager().exec(
-            IPSEC_APP + " unroute " + workName);
+        if (workName == null || workName.isEmpty()) {
+            logger.warn("Tunnel not found: " + workName);
+            return;
+        }
+
+        if (workName.startsWith("-")) {
+            logger.warn("Invalid Tunnel: " + workName);
+            return;
+        }
+        
+        IpsecVpnSettings settings = app.getSettings();
+        if (settings == null) {
+            logger.warn("Tunnel not found: " + workName);
+            return;
+        }
+        LinkedList<IpsecVpnTunnel> tunnelList = settings.getTunnels();
+        if (tunnelList == null) {
+            logger.warn("Tunnel not found: " + workName);
+            return;
+        }
+        UvmContextFactory.context().execManager().execCommand(
+            IPSEC_APP , List.of("down", workName));
+        UvmContextFactory.context().execManager().execCommand(
+            IPSEC_APP , List.of("stroke", "down-nb", workName));
+        UvmContextFactory.context().execManager().execCommand(
+            IPSEC_APP, List.of("unroute", workName));
+
     }
 
     /**

@@ -701,7 +701,13 @@ public class OpenVpnAppImpl extends AppBase
      */
     public void importClientConfig(String filename)
     {
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(IMPORT_CLIENT_SCRIPT + " \"" + filename + "\"");
+        
+        //Prevent path traversal and option smuggling
+        if (filename.contains("..") || filename.startsWith("-")) {
+            logger.error("Failed to import client config invalid filename: " + filename);
+            throw new RuntimeException("Failed to import client config");
+        }
+        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(IMPORT_CLIENT_SCRIPT , List.of(filename));
 
         String sitename = "siteName-" + (new Random().nextInt(10000));
         try {
