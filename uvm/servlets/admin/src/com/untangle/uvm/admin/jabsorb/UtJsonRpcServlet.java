@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.untangle.uvm.SafeUvmContext;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jabsorb.JSONRPCBridge;
@@ -54,8 +55,8 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             logger.warn( "Unable to register serializers", e );
         }
 
-        UvmContext uvm = UvmContextFactory.context();
-        bridge.registerObject("UvmContext", uvm, UvmContext.class);
+        SafeUvmContext uvm = UvmContextFactory.safeContext();
+        bridge.registerObject("UvmContext", uvm, SafeUvmContext.class);
 
         /**
          * This section registers hints that these classes should always be
@@ -75,19 +76,16 @@ public class UtJsonRpcServlet extends JSONRPCServlet
             bridge.registerCallableReference(uvm.adminManager().getClass());
             bridge.registerCallableReference(uvm.eventManager().getClass());
             bridge.registerCallableReference(uvm.uriManager().getClass());
-            bridge.registerCallableReference(uvm.authenticationManager().getClass());
             bridge.registerCallableReference(uvm.systemManager().getClass());
             bridge.registerCallableReference(uvm.networkManager().getClass());
             bridge.registerCallableReference(uvm.getConnectivityTester().getClass());
             bridge.registerCallableReference(uvm.netcapManager().getClass());
             bridge.registerCallableReference(uvm.licenseManager().getClass());
-            bridge.registerCallableReference(uvm.servletFileManager().getClass());
             bridge.registerCallableReference(uvm.settingsManager().getClass());
             bridge.registerCallableReference(uvm.oemManager().getClass());
             bridge.registerCallableReference(uvm.notificationManager().getClass());
             bridge.registerCallableReference(uvm.pipelineFoundry().getClass());
             bridge.registerCallableReference(uvm.sessionMonitor().getClass());
-            bridge.registerCallableReference(uvm.tomcatManager().getClass());
             bridge.registerCallableReference(uvm.dashboardManager().getClass());
             bridge.registerCallableReference(uvm.hostTable().getClass());
             bridge.registerCallableReference(uvm.deviceTable().getClass());

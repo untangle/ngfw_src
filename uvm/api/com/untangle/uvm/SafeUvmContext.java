@@ -3,22 +3,19 @@
  */
 package com.untangle.uvm;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.jabsorb.JSONSerializer;
-import org.json.JSONObject;
-
+import com.untangle.uvm.app.AppManager;
+import com.untangle.uvm.app.LicenseManager;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.LoggingManager;
-import com.untangle.uvm.app.LicenseManager;
-import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.servlet.ServletFileManager;
 import com.untangle.uvm.vnet.PipelineFoundry;
+import org.json.JSONObject;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * The top-level untangle-vm interfaces
+ * The top-level untangle-vm API
  */
-public interface UvmContext
+public interface SafeUvmContext
 {
     /**
      * Get the <code>AppManager</code> singleton.
@@ -26,7 +23,6 @@ public interface UvmContext
      * @return the AppManager.
      */
     AppManager appManager();
-    AppManager nodeManager(); /* DEPRECATED - use appManager() */
 
     /**
      * Get the <code>LoggingManager</code> singleton.
@@ -55,7 +51,7 @@ public interface UvmContext
      * @return the NetworkManager.
      */
     NetworkManager networkManager();
-    
+
     /**
      * Get the <code>ConnectivityTester</code> singleton.
      *
@@ -113,13 +109,6 @@ public interface UvmContext
     DaemonManager daemonManager();
 
     /**
-     * Get the HostsFileManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    HostsFileManager hostsFileManager();
-
-    /**
      * The LocalDirectory for managing/authenticating users
      *
      * @return the local directory
@@ -170,13 +159,6 @@ public interface UvmContext
     SettingsManager settingsManager();
 
     /**
-     * The certificate cache manager.
-     * 
-     * @return the CertCacheManager
-     */
-    CertCacheManager certCacheManager();
-
-    /**
      * Get the DashboardManager
      *
      * @return the DashboardManager
@@ -204,20 +186,6 @@ public interface UvmContext
      * @return the NotificationManager.
      */
     NotificationManager notificationManager();
-
-    /**
-     * Get the <code>BackupManager</code> singleton.
-     *
-     * @return the BackupManager.
-     */
-    BackupManager backupManager();
-
-    /**
-     * Get the <code>HookManager</code> singleton.
-     *
-     * @return the HookManager.
-     */
-    HookManager hookManager();
 
     /**
      * Get the <code>CloudManager</code> singleton.
@@ -253,40 +221,9 @@ public interface UvmContext
     UriManager uriManager();
 
     /**
-     * Get the Authentication manager
-     */
-    AuthenticationManager authenticationManager();
-
-    /**
-     * Get the UploadManager
-     *
-     * @return the UploadManager
-     */
-    ServletFileManager servletFileManager();
-
-    /**
      * Get the HTTP Servelet thread request
      */
     InheritableThreadLocal<HttpServletRequest> threadRequest = null;
-
-    /**
-     * Get the TomcatManager
-     *
-     * @return the TomcatManager
-     */
-    TomcatManager tomcatManager();
-
-    /**
-     * get the execManager for launching subprocesses
-     */
-    ExecManager execManager();
-
-    /**
-     * Create a new singleton exec manager
-     * This is usual for apps that need their own exec managers
-     * You must call close on the execmanager!
-     */
-    ExecManager createExecManager();
 
     /**
      * The host table
@@ -308,13 +245,6 @@ public interface UvmContext
      * @return the global user table.
      */
     UserTable userTable();
-    
-    /**
-     * Sync settings
-     *
-     * @return sync settings manager.
-     */
-    SyncSettings syncSettings();
 
     /**
      * Shut down the untangle-vm
@@ -348,7 +278,7 @@ public interface UvmContext
      * Return the Full Version
      */
     String getFullVersion();
-    
+
     /**
      * Return true if running in a development environment.
      */
@@ -494,12 +424,6 @@ public interface UvmContext
      */
     boolean isCCHidden();
 
-
-    /**
-     * blocks until startup is complete
-     */
-    void waitForStartup();
-
     /**
      * Get URLs
      */
@@ -528,17 +452,11 @@ public interface UvmContext
      * Convenience method to load all the object the webUI needs in one object to avoid
      * multiple calls
      */
-    org.json.JSONObject getWebuiStartupInfo();
+    JSONObject getWebuiStartupInfo();
 
     /**
      * Convenience method to load all the object the webUI needs in one object to avoid
      * multiple calls
      */
-    org.json.JSONObject getSetupStartupInfo();
-
-    /**
-     * Get the global json serializer
-     */
-    JSONSerializer getSerializer();
-
+    JSONObject getSetupStartupInfo();
 }
