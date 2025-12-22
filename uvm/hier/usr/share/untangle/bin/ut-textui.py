@@ -56,19 +56,12 @@ class UvmContext:
             sleep(wait)
         raise
 
-    def execute(self, command):
+    def pingTest(self, address, screen):
         """
-        Execute a command and send output to the output screen
-        """
-        self.context.execManager().execResult(command)
-
-    def exec_and_get_output(self, command, screen):
-        """
-        Execute a command and send output to the output screen
+        Execute reachability troubleshooting command and send output to the output screen
         """
         screen.external_call_header()
-
-        reader = self.context.execManager().execEvil(command)
+        reader = self.context.networkManager().runTroubleshooting("REACHABLE", { "HOST": address })
 
         screen.external_call_output("", True)
         while True:
@@ -1306,7 +1299,7 @@ class Ping(Screen):
         else:
             self.y_pos += 2
             uvm = UvmContext()
-            uvm.exec_and_get_output("ping -c 5 " + address, self )
+            uvm.pingTest(address, self )
             uvm = None
 
 class RemoteSupport(Form):
