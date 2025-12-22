@@ -58,6 +58,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
@@ -3294,12 +3295,14 @@ public class NetworkManagerImpl implements NetworkManager
                     validateTimeout(value, suspiciousEntries);
                     break;
                 case "MODE":
-                    if (!Set.of("basic", "advanced").contains(value)) {
+                    if (!Set.of("basic", "advanced")
+                            .contains(value.toLowerCase(Locale.ROOT))) {
                         suspiciousEntries.add("Invalid MODE: " + value);
                     }
                     break;
                 case "PROTOCOL":
-                    if (!Set.of("TCP", "UDP", "ICMP", "T", "U", "I").contains(value)) {
+                    if (!Set.of("tcp", "udp", "icmp", "t", "u", "i")
+                            .contains(value.toLowerCase(Locale.ROOT))) {
                         suspiciousEntries.add("Invalid PROTOCOL: " + value);
                     }
                     break;
