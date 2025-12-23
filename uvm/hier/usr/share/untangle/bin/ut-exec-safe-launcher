@@ -7,6 +7,12 @@ ALLOWED_EXECUTABLES = {
     "/usr/bin/import_client.sh",
     "/usr/share/untangle/bin/openvpn-import-config",
     "/sbin/ipsec",
+    "/usr/share/untangle/bin/ut-certgen",
+    "/usr/share/untangle/bin/ut-rootgen",
+    "/usr/share/untangle/bin/ut-cert-parser",
+    "/bin/ln",
+    "/bin/mkdir",
+    "/bin/mv"
 }
 
 while True:

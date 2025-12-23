@@ -75,7 +75,9 @@ public class CertificateManagerImpl implements CertificateManager
     private static final String MARKER_RKEY_TAIL = "-----END RSA PRIVATE KEY-----";
     private static final String MARKER_GKEY_HEAD = "-----BEGIN PRIVATE KEY-----";
     private static final String MARKER_GKEY_TAIL = "-----END PRIVATE KEY-----";
-
+    private static final String LN_BIN = "/bin/ln";
+    private static final String MKDIR_BIN = "/bin/mkdir";
+    private static final String MV_BIN = "/bin/mv";
     private final Logger logger = LogManager.getLogger(getClass());
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
 
@@ -208,20 +210,26 @@ public class CertificateManagerImpl implements CertificateManager
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
         {
-            // save the uploaded file
-            FileOutputStream fileStream = new FileOutputStream(CERTIFICATE_PARSER_FILE);
-            fileStream.write(fileItem.get());
-            fileStream.close();
             ExecManagerResult result;
-            // call the external utility to parse the uploaded file
-            String certData = UvmContextFactory.context().execManager().execOutputSafe(CERTIFICATE_PARSER_SCRIPT + " " + CERTIFICATE_PARSER_FILE + " " + argument);
-            if (certData != null && certData.contains("errorData")) {
-                JSONObject jsonCertData = new JSONObject(certData);
-                //errorData is present, fetch the value
-                String errorData = jsonCertData.optString("errorData");
-                result = new ExecManagerResult(1, errorData);
-            } else {
-                result = new ExecManagerResult(0, certData);
+            try {
+                rejectBacktick(argument, "argument");
+                // save the uploaded file
+                FileOutputStream fileStream = new FileOutputStream(CERTIFICATE_PARSER_FILE);
+                fileStream.write(fileItem.get());
+                fileStream.close();
+                // call the external utility to parse the uploaded file
+                String certData = UvmContextFactory.context().execManager().execCommand(CERTIFICATE_PARSER_SCRIPT, List.of(CERTIFICATE_PARSER_FILE, argument)).getOutput();
+                if (certData != null && certData.contains("errorData")) {
+                    JSONObject jsonCertData = new JSONObject(certData);
+                    //errorData is present, fetch the value
+                    String errorData = jsonCertData.optString("errorData");
+                    result = new ExecManagerResult(1, errorData);
+                } else {
+                    result = new ExecManagerResult(0, certData);
+                }
+            } catch (Exception e) {
+                    logger.error("Exception during certificate upload: {}",e);
+                    result = new ExecManagerResult(1, "INVALID ARGUMENT PASSED");
             }
             // returned the results 
             return (result);
@@ -284,14 +292,14 @@ public class CertificateManagerImpl implements CertificateManager
                 }
             }
             else if (downloadType.equalsIgnoreCase("csr")) {
-                String argList[] = new String[3];
-                argList[0] = "REQUEST"; // create CSR for server
-                argList[1] = req.getParameter("arg2"); // cert subject
-                argList[2] = req.getParameter("arg3"); // alt names
-                String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-                UvmContextFactory.context().execManager().execSafe(CERTIFICATE_GENERATOR_SCRIPT + argString);
-
                 try {
+                    String argList[] = new String[3];
+                    argList[0] = "REQUEST"; // create CSR for server
+                    argList[1] = req.getParameter("arg2"); // cert subject
+                    argList[2] = req.getParameter("arg3"); // alt names
+                    rejectBacktick(argList[1], "certSubject");
+                    rejectBacktick(argList[2], "alternate name");
+                    UvmContextFactory.context().execManager().execCommand(CERTIFICATE_GENERATOR_SCRIPT, List.of(argList[0], argList[1], argList[2]));
                     File certFile = new File(EXTERNAL_REQUEST_FILE);
                     certStream = new FileInputStream(certFile);
                     byte[] certData = new byte[(int) certFile.length()];
@@ -304,7 +312,7 @@ public class CertificateManagerImpl implements CertificateManager
                     OutputStream webStream = resp.getOutputStream();
                     webStream.write(certData);
                 } catch (Exception exn) {
-                    logger.warn("Exception during certificate download", exn);
+                    logger.error("Exception during certificate download:{}",exn);
                 } finally {
                     try {
                         if (certStream != null) {
@@ -581,25 +589,31 @@ public class CertificateManagerImpl implements CertificateManager
      */
     public boolean generateCertificateAuthority(String commonName, String certSubject)
     {
-        String baseName = commonName +"-"+ Long.toString(System.currentTimeMillis() / 1000l);
+        try {
+            rejectBacktick(commonName, "commonName");
+            rejectBacktick(certSubject, "certSubject");
+            String baseName = commonName +"-"+ Long.toString(System.currentTimeMillis() / 1000l);
+            logger.info("Creating new root certificate authority: " + certSubject);
+            String argList[] = new String[2];
+            argList[0] = baseName;
+            argList[1] = certSubject;
+            UvmContextFactory.context().execManager().execCommand(ROOT_CA_CREATOR_SCRIPT, List.of(argList[0], argList[1]));
 
-        logger.info("Creating new root certificate authority: " + certSubject);
-        String argList[] = new String[2];
-        argList[0] = baseName;
-        argList[1] = certSubject;
-        String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-        UvmContextFactory.context().execManager().execSafe(ROOT_CA_CREATOR_SCRIPT + argString);
+            // Symlink generated certs to the CERT_STORE_PATH (ROOT_KEY_FILE and ROOT_CERT_FILE)
+            symlinkRootCerts(CERT_STORE_PATH, CERT_STORE_PATH + baseName + "/", false);
 
-        // Symlink generated certs to the CERT_STORE_PATH (ROOT_KEY_FILE and ROOT_CERT_FILE)
-        symlinkRootCerts(CERT_STORE_PATH, CERT_STORE_PATH + baseName + "/", false);
+            // in the development enviroment save these to a global location
+            // so they will survive a rake clean
+            if (UvmContextFactory.context().isDevel()) {
+                UvmContextFactory.context().execManager().exec("cp -faR " + CERT_STORE_PATH + "/UntangleRootCA/ /etc/untangle/UntangleRootCA/");
+            }
 
-        // in the development enviroment save these to a global location
-        // so they will survive a rake clean
-        if (UvmContextFactory.context().isDevel()) {
-            UvmContextFactory.context().execManager().exec("cp -faR " + CERT_STORE_PATH + "/UntangleRootCA/ /etc/untangle/UntangleRootCA/");
+            return (true);
+        }catch (Exception e) {
+            logger.error("Failed to generate certificate authority for subject: {} \n {}", certSubject,e);
+            return false;
         }
 
-        return (true);
     }
 
     /**
@@ -614,17 +628,23 @@ public class CertificateManagerImpl implements CertificateManager
      */
     public boolean generateServerCertificate(String certSubject, String altNames)
     {
-        logger.info("Creating new locally signed apache certificate: " + certSubject);
-        String argList[] = new String[4];
-        String baseName = Long.toString(System.currentTimeMillis() / 1000l);
-        argList[0] = "SERVER"; // puts cert file and key in settings directory
-        argList[1] = certSubject.replaceAll("\"", "'");
-        argList[2] = altNames;
-        argList[3] = baseName;
-        String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-        ExecManagerResult result = UvmContextFactory.context().execManager().execSafe(CERTIFICATE_GENERATOR_SCRIPT + argString);
-        if (result.getResult() != 0) return (false);
-        return (true);
+        try {
+            rejectBacktick(altNames, "altNames");
+            rejectBacktick(certSubject, "certSubject");
+            logger.info("Creating new locally signed apache certificate: " + certSubject);
+            String argList[] = new String[4];
+            String baseName = Long.toString(System.currentTimeMillis() / 1000l);
+            argList[0] = "SERVER"; // puts cert file and key in settings directory
+            argList[1] = certSubject.replaceAll("\"", "'");
+            argList[2] = altNames;
+            argList[3] = baseName;
+            ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(CERTIFICATE_GENERATOR_SCRIPT, List.of(argList[0], argList[1], argList[2],argList[3]));
+            if (result.getResult() != 0) return (false);
+            return (true);
+        }catch (Exception e) {
+            logger.error("Failed to generate server certificate for subject: {} \n {}", certSubject,e);
+            return false;
+        }
     }
 
     /**
@@ -640,7 +660,20 @@ public class CertificateManagerImpl implements CertificateManager
         symlinkRootCerts(CERT_STORE_PATH, certParent + "/", false);
     }
 
-
+    /**
+     * Validates that the provided value does not contain a backtick character (`).
+     *
+     * @param value the value to validate; {@code null} values are permitted
+     * @param fieldName the name of the field being validated
+     * @throw IllegalArgumentException if {@code value} contains a backtick character
+     */
+    private static void rejectBacktick(String value, String fieldName) {
+        if (value != null && value.indexOf('`') >= 0) {
+            throw new IllegalArgumentException(
+                fieldName + " cannot contain backtick (`)"
+            );
+        }
+    }
     /**
      * Called to create a new server certificate using the data provided.
      * 
@@ -1184,20 +1217,20 @@ public class CertificateManagerImpl implements CertificateManager
     private void symlinkRootCerts(String targetDir, String sourceDir, boolean moveCerts) {
         if(moveCerts) {
             // create a sourcedir if we need to
-            UvmContextFactory.context().execManager().exec("mkdir -p " + sourceDir);
+            UvmContextFactory.context().execManager().execCommand(MKDIR_BIN, List.of("-p", sourceDir));
 
             // move cert, key, index, serial from old to new if move is specified
-            UvmContextFactory.context().execManager().exec("mv " + targetDir + "untangle.crt " + sourceDir);
-            UvmContextFactory.context().execManager().exec("mv " + targetDir + "untangle.key " + sourceDir);
-            UvmContextFactory.context().execManager().exec("mv " + targetDir + "index* " + sourceDir);
-            UvmContextFactory.context().execManager().exec("mv " + targetDir + "serial* " + sourceDir);
+            UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "untangle.crt", sourceDir));
+            UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "untangle.key", sourceDir));
+            UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "index*", sourceDir));
+            UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "serial*", sourceDir));
         }
 
         // symlink cert, key, index, serial from new location to old
-        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "untangle.crt " + targetDir + "untangle.crt");
-        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "untangle.key " + targetDir + "untangle.key");
-        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "index.txt " + targetDir + "index.txt");
-        UvmContextFactory.context().execManager().exec("ln -sf " + sourceDir + "serial.txt " + targetDir + "serial.txt");
+        UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "untangle.crt", targetDir + "untangle.crt"));
+        UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "untangle.key", targetDir + "untangle.key"));
+        UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "index.txt", targetDir + "index.txt"));
+        UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "serial.txt", targetDir + "serial.txt"));
 
         // Cleanup the untangle-ssl directory also
         UvmContextFactory.context().execManager().exec("rm -f " + SSL_INSPECTOR_LOCATION + "*");
