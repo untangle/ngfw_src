@@ -3,6 +3,7 @@ import pytest
 
 from tests.common import NGFWTestCase
 import tests.global_functions as global_functions
+from tests.global_functions import uvmContext
 import runtests.test_registry as test_registry
 
 
@@ -96,6 +97,15 @@ class VulnerabilitiesTests(NGFWTestCase):
                                                       extra_arguments=CURL_EXTRA_ARGS)
         result = int(subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT).decode('utf-8'))
         assert (result == 404)
+
+    def test_030_no_exec_manager_api(self):
+        """execManager should no longer be available over uvmContext as an API"""
+        try:
+            uvmContext.execManager()
+        except Exception as e:
+            assert(True)
+            return
+        assert(False)
 
 
 test_registry.register_module("vulnerabilities", VulnerabilitiesTests)
