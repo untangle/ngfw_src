@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
@@ -182,15 +184,18 @@ public class LocalDirectoryImpl implements LocalDirectory
         if (userPass.isBlank()) {
             return "Missing Password for authentication test";
         }
+        List<String> cmd = new ArrayList<>();
+        cmd.add("/usr/bin/ntlm_auth");
+        cmd.add("--request-nt-key");
 
-        String command = ("/usr/bin/ntlm_auth --request-nt-key");
         if (StringUtils.isNotEmpty(userDomain)) {
-            command += (" --domain=\"" + userDomain + "\"");
+            cmd.add("--domain=" + userDomain);
         }
-        command += (" --username=\"" + userName + "\"");
-        command += (" --password=\"" + userPass + "\"");
 
-        return UvmContextFactory.context().execManager().execOutput(command);
+        cmd.add("--username=" + userName);
+        cmd.add("--password=" + userPass);
+
+        return UvmContextFactory.context().execManager().execCommand(cmd.get(0),cmd.subList(1, cmd.size())).getOutput();
     }
 
     /**
@@ -220,18 +225,22 @@ public class LocalDirectoryImpl implements LocalDirectory
      * @return Message text and SVG image. (String)
      */
     public String showSecretQR(String username, String issuer, String secret) {
-        String url = new StringBuilder("otpauth://totp/").append(username.toLowerCase().trim())
-        .append("@")
-        .append("openvpn".trim())
-        .append("?secret=")
-        .append(secret.toUpperCase().trim())
-        .append("&issuer=")
-        .append(issuer.trim())
-        .toString();
+        String url = "otpauth://totp/"
+        + username.toLowerCase().trim()
+        + "@openvpn"
+        + "?secret=" + secret.toUpperCase().trim()
+        + "&issuer=" + issuer.trim();
 
-        String command = new StringBuilder("/usr/bin/qrencode -s 4 -t SVG -o - ").append(url).toString();
-        String QrSvg =  UvmContextFactory.context().execManager().execOutput(command);
-        return ("Manual entry: " + secret + "<BR>" + QrSvg);
+        List<String> cmd = List.of(
+            "/usr/bin/qrencode",
+            "-s", "4",
+            "-t", "SVG",
+            "-o", "-",
+            url
+        );
+
+        ExecManagerResult result =UvmContextFactory.context().execManager().execCommand(cmd.get(0), cmd.subList(1, cmd.size()));
+        return ("Manual entry: " + secret + "<BR>" + result.getOutput());
     }
 
     /**

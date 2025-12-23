@@ -4,9 +4,12 @@ import sys
 import json
 
 ALLOWED_EXECUTABLES = {
-    "/usr/bin/import_client.sh",
     "/usr/share/untangle/bin/openvpn-import-config",
     "/sbin/ipsec",
+    "/usr/bin/ntlm_auth",
+    "/usr/bin/qrencode",
+    "/usr/share/untangle/bin/network-status.sh",
+    "/usr/share/untangle/bin/wireless-interface.py"
 }
 
 while True:

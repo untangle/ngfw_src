@@ -118,7 +118,7 @@ public class ExecManagerImpl implements ExecManager
         try {
             if (proc != null) {
                 proc.destroy();
-                logger.info("UnSafe launcher stopped, pid=" + proc.pid());
+                logger.debug("UnSafe launcher stopped, pid=" + proc.pid());
             }
         } catch (Exception ex) {
         }
@@ -149,7 +149,7 @@ public class ExecManagerImpl implements ExecManager
         try {
             if (procSafe != null) {
                 procSafe.destroy();
-                logger.info("Safe launcher stopped, pid=" + procSafe.pid());
+                logger.debug("Safe launcher stopped, pid=" + procSafe.pid());
             }
         } catch (Exception ex) {
         }
@@ -290,56 +290,61 @@ public class ExecManagerImpl implements ExecManager
      * @return The execution result object
      */
     public synchronized ExecManagerResult execCommand( String cmd , List<String> arguments) {
+        
+        
         if (inSafe == null || outSafe == null || procSafe == null) {
-        initSafeDaemon();
-    }
+            initSafeDaemon();
+        }
 
-    try {
-        // Build structured JSON manually (no command string)
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("executable", cmd);
-        payload.put("args", arguments);
-
-        String json;
         try {
-            json = serializer.toJSON(payload).toString();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize exec request", e);
+
+            // Build structured JSON manually (no command string)
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("executable", cmd);
+            payload.put("args", arguments);
+
+            String json;
+            try {
+                json = serializer.toJSON(payload).toString();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to serialize exec request", e);
+            }
+
+
+            // Send JSON to launcher daemon
+            outSafe.write(json);
+            outSafe.write("\n");
+            outSafe.flush();
+
+            long t0 = System.currentTimeMillis();
+            String line = inSafe.readLine();
+            long t1 = System.currentTimeMillis();
+
+            ExecManagerResult result =
+                    ObjectMatcher.parseJson(line, ExecManagerResult.class);
+
+            if (result == null) {
+                logger.warn("Failed to parse ExecManagerResult");
+                return new ExecManagerResult(-1, "");
+            } else {
+                logger.log(this.level, "ExecManager.execCommand(" + cmd + ") = " + result.getResult() + " took " + (t1 - t0) + " ms.");
+            }
+
+            return result;
+
+        } catch (IOException exn) {
+            logger.warn("Exception during ut-exec-safe-launcher", exn);
+            initDaemon();
+            return new ExecManagerResult(-1, exn.toString());
+        } catch (JSONException | UnmarshallException exn) {
+            logger.warn("Exception during ut-exec-safe-launcher", exn);
+            initDaemon();
+            return new ExecManagerResult(-1, exn.toString());
+        }   catch (Exception ex) {
+            // command failed, launcher still healthy
+            logger.warn("Command execution failedfor ut-exec-safe-launcher", ex);
+            return new ExecManagerResult(-1, ex.toString());
         }
-
-
-        // Send JSON to launcher daemon
-        outSafe.write(json);
-        outSafe.write("\n");
-        outSafe.flush();
-
-        long t0 = System.currentTimeMillis();
-        String line = inSafe.readLine();
-        long t1 = System.currentTimeMillis();
-
-        ExecManagerResult result =
-                ObjectMatcher.parseJson(line, ExecManagerResult.class);
-
-        if (result == null) {
-            logger.warn("Failed to parse ExecManagerResult");
-            return new ExecManagerResult(-1, "");
-        }
-
-        return result;
-
-    } catch (IOException exn) {
-        logger.warn("Exception during ut-exec-safe-launcher", exn);
-        initDaemon();
-        return new ExecManagerResult(-1, exn.toString());
-    } catch (JSONException | UnmarshallException exn) {
-        logger.warn("Exception during ut-exec-safe-launcher", exn);
-        initDaemon();
-        return new ExecManagerResult(-1, exn.toString());
-    }   catch (Exception ex) {
-        // command failed, launcher still healthy
-        logger.warn("Command execution failedfor ut-exec-safe-launcher", ex);
-        return new ExecManagerResult(-1, ex.toString());
-    }
 
 
     }
@@ -580,7 +585,7 @@ public class ExecManagerImpl implements ExecManager
     /**
      * Initialize our safe input, output, and process objects we use to do our thing
      */
-    private void  initSafeDaemon()
+    private void initSafeDaemon()
     {
         if (procSafe != null && procSafe.isAlive()) {
             return;
@@ -593,7 +598,7 @@ public class ExecManagerImpl implements ExecManager
         try {
             logger.debug("Launching ut-exec-safe-launcher: " + launcher);
             procSafe = Runtime.getRuntime().exec(launcher);
-            logger.info("Safe launcher started, pid=" + procSafe.pid());
+            logger.debug("Safe launcher started, pid=" + procSafe.pid());
         } catch (IOException e) {
             logger.error("Couldn't start ut-exec-safe-launcher", e);
             return;
