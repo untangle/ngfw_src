@@ -32,3 +32,10 @@ fi
 echo "SQL scan passed. Running restore..."
 
 zcat $FILE | psql -U postgres uvm 2>&1 | tee -a $RESTORE_LOG | grep -v 'already exists'
+
+psql_rc=${PIPESTATUS[1]}
+if [ "$psql_rc" -eq 0 ]; then
+    : > "$RESTORE_LOG"
+fi
+
+exit "$psql_rc"
