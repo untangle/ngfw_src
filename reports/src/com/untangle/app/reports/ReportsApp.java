@@ -1101,8 +1101,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
                 file.delete();
             item.write( file );
 
-            SqlScanner.inspectSqlGz(file);
-
             String cmd = REPORTS_RESTORE_DATA_SCRIPT + " -f " + filename;
             return UvmContextFactory.context().execManager().execResult(cmd);
         } catch (Exception e) {
