@@ -7,6 +7,7 @@ import tempfile
 
 from tests.common import NGFWTestCase
 import tests.global_functions as global_functions
+from tests.global_functions import uvmContext
 import runtests.test_registry as test_registry
 
 SCANNER_CMD = ["python3", "/usr/share/untangle/bin/reports-sql-scanner.py"]
@@ -232,5 +233,15 @@ class VulnerabilitiesTests(NGFWTestCase):
 
         finally:
             shutil.rmtree(temp_dir)
+
+    def test_040_no_exec_manager_api(self):
+        """execManager should no longer be available over uvmContext as an API"""
+        try:
+            uvmContext.execManager()
+        except Exception as e:
+            assert(True)
+            return
+        assert(False)
+
 
 test_registry.register_module("vulnerabilities", VulnerabilitiesTests)
