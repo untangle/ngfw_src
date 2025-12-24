@@ -290,8 +290,6 @@ public class ExecManagerImpl implements ExecManager
      * @return The execution result object
      */
     public synchronized ExecManagerResult execCommand( String cmd , List<String> arguments) {
-        
-        
         if (inSafe == null || outSafe == null || procSafe == null) {
             initSafeDaemon();
         }
@@ -345,8 +343,6 @@ public class ExecManagerImpl implements ExecManager
             logger.warn("Command execution failedfor ut-exec-safe-launcher", ex);
             return new ExecManagerResult(-1, ex.toString());
         }
-
-
     }
 
 

@@ -9,7 +9,13 @@ ALLOWED_EXECUTABLES = {
     "/usr/bin/ntlm_auth",
     "/usr/bin/qrencode",
     "/usr/share/untangle/bin/network-status.sh",
-    "/usr/share/untangle/bin/wireless-interface.py"
+    "/usr/share/untangle/bin/wireless-interface.py",
+    "/usr/share/untangle/bin/ut-certgen",
+    "/usr/share/untangle/bin/ut-rootgen",
+    "/usr/share/untangle/bin/ut-cert-parser",
+    "/bin/ln",
+    "/bin/mkdir",
+    "/bin/mv"
 }
 
 while True:
