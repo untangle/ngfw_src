@@ -53,11 +53,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
@@ -94,6 +96,8 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ADDRESS = "static-address";
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
+    private static String INTERFACE_NAME_PATTERN = "[a-zA-Z0-9._:-]{1,32}";
+    private static String REGION_NAME_PATTERN = "[A-Z]{2}";
 
     // creating a cache for the lookedup mac addresses and vendors
     private static ConcurrentMap<String,String> cachedMacAddrVendorList = new ConcurrentHashMap<>();
@@ -2683,6 +2687,37 @@ public class NetworkManagerImpl implements NetworkManager
         return deviceNames;
     }
 
+     /**
+     *  Helper method to execute shell commands with a wireless device for fetching information
+     * @param scriptPath executable path
+     * @param arguments list of strings
+     * @param interfaceName
+     * @return String
+     */
+    private String execInterfaceCommand( String scriptPath, List<String> arguments, String interfaceName) {
+
+        // Validate interface syntax
+        if (interfaceName == null ||
+            !interfaceName.matches(INTERFACE_NAME_PATTERN)) {
+            throw new RuntimeException("Invalid interface name");
+        }
+
+        // Validate interface exists (sysfs)
+        Path iface = Paths.get("/sys/class/net", interfaceName);
+        if (!Files.exists(iface)) {
+            throw new RuntimeException("Unknown interface: " + interfaceName);
+        }
+
+        ExecManager execManager = UvmContextFactory.context().execManager();
+
+        ExecManagerResult result =
+            execManager.execCommand(scriptPath, arguments);
+
+        return result.getOutput();
+    }
+
+
+
     /**
      * Query a wireless device for valid regulatory country codes
      * @param systemDev
@@ -2690,15 +2725,25 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public JSONArray getWirelessValidRegulatoryCountryCodes( String systemDev )
     {
-        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_valid_country_codes");
-        JSONObject jo = null;
-        try{
-            jo = new JSONObject(result);
+        String result = execInterfaceCommand(
+            wirelessInterfaceScript,
+            List.of(
+                "--interface=" + systemDev,
+                "--query=get_valid_country_codes"
+            ),
+            systemDev
+        );
+    
+        try {
+            JSONObject jo = new JSONObject(result);
             return jo.getJSONArray("get_valid_country_codes");
-        }catch(JSONException e ){
-            logger.warn("Unable to parse wireless regulatory country codes: " + result);
+        } catch (JSONException e) {
+            logger.warn(
+                "Unable to parse wireless regulatory country codes: " + result,
+                e
+            );
+            return null;
         }
-        return null;
     }
 
     /**
@@ -2708,16 +2753,22 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public boolean isWirelessRegulatoryCompliant( String systemDev )
     {
-        boolean compliant = false;
-        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=is_regulatory_compliant");
-        JSONObject jo = null;
+        String result = execInterfaceCommand(
+            wirelessInterfaceScript,
+            List.of(
+                "--interface=" + systemDev,
+                "--query=is_regulatory_compliant"
+            ),
+            systemDev
+        );
+
         try{
-            jo = new JSONObject(result);
-            compliant = jo.getBoolean("is_regulatory_compliant");
+            JSONObject jo = new JSONObject(result);
+            return jo.getBoolean("is_regulatory_compliant");
         }catch( JSONException e ){
             logger.warn("Unable to parse wireless driver compliance: " + result);
         }
-        return compliant;
+        return false;
     }
 
     /**
@@ -2727,16 +2778,22 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public String getWirelessRegulatoryCountryCode( String systemDev )
     {
-        String country_code = "";
-        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_regulatory_country_code");
-        JSONObject jo = null;
+        String result = execInterfaceCommand(
+            wirelessInterfaceScript,
+            List.of(
+                "--interface=" + systemDev,
+                "--query=get_regulatory_country_code"
+            ),
+            systemDev
+        );
+
         try{
-            jo = new JSONObject(result);
-            country_code = jo.getString("get_regulatory_country_code");
+            JSONObject jo = new JSONObject(result);
+             return  jo.getString("get_regulatory_country_code");
         }catch( JSONException e ){
             logger.warn("Unable to parse wireless driver country code: " + result);
         }
-        return country_code;
+        return "";
     }
 
     /**
@@ -2749,10 +2806,20 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public JSONArray getWirelessChannels( String systemDev, String region )
     {
-        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_channels," + region);
-        JSONObject jo = null;
+        // Validate region (ISO 3166-1 alpha-2, e.g., US, IN, DE)
+        if (region == null || !region.matches(REGION_NAME_PATTERN)) {
+            throw new RuntimeException("Invalid wireless regulatory region");
+        }
+        String result = execInterfaceCommand(
+            wirelessInterfaceScript,
+            List.of(
+                "--interface=" + systemDev,
+                "--query=get_channels," + region
+            ),
+            systemDev
+        );
         try{
-            jo = new JSONObject(result);
+            JSONObject jo = new JSONObject(result);
             return jo.getJSONArray("get_channels");
         }catch(JSONException e ){
             logger.warn("Unable to parse wireless channels: " + result);
@@ -2769,7 +2836,8 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public String getUpnpManager(String command, String arguments)
     {
-        return UvmContextFactory.context().execManager().execOutput(upnpManagerScript + " " + command + " " + arguments);
+        throw new RuntimeException("UpnpManager not supported Exception");
+
     }
 
     /**
@@ -3043,27 +3111,32 @@ public class NetworkManagerImpl implements NetworkManager
      * @param argument - String of argument to pass to script
      * @return string of status
      */
-    public String getStatus(StatusCommands command, String argument)
-    {
-        switch(command){
-            case INTERFACE_TRANSFER:
-            case INTERFACE_IP_ADDRESSES:
-            case INTERFACE_ARP_TABLE:
-            case DYNAMIC_ROUTING_TABLE:
-            case DYNAMIC_ROUTING_BGP:
-            case DYNAMIC_ROUTING_OSPF:
-            case ROUTING_TABLE:
-            case QOS:
-            case DHCP_LEASES: {
-                if(argument != null && argument.contains("&")) throw new RuntimeException("runTroubleshooting suspicious argument: (" + argument + "), blocked");
-                
-                return UvmContextFactory.context().execManager().execOutputSafe(statusScript + " get_" + command.toString().toLowerCase() + " " + argument);
-            }
-            default:
-                throw new RuntimeException("getStatus unknown command: " + command);
-        }
-    }
+    public String getStatus(StatusCommands command, String argument) {
 
+        ExecManager execManager = UvmContextFactory.context().execManager();
+    
+        List<String> args = new ArrayList<>();
+        args.add(command.getScriptCommand());
+    
+        if (command.requiresInterface()) {
+            Path iface = Paths.get("/sys/class/net", argument);
+    
+            if (argument == null ||
+                !argument.matches(INTERFACE_NAME_PATTERN) || !Files.exists(iface)) {
+                throw new RuntimeException("Invalid interface name");
+            }
+    
+            args.add(argument);
+    
+        } else if (argument != null) {
+            throw new RuntimeException(
+                "Argument not supported for command: " + command
+            );
+        }
+    
+        return execManager.execCommand(statusScript, args).getOutput();
+    }
+    
     /**
      * Run network troubleshooting script
      *
@@ -3294,12 +3367,14 @@ public class NetworkManagerImpl implements NetworkManager
                     validateTimeout(value, suspiciousEntries);
                     break;
                 case "MODE":
-                    if (!Set.of("basic", "advanced").contains(value)) {
+                    if (!Set.of("basic", "advanced")
+                            .contains(value.toLowerCase(Locale.ROOT))) {
                         suspiciousEntries.add("Invalid MODE: " + value);
                     }
                     break;
                 case "PROTOCOL":
-                    if (!Set.of("TCP", "UDP", "ICMP", "T", "U", "I").contains(value)) {
+                    if (!Set.of("tcp", "udp", "icmp", "t", "u", "i")
+                            .contains(value.toLowerCase(Locale.ROOT))) {
                         suspiciousEntries.add("Invalid PROTOCOL: " + value);
                     }
                     break;

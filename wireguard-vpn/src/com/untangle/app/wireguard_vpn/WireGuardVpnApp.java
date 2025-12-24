@@ -154,6 +154,12 @@ public class WireGuardVpnApp extends AppBase
             if(tunnel.getPublicKey().equals("")){
                 tunnel.setPrivateKey(this.WireGuardVpnManager.createPrivateKey());
                 tunnel.setPublicKey(this.WireGuardVpnManager.getPublicKey(tunnel.getPrivateKey()));
+            } else {
+                if (!this.WireGuardVpnManager.isValidWGKey(tunnel.getPublicKey())) {
+                    logger.warn("Tunnel addition failed invalid publc key.");
+                    throw new RuntimeException("Invalid Tunnel public key");
+
+                }
             }
             // For tunnels pushed from ETM save the networks in NGFW format i.e. line seperated
             if(tunnel.getDescription().startsWith("CCTunnel") && tunnel.getNetworks().contains(Constants.COMMA_STRING)) {

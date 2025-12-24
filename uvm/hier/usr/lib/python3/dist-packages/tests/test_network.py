@@ -2797,22 +2797,6 @@ server=dynupdate.no-ip.com
         # Don't care about success/failure just that we see the test ran
         assert "saved" in output, "dns test"
 
-    def test_606_troubleshooting_trace(self):
-        """
-        Troubleshooting, trace
-        """
-        interface = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
-
-        output = get_troubleshooting_output(command='TRACE',arguments={
-                "TIMEOUT": "10",
-                "MODE": "BASIC",
-                "HOST": "any",
-                "INTERFACE": interface,
-                "FILENAME": "test.pcap"
-            })
-
-        # Don't care about success/failure just that we see the test ran
-        assert "tcpdump:" in output, "trace test"
 
     def test_607_troubleshooting_connection_reverse_shell(self):
         """
@@ -3121,6 +3105,24 @@ server=dynupdate.no-ip.com
 
         global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert invalid_dns is False, "dns resolvers properly pinned to devices"
+
+
+    def test_800_troubleshooting_trace(self):
+        """
+        Troubleshooting, trace
+        """
+        interface = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+
+        output = get_troubleshooting_output(command='TRACE',arguments={
+                "TIMEOUT": "10",
+                "MODE": "BASIC",
+                "HOST": "any",
+                "INTERFACE": interface,
+                "FILENAME": "test.pcap"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "tcpdump:" in output, "trace test"
 
     def test_801_runtroubleshoot_argument_exploit_test(self):
         """

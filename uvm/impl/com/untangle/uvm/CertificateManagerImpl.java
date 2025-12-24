@@ -212,7 +212,7 @@ public class CertificateManagerImpl implements CertificateManager
         {
             ExecManagerResult result;
             try {
-                rejectBacktick(argument, "argument");
+                rejectSuspiciousCharacter(argument, "argument");
                 // save the uploaded file
                 FileOutputStream fileStream = new FileOutputStream(CERTIFICATE_PARSER_FILE);
                 fileStream.write(fileItem.get());
@@ -228,7 +228,7 @@ public class CertificateManagerImpl implements CertificateManager
                     result = new ExecManagerResult(0, certData);
                 }
             } catch (Exception e) {
-                    logger.error("Exception during certificate upload: {}",e);
+                    logger.error("Exception during certificate upload: ",e);
                     result = new ExecManagerResult(1, "INVALID ARGUMENT PASSED");
             }
             // returned the results 
@@ -297,8 +297,8 @@ public class CertificateManagerImpl implements CertificateManager
                     argList[0] = "REQUEST"; // create CSR for server
                     argList[1] = req.getParameter("arg2"); // cert subject
                     argList[2] = req.getParameter("arg3"); // alt names
-                    rejectBacktick(argList[1], "certSubject");
-                    rejectBacktick(argList[2], "alternate name");
+                    rejectSuspiciousCharacter(argList[1], "certSubject");
+                    rejectSuspiciousCharacter(argList[2], "alternate name");
                     UvmContextFactory.context().execManager().execCommand(CERTIFICATE_GENERATOR_SCRIPT, List.of(argList[0], argList[1], argList[2]));
                     File certFile = new File(EXTERNAL_REQUEST_FILE);
                     certStream = new FileInputStream(certFile);
@@ -312,7 +312,7 @@ public class CertificateManagerImpl implements CertificateManager
                     OutputStream webStream = resp.getOutputStream();
                     webStream.write(certData);
                 } catch (Exception exn) {
-                    logger.error("Exception during certificate download:{}",exn);
+                    logger.error("Exception during certificate download:",exn);
                 } finally {
                     try {
                         if (certStream != null) {
@@ -590,8 +590,8 @@ public class CertificateManagerImpl implements CertificateManager
     public boolean generateCertificateAuthority(String commonName, String certSubject)
     {
         try {
-            rejectBacktick(commonName, "commonName");
-            rejectBacktick(certSubject, "certSubject");
+            rejectSuspiciousCharacter(commonName, "commonName");
+            rejectSuspiciousCharacter(certSubject, "certSubject");
             String baseName = commonName +"-"+ Long.toString(System.currentTimeMillis() / 1000l);
             logger.info("Creating new root certificate authority: " + certSubject);
             String argList[] = new String[2];
@@ -607,10 +607,9 @@ public class CertificateManagerImpl implements CertificateManager
             if (UvmContextFactory.context().isDevel()) {
                 UvmContextFactory.context().execManager().exec("cp -faR " + CERT_STORE_PATH + "/UntangleRootCA/ /etc/untangle/UntangleRootCA/");
             }
-
             return (true);
         }catch (Exception e) {
-            logger.error("Failed to generate certificate authority for subject: {} \n {}", certSubject,e);
+            logger.error("Failed to generate certificate authority for subject: {} ", certSubject,e);
             return false;
         }
 
@@ -629,8 +628,8 @@ public class CertificateManagerImpl implements CertificateManager
     public boolean generateServerCertificate(String certSubject, String altNames)
     {
         try {
-            rejectBacktick(altNames, "altNames");
-            rejectBacktick(certSubject, "certSubject");
+            rejectSuspiciousCharacter(altNames, "altNames");
+            rejectSuspiciousCharacter(certSubject, "certSubject");
             logger.info("Creating new locally signed apache certificate: " + certSubject);
             String argList[] = new String[4];
             String baseName = Long.toString(System.currentTimeMillis() / 1000l);
@@ -642,7 +641,7 @@ public class CertificateManagerImpl implements CertificateManager
             if (result.getResult() != 0) return (false);
             return (true);
         }catch (Exception e) {
-            logger.error("Failed to generate server certificate for subject: {} \n {}", certSubject,e);
+            logger.error("Failed to generate server certificate for subject: {}", certSubject,e);
             return false;
         }
     }
@@ -667,10 +666,10 @@ public class CertificateManagerImpl implements CertificateManager
      * @param fieldName the name of the field being validated
      * @throw IllegalArgumentException if {@code value} contains a backtick character
      */
-    private static void rejectBacktick(String value, String fieldName) {
+    private static void rejectSuspiciousCharacter(String value, String fieldName) {
         if (value != null && value.indexOf('`') >= 0) {
             throw new IllegalArgumentException(
-                fieldName + " cannot contain backtick (`)"
+                "Suspicious character detected in " + fieldName
             );
         }
     }

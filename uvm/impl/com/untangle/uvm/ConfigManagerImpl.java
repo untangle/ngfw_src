@@ -787,20 +787,20 @@ public class ConfigManagerImpl implements ConfigManager
     }
 
     /**
-     * Called to perform a database query
+     * Called to perform a database query. Shouldn't be called from an API unless proper input validation is done.
      *
      * @apiNote The database connection used in this function has the read-only
      *          flag set to maximize performance and to prevent accidental
      *          modifications. It is good practice to include a LIMIT clause in
      *          any query that could potentially return a very large amount of
-     *          data to avoid accidental overload of system resorces.
+     *          data to avoid accidental overload of system resources.
      *
      * @param argQuery
      *        The database query to perform
      * @return A JSON object with the result code and message plus the row
      *         count, row data, and the query that was executed.
      */
-    public Object doDatabaseQuery(String argQuery)
+    private Object doDatabaseQuery(String argQuery)
     {
         logger.info("CMAN_HIST doDatabaseQuery() = {}", argQuery);
 
@@ -1139,7 +1139,7 @@ public class ConfigManagerImpl implements ConfigManager
         fileName.append(context.getServerUID());
         fileName.append(".tar.gz");
 
-        String output = context.execManager().execOutput(DIAGNOSTIC_DUMP_SCRIPT + " " + fileName.toString());
+        String output = context.execManager().execOutput(DIAGNOSTIC_DUMP_SCRIPT + " " + fileName);
         if (output.startsWith("ERROR:")) {
             return createResponse(1, output);
         }

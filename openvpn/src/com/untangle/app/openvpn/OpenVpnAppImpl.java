@@ -41,6 +41,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.util.Constants;
 
 /**
  * The OpenVPN application
@@ -703,7 +704,7 @@ public class OpenVpnAppImpl extends AppBase
     {
         
         //Prevent path traversal and option smuggling
-        if (filename.contains("..") || filename.startsWith("-")) {
+        if (filename.contains(Constants.LOG_ELLIPSIS) || filename.startsWith(Constants.HYPHEN)) {
             logger.error("Failed to import client config invalid filename: " + filename);
             throw new RuntimeException("Failed to import client config");
         }

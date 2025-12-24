@@ -17,7 +17,7 @@ import com.untangle.uvm.CertificateManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppSettings.AppState;
 import com.untangle.uvm.vnet.AppSession;
-
+import com.untangle.uvm.util.Constants;
 /**
  * This class uses the application settings to dynamically generate the
  * configuration files used by the underlying IPsec implementation.
@@ -801,7 +801,7 @@ public class IpsecVpnManager
             return;
         }
 
-        if (workName.startsWith("-")) {
+        if (workName.startsWith(Constants.HYPHEN)) {
             logger.warn("Invalid Tunnel: " + workName);
             return;
         }
