@@ -51,6 +51,8 @@ public class LocalDirectoryImpl implements LocalDirectory
     private static final String FREERADIUS_KRB5_CONFIG = "/etc/krb5.conf";
     private static final String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/mschap";
     private static final String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-enabled/ntlm_auth";
+    private static final String FREERADIUS_NTLM_CMD = "/usr/bin/ntlm_auth";
+    private static final String QR_ENCODE_CMD = "/usr/bin/qrencode";
 
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n# If you modify this file manually, your changes will be overwritten!\n\n";
     public static final Random random = new Random();
@@ -177,25 +179,24 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public String testRadiusProxyLogin(String userName, String userPass, String userDomain)
     {
-        if (userName.isBlank()) {
+        if (userName == null || userName.isBlank()) {
             return "Missing Username for authentication test";
         }
 
-        if (userPass.isBlank()) {
+        if (userPass == null ||userPass.isBlank()) {
             return "Missing Password for authentication test";
         }
-        List<String> cmd = new ArrayList<>();
-        cmd.add("/usr/bin/ntlm_auth");
-        cmd.add("--request-nt-key");
+        List<String> args = new ArrayList<>();
+        args.add("--request-nt-key");
 
         if (StringUtils.isNotEmpty(userDomain)) {
-            cmd.add("--domain=" + userDomain);
+            args.add("--domain=" + userDomain);
         }
 
-        cmd.add("--username=" + userName);
-        cmd.add("--password=" + userPass);
+        args.add("--username=" + userName);
+        args.add("--password=" + userPass);
 
-        return UvmContextFactory.context().execManager().execCommand(cmd.get(0),cmd.subList(1, cmd.size())).getOutput();
+        return UvmContextFactory.context().execManager().execCommand(FREERADIUS_NTLM_CMD,args).getOutput();
     }
 
     /**
@@ -231,15 +232,14 @@ public class LocalDirectoryImpl implements LocalDirectory
         + "?secret=" + secret.toUpperCase().trim()
         + "&issuer=" + issuer.trim();
 
-        List<String> cmd = List.of(
-            "/usr/bin/qrencode",
+        List<String> args = List.of(
             "-s", "4",
             "-t", "SVG",
             "-o", "-",
             url
         );
 
-        ExecManagerResult result =UvmContextFactory.context().execManager().execCommand(cmd.get(0), cmd.subList(1, cmd.size()));
+        ExecManagerResult result =UvmContextFactory.context().execManager().execCommand(QR_ENCODE_CMD,args) ;
         return ("Manual entry: " + secret + "<BR>" + result.getOutput());
     }
 

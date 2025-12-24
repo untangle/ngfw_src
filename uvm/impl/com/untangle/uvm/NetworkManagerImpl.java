@@ -96,6 +96,8 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ADDRESS = "static-address";
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
+    private static String INTERFACE_NAME_PATTERN = "[a-zA-Z0-9._:-]{1,32}";
+    private static String REGION_NAME_PATTERN = "[A-Z]{2}";
 
     // creating a cache for the lookedup mac addresses and vendors
     private static ConcurrentMap<String,String> cachedMacAddrVendorList = new ConcurrentHashMap<>();
@@ -2696,7 +2698,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         // Validate interface syntax
         if (interfaceName == null ||
-            !interfaceName.matches("[a-zA-Z0-9._:-]{1,32}")) {
+            !interfaceName.matches(INTERFACE_NAME_PATTERN)) {
             throw new RuntimeException("Invalid interface name");
         }
 
@@ -2805,7 +2807,7 @@ public class NetworkManagerImpl implements NetworkManager
     public JSONArray getWirelessChannels( String systemDev, String region )
     {
         // Validate region (ISO 3166-1 alpha-2, e.g., US, IN, DE)
-        if (region == null || !region.matches("[A-Z]{2}")) {
+        if (region == null || !region.matches(REGION_NAME_PATTERN)) {
             throw new RuntimeException("Invalid wireless regulatory region");
         }
         String result = execInterfaceCommand(
@@ -3120,7 +3122,7 @@ public class NetworkManagerImpl implements NetworkManager
             Path iface = Paths.get("/sys/class/net", argument);
     
             if (argument == null ||
-                !argument.matches("[a-zA-Z0-9._:-]{1,32}") || !Files.exists(iface)) {
+                !argument.matches(INTERFACE_NAME_PATTERN) || !Files.exists(iface)) {
                 throw new RuntimeException("Invalid interface name");
             }
     
