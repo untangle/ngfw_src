@@ -10,12 +10,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Level;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.UnmarshallException;
+
 import org.json.JSONException;
 
 import com.untangle.uvm.ExecManager;
@@ -43,6 +47,9 @@ public class ExecManagerImpl implements ExecManager
     private Process proc = null;
     private OutputStreamWriter out = null;
     private BufferedReader in = null;
+    private Process procSafe = null;
+    private OutputStreamWriter outSafe = null;
+    private BufferedReader inSafe = null;
 
     private Level level;
 
@@ -55,6 +62,7 @@ public class ExecManagerImpl implements ExecManager
     protected ExecManagerImpl()
     {
         initDaemon();
+        initSafeDaemon();
         level = Level.INFO;
     }
 
@@ -110,12 +118,44 @@ public class ExecManagerImpl implements ExecManager
         try {
             if (proc != null) {
                 proc.destroy();
+                logger.debug("UnSafe launcher stopped, pid=" + proc.pid());
             }
         } catch (Exception ex) {
         }
         in = null;
         out = null;
         proc = null;
+    }
+
+
+    /**
+     * Closes all open objects
+     */
+    public synchronized void closeSafe()
+    {
+        if (inSafe != null || outSafe != null || procSafe != null) logger.debug("Shutting down ut-exec-safe-launcher...");
+        try {
+            if (outSafe != null) {
+                outSafe.close();
+            }
+        } catch (Exception ex) {
+        }
+        try {
+            if (inSafe != null) {
+                inSafe.close();
+            }
+        } catch (Exception ex) {
+        }
+        try {
+            if (procSafe != null) {
+                procSafe.destroy();
+                logger.debug("Safe launcher stopped, pid=" + procSafe.pid());
+            }
+        } catch (Exception ex) {
+        }
+        inSafe = null;
+        outSafe = null;
+        procSafe = null;
     }
 
     /**
@@ -237,6 +277,79 @@ public class ExecManagerImpl implements ExecManager
             return new ExecManagerResult(-1, exn.toString());
         }
     }
+
+
+
+     /**
+     * Executes a command and returns the result object
+     * 
+     * @param cmd
+     *        The String command to execute
+     * @param arguments
+     *        The Command argument as String
+     * @return The execution result object
+     */
+    public synchronized ExecManagerResult execCommand( String cmd , List<String> arguments) {
+        
+        
+        if (inSafe == null || outSafe == null || procSafe == null) {
+            initSafeDaemon();
+        }
+
+        try {
+
+            // Build structured JSON manually (no command string)
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("executable", cmd);
+            payload.put("args", arguments);
+
+            String json;
+            try {
+                json = serializer.toJSON(payload).toString();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to serialize exec request", e);
+            }
+
+
+            // Send JSON to launcher daemon
+            outSafe.write(json);
+            outSafe.write("\n");
+            outSafe.flush();
+
+            long t0 = System.currentTimeMillis();
+            String line = inSafe.readLine();
+            long t1 = System.currentTimeMillis();
+
+            ExecManagerResult result =
+                    ObjectMatcher.parseJson(line, ExecManagerResult.class);
+
+            if (result == null) {
+                logger.warn("Failed to parse ExecManagerResult");
+                return new ExecManagerResult(-1, "");
+            } else {
+                logger.log(this.level, "ExecManager.execCommand(" + cmd + ") = " + result.getResult() + " took " + (t1 - t0) + " ms.");
+            }
+
+            return result;
+
+        } catch (IOException exn) {
+            logger.warn("Exception during ut-exec-safe-launcher", exn);
+            initDaemon();
+            return new ExecManagerResult(-1, exn.toString());
+        } catch (JSONException | UnmarshallException exn) {
+            logger.warn("Exception during ut-exec-safe-launcher", exn);
+            initDaemon();
+            return new ExecManagerResult(-1, exn.toString());
+        }   catch (Exception ex) {
+            // command failed, launcher still healthy
+            logger.warn("Command execution failedfor ut-exec-safe-launcher", ex);
+            return new ExecManagerResult(-1, ex.toString());
+        }
+
+
+    }
+
+
 
     /**
      * Execute a command and return the exit code
@@ -458,6 +571,7 @@ public class ExecManagerImpl implements ExecManager
         try {
             logger.debug("Launching ut-exec-launcher: " + launcher);
             proc = Runtime.getRuntime().exec(launcher);
+            logger.info("UnSafe launcher started, pid=" + proc.pid());
         } catch (IOException e) {
             logger.error("Couldn't start ut-exec-launcher", e);
             return;
@@ -465,6 +579,33 @@ public class ExecManagerImpl implements ExecManager
 
         out = new OutputStreamWriter(proc.getOutputStream());
         in = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+    }
+
+
+    /**
+     * Initialize our safe input, output, and process objects we use to do our thing
+     */
+    private void initSafeDaemon()
+    {
+        if (procSafe != null && procSafe.isAlive()) {
+            return;
+        }
+        
+        closeSafe();
+
+        String launcher = System.getProperty("uvm.bin.dir") + "/ut-exec-safe-launcher";
+
+        try {
+            logger.debug("Launching ut-exec-safe-launcher: " + launcher);
+            procSafe = Runtime.getRuntime().exec(launcher);
+            logger.debug("Safe launcher started, pid=" + procSafe.pid());
+        } catch (IOException e) {
+            logger.error("Couldn't start ut-exec-safe-launcher", e);
+            return;
+        }
+
+        outSafe = new OutputStreamWriter(procSafe.getOutputStream());
+        inSafe = new BufferedReader(new InputStreamReader(procSafe.getInputStream()));
     }
 
     /**

@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
@@ -49,6 +51,8 @@ public class LocalDirectoryImpl implements LocalDirectory
     private static final String FREERADIUS_KRB5_CONFIG = "/etc/krb5.conf";
     private static final String FREERADIUS_MSCHAP_CONFIG = "/etc/freeradius/3.0/mods-enabled/mschap";
     private static final String FREERADIUS_NTLM_CONFIG = "/etc/freeradius/3.0/mods-enabled/ntlm_auth";
+    private static final String FREERADIUS_NTLM_CMD = "/usr/bin/ntlm_auth";
+    private static final String QR_ENCODE_CMD = "/usr/bin/qrencode";
 
     private final static String FILE_DISCLAIMER = "# This file is created and maintained by the Untangle Local Directory.\n# If you modify this file manually, your changes will be overwritten!\n\n";
     public static final Random random = new Random();
@@ -175,22 +179,24 @@ public class LocalDirectoryImpl implements LocalDirectory
      */
     public String testRadiusProxyLogin(String userName, String userPass, String userDomain)
     {
-        if (userName.isBlank()) {
+        if (userName == null || userName.isBlank()) {
             return "Missing Username for authentication test";
         }
 
-        if (userPass.isBlank()) {
+        if (userPass == null ||userPass.isBlank()) {
             return "Missing Password for authentication test";
         }
+        List<String> args = new ArrayList<>();
+        args.add("--request-nt-key");
 
-        String command = ("/usr/bin/ntlm_auth --request-nt-key");
         if (StringUtils.isNotEmpty(userDomain)) {
-            command += (" --domain=\"" + userDomain + "\"");
+            args.add("--domain=" + userDomain);
         }
-        command += (" --username=\"" + userName + "\"");
-        command += (" --password=\"" + userPass + "\"");
 
-        return UvmContextFactory.context().execManager().execOutput(command);
+        args.add("--username=" + userName);
+        args.add("--password=" + userPass);
+
+        return UvmContextFactory.context().execManager().execCommand(FREERADIUS_NTLM_CMD,args).getOutput();
     }
 
     /**
@@ -220,18 +226,21 @@ public class LocalDirectoryImpl implements LocalDirectory
      * @return Message text and SVG image. (String)
      */
     public String showSecretQR(String username, String issuer, String secret) {
-        String url = new StringBuilder("otpauth://totp/").append(username.toLowerCase().trim())
-        .append("@")
-        .append("openvpn".trim())
-        .append("?secret=")
-        .append(secret.toUpperCase().trim())
-        .append("&issuer=")
-        .append(issuer.trim())
-        .toString();
+        String url = "otpauth://totp/"
+        + username.toLowerCase().trim()
+        + "@openvpn"
+        + "?secret=" + secret.toUpperCase().trim()
+        + "&issuer=" + issuer.trim();
 
-        String command = new StringBuilder("/usr/bin/qrencode -s 4 -t SVG -o - ").append(url).toString();
-        String QrSvg =  UvmContextFactory.context().execManager().execOutput(command);
-        return ("Manual entry: " + secret + "<BR>" + QrSvg);
+        List<String> args = List.of(
+            "-s", "4",
+            "-t", "SVG",
+            "-o", "-",
+            url
+        );
+
+        ExecManagerResult result =UvmContextFactory.context().execManager().execCommand(QR_ENCODE_CMD,args) ;
+        return ("Manual entry: " + secret + "<BR>" + result.getOutput());
     }
 
     /**

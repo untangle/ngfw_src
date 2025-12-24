@@ -41,6 +41,7 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.util.Constants;
 
 /**
  * The OpenVPN application
@@ -701,7 +702,13 @@ public class OpenVpnAppImpl extends AppBase
      */
     public void importClientConfig(String filename)
     {
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(IMPORT_CLIENT_SCRIPT + " \"" + filename + "\"");
+        
+        //Prevent path traversal and option smuggling
+        if (filename.contains(Constants.LOG_ELLIPSIS) || filename.startsWith(Constants.HYPHEN)) {
+            logger.error("Failed to import client config invalid filename: " + filename);
+            throw new RuntimeException("Failed to import client config");
+        }
+        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(IMPORT_CLIENT_SCRIPT , List.of(filename));
 
         String sitename = "siteName-" + (new Random().nextInt(10000));
         try {
