@@ -442,17 +442,19 @@ Ext.define('Ung.config.administration.MainController', {
                 if(Util.isDestroyed(me)){
                     return;
                 }
+                if (result === false) {
+                    Util.handleException('Certificate generation failed. Please confirm the information provided is valid and try again.'.t());
+                    return;
+                }
                 Util.successToast('Certificate Authority generation successfully completed.'.t());
                 me.certDialog.close();
                 me.refreshRootCertificate();
                 me.refreshRootCertificateList();
                 me.certDialog.setLoading(false);
             }, function (ex) {
-                Util.handleException('Error during Certificate Authority generation.  Click OK to continue.'.t());
-                if(!Util.isDestroyed(me)){
-                    me.certDialog.setLoading(false);
-                    return;
-                }
+                Util.handleException('Error during Certificate Authority generation.'.t());
+            }).always(function () {
+                me.certDialog.setLoading(false);
             });
         }
 
