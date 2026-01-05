@@ -6,11 +6,14 @@ package com.untangle.app.phish_blocker;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import com.untangle.uvm.DaemonManager;
+import com.untangle.uvm.ExecManagerResultReader;
 
 import com.untangle.app.spam_blocker.SpamBlockerBaseApp;
 import com.untangle.app.spam_blocker.SpamSettings;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
@@ -26,6 +29,8 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     // before virus in the pipeline (towards the client for smtp).
     protected final PipelineConnector connector = UvmContextFactory.context().pipelineFoundry().create("phish-smtp", this, null, new PhishBlockerSmtpHandler(this), Fitting.SMTP_TOKENS, Fitting.SMTP_TOKENS, Affinity.CLIENT, 20, false);
     protected final PipelineConnector[] connectors = new PipelineConnector[] { connector };
+    final String STOP_SOCKET = "systemctl stop clamav-daemon.socket";
+    DaemonManager daemonManager = UvmContextFactory.context().daemonManager();
 
     /**
      * Constructor
@@ -174,10 +179,10 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        UvmContextFactory.context().daemonManager().incrementUsageCount("clamav-daemon");
-        UvmContextFactory.context().daemonManager().incrementUsageCount("clamav-freshclam");
-        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-daemon", 300, "clamd");
-        UvmContextFactory.context().daemonManager().enableDaemonMonitoring("clamav-freshclam", 3600, "freshclam");
+        daemonManager.incrementUsageCount(Constants.CLAMAV_DAEMON);
+        daemonManager.incrementUsageCount(Constants.FRESHCLAM);
+        daemonManager.enableDaemonMonitoring(Constants.CLAMAV_DAEMON, 300, "clamd");
+        daemonManager.enableDaemonMonitoring(Constants.FRESHCLAM, 3600, "freshclam");
         super.preStart(isPermanentTransition);
     }
 
@@ -190,10 +195,19 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     @Override
     protected void postStop(boolean isPermanentTransition)
     {
-        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-daemon");
-        //This disables socket service, it has to be disables explicitly
-        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-daemon.socket");
-        UvmContextFactory.context().daemonManager().decrementUsageCount("clamav-freshclam");
+        daemonManager.decrementUsageCount(Constants.CLAMAV_DAEMON);
+        int count = daemonManager.getUsageCount(Constants.CLAMAV_DAEMON);
+        // Disable socket service when daemon usage reaches zero
+        if(count == 0){
+            try {
+                ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(STOP_SOCKET);
+                reader.waitFor();
+                logger.info("Stopped clamav-daemon.socket because usage count reached zero");
+            } catch (Exception exn) {
+                logger.warn("Failed to run command: " + STOP_SOCKET, exn);
+            }
+        }
+        daemonManager.decrementUsageCount(Constants.FRESHCLAM);
         super.postStop(isPermanentTransition);
     }
 }
