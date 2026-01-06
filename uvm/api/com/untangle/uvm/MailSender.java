@@ -132,6 +132,8 @@ public interface MailSender
      */
     void sendMessageWithAttachments(String[] recipients, String subject, String bodyHTML, List<String> extraLocations, List<File> extras);
 
+    String sendTestMessageV2(String recipient);
+
     /**
      * Used by the UI to test saved MailSettings.  A static test email
      * is sent to the given address.

@@ -433,6 +433,18 @@ public class MailSenderImpl implements MailSender
     }
 
     /**
+     * Send a test message V2 API
+     *
+     * @param recipient
+     *        The recipient
+     * @return The send result
+     */
+    @Override
+    public String sendTestMessageV2(String recipient) {
+        return sendTestMessage(recipient);
+    }
+
+    /**
      * Send a test message
      * 
      * @param recipient

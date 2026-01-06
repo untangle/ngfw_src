@@ -90,6 +90,17 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     private String radiusProxyPassword = StringUtils.EMPTY;
     private String radiusProxyEncryptedPassword = StringUtils.EMPTY;
 
+    /**
+     * These are used to indicate which certificate is assigned to each of
+     * the services that are provided by this server. We assign apache.pem
+     * to each by default, since that is the name of the cert that is
+     * created and signed by our internal CA during the installation.
+     */
+    private String webCertificate = "apache.pem";
+    private String mailCertificate = "apache.pem";
+    private String ipsecCertificate = "apache.pem";
+    private String radiusCertificate = "apache.pem";
+
     private LanguageSettings languageSettings = null;
     private LinkedList<LocaleInfo> languagesList = null;
 
@@ -203,6 +214,15 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     public String getRadiusProxyEncryptedPassword() { return radiusProxyEncryptedPassword; }
     public void setRadiusProxyEncryptedPassword(String radiusProxyEncryptedPassword) { this.radiusProxyEncryptedPassword = radiusProxyEncryptedPassword; }
 
+    public String getWebCertificate() { return webCertificate; }
+    public void setWebCertificate(String webCertificate) { this.webCertificate = webCertificate; }
+    public String getMailCertificate() { return mailCertificate; }
+    public void setMailCertificate(String mailCertificate) { this.mailCertificate = mailCertificate; }
+    public String getIpsecCertificate() { return ipsecCertificate; }
+    public void setIpsecCertificate(String ipsecCertificate) { this.ipsecCertificate = ipsecCertificate; }
+    public String getRadiusCertificate() { return radiusCertificate; }
+    public void setRadiusCertificate(String radiusCertificate) { this.radiusCertificate = radiusCertificate; }
+
     public LanguageSettings getLanguageSettings() { return languageSettings;}
     public void setLanguageSettings(LanguageSettings languageSettings) { this.languageSettings = languageSettings; }
     public LinkedList<LocaleInfo> getLanguagesList() { return languagesList; }
@@ -264,6 +284,10 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
             systemSettings.setRadiusProxyUsername(this.radiusProxyUsername);
             systemSettings.setRadiusProxyPassword(this.radiusProxyPassword);
             systemSettings.setRadiusProxyEncryptedPassword(this.radiusProxyEncryptedPassword);
+            systemSettings.setWebCertificate(this.webCertificate);
+            systemSettings.setMailCertificate(this.mailCertificate);
+            systemSettings.setIpsecCertificate(this.ipsecCertificate);
+            systemSettings.setRadiusCertificate(this.radiusCertificate);
         }
 
         if (languageSettings != null && this.getLanguageSettings() != null) {

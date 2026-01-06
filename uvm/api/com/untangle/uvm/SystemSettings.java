@@ -246,6 +246,10 @@ public class SystemSettings implements Serializable, JSONString
         systemSettingsGeneric.setRadiusProxyUsername(this.radiusProxyUsername);
         systemSettingsGeneric.setRadiusProxyPassword(this.radiusProxyPassword);
         systemSettingsGeneric.setRadiusProxyEncryptedPassword(this.radiusProxyEncryptedPassword);
+        systemSettingsGeneric.setWebCertificate(this.webCertificate);
+        systemSettingsGeneric.setMailCertificate(this.mailCertificate);
+        systemSettingsGeneric.setIpsecCertificate(this.ipsecCertificate);
+        systemSettingsGeneric.setRadiusCertificate(this.radiusCertificate);
 
         if (networkSettings != null) {
             // Local Services Settings
