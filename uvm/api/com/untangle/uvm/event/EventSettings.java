@@ -6,11 +6,10 @@ package com.untangle.uvm.event;
 import java.util.LinkedList;
 import java.io.Serializable;
 
+import com.untangle.uvm.event.generic.EventSettingsGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-import com.untangle.uvm.event.AlertRule;
-import com.untangle.uvm.event.SyslogRule;
 /**
  * Settings for the Reports App.
  */
@@ -82,5 +81,16 @@ public class EventSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     *
+     * @return EventSettingsGeneric
+     */
+    public EventSettingsGeneric transformLegacyToGenericSettings() {
+        EventSettingsGeneric eventSettingsGen = new EventSettingsGeneric();
+        if (this.getAlertRules() != null)
+            eventSettingsGen.setAlert_rules(AlertRule.transformAlertRulesToGeneric(this.getAlertRules()));
+        return eventSettingsGen;
     }
 }

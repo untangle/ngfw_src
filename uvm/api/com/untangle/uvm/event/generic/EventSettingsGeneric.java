@@ -1,0 +1,37 @@
+/**
+ * $Id$
+ */
+package com.untangle.uvm.event.generic;
+
+import com.untangle.uvm.event.EventSettings;
+import com.untangle.uvm.generic.RuleGeneric;
+import org.json.JSONObject;
+import org.json.JSONString;
+
+import java.io.Serializable;
+import java.util.LinkedList;
+
+/**
+ * Generic Settings for the Report App Events.
+ */
+@SuppressWarnings("serial")
+public class EventSettingsGeneric implements Serializable, JSONString {
+
+    private LinkedList<EventRuleGeneric> alert_rules;
+
+    public LinkedList<EventRuleGeneric> getAlert_rules() { return alert_rules; }
+    public void setAlert_rules(LinkedList<EventRuleGeneric> alert_rules) { this.alert_rules = alert_rules; }
+
+    public String toJSONString() {
+        JSONObject jO = new JSONObject(this);
+        return jO.toString();
+    }
+
+    public void transformGenericToLegacySettings(EventSettings eventSettings) {
+        if (eventSettings == null)
+            eventSettings = new EventSettings();
+
+        if (this.getAlert_rules() != null)
+            eventSettings.setAlertRules(EventRuleGeneric.transformGenericToLegacyAlertRules(this.getAlert_rules(), eventSettings.getAlertRules()));
+    }
+}

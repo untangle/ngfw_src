@@ -3,9 +3,12 @@
  */
 package com.untangle.uvm.event;
 
+import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.uvm.event.EventRule;
+import com.untangle.uvm.event.generic.EventRuleActionGeneric;
+import com.untangle.uvm.event.generic.EventRuleConditionGeneric;
+import com.untangle.uvm.event.generic.EventRuleGeneric;
 
 /**
  * This in the implementation of a Event Rule
@@ -137,6 +140,67 @@ public class AlertRule extends EventRule
         }    	
         this.updateEventTime();
         return true;
+    }
+
+    /**
+     * Transforms a list of AlertRule objects into their generic EventRuleGeneric representation.
+     * Used for get api calls
+     * @param alertRulesList LinkedList<AlertRule>
+     * @return LinkedList<EventRuleGeneric>
+     */
+    public static LinkedList<EventRuleGeneric> transformAlertRulesToGeneric(LinkedList<AlertRule> alertRulesList) {
+        LinkedList<EventRuleGeneric> alertRulesGenList = new LinkedList<>();
+        for (AlertRule rule : alertRulesList) {
+            EventRuleGeneric alertRuleGen = AlertRule.getAlertRuleGeneric(rule);
+            alertRulesGenList.add(alertRuleGen);
+        }
+        return alertRulesGenList;
+    }
+
+    /**
+     * Transforms a AlertRule object into its generic EventRuleGeneric representation.
+     * @param rule AlertRule
+     * @return AlertRule
+     */
+    private static EventRuleGeneric getAlertRuleGeneric(AlertRule rule) {
+        // Transform enabled and ruleId
+        boolean enabled = Boolean.TRUE.equals(rule.getEnabled());
+        String ruleId = rule.getRuleId() != null ? String.valueOf(rule.getRuleId()) : null;
+
+        // Transform Action
+        EventRuleActionGeneric ruleActionGen = new EventRuleActionGeneric();
+        ruleActionGen.setType(rule.getEmail() ? EventRuleActionGeneric.Type.EMAIL : EventRuleActionGeneric.Type.EMAIL_OFF);
+        ruleActionGen.setEmailLimitFrequency(rule.getEmailLimitFrequency());
+        ruleActionGen.setEmailLimitFrequencyMinutes(rule.getEmailLimitFrequencyMinutes());
+
+        // Transform Conditions
+        LinkedList<EventRuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+        boolean first = true;
+        String className = null;
+        for (EventRuleCondition ruleCondition : rule.getConditions()) {
+            if (first) {
+                className = ruleCondition.getFieldValue();
+                first = false;
+            } else {
+                EventRuleConditionGeneric ruleConditionGen = new EventRuleConditionGeneric(ruleCondition.getComparator(), ruleCondition.getField(), ruleCondition.getFieldValue());
+                ruleConditionGenList.add(ruleConditionGen);
+            }
+        }
+
+        // Create Generic Rule
+        EventRuleGeneric filterRulesGen = new EventRuleGeneric(enabled, rule.getDescription(), ruleId);
+        // Set Actions
+        filterRulesGen.setLog(rule.getLog());
+        filterRulesGen.setAction(ruleActionGen);
+        // Set Conditions
+        filterRulesGen.setClassName(className);
+        filterRulesGen.setThresholdEnabled(rule.getThresholdEnabled());
+        filterRulesGen.setThresholdGroupingField(rule.getThresholdGroupingField());
+        filterRulesGen.setThresholdLimit(rule.getThresholdLimit());
+        filterRulesGen.setThresholdTimeframeSec(rule.getThresholdTimeframeSec());
+        filterRulesGen.setConditions(ruleConditionGenList);
+
+        return filterRulesGen;
     }
 
 }
