@@ -84,7 +84,8 @@ public class EventSettings implements Serializable, JSONString
     }
 
     /**
-     *
+     * Transforms legacy Event Settings to Generic v2 format
+     * Used for Vue UI
      * @return EventSettingsGeneric
      */
     public EventSettingsGeneric transformLegacyToGenericSettings() {
