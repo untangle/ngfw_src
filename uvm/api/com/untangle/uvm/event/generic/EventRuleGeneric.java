@@ -146,6 +146,10 @@ public class EventRuleGeneric implements JSONString, Serializable {
             ruleConditions.add(eventRuleCondition);
         }
         alertRule.setConditions(ruleConditions);
+        alertRule.setThresholdEnabled(ruleGeneric.getThresholdEnabled());
+        alertRule.setThresholdLimit(ruleGeneric.getThresholdLimit());
+        alertRule.setThresholdTimeframeSec(ruleGeneric.getThresholdTimeframeSec());
+        alertRule.setThresholdGroupingField(ruleGeneric.getThresholdGroupingField());
         return alertRule;
     }
 }
