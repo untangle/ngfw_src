@@ -844,6 +844,15 @@ public class EventManagerImpl implements EventManager
     }
 
     /**
+     * Return default email settings values for v2 API.
+     * @return Map of string mapping email values to their defaults.
+     */
+    public Map<String, String> defaultEmailSettingsV2()
+    {
+        return defaultEmailSettings();
+    }
+
+    /**
      * Return default email settings values.
      * @return Map of string mapping email values to their defaults.
      */

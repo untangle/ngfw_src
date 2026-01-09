@@ -18,10 +18,21 @@ import java.util.LinkedList;
 public class EventSettingsGeneric implements Serializable, JSONString {
 
     private LinkedList<EventRuleGeneric> alert_rules;
+    private String emailSubject = null;
+    private String emailBody = null;
+    private boolean emailConvert = true;
+
 
     public LinkedList<EventRuleGeneric> getAlert_rules() { return alert_rules; }
     public void setAlert_rules(LinkedList<EventRuleGeneric> alert_rules) { this.alert_rules = alert_rules; }
 
+    public String getEmailSubject() { return emailSubject; }
+    public void setEmailSubject(String emailSubject) { this.emailSubject = emailSubject; }
+    public String getEmailBody() { return emailBody; }
+    public void setEmailBody(String emailBody) { this.emailBody = emailBody; }
+    public boolean isEmailConvert() { return emailConvert; }
+    public void setEmailConvert(boolean emailConvert) { this.emailConvert = emailConvert; }
+       
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
@@ -33,5 +44,9 @@ public class EventSettingsGeneric implements Serializable, JSONString {
 
         if (this.getAlert_rules() != null)
             eventSettings.setAlertRules(EventRuleGeneric.transformGenericToLegacyAlertRules(this.getAlert_rules(), eventSettings.getAlertRules()));
+        
+        eventSettings.setEmailSubject(this.getEmailSubject());
+        eventSettings.setEmailBody(this.getEmailBody());
+        eventSettings.setEmailConvert(this.isEmailConvert());
     }
 }
