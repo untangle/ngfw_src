@@ -11,38 +11,32 @@ import java.util.Collection;
 import java.util.List;
 import java.util.HashMap;
 
-import com.maxmind.geoip2.record.Subdivision;
-import com.maxmind.geoip2.record.Location;
+import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.Country;
-import com.maxmind.geoip2.record.Postal;
-import com.maxmind.geoip2.record.City;
-import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.db.CHMCache;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import java.util.Optional;
-import com.untangle.uvm.GeographyManager;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.Pulse;
 
 /**
  * The Geography Manager provides location information for IP addresses using
- * the free MaxMind GeoIP2 city database.
+ * the free MaxMind GeoIP2 country database.
  */
 public class GeographyManagerImpl implements GeographyManager
 {
     private final Logger logger = LogManager.getLogger(getClass());
 
-    private final static String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.mmdb";
-    private final static String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-City.previous";
-    private final static String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-City.update";
-    private final static String LOCAL_COUNTRY_CODE = "XL";
-    private final static String UNKNOWN_COUNTRY_CODE = "XU";
+    private static final String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-Country.mmdb";
+    private static final String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-Country.previous";
+    private static final String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-Country.update";
+    public static final String LOCAL_COUNTRY_CODE = "XL";
+    public static final String UNKNOWN_COUNTRY_CODE = "XU";
 
     // we check for the update file once per hour which is more than enough
-    private final static long DATABASE_CHECK_FREQUENCY = (60 * 60 * 1000L);
+    private static final long DATABASE_CHECK_FREQUENCY = (60 * 60 * 1000L);
 
     private DatabaseReader databaseReader = null;
     private Pulse databaseChecker = null;
@@ -68,11 +62,12 @@ public class GeographyManagerImpl implements GeographyManager
      *        The address
      * @return The country name
      */
+    @Override
     public String getCountryName(String netAddress)
     {
         if (!initFlag) return (null);
 
-        CityResponse response = getCityObject(netAddress);
+        CountryResponse response = getCountryObject(netAddress);
         if (response == null) return (null);
         Country country = response.getCountry();
         if (country == null) return (null);
@@ -86,11 +81,12 @@ public class GeographyManagerImpl implements GeographyManager
      *        The address
      * @return The country code
      */
+    @Override
     public String getCountryCode(String netAddress)
     {
         if (!initFlag) return (null);
 
-        CityResponse response = getCityObject(netAddress);
+        CountryResponse response = getCountryObject(netAddress);
         if (response == null) return UNKNOWN_COUNTRY_CODE;
         Country country = response.getCountry();
         if (country == null) return UNKNOWN_COUNTRY_CODE;
@@ -100,125 +96,22 @@ public class GeographyManagerImpl implements GeographyManager
     }
 
     /**
-     * Get the subdivision name for an IP address
-     * 
-     * @param netAddress
-     *        The address
-     * @return The subdivision name
-     */
-    public String getSubdivisionName(String netAddress)
-    {
-        if (!initFlag) return (null);
-
-        CityResponse response = getCityObject(netAddress);
-        if (response == null) return (null);
-        Subdivision subdivision = response.getMostSpecificSubdivision();
-        if (subdivision == null) return (null);
-        return (subdivision.getName());
-    }
-
-    /**
-     * Get the subdivision code for an IP address
-     * 
-     * @param netAddress
-     *        The address
-     * @return The subdivision code
-     */
-    public String getSubdivisionCode(String netAddress)
-    {
-        if (!initFlag) return (null);
-
-        CityResponse response = getCityObject(netAddress);
-        if (response == null) return (null);
-        Subdivision subdivision = response.getMostSpecificSubdivision();
-        if (subdivision == null) return (null);
-        return (subdivision.getIsoCode());
-    }
-
-    /**
-     * Get the city name for an IP address
-     * 
-     * @param netAddress
-     *        The address
-     * @return The city name
-     */
-    public String getCityName(String netAddress)
-    {
-        if (!initFlag) return (null);
-
-        CityResponse response = getCityObject(netAddress);
-        if (response == null) return (null);
-        City city = response.getCity();
-        if (city == null) return (null);
-        return (city.getName());
-    }
-
-    /**
-     * Get the postal code for an IP address
-     * 
-     * @param netAddress
-     *        The address
-     * @return The postal code
-     */
-    public String getPostalCode(String netAddress)
-    {
-        if (!initFlag) return (null);
-
-        CityResponse response = getCityObject(netAddress);
-        if (response == null) return (null);
-        Postal postal = response.getPostal();
-        if (postal == null) return (null);
-        return (postal.getCode());
-    }
-
-    /**
-     * Get the coordinates for an IP address
-     * 
-     * @param netAddress
-     *        The address
-     * @return The coordinates
-     */
-    public Coordinates getCoordinates(String netAddress)
-    {
-        if (!initFlag) return (null);
-
-        CityResponse response = getCityObject(netAddress);
-        if (response == null) return (null);
-
-        Location location = response.getLocation();
-        Country country = response.getCountry();
-
-        Coordinates coordinates = new Coordinates();
-
-        if (country != null) {
-            coordinates.country = country.getIsoCode();
-        }
-
-        if (location != null) {
-            if (location.getLatitude() != null) coordinates.latitude = location.getLatitude().doubleValue();
-            if (location.getLongitude() != null) coordinates.longitude = location.getLongitude().doubleValue();
-        }
-
-        return (coordinates);
-    }
-
-    /**
-     * Private function called by the public functions to get the city object
-     * associated with an IP address. The city object holds all of the fields
+     * Private function called by the public functions to get the country object
+     * associated with an IP address. The country object holds all the fields
      * that we can return.
-     * 
+     *
      * @param netAddress
      *        The address
      * @return The corresponding city object, or null if no match
      */
-    private CityResponse getCityObject(String netAddress)
+    private CountryResponse getCountryObject(String netAddress)
     {
         try {
             InetAddress inetAddress = InetAddress.getByName(netAddress);
-            Optional<CityResponse> response = databaseReader.tryCity(inetAddress);
+            Optional<CountryResponse> response = databaseReader.tryCountry(inetAddress);
             if (response.isPresent() ) return (response.get());
         } catch (Exception exn) {
-            logger.debug("Exception getting database object for " + netAddress, exn);
+            logger.debug("Exception getting database object for {}", netAddress, exn);
         }
         return (null);
     }
@@ -235,7 +128,7 @@ public class GeographyManagerImpl implements GeographyManager
             String databaseType = databaseReader.getMetadata().getDatabaseType();
             Date databaseDate = databaseReader.getMetadata().getBuildDate();
             initFlag = true;
-            logger.info("Successfully loaded " + databaseType + " database created " + databaseDate.toString());
+            logger.info("Successfully loaded {} database created {}", databaseType, databaseDate);
         } catch (Exception exn) {
             logger.warn("Exception initializing geography manager database", exn);
         }
@@ -248,6 +141,7 @@ public class GeographyManagerImpl implements GeographyManager
      *        True to load the new database, false to check and download only.
      * @return True if an update was found, otherwise false
      */
+    @Override
     public boolean checkForDatabaseUpdate(boolean loadFlag)
     {
         // check for update file and return false if not found
@@ -289,38 +183,25 @@ public class GeographyManagerImpl implements GeographyManager
     {
         List<SessionMonitorEntry> sessions = UvmContextFactory.context().sessionMonitor().getMergedSessions();
 
-        HashMap<Double, JSONObject> coordinatesMap = new HashMap<>();
+        HashMap<String, JSONObject> coordinatesMap = new HashMap<>();
 
         for (SessionMonitorEntry session : sessions) {
-            Double coordinatesKey = null;
-            Double latitude = null;
-            Double longitude = null;
             String country = null;
             Double bps;
 
-            if (coordinatesKey == null && session.getClientLatitude() != null && session.getClientLongitude() != null) {
-                latitude = session.getClientLatitude();
-                longitude = session.getClientLongitude();
-                country = session.getClientCountry();
-                coordinatesKey = getCoordinatesKey(latitude, longitude);
-            }
-            if (coordinatesKey == null && session.getServerLatitude() != null && session.getServerLongitude() != null) {
-                latitude = session.getServerLatitude();
-                longitude = session.getServerLongitude();
-                country = session.getServerCountry();
-                coordinatesKey = getCoordinatesKey(latitude, longitude);
-            }
-            // if this session has no coordinates (on either client or server, just skip it)
-            if (coordinatesKey == null) continue;
+            country = session.getClientCountry() != null ? session.getClientCountry() : session.getServerCountry();
+
+            // if this session has no country (on either client or server, just skip it)
+            if (country == null) continue;
             
             if (session.getTotalBps() == null) bps = 0.0;
-            else bps = session.getTotalBps().doubleValue();
-            JSONObject value = coordinatesMap.get(coordinatesKey);
+            else bps = session.getTotalBps();
+            JSONObject value = coordinatesMap.get(country);
 
-            // if this is no existing entry for this lat & longitutde, create one
+            // if this is no existing entry for this country, create one
             if (value == null) {
-                JSONObject newValue = createCoordinatesValue(latitude, longitude, country, 1, bps);
-                coordinatesMap.put(coordinatesKey, newValue);
+                JSONObject newValue = createCoordinatesValue(country, 1, bps);
+                coordinatesMap.put(country, newValue);
             }
             // if one exists, just increment the count and add to the bps value
             else {
@@ -336,18 +217,13 @@ public class GeographyManagerImpl implements GeographyManager
         }
 
         Collection<JSONObject> values = coordinatesMap.values();
-        JSONObject[] jsonValues = values.toArray(new JSONObject[0]);
-        return jsonValues;
+        return values.toArray(new JSONObject[0]);
     }
 
     /**
      * Private function called to create a JSON object holding GeoIP coordinates
      * and other location information.
-     * 
-     * @param latitude
-     *        The latitude
-     * @param longitude
-     *        The longitude
+     *
      * @param country
      *        The country
      * @param sessionCount
@@ -356,13 +232,11 @@ public class GeographyManagerImpl implements GeographyManager
      *        The amount of traffic
      * @return The JSON object
      */
-    private JSONObject createCoordinatesValue(Double latitude, Double longitude, String country, int sessionCount, Double bps)
+    private JSONObject createCoordinatesValue(String country, int sessionCount, Double bps)
     {
         JSONObject json = new JSONObject();
 
         try {
-            json.put("latitude", latitude);
-            json.put("longitude", longitude);
             if (country != null) json.put("country", country);
             json.put("sessionCount", sessionCount);
             json.put("bps", bps);
@@ -372,20 +246,6 @@ public class GeographyManagerImpl implements GeographyManager
         }
 
         return json;
-    }
-
-    /**
-     * Private function to combine latitude and longitude into a key value
-     * 
-     * @param latitude
-     *        The latitude
-     * @param longitude
-     *        The longitude
-     * @return The key value
-     */
-    private Double getCoordinatesKey(Double latitude, Double longitude)
-    {
-        return latitude + 1024.0 * longitude;
     }
 
     /**
