@@ -37,4 +37,6 @@ public interface EventManager
 
     public Map<String,String> defaultEmailSettings();
 
+    public Map<String,String> defaultEmailSettingsV2();
+
 }
