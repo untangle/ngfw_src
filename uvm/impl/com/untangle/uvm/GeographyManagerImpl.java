@@ -189,7 +189,8 @@ public class GeographyManagerImpl implements GeographyManager
             String country = null;
             Double bps;
 
-            country = session.getClientCountry() != null ? session.getClientCountry() : session.getServerCountry();
+            // Give preference to server country
+            country = session.getServerCountry() != null ? session.getServerCountry() : session.getClientCountry();
 
             // if this session has no country (on either client or server, just skip it)
             if (country == null) continue;

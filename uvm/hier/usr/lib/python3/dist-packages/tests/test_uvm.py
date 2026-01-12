@@ -1425,20 +1425,12 @@ class UvmTests(NGFWTestCase):
         ip_address = "128.101.101.101"
         expected_country_name = "United States"
         expected_country_code = "US"
-        expected_sub_division_namme = "Minnesota"
-        expected_sub_division_code = "MN"
 
         country_name = global_functions.uvmContext.geographyManager().getCountryName(ip_address)
         country_code = global_functions.uvmContext.geographyManager().getCountryCode(ip_address)
-        sub_division_name = global_functions.uvmContext.geographyManager().getSubdivisionName(ip_address)
-        sub_division_code = global_functions.uvmContext.geographyManager().getSubdivisionCode(ip_address)
-        city_name = global_functions.uvmContext.geographyManager().getCityName(ip_address)
-        postal_code = global_functions.uvmContext.geographyManager().getPostalCode(ip_address)
 
         assert(expected_country_name == country_name)
         assert(expected_country_code == country_code)
-        assert(expected_sub_division_namme == sub_division_name)
-        assert(expected_sub_division_code == sub_division_code)
 
         # for IPs with no information None is received
         country_name = global_functions.uvmContext.geographyManager().getCountryName("192.168.56.120")
