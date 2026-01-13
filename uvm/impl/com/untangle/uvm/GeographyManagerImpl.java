@@ -23,15 +23,15 @@ import com.untangle.uvm.util.Pulse;
 
 /**
  * The Geography Manager provides location information for IP addresses using
- * the free MaxMind GeoIP2 country database.
+ * the free Geo country database.
  */
 public class GeographyManagerImpl implements GeographyManager
 {
     private final Logger logger = LogManager.getLogger(getClass());
 
-    private static final String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoLite2-Country.mmdb";
-    private static final String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoLite2-Country.previous";
-    private static final String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoLite2-Country.update";
+    private static final String GEOIP_DATABASE_FILE = "/var/cache/untangle-geoip/GeoCountry.mmdb";
+    private static final String GEOIP_PREVIOUS_FILE = "/var/cache/untangle-geoip/GeoCountry.previous";
+    private static final String GEOIP_UPDATE_FILE = "/var/cache/untangle-geoip/GeoCountry.update";
     public static final String LOCAL_COUNTRY_CODE = "XL";
     public static final String UNKNOWN_COUNTRY_CODE = "XU";
 
