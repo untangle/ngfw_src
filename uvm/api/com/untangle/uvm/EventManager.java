@@ -6,6 +6,7 @@ package com.untangle.uvm;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.AlertRule;
+import com.untangle.uvm.event.generic.EventSettingsGeneric;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,9 +20,13 @@ public interface EventManager
 {
     public EventSettings getSettings();
 
+    EventSettingsGeneric getSettingsV2();
+
     public JSONObject getClassFields();
 
     public void setSettings( EventSettings newSettings );
+
+    public void setSettingsV2( EventSettingsGeneric newSettings);
 
     public void logEvent( LogEvent evt );
 

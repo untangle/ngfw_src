@@ -22,6 +22,10 @@ public class EventSettingsGeneric implements Serializable, JSONString {
     private String emailBody = null;
     private boolean emailConvert = true;
 
+    private boolean syslogEnabled = false;
+    private String syslogHost;
+    private int syslogPort = 514;
+    private String syslogProtocol = "UDP";
 
     public LinkedList<EventRuleGeneric> getAlert_rules() { return alert_rules; }
     public void setAlert_rules(LinkedList<EventRuleGeneric> alert_rules) { this.alert_rules = alert_rules; }
@@ -32,7 +36,19 @@ public class EventSettingsGeneric implements Serializable, JSONString {
     public void setEmailBody(String emailBody) { this.emailBody = emailBody; }
     public boolean isEmailConvert() { return emailConvert; }
     public void setEmailConvert(boolean emailConvert) { this.emailConvert = emailConvert; }
-       
+    
+    public boolean isSyslogEnabled() { return syslogEnabled; }
+    public void setSyslogEnabled(boolean syslogEnabled) { this.syslogEnabled = syslogEnabled; }
+     
+    public String getSyslogHost() { return syslogHost; }
+    public void setSyslogHost(String syslogHost) { this.syslogHost = syslogHost; }
+
+    public int getSyslogPort() { return syslogPort; }
+    public void setSyslogPort(int syslogPort) { this.syslogPort = syslogPort; }
+
+    public String getSyslogProtocol() { return syslogProtocol; }
+    public void setSyslogProtocol(String syslogProtocol) { this.syslogProtocol = syslogProtocol; }
+
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
@@ -53,5 +69,9 @@ public class EventSettingsGeneric implements Serializable, JSONString {
         eventSettings.setEmailSubject(this.getEmailSubject());
         eventSettings.setEmailBody(this.getEmailBody());
         eventSettings.setEmailConvert(this.isEmailConvert());
+        eventSettings.setSyslogEnabled(syslogEnabled);
+        eventSettings.setSyslogHost(syslogHost);
+        eventSettings.setSyslogPort(syslogPort);
+        eventSettings.setSyslogProtocol(syslogProtocol);
     }
 }

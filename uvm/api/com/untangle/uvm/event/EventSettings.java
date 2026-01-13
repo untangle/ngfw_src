@@ -95,6 +95,11 @@ public class EventSettings implements Serializable, JSONString
         eventSettingsGen.setEmailBody(emailBody);
         eventSettingsGen.setEmailSubject(emailSubject);
         eventSettingsGen.setEmailConvert(emailConvert);
+        eventSettingsGen.setSyslogEnabled(syslogEnabled);
+        eventSettingsGen.setSyslogHost(syslogHost);
+        eventSettingsGen.setSyslogPort(syslogPort);
+        eventSettingsGen.setSyslogProtocol(syslogProtocol);
+
         return eventSettingsGen;
     }
 }
