@@ -4,6 +4,7 @@
 package com.untangle.uvm.event.generic;
 
 import com.untangle.uvm.event.EventSettings;
+import com.untangle.uvm.event.SyslogServer;
 import com.untangle.uvm.generic.RuleGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -18,6 +19,8 @@ import java.util.LinkedList;
 public class EventSettingsGeneric implements Serializable, JSONString {
 
     private LinkedList<EventRuleGeneric> alert_rules;
+    private LinkedList<SyslogServer> syslogServers = new LinkedList<>();
+
     private String emailSubject = null;
     private String emailBody = null;
     private boolean emailConvert = true;
@@ -29,6 +32,9 @@ public class EventSettingsGeneric implements Serializable, JSONString {
 
     public LinkedList<EventRuleGeneric> getAlert_rules() { return alert_rules; }
     public void setAlert_rules(LinkedList<EventRuleGeneric> alert_rules) { this.alert_rules = alert_rules; }
+
+    public LinkedList<SyslogServer> getSyslogServers() { return this.syslogServers; }
+    public void setSyslogServers( LinkedList<SyslogServer> newValue ) { this.syslogServers = newValue; } 
 
     public String getEmailSubject() { return emailSubject; }
     public void setEmailSubject(String emailSubject) { this.emailSubject = emailSubject; }
@@ -66,6 +72,9 @@ public class EventSettingsGeneric implements Serializable, JSONString {
         if (this.getAlert_rules() != null)
             eventSettings.setAlertRules(EventRuleGeneric.transformGenericToLegacyAlertRules(this.getAlert_rules(), eventSettings.getAlertRules()));
         
+        if(this.getSyslogServers() != null)
+            eventSettings.setSyslogServers(this.syslogServers);
+
         eventSettings.setEmailSubject(this.getEmailSubject());
         eventSettings.setEmailBody(this.getEmailBody());
         eventSettings.setEmailConvert(this.isEmailConvert());
