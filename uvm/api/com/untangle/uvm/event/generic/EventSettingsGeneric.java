@@ -19,6 +19,7 @@ import java.util.LinkedList;
 public class EventSettingsGeneric implements Serializable, JSONString {
 
     private LinkedList<EventRuleGeneric> alert_rules;
+    private LinkedList<EventRuleGeneric> trigger_rules;
     private LinkedList<SyslogServer> syslogServers = new LinkedList<>();
 
     private String emailSubject = null;
@@ -32,6 +33,8 @@ public class EventSettingsGeneric implements Serializable, JSONString {
 
     public LinkedList<EventRuleGeneric> getAlert_rules() { return alert_rules; }
     public void setAlert_rules(LinkedList<EventRuleGeneric> alert_rules) { this.alert_rules = alert_rules; }
+    public LinkedList<EventRuleGeneric> getTrigger_rules() { return trigger_rules; }
+    public void setTrigger_rules(LinkedList<EventRuleGeneric> trigger_rules) { this.trigger_rules = trigger_rules; }
 
     public LinkedList<SyslogServer> getSyslogServers() { return this.syslogServers; }
     public void setSyslogServers( LinkedList<SyslogServer> newValue ) { this.syslogServers = newValue; } 
@@ -71,6 +74,8 @@ public class EventSettingsGeneric implements Serializable, JSONString {
 
         if (this.getAlert_rules() != null)
             eventSettings.setAlertRules(EventRuleGeneric.transformGenericToLegacyAlertRules(this.getAlert_rules(), eventSettings.getAlertRules()));
+        if (this.getTrigger_rules() != null)
+            eventSettings.setTriggerRules(EventRuleGeneric.transformGenericToLegacyTriggerRules(this.getTrigger_rules(), eventSettings.getTriggerRules()));
         
         if(this.getSyslogServers() != null)
             eventSettings.setSyslogServers(this.syslogServers);

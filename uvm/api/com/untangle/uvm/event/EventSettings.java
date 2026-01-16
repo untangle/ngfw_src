@@ -92,6 +92,8 @@ public class EventSettings implements Serializable, JSONString
         EventSettingsGeneric eventSettingsGen = new EventSettingsGeneric();
         if (this.getAlertRules() != null)
             eventSettingsGen.setAlert_rules(AlertRule.transformAlertRulesToGeneric(this.getAlertRules()));
+        if (this.getTriggerRules() != null)
+            eventSettingsGen.setTrigger_rules(TriggerRule.transformTriggerRulesToGeneric(this.getTriggerRules()));
 
         if(this.getSyslogServers() != null)
             eventSettingsGen.setSyslogServers(this.syslogServers);
