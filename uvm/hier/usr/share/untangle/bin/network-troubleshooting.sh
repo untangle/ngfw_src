@@ -15,15 +15,8 @@
 run_connectivity(){
     echo -n 'Testing DNS ... '
 
-    success="Successful"
-    CMD="dig ${DNS_TEST_HOST} > /dev/null 2>&1"
-    if [ $DEBUG -eq 1 ] ; then
-        echo
-        echo "CMD=$CMD"
-        echo
-    fi
-    eval $CMD
-    if [ "$?" = "0" ]; then
+    local success="Successful"
+    if dig "${DNS_TEST_HOST}" > /dev/null 2>&1 ; then
         echo "OK"
     else
         echo "FAILED"
@@ -31,21 +24,15 @@ run_connectivity(){
     fi
 
     echo -n "Testing TCP Connectivity ... "
-    CMD="echo 'GET /' | netcat -q 0 -w 15 ${TCP_TEST_HOST} 80 > /dev/null 2>&1"
-    if [ $DEBUG -eq 1 ] ; then
-        echo
-        echo "CMD=$CMD"
-        echo
-    fi
-    eval $CMD
-    if [ "$?" = "0" ]; then 
+    # Using an array for command to avoid shell splitting/injection
+    local netcat_cmd=("netcat" "-q" "0" "-w" "15" "${TCP_TEST_HOST}" "80")
+    if echo 'GET /' | "${netcat_cmd[@]}" > /dev/null 2>&1 ; then
         echo "OK"
     else
         echo "FAILED"
         success="Failure"
     fi
     echo "Test ${success}!"
-
 }
 
 # run_reachable
@@ -55,13 +42,8 @@ run_connectivity(){
 # Environment variables:
 # HOST: IP address or domain name (e.g.,8.8.8.8)
 run_reachable(){
-    CMD="ping -c 5 ${HOST}"
-    if [ $DEBUG -eq 1 ] ; then
-        echo
-        echo "CMD=$CMD"
-        echo
-    fi
-    eval $CMD
+    # Execute ping directly with quoted variable
+    ping -c 5 "${HOST}"
 }
 
 # run_dns
@@ -71,19 +53,12 @@ run_reachable(){
 # Environment variables:
 # HOST: domain name to lookup (e.g.,www.google.com)
 run_dns(){
-    CMD="host ${HOST}"
-    if [ $DEBUG -eq 1 ] ; then
-        echo
-        echo "CMD=$CMD"
-        echo
-    fi
-    eval $CMD
-    if [ "$?" = "0" ]; then 
+    # Execute host directly with quoted variable
+    if host "${HOST}" ; then
         echo "Test Successful"
     else
         echo "Test Failure"
     fi
-
 }
 
 # run_connection
@@ -94,14 +69,9 @@ run_dns(){
 # HOST: domain name to lookup (e.g.,www.google.com)
 # HOST_PORT: port (e.g.,80)
 run_connection(){
-    CMD="echo 1 | netcat -q 0 -v -w 15 ${HOST} ${HOST_PORT}"
-    if [ $DEBUG -eq 1 ] ; then
-        echo
-        echo "CMD=$CMD"
-        echo
-    fi
-    eval $CMD
-    if [ "$?" = "0" ]; then
+    # Using an array for command to avoid shell splitting/injection
+    local netcat_cmd=("netcat" "-q" "0" "-v" "-w" "15" "${HOST}" "${HOST_PORT}")
+    if echo 1 | "${netcat_cmd[@]}" ; then
         echo "Test Successful"
     else
         echo "Test Failure"
@@ -116,14 +86,8 @@ run_connection(){
 # HOST: domain name to lookup (e.g.,www.google.com)
 # PROTOCOL: UDP/TCP/ICMP
 run_path(){
-    CMD="traceroute -${PROTOCOL} ${HOST}"
-    if [ $DEBUG -eq 1 ] ; then
-        echo
-        echo "CMD=$CMD"
-        echo
-    fi
-    eval $CMD
-    if [ "$?" = "0" ]; then
+    # Execute traceroute directly with quoted variables
+    if traceroute "-${PROTOCOL}" "${HOST}" ; then
         echo "Test Successful"
     else
         echo "Test Failure"
@@ -137,13 +101,13 @@ run_path(){
 # Environment variables:
 # URL: URL to download (e.g.,http://cachefly.cachefly.net/5mb.test)
 run_download(){
-    CMD="wget --output-document=/dev/null ${URL}"
     if [ $DEBUG -eq 1 ] ; then
         echo
-        echo "CMD=$CMD"
+        echo "CMD=wget --output-document=/dev/null \"${URL}\""
         echo
     fi
-    eval $CMD
+    # Execute wget directly with quoted URL to prevent command injection
+    wget --output-document=/dev/null "${URL}"
 }
 
 # run_trace
@@ -158,49 +122,58 @@ run_download(){
 # HOST_PORT: Basic port
 # INTERFACE: Basic interface
 # FILENAME: Filename (no path) to use:
-run_trace(){
 
+# Function to sanitize filename, remove path traversal elements
+sanitize_filename() {
+    local filename="$1"
+    # Remove any directory traversal sequences
+    filename="${filename//\.\.\//}" # Replace occurrences of "../"
+    filename="${filename//\.\//}"   # Replace occurrences of "./"
+    # Ensure it's just a basename to prevent creating files in subdirectories
+    filename=$(basename "${filename}")
+    echo "${filename}"
+}
+
+run_trace(){
     if [ "${TIMEOUT}" = "" ] ; then
         TIMEOUT=5
     fi
 
     # Always include for all traces
-    TRACE_FIXED_OPTIONS="-U -l -v"
-
+    local TRACE_FIXED_OPTIONS="-U -l -v"
+    local full_trace_arguments=""
+    
     if [ "${MODE}" == "advanced" ] ; then
-        TRACE_ARGUMENTS="$TRACE_FIXED_OPTIONS ${TRACE_ARGUMENTS}"
+        full_trace_arguments="${TRACE_FIXED_OPTIONS} ${TRACE_ARGUMENTS}"
     else
-        TRACE_OVERRIDE_OPTIONS="-n -s 65535"
+        local TRACE_OVERRIDE_OPTIONS="-n -s 65535"
         if [ "${INTERFACE}" != "" ] && [ "${INTERFACE}" != "null" ] ; then
             TRACE_OVERRIDE_OPTIONS+=" -i ${INTERFACE}"
         fi
-        TRACE_OPTIONS="$TRACE_FIXED_OPTIONS $TRACE_OVERRIDE_OPTIONS"
-        TRACE_ARGUMENTS=${TRACE_OPTIONS:-}
-        TRACE_ARGUMENTS_LIST=()
+        
+        full_trace_arguments="${TRACE_FIXED_OPTIONS} ${TRACE_OVERRIDE_OPTIONS}"
+        
+        local TRACE_ARGUMENTS_LIST=()
+        # Safely quote HOST and HOST_PORT for tcpdump filter syntax
         if [ "${HOST}" != "" ] && [ "${HOST_PORT}" != "null" ] && [ "${HOST}" != "any" ] ; then
-            TRACE_ARGUMENTS_LIST+=("host ${HOST}")
+            TRACE_ARGUMENTS_LIST+=("host $(printf %q "${HOST}")")
         fi
         if [ "${HOST_PORT}" != "" ] && [ "${HOST_PORT}" != "null" ] ; then
-            TRACE_ARGUMENTS_LIST+=("port ${HOST_PORT}")
+            TRACE_ARGUMENTS_LIST+=("port $(printf %q "${HOST_PORT}")")
         fi
-        if [ ${#TRACE_ARGUMENTS_LIST[@]} -gt 0 ] ; then
-            SEPARATOR=" and"
-            TRACE_ARGUMENTS_LIST_EXPANDED=$(printf "$SEPARATOR %s" "${TRACE_ARGUMENTS_LIST[@]}")
-            TRACE_ARGUMENTS_LIST_EXPANDED=${TRACE_ARGUMENTS_LIST_EXPANDED:${#SEPARATOR}}
-            TRACE_ARGUMENTS+=$TRACE_ARGUMENTS_LIST_EXPANDED
+        
+        if [ ${#TRACE_ARGUMENTS_LIST[@]} -gt 0 ]; then
+            local IFS=" and " # Internal Field Separator for joining array elements
+            full_trace_arguments+=" ${TRACE_ARGUMENTS_LIST[*]}"
         fi
     fi
 
-    FILENAME="/tmp/network-tests/${FILENAME}"
+    # Sanitize FILENAME to prevent path traversal
+    local SANITIZED_FILENAME=$(sanitize_filename "${FILENAME}")
+    local FULL_PATH_FILENAME="/tmp/network-tests/${SANITIZED_FILENAME}"
 
-    CMD="/usr/share/untangle/bin/ut-network-tests-packet.py --timeout ${TIMEOUT} --filename $FILENAME --arguments '$TRACE_ARGUMENTS'"
-    if [ $DEBUG -eq 1 ] ; then
-        echo
-        echo "CMD=$CMD"
-        echo
-    fi
-    eval $CMD
-
+    # Assuming ut-network-tests-packet.py correctly handles the 'arguments' string for tcpdump.
+    /usr/share/untangle/bin/ut-network-tests-packet.py --timeout "${TIMEOUT}" --filename "${FULL_PATH_FILENAME}" --arguments "${full_trace_arguments}"
 }
 
 $1 "$@"

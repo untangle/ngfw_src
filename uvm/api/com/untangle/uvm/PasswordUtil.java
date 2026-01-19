@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import com.untangle.uvm.UvmContextFactory;
@@ -26,8 +28,8 @@ public class PasswordUtil
 
     private final static Logger logger = LogManager.getLogger(PasswordUtil.class);
 
-    private final static String passwordEncryptionCmd = "/usr/bin/password-manager -e ";
-    private final static String passwordDecryptionCmd = "/usr/bin/password-manager -d ";
+    private final static String passwordManager = "/usr/bin/password-manager";
+    private static final String EMPTY_PASSWORD_SENTINEL = "__EMPTY__";
     
     
     /**  ************************* NOTE *************************
@@ -53,12 +55,11 @@ public class PasswordUtil
                 throw new IllegalArgumentException("password can not be null.");
             }
             //paasword encryption should work for empty string too as we allow empty passwords
-            if(password.isEmpty() || password.isBlank()){
-                //set empty string as " " so command can execute for empty and blank password too
-                password = Constants.EMPTY_STRING;
+            if(password.isEmpty()){
+                //set empty string as EMPTY_PASSWORD_SENTINEL so process run sccessfully
+                password = EMPTY_PASSWORD_SENTINEL;
             }
-            String command = passwordEncryptionCmd + password;
-            return execCmd(command);
+            return execCmdProcessBuilder(passwordManager, "-e", password);
         } catch (IllegalArgumentException | IllegalStateException e) {
             logger.error("Password can not be null or encryption output is invalid.", e);
         } 
@@ -80,8 +81,12 @@ public class PasswordUtil
             if (StringUtils.isBlank(encryptedPassword)) {
                 throw new IllegalArgumentException("Encrypted password can not be null or empty.");
             }
-            String command = passwordDecryptionCmd + encryptedPassword;
-            return execCmd(command);                
+            String decrypted =  execCmdProcessBuilder(passwordManager, "-d", encryptedPassword);
+            //return empty string for EMPTY_PASSWORD_SENTINEL
+            if (EMPTY_PASSWORD_SENTINEL.equals(decrypted)) {
+                return "";
+            }
+            return decrypted;
         } catch (IllegalArgumentException | IllegalStateException e) {
             logger.error("Encrypted password can not be null or empty, or decryption output is invalid. ", e);
         } catch (Exception e) {
@@ -95,10 +100,33 @@ public class PasswordUtil
      * @param command The command to execute for password encryption/decryption.
      * @return The encrypted/decrypted password string extracted from the command output.
      * @throw IllegalStateException if the command output is invalid (does not contain expected output result).
-     */
-    public static String execCmd(String command){
-        String cmdOutput = UvmContextFactory.context().execManager().execOutput(false, command);
-        String[] encryptOrDecryptPassword = cmdOutput.split(Constants.NEW_LINE);
+     * @throws Exception * If an error occurs while starting or interacting with the process.     
+    */
+    private static String execCmdProcessBuilder(String... command) throws Exception {
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+
+        // Redirect stderrstdout
+        pb.redirectErrorStream(true);
+
+        Process process = pb.start();
+
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(process.getInputStream()))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+        }
+
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            logger.error("password-manager exited with code: " + exitCode);
+            throw new IllegalStateException("password-manager failed");
+        }
+        String[] encryptOrDecryptPassword = output.toString().split(Constants.NEW_LINE);
         if (encryptOrDecryptPassword.length <= 1) {
             throw new IllegalStateException("Output is invalid.");
         }

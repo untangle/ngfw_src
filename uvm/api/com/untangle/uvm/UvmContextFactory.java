@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 public class UvmContextFactory
 {
     private static UvmContext UVM_CONTEXT = null;
+    private static SafeUvmContext SAFE_UVM_CONTEXT = null;
 
     /**
      * Gets the current state of the UVM.  This provides a way to get
@@ -52,5 +53,31 @@ public class UvmContextFactory
             }
         }
         return UVM_CONTEXT;
+    }
+
+    /**
+     * Get the <code>SafeUvmContext</code> from this classloader.
+     * used by Apps to get the context internally.
+     *
+     * @return the <code>SafeUvmContext</code>.
+     */
+    @SuppressWarnings({"unchecked","rawtypes"})
+    public static SafeUvmContext safeContext()
+    {
+        if (null == SAFE_UVM_CONTEXT) {
+            synchronized (UvmContextFactory.class) {
+                if (null == SAFE_UVM_CONTEXT) {
+                    try {
+                        Class c = Class.forName("com.untangle.uvm.SafeUvmContextImpl");
+                        Method m = c.getMethod("context");
+                        SAFE_UVM_CONTEXT = (SafeUvmContext) m.invoke(null);
+                    } catch ( Exception e ) {
+                        System.err.println( "No class or method for the Safe UVM context" );
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return SAFE_UVM_CONTEXT;
     }
 }

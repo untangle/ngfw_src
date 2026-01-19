@@ -98,17 +98,38 @@ public interface NetworkManager
 
     ConcurrentMap<String, String> lookupMacVendorList(List<String> macAddressList);
 
-    public static enum StatusCommands {
-        INTERFACE_TRANSFER,
-        INTERFACE_IP_ADDRESSES,
-        INTERFACE_ARP_TABLE,
-        DYNAMIC_ROUTING_TABLE,
-        DYNAMIC_ROUTING_BGP,
-        DYNAMIC_ROUTING_OSPF,
-        ROUTING_TABLE,
-        QOS,
-        DHCP_LEASES
-    };
+    public enum StatusCommands {
+
+        // -------- Interface-based commands --------
+        INTERFACE_TRANSFER(true, "get_interface_transfer"),
+        INTERFACE_IP_ADDRESSES(true, "get_interface_ip_addresses"),
+        INTERFACE_ARP_TABLE(true, "get_interface_arp_table"),
+    
+        // -------- Non-interface commands --------
+        DYNAMIC_ROUTING_TABLE(false, "get_dynamic_routing_table"),
+        DYNAMIC_ROUTING_BGP(false, "get_dynamic_routing_bgp"),
+        DYNAMIC_ROUTING_OSPF(false, "get_dynamic_routing_ospf"),
+        ROUTING_TABLE(false, "get_routing_table"),
+        QOS(false, "get_qos"),
+        DHCP_LEASES(false, "get_dhcp_leases");
+    
+        private final boolean requiresInterface;
+        private final String scriptCommand;
+    
+        StatusCommands(boolean requiresInterface, String scriptCommand) {
+            this.requiresInterface = requiresInterface;
+            this.scriptCommand = scriptCommand;
+        }
+    
+        public boolean requiresInterface() {
+            return requiresInterface;
+        }
+    
+        public String getScriptCommand() {
+            return scriptCommand;
+        }
+    }
+    
     String getStatus(StatusCommands command, String argument);
 
     public static enum TroubleshootingCommands {

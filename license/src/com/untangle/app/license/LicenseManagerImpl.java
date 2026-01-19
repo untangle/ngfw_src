@@ -676,18 +676,26 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 JSONArray userMessageList = parse.getJSONArray("userMessages");
                 List<UserLicenseMessage> userMessages = this.settings.getUserLicenseMessages();
                 for (int i = 0; i < userMessageList.length(); i++) {
-                    JSONObject userMessage = userMessageList.getJSONObject(i);
-
                     UserLicenseMessage newUlm = new UserLicenseMessage();
 
-                    if(userMessage.has("message")) {newUlm.setMessage(userMessage.getString("message"));}
-                    if(userMessage.has("closure")) {newUlm.setHasClosure(userMessage.getBoolean("closure"));}
-                    if(userMessage.has("type")) {
-                        UserLicenseMessage.UserLicenseMessageType type = 
-                            UserLicenseMessage.UserLicenseMessageType.valueOf(userMessage.getString("type").toUpperCase());
-                        newUlm.setType(type);
-                    } 
+                    Object entry = userMessageList.get(i);
 
+                    if (entry instanceof JSONObject) {
+                        JSONObject userMessage = (JSONObject) entry;
+                        if(userMessage.has("message")) {newUlm.setMessage(userMessage.getString("message"));}
+                        if(userMessage.has("closure")) {newUlm.setHasClosure(userMessage.getBoolean("closure"));}
+                        if(userMessage.has("type")) {
+                            UserLicenseMessage.UserLicenseMessageType type = 
+                                UserLicenseMessage.UserLicenseMessageType.valueOf(userMessage.getString("type").toUpperCase());
+                            newUlm.setType(type);
+                        } 
+
+                    } else if (entry instanceof String) {
+                        newUlm.setMessage(I18nUtil.marktr((String) entry));
+                        newUlm.setType(UserLicenseMessage.UserLicenseMessageType.ALERT);
+                        newUlm.setHasClosure(false);
+                        newUlm.setShowAsBanner(false);
+                    }
                     userMessages.add(newUlm);
                 }
             }

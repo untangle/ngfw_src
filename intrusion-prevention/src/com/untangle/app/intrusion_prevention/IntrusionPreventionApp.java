@@ -1011,7 +1011,7 @@ public class IntrusionPreventionApp extends AppBase
                 return;
             }
 
-            if(action.equals("signatures")){
+            if("signatures".equals(action)){
                 resp.setCharacterEncoding(CHARACTER_ENCODING);
                 resp.setHeader("Content-Type","text/plain");
 
@@ -1056,7 +1056,7 @@ public class IntrusionPreventionApp extends AppBase
                         logger.warn("Failed to close file");
                     }
                 }
-            }else if(action.equals("export")){
+            }else if("export".equals(action)){
                 String tempPatchName = "/tmp/changedDataSet_intrusion-prevention_settings_" + appId + ".js";
                 String tempSettingsName = "/tmp/intrusion-prevention_settings_" + appId + ".js";
 

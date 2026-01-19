@@ -251,7 +251,33 @@ class OpenVpnTests(NGFWTestCase):
     def test_011_license_valid(self):
         assert(global_functions.uvmContext.licenseManager().isLicenseValid(self.module_name()))
 
-    def test_020_createVPNTunnelWith_zipConfig(self):
+    def test_012_remote_server_complex_password_encrypt_decrypt(self):
+        """Verify complex password while setting remote servers"""
+        # Download remote system VPN config
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteUserPassFile, output_file="/tmp/UserPassConfig.zip"), shell=True)
+        assert(result == 0) #verify download was successful
+        self._app.importClientConfig("/tmp/UserPassConfig.zip")
+        original_password = "Tg#48L%p!cR9$^sM2z"
+        #set username/password in remoteServer settings
+        appData = self._app.getSettings()
+        appData["serverEnabled"]=True
+        appData["remoteServers"]["list"][0]["authUserPass"]=True
+        appData["remoteServers"]["list"][0]["authUsername"]=ovpnlocaluser
+        appData["remoteServers"]["list"][0]["authPassword"]=original_password
+        self._app.setSettings(appData)
+        encrypted_password = self._app.getSettings()["remoteServers"]["list"][0]["remoteServerEncryptedPassword"]
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+        # Password match assertion 
+        assert decrypted_password == original_password, \
+            "Decrypted password does not match original! (%s != %s)" % (decrypted_password, original_password)
+
+        #remove server from remoteServers so it doesn't interfere with later tests
+        appData = self._app.getSettings()
+        appData['authUserPass']=False
+        appData["remoteServers"]["list"][:] = []
+        self._app.setSettings(appData)
+
+    def test_020_createVPNTunnel(self):
         global tunnelUp
         tunnelUp = False
         if (vpnHostResult != 0):
