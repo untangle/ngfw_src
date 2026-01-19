@@ -7,6 +7,7 @@ import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.generic.EventSettingsGeneric;
 import com.untangle.uvm.event.AlertRule;
+import com.untangle.uvm.event.generic.EventSettingsGeneric;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -188,19 +188,19 @@ public class AlertRule extends EventRule
         }
 
         // Create Generic Rule
-        EventRuleGeneric filterRulesGen = new EventRuleGeneric(enabled, rule.getDescription(), ruleId);
+        EventRuleGeneric alertRulesGen = new EventRuleGeneric(enabled, rule.getDescription(), ruleId);
         // Set Actions
-        filterRulesGen.setLog(rule.getLog());
-        filterRulesGen.setAction(ruleActionGen);
+        alertRulesGen.setLog(rule.getLog());
+        alertRulesGen.setAction(ruleActionGen);
         // Set Conditions
-        filterRulesGen.setClassName(className);
-        filterRulesGen.setThresholdEnabled(rule.getThresholdEnabled());
-        filterRulesGen.setThresholdGroupingField(rule.getThresholdGroupingField());
-        filterRulesGen.setThresholdLimit(rule.getThresholdLimit());
-        filterRulesGen.setThresholdTimeframeSec(rule.getThresholdTimeframeSec());
-        filterRulesGen.setConditions(ruleConditionGenList);
+        alertRulesGen.setClassName(className);
+        alertRulesGen.setThresholdEnabled(rule.getThresholdEnabled());
+        alertRulesGen.setThresholdGroupingField(rule.getThresholdGroupingField());
+        alertRulesGen.setThresholdLimit(rule.getThresholdLimit());
+        alertRulesGen.setThresholdTimeframeSec(rule.getThresholdTimeframeSec());
+        alertRulesGen.setConditions(ruleConditionGenList);
 
-        return filterRulesGen;
+        return alertRulesGen;
     }
 
 }

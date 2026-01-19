@@ -92,6 +92,8 @@ public class EventSettings implements Serializable, JSONString
         EventSettingsGeneric eventSettingsGen = new EventSettingsGeneric();
         if (this.getAlertRules() != null)
             eventSettingsGen.setAlert_rules(AlertRule.transformAlertRulesToGeneric(this.getAlertRules()));
+        if (this.getTriggerRules() != null)
+            eventSettingsGen.setTrigger_rules(TriggerRule.transformTriggerRulesToGeneric(this.getTriggerRules()));
 
         if(this.getSyslogServers() != null)
             eventSettingsGen.setSyslogServers(this.syslogServers);
@@ -99,6 +101,11 @@ public class EventSettings implements Serializable, JSONString
         eventSettingsGen.setEmailBody(emailBody);
         eventSettingsGen.setEmailSubject(emailSubject);
         eventSettingsGen.setEmailConvert(emailConvert);
+        eventSettingsGen.setSyslogEnabled(syslogEnabled);
+        eventSettingsGen.setSyslogHost(syslogHost);
+        eventSettingsGen.setSyslogPort(syslogPort);
+        eventSettingsGen.setSyslogProtocol(syslogProtocol);
+
         return eventSettingsGen;
     }
 }
