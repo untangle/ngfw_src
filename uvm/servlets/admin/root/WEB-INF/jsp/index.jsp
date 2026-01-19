@@ -20,7 +20,7 @@
         <script src="/highcharts-6.0.2/proj4.js"></script>
 
         <!-- ExtJS lib & theme -->
-        <c:set var="debug" value="${param['debug']}"/>
+        <c:set var="debug" value="${param.debug == '1' ? '1' : '0'}"/>
         <c:choose>
             <c:when test="${debug == '1' or '@PREFIX@' != ''}">
         <script src="/ext6.2/ext-all-debug.js"></script>

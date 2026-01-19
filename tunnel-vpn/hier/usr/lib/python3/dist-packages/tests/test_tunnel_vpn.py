@@ -302,8 +302,10 @@ class TunnelVpnTests(NGFWTestCase):
         """
         org_appData = self._app.getSettings()
         appData = copy.deepcopy(org_appData)
+        complex_password = "R7u!9f@Q2m#X1$zP8_s!\n"
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1",password="testing",vpn_tunnel_id="202",username="test"))
         appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel2",vpn_tunnel_id="201"))
+        appData['tunnels']['list'].append(create_tunnel_profile(name="Tunnel1",password=complex_password,vpn_tunnel_id="203",username="test"))
         self._app.setSettings(appData)
 
         appData = self._app.getSettings()
@@ -314,6 +316,9 @@ class TunnelVpnTests(NGFWTestCase):
             elif tunnel['tunnelId'] == 201:
                 tunnel_with_no_password = tunnel
                 tunnelId201 = tunnel['tunnelId']
+            elif tunnel['tunnelId'] == 203:
+                tunnel_with_complex_password = tunnel
+                tunnelId203 = tunnel['tunnelId']
 
         assert tunnel_with_password.get('encryptedTunnelVpnPassword') is not None, "encryptedTunnelVpnPassword is missing"
         assert tunnel_with_password.get('password') is None, "Password is not None"
@@ -321,10 +326,25 @@ class TunnelVpnTests(NGFWTestCase):
         assert tunnel_with_no_password.get('encryptedTunnelVpnPassword') is None, "encryptedTunnelVpnPassword is not none"
         assert tunnel_with_no_password.get('password') is None, "Password is not None"
 
+        encrypted_password = tunnel_with_complex_password.get('encryptedTunnelVpnPassword')
+        expected_decrypted = complex_password.rstrip("\n")
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+        assert decrypted_password == expected_decrypted, \
+            "Decrypted password does not match original! (%s != %s)" % (decrypted_password, expected_decrypted)
+        
+        filename3 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId203}/auth.txt"
         filename1 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId202}/auth.txt"
         filename2 = f"@PREFIX@/usr/share/untangle/settings/tunnel-vpn/tunnel-{tunnelId201}/auth.txt"
-
         second_line = None
+        with open(filename3, 'r') as file:        
+            file.seek(0)  # Reset the file pointer to the beginning of the file
+            lines = file.readlines()  # Now read the lines again
+            if len(lines) > 1:
+                second_line = lines[1].strip()  # Removing trailing newline
+            else:
+                print("The file doesn't contain a second line.")
+        assert second_line == expected_decrypted, f"Expected '{expected_decrypted}' but got '{second_line}'"
+
         with open(filename1, 'r') as file:        
             file.seek(0)  # Reset the file pointer to the beginning of the file
             lines = file.readlines()  # Now read the lines again

@@ -30,6 +30,8 @@ public class Constants {
     public static final String DOUBLE_SLASH = "//";
     public static final String IS_EQUALS_TO = "==";
     public static final String IS_NOT_EQUALS_TO = "!=";
+    public static final String LOG_ELLIPSIS = "..";
+
 
     // Boolean
     public static final String FALSE = "False";

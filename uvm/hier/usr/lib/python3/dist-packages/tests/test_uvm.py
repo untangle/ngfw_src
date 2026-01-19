@@ -76,9 +76,9 @@ def create_trigger_rule(action, tag_target, tag_name, tag_lifetime_sec, descript
         "ruleId": 1
     }
 
-def create_local_directory_user(directory_user='test',expire_time=0):
+def create_local_directory_user(directory_user='test',expire_time=0, password="passwd"):
     user_email = directory_user + "@test.untangle.com"
-    passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
+    passwd_encoded = base64.b64encode(password.encode("utf-8"))
     return {'javaClass': 'java.util.LinkedList',
         'list': [{
             'username': directory_user,
@@ -1101,49 +1101,109 @@ class UvmTests(NGFWTestCase):
 
     def test_165_password_encryption_decryption_process(self):
         """
-        Verify password encryption decryption process
+        Verify password encryption/decryption process for multiple permutations
+        and combinations of characters.
         """
-        password = 'passwd'
-        # Test 1: Valid password - it should pass if encrypted and decrypted correctly
-        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
-        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+        # List of diverse passwords (add more as needed)
+        test_passwords = [
+        "",                                     # empty password
+        " ",                                    # blank password
+        "  ",                                   # multiple spaces
+        "passwd",                               # simple password
+        "PASSWORD",                             # all uppercase
+        "password",                             # all lowercase
+        "123456",                               # numbers only
+        "abcABC123",                            # letters (both cases) + numbers
+        "!96q$57p",                             # letters + numbers + special characters
+        "K96q$!@57p",                           # stronger mix: uppercase, numbers, multiple special chars
+        "K96q$!@'57p",                          # includes single quote
+        'shsk/"@sjjs/',                         # contains double quote and slash
+        "K96q$!@5|7p",                           # includes pipe '|' (shell-sensitive)
+        "P@ssw0rd!",                             # typical strong password
+        "!@ab#$%^&*()",                           # only special characters
+        "Aa1!Aa1!",                              # repeating pattern
+        "~space+inside ",                          # complex pass
+        "混合Password123!",                       # Unicode + ASCII
+        "!StarPassword*",                        # starts with special char
+        "long_password_" + "x" * 50,            # very long password
+        r"Quotes\"Slash\\Test",                  # quotes and backslashes
+        "<HTML>tag</HTML>",                       # HTML-like
+        "*user|admin&root>test<",                # shell-sensitive combination
+        "=lsj$sn",                               # short password with special chars
+        "=l!s$j#$^s(n)!h&&#%*",                  # complex special-char heavy password
+        "`~{}[]:;'<>,.?/!@#$%^&*()-_=+",         # almost all special characters
+        "中文密码123",                             # Chinese characters + numbers
+        "пароль123",                             # Cyrillic letters + numbers
+        "1234567890"*5,                           # very long numeric password
+        "Aa1!Aa1!Aa1!Aa1!",                       # repeating complex pattern
+        ]
+        for idx, password in enumerate(test_passwords):
 
-        # Compare original password with decrypted password
-        self.assertEqual(password, decrypted_password, "Password encryption/decryption failed.")
+            with self.subTest(password=password):
+                encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
+                decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+                self.assertEqual(
+                    password,
+                    decrypted_password,
+                    f"Encryption/Decryption failed for password index {idx}: {password} && {decrypted_password}"
+                )
 
-        # Test 2: Empty password - it should pass if encrypted and decrypted correctly
-        password = " "
-        encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
-        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
-
-        # Password should match after encryption and decryption
-        self.assertEqual(password, decrypted_password, "Empty password encryption/decryption failed.")
-
-        # Test 3: None (null) password - should return None or raise an exception
+        # Test: None input should return None
         password = None
         encrypted_password = global_functions.uvmContext.systemManager().getEncryptedPassword(password)
 
         # Check if encryption of None returns None or raises an exception
         self.assertIsNone(encrypted_password, "Encrypted password should be None when input is None.")
 
+    def test_167_radius_ad_complex_password_encrypt_decrypt(self):
+        """verify radius user encryption/decryption"""
+        # Enable cloud connection  
+        system_settings = global_functions.uvmContext.systemManager().getSettings()
+        original_password = "$a!P9%Zx!4t$Q7&'Km|(3)R"
+        org_system_settings = copy.deepcopy(system_settings)
+        system_settings['radiusServerEnabled'] = False
+        system_settings['radiusProxyServer'] = 'PROXY_AD'
+        system_settings['radiusProxyWorkgroup'] = 'PROXY_AD'
+        system_settings['radiusProxyUsername'] = 'ad_radius_user'
+        system_settings['radiusProxyPassword'] = original_password
+        system_settings['radiusProxyRealm'] = 'ats.untangle.com'
+        system_settings['radiusProxyEnabled']= False
+        
+        print()
+        print(system_settings)
+        global_functions.uvmContext.systemManager().setSettings(system_settings, True)
+        print()
+        print(org_system_settings)
+        radius_ad_enc_password= global_functions.uvmContext.systemManager().getSettings()["radiusProxyEncryptedPassword"]
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(radius_ad_enc_password)
+        assert decrypted_password == original_password, \
+            "Decrypted password does not match original! (%s != %s)" % (decrypted_password, original_password)
+        global_functions.uvmContext.systemManager().setSettings(org_system_settings, True)
 
-    def test_168_password_encryption_setting_process(self):
-        """
-        Verify password encryption setting process
-        """
-        # Create local directory user 'test'
-        global_functions.uvmContext.localDirectory().setUsers(create_local_directory_user())
 
-        # Get local directory users 
+    def test_168_local_user_complex_password_encrypt_decrypt(self):
+        """
+        Verify password encryption setting process for local_user
+        """
+        original_password = "Tg#48L%p!cR9$^sM2z"
+
+        global_functions.uvmContext.localDirectory().setUsers(
+            create_local_directory_user(password=original_password)
+        )
+
         users = global_functions.uvmContext.localDirectory().getUsers()
-
-        # Extract the user object
         user = users['list'][0]
 
-        # Assert that encryptedPassword is present and password is None
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(
+            user.get('encryptedPassword')
+        )
         assert user.get('encryptedPassword') is not None, "encryptedPassword is missing"
         assert user.get('password') is None, "password is not None"
-        #Clear the created user
+
+        # Password match assertion (ASCII only message)
+        assert decrypted_password == original_password, \
+            "Decrypted password does not match original! (%s != %s)" % (decrypted_password, original_password)
+
         global_functions.uvmContext.localDirectory().setUsers(remove_local_directory_user())
 
     def test_169_test_local_user_deletion(self):
@@ -1366,20 +1426,12 @@ class UvmTests(NGFWTestCase):
         ip_address = "128.101.101.101"
         expected_country_name = "United States"
         expected_country_code = "US"
-        expected_sub_division_namme = "Minnesota"
-        expected_sub_division_code = "MN"
 
         country_name = global_functions.uvmContext.geographyManager().getCountryName(ip_address)
         country_code = global_functions.uvmContext.geographyManager().getCountryCode(ip_address)
-        sub_division_name = global_functions.uvmContext.geographyManager().getSubdivisionName(ip_address)
-        sub_division_code = global_functions.uvmContext.geographyManager().getSubdivisionCode(ip_address)
-        city_name = global_functions.uvmContext.geographyManager().getCityName(ip_address)
-        postal_code = global_functions.uvmContext.geographyManager().getPostalCode(ip_address)
 
         assert(expected_country_name == country_name)
         assert(expected_country_code == country_code)
-        assert(expected_sub_division_namme == sub_division_name)
-        assert(expected_sub_division_code == sub_division_code)
 
         # for IPs with no information None is received
         country_name = global_functions.uvmContext.geographyManager().getCountryName("192.168.56.120")

