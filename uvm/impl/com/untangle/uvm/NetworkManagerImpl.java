@@ -834,7 +834,7 @@ public class NetworkManagerImpl implements NetworkManager
             logger.warn("Unable to find interface settings for interface " + interfaceId );
             return false;
         }
-        if ( ! intfSettings.getVrrpEnabled() ) {
+        if (!Boolean.TRUE.equals(intfSettings.getVrrpEnabled())) {
             logger.warn("VRRP not enabled on interface " + interfaceId );
             return false;
         }
