@@ -706,6 +706,7 @@ class NetworkTests(NGFWTestCase):
             "raEnabled": False,
             "symbolicDev": testVlanIdDev,
             "systemDev": testVlanIdDev,
+            "uploadBandwidthKbps": 0,
             "v4Aliases": {
                 "javaClass": "java.util.LinkedList",
                 "list": []
