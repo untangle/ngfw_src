@@ -3,12 +3,19 @@
  */
 package com.untangle.app.policy_manager;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.io.Serializable;
 import java.net.InetAddress;
 
 import org.json.JSONObject;
 import org.json.JSONString;
+
+import com.untangle.uvm.generic.RuleActionGeneric;
+import com.untangle.uvm.generic.RuleConditionGeneric;
+import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.util.Constants;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -93,5 +100,50 @@ public class PolicyRule implements JSONString, Serializable
         return true;
     }
     
+    /**
+     * Transforms a list of PolicyRule objects into their generic RuleGeneric representation.
+     * Used for get api calls
+     *
+     * @param policyRuleList List<FilterRule>
+     * @return LinkedList<RuleGeneric>
+     */
+    public static LinkedList<RuleGeneric> transformPolicyRulesToGeneric(List<PolicyRule> policyRuleList) {
+        LinkedList<RuleGeneric> policyRulesGenList = new LinkedList<>();
+        for (PolicyRule rule : policyRuleList) {
+            RuleGeneric policyRulesGen = PolicyRule.getPolicyRuleGeneric(rule);
+            policyRulesGenList.add(policyRulesGen);
+        }
+        return policyRulesGenList;
+    }
+
+    /**
+     * Transforms a PolicyRule object into its generic RuleGeneric representation.
+     * @param ruleLegacy PolicyRule
+     * @return RuleGeneric
+     */
+    private static RuleGeneric getPolicyRuleGeneric(PolicyRule ruleLegacy) {
+        // Transform enabled and ruleId
+        boolean enabled = Boolean.TRUE.equals(ruleLegacy.getEnabled());
+        String ruleId = ruleLegacy.getRuleId() != null ? String.valueOf(ruleLegacy.getRuleId()) : null;
+
+        // Transform Action
+        RuleActionGeneric ruleActionGen = new RuleActionGeneric();
+        ruleActionGen.setType(RuleActionGeneric.Type.TARGET_POLICY);
+        ruleActionGen.setTargetPolicy(ruleLegacy.getTargetPolicy());
+
+        // Transform Conditions
+        LinkedList<RuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+        for (PolicyRuleCondition ruleCondition : ruleLegacy.getConditions()) {
+            String op = ruleCondition.getInvert() ? Constants.IS_NOT_EQUALS_TO : Constants.IS_EQUALS_TO;
+            RuleConditionGeneric ruleConditionGen = new RuleConditionGeneric(op, ruleCondition.getConditionType(), ruleCondition.getValue());
+            ruleConditionGenList.add(ruleConditionGen);
+        }
+
+        // Create Generic Rule
+        RuleGeneric policyRuleGen = new RuleGeneric(enabled, ruleLegacy.getDescription(), ruleId);
+        policyRuleGen.setAction(ruleActionGen);
+        policyRuleGen.setConditions(ruleConditionGenList);
+        return policyRuleGen;
+    }
 }
 
