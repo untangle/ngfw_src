@@ -254,9 +254,9 @@ class OpenVpnTests(NGFWTestCase):
     def test_012_remote_server_complex_password_encrypt_decrypt(self):
         """Verify complex password while setting remote servers"""
         # Download remote system VPN config
-        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteUserPassFile, output_file="/tmp/UserPassConfig.zip"), shell=True)
+        result = subprocess.call(global_functions.build_wget_command(log_file="/dev/null", uri=vpnSite2SiteZipFile, output_file="/tmp/config.zip"), shell=True)
         assert(result == 0) #verify download was successful
-        self._app.importClientConfig("/tmp/UserPassConfig.zip")
+        self._app.importClientConfig("/tmp/config.zip")
         original_password = "Tg#48L%p!cR9$^sM2z"
         #set username/password in remoteServer settings
         appData = self._app.getSettings()
