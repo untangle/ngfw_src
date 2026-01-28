@@ -5,6 +5,9 @@ package com.untangle.app.policy_manager;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.net.InetAddress;
 
@@ -15,6 +18,7 @@ import com.untangle.uvm.generic.RuleActionGeneric;
 import com.untangle.uvm.generic.RuleConditionGeneric;
 import com.untangle.uvm.generic.RuleGeneric;
 import com.untangle.uvm.util.Constants;
+import com.untangle.uvm.util.StringUtil;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -144,6 +148,66 @@ public class PolicyRule implements JSONString, Serializable
         policyRuleGen.setAction(ruleActionGen);
         policyRuleGen.setConditions(ruleConditionGenList);
         return policyRuleGen;
+    }
+
+      /**
+     * Transforms a list of Policy RuleGeneric objects into their v1 PolicyRule representation.
+     * Used for set api calls
+     *
+     * @param policyRulesGen LinkedList<RuleGeneric>
+     * @param legacyRules List<PolicyRule>
+     * @return List<PolicyRule>
+     */
+    public static List<PolicyRule> transformGenericToLegacyPolicyRules(LinkedList<RuleGeneric> policyRulesGen, List<PolicyRule> legacyRules) {
+        if (legacyRules == null)
+            legacyRules = new LinkedList<>();
+        // CLEANUP: Remove deleted rules first
+        RuleGeneric.deleteOrphanRules(
+                policyRulesGen,
+                legacyRules,
+                RuleGeneric::getRuleId,
+                r -> String.valueOf(r.getRuleId())
+        );
+        // Build a map for quick lookup by ruleId
+        Map<Integer, PolicyRule> rulesMap = legacyRules.stream()
+                .collect(Collectors.toMap(PolicyRule::getRuleId, Function.identity()));
+        LinkedList<PolicyRule> policyRules = new LinkedList<>();
+        for (RuleGeneric ruleGeneric : policyRulesGen) {
+            PolicyRule policyRule = rulesMap.get(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), 0));
+            policyRule = PolicyRule.transformPolicyRule(ruleGeneric, policyRule);
+            policyRules.add(policyRule);
+        }
+        return policyRules;
+    }
+    
+    /**
+     * Transforms a Policy Rule Generic object into v1 PolicyRule representation.
+     * @param ruleGeneric RuleGeneric
+     * @param policyRule PolicyRule
+     * @return PolicyRule
+     */
+    private static PolicyRule transformPolicyRule(RuleGeneric ruleGeneric, PolicyRule policyRule) {
+        if (policyRule == null)
+            policyRule = new PolicyRule();
+        // Transform enabled, ruleId, description
+        policyRule.setEnabled(ruleGeneric.isEnabled());
+        policyRule.setDescription(ruleGeneric.getDescription());
+        // For new rules added UI send uuid string as ruleId. Here its set to -1
+        policyRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
+        // Transform Action
+        if (ruleGeneric.getAction() != null)
+            policyRule.setTargetPolicy(ruleGeneric.getAction().getTargetPolicy());
+        // Transform Conditions
+        List<PolicyRuleCondition> ruleConditions = new LinkedList<>();
+        for (RuleConditionGeneric ruleConditionGen : ruleGeneric.getConditions()) {
+            PolicyRuleCondition policyRuleCondition = new PolicyRuleCondition();
+            policyRuleCondition.setInvert(ruleConditionGen.getOp().equals(Constants.IS_NOT_EQUALS_TO));
+            policyRuleCondition.setConditionType(ruleConditionGen.getType());
+            policyRuleCondition.setValue(ruleConditionGen.getValue());
+            ruleConditions.add(policyRuleCondition);
+        }
+        policyRule.setConditions(ruleConditions);
+        return policyRule;
     }
 }
 

@@ -117,6 +117,17 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
     }
 
     /**
+     * Set Policy Manager Settings from generic version payload
+     * @param newSettings PolicyManagerSettingsGeneric
+     */
+    public void setSettingsV2( PolicyManagerSettingsGeneric newSettings ) {
+        // Deep clone current PolicyManager Settings
+        PolicyManagerSettings clonedPolicyManagerSettings = SerializationUtils.clone(this.settings);
+        newSettings.transformGenericToLegacySettings(clonedPolicyManagerSettings);
+        this.setSettings(clonedPolicyManagerSettings);
+    }
+
+    /**
      * getPolicyName gets the policy name for the speficied policy
      * @param policyId
      * @return the policy name
