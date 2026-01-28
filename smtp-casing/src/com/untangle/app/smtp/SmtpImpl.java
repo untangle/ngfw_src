@@ -126,7 +126,7 @@ public class SmtpImpl extends AppBase implements MailExport
     {
         SmtpSettings ns = new SmtpSettings();
         ns.setSmtpEnabled(true);
-        ns.setSmtpTimeout(1000 * 60 * 4);
+        ns.setSmtpTimeout(1000 * 60 * 4L);
 
         QuarantineSettings qs = new QuarantineSettings();
         qs.setDigestHourOfDay(6); // 6 am
@@ -178,6 +178,15 @@ public class SmtpImpl extends AppBase implements MailExport
         reconfigure();
         SmtpImpl.quarantine.setSettings(this, settings.getQuarantineSettings());
         SmtpImpl.safelistMangr.setSettings(this, settings);
+    }
+
+    /**
+     * Set SMTP settings without safelists V2 API.
+     * @param settings New SmtpSettings to use.
+     */
+    public void setSmtpSettingsWithoutSafelistsV2(final SmtpSettings settings)
+    {
+        setSmtpSettingsWithoutSafelists(settings);
     }
 
     /**
@@ -346,7 +355,7 @@ public class SmtpImpl extends AppBase implements MailExport
         String settingsFile = System.getProperty("uvm.settings.dir") + "/smtp/settings_" + appID + ".js";
 
         SmtpSettings readSettings = null;
-        logger.info("Loading settings from " + settingsFile);
+        logger.info("Loading settings from {}", settingsFile);
 
         try {
             // first we try to read our json settings
@@ -363,7 +372,7 @@ public class SmtpImpl extends AppBase implements MailExport
             }
             // otherwise apply the loaded or imported settings from the file
             else {
-                logger.info("Loaded settings from " + settingsFile);
+                logger.info("Loaded settings from {}", settingsFile);
 
                 settings = readSettings;
                 SmtpImpl.quarantine.setSettings(this, settings.getQuarantineSettings());
@@ -471,9 +480,7 @@ public class SmtpImpl extends AppBase implements MailExport
         try {
             File test = new File(path);
             if (test.isDirectory()) {
-                //boolean success = true;
                 for (File f : test.listFiles()) {
-                    //System.out.println(f.getAbsolutePath());
                     result.addAll(getTests(f.getAbsolutePath()));
                 }
             } else {
@@ -504,14 +511,12 @@ public class SmtpImpl extends AppBase implements MailExport
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String runTests(String path)
     {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         try {
             File test = new File(path);
             if (test.isDirectory()) {
-                //boolean success = true;
                 for (File f : test.listFiles()) {
-                    //System.out.println(f.getAbsolutePath());
-                    result = result + runTests(f.getAbsolutePath());
+                    result.append(runTests(f.getAbsolutePath()));
                 }
             } else {
                 if (test.getName().endsWith(".class")) {
@@ -524,9 +529,8 @@ public class SmtpImpl extends AppBase implements MailExport
                         method = cls.getMethod("runTest", String[].class);
                         String[] args = { "" };
                         String testResult = (String)method.invoke(cls, (Object) args);
-                        result = "\n ------- " + name + " -------\n ";
-                        result += testResult;
-                        // return (Boolean) result;
+                        result = new StringBuilder("\n ------- " + name + " -------\n ");
+                        result.append(testResult);
                     } catch (NoSuchMethodException e) {
                     }
                 }
@@ -538,7 +542,7 @@ public class SmtpImpl extends AppBase implements MailExport
                 logger.warn( "Cause:", cause );
             }
         }
-        return result;
+        return result.toString();
     }
 
 }
