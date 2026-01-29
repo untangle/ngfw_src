@@ -237,6 +237,19 @@ public class SystemSettings implements Serializable, JSONString
         systemSettingsGeneric.setAutoUpgradeDays(this.autoUpgradeDays);
         systemSettingsGeneric.setHourOfDay(this.autoUpgradeHour);
         systemSettingsGeneric.setMinuteOfHour(this.autoUpgradeMinute);
+        systemSettingsGeneric.setRadiusServerEnabled(this.radiusServerEnabled);
+        systemSettingsGeneric.setRadiusServerSecret(this.radiusServerSecret);
+        systemSettingsGeneric.setRadiusProxyEnabled(this.radiusProxyEnabled);
+        systemSettingsGeneric.setRadiusProxyServer(this.radiusProxyServer);
+        systemSettingsGeneric.setRadiusProxyWorkgroup(this.radiusProxyWorkgroup);
+        systemSettingsGeneric.setRadiusProxyRealm(this.radiusProxyRealm);
+        systemSettingsGeneric.setRadiusProxyUsername(this.radiusProxyUsername);
+        systemSettingsGeneric.setRadiusProxyPassword(this.radiusProxyPassword);
+        systemSettingsGeneric.setRadiusProxyEncryptedPassword(this.radiusProxyEncryptedPassword);
+        systemSettingsGeneric.setWebCertificate(this.webCertificate);
+        systemSettingsGeneric.setMailCertificate(this.mailCertificate);
+        systemSettingsGeneric.setIpsecCertificate(this.ipsecCertificate);
+        systemSettingsGeneric.setRadiusCertificate(this.radiusCertificate);
 
         if (networkSettings != null) {
             // Local Services Settings

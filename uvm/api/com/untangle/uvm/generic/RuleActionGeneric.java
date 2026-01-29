@@ -23,8 +23,9 @@ public class RuleActionGeneric implements JSONString, Serializable {
      * ACCEPT, REJECT - Required for Filter, Access and UPnP Rules
      * PRIORITY - Required for QoS Rules
      * SCAN, PASS - Required for Shield Rules
+     * TARGET_POLICY - Required for Policy Manager
      */
-    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, SET_PRIORITY, SCAN, PASS }
+    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, SET_PRIORITY, SCAN, PASS, TARGET_POLICY }
     // Common To All Rules
     private Type type;
 
@@ -51,6 +52,13 @@ public class RuleActionGeneric implements JSONString, Serializable {
 
     public int getPriority() { return priority; }
     public void setPriority(int priority) { this.priority = priority; }
+
+    // Required for Policy Manager
+    private Integer targetPolicy;
+
+    public Integer getTargetPolicy() { return targetPolicy; }
+    public void setTargetPolicy(Integer targetPolicy) { this.targetPolicy = targetPolicy; }
+
 
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);
