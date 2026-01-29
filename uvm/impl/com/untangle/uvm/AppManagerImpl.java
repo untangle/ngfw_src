@@ -994,6 +994,25 @@ public class AppManagerImpl implements AppManager
     }
 
     /**
+     * Get the view of the apps (v2 format) when the specified policy/rack is displayed
+     *
+     * @param policyId policy.
+     * @return visible apps for this policy.
+     */
+    public AppsView getAppsViewV2( Integer policyId ) {
+        return this.getAppsView( policyId );
+    }
+
+    /**
+     * Get an array of the AppsView for all policies (V2 API)
+     * 
+     * @return The array of AppsView objects
+     */
+    public AppsView[] getAppsViewsV2() {
+        return this.getAppsViews();
+    }
+
+    /**
      * Returns true is apps are being loaded
      * 
      * @return a boolean value
