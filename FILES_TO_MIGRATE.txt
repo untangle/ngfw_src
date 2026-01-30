@@ -1,0 +1,357 @@
+================================================================================
+BOOKWORM MIGRATION: COMPLETE FILE INVENTORY FOR CHANGES
+================================================================================
+
+PROJECT: Bullseye (iptables) → Bookworm (nftables)
+TOTAL FILES: 32 files (21 Java + 11 Shell Scripts)
+TOTAL IPTABLES REFERENCES: 284 (152 Java + 132 Shell)
+
+================================================================================
+JAVA FILES TO UPDATE (21 files, 152 iptables references)
+================================================================================
+
+CORE INFRASTRUCTURE (4 files) - CRITICAL
+────────────────────────────────────────────────────────────────────────────
+1. uvm/impl/com/untangle/uvm/NetworkManagerImpl.java
+   - Rule generation logic, mark application
+   - PRIMARY file for nftables integration
+   
+2. uvm/impl/com/untangle/uvm/HostTableImpl.java
+   - Session mark handling, QoS classification
+   
+3. uvm/impl/com/untangle/uvm/NetFilterLogger.java
+   - nfqueue/netfilter interaction logging
+   
+4. uvm/impl/com/untangle/uvm/SessionTableImpl.java
+   - Session state and mark management
+
+VPN APPLICATIONS (4 files) - HIGH PRIORITY
+────────────────────────────────────────────────────────────────────────────
+5. wireguard-vpn/src/com/untangle/app/wireguard_vpn/WireGuardVpnManager.java
+   - Line 33: IPTABLES_SCRIPT constant
+   - Line 76, 86, 113: configureIptables() calls
+   - Action: Replace with NftablesRulesManager
+   
+6. openvpn/src/com/untangle/app/openvpn/OpenVpnManager.java
+   - VPN interface marking and rule generation
+   
+7. ipsec-vpn/src/com/untangle/app/ipsec_vpn/IpsecVpnManager.java
+   - IPSec tunnel rules
+   
+8. tunnel-vpn/src/com/untangle/app/tunnel_vpn/TunnelVpnManager.java
+   - Tunnel interface rules
+
+NETWORK APPLICATIONS (2 files) - HIGH PRIORITY
+────────────────────────────────────────────────────────────────────────────
+9. wan-balancer/src/com/untangle/app/wan_balancer/WanBalancerApp.java
+   - Line 215: iptables-rules.d file creation
+   - Line 280, 332-358: Rule generation and execution
+   - Action: Generate nftables rules instead of shell scripts
+   
+10. router/src/com/untangle/app/router/RouterApp.java
+    - Routing rules (if iptables-based)
+
+PROTOCOL CASINGS (1 file) - MEDIUM PRIORITY
+────────────────────────────────────────────────────────────────────────────
+11. ftp-casing/src/com/untangle/app/ftp/FtpNatHandler.java
+    - Line 633, 655: Inline iptables commands
+    - Action: Replace with nftables NAT rules
+
+SECURITY APPLICATIONS (3 files) - MEDIUM PRIORITY
+────────────────────────────────────────────────────────────────────────────
+12. intrusion-prevention/src/com/untangle/app/intrusion_prevention/IntrusionPreventionApp.java
+    - Suricata nfqueue integration
+    
+13. intrusion-prevention/src/com/untangle/app/intrusion_prevention/IntrusionPreventionSettings.java
+    - Line 33-35: iptablesNfqNumber, iptablesMaxScanSize, iptablesProcessing
+    
+14. dynamic-blocklists/src/com/untangle/app/dynamic_blocklists/DynamicBlockListsManager.java
+    - CRITICAL: ipset → nftables set conversion needed
+    - Dynamic IP addition/removal
+    
+15. shield/src/com/untangle/app/shield/ShieldApp.java
+    - Security rule generation
+
+CONFIGURATION & API (6 files) - LOW PRIORITY
+────────────────────────────────────────────────────────────────────────────
+16. uvm/api/com/untangle/uvm/network/InterfaceSettings.java
+    - Comment ref: "iptables interface name"
+    
+17. uvm/api/com/untangle/uvm/network/generic/InterfaceSettingsGeneric.java
+    - Same as above
+    
+18. uvm/api/com/untangle/uvm/app/ProtocolMatcher.java
+    - Protocol matching definitions
+    
+19. uvm/api/com/untangle/uvm/app/RuleCondition.java
+    - Rule conditions (might reference marks)
+    
+20. uvm/api/com/untangle/uvm/app/SessionEvent.java
+    - Session events and mark propagation
+    
+21. uvm/impl/com/untangle/uvm/SessionMonitorImpl.java
+    - Session monitoring and mark tracking
+
+================================================================================
+SHELL SCRIPTS TO UPDATE (11 files, 132 iptables references)
+================================================================================
+
+CRITICAL SCRIPTS (Priority 1)
+────────────────────────────────────────────────────────────────────────────
+1. uvm/hier/usr/share/untangle/bin/ut-uvm-update-rules.sh (~230 lines)
+   - MAIN orchestrator for firewall rules
+   - References: /proc/net/netfilter/nfnetlink_queue, nfqueue marks
+   - Actions: mangle table marks, filter chain rules, nfqueue setup
+   - Action: Migrate to nftables + create wrapper
+   
+2. dynamic-blocklists/hier/usr/share/untangle/bin/dbl-setup.sh
+   - Create ipset and iptables rules for blocklists
+   - Action: Convert to nftables sets with dynamic elements
+   
+3. dynamic-blocklists/hier/usr/share/untangle/bin/dbl-cleanup.sh
+   - Clean up blocklist ipset and rules
+   - Action: Convert to nftables cleanup commands
+
+HIGH PRIORITY SCRIPTS (Priority 2)
+────────────────────────────────────────────────────────────────────────────
+4. tunnel-vpn/hier/usr/share/untangle/bin/tunnel-vpn-up.sh
+   - VPN interface setup (mangle, POSTROUTING rules)
+   
+5. tunnel-vpn/hier/usr/share/untangle/bin/tunnel-vpn-down.sh
+   - VPN cleanup
+
+MEDIUM PRIORITY SCRIPTS (Priority 3)
+────────────────────────────────────────────────────────────────────────────
+6. uvm/hier/usr/share/untangle/bin/ut-routedump.sh
+   - Diagnostic script (minor references)
+   
+7-11. GENERATED APP SCRIPTS (Created at runtime by Java apps)
+   ├─ Generated by WireGuardVpnManager: /etc/untangle/iptables-rules.d/720-wireguard-vpn
+   ├─ Generated by WanBalancerApp: /etc/untangle/iptables-rules.d/330-wan-balancer-rules
+   ├─ Generated by OpenVpnManager: /etc/untangle/iptables-rules.d/XXX-openvpn-*
+   ├─ Generated by IntrusionPreventionApp: /etc/untangle/iptables-rules.d/740-suricata
+   └─ Other app-generated rules
+   
+   Note: These don't exist in git but are created by Java code. When Java is
+   updated to generate nftables rules instead of shell scripts, these become
+   obsolete.
+
+ADDITIONAL SCRIPT-RELATED FILES
+────────────────────────────────────────────────────────────────────────────
+- uvm/hier/usr/share/untangle/bin/ (contains helpers and utilities)
+- May need to add nftables helper functions/libraries
+
+================================================================================
+SUPPORTING FILES TO CREATE (NEW)
+================================================================================
+
+PYTHON ABSTRACTION LAYER (NEW)
+────────────────────────────────────────────────────────────────────────────
+sync-settings/sync/nftables_rules_manager.py (NEW FILE)
+   - Python class for unified iptables/nftables rule generation
+   - Methods:
+     * generate_mark_rules(interface, mark_value)
+     * generate_filter_rules(protocol, port, action)
+     * generate_nat_rules(src_ip, dst_ip)
+     * execute_rules(rule_set)
+     * detect_kernel_version()
+   - Support for both iptables and nftables
+
+SHELL SCRIPT WRAPPERS (NEW)
+────────────────────────────────────────────────────────────────────────────
+New scripts to detect kernel and call appropriate version:
+   - ut-uvm-update-rules.sh (wrapper)
+   - ut-uvm-update-rules-iptables.sh (Bullseye version)
+   - ut-uvm-update-rules-nftables.sh (Bookworm version)
+   
+   Similar structure for other critical scripts
+
+================================================================================
+KERNEL & BUILD SYSTEM CHANGES
+================================================================================
+
+KERNEL PATCHES (8 patches - mostly unchanged)
+────────────────────────────────────────────────────────────────────────────
+Location: /home/rohit/Arista-Workspace/Bookworm-Assemble/ngfw_kernels/debian-5.10.0/patches/untangle/
+
+0001-bridge-mac-ageing-fix.patch - KEEP (kernel-level)
+0002-extensions.patch - KEEP (kernel API, not iptables-specific)
+0003-IPSEC-policy-bypass.patch - KEEP (kernel-level)
+0004-iptables-tune.patch - REVIEW (custom "tune" table, adapt for nftables)
+0005-xt_mac.patch - REVIEW (MAC byte matching, nftables equivalent)
+0006-iptables-socket.patch - REVIEW (socket mark restoration, nftables version)
+0007-physdev.patch - KEEP (kernel-level)
+0008-imq-4.16-patch.patch - KEEP (kernel-level)
+
+BUILD SYSTEM CHANGES
+────────────────────────────────────────────────────────────────────────────
+- rakefile: Add Bookworm-specific build profiles
+- buildtools/buildtools.rb: Kernel version detection
+- buildtools/target.rb: nftables rule generation targets
+- debian/control: Add nftables dependencies
+- debian/rules: Bookworm-specific build rules
+
+================================================================================
+SYNC-SETTINGS REPO CHANGES (IF APPLICABLE)
+================================================================================
+
+sync-settings/sync/nftables_util.py
+   - If existing nftables utilities, integrate or extend
+
+sync-settings/tests/test_nftables.py
+   - Add tests for nftables rule generation
+
+================================================================================
+SUMMARY STATISTICS
+================================================================================
+
+FILES TO MODIFY:
+  - Java files: 21
+  - Shell scripts: 11
+  - Kernel patches: 8 (review for compatibility)
+  - Build system: ~5 files
+  ────────────────────
+  TOTAL: ~45 files
+
+REFERENCES TO CHANGE:
+  - iptables: 152 (Java) + 132 (Shell) = 284 references
+  - ipset: ~15-20 references (dynamic blocklists)
+  - nfqueue/mark: ~30 references (keep, just change syntax)
+
+NEW FILES TO CREATE:
+  - nftables_rules_manager.py (Python)
+  - Script wrappers (Shell)
+  - Build system updates
+
+COMPLEXITY LEVELS:
+  - Critical (must change): 10 files
+  - High (should change): 8 files
+  - Medium (refactor): 10 files
+  - Low (documentation only): 5 files
+  - Infrastructure/Kernel: 8 patches + 5 build files
+
+================================================================================
+MIGRATION SEQUENCE
+================================================================================
+
+PHASE 1 (Weeks 1-2): Foundation
+  ✓ Create nftables_rules_manager.py
+  ✓ Review 8 kernel patches
+  ✓ Set up test infrastructure
+
+PHASE 2 (Weeks 3-4): Shell Scripts (11 scripts)
+  → ut-uvm-update-rules.sh (CRITICAL)
+  → dbl-setup.sh + dbl-cleanup.sh
+  → tunnel-vpn scripts
+  → Generated app scripts (via Java changes)
+
+PHASE 3 (Weeks 5-7): Java Files (21 files)
+  WEEK 5: Core (4 files)
+    → NetworkManagerImpl.java
+    → HostTableImpl.java
+    → NetFilterLogger.java
+    → SessionTableImpl.java
+  
+  WEEK 6: VPN/Network Apps (6 files)
+    → WireGuardVpnManager.java
+    → OpenVpnManager.java
+    → IpsecVpnManager.java
+    → TunnelVpnManager.java
+    → WanBalancerApp.java
+    → RouterApp.java
+  
+  WEEK 7: Protocol/Security (5 files + config/api 6 files)
+    → FtpNatHandler.java
+    → IntrusionPreventionApp.java
+    → IntrusionPreventionSettings.java
+    → DynamicBlockListsManager.java (CRITICAL - ipset→nftables)
+    → ShieldApp.java
+    + Config/API files
+
+PHASE 4 (Weeks 8-9): Kernel Verification
+  → Verify 8 patches on Bookworm
+  → Integration testing with libnetcap
+
+PHASE 5 (Weeks 10-11): Integration & Testing
+  → Full system testing
+  → Regression verification
+  → Performance benchmarking
+
+PHASE 6 (Week 12): Documentation & Deployment
+  → Finalize all docs
+  → Prepare deployment procedures
+  → Team training
+
+================================================================================
+FILE FORMAT REFERENCE
+================================================================================
+
+LOCATION OF FILES:
+- Java files: /home/rohit/Arista-Workspace/BUILDS-ORG/ngfw_src/<module>/src/...
+- Shell scripts: /home/rohit/Arista-Workspace/BUILDS-ORG/ngfw_src/<module>/hier/usr/share/untangle/bin/
+- Kernel patches: /home/rohit/Arista-Workspace/Bookworm-Assemble/ngfw_kernels/debian-5.10.0/patches/
+- Build files: /home/rohit/Arista-Workspace/BUILDS-ORG/ngfw_src/buildtools/
+- Config: /home/rohit/Arista-Workspace/BUILDS-ORG/ngfw_src/debian/
+
+================================================================================
+PRIORITY & RISK LEVELS
+================================================================================
+
+CRITICAL (Must work, highest risk):
+  ✓ ut-uvm-update-rules.sh - Main firewall orchestrator
+  ✓ NetworkManagerImpl.java - Core rule engine
+  ✓ DynamicBlockListsManager.java - ipset→nftables conversion
+
+HIGH (App functionality):
+  ✓ WireGuardVpnManager.java - VPN integration
+  ✓ WanBalancerApp.java - Traffic routing
+  ✓ dbl-setup.sh - Dynamic blocklists
+
+MEDIUM (Infrastructure):
+  ✓ Kernel patches - Verify compatibility
+  ✓ Build system - Support both paths
+
+LOW (Documentation/API):
+  ✓ Config files
+  ✓ API classes
+  ✓ Helper utilities
+
+================================================================================
+TESTING CHECKPOINTS
+================================================================================
+
+After each phase, verify:
+1. Phase 1: Python abstraction generates correct syntax
+2. Phase 2: Shell scripts produce equivalent firewall rules
+3. Phase 3: Java apps generate nftables rules without errors
+4. Phase 4: Kernel patches apply and network functions work
+5. Phase 5: Full system integration tests pass
+6. Phase 6: Documentation complete, team trained
+
+================================================================================
+SUGGESTED ORDER OF CHANGES
+================================================================================
+
+ORDER 1 (FOR FOUNDATION):
+  1. nftables_rules_manager.py (NEW)
+  2. NetworkManagerImpl.java (uses abstraction)
+  3. ut-uvm-update-rules.sh (uses new rules)
+
+ORDER 2 (FOR CORE APPS):
+  4. DynamicBlockListsManager.java (ipset→sets)
+  5. dbl-setup.sh + dbl-cleanup.sh
+  6. WanBalancerApp.java
+
+ORDER 3 (FOR VPN):
+  7. WireGuardVpnManager.java
+  8. OpenVpnManager.java
+  9. tunnel-vpn scripts
+
+ORDER 4 (FOR COMPLETENESS):
+  10-21. Remaining Java files
+  11+. Build system & documentation
+
+================================================================================
+Generated: January 30, 2026
+For: Bookworm Migration Project
+Reference: BOOKWORM_NFTABLES_MIGRATION_PLAN.md Appendix C
