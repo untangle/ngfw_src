@@ -204,7 +204,8 @@ public class NetworkManagerImpl implements NetworkManager
             if ( this.networkSettings.getVersion() < currentVersion ) {
                 convertSettings();
             }
-            logger.debug("Loading Settings: {}", this.networkSettings.toJSONString() );
+            if (logger.isDebugEnabled())
+                logger.debug("Loading Settings: {}", this.networkSettings.toJSONString() );
         }
 
         /**
@@ -322,7 +323,10 @@ public class NetworkManagerImpl implements NetworkManager
         this.networkSettings = newSettings;
         updateNetworkReservations(newSettings);
         configureInterfaceSettingsArray();
-        try {logger.debug("New Settings: \n{}", new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug("New Settings: \n{}", new org.json.JSONObject(this.networkSettings).toString(2));
+        } catch (Exception e) {}
 
         UvmContextFactory.context().syncSettings().run(this.settingsFilename);
         
