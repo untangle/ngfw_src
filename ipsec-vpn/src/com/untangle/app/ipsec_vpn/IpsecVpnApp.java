@@ -430,6 +430,10 @@ public class IpsecVpnApp extends AppBase
 
         // Fix for NGFW-14844, wait for charon to restart and then rewrite STRONGSWAN_CONF_FILE
         waitForCharonStart();
+
+        // Initialize active WAN address from WAN Failover if it's running
+        initializeActiveWanFromFailover();
+
         reconfigure();
     }
 
@@ -458,6 +462,32 @@ public class IpsecVpnApp extends AppBase
         } catch (Exception e) {
             logger.error("Exception in waitForCharonStart: ", e);
             scheduler.shutdownNow();
+        }
+    }
+
+    /**
+     * Initialize active WAN address from WAN Failover if it's running.
+     * This ensures IPsec uses the correct active WAN (based on weights and status)
+     * when it starts while WAN Failover is already running.
+     */
+    private void initializeActiveWanFromFailover() {
+        try {
+            com.untangle.uvm.app.App wanFailoverApp = UvmContextFactory.context().appManager().app("wan-failover");
+            if (wanFailoverApp != null && wanFailoverApp.getRunState() == com.untangle.uvm.app.AppSettings.AppState.RUNNING) {
+                logger.info("WAN Failover is running - requesting current active WAN ID via hook");
+                // Trigger WAN Failover to update and send the current active WAN ID
+                // WAN Failover listens to WAN_BALANCER_CHANGE hook and will respond via WAN_FAILOVER_CHANGE
+                // Pass empty weights to trigger re-evaluation using current WAN states
+                UvmContextFactory.context().hookManager().callCallbacks(
+                    com.untangle.uvm.HookManager.WAN_BALANCER_CHANGE,
+                    new int[0]
+                );
+                logger.debug("Successfully triggered WAN Failover to send active WAN ID");
+            } else {
+                logger.info("WAN Failover is not running - using default WAN address");
+            }
+        } catch (Exception e) {
+            logger.warn("Error initializing active WAN from WAN Failover: " + e.getMessage());
         }
     }
 
