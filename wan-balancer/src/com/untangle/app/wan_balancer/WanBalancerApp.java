@@ -23,6 +23,9 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.app.App;
+import static com.untangle.uvm.app.License.WAN_FAILOVER;
+import static com.untangle.uvm.app.AppSettings.AppState.RUNNING;
 
 /**
  * The Wan Balancer Application
@@ -169,7 +172,7 @@ public class WanBalancerApp extends AppBase
         // Notify WAN Failover that WAN Balancer has started
         // This is done in postStart() to ensure WAN Balancer is fully running
         // before WAN Failover checks the run state
-        notifyWanFailoverOfStartOrStop();
+        notifyWanFailover();
     }
     /**
      * Called before the application is stopped
@@ -182,7 +185,7 @@ public class WanBalancerApp extends AppBase
     {
         // Notify WAN Failover that WAN Balancer is stopping so it can re-evaluate active WAN
         // This ensures IPsec and other apps switch from weight-based to first-active-WAN logic
-        notifyWanFailoverOfStartOrStop();
+        notifyWanFailover();
     }
 
     /**
@@ -214,11 +217,11 @@ public class WanBalancerApp extends AppBase
      * This triggers WAN Failover to re-evaluate the active WAN and switch
      * from weight-based selection to first-active-WAN selection.
      */
-    private void notifyWanFailoverOfStartOrStop()
+    private void notifyWanFailover()
     {
         try {
-            com.untangle.uvm.app.App wanFailoverApp = UvmContextFactory.context().appManager().app("wan-failover");
-            if (wanFailoverApp != null && wanFailoverApp.getRunState() == com.untangle.uvm.app.AppSettings.AppState.RUNNING) {
+            App wanFailoverApp = UvmContextFactory.context().appManager().app(WAN_FAILOVER);
+            if (wanFailoverApp != null && wanFailoverApp.getRunState() == RUNNING) {
                 // WAN Failover is already listening to WAN_BALANCER_CHANGE hook
                 // Send current weights
                 int[] weights = null;
@@ -228,7 +231,7 @@ public class WanBalancerApp extends AppBase
                 UvmContextFactory.context().hookManager().callCallbacks(HookManager.WAN_BALANCER_CHANGE, weights);
             }
         } catch (Exception e) {
-            logger.warn("Failed to notify WAN Failover: " + e.getMessage());
+            logger.warn("Failed to notify WAN Failover: ", e.getMessage());
         }
     }
 

@@ -45,6 +45,7 @@ public class WanFailoverApp extends AppBase
 
     private final WanFailoverNetworkHookCallback networkHookCallback = new WanFailoverNetworkHookCallback();
     private final WanFailoverWanBalancerHookCallback wanBalancerHookCallback = new WanFailoverWanBalancerHookCallback();
+    private final ActiveWanIdHookCallback activeWanIdHookCallback = new ActiveWanIdHookCallback();
 
     private WanFailoverSettings settings = null;
 
@@ -225,6 +226,7 @@ public class WanFailoverApp extends AppBase
     {
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback);
         UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.WAN_BALANCER_CHANGE, this.wanBalancerHookCallback);
+        UvmContextFactory.context().hookManager().registerCallback(com.untangle.uvm.HookManager.REQUEST_ACTIVE_WAN_ID, this.activeWanIdHookCallback);
 
         if (WanFailoverApp.execManager == null) {
             WanFailoverApp.execManager = UvmContextFactory.context().createExecManager();
@@ -247,6 +249,7 @@ public class WanFailoverApp extends AppBase
     {
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.NETWORK_SETTINGS_CHANGE, this.networkHookCallback);
         UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.WAN_BALANCER_CHANGE, this.wanBalancerHookCallback);
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.REQUEST_ACTIVE_WAN_ID, this.activeWanIdHookCallback);
 
         if (this.wanFailoverTesterMonitor != null) {
             this.wanFailoverTesterMonitor.stop();
@@ -318,7 +321,7 @@ public class WanFailoverApp extends AppBase
     public void wanBalancerSettingsEvent()
     {
         if (this.wanFailoverTesterMonitor != null) {
-            logger.info("WAN Balancer settings changed, updating active WAN ID");
+            logger.info("Updating active WAN ID");
             this.wanFailoverTesterMonitor.updateActiveWanId();
         }
     }
@@ -352,16 +355,39 @@ public class WanFailoverApp extends AppBase
         {
             if (args.length > 0 && args[0] instanceof int[]) {
                 int[] weights = (int[]) args[0];
-
-                // Only update weights if the array is not empty
-                // Empty arrays could be sent as triggers to re-evaluate without changing weights
-                if (weights.length > 0) {
-                    WanFailoverApp.wanBalancerWeights = weights;
-                    logger.info("WAN Balancer weights updated (length=" + weights.length + ")");
-                }
-            } else {
-                logger.warn("Invalid weights argument received");
+                //set wanFailover wanbalancerweights as per wanBalancer passed argument
+                WanFailoverApp.wanBalancerWeights = weights;
+                logger.info("WAN Balancer weights updated (length= {} )", weights.length);
+                wanBalancerSettingsEvent();
             }
+        }
+    }
+    /**
+     * Callback hook for requesting the active WAN IP
+     * Responds to requests for the current active WAN interface by re-evaluating and returning the active WAN ID
+     */
+    private class ActiveWanIdHookCallback implements HookCallback
+    {
+
+        /**
+         * Gets the name for the callback hook
+         *
+         * @return The name of the callback hook
+         */
+        public String getName()
+        {
+            return "request-active-wan-ip";
+        }
+
+        /**
+         * Callback handler invoked when active WAN IP is requested
+         * Triggers active WAN ID re-evaluation to determine the current active WAN interface
+         *
+         * @param args
+         *        The callback arguments (not used - can be called with no arguments)
+         */
+        public void callback(Object... args)
+        {
             wanBalancerSettingsEvent();
         }
     }
