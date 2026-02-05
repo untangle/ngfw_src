@@ -4,6 +4,11 @@
 package com.untangle.uvm.event;
 
 import java.util.List;
+
+import com.untangle.uvm.event.generic.EventRuleActionGeneric;
+import com.untangle.uvm.event.generic.EventRuleConditionGeneric;
+import com.untangle.uvm.event.generic.EventRuleGeneric;
+
 import java.util.LinkedList;
 /**
  * This in the implementation of a Event Rule
@@ -89,5 +94,65 @@ public class SyslogRule extends EventRule
         this.syslogServers = syslogServers;
     }
 
+
+    /**
+     * Transforms a list of SyslogRule objects into their generic EventRuleGeneric representation.
+     * Used for get api calls
+     * @param syslogRulesList LinkedList<SyslogRule>
+     * @return LinkedList<EventRuleGeneric>
+     */
+    public static LinkedList<EventRuleGeneric> transformSyslogRulesToGeneric(LinkedList<SyslogRule> syslogRulesList) {
+        LinkedList<EventRuleGeneric> syslogRulesGenList = new LinkedList<>();
+        for (SyslogRule rule : syslogRulesList) {
+            EventRuleGeneric syslogRuleGen = SyslogRule.getSyslogRuleGeneric(rule);
+            syslogRulesGenList.add(syslogRuleGen);
+        }
+        return syslogRulesGenList;
+    }
+
+    /**
+     * Transforms a SyslogRule object into its generic EventRuleGeneric representation.
+     * @param rule SyslogRule
+     * @return SyslogRule
+     */
+    private static EventRuleGeneric getSyslogRuleGeneric(SyslogRule rule) {
+        // Transform enabled and ruleId
+        boolean enabled = Boolean.TRUE.equals(rule.getEnabled());
+        String ruleId = rule.getRuleId() != null ? String.valueOf(rule.getRuleId()) : null;
+
+        // Transform Action
+        EventRuleActionGeneric ruleActionGen = new EventRuleActionGeneric();
+        ruleActionGen.setType(EventRuleActionGeneric.Type.SYSLOG);
+        ruleActionGen.setSyslogServers(rule.getSyslogServers() != null ? rule.getSyslogServers() : new LinkedList<>());
+        ruleActionGen.setSyslog(rule.getSyslog() != null ? rule.getSyslog() : false);
+        
+
+        // Transform Conditions
+        LinkedList<EventRuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+        boolean first = true;
+        String className = null;
+        for (EventRuleCondition ruleCondition : rule.getConditions()) {
+            if (first) {
+                className = ruleCondition.getFieldValue();
+                first = false;
+            } else {
+                EventRuleConditionGeneric ruleConditionGen = new EventRuleConditionGeneric(ruleCondition.getComparator(), ruleCondition.getField(), ruleCondition.getFieldValue());
+                ruleConditionGenList.add(ruleConditionGen);
+            }
+        }
+
+        // Create Generic Rule
+        EventRuleGeneric syslogRulesGen = new EventRuleGeneric(enabled, rule.getDescription(), ruleId);
+
+        // Set Actions
+        syslogRulesGen.setConditions(ruleConditionGenList);
+        
+        syslogRulesGen.setAction(ruleActionGen);
+        syslogRulesGen.setClassName(className);
+        syslogRulesGen.setLog(rule.getLog());
+        syslogRulesGen.setThresholdEnabled(rule.getThresholdEnabled());
+        syslogRulesGen.setThresholdTimeframeSec(rule.getThresholdTimeframeSec());
+        return syslogRulesGen;
+    }
 
 }

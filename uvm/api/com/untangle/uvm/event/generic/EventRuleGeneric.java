@@ -5,6 +5,7 @@ package com.untangle.uvm.event.generic;
 
 import com.untangle.uvm.event.AlertRule;
 import com.untangle.uvm.event.EventRuleCondition;
+import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.TriggerRule;
 import com.untangle.uvm.generic.RuleGeneric;
 import com.untangle.uvm.util.Constants;
@@ -231,4 +232,79 @@ public class EventRuleGeneric implements JSONString, Serializable {
         triggerRule.setThresholdGroupingField(ruleGeneric.getThresholdGroupingField());
         return triggerRule;
     }
+
+    /**
+     * Transforms a list of Syslog EventRuleGeneric objects into their v1 SyslogRule representation.
+     * Used for set api calls
+     * @param syslogRulesGen LinkedList<EventRuleGeneric>
+     * @param legacyRules LinkedList<SyslogRule>
+     * @return List<SyslogRule>
+     */
+    public static LinkedList<SyslogRule> transformGenericToLegacySyslogRules(LinkedList<EventRuleGeneric> syslogRulesGen, LinkedList<SyslogRule> legacyRules) {
+        if (legacyRules == null)
+            legacyRules = new LinkedList<>();
+
+        // CLEANUP: Remove deleted rules first
+        RuleGeneric.deleteOrphanRules(
+                syslogRulesGen,
+                legacyRules,
+                EventRuleGeneric::getRuleId,
+                r -> String.valueOf(r.getRuleId())
+        );
+
+        // Build a map for quick lookup by ruleId
+        Map<Integer, SyslogRule> rulesMap = legacyRules.stream()
+                .collect(Collectors.toMap(SyslogRule::getRuleId, Function.identity()));
+
+        LinkedList<SyslogRule> syslogRules = new LinkedList<>();
+        for (EventRuleGeneric ruleGeneric : syslogRulesGen) {
+            SyslogRule syslogRule = rulesMap.get(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), 0));
+            syslogRule = EventRuleGeneric.transformSyslogRule(ruleGeneric, syslogRule);
+            syslogRules.add(syslogRule);
+        }
+        return syslogRules;
+    }
+
+     /**
+     * Transforms a Syslog Rule Generic object into v1 SyslogRule representation.
+     * @param ruleGeneric EventRuleGeneric
+     * @param syslogRule SyslogRule
+     * @return SyslogRule
+     */
+     private static SyslogRule transformSyslogRule(EventRuleGeneric ruleGeneric, SyslogRule syslogRule) {
+        if (syslogRule == null)
+            syslogRule = new SyslogRule();
+
+        
+        // Transform Action
+        if (ruleGeneric.getAction() != null && ruleGeneric.getAction().getType() == EventRuleActionGeneric.Type.SYSLOG) {
+            syslogRule.setSyslogServers(ruleGeneric.getAction().getSyslogServers());
+            syslogRule.setSyslog(ruleGeneric.getAction().getSyslog());
+        }
+
+        // Transform enabled, ruleId, description
+        syslogRule.setEnabled(ruleGeneric.isEnabled());
+        syslogRule.setDescription(ruleGeneric.getDescription());
+        // For new rules added UI send uuid string as ruleId. Here its set to -1
+        syslogRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
+        syslogRule.setLog(ruleGeneric.getLog());
+
+        // Transform Conditions
+        List<EventRuleCondition> ruleConditions = new LinkedList<>();
+        EventRuleCondition classCondition = new EventRuleCondition(Constants.CLASS, Constants.EQUALS_TO, ruleGeneric.getClassName());
+        ruleConditions.add(classCondition);
+        for (EventRuleConditionGeneric ruleConditionGen : ruleGeneric.getConditions()) {
+            EventRuleCondition eventRuleCondition = new EventRuleCondition();
+
+            eventRuleCondition.setComparator(ruleConditionGen.getOp());
+            eventRuleCondition.setField(ruleConditionGen.getType());
+            eventRuleCondition.setFieldValue(ruleConditionGen.getValue());
+            ruleConditions.add(eventRuleCondition);
+        }
+        syslogRule.setConditions(ruleConditions);
+        syslogRule.setThresholdEnabled(ruleGeneric.getThresholdEnabled());
+        syslogRule.setThresholdTimeframeSec(ruleGeneric.getThresholdTimeframeSec());
+        return syslogRule;
+    }
+
 }
