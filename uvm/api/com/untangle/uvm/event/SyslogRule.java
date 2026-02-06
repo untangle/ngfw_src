@@ -153,6 +153,9 @@ public class SyslogRule extends EventRule
         syslogRulesGen.setLog(rule.getLog());
         syslogRulesGen.setThresholdEnabled(rule.getThresholdEnabled());
         syslogRulesGen.setThresholdTimeframeSec(rule.getThresholdTimeframeSec());
+        syslogRulesGen.setThresholdGroupingField((rule.getThresholdGroupingField()));
+        syslogRulesGen.setThresholdLimit((rule.getThresholdLimit()));
+
         return syslogRulesGen;
     }
 

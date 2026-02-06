@@ -304,6 +304,8 @@ public class EventRuleGeneric implements JSONString, Serializable {
         syslogRule.setConditions(ruleConditions);
         syslogRule.setThresholdEnabled(ruleGeneric.getThresholdEnabled());
         syslogRule.setThresholdTimeframeSec(ruleGeneric.getThresholdTimeframeSec());
+        syslogRule.setThresholdGroupingField((ruleGeneric.getThresholdGroupingField()));
+        syslogRule.setThresholdLimit((ruleGeneric.getThresholdLimit()));
         return syslogRule;
     }
 
