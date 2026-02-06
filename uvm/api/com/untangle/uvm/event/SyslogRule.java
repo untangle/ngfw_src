@@ -144,9 +144,10 @@ public class SyslogRule extends EventRule
         // Create Generic Rule
         EventRuleGeneric syslogRulesGen = new EventRuleGeneric(enabled, rule.getDescription(), ruleId);
 
-        // Set Actions
+        // Set Conditions
         syslogRulesGen.setConditions(ruleConditionGenList);
         
+        // Set Actions
         syslogRulesGen.setAction(ruleActionGen);
         syslogRulesGen.setClassName(className);
         syslogRulesGen.setLog(rule.getLog());
