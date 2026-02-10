@@ -8,6 +8,7 @@ import java.util.List;
 import com.untangle.uvm.event.generic.EventRuleActionGeneric;
 import com.untangle.uvm.event.generic.EventRuleConditionGeneric;
 import com.untangle.uvm.event.generic.EventRuleGeneric;
+import com.untangle.uvm.util.Constants;
 
 import java.util.LinkedList;
 /**
@@ -130,14 +131,20 @@ public class SyslogRule extends EventRule
         // Transform Conditions
         LinkedList<EventRuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
         boolean first = true;
-        String className = null;
-        for (EventRuleCondition ruleCondition : rule.getConditions()) {
-            if (first) {
-                className = ruleCondition.getFieldValue();
-                first = false;
-            } else {
-                EventRuleConditionGeneric ruleConditionGen = new EventRuleConditionGeneric(ruleCondition.getComparator(), ruleCondition.getField(), ruleCondition.getFieldValue());
-                ruleConditionGenList.add(ruleConditionGen);
+        String className = Constants.ALL;
+        if (rule.getConditions() != null) {
+            for (EventRuleCondition ruleCondition : rule.getConditions()) {
+                if (Constants.CLASS.equals(ruleCondition.getField())) {
+                    className = ruleCondition.getFieldValue();
+                } else {
+                    EventRuleConditionGeneric ruleConditionGen =
+                        new EventRuleConditionGeneric(
+                            ruleCondition.getComparator(),
+                            ruleCondition.getField(),
+                            ruleCondition.getFieldValue()
+                        );
+                    ruleConditionGenList.add(ruleConditionGen);
+                }
             }
         }
 

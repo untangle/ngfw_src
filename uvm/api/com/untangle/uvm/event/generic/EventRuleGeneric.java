@@ -277,9 +277,9 @@ public class EventRuleGeneric implements JSONString, Serializable {
 
         
         // Transform Action
-        if (ruleGeneric.getAction() != null && ruleGeneric.getAction().getType() == EventRuleActionGeneric.Type.SYSLOG) {
+        if (ruleGeneric.getAction() != null) {
             syslogRule.setSyslogServers(ruleGeneric.getAction().getSyslogServers());
-            syslogRule.setSyslog(ruleGeneric.getAction().getSyslog());
+            syslogRule.setSyslog(ruleGeneric.getAction().getType() == EventRuleActionGeneric.Type.SYSLOG);
         }
 
         // Transform enabled, ruleId, description
@@ -289,17 +289,25 @@ public class EventRuleGeneric implements JSONString, Serializable {
         syslogRule.setRuleId(StringUtil.getInstance().parseInt(ruleGeneric.getRuleId(), -1));
         syslogRule.setLog(ruleGeneric.getLog());
 
-        // Transform Conditions
+        String className = ruleGeneric.getClassName();
         List<EventRuleCondition> ruleConditions = new LinkedList<>();
-        EventRuleCondition classCondition = new EventRuleCondition(Constants.CLASS, Constants.EQUALS_TO, ruleGeneric.getClassName());
-        ruleConditions.add(classCondition);
-        for (EventRuleConditionGeneric ruleConditionGen : ruleGeneric.getConditions()) {
-            EventRuleCondition eventRuleCondition = new EventRuleCondition();
 
-            eventRuleCondition.setComparator(ruleConditionGen.getOp());
-            eventRuleCondition.setField(ruleConditionGen.getType());
-            eventRuleCondition.setFieldValue(ruleConditionGen.getValue());
-            ruleConditions.add(eventRuleCondition);
+        // Transform Conditions
+        if (!Constants.ALL.equalsIgnoreCase(className)) {
+            if (className != null) {
+                EventRuleCondition classCondition = new EventRuleCondition(Constants.CLASS, Constants.EQUALS_TO, ruleGeneric.getClassName());
+                ruleConditions.add(classCondition);
+            }
+            if (ruleGeneric.getConditions() != null) {
+                for (EventRuleConditionGeneric ruleConditionGen : ruleGeneric.getConditions()) {
+                    EventRuleCondition eventRuleCondition = new EventRuleCondition();
+
+                    eventRuleCondition.setComparator(ruleConditionGen.getOp());
+                    eventRuleCondition.setField(ruleConditionGen.getType());
+                    eventRuleCondition.setFieldValue(ruleConditionGen.getValue());
+                    ruleConditions.add(eventRuleCondition);
+                }
+            }
         }
         syslogRule.setConditions(ruleConditions);
         syslogRule.setThresholdEnabled(ruleGeneric.getThresholdEnabled());
