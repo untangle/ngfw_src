@@ -30,6 +30,53 @@ ACTIVE_DIRECTORY = WG_REMOTE = overrides.get("ACTIVE_DIRECTORY", default={
     "clientPassword": "passwd"
 })
 
+def create_ad_settings_with_complex_password(ldap_secure=False):
+    """
+    Create Active Directory settings
+    Need to send Radius setting even though it's not used in this case.
+    """
+    if ldap_secure == True:
+        ldap_port = 636
+    else:
+        ldap_port = 389
+    return {
+        "apiEnabled": True,
+        "activeDirectorySettings": {
+            "javaClass": "com.untangle.app.directory_connector.ActiveDirectorySettings",
+            "enabled": True,
+            "servers": {
+                "javaClass": "java.util.LinkedList",
+                "list": [{
+                    "LDAPHost": "10.111.23.1",
+                    "LDAPSecure": ldap_secure,
+                    "LDAPPort": ldap_port,
+                    "OUFilter": "",
+                    "OUFilters": {
+                        "javaClass": "java.util.LinkedList",
+                        "list": []
+                    },
+                    "domain": "adtest.adtesting.int",
+                    "enabled": True,
+                    "javaClass": "com.untangle.app.directory_connector.ActiveDirectoryServer",
+                    "superuser": "adComplexUser",
+                    "superuserPass": "Tg#48L%p!cR9$^sM2z"
+                }]
+            }
+        },
+        "radiusSettings": {
+            "port": 1812,
+            "enabled": False,
+            "authenticationMethod": "PAP",
+            "javaClass": "com.untangle.app.directory_connector.RadiusSettings",
+            "server": global_functions.RADIUS_SERVER,
+            "sharedSecret": "mysharedsecret"
+        },
+        "googleSettings": {
+            "javaClass": "com.untangle.app.directory_connector.GoogleSettings",
+            "authenticationEnabled": True
+        }
+    }
+
 def create_ad_settings(ldap_secure=False):
     """
     Create Active Directory settings
@@ -239,6 +286,22 @@ class DirectoryConnectorTests(NGFWTestCase):
 
     def test_011_license_valid(self):
         assert(uvmContext.licenseManager().isLicenseValid(self.module_name()))
+
+    def test_012_ad_complex_password_encrypt_decrypt(self):
+        """
+        Add Active Directory Settings with complex password
+        """
+        orig_dc_settings = self._app.getSettings()
+        original_password= "Tg#48L%p!cR9$^sM2z"
+        self._app.setSettings(create_ad_settings_with_complex_password())
+        AD_settings = self._app.getSettings()["activeDirectorySettings"]["servers"]["list"][0]
+        encrypted_password = AD_settings["encrSupUserPass"]
+        decrypted_password = global_functions.uvmContext.systemManager().getDecryptedPassword(encrypted_password)
+
+        # Password match assertion
+        assert decrypted_password == original_password, \
+            "Decrypted password does not match original! (%s != %s)" % (decrypted_password, original_password)
+        self._app.setSettings(orig_dc_settings)
 
     def test_015_setADSettings_NonSecure(self):
         """

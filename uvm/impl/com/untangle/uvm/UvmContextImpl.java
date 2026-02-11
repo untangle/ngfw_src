@@ -12,8 +12,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Scanner;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +33,7 @@ import com.untangle.uvm.servlet.ServletUtils;
 import com.untangle.uvm.util.IOUtil;
 
 /** UvmContextImpl */
-/** This is the root object "context" providing the Untangle VM functionality for applications and the user interface */
+/** This is the root object "context" providing the Untangle VM functionality for applications*/
 public class UvmContextImpl extends UvmContextBase implements UvmContext
 {
     private static final UvmContextImpl CONTEXT = new UvmContextImpl();
@@ -139,10 +137,6 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private SyncSettingsImpl syncSettingsImpl = null;
     private NetFilterLogger netFilterLogger = null;
     private InheritableThreadLocal<HttpServletRequest> threadRequest;
-
-    private long lastLoggedWarningTime = System.currentTimeMillis();
-
-    private volatile List<String> annotatedClasses = new LinkedList<>();
 
     /**
      * UvmContextImpl - private because its a singleton and cannot be instantiated
@@ -1305,6 +1299,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
      * getRegion - returns the name of the region
      * @return the region
      */
+    @Override
     public String getRegionName()
     {
         if (UvmContextImpl.regionName == null) {
@@ -1529,7 +1524,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
 
         this.threadRequest = new InheritableThreadLocal<>();
 
-        this.tomcatManager = new TomcatManagerImpl(this, threadRequest, System.getProperty("uvm.tomcat.dir"), System.getProperty("uvm.web.dir"), System.getProperty("uvm.log.dir"));
+        this.tomcatManager = new TomcatManagerImpl(threadRequest, System.getProperty("uvm.tomcat.dir"), System.getProperty("uvm.web.dir"), System.getProperty("uvm.log.dir"));
 
         this.adminManager = new AdminManagerImpl();
 

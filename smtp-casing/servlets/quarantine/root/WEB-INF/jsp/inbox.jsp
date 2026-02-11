@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ taglib uri="http://java.untangle.com/jsp/uvm" prefix="uvm" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html xmlns:uvm="http://java.untangle.com/jsp/uvm">
@@ -17,7 +18,7 @@
     <script src="/jsonrpc/jsonrpc.js"></script>
 
     <!-- ExtJS lib & theme -->
-    <c:set var="debug" value="${param['debug']}"/>
+    <c:set var="debug" value="${param.debug == '1' ? '1' : '0'}"/>
     <c:choose>
         <c:when test="${debug == '1'}">
     <script src="/ext6.2/ext-all-debug.js"></script>

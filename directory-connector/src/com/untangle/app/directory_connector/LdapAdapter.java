@@ -732,7 +732,14 @@ abstract class LdapAdapter
         throws CommunicationException, AuthenticationException, NamingException
     {
         ActiveDirectoryServer settings = getSettings();
-        String password = settings.getSuperuserPass() != null ? settings.getSuperuserPass() : PasswordUtil.getDecryptPassword(settings.getEncrSupUserPass());
+        String password;
+        if (settings.getSuperuserPass() != null) {
+            password = settings.getSuperuserPass();
+        } else if (settings.getEncrSupUserPass() != null) {
+            password = PasswordUtil.getDecryptPassword(settings.getEncrSupUserPass());
+        } else {
+            throw new AuthenticationException("No superuser password or encrypted password provided.");
+        }
         return createContext(settings.getLDAPHost(),
                              settings.getLDAPPort(),
                              settings.getLDAPSecure(),

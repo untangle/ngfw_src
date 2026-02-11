@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.net.InetAddress;
+import java.util.Objects;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +30,9 @@ import com.untangle.uvm.app.SessionNatEvent;
 import com.untangle.uvm.app.SessionStatsEvent;
 import com.untangle.uvm.app.PolicyManager;
 import com.untangle.uvm.network.InterfaceSettings;
+
+import static com.untangle.uvm.GeographyManagerImpl.LOCAL_COUNTRY_CODE;
+import static com.untangle.uvm.GeographyManagerImpl.UNKNOWN_COUNTRY_CODE;
 
 /**
  * Helper class for the IP session hooks.
@@ -297,34 +301,22 @@ public abstract class NetcapHook implements Runnable
                 sessionEvent.setLocalAddr( serverSide.getServerAddr() );
                 sessionEvent.setRemoteAddr( clientSide.getClientAddr() );
 
-                // lookup the country, latitude, and longitude for WAN clients
-                GeographyManager.Coordinates clientGeoip = UvmContextFactory.context().geographyManager().getCoordinates(clientSide.getClientAddr().getHostAddress());
-                if (clientGeoip != null) {
-                    sessionEvent.setClientCountry(clientGeoip.country);
-                    sessionEvent.setClientLatitude(clientGeoip.latitude);
-                    sessionEvent.setClientLongitude(clientGeoip.longitude);
-                } else {
-                    sessionEvent.setClientCountry("XU");
-                }
+                // lookup the country for WAN clients
+                String clientCountry = UvmContextFactory.context().geographyManager().getCountryCode(clientSide.getClientAddr().getHostAddress());
+                sessionEvent.setClientCountry(Objects.requireNonNullElse(clientCountry, UNKNOWN_COUNTRY_CODE));
             } else {
                 sessionEvent.setLocalAddr( clientSide.getClientAddr() );
                 sessionEvent.setRemoteAddr( serverSide.getServerAddr() );
 
-                sessionEvent.setClientCountry("XL");
+                sessionEvent.setClientCountry(LOCAL_COUNTRY_CODE);
             }
 
-            // lookup the country, latitude, and longitude for WAN servers
+            // lookup the country for WAN servers
             if(serverIsWanInterface){
-                GeographyManager.Coordinates serverGeoip = UvmContextFactory.context().geographyManager().getCoordinates(serverSide.getServerAddr().getHostAddress());
-                if (serverGeoip != null) {
-                    sessionEvent.setServerCountry(serverGeoip.country);
-                    sessionEvent.setServerLatitude(serverGeoip.latitude);
-                    sessionEvent.setServerLongitude(serverGeoip.longitude);
-                } else {
-                    sessionEvent.setServerCountry("XU");
-                }
+                String serverCountry = UvmContextFactory.context().geographyManager().getCountryCode(serverSide.getServerAddr().getHostAddress());
+                sessionEvent.setServerCountry(Objects.requireNonNullElse(serverCountry, UNKNOWN_COUNTRY_CODE));
             } else {
-                sessionEvent.setServerCountry("XL");
+                sessionEvent.setServerCountry(LOCAL_COUNTRY_CODE);
             }
 
             sessionGlobalState.setSessionEvent( sessionEvent );

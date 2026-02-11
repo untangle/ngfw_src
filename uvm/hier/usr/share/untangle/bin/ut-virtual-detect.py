@@ -3,8 +3,10 @@
 import getopt
 import sys
 import os
+import re
 
 Debug = False
+DEVICE_PATTERN = re.compile(r"^(V|VP)\d{4}$")
 
 def get_virtual_type():
     # Unknown.  Let the UI interpret this as "custom"
@@ -26,7 +28,13 @@ def get_virtual_type():
             virtual_type = "VMware"
     elif os.path.exists("/proc/xen"):
         virtual_type = "Xen"
-
+    if os.path.exists("/sys/devices/virtual/dmi/id/product_name"):
+        file = open("/sys/devices/virtual/dmi/id/product_name")
+        product_name = file.read().strip()
+        file.close()
+        #Device models generally follow patterns like: V###, VP###
+        if product_name and DEVICE_PATTERN.match(product_name):
+            virtual_type = product_name
     return virtual_type;
 
 def main(argv):

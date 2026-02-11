@@ -1,0 +1,66 @@
+#!/usr/bin/python3
+import subprocess
+import sys
+import json
+
+ALLOWED_EXECUTABLES = {
+    "/usr/share/untangle/bin/openvpn-import-config",
+    "/sbin/ipsec",
+    "/usr/bin/ntlm_auth",
+    "/usr/bin/qrencode",
+    "/usr/share/untangle/bin/network-status.sh",
+    "/usr/share/untangle/bin/wireless-interface.py",
+    "/usr/share/untangle/bin/ut-certgen",
+    "/usr/share/untangle/bin/ut-rootgen",
+    "/usr/share/untangle/bin/ut-cert-parser",
+    "/bin/ln",
+    "/bin/mkdir",
+    "/bin/mv"
+}
+
+while True:
+    line = sys.stdin.readline()
+    if not line:
+        break
+
+    try:
+        req = json.loads(line)
+
+        # Unwrap Jabsorb HashMap
+        if "map" in req:
+            req = req["map"]
+
+        executable = req.get("executable")
+        args = req.get("args", [])
+
+        # Unwrap Jabsorb List
+        if isinstance(args, dict) and "list" in args:
+            args = args["list"]
+
+        if executable not in ALLOWED_EXECUTABLES:
+            raise Exception("Executable not allowed: " + str(executable))
+
+        if not isinstance(args, list):
+            raise Exception("Arguments must be a list")
+
+        proc = subprocess.Popen(
+            [executable] + args,
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+
+        std_out, _ = proc.communicate()
+        ret_code = proc.returncode
+
+    except Exception as e:
+        std_out = str(e)
+        ret_code = -1
+
+    sys.stdout.write(json.dumps({
+        "javaClass": "com.untangle.uvm.ExecManagerResult",
+        "result": ret_code,
+        "output": std_out
+    }) + "\n")
+    sys.stdout.flush()

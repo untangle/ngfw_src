@@ -60,12 +60,10 @@ Ext.define('Ung.widget.MapDistribution', {
                         bubbleSize = result[i].bps;
                     }
                     data.push({
-                        lat: result[i].latitude,
-                        lon: result[i].longitude,
+                        country: result[i].country,
                         z: bubbleSize == 0 ? 0 : me.bytesToDynamicSize(bubbleSize),
                         numberPart: numberPart,
                         unitPart: unitPart,
-                        country: result[i].country,
                         sessionCount: result[i].sessionCount
                     });
                 }
@@ -149,6 +147,7 @@ Ext.define('Ung.widget.MapDistribution', {
                 enableMouseTracking: false
             }, {
                 type: 'mapbubble',
+                joinBy: ['iso-a2', 'country'],
                 minSize: 10,
                 maxSize: 50,
                 zMax: 500

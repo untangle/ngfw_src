@@ -292,7 +292,8 @@ class PhishBlockerTests(NGFWTestCase):
         response_msg = global_functions.is_clamav_receive_ready(b"This is normal data")
         response_virus = global_functions.is_clamav_receive_ready(b'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*')
         assert("OK" in response_msg)
-        assert("Win.Test.EICAR_HDB-1" in response_virus)
+        assert "FOUND" in response_virus
+        assert "EICAR" in response_virus.upper()
     
     @classmethod
     def final_extra_tear_down(cls):

@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import java.util.Base64;
+import java.util.regex.Pattern;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -37,6 +38,8 @@ public class WireGuardVpnManager
 
     private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY = "%PUBLIC_KEY%";
     private static final String WIREGUARD_REMOTE_CONFIG_TEMPLATE = "/etc/wireguard/untangle/remote-" + WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY + ".conf";
+    private static final String WG_KEY_REGEX = "^[A-Za-z0-9+/]{42}[AEIMQUYcgkosw480]=$";
+    private static final Pattern PATTERN = Pattern.compile(WG_KEY_REGEX);
 
     private final Logger logger = LogManager.getLogger(this.getClass());
     private final WireGuardVpnApp app;
@@ -135,6 +138,12 @@ public class WireGuardVpnManager
     public void addTunnel(String publicKey)
     {
         WireGuardVpnTunnel addTunnel = null;
+
+        if (!isValidWGKey(publicKey)) {
+            logger.info("Invalid wireguard public key");
+            return;
+
+        }
         for(WireGuardVpnTunnel tunnel : app.getSettings().getTunnels()){
             if(tunnel.getPublicKey().equals(publicKey)){
                 addTunnel = tunnel;
@@ -183,6 +192,11 @@ public class WireGuardVpnManager
      */
     public void deleteTunnel(String publicKey)
     {
+        if (!isValidWGKey(publicKey)) {
+            logger.info("Invalid wireguard public key");
+            return;
+
+        }
         WireGuardVpnTunnel removeTunnel = null;
         String[] networks = null;
         for(WireGuardVpnTunnel tunnel : app.getSettings().getTunnels()){
@@ -202,6 +216,32 @@ public class WireGuardVpnManager
         commands.add(WIREGUARD_APP + " set wg0 peer " + publicKey + " remove");
         for ( String cmd: commands ) 
             this.wireguardCommand(cmd);
+    }
+
+    /**
+     * Validate a public key
+     * @param publicKey String key to lookup in tunnel settings.
+     * @return True if Public key is valid or not.
+     */
+    public boolean isValidWGKey(String publicKey) {
+        if (publicKey == null || publicKey.length() != 44) {
+            return false;
+        }
+
+        // 1. Regex check: Immediately rejects command injection characters
+        if (!PATTERN.matcher(publicKey).matches()) {
+            return false;
+        }
+
+        try {
+            // 2. Base64 decode check
+            byte[] decoded = Base64.getDecoder().decode(publicKey);
+            
+            // 3. Length check: WireGuard keys are exactly 32 raw bytes
+            return decoded.length == 32;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     /**
@@ -242,7 +282,12 @@ public class WireGuardVpnManager
      * @return String of derived public key.
      */
     public String getPublicKey(String privateKey)
-    {
+    {  
+        if (!isValidWGKey(privateKey)) {
+            logger.info("Invalid wireguard private key");
+            return "";
+
+        } 
         String result = wireguardCommand(System.getProperty("uvm.bin.dir") + "/ut-wireguard-helpers.sh showPublicKey " + privateKey + " " + WIREGUARD_APP );
         return result;
     }
@@ -253,6 +298,11 @@ public class WireGuardVpnManager
      * @return Base 64 encoded string of image.
      */
     public String createQrCode(String publicKey){
+        if (!isValidWGKey(publicKey)) {
+            logger.info("Invalid wireguard public key");
+            return "";
+
+        }
         File file = getRemoteConfigFile(publicKey);
         return (file != null) ? wireguardCommand("/usr/bin/qrencode -t SVG -o - -r " + file.getAbsolutePath())  : "";
     }
@@ -274,6 +324,11 @@ public class WireGuardVpnManager
      */
     private File getRemoteConfigFile(String publicKey)
     {
+        if (!isValidWGKey(publicKey)) {
+            logger.info("Invalid wireguard public key");
+            return null;
+
+        }
         String filename = WIREGUARD_REMOTE_CONFIG_TEMPLATE.replaceAll(WIREGUARD_REMOTE_CONFIG_TEMPLATE_PUBLIC_KEY, publicKey);
         File file = new File(filename);
         return file.exists() ? file : null;

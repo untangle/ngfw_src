@@ -7,6 +7,7 @@ import base64
 import copy
 import unittest
 import pytest
+import urllib
 import runtests
 from urllib3 import util
 
@@ -94,9 +95,9 @@ def create_capture_allow_https_rule(id_value):
      };
 
 
-def create_local_directory_user(directory_user=local_user_name,expire_time=0):
+def create_local_directory_user(directory_user=local_user_name,expire_time=0,password="passwd"):
     user_email = directory_user + "@test.untangle.com"
-    passwd_encoded = base64.b64encode("passwd".encode("utf-8"))
+    passwd_encoded = base64.b64encode(password.encode("utf-8"))
     return {'javaClass': 'java.util.LinkedList',
         'list': [{
             'username': directory_user,
@@ -511,9 +512,68 @@ class CaptivePortalTests(NGFWTestCase):
         search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_028.out")
         assert (search == 0)
 
+    def test_029_login_local_directory_auth_with_complex_password(self):
+        global app, appData
+        local_user_password = "$a!P9%Zx!4t$Q7&'Km|(3)R"
+        uvmContext.localDirectory().setUsers(create_local_directory_user(password=local_user_password))
+        # Create Internal NIC capture rule with basic login page
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
+        appData['authenticationType']="LOCAL_DIRECTORY"
+        appData['pageType'] = "BASIC_LOGIN"
+        appData['userTimeout'] = 3600  # default
+        self._app.setSettings(appData)
+
+        # check that basic captive page is shown
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_030.out"))
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'username and password' /tmp/capture_test_030.out")
+        assert (search == 0)
+
+        # check if local directory login and password
+        appid = str(self._app.getAppSettings()["id"])
+        encoded_password = urllib.parse.quote(local_user_password, safe='')
+
+        uri = (
+            global_functions.get_http_url()
+            + "/capture/handler.py/authpost?"
+            + "username=" + local_user_name
+            + "&password=" + encoded_password
+            + "&nonce=9abd7f2eb5ecd82b"
+            + "&method=GET"
+            + "&appid=" + appid
+            + "&host=test.untangle.com"
+            + "&uri=/"
+        )
+
+        result = remote_control.run_command(
+            global_functions.build_wget_command(
+                tries=None,
+                timeout=None,
+                output_file="/tmp/capture_test_030a.out",
+                uri=uri
+            )
+        )
+
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_030a.out")
+        assert (search == 0)
+        foundUsername = find_name_in_host_table(local_user_name)
+        assert(foundUsername)
+
+        # logout user to clean up test.
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/capture_test_030b.out", uri=global_functions.get_http_url() + "/capture/logout"))
+        assert (result == 0)
+        search = remote_control.run_command("grep -q 'logged out' /tmp/capture_test_030b.out")
+        assert (search == 0)
+        foundUsername = find_name_in_host_table(local_user_name)
+        assert(not foundUsername)
+        #Settting the user to intial setting
+        uvmContext.localDirectory().setUsers(create_local_directory_user())
+
+
     def test_030_login_local_directory(self):
         global app, appData
-
         # Create Internal NIC capture rule with basic login page
         appData['captureRules']['list'] = []
         appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))

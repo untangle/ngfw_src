@@ -48,8 +48,6 @@ public interface ConfigManager
 
     Object restoreSystemBackup(String argFileName, String maintainRegex);
 
-    Object doDatabaseQuery(String argQuery);
-
     Object createDiagnosticDump();
 
     Object getConnectedClients();

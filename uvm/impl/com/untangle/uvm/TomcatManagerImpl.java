@@ -15,7 +15,6 @@ import java.net.InetAddress;
 import java.util.Properties;
 import java.util.Map;
 
-import javax.naming.Name;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -42,8 +41,6 @@ import org.apache.catalina.valves.ValveBase;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.TomcatManager;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.IPMatcher;
 
@@ -64,18 +61,15 @@ public class TomcatManagerImpl implements TomcatManager
     private final Tomcat tomcat;
     private final StandardHost baseHost;
     private final String webAppRoot;
-    
-    private static final String[] tldScanTargets = {"untangle-libuvm-taglib.jar","standard.jar","smtp-servlet-quarantine.jar"};
 
     /**
      * constructor
-     * @param uvmContext
      * @param threadRequest
      * @param catalinaHome
      * @param webAppRoot
      * @param logDir
      */
-    protected TomcatManagerImpl(UvmContextImpl uvmContext, InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
+    protected TomcatManagerImpl(InheritableThreadLocal<HttpServletRequest> threadRequest, String catalinaHome, String webAppRoot, String logDir)
     {
         this.webAppRoot = webAppRoot;
         String hostname = "localhost";

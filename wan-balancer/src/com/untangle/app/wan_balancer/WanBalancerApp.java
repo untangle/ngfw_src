@@ -10,6 +10,7 @@ import java.io.File;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import com.untangle.uvm.HookManager;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
@@ -22,6 +23,9 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.vnet.PipelineConnector;
+import com.untangle.uvm.app.App;
+import static com.untangle.uvm.app.License.WAN_FAILOVER;
+import static com.untangle.uvm.app.AppSettings.AppState.RUNNING;
 
 /**
  * The Wan Balancer Application
@@ -138,6 +142,7 @@ public class WanBalancerApp extends AppBase
          * Sync the new settings
          */
         syncToSystem(true);
+        UvmContextFactory.context().hookManager().callCallbacks( HookManager.WAN_BALANCER_CHANGE, this.settings.getWeights());
     }
 
     /**
@@ -153,6 +158,34 @@ public class WanBalancerApp extends AppBase
 
         // if this is permanent write the enabled version of the scripts and run them
         if (isPermanentTransition) syncToSystem(true);
+    }
+
+    /**
+     * Called after the application is started
+     *
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    @Override
+    protected void postStart(boolean isPermanentTransition)
+    {
+        // Notify WAN Failover that WAN Balancer has started
+        // This is done in postStart() to ensure WAN Balancer is fully running
+        // before WAN Failover checks the run state
+        notifyWanFailover();
+    }
+    /**
+     * Called before the application is stopped
+     * 
+     * @param isPermanentTransition
+     *        Permanent transition flag
+     */
+    @Override
+    protected void preStop(boolean isPermanentTransition)
+    {
+        // Notify WAN Failover that WAN Balancer is stopping so it can re-evaluate active WAN
+        // This ensures IPsec and other apps switch from weight-based to first-active-WAN logic
+        notifyWanFailover();
     }
 
     /**
@@ -177,6 +210,29 @@ public class WanBalancerApp extends AppBase
     protected void postDestroy()
     {
         syncToSystem(false);
+    }
+
+    /**
+     * Notify WAN Failover that WAN Balancer has stopped or started.
+     * This triggers WAN Failover to re-evaluate the active WAN and switch
+     * from weight-based selection to first-active-WAN selection.
+     */
+    private void notifyWanFailover()
+    {
+        try {
+            App wanFailoverApp = UvmContextFactory.context().appManager().app(WAN_FAILOVER);
+            if (wanFailoverApp != null && wanFailoverApp.getRunState() == RUNNING) {
+                // WAN Failover is already listening to WAN_BALANCER_CHANGE hook
+                // Send current weights
+                int[] weights = null;
+                if (this.settings != null) {
+                    weights = this.settings.getWeights();
+                }
+                UvmContextFactory.context().hookManager().callCallbacks(HookManager.WAN_BALANCER_CHANGE, weights);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to notify WAN Failover: ", e.getMessage());
+        }
     }
 
     /**

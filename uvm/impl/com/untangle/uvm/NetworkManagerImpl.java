@@ -62,9 +62,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -107,6 +114,8 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
     private final static String GET_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/hostapd-logfile";
+    private static String INTERFACE_NAME_PATTERN = "[a-zA-Z0-9._:-]{1,32}";
+    private static String REGION_NAME_PATTERN = "[A-Z]{2}";
 
     // creating a cache for the lookedup mac addresses and vendors
     private static ConcurrentMap<String,String> cachedMacAddrVendorList = new ConcurrentHashMap<>();
@@ -144,7 +153,7 @@ public class NetworkManagerImpl implements NetworkManager
         try {
             readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilename );
         } catch ( SettingsManager.SettingsException e ) {
-            logger.warn( "Failed to load settings:", e );
+            logger.warn("Failed to load settings:", e );
         }
 
         /**
@@ -155,15 +164,15 @@ public class NetworkManagerImpl implements NetworkManager
         if ( readSettings == null && UvmContextFactory.context().isDevel() ) {
             try {
                 // check for "backup" settings in /etc
-                logger.info("Reading Network Settings from " + this.settingsFilenameBackup);
+                logger.info("Reading Network Settings from {}", this.settingsFilenameBackup);
                 readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
-                logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
+                logger.info("Reading Network Settings from {} = {}", this.settingsFilenameBackup , readSettings);
                 
                 if (readSettings != null)
                     settingsManager.save( this.settingsFilename, readSettings );
                     
             } catch ( SettingsManager.SettingsException e ) {
-                logger.warn( "Failed to load settings:", e );
+                logger.warn("Failed to load settings:", e );
             }
         }
         
@@ -171,7 +180,7 @@ public class NetworkManagerImpl implements NetworkManager
          * If there are still no settings, just initialize
          */
         if (readSettings == null) {
-            logger.warn( "No settings found - Initializing new settings." );
+            logger.warn("No settings found - Initializing new settings.");
             this.setNetworkSettings( defaultSettings() );
 
             // apply oem settings
@@ -195,7 +204,8 @@ public class NetworkManagerImpl implements NetworkManager
             if ( this.networkSettings.getVersion() < currentVersion ) {
                 convertSettings();
             }
-            logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
+            if (logger.isDebugEnabled())
+                logger.debug("Loading Settings: {}", this.networkSettings.toJSONString() );
         }
 
         /**
@@ -224,7 +234,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
         
-        logger.info( "Initialized NetworkManager" );
+        logger.info("Initialized NetworkManager");
     }
     
     /**
@@ -303,7 +313,7 @@ public class NetworkManagerImpl implements NetworkManager
                 settingsManager.save( this.settingsFilenameBackup, newSettings, false );
             }
         } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.",e);
+            logger.warn("Failed to save settings.", e);
             return;
         }
 
@@ -313,7 +323,10 @@ public class NetworkManagerImpl implements NetworkManager
         this.networkSettings = newSettings;
         updateNetworkReservations(newSettings);
         configureInterfaceSettingsArray();
-        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug("New Settings: \n{}", new org.json.JSONObject(this.networkSettings).toString(2));
+        } catch (Exception e) {}
 
         UvmContextFactory.context().syncSettings().run(this.settingsFilename);
         
@@ -331,34 +344,34 @@ public class NetworkManagerImpl implements NetworkManager
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
 
         if ( intfSettings == null ) {
-            logger.warn("Interface not found. Unable to renew DHCP lease on interface " + interfaceId);
+            logger.warn("Interface not found. Unable to renew DHCP lease on interface {}", interfaceId);
             return;
         }
         String devName = intfSettings.getSymbolicDev();
         if ( devName == null ) {
-            logger.warn("Interface missing systemDev. Unable to renew DHCP lease on interface " + interfaceId);
+            logger.warn("Interface missing systemDev. Unable to renew DHCP lease on interface {}", interfaceId);
             return;
         }
         if ( intfSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.AUTO ) {
-            logger.warn("Interface not type AUTO. Unable to renew DHCP lease on interface " + interfaceId);
+            logger.warn("Interface not type AUTO. Unable to renew DHCP lease on interface {}", interfaceId);
             return;
         }
         
         // just bring the interface up and down 
         result = UvmContextFactory.context().execManager().exec( "ifdown " + devName );
         try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("ifdown " + devName + ": ");
+            String[] lines = result.getOutput().split("\\r?\\n");
+            logger.info("ifdown {}: ", devName );
             for ( String line : lines )
-                logger.info("ifdown: " + line);
+                logger.info("ifdown: {}", line);
         } catch (Exception e) {}
 
         result = UvmContextFactory.context().execManager().exec( "ifup " + devName );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("ifup " + devName + ": ");
+            logger.info("ifup {}: ", devName );
             for ( String line : lines )
-                logger.info("ifup: " + line);
+                logger.info("ifup: {}", line);
         } catch (Exception e) {}
     }
         
@@ -427,12 +440,12 @@ public class NetworkManagerImpl implements NetworkManager
     public InterfaceSettings findInterfaceId( int interfaceId )
     {
         if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null) {
-            logger.warn( "Missing network settings." );
+            logger.warn("Missing network settings.");
             return null;
         }
 
         if ( interfaceId < 0 || interfaceId > 255 ) {
-            logger.warn( "Invalid interface ID: " + interfaceId );
+            logger.warn("Invalid interface ID: {}", interfaceId );
             return null;
         }
 
@@ -486,7 +499,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
         if ( intfSettings == null ) {
-            logger.warn("Unknown interface: " + interfaceId, new Exception());
+            logger.warn("Unknown interface: {}", interfaceId, new Exception());
             return false;
         }
 
@@ -511,7 +524,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         InterfaceSettings intfSettings = findInterfaceId( intfId );
         if ( intfSettings == null ) {
-            logger.warn("Failed to find interface " + intfId);
+            logger.warn("Failed to find interface {}", intfId);
             return null;
         }
 
@@ -530,7 +543,7 @@ public class NetworkManagerImpl implements NetworkManager
             intfSettings = findInterfaceId( bridgedTo );
 
             if ( intfSettings == null ) {
-                logger.warn("No Interface found for name: " + bridgedTo );
+                logger.warn("No Interface found for name: {}", bridgedTo );
                 return null;
             } 
 
@@ -573,7 +586,7 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
         }catch(Exception e){
-            logger.warn("Unable to parse interfaces for dhcpDnsOverride:",e);
+            logger.warn("Unable to parse interfaces for dhcpDnsOverride:", e);
         }
 
         return address;
@@ -594,7 +607,7 @@ public class NetworkManagerImpl implements NetworkManager
         try {
             status = UvmContextFactory.context().settingsManager().load( InterfaceStatus.class,  filename);
         } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to load settings:",e);
+            logger.warn("Failed to load settings:", e);
             return null;
         }
 
@@ -822,11 +835,13 @@ public class NetworkManagerImpl implements NetworkManager
     {
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
         if ( intfSettings == null ) {
-            logger.warn("Unable to find interface settings for interface " + interfaceId );
+            logger.warn("Unable to find interface settings for interface {}", interfaceId );
             return false;
         }
-        if ( ! intfSettings.getVrrpEnabled() ) {
-            logger.warn("VRRP not enabled on interface " + interfaceId );
+        // check if vrrp is enabled on the interface to avoid console errors
+        // if not enabled, return false
+        if (!Boolean.TRUE.equals(intfSettings.getVrrpEnabled())) {
+            logger.warn("VRRP not enabled on interface {}", interfaceId );
             return false;
         }
         // find any vrrp address
@@ -839,7 +854,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         if ( vrrpAddress == null ) {
-            logger.warn("VRRP alias not found on interface " + interfaceId );
+            logger.warn("VRRP alias not found on interface {}", interfaceId );
             return false;
         }
 
@@ -907,7 +922,7 @@ public class NetworkManagerImpl implements NetworkManager
             entryList = ObjectMatcher.parseJson(output, ListOfDeviceStatusClass); 
             } catch (JSONException | UnmarshallException e) {
                 logger.warn("Unable to parse device status: ", e);
-                logger.warn("Unable to parse device status: " + output);
+                logger.warn("Unable to parse device status: {}", output);
                 return null;
             } catch (Exception e) {
                 logger.error("Unexpected exception while getting device status: ", e);
@@ -1074,7 +1089,7 @@ public class NetworkManagerImpl implements NetworkManager
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("insert rules: ");
             for ( String line : lines )
-                logger.info("insert rules: " + line);
+                logger.info("insert rules: {}", line);
         } catch (Exception e) {}
     }
 
@@ -1092,7 +1107,7 @@ public class NetworkManagerImpl implements NetworkManager
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("remove rules: ");
             for ( String line : lines )
-                logger.info("remove rules: " + line);
+                logger.info("remove rules: {}", line);
         } catch (Exception e) {}
     }
 
@@ -1125,7 +1140,7 @@ public class NetworkManagerImpl implements NetworkManager
                     interfaceSettingsById[intf.getInterfaceId()] = intf;
             }
                 catch (ArrayIndexOutOfBoundsException e) {
-                    logger.warn("Skipping out-of-bounds physical interface: " + intf.getInterfaceId());
+                    logger.warn("Skipping out-of-bounds physical interface: {}", intf.getInterfaceId());
                     continue;
                 }
             }
@@ -1136,7 +1151,7 @@ public class NetworkManagerImpl implements NetworkManager
                     interfaceSettingsById[intf.getInterfaceId()] = intf;
                 }
                 catch (ArrayIndexOutOfBoundsException e) {
-                    logger.warn("Skipping out-of-bounds virtual interface: " + intf.getInterfaceId());
+                    logger.warn("Skipping out-of-bounds virtual interface: {}", intf.getInterfaceId());
                     continue;
                 }
             }
@@ -1166,15 +1181,15 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
             if ( ! foundMatchingInterface ) {
-                logger.warn("Found unmapped new physical device: " + deviceName);
-                logger.warn("Creating new InterfaceSettings for " + deviceName);
+                logger.warn("Found unmapped new physical device: {}", deviceName);
+                logger.warn("Creating new InterfaceSettings for {}", deviceName);
                 int interfaceId = this.getNextFreeInterfaceId( netSettings );
                 if (interfaceId == -1) {
                     // note: we never need to explicitly set this flag to false. The user needs to 
                     // restart to solve the problem (which is told to them in NotificationManagerImpl). 
                     // On restart, the flag will always be false initially.
                     this.setInterfacesOverloadedFlag(true);
-                    logger.warn("No space for added physical interface '" + deviceName + "'");
+                    logger.warn("No space for added physical interface '{}'", deviceName );
                     continue;
                 }
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
@@ -1214,8 +1229,8 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
             if ( ! foundMatchingDevice ) {
-                logger.warn("Found unmapped new physical device: " + deviceName);
-                logger.warn("Creating new DeviceSettings for " + deviceName + ".");
+                logger.warn("Found unmapped new physical device: {}", deviceName);
+                logger.warn("Creating new DeviceSettings for {}.", deviceName );
 
                 DeviceSettings deviceSettings = new DeviceSettings();
                 deviceSettings.setDeviceName( deviceName );
@@ -1537,7 +1552,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
         catch (Exception e) {
-            logger.error("Error creating Network Settings",e);
+            logger.error("Error creating Network Settings", e);
         }
 
         return newSettings;
@@ -2209,7 +2224,7 @@ public class NetworkManagerImpl implements NetworkManager
             InetAddress addr = interfaceSettings.getV4StaticAddress();
             InetAddress mask = interfaceSettings.getV4StaticNetmask();
             if (addr == null || mask == null) {
-                logger.warn("Missing interface[" + interfaceSettings.getName() + "] settings (" + addr + ", " + mask + "). Disabling DHCP.");
+                logger.warn("Missing interface[{}] settings ({}, {}). Disabling DHCP.", interfaceSettings.getName() , addr , mask );
                 interfaceSettings.setDhcpType(InterfaceSettings.DhcpType.DISABLED);
                 return;
             }
@@ -2248,7 +2263,7 @@ public class NetworkManagerImpl implements NetworkManager
             interfaceSettings.setDhcpLeaseDuration( 60*60 ); // 1 hours (dnsmasq doc suggested value)
         }
         catch (Exception e) {
-            logger.warn("Exception initializing DHCP Address: ",e);
+            logger.warn("Exception initializing DHCP Address: ", e);
             interfaceSettings.setDhcpType(InterfaceSettings.DhcpType.DISABLED);
         }
     }
@@ -2924,6 +2939,37 @@ public class NetworkManagerImpl implements NetworkManager
         return deviceNames;
     }
 
+     /**
+     *  Helper method to execute shell commands with a wireless device for fetching information
+     * @param scriptPath executable path
+     * @param arguments list of strings
+     * @param interfaceName
+     * @return String
+     */
+    private String execInterfaceCommand( String scriptPath, List<String> arguments, String interfaceName) {
+
+        // Validate interface syntax
+        if (interfaceName == null ||
+            !interfaceName.matches(INTERFACE_NAME_PATTERN)) {
+            throw new RuntimeException("Invalid interface name");
+        }
+
+        // Validate interface exists (sysfs)
+        Path iface = Paths.get("/sys/class/net", interfaceName);
+        if (!Files.exists(iface)) {
+            throw new RuntimeException("Unknown interface: " + interfaceName);
+        }
+
+        ExecManager execManager = UvmContextFactory.context().execManager();
+
+        ExecManagerResult result =
+            execManager.execCommand(scriptPath, arguments);
+
+        return result.getOutput();
+    }
+
+
+
     /**
      * Query a wireless device for valid regulatory country codes
      * @param systemDev
@@ -2931,15 +2977,25 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public JSONArray getWirelessValidRegulatoryCountryCodes( String systemDev )
     {
-        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_valid_country_codes");
-        JSONObject jo = null;
-        try{
-            jo = new JSONObject(result);
+        String result = execInterfaceCommand(
+            wirelessInterfaceScript,
+            List.of(
+                "--interface=" + systemDev,
+                "--query=get_valid_country_codes"
+            ),
+            systemDev
+        );
+    
+        try {
+            JSONObject jo = new JSONObject(result);
             return jo.getJSONArray("get_valid_country_codes");
-        }catch(JSONException e ){
-            logger.warn("Unable to parse wireless regulatory country codes: " + result);
+        } catch (JSONException e) {
+            logger.warn(
+                "Unable to parse wireless regulatory country codes: " + result,
+                e
+            );
+            return null;
         }
-        return null;
     }
 
     /**
@@ -2949,16 +3005,22 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public boolean isWirelessRegulatoryCompliant( String systemDev )
     {
-        boolean compliant = false;
-        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=is_regulatory_compliant");
-        JSONObject jo = null;
+        String result = execInterfaceCommand(
+            wirelessInterfaceScript,
+            List.of(
+                "--interface=" + systemDev,
+                "--query=is_regulatory_compliant"
+            ),
+            systemDev
+        );
+
         try{
-            jo = new JSONObject(result);
-            compliant = jo.getBoolean("is_regulatory_compliant");
+            JSONObject jo = new JSONObject(result);
+            return jo.getBoolean("is_regulatory_compliant");
         }catch( JSONException e ){
-            logger.warn("Unable to parse wireless driver compliance: " + result);
+            logger.warn("Unable to parse wireless driver compliance: {}", result);
         }
-        return compliant;
+        return false;
     }
 
     /**
@@ -2968,16 +3030,22 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public String getWirelessRegulatoryCountryCode( String systemDev )
     {
-        String country_code = "";
-        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_regulatory_country_code");
-        JSONObject jo = null;
+        String result = execInterfaceCommand(
+            wirelessInterfaceScript,
+            List.of(
+                "--interface=" + systemDev,
+                "--query=get_regulatory_country_code"
+            ),
+            systemDev
+        );
+
         try{
-            jo = new JSONObject(result);
-            country_code = jo.getString("get_regulatory_country_code");
+            JSONObject jo = new JSONObject(result);
+             return  jo.getString("get_regulatory_country_code");
         }catch( JSONException e ){
-            logger.warn("Unable to parse wireless driver country code: " + result);
+            logger.warn("Unable to parse wireless driver country code: {}", result);
         }
-        return country_code;
+        return "";
     }
 
     /**
@@ -2990,13 +3058,23 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public JSONArray getWirelessChannels( String systemDev, String region )
     {
-        String result = UvmContextFactory.context().execManager().execOutput( wirelessInterfaceScript + " --interface=" + systemDev + " --query=get_channels," + region);
-        JSONObject jo = null;
+        // Validate region (ISO 3166-1 alpha-2, e.g., US, IN, DE)
+        if (region == null || !region.matches(REGION_NAME_PATTERN)) {
+            throw new RuntimeException("Invalid wireless regulatory region");
+        }
+        String result = execInterfaceCommand(
+            wirelessInterfaceScript,
+            List.of(
+                "--interface=" + systemDev,
+                "--query=get_channels," + region
+            ),
+            systemDev
+        );
         try{
-            jo = new JSONObject(result);
+            JSONObject jo = new JSONObject(result);
             return jo.getJSONArray("get_channels");
         }catch(JSONException e ){
-            logger.warn("Unable to parse wireless channels: " + result);
+            logger.warn("Unable to parse wireless channels: {}", result);
         }
         return null;
     }
@@ -3010,7 +3088,8 @@ public class NetworkManagerImpl implements NetworkManager
      */
     public String getUpnpManager(String command, String arguments)
     {
-        return UvmContextFactory.context().execManager().execOutput(upnpManagerScript + " " + command + " " + arguments);
+        throw new RuntimeException("UpnpManager not supported Exception");
+
     }
 
     /**
@@ -3065,7 +3144,7 @@ public class NetworkManagerImpl implements NetworkManager
         boolean changed = false;
 
         if ( ssid == null || password == null || encryption == null ) {
-            logger.warn("Invalid arguments: " + ssid + " " + password + " " + encryption );
+            logger.warn("Invalid arguments: {} {} {}", ssid , password , encryption );
             return;
         }
 
@@ -3084,7 +3163,7 @@ public class NetworkManagerImpl implements NetworkManager
 
             JSONArray channels = getWirelessChannels( intf.getSystemDev(), intf.getWirelessCountryCode() );
             if ( channels == null ) {
-                logger.warn("Unabled to determine supported channels for " + intf.getSystemDev());
+                logger.warn("Unabled to determine supported channels for {}", intf.getSystemDev());
                 continue;
             }
             int maxChannel = 0;
@@ -3096,7 +3175,7 @@ public class NetworkManagerImpl implements NetworkManager
                     channelFrequency = channels.getJSONObject(j);
                     ch = channelFrequency.getInt("channel");
                 }catch(JSONException e){
-                    logger.warn("Unable to determine supported channels for " + intf.getSystemDev());
+                    logger.warn("Unable to determine supported channels for {}", intf.getSystemDev());
                     continue;
                 }
                 if ( ch > maxChannel ) maxChannel = ch;
@@ -3231,7 +3310,7 @@ public class NetworkManagerImpl implements NetworkManager
                 httpsPortStr = Integer.toString( this.networkSettings.getPublicUrlPort() );
             }
         } else {
-            logger.warn("Unknown public URL method: " + this.networkSettings.getPublicUrlMethod() );
+            logger.warn("Unknown public URL method: {}", this.networkSettings.getPublicUrlMethod() );
         }
         
         return primaryAddressStr + ":" + httpsPortStr;
@@ -3270,7 +3349,7 @@ public class NetworkManagerImpl implements NetworkManager
             if (found) continue;
             return freeId;
         }
-        logger.warn("Failed to find a free interface Id ("  + freeId + ")");
+        logger.warn("Failed to find a free interface Id ({})", freeId );
         return -1;
     }
 
@@ -3284,27 +3363,32 @@ public class NetworkManagerImpl implements NetworkManager
      * @param argument - String of argument to pass to script
      * @return string of status
      */
-    public String getStatus(StatusCommands command, String argument)
-    {
-        switch(command){
-            case INTERFACE_TRANSFER:
-            case INTERFACE_IP_ADDRESSES:
-            case INTERFACE_ARP_TABLE:
-            case DYNAMIC_ROUTING_TABLE:
-            case DYNAMIC_ROUTING_BGP:
-            case DYNAMIC_ROUTING_OSPF:
-            case ROUTING_TABLE:
-            case QOS:
-            case DHCP_LEASES: {
-                if(argument != null && argument.contains("&")) throw new RuntimeException("runTroubleshooting suspicious argument: (" + argument + "), blocked");
-                
-                return UvmContextFactory.context().execManager().execOutputSafe(statusScript + " get_" + command.toString().toLowerCase() + " " + argument);
-            }
-            default:
-                throw new RuntimeException("getStatus unknown command: " + command);
-        }
-    }
+    public String getStatus(StatusCommands command, String argument) {
 
+        ExecManager execManager = UvmContextFactory.context().execManager();
+    
+        List<String> args = new ArrayList<>();
+        args.add(command.getScriptCommand());
+    
+        if (command.requiresInterface()) {
+            Path iface = Paths.get("/sys/class/net", argument);
+    
+            if (argument == null ||
+                !argument.matches(INTERFACE_NAME_PATTERN) || (!argument.startsWith("ppp") && !Files.exists(iface))) {
+                throw new RuntimeException("Invalid interface name");
+            }
+    
+            args.add(argument);
+    
+        } else if (argument != null) {
+            throw new RuntimeException(
+                "Argument not supported for command: " + command
+            );
+        }
+    
+        return execManager.execCommand(statusScript, args).getOutput();
+    }
+    
     /**
      * Run network troubleshooting script
      *
@@ -3316,11 +3400,21 @@ public class NetworkManagerImpl implements NetworkManager
     {
         List<String> environment_variables = new ArrayList<>();
         List<String> suspiciousEntries = new ArrayList<>();
-        // Define regex patterns
-        Pattern hostnamePattern = Pattern.compile("^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*\\.?$");
-        Pattern ipv4Pattern = Pattern.compile("^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.|$)){4}$");
-        Pattern ipv6Pattern = Pattern.compile("^(?:[\\da-fA-F]{1,4}:){7}[\\da-fA-F]{1,4}$");
-        Pattern urlPattern = Pattern.compile("^(https?://)([\\w\\-\\.]+)(:\\d+)?(/\\S*)?$");
+
+        // Allowed args
+        Map<TroubleshootingCommands, Set<String>> allowedArgs =
+            Map.of(
+                TroubleshootingCommands.CONNECTIVITY, Set.of("DNS_TEST_HOST", "TCP_TEST_HOST"),
+                TroubleshootingCommands.REACHABLE,    Set.of("HOST"),
+                TroubleshootingCommands.DNS,          Set.of("HOST"),
+                TroubleshootingCommands.CONNECTION,   Set.of("HOST", "HOST_PORT"),
+                TroubleshootingCommands.PATH,         Set.of("HOST", "PROTOCOL"),
+                TroubleshootingCommands.DOWNLOAD,     Set.of("URL"),
+                TroubleshootingCommands.TRACE,
+                    Set.of("TIMEOUT","MODE","TRACE_ARGUMENTS","HOST","HOST_PORT","INTERFACE","FILENAME")
+            );
+
+        TroubleshootingValidator validator = new TroubleshootingValidator(this.networkSettings);
 
         try {
             if (arguments != null) {
@@ -3329,58 +3423,24 @@ public class NetworkManagerImpl implements NetworkManager
                     String key = (String) keys.next();
                     String value = String.valueOf(arguments.get(key)).trim();
 
-                    if ("HOST".equalsIgnoreCase(key)) {
-                        boolean validHost = hostnamePattern.matcher(value).matches() ||
-                                            ipv4Pattern.matcher(value).matches() ||
-                                            ipv6Pattern.matcher(value).matches();
-                        if (!validHost) {
-                            suspiciousEntries.add(key + "=" + value);
-                        }
-                    } else if ("URL".equalsIgnoreCase(key)) {
-                        if (!urlPattern.matcher(value).matches()) {
-                            suspiciousEntries.add(key + "=" + value);
-                        }
-                    }
+                    validator.validate(command, key, value, allowedArgs, suspiciousEntries);
 
                     environment_variables.add(key + "=" + value);
                 }
             }
-        } catch (Exception e) {
-            logger.warn("runTroubleshooting, parsing arguments: ", e);
-        }
 
-        switch (command) {
-            case CONNECTIVITY:
-            case REACHABLE:
-            case DNS:
-            case CONNECTION:
-            case PATH:
-            case DOWNLOAD:
-            case TRACE:
-                try {
-                    for (String var : environment_variables) {
-                        if (var.contains(";") || var.contains("&") || var.contains("|")
-                                || var.contains(">") || var.contains("$(")) {
-                            throw new RuntimeException("runTroubleshooting suspicious command: (" + environment_variables + "), blocked");
-                        }
-                    }
+            if (!suspiciousEntries.isEmpty()) {
+                throw new RuntimeException("Blocked due to suspicious entries: " + suspiciousEntries);
+            }
 
-                    if (!suspiciousEntries.isEmpty()) {
-                        throw new RuntimeException("runTroubleshooting suspicious entry: " + suspiciousEntries + ", blocked");
-                    }
+            return UvmContextFactory.context().execManager().execEvil(
+                    new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()},
+                    environment_variables.toArray(new String[0])
+            );
 
-                    return UvmContextFactory.context().execManager().execEvil(
-                        new String[]{troubleshootingScript, "run_" + command.toString().toLowerCase()},
-                        environment_variables.toArray(new String[0])
-                    );
-
-                } catch (Exception e) {
-                    logger.warn("runTroubleshooting executing:", e);
-                    return null;
-                }
-
-            default:
-                throw new RuntimeException("runTroubleshooting unknown command: " + command);
+        } catch (Exception ex) {
+            logger.warn("runTroubleshooting failed: ", ex);
+            return null;
         }
     }
 
@@ -3456,7 +3516,7 @@ public class NetworkManagerImpl implements NetworkManager
             String name = req.getParameter("arg1");
 
             if (name == null ) {
-                logger.warn("Invalid parameters: " + name );
+                logger.warn("Invalid parameters: {}", name );
                 return;
             }
             // Ensuring that filename can only be downloaded from under our path and is valid
@@ -3487,7 +3547,7 @@ public class NetworkManagerImpl implements NetworkManager
 
                 out.flush();
             } catch (Exception e) {
-                logger.warn("Failed to export packet trace.",e);
+                logger.warn("Failed to export packet trace.", e);
             } finally{
                 try{
                     if(fis != null){
@@ -3500,6 +3560,253 @@ public class NetworkManagerImpl implements NetworkManager
                     logger.error("Unable to close formatter", ex);
                 }
 
+            }
+        }
+    }
+
+    /**
+     * Validates troubleshooting command arguments.
+     * This class contains all validation logic for network troubleshooting parameters.
+     */
+    private static class TroubleshootingValidator {
+
+        private final NetworkSettings networkSettings;
+
+        private final Pattern hostnamePat = Pattern.compile("^(?=.{1,253}$)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,}$");
+        private final Pattern ipv4Pat = Pattern.compile("^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)(\\.|$)){4}$");
+        private final Pattern ipv6Pat = Pattern.compile("^(?:[\\da-fA-F]{1,4}:){1,7}[\\da-fA-F]{1,4}$");
+        private final Pattern urlPat = Pattern.compile("^(https?://)([\\w.-]+)(:\\d+)?(/\\S*)?$");
+        private final Pattern pcapFilePat = Pattern.compile("^[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*\\.(pcap|pcapng)$");
+        private final Pattern traceSafeChars = Pattern.compile("^[A-Za-z0-9 ._:/\\-]+$");
+        private final Pattern safeChars = Pattern.compile("^[A-Za-z0-9:/._\\-]+$");
+
+        private final Set<String> simpleFlags = Set.of(
+                "-A","-b","-d","-D","-e","-f","-h","-H","-I","-J","-K","-l","-L",
+                "-n","-N","-O","-p","-q","-S","-t","-u","-U","-v","-x","-X"
+        );
+        private final Set<String> numericFlags = Set.of("-B","-c","-C","-G","-s","-W");
+        private final Set<String> stringFlags = Set.of("-i","-j","-Q","-T","-y");
+        private final Set<String> forbiddenFlags = Set.of("-z","-Z","-E","-M","-F","-V","-r");
+        private final Set<String> outputFlags = Set.of("-w");
+
+        /**
+         * Creates a new validator for troubleshooting arguments.
+         *
+         * @param networkSettings network interface settings used to validate interface names
+         */
+        TroubleshootingValidator(NetworkSettings networkSettings) {
+            this.networkSettings = networkSettings;
+        }
+
+        /**
+         * Validates a single troubleshooting argument, performing character checks,
+         * type validation, and rule-based restrictions depending on the command.
+         *
+         * @param command          the troubleshooting command being executed
+         * @param key              the argument key (e.g., HOST, URL, TIMEOUT)
+         * @param value            the argument value provided by the user
+         * @param allowedArgs      mapping of valid keys permitted for the given command
+         * @param suspiciousEntries list to accumulate validation failures or suspicious values
+         */
+        public void validate(
+                TroubleshootingCommands command,
+                String key,
+                String value,
+                Map<TroubleshootingCommands, Set<String>> allowedArgs,
+                List<String> suspiciousEntries
+        ) {
+
+            // Reject unexpected args
+            if (!allowedArgs.get(command).contains(key)) {
+                throw new RuntimeException("Unexpected argument for " + command + ": " + key);
+            }
+
+            // Reject dangerous characters
+            if (key.equals("TRACE_ARGUMENTS")) {
+                if (!traceSafeChars.matcher(value).matches()) {
+                    suspiciousEntries.add("Illegal characters in TRACE_ARGUMENTS");
+                }
+            } else if (!safeChars.matcher(value).matches() && !key.equals("HOST_PORT") && !key.equals("HOST")) {
+                suspiciousEntries.add("Illegal characters in " + key + "=" + value);
+            }
+
+            switch (key) {
+                case "HOST":
+                case "DNS_TEST_HOST":
+                case "TCP_TEST_HOST":
+                    validateHost(command, value, suspiciousEntries);
+                    break;
+                case "URL":
+                    if (!urlPat.matcher(value).matches()) {
+                        suspiciousEntries.add("Invalid URL: " + value);
+                    }
+                    break;
+                case "HOST_PORT":
+                    validatePort(command, value, suspiciousEntries);
+                    break;
+                case "TIMEOUT":
+                    validateTimeout(value, suspiciousEntries);
+                    break;
+                case "MODE":
+                    if (!Set.of("basic", "advanced")
+                            .contains(value.toLowerCase(Locale.ROOT))) {
+                        suspiciousEntries.add("Invalid MODE: " + value);
+                    }
+                    break;
+                case "PROTOCOL":
+                    if (!Set.of("tcp", "udp", "icmp", "t", "u", "i")
+                            .contains(value.toLowerCase(Locale.ROOT))) {
+                        suspiciousEntries.add("Invalid PROTOCOL: " + value);
+                    }
+                    break;
+                case "INTERFACE":
+                    validateInterface(value, suspiciousEntries);
+                    break;
+                case "FILENAME":
+                    if (!pcapFilePat.matcher(value).matches()) {
+                        suspiciousEntries.add("Invalid .pcap filename: " + value);
+                    }
+                    break;
+                case "TRACE_ARGUMENTS":
+                    validateTraceArguments(value, suspiciousEntries);
+                    break;
+            }
+        }
+
+        /**
+         * Validates the host value based on hostname, IPv4, or IPv6 rules.
+         *
+         * @param command          the troubleshooting command (TRACE allows blank/any host)
+         * @param value            the host value to validate
+         * @param suspiciousEntries list to collect validation errors
+         */
+        private void validateHost(TroubleshootingCommands command, String value, List<String> suspiciousEntries) {
+            if (command == TroubleshootingCommands.TRACE) {
+                if (StringUtils.isBlank(value) || value.equalsIgnoreCase("any")) return;
+            }
+
+            boolean valid = hostnamePat.matcher(value).matches()
+                    || ipv4Pat.matcher(value).matches()
+                    || ipv6Pat.matcher(value).matches();
+
+            if (!valid) {
+                suspiciousEntries.add("Invalid host: " + value);
+            }
+        }
+
+        /**
+         * Validates a port value ensuring numeric bounds and command-specific rules.
+         *
+         * @param command           troubleshooting command being executed
+         * @param value             the port string to validate
+         * @param suspiciousEntries list to collect validation errors
+         */
+        private void validatePort(TroubleshootingCommands command, String value, List<String> suspiciousEntries) {
+            if (command == TroubleshootingCommands.TRACE && StringUtils.isBlank(value)) return;
+
+            try {
+                int p = Integer.parseInt(value);
+                if (p < 1 || p > 65535) {
+                    suspiciousEntries.add("Invalid port: " + value);
+                }
+            } catch (Exception ex) {
+                suspiciousEntries.add("Non-numeric port: " + value);
+            }
+        }
+
+        /**
+         * Validates timeout ensuring it is numeric and within the allowed range (1 to 60).
+         *
+         * @param value            the timeout value as string
+         * @param suspiciousEntries list to collect validation errors
+         */
+        private void validateTimeout(String value, List<String> suspiciousEntries) {
+            try {
+                int t = Integer.parseInt(value);
+                if (t < 1 || t > 120) {
+                    suspiciousEntries.add("Invalid timeout: " + value);
+                }
+            } catch (Exception ex) {
+                suspiciousEntries.add("Non-numeric timeout: " + value);
+            }
+        }
+
+        /**
+         * Validates the provided network interface name against existing interfaces.
+         *
+         * @param value            interface name supplied by user
+         * @param suspiciousEntries list to collect validation errors
+         */
+        private void validateInterface(String value, List<String> suspiciousEntries) {
+            boolean found = false;
+
+            for (InterfaceSettings ni : networkSettings.getInterfaces()) {
+                if (ni.getSystemDev().equals(value)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (value.equals("tun0")) found = true;
+
+            if (!found) {
+                suspiciousEntries.add("Invalid interface: " + value);
+            }
+        }
+
+        /**
+         * Validates TRACE_ARGUMENTS by parsing tcpdump flags and ensuring
+         * numeric/string parameters, forbidlist flags, and permitted BPF filters.
+         *
+         * @param value            full argument string for tcpdump
+         * @param suspiciousEntries list to collect validation errors or unknown flags
+         */
+        private void validateTraceArguments(String value, List<String> suspiciousEntries) {
+            String[] parts = value.split("\\s+");
+
+            for (int i = 0; i < parts.length; i++) {
+                String arg = parts[i];
+
+                if (forbiddenFlags.contains(arg)) {
+                    suspiciousEntries.add("Forbidden tcpdump flag: " + arg);
+                    continue;
+                }
+
+                if (simpleFlags.contains(arg)) continue;
+
+                if (numericFlags.contains(arg)) {
+                    if (i + 1 >= parts.length || !parts[i + 1].matches("^\\d+$")) {
+                        suspiciousEntries.add("Invalid numeric param for " + arg);
+                    }
+                    i++;
+                    continue;
+                }
+
+                if (stringFlags.contains(arg)) {
+                    if (i + 1 >= parts.length) {
+                        suspiciousEntries.add("Missing string param for " + arg);
+                    }
+                    i++;
+                    continue;
+                }
+
+                if (outputFlags.contains(arg)) {
+                    if (i + 1 >= parts.length || !pcapFilePat.matcher(parts[i + 1]).matches()) {
+                        suspiciousEntries.add("Invalid filename for -w");
+                    }
+                    i++;
+                    continue;
+                }
+
+                // BPF filter allowlist
+                if (!arg.startsWith("-")) {
+                    if (!arg.matches("^(host|net|port)\\s*[A-Za-z0-9./]+$")) {
+                        suspiciousEntries.add("Invalid BPF filter: " + arg);
+                    }
+                    continue;
+                }
+
+                suspiciousEntries.add("Unknown flag: " + arg);
             }
         }
     }

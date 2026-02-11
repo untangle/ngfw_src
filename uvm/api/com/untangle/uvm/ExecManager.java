@@ -4,6 +4,7 @@
 package com.untangle.uvm;
 
 import java.io.IOException;
+import java.util.List;
 import org.apache.logging.log4j.Level;
 
 public interface ExecManager
@@ -12,6 +13,11 @@ public interface ExecManager
      * Execute the specified command and return the result
      */
     ExecManagerResult exec( String cmd );
+
+    /**
+     * Execute the specified command and return the result
+     */
+    ExecManagerResult execCommand( String cmd, List<String> arguments );
 
     /**
     * Execute the specified command and return the result
@@ -96,6 +102,13 @@ public interface ExecManager
      * after this this ExecManager can no longer be used
      */
     void close();
+
+      /**
+     * Close this instance of exec manager
+     * This shuts down the safe "launcher" process
+     * after this this ExecManager can no longer be used
+     */
+    void closeSafe();
 
     /**
      * Just combines all the arguments into one string and quotes them
