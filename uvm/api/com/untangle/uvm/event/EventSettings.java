@@ -98,6 +98,10 @@ public class EventSettings implements Serializable, JSONString
         if(this.getSyslogServers() != null)
             eventSettingsGen.setSyslogServers(this.syslogServers);
 
+        // Transform Syslog Rules from v1 to v2
+        if(this.getSyslogRules() != null)
+            eventSettingsGen.setSyslog_rules(SyslogRule.transformSyslogRulesToGeneric(this.getSyslogRules()));
+
         eventSettingsGen.setEmailBody(emailBody);
         eventSettingsGen.setEmailSubject(emailSubject);
         eventSettingsGen.setEmailConvert(emailConvert);
