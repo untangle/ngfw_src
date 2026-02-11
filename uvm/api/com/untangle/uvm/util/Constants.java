@@ -44,6 +44,7 @@ public class Constants {
     public static final String CATEGORY = "category";
 
     // Class Regex as condition matcher
+    public static final String ALL = "*All*";
     public static final String CRITICAL_ALERT_EVENT_RGX = "*CriticalAlertEvent*";
     public static final String SYSTEM_STAT_EVENT_RGX = "*SystemStatEvent*";
     public static final String SESSION_EVENT_RGX = "*SessionEvent*";

@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 
 /**
  * This in the Generic Rule Action Class for Event Rules
@@ -17,7 +18,7 @@ public class EventRuleActionGeneric implements JSONString, Serializable {
     /**
      * EMAIL, EMAIL_OFF - Required for Alert Rules
      */
-    public enum Type { EMAIL, EMAIL_OFF, TAG_HOST, TAG_DEVICE, TAG_USER, UNTAG_HOST, UNTAG_DEVICE, UNTAG_USER }
+    public enum Type { SYSLOG, EMAIL, EMAIL_OFF, TAG_HOST, TAG_DEVICE, TAG_USER, UNTAG_HOST, UNTAG_DEVICE, UNTAG_USER }
 
     private EventRuleActionGeneric.Type type;
 
@@ -44,6 +45,18 @@ public class EventRuleActionGeneric implements JSONString, Serializable {
     public void setTagName(String tagName) { this.tagName = tagName; }
     public Long getTagLifetimeSec() { return tagLifetimeSec; }
     public void setTagLifetimeSec(Long tagLifetimeSec) { this.tagLifetimeSec = tagLifetimeSec; }
+
+    // Required for Syslog Rules
+    private Boolean syslog = false;
+    private LinkedList<Integer> syslogServers = null;
+
+    public Boolean getSyslog() { return syslog; }
+    public void setSyslog(Boolean syslog) { this.syslog = syslog; }
+
+    public LinkedList<Integer> getSyslogServers() { return syslogServers; }
+    public void setSyslogServers(LinkedList<Integer> syslogServers) {
+        this.syslogServers = syslogServers;
+    }
 
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);

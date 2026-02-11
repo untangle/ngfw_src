@@ -4,6 +4,7 @@
 package com.untangle.uvm.event.generic;
 
 import com.untangle.uvm.event.EventSettings;
+import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.SyslogServer;
 import com.untangle.uvm.generic.RuleGeneric;
 import org.json.JSONObject;
@@ -21,6 +22,7 @@ public class EventSettingsGeneric implements Serializable, JSONString {
     private LinkedList<EventRuleGeneric> alert_rules;
     private LinkedList<EventRuleGeneric> trigger_rules;
     private LinkedList<SyslogServer> syslogServers = new LinkedList<>();
+    private LinkedList<EventRuleGeneric> syslog_rules;
 
     private String emailSubject = null;
     private String emailBody = null;
@@ -35,6 +37,9 @@ public class EventSettingsGeneric implements Serializable, JSONString {
     public void setAlert_rules(LinkedList<EventRuleGeneric> alert_rules) { this.alert_rules = alert_rules; }
     public LinkedList<EventRuleGeneric> getTrigger_rules() { return trigger_rules; }
     public void setTrigger_rules(LinkedList<EventRuleGeneric> trigger_rules) { this.trigger_rules = trigger_rules; }
+
+    public LinkedList<EventRuleGeneric> getSyslog_rules() { return syslog_rules; }
+    public void setSyslog_rules(LinkedList<EventRuleGeneric> syslog_rules) { this.syslog_rules = syslog_rules; }
 
     public LinkedList<SyslogServer> getSyslogServers() { return this.syslogServers; }
     public void setSyslogServers( LinkedList<SyslogServer> newValue ) { this.syslogServers = newValue; } 
@@ -64,7 +69,7 @@ public class EventSettingsGeneric implements Serializable, JSONString {
     }
 
     /**
-     * Transforms Generic (v2) Event Settings to Legacy v2 format
+     * Transforms Generic (v2) Event Settings to Legacy v1 format
      * Used for Vue UI
      * @param eventSettings EventSettings
      */
@@ -79,6 +84,9 @@ public class EventSettingsGeneric implements Serializable, JSONString {
         
         if(this.getSyslogServers() != null)
             eventSettings.setSyslogServers(this.syslogServers);
+
+        if(this.getSyslog_rules() != null)
+            eventSettings.setSyslogRules(EventRuleGeneric.transformGenericToLegacySyslogRules(this.getSyslog_rules(), eventSettings.getSyslogRules()));
 
         eventSettings.setEmailSubject(this.getEmailSubject());
         eventSettings.setEmailBody(this.getEmailBody());
