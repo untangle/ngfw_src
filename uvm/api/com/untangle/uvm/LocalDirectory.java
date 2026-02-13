@@ -34,10 +34,21 @@ public interface LocalDirectory
      */
     public LinkedList<LocalDirectoryUser> getUsers();
 
+    /*
+     * Return a list of users (V2)
+     */
+    public LinkedList<LocalDirectoryUser> getUsersV2();
+
     /**
      * Save a new list of users
      */
     public void setUsers(LinkedList<LocalDirectoryUser> users);
+
+    /*
+     * Save a new list of users (V2) 
+     * @param users
+    */
+    public void setUsersV2(LinkedList<LocalDirectoryUser> users);
 
     /**
      * Adds a new user
