@@ -57,6 +57,17 @@ Remote_ngfw = overrides.get("Remote_ngfw", default={
         "adminPassword": "passwd"
 })
 
+# Test timeout constants
+IPSEC_TUNNEL_STARTUP_WAIT = 10  # seconds
+WAN_BALANCER_UPDATE_WAIT = 5    # seconds
+DEFAULT_EVENT_WAIT_TRIES = 30
+DEFAULT_CONNECTIVITY_TRIES = 20
+
+# WAN weight configurations
+WAN_WEIGHTS_UNEQUAL = [20, 0, 80]  # WAN1=20, WAN2=80
+WAN_WEIGHTS_EQUAL = [50, 0, 50]    # WAN1=50, WAN2=50
+WAN_WEIGHTS_FAILOVER = [60, 0, 50] # WAN1=60, WAN2=50
+
 def build_ipsec_tunnel(remote_ip=IPSEC_HOST, remote_lan=IPSEC_HOST_LAN, local_ip=None, local_lan_ip=None, local_lan_range=None):
     """
     Create an ipsec tunnel settings entry.
@@ -215,24 +226,145 @@ def create_firewall_rule( conditionType, value, blocked=True ):
     conditionTypeStr = str(conditionType)
     valueStr = str(value)
     return {
-        "javaClass": "com.untangle.app.firewall.FirewallRule", 
-        "id": 1, 
-        "enabled": True, 
-        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr, 
-        "log": True, 
-        "block": blocked, 
+        "javaClass": "com.untangle.app.firewall.FirewallRule",
+        "id": 1,
+        "enabled": True,
+        "description": "Single Matcher: " + conditionTypeStr + " = " + valueStr,
+        "log": True,
+        "block": blocked,
         "conditions": {
-            "javaClass": "java.util.LinkedList", 
+            "javaClass": "java.util.LinkedList",
             "list": [
                 {
-                    "invert": False, 
-                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition", 
-                    "conditionType": conditionTypeStr, 
+                    "invert": False,
+                    "javaClass": "com.untangle.app.firewall.FirewallRuleCondition",
+                    "conditionType": conditionTypeStr,
                     "value": valueStr
                     }
                 ]
             }
         }
+
+
+def verify_ipsec_connectivity(target_host=IPSEC_HOST_LAN_IP, tries=20):
+    """Helper function to verify IPsec tunnel connectivity"""
+    return global_functions.get_wait_for_command_result(
+        command=global_functions.build_ping_command(target=target_host),
+        success_result=0,
+        tries=tries
+    )
+
+def trigger_wan_failover(app_wan_failover):
+    """Helper function to trigger WAN failover by setting an invalid HTTP test"""
+    wf_settings = app_wan_failover.getSettings()
+    wf_settings["tests"]["list"][0]["type"] = "http"
+    wf_settings["tests"]["list"][0]["httpUrl"] = "http://1.2.3.4"
+    app_wan_failover.setSettings(wf_settings)
+    return wf_settings
+
+def restore_wan_failover(app_wan_failover):
+    """Helper function to restore WAN failover by setting a valid ping test"""
+    wf_settings = app_wan_failover.getSettings()
+    wf_settings["tests"]["list"][0]["type"] = "ping"
+    wf_settings["tests"]["list"][0]["pingHostname"] = "8.8.8.8"
+    app_wan_failover.setSettings(wf_settings)
+    return wf_settings
+
+def get_ipsec_tunnel_left_ip(tunnel_name=None):
+    """Helper function to read /etc/ipsec.conf and extract the 'left' IP address"""
+    try:
+        with open('/etc/ipsec.conf', 'r') as f:
+            content = f.read()
+
+        # If tunnel_name is specified, find that specific tunnel
+        # Otherwise, return the first 'left' value found
+        lines = content.split('\n')
+        in_target_tunnel = tunnel_name is None  # If no name specified, start looking immediately
+
+        for line in lines:
+            line = line.strip()
+
+            # Check if we're entering a tunnel section
+            if tunnel_name and line.startswith('conn ') and tunnel_name in line:
+                in_target_tunnel = True
+                continue
+
+            # If we hit another 'conn' section and we were in our target, we're done
+            if in_target_tunnel and line.startswith('conn ') and tunnel_name and tunnel_name not in line:
+                break
+
+            # Extract the left IP
+            if in_target_tunnel and line.startswith('left='):
+                left_ip = line.split('=')[1].strip()
+                return left_ip
+
+        return None
+    except Exception as e:
+        print(f"Error reading ipsec.conf: {e}")
+        return None
+
+def set_wan_weights(weights, total_interfaces):
+    """
+    Helper to set WAN weights array with proper padding
+
+    Args:
+        weights: List of weights [wan1, 0, wan2]
+        total_interfaces: Total number of interfaces in settings
+
+    Returns:
+        Properly sized weight array
+    """
+    return weights + [0] * max(0, total_interfaces - len(weights))
+
+def wait_for_wan_failover_event(interface_id, expected_success, app_wan_failover, tries=DEFAULT_EVENT_WAIT_TRIES):
+    """
+    Wait for WAN failover event with specified success state
+
+    Args:
+        interface_id: Interface ID to check
+        expected_success: True for success event, False for failure
+        app_wan_failover: WAN Failover app instance
+        tries: Number of tries
+
+    Returns:
+        True if event found, raises assertion otherwise
+    """
+    result = global_functions.get_wait_for_events(
+        prefix="wan failover",
+        report_category="WAN Failover",
+        report_title='Test Events',
+        matches={
+            "interface_id": interface_id,
+            "success": expected_success
+        },
+        tries=tries)
+
+    assert result is True, f"WAN failover event not found for interface {interface_id}"
+    return result
+
+def get_wan_route_address(expected_different_from=None, tries=30):
+    """
+    Get current WAN route address with optional verification
+
+    Args:
+        expected_different_from: If provided, waits until address differs from this
+        tries: Number of tries if waiting for change
+
+    Returns:
+        Current WAN route address
+    """
+    command = "ip route get 8.8.8.8 | head -1 | cut -d' ' -f3"
+
+    if expected_different_from:
+        return global_functions.get_wait_for_command_output(
+            command=command,
+            local=True,
+            success_test=lambda address: address != expected_different_from,
+            tries=tries)
+    else:
+        return global_functions.get_wait_for_command_output(
+            command=command,
+            local=True)
 
 @pytest.mark.ipsec_vpn
 class IPsecTests(NGFWTestCase):
@@ -692,18 +824,14 @@ class IPsecTests(NGFWTestCase):
         ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(local_ip="active_wan_address")]
         self._app.setSettings(ipsec_settings)
 
-        # Ping remote LAN host
-        lan_host_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_HOST_LAN_IP), success_result=0)
-        assert lan_host_ping_result is True, "reached remote lan host"
-
-        # Ping remote LAN client
-        lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
-        assert lan_client_ping_result is True, "reached remote lan client"
+        # Ping remote LAN host and client
+        assert verify_ipsec_connectivity() is True, "reached remote lan host"
+        assert verify_ipsec_connectivity(target_host=IPSEC_PC_LAN_IP) is True, "reached remote lan client"
 
         ipsec_settings["tunnels"]["list"] = []
         self._app.setSettings(ipsec_settings)
 
-    def test_081_active_wan_address_failover(self):
+    def test_081_active_wan_address_failover_without_wan_balancer(self):
         """
         Verify ipsec tunnel failover and failback with WAN failover
         """
@@ -722,90 +850,58 @@ class IPsecTests(NGFWTestCase):
         self._app.setSettings(ipsec_settings)
 
         # Verify connection comes up
-        # Ping remote LAN host
-        lan_host_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_HOST_LAN_IP), success_result=0)
-        assert lan_host_ping_result is True, "reached remote lan host"
-
-        # Ping remote LAN client
-        lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
-        assert lan_client_ping_result is True, "reached remote lan client"
+        assert verify_ipsec_connectivity() is True, "reached remote lan host"
+        assert verify_ipsec_connectivity(target_host=IPSEC_PC_LAN_IP) is True, "reached remote lan client"
 
         # Get our primary WAN IP address
-        primary_default_address = global_functions.get_wait_for_command_output(command="ip route get 8.8.8.8 | head -1 | cut -d' ' -f3", local=True)
+        primary_default_address = get_wan_route_address()
         print(f"primary_default_address={primary_default_address}")
 
+        # Get the active WAN IP being used
+        active_wan_ip = get_ipsec_tunnel_left_ip()
+
+        # Without WAN Balancer, should select the first active WAN
+        wan1_ip = wans[0][1]  # First WAN's IP address
+
+        print(f"Active WAN IP: {active_wan_ip}, Expected WAN 1 IP: {wan1_ip}")
+
+        # Verify connection works
+        assert verify_ipsec_connectivity() is True, "IPsec tunnel should be up with first active WAN"
+
+        # The active WAN should match WAN 1's IP (first active WAN without balancer)
+        assert active_wan_ip == wan1_ip, f"Active WAN should be WAN 1 ({wan1_ip}) without WAN Balancer, but got {active_wan_ip}"
+
         # "Disable" primary WAN interface with a test that will always fail
-        wf_settings = app_wan_failover.getSettings()
-        wf_settings["tests"]["list"][0]["type"] = "http"
-        wf_settings["tests"]["list"][0]["httpUrl"] = "http://1.2.3.4"
-        print(wf_settings)
-        app_wan_failover.setSettings(wf_settings)
+        trigger_wan_failover(app_wan_failover)
 
         # Wait for failure
-        assert True is global_functions.get_wait_for_events(
-            prefix="wan failover",
-            report_category="WAN Failover",
-            report_title='Test Events',
-            matches={
-                "interface_id": wans[0][0],
-                "success": False
-            },
-            tries=30), "found failover event"
+        wait_for_wan_failover_event(wans[0][0], False, app_wan_failover)
 
-        # Get the new default route address which should NOT be primary        
-        failover_default_address = global_functions.get_wait_for_command_output(
-            command="ip route get 8.8.8.8 | head -1 | cut -d' ' -f3", 
-            local=True,
-            success_test=lambda address: address != primary_default_address,
-            tries=30)
+        # Get the new default route address which should NOT be primary
+        failover_default_address = get_wan_route_address(expected_different_from=primary_default_address)
         print(f"failover_default_address={failover_default_address}")
 
         assert primary_default_address != failover_default_address, "primary_default_address != failover_default_address"
 
         # Verify connection comes up
-        # Ping remote LAN host
-        lan_host_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_HOST_LAN_IP), success_result=0)
-        assert lan_host_ping_result is True, "reached remote lan host"
-
-        # Ping remote LAN client
-        lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
-        assert lan_client_ping_result is True, "reached remote lan client"
+        assert verify_ipsec_connectivity() is True, "reached remote lan host"
+        assert verify_ipsec_connectivity(target_host=IPSEC_PC_LAN_IP) is True, "reached remote lan client"
 
         # "Fix" primary's test so it becomes active again
-        wf_settings = app_wan_failover.getSettings()
-        wf_settings["tests"]["list"][0]["type"] = "ping"
-        wf_settings["tests"]["list"][0]["pingHostname"] = "8.8.8.8"
-        print(wf_settings)
-        app_wan_failover.setSettings(wf_settings)
+        restore_wan_failover(app_wan_failover)
 
         # Wait for primary test success
-        assert True is global_functions.get_wait_for_events(
-            prefix="wan failover",
-            report_category="WAN Failover",
-            report_title='Test Events',
-            matches={
-                "interface_id": wans[0][0],
-                "success": True
-            },
-            tries=30), "found failover event"
+        wait_for_wan_failover_event(wans[0][0], True, app_wan_failover)
 
-        # Get the new default route address which should NOT be failback
-        failback_default_address = global_functions.get_wait_for_command_output(
-            command="ip route get 8.8.8.8 | head -1 | cut -d' ' -f3", 
-            local=True,
-            success_test=lambda address: address != failover_default_address,
-            tries=30)
+        # Get the new default route address which should be back to primary
+        failback_default_address = get_wan_route_address(expected_different_from=failover_default_address)
         print(f"failback_default_address={failback_default_address}")
-        assert primary_default_address == failback_default_address, "primary_default_address == failover_default_address"
+        assert primary_default_address == failback_default_address, "primary_default_address == failback_default_address"
 
         # Verify connection comes up
-        # Ping remote LAN host
-        lan_host_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_HOST_LAN_IP), success_result=0)
-        assert lan_host_ping_result is True, "reached remote lan host"
+        assert verify_ipsec_connectivity() is True, "reached remote lan host"
+        assert verify_ipsec_connectivity(target_host=IPSEC_PC_LAN_IP) is True, "reached remote lan client"
 
-        # Ping remote LAN client
-        lan_client_ping_result = global_functions.get_wait_for_command_result(command=global_functions.build_ping_command(target=IPSEC_PC_LAN_IP), success_result=0)
-        assert lan_client_ping_result is True, "reached remote lan client"
 
     def test_082_any_remote_tunnel_ping(self):
         """
@@ -825,12 +921,260 @@ class IPsecTests(NGFWTestCase):
 
         # Check for events logged
         events = global_functions.get_events("IPsec VPN",'Tunnel Connection Events',None,5)
-        found = global_functions.check_events( events.get('list'), 5, 
+        found = global_functions.check_events( events.get('list'), 5,
                                               "event_type", "UNREACHABLE" )
         # set to original settings
         self._app.setSettings(org_ipsec_settings)
         assert(found == False)
 
+    def test_083_active_wan_with_wan_balancer_unequal_weights(self):
+        """
+        Verify IPsec tunnel uses WAN with highest weight when WAN Balancer is enabled
+        Test scenario: WAN 1 weight=20, WAN 2 weight=80 -> should select WAN 2
+        """
+        if (ipsecHostResult != 0):
+            raise unittest.SkipTest("No paired IPSec server available")
+
+        wans = global_functions.get_wan_tuples()
+
+        if len(wans) < 2:
+            raise unittest.SkipTest("not enough wan devices")
+
+        # Check if WAN Balancer can be installed
+        if not global_functions.uvmContext.licenseManager().isLicenseValid("wan-balancer"):
+            raise unittest.SkipTest("WAN Balancer license not valid")
+
+        # Get WAN Balancer
+        app_wan_balancer = IPsecTests.get_app("wan-balancer")
+
+        # Get WAN Failover
+        app_wan_failover = IPsecTests.get_app("wan-failover")
+
+        try:
+            print(f"WAN interfaces: WAN 1 (id={wans[0][0]}, ip={wans[0][1]}), WAN 2 (id={wans[1][0]}, ip={wans[1][1]})")
+
+            # Configure WAN Failover tests for both WANs
+            for wan in wans:
+                interface_id = wan[0]
+                test_wan_failover.build_wan_test(interface_id, wf_app=app_wan_failover)
+
+            # Configure WAN Balancer with unequal weights: WAN 1 = 20, WAN 2 = 80
+            wb_settings = app_wan_balancer.getSettings()
+            wb_settings["weights"] = set_wan_weights(WAN_WEIGHTS_UNEQUAL, len(wb_settings.get("weights", [])))
+            app_wan_balancer.setSettings(wb_settings)
+            print(f"WAN Balancer weights set to: WAN1=20, WAN2=80")
+
+            # Give the system time to update
+            time.sleep(WAN_BALANCER_UPDATE_WAIT)
+
+            # Configure IPsec tunnel with active_wan_address
+            ipsec_settings = self._app.getSettings()
+            ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(local_ip="active_wan_address")]
+            self._app.setSettings(ipsec_settings)
+            print("IPsec tunnel configured with active_wan_address")
+
+            # Wait for tunnel to come up
+            time.sleep(IPSEC_TUNNEL_STARTUP_WAIT)
+
+            # Get the active WAN IP being used by IPsec
+            active_wan_ip = get_ipsec_tunnel_left_ip()
+            wan2_ip = wans[1][1]  # Second WAN's IP address (should be selected with weight 80)
+
+            print(f"IPsec config left IP: {active_wan_ip}")
+            print(f"Active WAN IP: {active_wan_ip}, Expected WAN 2 IP: {wan2_ip}")
+
+            # TODO: Enable connectivity verification when ATS configuration is available
+            # Connection testing currently disabled - waiting for dual-WAN ATS setup
+            # assert verify_ipsec_connectivity() is True, "IPsec tunnel should be up with WAN 2"
+
+            # The active WAN should match WAN 2's IP
+            assert active_wan_ip == wan2_ip, f"Active WAN should be WAN 2 ({wan2_ip}) with weight 80, but got {active_wan_ip}"
+
+        finally:
+            # Cleanup
+            ipsec_settings["tunnels"]["list"] = []
+            self._app.setSettings(ipsec_settings)
+
+    def test_084_active_wan_with_wan_balancer_equal_weights(self):
+        """
+        Verify IPsec tunnel uses first WAN when WAN Balancer has equal weights
+        Test scenario: WAN 1 weight=50, WAN 2 weight=50 -> should select WAN 1 (first)
+        """
+        if (ipsecHostResult != 0):
+            raise unittest.SkipTest("No paired IPSec server available")
+
+        wans = global_functions.get_wan_tuples()
+
+        if len(wans) < 2:
+            raise unittest.SkipTest("not enough wan devices")
+
+        # Check if WAN Balancer can be installed
+        if not global_functions.uvmContext.licenseManager().isLicenseValid("wan-balancer"):
+            raise unittest.SkipTest("WAN Balancer license not valid")
+
+        # Get WAN Balancer
+        app_wan_balancer = IPsecTests.get_app("wan-balancer")
+
+        # Get WAN Failover
+        app_wan_failover = IPsecTests.get_app("wan-failover")
+
+        try:
+            # Configure WAN Failover tests for both WANs
+            for wan in wans:
+                interface_id = wan[0]
+                test_wan_failover.build_wan_test(interface_id, wf_app=app_wan_failover)
+
+            # Configure WAN Balancer with equal weights: WAN 1 = 50, WAN 2 = 50
+            wb_settings = app_wan_balancer.getSettings()
+            wb_settings["weights"] = set_wan_weights(WAN_WEIGHTS_EQUAL, len(wb_settings.get("weights", [])))
+            app_wan_balancer.setSettings(wb_settings)
+            print(f"WAN Balancer weights set to: WAN1=50, WAN2=50")
+
+            # Give the system time to update
+            time.sleep(WAN_BALANCER_UPDATE_WAIT)
+
+            # Configure IPsec tunnel with active_wan_address
+            ipsec_settings = self._app.getSettings()
+            ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(local_ip="active_wan_address")]
+            self._app.setSettings(ipsec_settings)
+
+            # Wait for tunnel to come up
+            time.sleep(IPSEC_TUNNEL_STARTUP_WAIT)
+
+            # Get the active WAN IP being used
+            active_wan_ip = get_ipsec_tunnel_left_ip()
+            wan1_ip = wans[0][1]  # First WAN's IP address (should be selected with equal weights)
+
+            print(f"IPsec config left IP: {active_wan_ip}")
+            print(f"Active WAN IP: {active_wan_ip}, Expected WAN 1 IP: {wan1_ip}")
+
+            # Verify connection works
+            assert verify_ipsec_connectivity() is True, "IPsec tunnel should be up with WAN 1 (first active)"
+
+            # The active WAN should match WAN 1's IP (first WAN when weights are equal)
+            assert active_wan_ip == wan1_ip, f"Active WAN should be WAN 1 ({wan1_ip}) with equal weights, but got {active_wan_ip}"
+
+        finally:
+            # Cleanup
+            ipsec_settings["tunnels"]["list"] = []
+            self._app.setSettings(ipsec_settings)
+
+    def test_085_active_wan_address_failover_with_wan_balancer(self):
+        """
+        Verify ipsec tunnel failover and failback with WAN Balancer using weight-based selection
+        """
+        wans = global_functions.get_wan_tuples()
+
+        if len(wans) < 2:
+            raise unittest.SkipTest("not enough wan devices")
+
+        # Check if WAN Balancer license is valid
+        if not global_functions.uvmContext.licenseManager().isLicenseValid("wan-balancer"):
+            raise unittest.SkipTest("WAN Balancer license not valid")
+
+        # Get WAN Balancer and WAN Failover apps
+        app_wan_balancer = IPsecTests.get_app("wan-balancer")
+        app_wan_failover = IPsecTests.get_app("wan-failover")
+
+        # Store original WAN Balancer settings
+        orig_wb_settings = app_wan_balancer.getSettings()
+
+        wan1_ip = wans[0][1]
+        wan2_ip = wans[1][1]
+
+        try:
+            # Configure WAN Failover tests for both WANs
+            for wan in wans:
+                interface_id = wan[0]
+                test_wan_failover.build_wan_test(interface_id, wf_app=app_wan_failover)
+
+            # Configure WAN Balancer with weights: WAN1=60, WAN2=50
+            wb_settings = app_wan_balancer.getSettings()
+            wb_settings["weights"] = set_wan_weights(WAN_WEIGHTS_FAILOVER, len(wb_settings.get("weights", [])))
+            app_wan_balancer.setSettings(wb_settings)
+            print(f"WAN Balancer weights set: WAN1=60, WAN2=50")
+
+            # Give the system time to update
+            time.sleep(WAN_BALANCER_UPDATE_WAIT)
+
+            # Configure IPsec tunnel with active_wan_address
+            ipsec_settings = self._app.getSettings()
+            ipsec_settings["tunnels"]["list"] = [build_ipsec_tunnel(local_ip="active_wan_address")]
+            self._app.setSettings(ipsec_settings)
+
+            # === Phase 1: Verify initial state (WAN1 active) ===
+            assert verify_ipsec_connectivity() is True, "Initial connectivity check"
+            assert verify_ipsec_connectivity(target_host=IPSEC_PC_LAN_IP) is True, "Initial client check"
+
+            # Get our primary WAN IP address
+            primary_default_address = get_wan_route_address()
+            print(f"primary_default_address={primary_default_address}")
+
+            # Get the active WAN IP being used
+            active_wan_ip = get_ipsec_tunnel_left_ip()
+
+            print(f"IPsec config left IP: {active_wan_ip}")
+            print(f"Active WAN IP: {active_wan_ip}, Expected WAN 1 IP: {wan1_ip}")
+
+            # The active WAN should match WAN 1's IP (highest weight)
+            assert active_wan_ip == wan1_ip, f"Active WAN should be WAN 1 ({wan1_ip}) with highest weight, but got {active_wan_ip}"
+
+            # === Phase 2: Trigger failover to WAN2 ===
+            trigger_wan_failover(app_wan_failover)
+
+            # Wait for failure
+            wait_for_wan_failover_event(wans[0][0], False, app_wan_failover)
+
+            # Get the new default route address which should NOT be primary
+            failover_default_address = get_wan_route_address(expected_different_from=primary_default_address)
+            print(f"failover_default_address={failover_default_address}")
+
+            assert primary_default_address != failover_default_address, "Route should change after failover"
+
+            # Get the active WAN IP after failover
+            active_wan_ip_after_failover = get_ipsec_tunnel_left_ip()
+
+            print(f"IPsec config left IP after failover: {active_wan_ip_after_failover}")
+            print(f"Active WAN IP after failover: {active_wan_ip_after_failover}, Expected WAN 2 IP: {wan2_ip}")
+
+            # After WAN1 fails, WAN2 should be active
+            assert active_wan_ip_after_failover == wan2_ip, f"Active WAN should be WAN 2 ({wan2_ip}) after failover, but got {active_wan_ip_after_failover}"
+
+            # TODO: Enable connectivity verification when ATS configuration is available for dual-WAN testing
+            # assert verify_ipsec_connectivity() is True, "reached remote lan host on WAN2"
+            # assert verify_ipsec_connectivity(target_host=IPSEC_PC_LAN_IP) is True, "reached remote lan client on WAN2"
+
+            # === Phase 3: Trigger failback to WAN1 ===
+            restore_wan_failover(app_wan_failover)
+
+            # Wait for primary test success
+            wait_for_wan_failover_event(wans[0][0], True, app_wan_failover)
+
+            # Get the new default route address which should be back to primary
+            failback_default_address = get_wan_route_address(expected_different_from=failover_default_address)
+            print(f"failback_default_address={failback_default_address}")
+            assert primary_default_address == failback_default_address, "Route should restore to primary"
+
+            # Get the active WAN IP after failback
+            active_wan_ip_after_failback = get_ipsec_tunnel_left_ip()
+
+            print(f"IPsec config left IP after failback: {active_wan_ip_after_failback}")
+            print(f"Active WAN IP after failback: {active_wan_ip_after_failback}, Expected WAN 1 IP: {wan1_ip}")
+
+            # After WAN1 is restored, it should be active again (highest weight)
+            assert active_wan_ip_after_failback == wan1_ip, f"Active WAN should be WAN 1 ({wan1_ip}) after failback, but got {active_wan_ip_after_failback}"
+
+            # Verify connection comes up on WAN1
+            assert verify_ipsec_connectivity() is True, "Final connectivity check on WAN1"
+            assert verify_ipsec_connectivity(target_host=IPSEC_PC_LAN_IP) is True, "Final client check on WAN1"
+
+        finally:
+            # Cleanup
+            ipsec_settings["tunnels"]["list"] = []
+            self._app.setSettings(ipsec_settings)
+
+            # Restore original WAN Balancer settings
+            app_wan_balancer.setSettings(orig_wb_settings)
     @classmethod
     def final_extra_tear_down(cls):
         global appAD, appFW

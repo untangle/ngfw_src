@@ -34,7 +34,8 @@ public interface HookManager
     public static String CAPTURE_USERNAME_CHECK = "capture-username-check";
     public static String WEBFILTER_BASE_CATEGORIZE_SITE = "webfilter-base-categorize-site";
     public static String WAN_FAILOVER_CHANGE = "wan-failover-change";
-    
+    public static String WAN_BALANCER_CHANGE = "wan-balancer-change";
+    public static String REQUEST_ACTIVE_WAN_ID = "request-active-wan-id";
     public boolean isRegistered( String hookName, HookCallback callback );
 
     public boolean registerCallback( String groupName, HookCallback callback );

@@ -40,6 +40,9 @@ import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.HostTableEntry;
+import com.untangle.uvm.app.App;
+import static com.untangle.uvm.app.License.WAN_FAILOVER;
+import static com.untangle.uvm.app.AppSettings.AppState.RUNNING;
 
 /**
  * The IPsec application manages all IPsec tunnels and VPN configurations.
@@ -430,6 +433,10 @@ public class IpsecVpnApp extends AppBase
 
         // Fix for NGFW-14844, wait for charon to restart and then rewrite STRONGSWAN_CONF_FILE
         waitForCharonStart();
+
+        // Initialize active WAN address from WAN Failover if it's running
+        initializeActiveWanFromFailover();
+
         reconfigure();
     }
 
@@ -458,6 +465,30 @@ public class IpsecVpnApp extends AppBase
         } catch (Exception e) {
             logger.error("Exception in waitForCharonStart: ", e);
             scheduler.shutdownNow();
+        }
+    }
+
+    /**
+     * Initialize active WAN address from WAN Failover if it's running.
+     * This ensures IPsec uses the correct active WAN (based on weights and status)
+     * when it starts while WAN Failover is already running.
+     */
+    private void initializeActiveWanFromFailover() {
+        try {
+            App wanFailoverApp = UvmContextFactory.context().appManager().app(WAN_FAILOVER);
+            if (wanFailoverApp != null && wanFailoverApp.getRunState() == RUNNING) {
+                logger.info("WAN Failover is running - requesting current active WAN ID via hook");
+                // Trigger WAN Failover to update and send the current active WAN ID
+                // WAN Failover listens to REQUEST_ACTIVE_WAN_ID hook and will respond via WAN_FAILOVER_CHANGE
+                // Using synchronous call since this hook doesn't require arguments
+                UvmContextFactory.context().hookManager().callCallbacksSynchronous(
+                    com.untangle.uvm.HookManager.REQUEST_ACTIVE_WAN_ID);
+                logger.debug("Successfully triggered WAN Failover to send active WAN ID");
+            } else {
+                logger.info("WAN Failover is not running - using default WAN address");
+            }
+        } catch (Exception e) {
+            logger.warn("Error initializing active WAN from WAN Failover: ", e.getMessage());
         }
     }
 
