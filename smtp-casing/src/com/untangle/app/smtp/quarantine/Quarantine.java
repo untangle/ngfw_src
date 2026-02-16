@@ -32,6 +32,8 @@ import com.untangle.app.smtp.quarantine.store.QuarantineStore;
 import com.untangle.uvm.util.Pair;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Quarantine.
@@ -449,14 +451,23 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     }
 
     /**
-     * Return inbox summaries V2 API
-     * @return List of InboxSummary for all mailboxes.
+     * Return inbox summaries and total disk space V2 API
+     *
+     * @return List of InboxSummary for all mailboxes and total disk space
      * @throws QuarantineUserActionFailedException If action failed.
      */
     @Override
-    public List<InboxSummary> listInboxesV2() throws QuarantineUserActionFailedException
+    public JSONObject listInboxesV2() throws QuarantineUserActionFailedException
     {
-        return listInboxes();
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("inboxesList", listInboxes());
+            json.put("totalDiskSpace", getInboxesTotalSize());
+        } catch (JSONException e) {
+            logger.error("Error getting inbox details", e);
+        }
+        return json;
     }
 
     /**

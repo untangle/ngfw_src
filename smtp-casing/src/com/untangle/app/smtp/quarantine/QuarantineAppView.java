@@ -3,7 +3,7 @@
  */
 package com.untangle.app.smtp.quarantine;
 
-import com.untangle.app.smtp.quarantine.store.InboxSummary;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
@@ -34,6 +34,10 @@ public interface QuarantineAppView
     public boolean quarantineMail(File file, MailSummary summary, InternetAddress... recipients);
 
     // --QuarantineManipulation--
+
+    JSONObject listInboxesV2() throws QuarantineUserActionFailedException;
+
+    // --QuarantineManipulation--
     InboxIndex purgeV2(String account, String... doomedMails) throws NoSuchInboxException,
             QuarantineUserActionFailedException;
 
@@ -42,8 +46,6 @@ public interface QuarantineAppView
 
     List<InboxRecord> getInboxRecordsV2(String account) throws NoSuchInboxException,
             QuarantineUserActionFailedException;
-
-    List<InboxSummary> listInboxesV2() throws QuarantineUserActionFailedException;
 
     /**
      * Generate token.
