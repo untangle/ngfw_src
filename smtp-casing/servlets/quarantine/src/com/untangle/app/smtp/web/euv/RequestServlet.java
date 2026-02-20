@@ -4,15 +4,11 @@
 package com.untangle.app.smtp.web.euv;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.UvmContextFactory;
 
 /**
  * Servlet used when requesting a digest email/login.
@@ -20,8 +16,8 @@ import com.untangle.uvm.UvmContextFactory;
 @SuppressWarnings("serial")
 public class RequestServlet extends HttpServlet
 {
-    private static final String REQ_DIGEST_VIEW = "/console/email-quarantine-digest?companyName=";
-    
+    private static final String REQ_DIGEST_VIEW = "/console/quarantine";
+
     /**
      * Setup the request servlet
      *
@@ -33,9 +29,6 @@ public class RequestServlet extends HttpServlet
     protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
-        UvmContext uvm = UvmContextFactory.context();
-        String companyName = uvm.brandingManager().getCompanyName();
-        String encodedCompanyName = URLEncoder.encode(companyName, "UTF-8");
-        resp.sendRedirect(REQ_DIGEST_VIEW + encodedCompanyName);
+        resp.sendRedirect(REQ_DIGEST_VIEW);
     }
 }
