@@ -159,6 +159,14 @@ public class ReportsManagerImpl implements ReportsManager
     }
 
     /** 
+     * Get all report entries in v2 format.
+     * @return List<ReportEntry> List of all ReportEntry objects.
+     */
+    public List<ReportEntry> getReportEntriesV2() {
+        return getReportEntries();
+    }
+
+    /** 
      * Get all report entries for a specified category.
      *
      * @param category
