@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.network.generic.DynamicRoutingSettingsGeneric;
+
 /**
  * Dynamic Routing settings
  */
@@ -139,5 +141,61 @@ public class DynamicRoutingSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+    
+    /**
+     * Transforms a {@link DynamicRoutingSettings} object into its generic representation.
+     * @return DynamicRoutingSettingsGeneric
+     */
+    public DynamicRoutingSettingsGeneric transformDynamicRoutingSettingsToGeneric() {
+        DynamicRoutingSettingsGeneric dynamicRoutingSettingsGeneric = new DynamicRoutingSettingsGeneric();
+        dynamicRoutingSettingsGeneric.setEnabled(this.getEnabled());
+        dynamicRoutingSettingsGeneric.setBgpEnabled(this.getBgpEnabled());
+        dynamicRoutingSettingsGeneric.setBgpRouterAs(this.getBgpRouterAs());
+        dynamicRoutingSettingsGeneric.setBgpNeighbors(
+                this.getBgpNeighbors() != null
+                        ? new LinkedList<>(this.getBgpNeighbors())
+                        : new LinkedList<>()
+        );
+        dynamicRoutingSettingsGeneric.setBgpNetworks(
+                this.getBgpNetworks() != null
+                        ? new LinkedList<>(this.getBgpNetworks())
+                        : new LinkedList<>()
+        );
+        dynamicRoutingSettingsGeneric.setBgpRouterId(this.getBgpRouterId());
+        dynamicRoutingSettingsGeneric.setOspfEnabled(this.getOspfEnabled());
+        dynamicRoutingSettingsGeneric.setOspfRouterId(this.getOspfRouterId());
+        dynamicRoutingSettingsGeneric.setOspfUseDefaultMetricEnabled(this.getOspfUseDefaultMetricEnabled());
+        dynamicRoutingSettingsGeneric.setOspfDefaultMetric(this.getOspfDefaultMetric());
+        dynamicRoutingSettingsGeneric.setOspfAbrType(this.getOspfAbrType());
+        dynamicRoutingSettingsGeneric.setOspfAutoCost(this.getOspfAutoCost());
+        dynamicRoutingSettingsGeneric.setOspfDefaultInformationOriginateType(this.getOspfDefaultInformationOriginateType());
+        dynamicRoutingSettingsGeneric.setOspfDefaultInformationOriginateMetric(this.getOspfDefaultInformationOriginateMetric());
+        dynamicRoutingSettingsGeneric.setOspfDefaultInformationOriginateExternalType(this.getOspfDefaultInformationOriginateExternalType());
+        dynamicRoutingSettingsGeneric.setOspfRedistConnectedEnabled(this.getOspfRedistConnectedEnabled());
+        dynamicRoutingSettingsGeneric.setOspfRedistConnectedMetric(this.getOspfRedistConnectedMetric());
+        dynamicRoutingSettingsGeneric.setOspfRedistConnectedExternalType(this.getOspfRedistConnectedExternalType());
+        dynamicRoutingSettingsGeneric.setOspfRedistStaticEnabled(this.getOspfRedistStaticEnabled());
+        dynamicRoutingSettingsGeneric.setOspfRedistStaticMetric(this.getOspfRedistStaticMetric());
+        dynamicRoutingSettingsGeneric.setOspfRedistStaticExternalType(this.getOspfRedistStaticExternalType());
+        dynamicRoutingSettingsGeneric.setOspfRedistBgpEnabled(this.getOspfRedistBgpEnabled());
+        dynamicRoutingSettingsGeneric.setOspfRedistBgpMetric(this.getOspfRedistBgpMetric());
+        dynamicRoutingSettingsGeneric.setOspfRedistBgpExternalType(this.getOspfRedistBgpExternalType());
+        dynamicRoutingSettingsGeneric.setOspfNetworks(
+                this.getOspfNetworks() != null
+                        ? new LinkedList<>(this.getOspfNetworks())
+                        : new LinkedList<>()
+        );
+        dynamicRoutingSettingsGeneric.setOspfAreas(
+                this.getOspfAreas() != null
+                        ? new LinkedList<>(this.getOspfAreas())
+                        : new LinkedList<>()
+        );
+        dynamicRoutingSettingsGeneric.setOspfInterfaces(
+                this.getOspfInterfaces() != null
+                        ? new LinkedList<>(this.getOspfInterfaces())
+                        : new LinkedList<>()
+        );
+        return dynamicRoutingSettingsGeneric;
     }
 }

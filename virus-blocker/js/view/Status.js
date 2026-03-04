@@ -35,13 +35,7 @@ Ext.define('Ung.apps.virusblocker.view.Status', {
                 value: '{getSignatureTimestamp}',
                 hidden: '{!isFileScannerAvailable}'
             }
-        }, {
-            xtype: 'displayfield',
-            bind: {
-                hidden: '{!isFileScannerAvailable}',
-                value: 'Scanning Engine &copy; BitDefender 1997-{trademarkEndYear}'
-            }
-        }, {
+        },{
             xtype: 'appreports'
         }]
     }, {

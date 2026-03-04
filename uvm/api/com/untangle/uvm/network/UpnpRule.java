@@ -3,9 +3,14 @@
  */
 package com.untangle.uvm.network;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.io.Serializable;
 
+import com.untangle.uvm.generic.RuleActionGeneric;
+import com.untangle.uvm.generic.RuleConditionGeneric;
+import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.util.Constants;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +42,7 @@ public class UpnpRule implements JSONString, Serializable
         this.setEnabled(Boolean.valueOf(enabled));
         this.setAllow(Boolean.valueOf(allow));
     }
-    
+
     public List<UpnpRuleCondition> getConditions() { return this.matchers; }
     public void setConditions( List<UpnpRuleCondition> matchers ) { this.matchers = matchers; }
 
@@ -57,6 +62,50 @@ public class UpnpRule implements JSONString, Serializable
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms a list of UpnpRule objects into their generic RuleGeneric representation.
+     * Used for get api calls
+     * @param upnpRulesList List<UpnpRule>
+     * @return LinkedList<RuleGeneric>
+     */
+    public static LinkedList<RuleGeneric> transformUpnpRulesToGeneric(List<UpnpRule> upnpRulesList) {
+        LinkedList<RuleGeneric> upnpRulesGenList = new LinkedList<>();
+        for (UpnpRule rule : upnpRulesList) {
+            RuleGeneric upnpRuleGen = getUpnpRuleGeneric(rule);
+            upnpRulesGenList.add(upnpRuleGen);
+        }
+        return upnpRulesGenList;
+    }
+
+    /**
+     * Transforms a UpnpRule object into its generic RuleGeneric representation.
+     * @param ruleLegacy UpnpRule
+     * @return RuleGeneric
+     */
+    private static RuleGeneric getUpnpRuleGeneric(UpnpRule ruleLegacy) {
+        // Transform enabled and ruleId
+        boolean enabled = Boolean.TRUE.equals(ruleLegacy.getEnabled());
+        String ruleId = ruleLegacy.getRuleId() != null ? String.valueOf(ruleLegacy.getRuleId()) : null;
+
+        // Transform Action
+        RuleActionGeneric ruleActionGen = new RuleActionGeneric();
+        ruleActionGen.setType(Boolean.TRUE.equals(ruleLegacy.getAllow()) ? RuleActionGeneric.Type.ACCEPT : RuleActionGeneric.Type.REJECT);
+
+        // Transform Conditions
+        LinkedList<RuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+        for (UpnpRuleCondition ruleCondition : ruleLegacy.getConditions()) {
+            String op = ruleCondition.getInvert() ? Constants.IS_NOT_EQUALS_TO : Constants.IS_EQUALS_TO;
+            RuleConditionGeneric ruleConditionGen = new RuleConditionGeneric(op, ruleCondition.getConditionType(), ruleCondition.getValue());
+            ruleConditionGenList.add(ruleConditionGen);
+        }
+
+        // Create Generic Rule
+        RuleGeneric upnpRuleGen = new RuleGeneric(enabled, ruleLegacy.getDescription(), ruleId);
+        upnpRuleGen.setAction(ruleActionGen);
+        upnpRuleGen.setConditions(ruleConditionGenList);
+        return upnpRuleGen;
     }
 }
 

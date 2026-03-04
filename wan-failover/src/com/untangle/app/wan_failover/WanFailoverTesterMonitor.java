@@ -14,6 +14,9 @@ import com.untangle.uvm.HookManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.app.App;
+import static com.untangle.uvm.app.License.WAN_BALANCER;
+import static com.untangle.uvm.app.AppSettings.AppState.RUNNING;
 
 /**
  * The WanFailoverTesterMonitor is a daemon thread that launches and monitors
@@ -109,18 +112,48 @@ public class WanFailoverTesterMonitor
     /**
      * Get active wan interface identifer and send to hook listeners.
      */
-    private void updateActiveWanId()
-    {
+    protected void updateActiveWanId() {
         int activeWanId = 0;
-        for (activeWanId = 1; activeWanId < InterfaceSettings.MAX_INTERFACE_ID + 1; activeWanId++) {
-            if(wanStatusArray[activeWanId] == null){
-                continue;
+        int maxWeight = -1;
+
+        // Check if WAN Balancer is actually running before using weights
+        boolean wanBalancerRunning = false;
+        try {
+            App wanBalancerApp = UvmContextFactory.context().appManager().app(WAN_BALANCER);
+            if (wanBalancerApp != null && wanBalancerApp.getRunState() == RUNNING) {
+                wanBalancerRunning = true;
             }
-            if(wanStatusArray[activeWanId]){
-                break;
+        } catch (Exception e) {
+            logger.warn("Unable to check WAN Balancer status: ", e.getMessage());
+        }
+
+        int[] weights = WanFailoverApp.wanBalancerWeights;
+        // Only use weights if WAN Balancer is running AND we have valid weights
+        if (wanBalancerRunning && weights != null && weights.length > 0) {
+            int length = Math.min(weights.length, InterfaceSettings.MAX_INTERFACE_ID + 1);
+
+            for (int i = 1; i < length; i++) {
+                int weight = weights[i-1];
+
+                if (weight > 0 && wanStatusArray[i] != null && wanStatusArray[i]) {
+                    if (weight > maxWeight) {
+                        maxWeight = weight;
+                        activeWanId = i;
+                    }
+                }
             }
         }
-        UvmContextFactory.context().hookManager().callCallbacks( HookManager.WAN_FAILOVER_CHANGE, activeWanId );
+
+        // Fallback: If WAN Balancer is not running or no weighted active WAN found, use first active WAN
+        if (activeWanId == 0) {
+            activeWanId = java.util.stream.IntStream.rangeClosed(1, InterfaceSettings.MAX_INTERFACE_ID)
+                .filter(i -> wanStatusArray[i] != null && wanStatusArray[i])
+                .findFirst() 
+                .orElse(0);
+        }
+
+        logger.info("Active WAN selected: {} (WAN Balancer running: {} )", activeWanId, wanBalancerRunning);
+        UvmContextFactory.context().hookManager().callCallbacks(HookManager.WAN_FAILOVER_CHANGE, activeWanId);
     }
 
     /**

@@ -3,10 +3,15 @@
  */
 package com.untangle.uvm.network;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.io.Serializable;
 import java.net.InetAddress;
 
+import com.untangle.uvm.generic.RuleActionGeneric;
+import com.untangle.uvm.generic.RuleConditionGeneric;
+import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.util.Constants;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +48,7 @@ public class PortForwardRule implements JSONString, Serializable
         this.setDescription(description);
         this.setSimple(false);
     }
-    
+
     public List<PortForwardRuleCondition> getConditions() { return this.matchers; }
     public void setConditions( List<PortForwardRuleCondition> matchers ) { this.matchers = matchers; }
 
@@ -69,6 +74,52 @@ public class PortForwardRule implements JSONString, Serializable
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms a list of PortForwardRule objects into their generic RuleGeneric representation.
+     * Used for get api calls
+     * @param portForwardRuleList List<PortForwardRule>
+     * @return LinkedList<RuleGeneric>
+     */
+    public static LinkedList<RuleGeneric> transformPortForwardRulesToGeneric(List<PortForwardRule> portForwardRuleList) {
+        LinkedList<RuleGeneric> portForwardRulesGenList = new LinkedList<>();
+        for (PortForwardRule rule : portForwardRuleList) {
+            RuleGeneric portForwardRulesGen = getPortForwardRuleGeneric(rule);
+            portForwardRulesGenList.add(portForwardRulesGen);
+        }
+        return portForwardRulesGenList;
+    }
+
+    /**
+     * Transforms a PortForwardRule object into its generic RuleGeneric representation.
+     * @param rule PortForwardRule
+     * @return RuleGeneric
+     */
+    private static RuleGeneric getPortForwardRuleGeneric(PortForwardRule rule) {
+        // Transform enabled and ruleId
+        boolean enabled = Boolean.TRUE.equals(rule.getEnabled());
+        String ruleId = rule.getRuleId() != null ? String.valueOf(rule.getRuleId()) : null;
+
+        // Transform Action
+        RuleActionGeneric ruleActionGen = new RuleActionGeneric();
+        ruleActionGen.setType(RuleActionGeneric.Type.DNAT);
+        ruleActionGen.setDnat_address(rule.getNewDestination());
+        ruleActionGen.setDnat_port(rule.getNewPort() != null ? String.valueOf(rule.getNewPort()) : null);
+
+        // Transform Conditions
+        LinkedList<RuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+        for (PortForwardRuleCondition ruleCondition : rule.getConditions()) {
+            String op = ruleCondition.getInvert() ? Constants.IS_NOT_EQUALS_TO : Constants.IS_EQUALS_TO;
+            RuleConditionGeneric ruleConditionGen = new RuleConditionGeneric(op, ruleCondition.getConditionType(), ruleCondition.getValue());
+            ruleConditionGenList.add(ruleConditionGen);
+        }
+
+        // Create Generic Rule
+        RuleGeneric portForwardRulesGen = new RuleGeneric(enabled, rule.getDescription(), ruleId);
+        portForwardRulesGen.setAction(ruleActionGen);
+        portForwardRulesGen.setConditions(ruleConditionGenList);
+        return portForwardRulesGen;
     }
 }
 

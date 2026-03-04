@@ -19,9 +19,13 @@ public interface CertificateManager
 
     LinkedList<CertificateInformation> getServerCertificateList();
 
+    LinkedList<CertificateInformation> getServerCertificateListV2();
+
     public CertificateInformation getServerCertificateInformation(String fileName);
 
     LinkedList<CertificateInformation> getRootCertificateList();
+
+    LinkedList<CertificateInformation> getRootCertificateListV2();
 
     CertificateInformation getRootCertificateInformation();
 

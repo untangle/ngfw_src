@@ -49,7 +49,7 @@ import java.util.stream.Stream;
  */
 public class EventManagerImpl implements EventManager
 {
-    private static final Integer SETTINGS_CURRENT_VERSION = 5;
+    private static final Integer SETTINGS_CURRENT_VERSION = 6;
 
     private static final Logger logger = LogManager.getLogger(EventManagerImpl.class);
 
@@ -92,7 +92,10 @@ public class EventManagerImpl implements EventManager
 
     private static final String PREVIEW_EVENT_CLASS_NAME = "SystemStatEvent";
     private LogEvent mostRecentPreviewEvent = null;
-
+    private static final String DISK_CHECK_FAILURE = "DISK_CHECK_FAILURE";
+    private static final String DISK_CHECK_FAILURE_MESSAGE = "Disk health checks failed";
+    private static final String CRITICAL_DEVICE_TEMPERATURE = "CRITICAL_DEVICE_TEMPERATURE";
+    private static final String CRITICAL_DEVICE_TEMPERATURE_MESSAGE = "Device temperature exceeded critical threshold";
     private final HookCallback settingsChangeHook = new SettingsHook();;
     private static HookCallback appInstantiateHook;
     private static HookCallback appDestroyHook;
@@ -422,37 +425,36 @@ public class EventManagerImpl implements EventManager
     private void updateSettings(EventSettings settings){
         if(settings.getVersion() < SETTINGS_CURRENT_VERSION){
 
-            // Below code to add CriticalAlertEvent as deafult event can be removed after 17.4 release
+            // Below code to add CriticalAlertEvent as default event can be removed after 17.4 release
             boolean criticalFlag = false;
             boolean diskCheckFailFlag = false;
+            boolean deviceCriticalTemperature = false;
 
-            // search for the CriticalAlertEvent DISK_CHECK_FAILURE rule
+            // search for the CriticalAlertEvent CRITICAL_DEVICE_TEMPERATURE rule
             for (EventRule er : settings.getAlertRules()) {
                 for(EventRuleCondition c : er.getConditions()) {
                     if(c.getField().equals(Constants.CLASS) && c.getFieldValue().equals(Constants.CRITICAL_ALERT_EVENT_RGX)){
                         criticalFlag = true;
                     }
-                    if(c.getField().equals(Constants.COMPONENT) && c.getFieldValue().equals("DISK_CHECK_FAILURE")){
+                    if(c.getField().equals(Constants.COMPONENT) && c.getFieldValue().equals(DISK_CHECK_FAILURE)){
                         diskCheckFailFlag = true;
+                    }
+                    if(c.getField().equals(Constants.COMPONENT) && c.getFieldValue().equals(CRITICAL_DEVICE_TEMPERATURE)){
+                        deviceCriticalTemperature = true;
                     }
                 }
             }
 
             // if we didn't find the CriticalAlertEvent DISK_CHECK_FAILURE rule create at top
             if ((!criticalFlag) || (!diskCheckFailFlag)) {
-                LinkedList<EventRuleCondition> conditions;
-                EventRuleCondition condition1;
-                EventRuleCondition condition2;
-                AlertRule eventRule;
-
-                conditions = new LinkedList<>();
-                condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.CRITICAL_ALERT_EVENT_RGX );
-                conditions.add( condition1 );
-                condition2 = new EventRuleCondition( Constants.COMPONENT, Constants.EQUALS_TO, "DISK_CHECK_FAILURE" );
-                conditions.add( condition2 );
-                eventRule = new AlertRule( true, conditions, true, true, "Disk health checks failed", false, 0 );
-                settings.getAlertRules().addFirst( eventRule );
+                this.addCriticalEventRules(settings, DISK_CHECK_FAILURE, DISK_CHECK_FAILURE_MESSAGE);
             }
+
+            // if we didn't find the CriticalAlertEvent CRITICAL_DEVICE_TEMPERATURE rule create at top
+            if ((!criticalFlag) || (!deviceCriticalTemperature)) {
+                this.addCriticalEventRules(settings, CRITICAL_DEVICE_TEMPERATURE, CRITICAL_DEVICE_TEMPERATURE_MESSAGE);
+            }
+
 
             // set the alertrules FieldValues from null to correct values
             for (EventRule er : settings.getAlertRules()) {
@@ -468,6 +470,29 @@ public class EventManagerImpl implements EventManager
         }
         this.setSettings( settings );
     }
+
+    /**
+     * Adds CriticalEvent Rule like CRITICAL_DEVICE_TEMPERATURE DISK_CHECK_FAILURE .
+     *  @param settings Current EventSettings
+     * @param  criticalEventName criticalEventName
+     * @param  criticalEventMessage criticalEventMessage
+     */
+    private void addCriticalEventRules(EventSettings settings, String criticalEventName, String criticalEventMessage)
+    {
+        LinkedList<EventRuleCondition> conditions;
+        EventRuleCondition condition1;
+        EventRuleCondition condition2;
+        AlertRule eventRule;
+
+        conditions = new LinkedList<>();
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.CRITICAL_ALERT_EVENT_RGX );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( Constants.COMPONENT, Constants.EQUALS_TO, criticalEventName );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, criticalEventMessage , false, 0 );
+        settings.getAlertRules().addFirst( eventRule );
+    }
+
 
     /**
      * Create default settings.
@@ -503,9 +528,17 @@ public class EventManagerImpl implements EventManager
         conditions = new LinkedList<>();
         condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.CRITICAL_ALERT_EVENT_RGX );
         conditions.add( condition1 );
-        condition2 = new EventRuleCondition( Constants.COMPONENT, Constants.EQUALS_TO, "DISK_CHECK_FAILURE" );
+        condition2 = new EventRuleCondition( Constants.COMPONENT, Constants.EQUALS_TO, CRITICAL_DEVICE_TEMPERATURE );
         conditions.add( condition2 );
-        eventRule = new AlertRule( true, conditions, true, true, "Disk health checks failed", false, 0 );
+        eventRule = new AlertRule( true, conditions, true, true, CRITICAL_DEVICE_TEMPERATURE_MESSAGE, false, 0 );
+        rules.add( eventRule );
+
+        conditions = new LinkedList<>();
+        condition1 = new EventRuleCondition( Constants.CLASS, Constants.EQUALS_TO, Constants.CRITICAL_ALERT_EVENT_RGX );
+        conditions.add( condition1 );
+        condition2 = new EventRuleCondition( Constants.COMPONENT, Constants.EQUALS_TO, DISK_CHECK_FAILURE );
+        conditions.add( condition2 );
+        eventRule = new AlertRule( true, conditions, true, true, DISK_CHECK_FAILURE_MESSAGE, false, 0 );
         rules.add( eventRule );
 
         conditions = new LinkedList<>();

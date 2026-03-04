@@ -19,14 +19,18 @@ public class Constants {
 
     // Symbols
     public static final String DOT = ".";
+    public static final String HYPHEN = "-";
     public static final String UNDERSCORE = "_";
     public static final String SPACE = " ";
     public static final String COMMA_STRING = ",";
 
     public static final String EQUALS_TO = "=";
-    public static final String HYPHEN = "-";
+    public static final String COMMA = ",";
+    public static final String SLASH = "/";
+    public static final String DOUBLE_SLASH = "//";
+    public static final String IS_EQUALS_TO = "==";
+    public static final String IS_NOT_EQUALS_TO = "!=";
     public static final String LOG_ELLIPSIS = "..";
-
 
 
     // Boolean
@@ -51,6 +55,17 @@ public class Constants {
     // Escape sequence
     public static final String NEW_LINE = "\n";
 
+    //encoding Key
+    public static final String BASE64 = "Base64";
+
     // Empty string
     public static final String EMPTY_STRING = "\" \"";
+
+    // Numbers
+    public static final String FOUR = "4";
+    public static final String SEVEN = "7";
+
+    //clamav daemons
+    public static final String CLAMAV_DAEMON = "clamav-daemon";
+    public static final String FRESHCLAM = "clamav-freshclam";
 }

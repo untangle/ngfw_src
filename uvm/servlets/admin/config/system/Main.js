@@ -1,35 +1,26 @@
 Ext.define('Ung.config.system.Main', {
     extend: 'Ung.cmp.ConfigPanel',
     alias: 'widget.config-system',
-
-    /* requires-start */
-    requires: [
-        'Ung.config.system.MainController',
-        'Ung.config.system.MainModel',
-    ],
-    /* requires-end */
-    controller: 'config-system',
+    itemId: 'system',
+    layout: 'border',
 
     viewModel: {
-        type: 'config-system',
-        localizationChanged: false,
-        formulas: {
-            logDirectorySizeHuman: {
-                get: function(get){
-                    return Util.bytesToHumanReadable(get('logDirectorySize'), true);
-                }
-            }
+        data: {
+            title: 'System'.t(),
+            iconName: 'system',
+            vueMigrated: true
+        }
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/system', false);
         }
     },
 
     items: [
-        { xtype: 'config-system-regional' },
-        { xtype: 'config-system-support' },
-        { xtype: 'config-system-logs' },
-        { xtype: 'config-system-backup' },
-        { xtype: 'config-system-restore' },
-        { xtype: 'config-system-protocols' },
-        { xtype: 'config-system-shield' }
+        Field.iframeHolder
     ]
 
 });

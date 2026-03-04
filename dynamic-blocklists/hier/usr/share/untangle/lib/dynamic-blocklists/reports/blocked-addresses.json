@@ -1,0 +1,22 @@
+{
+    "uniqueId": "dynamic-blocklists-8bTqxKxxUK",
+    "category": "Dynamic Blocklists",
+    "description": "All sessions blocked by Dynamic Blocklists.",
+    "displayOrder": 102,
+    "javaClass": "com.untangle.app.reports.ReportEntry",
+    "readOnly": true,
+    "table": "sessions",
+    "conditions": [
+        {
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "filter_prefix",
+            "operator": "=",
+            "value": "dynamic_block_list_blocked"
+        }
+    ],
+    "timeDataInterval": "AUTO",
+    "timeStyle": "BAR",
+    "title": "Blocked Addresses",
+    "type": "EVENT_LIST",
+    "defaultColumns": ["time_stamp","c_client_addr","s_server_addr"]
+}

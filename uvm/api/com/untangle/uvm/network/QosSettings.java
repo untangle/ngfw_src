@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.network.generic.QosSettingsGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -62,5 +63,33 @@ public class QosSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms a {@link QosSettings} object into its generic representation.
+     * @return QosSettingsGeneric
+     */
+    public QosSettingsGeneric transformQosSettingsToGeneric() {
+        QosSettingsGeneric qosSettingsGen = new QosSettingsGeneric();
+
+        qosSettingsGen.setQueueDiscipline(this.getQueueDiscipline());
+        qosSettingsGen.setQosEnabled(this.getQosEnabled());
+
+        qosSettingsGen.setDefaultPriority(this.getDefaultPriority());
+
+        qosSettingsGen.setPingPriority(this.getPingPriority());
+        qosSettingsGen.setDnsPriority(this.getDnsPriority());
+        qosSettingsGen.setSshPriority(this.getSshPriority());
+        qosSettingsGen.setOpenvpnPriority(this.getOpenvpnPriority());
+
+        // Set QoS Priorities
+        if (this.getQosPriorities() != null)
+            qosSettingsGen.setQosPriorities(new LinkedList<>(this.getQosPriorities()));
+
+        // Set QoS Rules
+        if (this.getQosRules() != null)
+            qosSettingsGen.setQos_rules(QosRule.transformQoSRulesToGeneric(this.getQosRules()));
+
+        return qosSettingsGen;
     }
 }

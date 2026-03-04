@@ -383,6 +383,14 @@ public class CertificateManagerImpl implements CertificateManager
     }
 
     /**
+     * Gets list of server certificates - without any list node for vue UI
+     * @return A list of all known server certificate files
+     */
+    public LinkedList<CertificateInformation> getServerCertificateListV2() {
+        return getServerCertificateList();
+    }
+
+    /**
      * Called to retrieve the details about a certificate
      * 
      * @param fileName
@@ -533,6 +541,14 @@ public class CertificateManagerImpl implements CertificateManager
         logger.debug("Root CA File List:" + certList);
 
        return (certList);
+   }
+
+   /**
+    * Gets list of root certificates - without any list node for vue UI
+    * @return A list of all known root certificate files
+    */
+   public LinkedList<CertificateInformation> getRootCertificateListV2() {
+       return getRootCertificateList();
    }
 
    /**

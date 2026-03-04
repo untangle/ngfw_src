@@ -27,6 +27,18 @@ public interface AdminManager
     void setSettings(AdminSettings settings);
 
     /**
+     * Return administrator settings in generic format.
+     * @return AdminSettings object.
+     */
+    AdminSettings getSettingsV2();
+
+    /**
+     * Write administrator settings format.
+     * @param settings AdminSettings object in generic format.
+     */
+    void setSettingsV2(AdminSettings settings);
+
+    /**
      * Return whether sytem has been modified from command line.
      * 
      * @return

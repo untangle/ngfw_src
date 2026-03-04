@@ -263,10 +263,6 @@ img.icon-drag {
     background-image: url(/icons/config/local-directory.svg);
 }
 
-.icon-config-upgrade {
-    background-image: url(/icons/config/upgrade.svg);
-}
-
 .icon-config-system {
     background-image: url(/icons/config/system.svg);
 }

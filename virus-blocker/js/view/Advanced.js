@@ -43,13 +43,6 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
             xtype: 'checkbox',
             boxLabel: 'Enable ScoutIQ&trade; Cloud Scan'.t(),
             bind: '{settings.enableCloudScan}'
-        }, {
-            xtype: 'checkbox',
-            boxLabel: 'Enable BitDefender&reg; Scan'.t(),
-            hidden: rpc.architecture === "arm",
-            bind: {
-                value: '{settings.enableLocalScan}',
-            }
         }]
     }, {
         xtype: 'tabpanel',

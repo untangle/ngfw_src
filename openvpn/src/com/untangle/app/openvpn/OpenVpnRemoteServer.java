@@ -18,6 +18,7 @@ public class OpenVpnRemoteServer implements java.io.Serializable, org.json.JSONS
     private boolean authUserPass = false;
     private String authUsername;
     private String authPassword;
+    private OpenVpnConfFile openvpnConfFile;
     private String remoteServerEncryptedPassword;
 
     public OpenVpnRemoteServer()
@@ -44,11 +45,45 @@ public class OpenVpnRemoteServer implements java.io.Serializable, org.json.JSONS
     public String getRemoteServerEncryptedPassword() { return this.remoteServerEncryptedPassword; }
     public void setRemoteServerEncryptedPassword( String newValue ) { this.remoteServerEncryptedPassword = newValue; }
 
+    public OpenVpnConfFile getOpenvpnConfFile() { return openvpnConfFile; }
+    public void setOpenvpnConfFile(OpenVpnConfFile openvpnConfFile) { this.openvpnConfFile = openvpnConfFile; }
+
 // THIS IS FOR ECLIPSE - @formatter:on
 
     public String toJSONString()
     {
         org.json.JSONObject jO = new org.json.JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Represents an OpenVPN configuration file with its encoded contents and encoding format.
+     * 
+     * <p>This class is typically used to hold the contents of an OpenVPN configuration file
+     * encoded in a specific format (e.g., Base64). It can be deserialized from a JSON structure
+     * where the configuration content and encoding method are provided.</p>
+     */
+    public static class OpenVpnConfFile {
+        private String contents;
+        private String encoding = "base64";
+
+        public OpenVpnConfFile() {
+        }
+
+        public String getContents() {
+            return contents;
+        }
+
+        public void setContents(String contents) {
+            this.contents = contents;
+        }
+
+        public String getEncoding() {
+            return encoding;
+        }
+
+        public void setEncoding(String encoding) {
+            this.encoding = encoding;
+        }
     }
 }

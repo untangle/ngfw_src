@@ -101,7 +101,7 @@ JsBuilder.new(uvm_lib, "ung-setup-all", ungSetupAllDirs, "setup/script")
 
 # sections
 ['about', 'administration', 'events', 'email', 'local-directory', 'network',
- 'system', 'upgrade'].each do |n|
+ 'system'].each do |n|
   JsBuilder.new(uvm_lib, n, "uvm/servlets/admin/config/#{n}", "admin/script/config")
 end
 

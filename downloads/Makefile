@@ -29,7 +29,7 @@ tarballs_gz=apache-ant-1.6.5.tar.gz \
 
 tarballs_bz2=
 
-zips=javamail-1_3_3_01.zip jabsorb-1.2.4-src.zip \
+zips=javamail-1_3_3_01.zip jabsorb-1.2.5.zip \
 	jradius-client-1.0.0-release.zip apache-taglibs-standard-1.2.5.zip \
 	selenium-java-3.141.59.zip geoip2-2.17.0-with-dependencies.zip
 

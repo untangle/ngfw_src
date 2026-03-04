@@ -3,9 +3,14 @@
  */
 package com.untangle.uvm.network;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.io.Serializable;
 
+import com.untangle.uvm.generic.RuleActionGeneric;
+import com.untangle.uvm.generic.RuleConditionGeneric;
+import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.util.Constants;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +43,7 @@ public class BypassRule implements JSONString, Serializable
         this.setBypass(bypass);
         this.setDescription(description);
     }
-    
+
     public List<BypassRuleCondition> getConditions() { return this.conditions; }
     public void setConditions( List<BypassRuleCondition> conditions ) { this.conditions = conditions; }
 
@@ -58,6 +63,50 @@ public class BypassRule implements JSONString, Serializable
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms a list of BypassRule objects into their generic RuleGeneric representation.
+     * Used for get api calls
+     * @param bypassRuleList List<BypassRule>
+     * @return LinkedList<RuleGeneric>
+     */
+    public static LinkedList<RuleGeneric> transformBypassRulesToGeneric(List<BypassRule> bypassRuleList) {
+        LinkedList<RuleGeneric> bypassRulesGenList = new LinkedList<>();
+        for (BypassRule rule : bypassRuleList) {
+            RuleGeneric bypassRulesGen = BypassRule.getBypassRuleGen(rule);
+            bypassRulesGenList.add(bypassRulesGen);
+        }
+        return bypassRulesGenList;
+    }
+
+    /**
+     * Transforms a BypassRule object into its generic RuleGeneric representation.
+     * @param rule BypassRule
+     * @return RuleGeneric
+     */
+    private static RuleGeneric getBypassRuleGen(BypassRule rule) {
+        // Transform enabled and ruleId
+        boolean enabled = Boolean.TRUE.equals(rule.getEnabled());
+        String ruleId = rule.getRuleId() != null ? String.valueOf(rule.getRuleId()) : null;
+
+        // Transform Action
+        RuleActionGeneric ruleActionGen = new RuleActionGeneric();
+        ruleActionGen.setType(Boolean.TRUE.equals(rule.getBypass()) ? RuleActionGeneric.Type.BYPASS : RuleActionGeneric.Type.PROCESS);
+
+        // Transform Conditions
+        LinkedList<RuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+        for (BypassRuleCondition ruleCondition : rule.getConditions()) {
+            String op = ruleCondition.getInvert() ? Constants.IS_NOT_EQUALS_TO : Constants.IS_EQUALS_TO;
+            RuleConditionGeneric ruleConditionGen = new RuleConditionGeneric(op, ruleCondition.getConditionType(), ruleCondition.getValue());
+            ruleConditionGenList.add(ruleConditionGen);
+        }
+
+        // Create Generic Rule
+        RuleGeneric bypassRulesGen = new RuleGeneric(enabled, rule.getDescription(), ruleId);
+        bypassRulesGen.setAction(ruleActionGen);
+        bypassRulesGen.setConditions(ruleConditionGenList);
+        return bypassRulesGen;
     }
 }
 
