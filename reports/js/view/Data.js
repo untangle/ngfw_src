@@ -80,6 +80,14 @@ Ext.define('Ung.apps.reports.view.Data', {
                  style: { color: '{googleDriveConfigured ? "green" : "red"}'}
              }
          }, {
+            xtype: 'component',
+            hidden: true,
+            bind: {
+                hidden: '{rootDirectory}',
+                html: 'The Google Drive directory is not selected.'.t(),
+                style: { color: "red" }
+            }
+        }, {
              xtype: 'button',
              text: 'Configure Google Drive'.t(),
              margin: '10 0 15 0',
@@ -90,7 +98,7 @@ Ext.define('Ung.apps.reports.view.Data', {
              disabled: true,
              bind: {
                  value: '{settings.googleDriveUploadData}',
-                 disabled: '{!googleDriveConfigured}'
+                 disabled: '{!googleDriveConfigured || !rootDirectory}'
              },
              listeners: {
                  render: function(obj) {
@@ -103,7 +111,7 @@ Ext.define('Ung.apps.reports.view.Data', {
              disabled: true,
              bind: {
                  value: '{settings.googleDriveUploadCsv}',
-                 disabled: '{!googleDriveConfigured}'
+                 disabled: '{!googleDriveConfigured || !rootDirectory}'
              },
              listeners: {
                  render: function(obj) {
@@ -115,8 +123,8 @@ Ext.define('Ung.apps.reports.view.Data', {
             disabled: true,
             hidden: true,
             bind: {
-                disabled: '{!googleDriveConfigured}',
-                hidden: '{!googleDriveConfigured}'
+                disabled: '{!googleDriveConfigured || !rootDirectory}',
+                hidden: '{!googleDriveConfigured || !rootDirectory}'
             },
             layout: {
                 type: 'hbox'
@@ -128,9 +136,7 @@ Ext.define('Ung.apps.reports.view.Data', {
                 labelWidth: 150,
                 renderer: function() {
                     var rootDirectory = Rpc.directData('rpc.UvmContext.googleManager.getAppSpecificGoogleDrivePath', null);
-                    if (!rootDirectory || rootDirectory.trim() === '')
-                        return '';
-                    return Ext.String.format('<strong><span class="cond-val">{0}</span></strong>', rootDirectory + " /");
+                    return Ext.String.format('<strong><span class="cond-val"> {0}</span></strong>', rootDirectory + " /");
                 }
             },{
                 xtype: 'textfield',

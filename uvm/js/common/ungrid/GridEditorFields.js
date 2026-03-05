@@ -172,13 +172,6 @@ Ext.define('Ung.cmp.GridEditorFields', {
         editable: false
     },
 
-    iframeHolder: {
-        region: 'center',
-        xtype: 'container',
-        itemId: 'iframeHolder',
-        layout: 'fit'
-    }
-
     // string: {
     //     xtype: 'textfield',
     //     name: "Site",

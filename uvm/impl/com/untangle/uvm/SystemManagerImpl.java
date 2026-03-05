@@ -4,55 +4,61 @@
 
 package com.untangle.uvm;
 
-import com.untangle.uvm.app.DayOfWeekMatcher;
-import com.untangle.uvm.generic.SystemSettingsGeneric;
-import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.servlet.DownloadHandler;
-import com.untangle.uvm.util.Constants;
-import com.untangle.uvm.util.FileDirectoryMetadata;
-import com.untangle.uvm.util.IOUtil;
-import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Scanner;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
-import java.util.TimeZone;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.TimeZone;
+import java.util.zip.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.SettingsManager;
+import com.untangle.uvm.SystemManager;
+import com.untangle.uvm.SystemSettings;
+import com.untangle.uvm.SnmpSettings;
+import com.untangle.uvm.ExecManagerResultReader;
+import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.event.AdminLoginEvent;
+import com.untangle.uvm.servlet.DownloadHandler;
+import com.untangle.uvm.util.Constants;
+import com.untangle.uvm.util.FileDirectoryMetadata;
+import com.untangle.uvm.util.IOUtil;
+import com.untangle.uvm.util.StringUtil;
 
 /**
  * The Manager for system-related settings
  */
 public class SystemManagerImpl implements SystemManager
 {
-    private static final int SETTINGS_VERSION = 6;
+    private static final int SETTINGS_VERSION = 5;
     private static final String ZIP_FILE = "system_logs.zip";
-    public static final String UVM_LOG = "/var/log/uvm/uvm.log";
     private static final String EOL = "\n";
     private static final String BLANK_LINE = EOL + EOL;
     private static final String TWO_LINES = BLANK_LINE + EOL;
@@ -71,7 +77,7 @@ public class SystemManagerImpl implements SystemManager
 
     private static final String CRON_STRING = " root /usr/share/untangle/bin/ut-upgrade.py >/dev/null 2>&1";
     private static final File CRON_FILE = new File("/etc/cron.d/untangle-upgrade");
-    private static final File BDAM_LICENSE_UPDATE_SCRIPT = new File(System.getProperty("uvm.bin.dir") + "/ut-bdam-license-update.py");
+    private static final String BDAM_LICENSE_UPDATE_SCRIPT = System.getProperty("uvm.bin.dir") + "/ut-bdam-license-update.py";
     private static final File BDAM_CRON_FILE = new File("/etc/cron.daily/bdam-cron");
 
     // 850K .......... .......... .......... .......... .......... 96% 46.6K 6s
@@ -98,11 +104,6 @@ public class SystemManagerImpl implements SystemManager
     private boolean skipDiskCheck = false;
 
     private List<FileDirectoryMetadata> logFiles;
-
-    private static final String CRITICAL_DEVICE_TEMPERATURE = "CRITICAL_DEVICE_TEMPERATURE";
-    private final static String GET_DEVICE_TEMPERATURE_SCRIPT = System.getProperty("uvm.home") + "/bin/ut-temperature-status.sh";
-    private static final String CRON_TEMPERATURE_STRING = "*/15 * * * * root /usr/share/untangle/bin/ut-temperature-status.py >/dev/null 2>&1";
-    private static final File CRON_TEMPERATURE_FILE = new File("/etc/cron.d/ut-temperature-status-cron");
 
     /**
      * Constructor
@@ -134,11 +135,8 @@ public class SystemManagerImpl implements SystemManager
             this.settings = readSettings;
 
             if (this.settings.getVersion() < SETTINGS_VERSION) {
-                if(this.settings.getVersion() < 5){
-                    this.settings.setLogRetention(7);
-                }
                 this.settings.setVersion(SETTINGS_VERSION);
-                this.getSettings().setThresholdTemperature(105.0);
+                this.settings.setLogRetention(7);
                 this.setSettings(this.settings, false);
             }
 
@@ -176,15 +174,11 @@ public class SystemManagerImpl implements SystemManager
         if (settings.getAutoUpgrade() && settingsFile.lastModified() > CRON_FILE.lastModified()) writeCronFile();
 
         /**
-         * Remove  bdam_cron file as its deprecated
+         * Write bdam_cron to auto update license 
          */
-        if (BDAM_CRON_FILE.exists())
-            BDAM_CRON_FILE.delete();
-        /**
-         * Remove bdam_cron license update script as its deprecated
-        */
-        if (BDAM_LICENSE_UPDATE_SCRIPT.exists())
-            BDAM_LICENSE_UPDATE_SCRIPT.delete();
+        if (!BDAM_CRON_FILE.exists())
+            writeBDAMCronFile();
+
         /**
          * If auto-upgrade is disabled and cron file exists, delete it
          */
@@ -200,11 +194,6 @@ public class SystemManagerImpl implements SystemManager
         radiusServerSync();
         radiusProxySync();
 
-        /**
-         * Write ut-temperature-status-cron to check if device temperature reached critical threshold
-         */
-        if (!CRON_TEMPERATURE_FILE.exists())
-            writeCRONTemperatureFile();
         UvmContextFactory.context().servletFileManager().registerDownloadHandler(new SystemSupportLogDownloadHandler());
         initLogFilesMetadata();
 
@@ -220,6 +209,8 @@ public class SystemManagerImpl implements SystemManager
         logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^auth[.]log.*"));
         // matches 'bctid.log*' at the start of the string
         logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^bctid[.]log.*"));
+        // matches 'bdadmserver.log*' at the start of the string
+        logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR, "^bdamserver[.]log.*"));
         // matches '*'
         logFilesList.add(new FileDirectoryMetadata(SYSTEM_LOG_DIR + "/clamav", ".*"));
         // matches 'dhcp.log*' at the start of the string
@@ -262,47 +253,6 @@ public class SystemManagerImpl implements SystemManager
     */
     public void setSettings(final SystemSettings newSettings) {
         setSettings(newSettings, false);
-    }
-
-    /**
-     * Get SystemSettingsGeneric for Vue UI
-     * @return SystemSettingsGeneric
-     */
-    public SystemSettingsGeneric getSystemSettingsV2() {
-        // Get current network settings
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        // transform the systemSettings and networkSettings to systemSettingsGeneric
-        return this.settings.transformLegacyToGenericSettings(networkSettings);
-    }
-
-    /**
-     * Sets the SystemSettings and NetworkSettings (Hostname/Services)
-     * @param systemSettingsGeneric SystemSettingsGeneric
-     */
-    public void setSystemSettingsV2(final SystemSettingsGeneric systemSettingsGeneric) {
-        // Get current network settings and clone it.
-        NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
-        NetworkSettings clonedNetworkSettings = SerializationUtils.clone(networkSettings);
-        // Get current language settings and clone it.
-        LanguageSettings languageSettings = UvmContextFactory.context().languageManager().getLanguageSettings();
-        LanguageSettings clonedLanguageSettings = SerializationUtils.clone(languageSettings);
-
-        // Deep clone current System Settings to transform in New System Settings
-        SystemSettings clonedSystemSettings = SerializationUtils.clone(this.settings);
-
-        // update network (Hostname|Services) and system settings with value coming from postData
-        systemSettingsGeneric.transformGenericToLegacySettings(clonedSystemSettings, clonedNetworkSettings, clonedLanguageSettings);
-        
-        //Set TimeZone with updated values.
-        setTimeZone(TimeZone.getTimeZone(systemSettingsGeneric.getTimeZone().getDisplayName()));
-
-        // Set Network Settings with updated values.
-        UvmContextFactory.context().networkManager().setNetworkSettings(clonedNetworkSettings);
-        // Set Language Settings with updated values.
-        UvmContextFactory.context().languageManager().setLanguageSettings(clonedLanguageSettings);
-
-        // Set System settings
-        this.setSettings(clonedSystemSettings);
     }
 
     /**
@@ -798,33 +748,6 @@ can look deeper. - mahotz
     }
 
     /**
-     * Get UVM logs
-     * @return
-     */
-    @Override
-    public String getUvmLogs() {
-        return getLogFile(UVM_LOG, 500);
-    }
-
-    /**
-     * Private method to get specific number of logs from a file.
-     * @param file
-     * @param numberOfLines
-     * @return
-     */
-    private String getLogFile(String file, int numberOfLines) {
-        if (StringUtils.isEmpty(file)) return null;
-
-        File f = new File(file);
-        if (f.exists()) {
-            return UvmContextFactory.context().execManager().execOutput(String.format("tail -n %d %s", numberOfLines, file));
-        } else {
-            logger.warn("Unable to get logs, file {} does not exist", file);
-            return null;
-        }
-    }
-
-    /**
      * Upgrade the system
      */
     public void upgrade()
@@ -1064,6 +987,7 @@ can look deeper. - mahotz
         newSettings.setAutoUpgradeHour(23);
         newSettings.setAutoUpgradeMinute((new java.util.Random()).nextInt(60));
         newSettings.setAutoUpgradeDays(DayOfWeekMatcher.getAnyMatcher());
+
         // pass the settings to the OEM override function and return the override settings
         SystemSettings overrideSettings = (SystemSettings)UvmContextFactory.context().oemManager().applyOemOverrides(newSettings);
         return overrideSettings;
@@ -1450,15 +1374,16 @@ can look deeper. - mahotz
     }
 
     /** 
-     * Write device temperaure cronjob file.
+     * Write BDAM licence update cronjob file.
      */
-    private void writeCRONTemperatureFile()
+    private void writeBDAMCronFile()
     {
-        // write the cron file for 15 minute runs
+        // write the cron file for nightly runs
+        String cronStr =  "#!/bin/sh" + Constants.NEW_LINE + BDAM_LICENSE_UPDATE_SCRIPT;
         BufferedWriter out = null;
         try {
-            out = new BufferedWriter(new FileWriter(CRON_TEMPERATURE_FILE));
-            out.write(CRON_TEMPERATURE_STRING, 0, CRON_TEMPERATURE_STRING.length());
+            out = new BufferedWriter(new FileWriter(BDAM_CRON_FILE));
+            out.write(cronStr, 0, cronStr.length());
             out.write(Constants.NEW_LINE);
         } catch (IOException ex) {
             logger.error("Unable to write file", ex);
@@ -1474,8 +1399,8 @@ can look deeper. - mahotz
         }
 
         // Make files executable
-        UvmContextFactory.context().execManager().execResult( "chmod 755 " + CRON_TEMPERATURE_FILE);
-        UvmContextFactory.context().execManager().execResult( "chmod 755 " + GET_DEVICE_TEMPERATURE_SCRIPT);
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + BDAM_CRON_FILE);
+        UvmContextFactory.context().execManager().execResult( "chmod 755 " + BDAM_LICENSE_UPDATE_SCRIPT);
     }
 
     /**
@@ -1704,30 +1629,6 @@ can look deeper. - mahotz
     {
         logger.warn("Logging CriticalAlertEvent for Disk Check Failure. Errors: {}", diskCheckErrors);
         CriticalAlertEvent alert = new CriticalAlertEvent("DISK_CHECK_FAILURE", "Disk health checks failed, Upgrade aborted", "Errors: " + diskCheckErrors);
-        UvmContextFactory.context().logEvent(alert);
-    }
-
-    /**
-     * Get device temperature information.
-     * 
-     * @return The device temperature string
-     */
-    public String getDeviceTemperatureInfo()
-    {
-        logger.debug(" Getting device temperature getDeviceTemperatureInfo()");
-        return UvmContextFactory.context().execManager().execOutput(String.format("%s", GET_DEVICE_TEMPERATURE_SCRIPT));
-    }
-
-    /**
-     * Send Temperature Exceeded Critical Threshold event log.
-     * 
-     * @param temperatureErrors
-     *        String temperatureErrors
-     */
-    public void logCriticalTemperature( String temperatureErrors )
-    {
-        logger.warn("Logging CriticalAlertEvent for Device temparature reaching critical level. Errors: {}", temperatureErrors);
-        CriticalAlertEvent alert = new CriticalAlertEvent(CRITICAL_DEVICE_TEMPERATURE, "Temperature Exceeded Critical Threshold", "Errors: " + temperatureErrors);
         UvmContextFactory.context().logEvent(alert);
     }
 }

@@ -78,7 +78,6 @@ Ext.define ('Ung.model.Interface', {
         { name: 'wirelessEncryption', type: 'auto', defaultValue: null },
         { name: 'wirelessPassword', type: 'string', defaultValue: '' },
         { name: 'wirelessSsid', type: 'string', defaultValue: '' },
-        { name: 'wirelessLogLevel', type: 'number', defaultValue: 2 },
 
         // status fields
         { name: 'v4Address', type: 'string', defaultValue: null },

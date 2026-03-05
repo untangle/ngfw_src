@@ -26,11 +26,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
     dockedItems: [{
         xtype: 'toolbar',
         dock: 'top',
-        items: ['@add', '-', { xtype: 'ungridfilter', store: 'tunnels' }, '->', '@import', '@export']
-    }],
-    plugins: [ 'gridfilters', {
-        ptype: 'cellediting',
-        clicksToEdit: 1
+        items: ['@add', '->', '@import', '@export']
     }],
 
     recordActions: ['edit', 'copy', 'delete'],
@@ -63,12 +59,7 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         'pingInterval': 60,
         'pingConnectionEvents': true,
         'pingUnreachableEvents': false,
-        'assignDnsServer': false,
-        'routedNetworkProfiles': {
-            'javaClass': 'java.util.LinkedList',
-            'list': []
-        },
-        'routedNetworks':''
+        'assignDnsServer': false
     },
 
     importValidationJavaClass: true,
@@ -86,7 +77,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
         width: Renderer.messageWidth,
         flex: 1,
         dataIndex: 'description',
-        filter: Renderer.stringFilter
     }, {
         header: 'Remote Public Key'.t(),
         width: 290,
@@ -103,32 +93,27 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
             validator: function(value) {
                 return peerIpAddrValidator(value, 'peerAddress', this, 'app-wireguard-vpn-server-tunnels-grid');
             }
-        },
-        filter: Renderer.stringFilter
+        }
     }, {
         header: 'Remote Networks'.t(),
         width: Renderer.messageWidth,
         flex: 1,
-        dataIndex: 'networks',
-        filter: Renderer.stringFilter
+        dataIndex: 'networks'
     }, {
         header: 'Remote Endpoint'.t(),
         width: Renderer.messageWidth,
         dataIndex: 'endpointDynamic',
-        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer,
-        filter: Renderer.booleanFilter
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
     }, {
         header: 'Hostname'.t(),
         width: Renderer.messageWidth,
         dataIndex: 'endpointHostname',
-        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer,
-        filter: Renderer.stringFilter
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
     }, {
         header: 'Port'.t(),
         width: Renderer.portWidth,
         dataIndex: 'endpointPort',
-        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer,
-        filter: Renderer.numericFilter
+        renderer: Ung.apps['wireguard-vpn'].Main.dynamicEndpointRenderer
     }, {
         xtype: 'actioncolumn',
         header: 'Remote Client'.t(),
@@ -266,6 +251,17 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 var localNetworkStore = remoteNetworks.length > 0 ? Ext.Array.map(remoteNetworks.split("\n"),function (remoteIpAddr){
                     return remoteIpAddr.trim();
                 }) : [];
+
+                var res = null;
+                for(var i=0;i<localNetworkStore.length;i++){
+                    res = Util.networkValidator(localNetworkStore[i]);
+                    if(res!=true){
+                        break;
+                    }
+                }
+                if(res != true){
+                    return res;
+                }
                 
                 return Util.findIpPoolConflict(peerNetworkIp, localNetworkStore, this, false);
 
@@ -274,20 +270,6 @@ Ext.define('Ung.apps.wireguard-vpn.cmp.TunnelsGrid', {
                 return true;
             }                        
         }
-    }, {
-        xtype: 'checkboxgroup',
-        fieldLabel: 'Routed Network Profiles'.t(),
-        useParentDefinition: true,
-        // labelWidth: 155,
-        itemId: 'routednetworkscbgroup',
-        bind: {
-            value: '{record.routedNetworkProfiles}'
-        },
-        listeners: {
-            change: 'onRoutednetworkscbgroupChange'
-        },
-        columns: 3,
-        vertical: true
     }, {
         xtype: 'checkbox',
         fieldLabel: 'Assign DNS Server'.t(),

@@ -43,7 +43,11 @@ public class UploadServlet extends HttpServlet
         throws ServletException, IOException
     {
 
-        ServletFileUpload upload = getServletFileUpload();
+        // Create a factory for disk-based file items
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+
+        // Create a new file upload handler
+        ServletFileUpload upload = new ServletFileUpload(factory);
 
         // Parse the request
         List<FileItem> items = null;
@@ -60,8 +64,9 @@ public class UploadServlet extends HttpServlet
                 if (!item.isFormField()) {
                     UploadHandler handler = UvmContextFactory.context().servletFileManager().getUploadHandler(uploadType);
                     if ( handler == null ) {
-                        handleNoUploadHandler(resp, uploadType);
-                        return;
+                        result = "Do not know how to handler the type '" + uploadType + "'";
+                        logger.error("Unable to handle an upload of type: " + uploadType );
+                        createResponse(resp, false, "Unable to handle an upload of type: " + uploadType);
                     } else {
                         result = handler.handleFile(item, arg);
                     }                    
@@ -76,35 +81,12 @@ public class UploadServlet extends HttpServlet
     }
 
     /**
-     * Logs and returns result message when no handler is found for the input uploadType
-     * @param resp
-     * @param uploadType
-     * @throws IOException
-     */
-    protected void handleNoUploadHandler(HttpServletResponse resp, String uploadType) throws IOException {
-        logger.error("Unable to handle an upload of type: {}", uploadType);
-        createResponse(resp, false, "Unable to handle an upload of type: " + uploadType);
-    }
-
-    /**
-     * Returns ServletFileUpload
-     * @return
-     */
-    protected static ServletFileUpload getServletFileUpload() {
-        // Create a factory for disk-based file items
-        DiskFileItemFactory factory = new DiskFileItemFactory();
-
-        // Create a new file upload handler
-        return new ServletFileUpload(factory);
-    }
-
-    /**
      * getUploadType - returns the "type" of the upload
      * This is used to determine which upload handler we send the upload to
      * @param items
      * @return string 
      */
-    protected String getUploadType(List<FileItem> items)
+    private String getUploadType(List<FileItem> items)
     {
         for ( FileItem fileItem : items ) {
             if (fileItem.isFormField() && "type".equals(fileItem.getFieldName())) {
@@ -136,7 +118,7 @@ public class UploadServlet extends HttpServlet
      * @param result
      * @throws IOException
      */
-    protected void createResponse(HttpServletResponse resp, boolean success, Object result)
+    private void createResponse(HttpServletResponse resp, boolean success, Object result)
         throws IOException
     {
         resp.setContentType("text/html");

@@ -58,7 +58,6 @@ public class License implements Serializable
     public static final String WEB_FILTER = "web-filter";
     public static final String WEB_MONITOR = "web-monitor";
     public static final String WIREGUARD_VPN = "wireguard-vpn";
-    public static final String DYNAMIC_BLOCK_LISTS = "dynamic-blocklists";
 
     /** Identifier for the product this license is for */
     private String name;
@@ -293,8 +292,6 @@ public class License implements Serializable
             return WEB_MONITOR;
         //WIREGUARD_VPN
         //
-        case "dynamic-lists":
-            return DYNAMIC_BLOCK_LISTS;
         default:
             break;
         }

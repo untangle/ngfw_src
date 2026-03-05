@@ -47,9 +47,6 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
             },
             networks: {
                 data: '{settings.networks.list}'
-            },
-            networkProfiles: {
-                data: '{settings.networkProfiles.list}'
             }
         },
 
@@ -103,7 +100,6 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
             return {
                     xtype: 'fieldset',
                     title: 'Local Service Information'.t(),
-                    itemId: 'localserviceinfo',
                     collapsible: collapsible ? true : false,
                     collapsed: collapsible && collapsed ? true : false,
                     layout: {
@@ -184,9 +180,6 @@ Ext.define('Ung.apps.wireguard-vpn.Main', {
                                     cls: 'x-selectable',
                                     bind: {
                                         value: '{localNetworkList}',
-                                    },
-                                    renderer: function(value) {
-                                        return value ? value.replace(/,\s*/g, ', ') : '';
                                     }
                                 }]
                             }]

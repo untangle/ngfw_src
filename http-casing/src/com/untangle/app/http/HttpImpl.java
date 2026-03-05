@@ -60,16 +60,7 @@ public class HttpImpl extends AppBase
     }
 
     /**
-     * Get the current HttpSettings.
-     * @return HttpSettings (as an Object)
-     */
-    public Object getSettingsV2()
-    {
-        return getSettings();
-    }
-
-    /**
-     * Set the current HttpSettings
+     * Set the current HttpSettinngs
      * @param newSettings
      */
     public void setHttpSettings(final HttpSettings newSettings)
@@ -90,21 +81,12 @@ public class HttpImpl extends AppBase
     }
 
     /**
-     * Set the current HttpSettings
+     * Set the current HttpSettinngs
      * @param settings (HttpSettings as an Object)
      */
     public void setSettings(Object settings)
     {
         setHttpSettings((HttpSettings)settings);
-    }
-
-    /**
-     * Set the current HttpSettings
-     * @param settings (HttpSettings as an Object)
-     */
-    public void setSettingsV2(Object settings)
-    {
-        setSettings(settings);
     }
     
     /**

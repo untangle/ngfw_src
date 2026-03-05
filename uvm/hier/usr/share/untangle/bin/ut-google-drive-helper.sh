@@ -9,16 +9,22 @@ get_json_value() {
   python3 -m simplejson.tool $2 | grep "$json_key" | awk '{print $2}' | sed 's/[",[:space:]]//g' | tr -d '\t' | tr -d '\n'
 }
 
+refreshToken()
+{
+    shift
+    get_json_value "refresh_token" "$1.gd/credentials.json"
+}
+
 appId()
 {
     shift
     get_json_value "app_id" "$1.gd/credentials.json"
 }
 
-encryptedApiKey()
+apiKey()
 {
     shift
-    get_json_value "encrypted_api_key" "$1.gd/credentials.json"
+    get_json_value "api_key" "$1.gd/credentials.json"
 }
 
 clientId()
@@ -27,10 +33,10 @@ clientId()
     get_json_value "client_id" "$1.gd/credentials.json"
 }
 
-encryptedClientSecret()
+clientSecret()
 {
     shift
-    get_json_value "encrypted_client_secret" "$1.gd/credentials.json"
+    get_json_value "client_secret" "$1.gd/credentials.json"
 }
 
 scopes()
@@ -39,22 +45,10 @@ scopes()
     get_json_value "scopes" "$1.gd/credentials.json"
 }
 
-redirectUri()
+redirectUrl()
 {
     shift
-    get_json_value "redirect_uri" "$1.gd/credentials.json"
-}
-
-authUri()
-{
-    shift
-    get_json_value "auth_uri" "$1.gd/credentials.json"
-}
-
-tokenUri()
-{
-    shift
-    get_json_value "token_uri" "$1.gd/credentials.json"
+    get_json_value "redirect_url" "$1.gd/credentials.json"
 }
 
 $1 "$@"

@@ -100,30 +100,12 @@ public class FtpAppImpl extends AppBase
     }
 
     /**
-     * getSettingsV2 - alias for getFtpSettings
-     * @return FtpSettings
-     */
-    public Object getSettingsV2()
-    {
-        return getSettings();
-    }
-
-    /**
      * setSettings - alias for setFtpSettings
      * @param settings
      */
     public void setSettings(Object settings)
     {
         setFtpSettings((FtpSettings)settings);
-    }
-
-    /**
-     * setSettingsV2 - alias for setFtpSettings
-     * @param settings
-     */
-    public void setSettingsV2(Object settings)
-    {
-        setSettings(settings);
     }
     
     /**

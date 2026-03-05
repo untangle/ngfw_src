@@ -68,24 +68,20 @@ Ext.define('Ung.config.administration.view.Google', {
                 items: [{
                     xtype: "textfield",
                     margin: '10',
-                    emptyText: "No root directory entered".t(),
+                    readOnly: true,
+                    emptyText: "No Directory Selected".t(),
                     regex: /^[\w\. \/]+$/,
                     regexText: "The field can have only alphanumerics, spaces, or periods.".t(),
-                    fieldLabel: "Optional Google Drive Root Directory".t(),
-                    labelWidth: 220,
+                    fieldLabel: "Google Drive Directory".t(),
+                    labelWidth: 200,
                     bind: '{googleSettings.googleDriveRootDirectory}',
                     autoEl: {
                         tag: 'div',
-                        'data-qtip': "Root directory in Google Drive where app directories will be created. If not set, app directories will be created at the top level.".t()
+                        'data-qtip': "The destination directory in google drive.".t()
                     }
                 }, {
-                    xtype: 'component',
-                    html: 'Or',
-                    margin: '15',
-                    style: { fontSize: '12px', fontWeight: 500 }
-                }, {
                     xtype: 'button',
-                    text: 'Select Existing Directory'.t(),
+                    text: 'Select Directory'.t(),
                     itemId: 'selectDirButton',
                     margin: '10',
                     handler: 'handleSelectDirectory',
