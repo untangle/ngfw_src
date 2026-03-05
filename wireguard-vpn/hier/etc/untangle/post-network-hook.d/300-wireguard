@@ -17,22 +17,10 @@ if [ -f /etc/wireguard/wg0.conf ]; then
         echo "Missing status file: /var/lib/interface-status/interface-wg0-status.js"
     fi
 
-    # Add routing rule only if it doesn't already exist
-    if ! ip rule list | grep -q "221:.*lookup wireguard"; then
-        ip rule add priority 221 lookup wireguard || echo "Warning: Failed to add routing rule"
-    fi
-
-    # Force cleanup of any existing wg0 interface to prevent stale state
-    # This removes any orphaned IP addresses, routes, or partial interface state
-    if ip link show wg0 >/dev/null 2>&1; then
-        echo "Removing existing wg0 interface"
-        ip link del dev wg0 2>/dev/null || echo "Warning: Failed to delete wg0 interface"
-    fi
-
-    # Bring up WireGuard interface
+    ip rule add priority 221 lookup wireguard
+    wg-quick down /etc/wireguard/wg0.conf
     wg-quick up /etc/wireguard/wg0.conf
 else
-    # Clean up routing rule and interface when WireGuard is disabled
-    ip rule del priority 221 lookup wireguard 2>/dev/null || echo "Warning: Routing rule not found"
-    ip link del dev wg0 2>/dev/null || echo "Warning: wg0 interface not found"
+    ip rule del priority 221 lookup wireguard
+    ip link del dev wg0
 fi

@@ -4,11 +4,8 @@
 
 package com.untangle.uvm;
 
-import java.io.Serializable;
 import java.net.InetAddress;
 import com.untangle.uvm.app.IPMaskedAddress;
-import org.json.JSONObject;
-import org.json.JSONString;
 
 public interface NetspaceManager
 {
@@ -40,16 +37,11 @@ public interface NetspaceManager
      * Stores details about a network address block
      *
      */
-    @SuppressWarnings("serial")
-    class NetworkSpace implements Serializable, JSONString
+    class NetworkSpace
     {
         public String ownerName;
         public String ownerPurpose;
         public IPMaskedAddress maskedAddress;
-
-        public String getOwnerName() { return ownerName; }
-        public String getOwnerPurpose() { return ownerPurpose; }
-        public IPMaskedAddress getMaskedAddress() { return maskedAddress; }
 
         /**
          * Gets a string representation for logging
@@ -58,13 +50,9 @@ public interface NetspaceManager
          */
         public String toString()
         {
-            return "OWNER:" + ownerName + " PURPOSE:" + ownerPurpose + " NETWORK:" + maskedAddress.toString();
-        }
-
-        public String toJSONString()
-        {
-            JSONObject jO = new JSONObject(this);
-            return jO.toString();
+            String string = new String();
+            string = "OWNER:" + ownerName + " PURPOSE:" + ownerPurpose + " NETWORK:" + maskedAddress.toString();
+            return string;
         }
     }
 }

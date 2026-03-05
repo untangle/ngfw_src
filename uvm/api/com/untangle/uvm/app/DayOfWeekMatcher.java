@@ -4,7 +4,6 @@
 
 package com.untangle.uvm.app;
 
-import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -21,8 +20,7 @@ import org.apache.logging.log4j.LogManager;
  * 
  * DayOfWeekMatcher it is case insensitive
  */
-@SuppressWarnings("serial")
-public class DayOfWeekMatcher implements Serializable
+public class DayOfWeekMatcher
 {
     private static final String MARKER_ANY = "any";
     private static final String MARKER_ALL = "all";

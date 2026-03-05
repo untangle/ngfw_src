@@ -3,18 +3,15 @@
  */
 package com.untangle.uvm;
 
+import org.json.JSONObject;
+
 /**
  * Describe interface <code>GoogleManager</code> here.
  */
 public interface GoogleManager
 {
-    void refreshToken(GoogleSettings readSettings);
-
     GoogleSettings getSettings();
     void setSettings(GoogleSettings settings);
-
-    boolean isGoogleDriveDisconnectedAbruptly();
-
     public boolean isGoogleDriveConnected();
 
     String getAppSpecificGoogleDrivePath(String appDirectory);
@@ -26,6 +23,4 @@ public interface GoogleManager
     public String provideDriveCode(String code );
     public void disconnectGoogleDrive();
     public void migrateConfiguration( String refreshToken );
-
-    int uploadToDrive(String filePath, String folderName) throws GoogleDriveOperationFailedException;
 }

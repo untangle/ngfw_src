@@ -18,6 +18,15 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                 style: { color: '{googleDriveIsConfigured ? "green" : "red"}'}
             }
         },{
+            xtype: 'component',
+            hidden: true,
+            margin: '0 0 0 10',
+            bind: {
+                hidden: '{rootDirectory}',
+                html: 'The Google Drive directory is not selected.'.t(),
+                style: { color: "red" }
+            }
+        },{
             xtype: "button",
             text: 'Configure Google Drive'.t(),
             iconCls: "fa fa-check-circle",
@@ -31,8 +40,8 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
             hidden: true,
             disabled: true,
              bind: {
-                 hidden: '{googleDriveIsConfigured == false}',
-                 disabled: '{googleDriveIsConfigured == false}'
+                 hidden: '{googleDriveIsConfigured == false || !rootDirectory}',
+                 disabled: '{googleDriveIsConfigured == false || !rootDirectory}'
              },
             items: [{
                 xtype: "checkbox",
@@ -66,9 +75,7 @@ Ext.define('Ung.apps.configurationbackup.view.GoogleConnector', {
                     labelWidth: 150,
                     renderer: function() {
                         var rootDirectory = Rpc.directData('rpc.UvmContext.googleManager.getAppSpecificGoogleDrivePath', null);
-                        if (!rootDirectory || rootDirectory.trim() === '')
-                            return '';
-                        return Ext.String.format('<strong><span class="cond-val">{0}</span></strong>', rootDirectory + " /");
+                        return Ext.String.format('<strong><span class="cond-val"> {0}</span></strong>', rootDirectory + " /");
                     }
                 },{
                     xtype: 'textfield',

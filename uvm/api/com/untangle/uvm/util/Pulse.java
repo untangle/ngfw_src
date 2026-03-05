@@ -219,15 +219,6 @@ public class Pulse implements Runnable
     }
 
     /**
-     * Stops the running thread
-     */
-    public void stopIfRunning() {
-        if (this.getState() == PulseState.RUNNING) {
-            this.stop();
-        }
-    }
-
-    /**
      * Stop the thread, you can only start a pulse once and once it is stopped,
      * you can never restart it.
      */

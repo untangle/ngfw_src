@@ -37,19 +37,6 @@ Ext.define('Ung.controller.Global', {
         'PoliciesTree'
     ],
 
-    init: function() {
-        var me = this;
-        me.callParent(arguments); // Always call parent init
-
-        // Listen for messages from the iframe
-        window.addEventListener('message', function(event) {
-
-            // Check if the message is from your Vue iframe app
-            if (event.data && event.data.source === 'vue-iframe-app' && event.data.type === 'isDirtyChange') {
-                me.isVueDirty = event.data.isDirty;
-            }
-        });
-    },
     listen: {
         controller: {
             '#': {
@@ -133,7 +120,6 @@ Ext.define('Ung.controller.Global', {
             'noexpert': 'setNoExpertMode'
         }
     },
-    isVueDirty: false,
 
     detectChanges: function () {
         var action = arguments[arguments.length - 1]; // arguments length vary, action being the last one
@@ -158,7 +144,7 @@ Ext.define('Ung.controller.Global', {
             }
         });
 
-        if (dirtyFields || dirtyGrids || this.isVueDirty) {
+        if (dirtyFields || dirtyGrids) {
             Ext.MessageBox.confirm('Warning'.t(), 'There are unsaved settings which will be lost. Do you want to continue?'.t(),
                 function(btn) {
                     if (btn === 'yes') {
@@ -407,7 +393,7 @@ Ext.define('Ung.controller.Global', {
         var subViews = [];
 
         // config must be one of those defined in array, otherwise route is invalid
-        if (config && !Ext.Array.contains(['network', 'administration', 'events', 'email', 'local-directory', 'system', 'about'], config)) {
+        if (config && !Ext.Array.contains(['network', 'administration', 'events', 'email', 'local-directory', 'upgrade', 'system', 'about'], config)) {
             Ext.fireEvent('invalidquery');
             return;
         }

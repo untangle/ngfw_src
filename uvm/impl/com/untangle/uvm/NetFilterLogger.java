@@ -14,11 +14,11 @@ import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.SessionEvent;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * This process connects to the untangle-nflogd daemon to log network packets
@@ -33,7 +33,6 @@ import com.untangle.uvm.app.SessionEvent;
  */
 public class NetFilterLogger
 {
-    public static final String DYNAMIC_BLOCK_LIST_PREFIX = "dynamic_block_list_blocked";
     private final Logger logger = LogManager.getLogger(getClass());
 
     protected final InetSocketAddress daemonAddress = new InetSocketAddress("127.0.0.1", 1999);
@@ -80,7 +79,7 @@ public class NetFilterLogger
 
                     // if the reset flag is set we shut down the socket and start it
                     // up again after a brief delay so we don't spin in a tight loop
-                    if (socketReset) {
+                    if (socketReset == true) {
                         socketReset = false;
                         Thread.sleep(snoozeTime);
                         snoozeTime += 1000;
@@ -203,8 +202,11 @@ public class NetFilterLogger
      * 
      * @param logMessage
      *        The message
+     * @throws Exception
      */
-    protected void HandleLoggerMessage(ByteBuffer logMessage) {
+    protected void HandleLoggerMessage(ByteBuffer logMessage) throws Exception
+    {
+        if (!UvmContextFactory.context().networkManager().getNetworkSettings().getLogBlockedSessions()) return;
 
         String message = new String(logMessage.array(), 0, logMessage.position());
         String srcAddressStr, dstAddressStr;
@@ -212,18 +214,13 @@ public class NetFilterLogger
         int netProto, srcIntf, dstIntf;
         int srcPort, dstPort;
         int icmpType;
+        int counter = 0;
 
         // we may get more than one message so split on end of line markers
         for (String item : message.split("\r\n")) {
 
             try {
                 // extract all of the fields from the message
-                logPrefix = extractField(item, "PREFIX:", StringUtils.EMPTY);
-                // Skip the message if it's not a Dynamic Block List message or logging of blocked sessions is disabled
-                if (!StringUtils.equals(logPrefix, DYNAMIC_BLOCK_LIST_PREFIX) &&
-                        !UvmContextFactory.context().networkManager().getNetworkSettings().getLogBlockedSessions()) {
-                    continue;
-                }
                 netProto = Integer.valueOf(extractField(item, "PROTO:", "0"));
                 icmpType = Integer.valueOf(extractField(item, "ICMP:", "999"));
                 srcIntf = Integer.valueOf(extractField(item, "SINTF:", "0"));
@@ -232,6 +229,7 @@ public class NetFilterLogger
                 dstIntf = Integer.valueOf(extractField(item, "DINTF:", "0"));
                 dstAddressStr = extractField(item, "DADDR:", "0.0.0.0");
                 dstPort = Integer.valueOf(extractField(item, "DPORT:", "0"));
+                logPrefix = extractField(item, "PREFIX:", "");
 
                 InetAddress srcAddress = InetAddress.getByName(srcAddressStr);
                 InetAddress dstAddress = InetAddress.getByName(dstAddressStr);
@@ -251,7 +249,7 @@ public class NetFilterLogger
 
                 boolean srcIsWanInterface = srcIntf != 0 && UvmContextFactory.context().networkManager().isWanInterface( srcIntf );
 
-                if (StringUtils.isEmpty(hostname)) {
+                if (hostname == null || hostname.length() == 0) {
                     hostname = SessionEvent.determineBestHostname(srcAddress, srcIntf, dstAddress, dstIntf, srcIsWanInterface);
                 }
 
@@ -294,7 +292,7 @@ public class NetFilterLogger
                 UvmContextFactory.context().logEvent(event);
 
             } catch (Exception exn) {
-                logger.warn("Unable to parse message: {}", item, exn);
+                logger.warn("Unable to parse message: " + item);
             }
         }
     }

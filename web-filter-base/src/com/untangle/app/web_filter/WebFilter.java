@@ -22,13 +22,6 @@ public interface WebFilter extends App
     WebFilterSettings getSettings();
 
     /**
-     * Get the global settings
-     * 
-     * @return The global settings
-     */
-    WebFilterSettings getGlobalSettings();
-
-    /**
      * Set the settings
      * 
      * @param settings
@@ -36,18 +29,6 @@ public interface WebFilter extends App
      */
     void setSettings(WebFilterSettings settings);
 
-    /**
-     * Load the global settings
-     * 
-     */
-    void loadAllGlobalSettings();
-
-    /**
-     * Get the current settings file
-     * 
-     *   @return string
-     */
-    String getCurrentSettingFileName();
     /**
      * Get the passed URL list
      * 

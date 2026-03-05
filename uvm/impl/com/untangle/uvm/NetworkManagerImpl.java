@@ -5,55 +5,46 @@ package com.untangle.uvm;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.app.RuleCondition;
+import com.untangle.uvm.network.NetworkSettings;
+import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.network.InterfaceStatus;
+import com.untangle.uvm.network.DeviceStatus;
+import com.untangle.uvm.network.DeviceSettings;
 import com.untangle.uvm.network.BypassRule;
 import com.untangle.uvm.network.BypassRuleCondition;
-import com.untangle.uvm.network.DeviceSettings;
-import com.untangle.uvm.network.DeviceStatus;
-import com.untangle.uvm.network.DeviceStatus.ConnectedStatus;
-import com.untangle.uvm.network.DeviceStatus.DuplexStatus;
-import com.untangle.uvm.network.DhcpRelay;
-import com.untangle.uvm.network.DhcpStaticEntry;
+import com.untangle.uvm.network.StaticRoute;
+import com.untangle.uvm.network.NatRule;
+import com.untangle.uvm.network.NatRuleCondition;
+import com.untangle.uvm.network.PortForwardRule;
+import com.untangle.uvm.network.PortForwardRuleCondition;
+import com.untangle.uvm.network.FilterRule;
+import com.untangle.uvm.network.FilterRuleCondition;
+import com.untangle.uvm.network.QosSettings;
+import com.untangle.uvm.network.QosRule;
+import com.untangle.uvm.network.QosRuleCondition;
+import com.untangle.uvm.network.QosPriority;
 import com.untangle.uvm.network.DnsSettings;
+import com.untangle.uvm.network.DhcpStaticEntry;
+import com.untangle.uvm.network.DhcpRelay;
+import com.untangle.uvm.network.UpnpSettings;
+import com.untangle.uvm.network.InterfaceSettings.ConfigType;
+import com.untangle.uvm.network.UpnpRule;
+import com.untangle.uvm.network.UpnpRuleCondition;
+import com.untangle.uvm.network.NetflowSettings;
+import com.untangle.uvm.network.DynamicRoutingSettings;
 import com.untangle.uvm.network.DynamicRouteBgpNeighbor;
 import com.untangle.uvm.network.DynamicRouteNetwork;
 import com.untangle.uvm.network.DynamicRouteOspfArea;
 import com.untangle.uvm.network.DynamicRouteOspfInterface;
-import com.untangle.uvm.network.DynamicRoutingSettings;
-import com.untangle.uvm.network.FilterRule;
-import com.untangle.uvm.network.FilterRuleCondition;
-import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.network.InterfaceSettings.ConfigType;
-import com.untangle.uvm.network.InterfaceSettings.V4ConfigType;
-import com.untangle.uvm.network.InterfaceSettings.V6ConfigType;
-import com.untangle.uvm.network.InterfaceStatus;
-import com.untangle.uvm.network.NatRule;
-import com.untangle.uvm.network.NatRuleCondition;
-import com.untangle.uvm.network.NetflowSettings;
-import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.network.PortForwardRule;
-import com.untangle.uvm.network.PortForwardRuleCondition;
-import com.untangle.uvm.network.QosPriority;
-import com.untangle.uvm.network.QosRule;
-import com.untangle.uvm.network.QosRuleCondition;
-import com.untangle.uvm.network.QosSettings;
-import com.untangle.uvm.network.StaticRoute;
-import com.untangle.uvm.network.UpnpRule;
-import com.untangle.uvm.network.UpnpRuleCondition;
-import com.untangle.uvm.network.UpnpSettings;
-import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
-import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
-import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.ObjectMatcher;
-import com.untangle.uvm.util.StringUtil;
-
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jabsorb.serializer.UnmarshallException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -74,16 +65,12 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Iterator;
 
 /**
  * The Network Manager handles all the network configuration
@@ -92,10 +79,6 @@ public class NetworkManagerImpl implements NetworkManager
 {
     public static final String MAC = "MAC";
     public static final String ORGANIZATION = "Organization";
-    private static final String INET = "inet";
-    private static final String INET6 = "inet6";
-    private static final String DHCP = "dhcp";
-    private static final String DHCPV6 = "dhcpv6";
     public static final String COMMA = ",";
     private final Logger logger = LogManager.getLogger(this.getClass());
 
@@ -113,7 +96,6 @@ public class NetworkManagerImpl implements NetworkManager
     private static String NETSPACE_STATIC_ADDRESS = "static-address";
     private static String NETSPACE_STATIC_ALIAS = "static-alias";
     private static String NETSPACE_DYNAMIC_ADDRESS = "dynamic-address";
-    private final static String GET_LOGFILE_SCRIPT = System.getProperty("uvm.home") + "/bin/hostapd-logfile";
     private static String INTERFACE_NAME_PATTERN = "[a-zA-Z0-9._:-]{1,32}";
     private static String REGION_NAME_PATTERN = "[A-Z]{2}";
 
@@ -124,7 +106,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
-    private Integer currentVersion = 12;
+    private Integer currentVersion = 11;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
@@ -153,7 +135,7 @@ public class NetworkManagerImpl implements NetworkManager
         try {
             readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilename );
         } catch ( SettingsManager.SettingsException e ) {
-            logger.warn("Failed to load settings:", e );
+            logger.warn( "Failed to load settings:", e );
         }
 
         /**
@@ -164,15 +146,15 @@ public class NetworkManagerImpl implements NetworkManager
         if ( readSettings == null && UvmContextFactory.context().isDevel() ) {
             try {
                 // check for "backup" settings in /etc
-                logger.info("Reading Network Settings from {}", this.settingsFilenameBackup);
+                logger.info("Reading Network Settings from " + this.settingsFilenameBackup);
                 readSettings = settingsManager.load( NetworkSettings.class, this.settingsFilenameBackup );
-                logger.info("Reading Network Settings from {} = {}", this.settingsFilenameBackup , readSettings);
+                logger.info("Reading Network Settings from " + this.settingsFilenameBackup + " = " + readSettings);
                 
                 if (readSettings != null)
                     settingsManager.save( this.settingsFilename, readSettings );
                     
             } catch ( SettingsManager.SettingsException e ) {
-                logger.warn("Failed to load settings:", e );
+                logger.warn( "Failed to load settings:", e );
             }
         }
         
@@ -180,7 +162,7 @@ public class NetworkManagerImpl implements NetworkManager
          * If there are still no settings, just initialize
          */
         if (readSettings == null) {
-            logger.warn("No settings found - Initializing new settings.");
+            logger.warn( "No settings found - Initializing new settings." );
             this.setNetworkSettings( defaultSettings() );
 
             // apply oem settings
@@ -204,8 +186,7 @@ public class NetworkManagerImpl implements NetworkManager
             if ( this.networkSettings.getVersion() < currentVersion ) {
                 convertSettings();
             }
-            if (logger.isDebugEnabled())
-                logger.debug("Loading Settings: {}", this.networkSettings.toJSONString() );
+            logger.debug( "Loading Settings: " + this.networkSettings.toJSONString() );
         }
 
         /**
@@ -234,7 +215,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
         
-        logger.info("Initialized NetworkManager");
+        logger.info( "Initialized NetworkManager" );
     }
     
     /**
@@ -247,32 +228,12 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Get the v2 network settings
-     * @return NetworkSettingsV2
-     */
-    public NetworkSettingsGeneric getNetworkSettingsV2() {
-        return this.networkSettings.transformNetworkSettingsToGeneric();
-    }
-
-    /**
      * Set the network settings
      * @param newSettings
      */
     public void setNetworkSettings( NetworkSettings newSettings )
     {
         setNetworkSettings( newSettings, true );
-    }
-
-    /**
-     * Set the network settings V2
-     * @param newSettings
-     */
-    public void setNetworkSettingsV2( NetworkSettingsGeneric newSettings )
-    {
-        // Deep clone current Network Settings to transform in New Network Settings
-        NetworkSettings clonedNetworkSettings = SerializationUtils.clone(this.networkSettings);
-        newSettings.transformGenericToNetworkSettings(clonedNetworkSettings);
-        setNetworkSettings( clonedNetworkSettings, true );
     }
 
     /**
@@ -313,7 +274,7 @@ public class NetworkManagerImpl implements NetworkManager
                 settingsManager.save( this.settingsFilenameBackup, newSettings, false );
             }
         } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to save settings.", e);
+            logger.warn("Failed to save settings.",e);
             return;
         }
 
@@ -323,10 +284,7 @@ public class NetworkManagerImpl implements NetworkManager
         this.networkSettings = newSettings;
         updateNetworkReservations(newSettings);
         configureInterfaceSettingsArray();
-        try {
-            if (logger.isDebugEnabled())
-                logger.debug("New Settings: \n{}", new org.json.JSONObject(this.networkSettings).toString(2));
-        } catch (Exception e) {}
+        try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.networkSettings).toString(2));} catch (Exception e) {}
 
         UvmContextFactory.context().syncSettings().run(this.settingsFilename);
         
@@ -344,34 +302,34 @@ public class NetworkManagerImpl implements NetworkManager
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
 
         if ( intfSettings == null ) {
-            logger.warn("Interface not found. Unable to renew DHCP lease on interface {}", interfaceId);
+            logger.warn("Interface not found. Unable to renew DHCP lease on interface " + interfaceId);
             return;
         }
         String devName = intfSettings.getSymbolicDev();
         if ( devName == null ) {
-            logger.warn("Interface missing systemDev. Unable to renew DHCP lease on interface {}", interfaceId);
+            logger.warn("Interface missing systemDev. Unable to renew DHCP lease on interface " + interfaceId);
             return;
         }
         if ( intfSettings.getV4ConfigType() != InterfaceSettings.V4ConfigType.AUTO ) {
-            logger.warn("Interface not type AUTO. Unable to renew DHCP lease on interface {}", interfaceId);
+            logger.warn("Interface not type AUTO. Unable to renew DHCP lease on interface " + interfaceId);
             return;
         }
         
         // just bring the interface up and down 
         result = UvmContextFactory.context().execManager().exec( "ifdown " + devName );
         try {
-            String[] lines = result.getOutput().split("\\r?\\n");
-            logger.info("ifdown {}: ", devName );
+            String lines[] = result.getOutput().split("\\r?\\n");
+            logger.info("ifdown " + devName + ": ");
             for ( String line : lines )
-                logger.info("ifdown: {}", line);
+                logger.info("ifdown: " + line);
         } catch (Exception e) {}
 
         result = UvmContextFactory.context().execManager().exec( "ifup " + devName );
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("ifup {}: ", devName );
+            logger.info("ifup " + devName + ": ");
             for ( String line : lines )
-                logger.info("ifup: {}", line);
+                logger.info("ifup: " + line);
         } catch (Exception e) {}
     }
         
@@ -440,12 +398,12 @@ public class NetworkManagerImpl implements NetworkManager
     public InterfaceSettings findInterfaceId( int interfaceId )
     {
         if ( this.networkSettings == null || this.networkSettings.getInterfaces() == null) {
-            logger.warn("Missing network settings.");
+            logger.warn( "Missing network settings." );
             return null;
         }
 
         if ( interfaceId < 0 || interfaceId > 255 ) {
-            logger.warn("Invalid interface ID: {}", interfaceId );
+            logger.warn( "Invalid interface ID: " + interfaceId );
             return null;
         }
 
@@ -499,7 +457,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
         if ( intfSettings == null ) {
-            logger.warn("Unknown interface: {}", interfaceId, new Exception());
+            logger.warn("Unknown interface: " + interfaceId, new Exception());
             return false;
         }
 
@@ -524,7 +482,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         InterfaceSettings intfSettings = findInterfaceId( intfId );
         if ( intfSettings == null ) {
-            logger.warn("Failed to find interface {}", intfId);
+            logger.warn("Failed to find interface " + intfId);
             return null;
         }
 
@@ -543,7 +501,7 @@ public class NetworkManagerImpl implements NetworkManager
             intfSettings = findInterfaceId( bridgedTo );
 
             if ( intfSettings == null ) {
-                logger.warn("No Interface found for name: {}", bridgedTo );
+                logger.warn("No Interface found for name: " + bridgedTo );
                 return null;
             } 
 
@@ -586,7 +544,7 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
         }catch(Exception e){
-            logger.warn("Unable to parse interfaces for dhcpDnsOverride:", e);
+            logger.warn("Unable to parse interfaces for dhcpDnsOverride:",e);
         }
 
         return address;
@@ -607,7 +565,7 @@ public class NetworkManagerImpl implements NetworkManager
         try {
             status = UvmContextFactory.context().settingsManager().load( InterfaceStatus.class,  filename);
         } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to load settings:", e);
+            logger.warn("Failed to load settings:",e);
             return null;
         }
 
@@ -619,214 +577,6 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * Method to get all interfaces' status.
-     * @return List of InterfaceStatusGeneric
-     */
-    public List<InterfaceStatusGeneric> getAllInterfacesStatusV2() {
-        List<DeviceStatus> deviceStatusList = getDeviceStatus();
-
-        return networkSettings.getInterfaces().stream()
-                .map(intf -> buildInterfaceStatus(intf.resolveDeviceName(), intf, deviceStatusList))
-                .collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    /**
-     * Method to get status for a specific interface by device name.
-     * @param device the resolved device name (e.g., eth0, eth1.12, wlan0)
-     * @return InterfaceStatusGeneric for the device, or null if not found
-     */
-    public InterfaceStatusGeneric getInterfaceStatusV2(String device) {
-        List<DeviceStatus> deviceStatusList = getDeviceStatus();
-
-        return networkSettings.getInterfaces().stream()
-                .filter(intf -> device.equals(intf.resolveDeviceName()))
-                .findFirst()
-                .map(intf -> buildInterfaceStatus(device, intf, deviceStatusList))
-                .orElse(null);
-    }
-
-    /**
-     * Helper: Build populated InterfaceStatusGeneric
-     * @param device device name
-     * @param intf InterfaceSettings
-     * @param deviceStatusList List<DeviceStatus>
-     * @return InterfaceStatusGeneric
-     */
-    private InterfaceStatusGeneric buildInterfaceStatus(String device, InterfaceSettings intf, List<DeviceStatus> deviceStatusList) {
-        InterfaceStatusGeneric status = new InterfaceStatusGeneric();
-
-        status.setDevice(device);
-        status.setWan(intf.getIsWan());
-        status.setInterfaceId(intf.getInterfaceId());
-        populateTransferStats(status, intf);
-        populateMacVendor(status);
-        populateIpAddresses(status, intf);
-        populateConnectionStatus(status, intf, deviceStatusList);
-        populateGatewayAndDns(status, intf);
-        populateAddressSources(status, intf);
-
-        return status;
-    }
-
-    /** 
-     * Populates transfer statistics such as rx/tx bytes, packets, errors, and drops. 
-     * @param status InterfaceStatusGeneric
-     * @param intf InterfaceSettings
-     */
-    private void populateTransferStats(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSymbolicDev());
-        String[] stats = intfTransfer.trim().split("\\s+");
-
-        if (stats.length < 12) return;
-
-        status.setMacAddress(stats[1]);
-        status.setRxbytes(parseLongSafe(stats[2]));
-        status.setRxpkts(parseLongSafe(stats[3]));
-        status.setRxerr(parseLongSafe(stats[4]));
-        status.setRxdrop(parseLongSafe(stats[5]));
-        status.setTxbytes(parseLongSafe(stats[8]));
-        status.setTxpkts(parseLongSafe(stats[9]));
-        status.setTxerr(parseLongSafe(stats[10]));
-        status.setTxdrop(parseLongSafe(stats[11]));
-    }
-
-    /** 
-     * Adds vendor name based on MAC address to the InterfaceStatusGeneric object. 
-     * @param status InterfaceStatusGeneric
-     */
-    private void populateMacVendor(InterfaceStatusGeneric status) {
-        String vendor = null;
-        if(status.getMacAddress() != null) {
-            if (cachedMacAddrVendorList.containsKey(status.getMacAddress())) {
-                vendor = cachedMacAddrVendorList.get(status.getMacAddress());
-            } else {
-                vendor = UvmContextFactory.context()
-                            .deviceTable()
-                            .getMacVendorFromMacAddress(status.getMacAddress());
-                if (!StringUtil.isEmpty(vendor)) {
-                    cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
-                }
-            }
-        }
-        status.setMacVendor(vendor);
-    }
-
-    /** 
-     * Populates IPv4 and IPv6 addresses for the interface 
-     * in InterfaceStatusGeneric using Status - INTERFACE_IP_ADDRESSES. 
-     * @param status InterfaceStatusGeneric
-     * @param intf InterfaceSettings
-     */
-    private void populateIpAddresses(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSymbolicDev());
-        String[] tokens = ipStatus.trim().split("\\s+");
-
-        String nextType = "";
-        for (String token : tokens) {
-            if (INET.equals(nextType)) {
-                if(status.getIp4Addr() == null)
-                    status.setIp4Addr(new LinkedList<>());
-                status.getIp4Addr().add(token);
-            } else if (INET6.equals(nextType)) {
-                if(status.getIp6Addr() == null)
-                    status.setIp6Addr(new LinkedList<>());
-                status.getIp6Addr().add(token);
-            }
-            nextType = "";
-            if (INET.equals(token)) nextType = INET;
-            else if (INET6.equals(token)) nextType = INET6;
-        }
-    }
-
-    /** 
-     * Populates connection state (connected/offline), duplex, and speed. 
-     * @param status InterfaceStatusGeneric
-     * @param intf InterfaceSettings
-     * @param deviceStatusList List<DeviceStatus>
-     */
-    private void populateConnectionStatus(InterfaceStatusGeneric status, InterfaceSettings intf, List<DeviceStatus> deviceStatusList) {
-        for (DeviceStatus ds : deviceStatusList) {
-            if (ds.getDeviceName().equals(intf.getPhysicalDev())) {
-                boolean isConnected = ConnectedStatus.CONNECTED.equals(ds.getConnected());
-                DuplexStatus duplex = ds.getDuplex();
-
-                status.setConnected(isConnected);
-                status.setOffline(!isConnected);
-                status.setEthSpeed(ds.getMbit());
-
-                if (duplex == DuplexStatus.FULL_DUPLEX) status.setEthDuplex("full");
-                else if(duplex == DuplexStatus.HALF_DUPLEX) status.setEthDuplex("half");
-                else status.setEthDuplex(DuplexStatus.UNKNOWN.toString().toLowerCase());
-                
-                return;
-            }
-        }
-    }
-
-    /** 
-     * Sets DNS and gateway information from interface status. 
-     * @param status InterfaceStatusGeneric
-     * @param intf InterfaceSettings
-     */
-    private void populateGatewayAndDns(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        InterfaceStatus intfStatus = getInterfaceStatus(intf.getInterfaceId());
-        List<InetAddress> dns = Stream.of(intfStatus.getV4Dns1(), intfStatus.getV4Dns2())
-                                .filter(Objects::nonNull)
-                                .collect(Collectors.toList());
-        if (!dns.isEmpty()) {
-            if (status.getDnsServers() == null)
-                status.setDnsServers(new LinkedList<>());
-            status.getDnsServers().addAll(dns);
-        }
-        status.setV4Address(intfStatus.getV4Address());
-        status.setIp4Gateway(intfStatus.getV4Gateway());
-        status.setIp6Gateway(intfStatus.getV6Gateway());
-    }
-
-    /** Populates IPv4/IPv6 address source (dhcp/static/pppoe
-    * @param status InterfaceStatusGeneric
-    * @param intf InterfaceSettings
-    */
-    private void populateAddressSources(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        if (intf.getConfigType() != ConfigType.ADDRESSED) return;
-
-        // Ensure lists are initialized
-        if(status.getAddressSource() == null)
-            status.setAddressSource(new LinkedList<>());
-        if(status.getIp6addressSource() == null && intf.getV6ConfigType() != V6ConfigType.DISABLED)
-            status.setIp6addressSource(new LinkedList<>());
-        
-        // Handle IPv4 address source
-        V4ConfigType v4Type = intf.getV4ConfigType();
-        switch (v4Type) {
-            case AUTO: 
-                status.getAddressSource().add(DHCP); break;
-            case PPPOE: 
-            case STATIC: {
-                status.getAddressSource().add(v4Type.name().toLowerCase()); break;
-            }
-        }
-
-        // Handle IPv6 address source
-        V6ConfigType v6Type = intf.getV6ConfigType();
-        switch (v6Type) {
-            case AUTO: 
-                status.getIp6addressSource().add(DHCPV6); break;
-            case STATIC: 
-                status.getIp6addressSource().add(v6Type.name().toLowerCase()); break;
-        }
-    }
-
-    /** 
-     * Safely parses integer, returns 0 if invalid. 
-     * @param str String
-     * @return int 
-     */
-    private long parseLongSafe(String str) {
-        return str.matches("-?\\d+") ? Long.parseLong(str) : 0;
-    }
-
-    /**
      * Determines if the specified interface is currently the VRRP master
      * @param interfaceId
      * @return true if the given interfaceId is current the VRRP master of its VRRP group, false otherwise
@@ -835,13 +585,11 @@ public class NetworkManagerImpl implements NetworkManager
     {
         InterfaceSettings intfSettings = findInterfaceId( interfaceId );
         if ( intfSettings == null ) {
-            logger.warn("Unable to find interface settings for interface {}", interfaceId );
+            logger.warn("Unable to find interface settings for interface " + interfaceId );
             return false;
         }
-        // check if vrrp is enabled on the interface to avoid console errors
-        // if not enabled, return false
-        if (!Boolean.TRUE.equals(intfSettings.getVrrpEnabled())) {
-            logger.warn("VRRP not enabled on interface {}", interfaceId );
+        if ( ! intfSettings.getVrrpEnabled() ) {
+            logger.warn("VRRP not enabled on interface " + interfaceId );
             return false;
         }
         // find any vrrp address
@@ -854,7 +602,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         if ( vrrpAddress == null ) {
-            logger.warn("VRRP alias not found on interface {}", interfaceId );
+            logger.warn("VRRP alias not found on interface " + interfaceId );
             return false;
         }
 
@@ -922,7 +670,7 @@ public class NetworkManagerImpl implements NetworkManager
             entryList = ObjectMatcher.parseJson(output, ListOfDeviceStatusClass); 
             } catch (JSONException | UnmarshallException e) {
                 logger.warn("Unable to parse device status: ", e);
-                logger.warn("Unable to parse device status: {}", output);
+                logger.warn("Unable to parse device status: " + output);
                 return null;
             } catch (Exception e) {
                 logger.error("Unexpected exception while getting device status: ", e);
@@ -1089,7 +837,7 @@ public class NetworkManagerImpl implements NetworkManager
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("insert rules: ");
             for ( String line : lines )
-                logger.info("insert rules: {}", line);
+                logger.info("insert rules: " + line);
         } catch (Exception e) {}
     }
 
@@ -1107,7 +855,7 @@ public class NetworkManagerImpl implements NetworkManager
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("remove rules: ");
             for ( String line : lines )
-                logger.info("remove rules: {}", line);
+                logger.info("remove rules: " + line);
         } catch (Exception e) {}
     }
 
@@ -1140,7 +888,7 @@ public class NetworkManagerImpl implements NetworkManager
                     interfaceSettingsById[intf.getInterfaceId()] = intf;
             }
                 catch (ArrayIndexOutOfBoundsException e) {
-                    logger.warn("Skipping out-of-bounds physical interface: {}", intf.getInterfaceId());
+                    logger.warn("Skipping out-of-bounds physical interface: " + intf.getInterfaceId());
                     continue;
                 }
             }
@@ -1151,7 +899,7 @@ public class NetworkManagerImpl implements NetworkManager
                     interfaceSettingsById[intf.getInterfaceId()] = intf;
                 }
                 catch (ArrayIndexOutOfBoundsException e) {
-                    logger.warn("Skipping out-of-bounds virtual interface: {}", intf.getInterfaceId());
+                    logger.warn("Skipping out-of-bounds virtual interface: " + intf.getInterfaceId());
                     continue;
                 }
             }
@@ -1181,15 +929,15 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
             if ( ! foundMatchingInterface ) {
-                logger.warn("Found unmapped new physical device: {}", deviceName);
-                logger.warn("Creating new InterfaceSettings for {}", deviceName);
+                logger.warn("Found unmapped new physical device: " + deviceName);
+                logger.warn("Creating new InterfaceSettings for " + deviceName);
                 int interfaceId = this.getNextFreeInterfaceId( netSettings );
                 if (interfaceId == -1) {
                     // note: we never need to explicitly set this flag to false. The user needs to 
                     // restart to solve the problem (which is told to them in NotificationManagerImpl). 
                     // On restart, the flag will always be false initially.
                     this.setInterfacesOverloadedFlag(true);
-                    logger.warn("No space for added physical interface '{}'", deviceName );
+                    logger.warn("No space for added physical interface '" + deviceName + "'");
                     continue;
                 }
                 InterfaceSettings interfaceSettings = new InterfaceSettings();
@@ -1229,8 +977,8 @@ public class NetworkManagerImpl implements NetworkManager
                 }
             }
             if ( ! foundMatchingDevice ) {
-                logger.warn("Found unmapped new physical device: {}", deviceName);
-                logger.warn("Creating new DeviceSettings for {}.", deviceName );
+                logger.warn("Found unmapped new physical device: " + deviceName);
+                logger.warn("Creating new DeviceSettings for " + deviceName + ".");
 
                 DeviceSettings deviceSettings = new DeviceSettings();
                 deviceSettings.setDeviceName( deviceName );
@@ -1552,7 +1300,7 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
         catch (Exception e) {
-            logger.error("Error creating Network Settings", e);
+            logger.error("Error creating Network Settings",e);
         }
 
         return newSettings;
@@ -2224,7 +1972,7 @@ public class NetworkManagerImpl implements NetworkManager
             InetAddress addr = interfaceSettings.getV4StaticAddress();
             InetAddress mask = interfaceSettings.getV4StaticNetmask();
             if (addr == null || mask == null) {
-                logger.warn("Missing interface[{}] settings ({}, {}). Disabling DHCP.", interfaceSettings.getName() , addr , mask );
+                logger.warn("Missing interface[" + interfaceSettings.getName() + "] settings (" + addr + ", " + mask + "). Disabling DHCP.");
                 interfaceSettings.setDhcpType(InterfaceSettings.DhcpType.DISABLED);
                 return;
             }
@@ -2263,7 +2011,7 @@ public class NetworkManagerImpl implements NetworkManager
             interfaceSettings.setDhcpLeaseDuration( 60*60 ); // 1 hours (dnsmasq doc suggested value)
         }
         catch (Exception e) {
-            logger.warn("Exception initializing DHCP Address: ", e);
+            logger.warn("Exception initializing DHCP Address: ",e);
             interfaceSettings.setDhcpType(InterfaceSettings.DhcpType.DISABLED);
         }
     }
@@ -3018,7 +2766,7 @@ public class NetworkManagerImpl implements NetworkManager
             JSONObject jo = new JSONObject(result);
             return jo.getBoolean("is_regulatory_compliant");
         }catch( JSONException e ){
-            logger.warn("Unable to parse wireless driver compliance: {}", result);
+            logger.warn("Unable to parse wireless driver compliance: " + result);
         }
         return false;
     }
@@ -3043,7 +2791,7 @@ public class NetworkManagerImpl implements NetworkManager
             JSONObject jo = new JSONObject(result);
              return  jo.getString("get_regulatory_country_code");
         }catch( JSONException e ){
-            logger.warn("Unable to parse wireless driver country code: {}", result);
+            logger.warn("Unable to parse wireless driver country code: " + result);
         }
         return "";
     }
@@ -3074,7 +2822,7 @@ public class NetworkManagerImpl implements NetworkManager
             JSONObject jo = new JSONObject(result);
             return jo.getJSONArray("get_channels");
         }catch(JSONException e ){
-            logger.warn("Unable to parse wireless channels: {}", result);
+            logger.warn("Unable to parse wireless channels: " + result);
         }
         return null;
     }
@@ -3144,7 +2892,7 @@ public class NetworkManagerImpl implements NetworkManager
         boolean changed = false;
 
         if ( ssid == null || password == null || encryption == null ) {
-            logger.warn("Invalid arguments: {} {} {}", ssid , password , encryption );
+            logger.warn("Invalid arguments: " + ssid + " " + password + " " + encryption );
             return;
         }
 
@@ -3163,7 +2911,7 @@ public class NetworkManagerImpl implements NetworkManager
 
             JSONArray channels = getWirelessChannels( intf.getSystemDev(), intf.getWirelessCountryCode() );
             if ( channels == null ) {
-                logger.warn("Unabled to determine supported channels for {}", intf.getSystemDev());
+                logger.warn("Unabled to determine supported channels for " + intf.getSystemDev());
                 continue;
             }
             int maxChannel = 0;
@@ -3175,7 +2923,7 @@ public class NetworkManagerImpl implements NetworkManager
                     channelFrequency = channels.getJSONObject(j);
                     ch = channelFrequency.getInt("channel");
                 }catch(JSONException e){
-                    logger.warn("Unable to determine supported channels for {}", intf.getSystemDev());
+                    logger.warn("Unable to determine supported channels for " + intf.getSystemDev());
                     continue;
                 }
                 if ( ch > maxChannel ) maxChannel = ch;
@@ -3310,7 +3058,7 @@ public class NetworkManagerImpl implements NetworkManager
                 httpsPortStr = Integer.toString( this.networkSettings.getPublicUrlPort() );
             }
         } else {
-            logger.warn("Unknown public URL method: {}", this.networkSettings.getPublicUrlMethod() );
+            logger.warn("Unknown public URL method: " + this.networkSettings.getPublicUrlMethod() );
         }
         
         return primaryAddressStr + ":" + httpsPortStr;
@@ -3349,7 +3097,7 @@ public class NetworkManagerImpl implements NetworkManager
             if (found) continue;
             return freeId;
         }
-        logger.warn("Failed to find a free interface Id ({})", freeId );
+        logger.warn("Failed to find a free interface Id ("  + freeId + ")");
         return -1;
     }
 
@@ -3374,7 +3122,7 @@ public class NetworkManagerImpl implements NetworkManager
             Path iface = Paths.get("/sys/class/net", argument);
     
             if (argument == null ||
-                !argument.matches(INTERFACE_NAME_PATTERN) || (!argument.startsWith("ppp") && !Files.exists(iface))) {
+                !argument.matches(INTERFACE_NAME_PATTERN) || !Files.exists(iface)) {
                 throw new RuntimeException("Invalid interface name");
             }
     
@@ -3450,38 +3198,9 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void convertSettings()
     {
-        // For 17.5 Vue Migration Changes
-        boolean globalQosEnabled = this.networkSettings.getQosSettings() != null && this.networkSettings.getQosSettings().getQosEnabled();
-        for(InterfaceSettings intfSettings: this.networkSettings.getInterfaces()) {
-            // Set generic config type for Vue response config type.
-            InterfaceSettingsGeneric.ConfigType configTypeGeneric =
-                    (intfSettings.getConfigType() != ConfigType.DISABLED)
-                            ? InterfaceSettingsGeneric.ConfigType.valueOf(intfSettings.getConfigType().name())
-                            : InterfaceSettingsGeneric.ConfigType.ADDRESSED;
-            intfSettings.setConfigTypeGeneric(configTypeGeneric);
-
-            // If global QOS is enabled and interface have non zero band width set qosEnabled true for that interface
-            if(intfSettings.getIsWan() && globalQosEnabled) {
-                boolean qosEnabled = intfSettings.getDownloadBandwidthKbps() != null && intfSettings.getDownloadBandwidthKbps() != 0
-                        && intfSettings.getUploadBandwidthKbps() != null && intfSettings.getUploadBandwidthKbps() != 0;
-                intfSettings.setQosEnabled(qosEnabled);
-            }
-        }
-        // Set new version
+        // For 17.1, peform "free" conversion to set the new dhcpMaxLeases setting to its default value
         this.networkSettings.setVersion( currentVersion );
         this.setNetworkSettings( this.networkSettings, false );
-    }
-
-    /**
-     * Gets the contents of the hostapd log file
-     * @param device - the device name to filter the logs
-     *
-     * @return The contents of the IPsec log file
-     */
-    public String getLogFile(String device)
-    {
-        logger.debug("hostapd.log getLogFile()");
-        return UvmContextFactory.context().execManager().execOutput(String.format("%s %s", GET_LOGFILE_SCRIPT, device));
     }
 
     /**
@@ -3516,7 +3235,7 @@ public class NetworkManagerImpl implements NetworkManager
             String name = req.getParameter("arg1");
 
             if (name == null ) {
-                logger.warn("Invalid parameters: {}", name );
+                logger.warn("Invalid parameters: " + name );
                 return;
             }
             // Ensuring that filename can only be downloaded from under our path and is valid
@@ -3547,7 +3266,7 @@ public class NetworkManagerImpl implements NetworkManager
 
                 out.flush();
             } catch (Exception e) {
-                logger.warn("Failed to export packet trace.", e);
+                logger.warn("Failed to export packet trace.",e);
             } finally{
                 try{
                     if(fis != null){

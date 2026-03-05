@@ -37,8 +37,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jabsorb.JSONSerializer;
 import org.jabsorb.serializer.MarshallException;
-import org.jabsorb.serializer.MarshallingMode;
-import org.jabsorb.serializer.MarshallingModeContext;
 import org.jabsorb.serializer.UnmarshallException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -341,7 +339,7 @@ public class SettingsManagerImpl implements SettingsManager
                 if( hostname == null ){
                     hostname = inheritableThreadLocal.get().getRemoteAddr();
                 }
-                if (hostname != null  && username != null) return username + "," +hostname;
+                if (hostname != null  & username != null) return username + "," +hostname;
             } catch(UnknownHostException e) {
                 logger.warn("Host not found: ", e);
             }
@@ -413,7 +411,7 @@ public class SettingsManagerImpl implements SettingsManager
 
             String line;
             while ((line = reader.readLine()) != null) {
-                jsonString.append(line).append("\n");
+                jsonString.append(line+"\n");
             }
 
             logger.debug("Loading Settings: \n" + "-----------------------------\n" + jsonString + "-----------------------------\n");
@@ -426,7 +424,6 @@ public class SettingsManagerImpl implements SettingsManager
                 return (T) new JSONObject(jsonString.toString());
             }
 
-            MarshallingModeContext.push(MarshallingMode.JABSORB);
             return (T) serializer.fromJSON(jsonString.toString());
         } catch (IOException e) {
             logger.warn("IOException: ",e);
@@ -441,7 +438,6 @@ public class SettingsManagerImpl implements SettingsManager
             }
             throw new SettingsException("Unable to unmarshal the settings: '" + is + "'", e);
         } finally {
-            MarshallingModeContext.pop();
             try {
                 if (reader != null) {
                     reader.close();
@@ -483,9 +479,8 @@ public class SettingsManagerImpl implements SettingsManager
                 parentFile.mkdirs();
 
                 fileWriter = new FileWriter(outputFile);
-                MarshallingModeContext.push(MarshallingMode.JABSORB);
                 String json = this.serializer.toJSON(value);
-                logger.debug("Saving Settings: \n{}", json);
+                logger.debug("Saving Settings: \n" + json);
                 fileWriter.write(json);
                 fileWriter.close();
                 fileWriter = null;
@@ -502,7 +497,6 @@ public class SettingsManagerImpl implements SettingsManager
                 }
                 throw new SettingsException("Unable to marshal json string:", e);
             } finally {
-                MarshallingModeContext.pop();
                 try {
                     if (fileWriter != null) {
                         fileWriter.close();
@@ -600,8 +594,8 @@ public class SettingsManagerImpl implements SettingsManager
                 String hostname = null;
                 String userHostNameInfo = getUserAndHostNameInfo("reports");
                 if (userHostNameInfo != null) {
-                    String[] infoArray = userHostNameInfo.split(",");
-                    if (infoArray != null && infoArray.length == 2) {
+                    String infoArray[] = userHostNameInfo.split(",");
+                    if (infoArray != null & infoArray.length == 2) {
                         username = infoArray[0];
                         hostname = infoArray[1];
                     }

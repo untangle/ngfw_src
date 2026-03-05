@@ -4,16 +4,9 @@
 package com.untangle.uvm;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
-import com.untangle.uvm.generic.SystemSettingsGeneric;
-import com.untangle.uvm.network.NetworkSettings;
-import com.untangle.uvm.util.Constants;
-import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONObject;
 import org.json.JSONString;
-import java.util.stream.Collectors;
 
 import com.untangle.uvm.app.DayOfWeekMatcher;
 
@@ -215,73 +208,4 @@ public class SystemSettings implements Serializable, JSONString
     /* DEPRECATED in 12.2 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
     /* DEPRECATED in 12.1 - moved to network settings */
-
-    private Double thresholdTemperature = 105.0;
-    public void setThresholdTemperature( Double newValue ) { this.thresholdTemperature = newValue; }
-    public Double getThresholdTemperature() { return this.thresholdTemperature; }
-
-    /**
-     * Transforms a {@link SystemSettings} and {@link NetworkSettings} object
-     * into its generic counterpart {@link SystemSettingsGeneric},
-     * @param networkSettings {@link NetworkSettings} object to populate hostname and services fields
-     * @return a new {@link SystemSettingsGeneric} instance containing the generic representation of systemSettings for vue UI
-     */
-    public SystemSettingsGeneric transformLegacyToGenericSettings(NetworkSettings networkSettings) {
-        UvmContext context =  UvmContextFactory.context();
-        SystemSettingsGeneric systemSettingsGeneric = new SystemSettingsGeneric();
-        systemSettingsGeneric.setCCHidden(context.isCCHidden());
-        systemSettingsGeneric.setLogDirectorySize(context.systemManager().getLogDirectorySize());
-        systemSettingsGeneric.setLogRetention(this.getLogRetention());
-        systemSettingsGeneric.setThresholdTemperature(this.getThresholdTemperature());
-        systemSettingsGeneric.setEnabled(this.autoUpgrade);
-        systemSettingsGeneric.setAutoUpgradeDays(this.autoUpgradeDays);
-        systemSettingsGeneric.setHourOfDay(this.autoUpgradeHour);
-        systemSettingsGeneric.setMinuteOfHour(this.autoUpgradeMinute);
-
-        if (networkSettings != null) {
-            // Local Services Settings
-            systemSettingsGeneric.setHttpPort(networkSettings.getHttpPort());
-            systemSettingsGeneric.setHttpsPort(networkSettings.getHttpsPort());
-
-            // Hostname Settings
-            systemSettingsGeneric.setHostName(networkSettings.getHostName());
-            systemSettingsGeneric.setDomainName(networkSettings.getDomainName());
-
-            systemSettingsGeneric.setDynamicDnsServiceEnabled(networkSettings.getDynamicDnsServiceEnabled());
-            systemSettingsGeneric.setDynamicDnsServiceUsername(networkSettings.getDynamicDnsServiceUsername());
-            systemSettingsGeneric.setDynamicDnsServiceName(networkSettings.getDynamicDnsServiceName());
-            systemSettingsGeneric.setDynamicDnsServiceHostnames(networkSettings.getDynamicDnsServiceHostnames());
-            systemSettingsGeneric.setDynamicDnsServicePassword(networkSettings.getDynamicDnsServicePassword());
-            systemSettingsGeneric.setDynamicDnsServiceZone(networkSettings.getDynamicDnsServiceZone());
-            systemSettingsGeneric.setDynamicDnsServiceWan(networkSettings.getDynamicDnsServiceWan());
-
-            systemSettingsGeneric.setPublicUrlAddress(networkSettings.getPublicUrlAddress());
-            systemSettingsGeneric.setPublicUrlMethod(networkSettings.getPublicUrlMethod());
-            systemSettingsGeneric.setPublicUrlPort(networkSettings.getPublicUrlPort());
-        }
-        systemSettingsGeneric.setTimeZone(new SystemSettingsGeneric.TimeZone(context.systemManager().getTimeZone().getID(), StringUtils.EMPTY));
-
-        systemSettingsGeneric.setCloudEnabled(this.getCloudEnabled());
-        systemSettingsGeneric.setSupportEnabled(this.getSupportEnabled());
-        systemSettingsGeneric.setHttpAdministrationAllowed(this.getHttpAdministrationAllowed());
-        systemSettingsGeneric.setAdministrationSubnets(this.getAdministrationSubnets());
-
-        if (this.getSnmpSettings() != null)
-            systemSettingsGeneric.setSnmpSettings(this.getSnmpSettings());
-
-        LanguageSettings languageSettings = SerializationUtils.clone(context.languageManager().getLanguageSettings());
-        List<LocaleInfo> languagesList = context.languageManager().getLanguagesList();
-        
-        if (languageSettings != null) {
-            languageSettings.setLanguage(languageSettings.getSource() + Constants.HYPHEN + languageSettings.getLanguage());
-            systemSettingsGeneric.setLanguageSettings(languageSettings);
-        }
-        if (languagesList != null) {
-            systemSettingsGeneric.setLanguagesList(languagesList.stream()
-                .filter(language -> (language.getEnabled() && StringUtils.isNotBlank(language.getName())) || language.getLanguageCode().equals(languageSettings.getLanguage()))
-                .collect(Collectors.toCollection(LinkedList::new)));
-        }
-
-        return systemSettingsGeneric;
-    }
 }
