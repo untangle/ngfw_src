@@ -14,11 +14,13 @@ import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.event.SyslogRule;
 import com.untangle.uvm.event.SyslogServer;
 import com.untangle.uvm.event.TriggerRule;
+import com.untangle.uvm.event.generic.EventSettingsGeneric;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.StringUtil;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -252,6 +254,25 @@ public class EventManagerImpl implements EventManager
     public EventSettings getSettings()
     {
         return this.settings;
+    }
+
+    /**
+     * Get the v2 version of Event Settings
+     * @return EventSettingsGeneric
+     */
+    public EventSettingsGeneric getSettingsV2() {
+        return this.settings.transformLegacyToGenericSettings();
+    }
+
+    /**
+     * Set Event Settings from generic version payload
+     * @param newSettings EventSettingsGeneric
+     */
+    public void setSettingsV2(EventSettingsGeneric newSettings) {
+        // Deep clone current Event Settings
+        EventSettings clonedEventSettings = SerializationUtils.clone(this.settings);
+        newSettings.transformGenericToLegacySettings(clonedEventSettings);
+        this.setSettings(clonedEventSettings);
     }
 
     /**
@@ -820,6 +841,15 @@ public class EventManagerImpl implements EventManager
         rules.add( eventRule );
         
         return rules;
+    }
+
+    /**
+     * Return default email settings values for v2 API.
+     * @return Map of string mapping email values to their defaults.
+     */
+    public Map<String, String> defaultEmailSettingsV2()
+    {
+        return defaultEmailSettings();
     }
 
     /**
