@@ -159,9 +159,9 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
      */
     public void setSettingsV2(BrandingManagerSettingsGeneric newSettingsGeneric) {
          // Deep clone current BrandingManager Settings
-        BrandingManagerSettings clonedPolicyManagerSettings = SerializationUtils.clone(this.settings);
-        newSettingsGeneric.transformGenericToLegacySettings(clonedPolicyManagerSettings);
-        this.setSettings(clonedPolicyManagerSettings);
+        BrandingManagerSettings clonedBrandingManagerSettings = SerializationUtils.clone(this.settings);
+        newSettingsGeneric.transformGenericToLegacySettings(clonedBrandingManagerSettings);
+        this.setSettings(clonedBrandingManagerSettings);
     }
 
     /**
