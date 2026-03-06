@@ -17,12 +17,14 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.SerializationUtils;
 
 import com.untangle.uvm.UriManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.app.branding_manager.generic.BrandingManagerSettingsGeneric;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.util.IOUtil;
 
@@ -141,6 +143,25 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         copy.setDefaultLogo(defaultLogo);
 
         return copy;
+    }
+
+    /**
+     * get Branding Manager settings using the generic format
+     * @return BrandingManagerSettingsGeneric object
+     */
+    public BrandingManagerSettingsGeneric getSettingsV2() {
+        return this.settings.transformLegacyToGenericSettings();
+    }
+
+    /**
+     * set Branding Manager settings using the generic format
+     * @param BrandingManagerSettingsGeneric newSettingsGeneric
+     */
+    public void setSettingsV2(BrandingManagerSettingsGeneric newSettingsGeneric) {
+         // Deep clone current BrandingManager Settings
+        BrandingManagerSettings clonedPolicyManagerSettings = SerializationUtils.clone(this.settings);
+        newSettingsGeneric.transformGenericToLegacySettings(clonedPolicyManagerSettings);
+        this.setSettings(clonedPolicyManagerSettings);
     }
 
     /**

@@ -1,21 +1,21 @@
 /**
  * $Id$
  */
-package com.untangle.app.branding_manager;
+package com.untangle.app.branding_manager.generic;
 
-import java.io.Serializable;
-
-import com.untangle.app.branding_manager.generic.BrandingManagerSettingsGeneric;
-import com.untangle.uvm.util.I18nUtil;
 import org.json.JSONObject;
 import org.json.JSONString;
+import java.io.Serializable;
+
+import com.untangle.app.branding_manager.BrandingManagerSettings;
+import com.untangle.uvm.util.I18nUtil;
 
 /**
- * Contains properties that a vendor may use to rebrand the product.
+ * Branding Manager Settings Generic
  */
 @SuppressWarnings("serial")
-public class BrandingManagerSettings implements Serializable, JSONString
-{
+public class BrandingManagerSettingsGeneric implements Serializable, JSONString {
+
     private static final String DEFAULT_COMPANY_NAME   = "Arista";
     private static final String DEFAULT_COMPANY_URL    = "http://edge.arista.com";
     private static final String DEFAULT_CONTACT_NAME   = "your network administator";
@@ -26,22 +26,6 @@ public class BrandingManagerSettings implements Serializable, JSONString
     private String contactEmail = "";
     private boolean defaultLogo = true;
     private String bannerMessage = "";
-
-    public BrandingManagerSettings()
-    {
-        setDefaultLogo(null == binary_getLogo());
-    }
-
-    public BrandingManagerSettings( BrandingManagerSettings copy )
-    {
-        this.setCompanyName(copy.getCompanyName());
-        this.setCompanyUrl(copy.getCompanyUrl());
-        this.setContactName(copy.getContactName());
-        this.setContactEmail(copy.getContactEmail());
-        this.binary_setLogo(copy.binary_getLogo());
-        this.setDefaultLogo(copy.getDefaultLogo());
-        this.setBannerMessage(copy.getBannerMessage());
-    }
 
     public String getCompanyName() { return null == companyName ? DEFAULT_COMPANY_NAME : companyName; }
     public void setCompanyName( String companyName ) { this.companyName = companyName; }
@@ -130,30 +114,23 @@ public class BrandingManagerSettings implements Serializable, JSONString
     }
 
     /**
-     * Transforms legacy Branding Manager Settings to Generic v2 format
-     * @return BrandingManagerSettingsGeneric object
+     * Transforms Generic (v2) Branding Manager Settings to Legacy
+     * @param BrandingManagerSettings brandingManagerSettings
      */
-    public BrandingManagerSettingsGeneric transformLegacyToGenericSettings() {
-        BrandingManagerSettingsGeneric brandingManagerSettingsGeneric = new BrandingManagerSettingsGeneric();
+    public void transformGenericToLegacySettings(BrandingManagerSettings brandingManagerSettings) {
+        if (brandingManagerSettings == null)
+            brandingManagerSettings = new BrandingManagerSettings();
 
-        brandingManagerSettingsGeneric.setCompanyName(this.getCompanyName());
-        brandingManagerSettingsGeneric.setCompanyUrl(this.getCompanyUrl());
-        brandingManagerSettingsGeneric.setContactName(this.getContactName());
-        brandingManagerSettingsGeneric.setContactEmail(this.getContactEmail());
-        brandingManagerSettingsGeneric.setBannerMessage(this.getBannerMessage());
-        brandingManagerSettingsGeneric.setLogo(this.getLogo());
-        brandingManagerSettingsGeneric.setDefaultLogo(this.getDefaultLogo());
-        
-        return brandingManagerSettingsGeneric;
+        brandingManagerSettings.setCompanyName(this.getCompanyName());
+        brandingManagerSettings.setCompanyUrl(this.getCompanyUrl());
+        brandingManagerSettings.setContactName(this.getContactName());
+        brandingManagerSettings.setContactEmail(this.getContactEmail());
+        brandingManagerSettings.setBannerMessage(this.getBannerMessage());
+        brandingManagerSettings.setLogo(this.getLogo());
+        brandingManagerSettings.setDefaultLogo(this.getDefaultLogo());
     }
-    /**
-     * Convert settings to JSON string.
-     *
-     * @return
-     *      JSON string.
-     */
-    public String toJSONString()
-    {
+
+    public String toJSONString() {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
