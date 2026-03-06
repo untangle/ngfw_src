@@ -155,7 +155,7 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
 
     /**
      * set Branding Manager settings using the generic format
-     * @param BrandingManagerSettingsGeneric newSettingsGeneric
+     * @param newSettingsGeneric Branding manager settings in the generic format
      */
     public void setSettingsV2(BrandingManagerSettingsGeneric newSettingsGeneric) {
          // Deep clone current BrandingManager Settings
