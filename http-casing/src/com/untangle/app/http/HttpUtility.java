@@ -12,6 +12,7 @@ import javax.net.ssl.SSLEngine;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Utility class for Extract host name
@@ -23,6 +24,8 @@ public class HttpUtility {
     private static int CLIENT_HELLO = 0x01;
     private static int SERVER_NAME = 0x0000;
     private static int HOST_NAME = 0x00;
+    private static int ENCRYPTED_CLIENT_HELLO = 0xfe0d;
+    public static final String ECH_BLOCKED= "encrypted_client_hello";
 
     private static final HttpUtility INSTANCE = new HttpUtility();
     
@@ -45,10 +48,11 @@ public class HttpUtility {
     /**
      * Function for extracting the SNI hostname from the client request.
      * @param data
+     * @param isEchBlocked
      * @return The SNI hostname extracted from the client request, or null
      * @throws Exception
      */
-    public static String extractSniHostname(ByteBuffer data) throws Exception{
+    public static String extractSniHostname(ByteBuffer data, boolean isEchBlocked) throws Exception{
         int counter = 0;
         int pos=0;
 
@@ -99,7 +103,7 @@ public class HttpUtility {
             logger.debug("No extensions found in TLS handshake message");
             return (null);
         }
-        return extractSniHostNameFromExtensions(data, counter);
+        return extractSniHostNameFromExtensions(data, counter, isEchBlocked);
     }
     
     /**
@@ -144,13 +148,18 @@ public class HttpUtility {
      * Process all extensions to find the SNI signature.
      * @param data
      * @param counter
+     * @param isEchBlocked
      * @return The extracted SNI hostname, or null if not found.
      */
-    public static String extractSniHostNameFromExtensions(ByteBuffer data, int counter){
+    public static String extractSniHostNameFromExtensions(ByteBuffer data, int counter, boolean isEchBlocked) {
 
         // get the total size of extension data block
         int extensionLength = Math.abs(data.getShort());
-
+        boolean encryptedClientHelloFound = false;
+        // if ECH check enbled check for ech extention 
+        if(isEchBlocked){
+            encryptedClientHelloFound = checkEchExtension(extensionLength, data.duplicate(),counter);
+        }
          // walk through all of the extensions looking for SNI signature
          while (counter < extensionLength) {
             if (data.remaining() < 2) throw new BufferUnderflowException();
@@ -185,10 +194,40 @@ public class HttpUtility {
             // found a valid host name so adjust the position to skip over
             // the list length and name type info we directly accessed above
             if (data.remaining() < 5) throw new BufferUnderflowException();
-
-            return extractedSNIHostname(data, nameLength);
+            String hostname = extractedSNIHostname(data, nameLength);
+            //check for ech extention and encrypted hostname, if found return encrypted_client_hello
+            if(encryptedClientHelloFound && StringUtils.isEmpty(hostname)){
+                return ECH_BLOCKED;
+            }
+            return hostname;
         }
         return null;
+    }
+
+    /**
+     * Check for ECH extention
+     * @param extensionLength
+     * @param data
+     * @param counter
+     * @return encryptedClientHelloFound
+     */
+    public static boolean checkEchExtension(int extensionLength, ByteBuffer data, int counter){
+        while (counter < extensionLength) {
+            if (data.remaining() < 2) throw new BufferUnderflowException();
+
+            int extType = data.getShort() & 0xFFFF;
+            int extSize = Math.abs(data.getShort());
+            // Check for "encrypted client hello" extension first
+            if (extType == ENCRYPTED_CLIENT_HELLO) {
+                return true;
+            }
+    
+            // If not "encrypted client hello", process other extensions
+            if (data.remaining() < extSize) throw new BufferUnderflowException();
+            data.position(data.position() + extSize);
+            counter += (extSize + 4);
+        }
+        return false;
     }
 
     /**
