@@ -23,7 +23,7 @@ L2TP_SERVER_HOSTS = overrides.get("L2TP_SERVER_HOSTS", default=
     ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
     "10.112.56.91","10.112.56.94","10.112.56.57","10.112.56.58","10.112.56.59"]
 )
-L2TP_CLIENT_HOST = overrides.get("L2TP_CLIENT_HOST", default="10.112.56.84")  # Windows 10 using builtin OpenSSH
+L2TP_CLIENT_HOST = overrides.get("L2TP_CLIENT_HOST", default="10.112.12.155")  # Windows 10 using builtin OpenSSH
 L2TP_ALIAS_IP = overrides.get("L2TP_ALIAS_IP", default="10.112.56.200")
 L2TP_LOCAL_USER = overrides.get("L2TP_LOCAL_USER", default="test")
 L2TP_LOCAL_PASSWORD = overrides.get("L2TP_LOCAL_PASSWORD", default="passwd")
@@ -34,7 +34,7 @@ IPSEC_HOST_LAN_IP = overrides.get("IPSEC_HOST_LAN_IP", default="192.168.235.96")
 IPSEC_PC_LAN_IP = overrides.get("IPSEC_PC_LAN_IP", default="192.168.235.83")
 IPSEC_HOST_NAME = overrides.get("IPSEC_HOST_NAME", default="ipsecsite.untangle.int")
 IPSEC_CONFIGURED_HOST_IPS = overrides.get("IPSEC_CONFIGURED_HOST_IPS", default=
-                        [('10.112.13.36','192.168.10.1','192.168.10.1/24'), # ATS
+                        [('10.112.13.179','192.168.10.1','192.168.10.1/24'), # ATS
                         ('10.112.56.89','10.112.56.89','10.112.56.0/24'),  # QA 3 Bridged
                         ('10.112.56.57','192.168.10.1','192.168.10.0/24'),  # QA box .57
                         ('10.112.56.58','192.168.10.1','192.168.10.0/24'),  # QA box .58
