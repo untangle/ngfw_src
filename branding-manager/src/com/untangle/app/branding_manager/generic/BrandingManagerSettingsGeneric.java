@@ -115,7 +115,7 @@ public class BrandingManagerSettingsGeneric implements Serializable, JSONString 
 
     /**
      * Transforms Generic (v2) Branding Manager Settings to Legacy
-     * @param BrandingManagerSettings brandingManagerSettings
+     * @param brandingManagerSettings BrandingManagerSettings
      */
     public void transformGenericToLegacySettings(BrandingManagerSettings brandingManagerSettings) {
         if (brandingManagerSettings == null)
