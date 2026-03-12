@@ -80,12 +80,17 @@ class VirusBlockerBaseTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global app, md5StdNum, appSSL, appSSLData, canRelay
+        global app, md5StdNum, appSSL, appSSLData, canRelay, ftp_result
         app = cls._app.getName()
         #For pppoe server clamav takes more time to get ready for connection so need to validate it first
         if app == "virus_blocker_lite":
             global clamavNotReady
             clamavNotReady = global_functions.clamav_not_ready_for_connections()
+        ftp_result = subprocess.call(
+            ["nc", "-z", global_functions.ftp_server, "21"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
 
         # download eicar and trojan files before installing virus
         # blocker, using HTTPS to avoid any scanner potentially
@@ -196,7 +201,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_021_ftpNonVirusNotBlocked(self):
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/test.zip"))
@@ -206,7 +210,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_023_ftpNonVirusPDFNotBlocked(self):
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/test/test.pdf"))
@@ -221,7 +224,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("Unable to obtain FTP credentials")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_025_ftpVirusBlocked_file")
@@ -245,7 +247,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_027_ftpVirusPassSite(self):
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         addPassSite(self._app, global_functions.ftp_server)
@@ -294,7 +295,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("local scanner not available on ARM")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
@@ -311,7 +311,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_103_eventlog_ftpNonVirus(self):
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
@@ -453,7 +452,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("Unable to obtain FTP credentials")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")    
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         md5LargePDFClean = "06b3cc0a1430c2aaf449b46c72fecee5"

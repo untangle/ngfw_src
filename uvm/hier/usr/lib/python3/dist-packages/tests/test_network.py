@@ -650,7 +650,11 @@ class NetworkTests(NGFWTestCase):
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect( ( remote_control.client_ip, 21 ))
                 s.close()
-                pingResult = subprocess.call(["ping","-c","1",global_functions.ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                pingResult = subprocess.call(
+                    ["nc", "-z", global_functions.ftp_server, "21"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )                
                 if pingResult == 0:
                     run_ftp_inbound_tests = True
                 else:

@@ -107,7 +107,11 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with ftp using our special small test virus
     def test_250_ftpCloudSmallBlocked(self):
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(
+            ["nc", "-z", global_functions.ftp_server, "21"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         md5TestNum = ""
@@ -124,7 +128,11 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with ftp using our special large test virus
     def test_260_ftpCloudLargeBlocked(self):
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(
+            ["nc", "-z", global_functions.ftp_server, "21"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         md5TestNum = ""
