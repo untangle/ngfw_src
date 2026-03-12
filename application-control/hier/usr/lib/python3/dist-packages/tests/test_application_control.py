@@ -140,7 +140,11 @@ class ApplicationControlTests(NGFWTestCase):
 
     def test_025_protoRule_Ftp(self):
         touchProtoRule(self._app, "FTP",False,False)
-        pingResult = subprocess.call(["ping","-c","1",global_functions.ftp_server],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        pingResult = subprocess.call(
+            ["nc", "-z", global_functions.ftp_server, "21"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         if pingResult:
             raise unittest.SkipTest(global_functions.ftp_server + " not reachable")
         ftpUserName, ftpPassword = global_functions.get_live_account_info("ftp")

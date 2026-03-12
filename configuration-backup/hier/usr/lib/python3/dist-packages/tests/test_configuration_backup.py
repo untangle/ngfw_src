@@ -76,7 +76,11 @@ class ConfigurationBackupTests(NGFWTestCase):
 
         #set Token for boxbackup access
         authenticationUrl = authUrl
-        authPayload = "{\n  \"token\": 123,\n  \"resourceIds\": [\"%s\"],\n  \"timeoutOverride\": \"5\"\n}" % (boxUID)
+        authPayload = """{
+            "token": "123",
+            "resourceIds": ["%s"],
+            "timeoutOverride": 5
+        }""" % boxUID
         authHeaders = {
             'Content-Type': "application/json",
             'AuthRequest': authKey,
