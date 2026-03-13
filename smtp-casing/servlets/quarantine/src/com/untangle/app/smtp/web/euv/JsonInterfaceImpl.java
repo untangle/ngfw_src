@@ -470,4 +470,14 @@ public class JsonInterfaceImpl implements JsonInterface
         return(offset);
     }
 
+    /**
+     * Get getCompanyName to show in title for quarantine request page .
+     * @return String containing the company name.
+     */
+    public String getCompanyName()
+    {
+        com.untangle.uvm.UvmContext uvm = com.untangle.uvm.UvmContextFactory.context();
+        return uvm.brandingManager().getCompanyName();
+    }
+
 }

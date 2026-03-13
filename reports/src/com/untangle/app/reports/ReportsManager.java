@@ -24,6 +24,12 @@ public interface ReportsManager
      */
     List<ReportEntry> getReportEntries();
 
+    /** 
+     * Get all report entries in v2 format.
+     * @return List<ReportEntry> List of all ReportEntry objects.
+     */
+    List<ReportEntry> getReportEntriesV2();
+
     /**
      * Get all report entries of the specified category
      *

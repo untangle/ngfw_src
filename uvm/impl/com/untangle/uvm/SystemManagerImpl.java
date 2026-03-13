@@ -276,10 +276,19 @@ public class SystemManagerImpl implements SystemManager
     }
 
     /**
-     * Sets the SystemSettings and NetworkSettings (Hostname/Services)
-     * @param systemSettingsGeneric SystemSettingsGeneric
+     * set SystemSettingsGeneric
+     * @param systemSettingsGeneric
      */
     public void setSystemSettingsV2(final SystemSettingsGeneric systemSettingsGeneric) {
+        setSystemSettingsV2(systemSettingsGeneric, false);
+    }
+
+    /**
+     * Sets the SystemSettings and NetworkSettings (Hostname/Services)
+     * @param systemSettingsGeneric SystemSettingsGeneric
+     * @param dirtyRadiusFields If the Radius Proxy fields are 'dirty' and so a computer account needs to be added  
+     */
+    public void setSystemSettingsV2(final SystemSettingsGeneric systemSettingsGeneric, boolean dirtyRadiusFields) {
         // Get current network settings and clone it.
         NetworkSettings networkSettings = UvmContextFactory.context().networkManager().getNetworkSettings();
         NetworkSettings clonedNetworkSettings = SerializationUtils.clone(networkSettings);
@@ -302,7 +311,7 @@ public class SystemManagerImpl implements SystemManager
         UvmContextFactory.context().languageManager().setLanguageSettings(clonedLanguageSettings);
 
         // Set System settings
-        this.setSettings(clonedSystemSettings);
+       this.setSettings(clonedSystemSettings, dirtyRadiusFields);
     }
 
     /**
