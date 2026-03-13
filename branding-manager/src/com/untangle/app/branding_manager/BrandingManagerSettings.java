@@ -5,7 +5,6 @@ package com.untangle.app.branding_manager;
 
 import java.io.Serializable;
 
-import com.untangle.app.branding_manager.generic.BrandingManagerSettingsGeneric;
 import com.untangle.uvm.util.I18nUtil;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -129,23 +128,6 @@ public class BrandingManagerSettings implements Serializable, JSONString
         }
     }
 
-    /**
-     * Transforms legacy Branding Manager Settings to Generic v2 format
-     * @return BrandingManagerSettingsGeneric object
-     */
-    public BrandingManagerSettingsGeneric transformLegacyToGenericSettings() {
-        BrandingManagerSettingsGeneric brandingManagerSettingsGeneric = new BrandingManagerSettingsGeneric();
-
-        brandingManagerSettingsGeneric.setCompanyName(this.getCompanyName());
-        brandingManagerSettingsGeneric.setCompanyUrl(this.getCompanyUrl());
-        brandingManagerSettingsGeneric.setContactName(this.getContactName());
-        brandingManagerSettingsGeneric.setContactEmail(this.getContactEmail());
-        brandingManagerSettingsGeneric.setBannerMessage(this.getBannerMessage());
-        brandingManagerSettingsGeneric.setLogo(this.getLogo());
-        brandingManagerSettingsGeneric.setDefaultLogo(this.getDefaultLogo());
-        
-        return brandingManagerSettingsGeneric;
-    }
     /**
      * Convert settings to JSON string.
      *

@@ -17,14 +17,12 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.SerializationUtils;
 
 import com.untangle.uvm.UriManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.app.branding_manager.generic.BrandingManagerSettingsGeneric;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.util.IOUtil;
 
@@ -146,22 +144,19 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     }
 
     /**
-     * get Branding Manager settings using the generic format
-     * @return BrandingManagerSettingsGeneric object
+     * getSettings gets the current settings in v2 (Generic) format
+     * @return BrandingManagerSettings object
      */
-    public BrandingManagerSettingsGeneric getSettingsV2() {
-        return this.settings.transformLegacyToGenericSettings();
+    public BrandingManagerSettings getSettingsV2() {
+        return this.getSettings();
     }
 
     /**
-     * set Branding Manager settings using the generic format
-     * @param newSettingsGeneric Branding manager settings in the generic format
+     * Set BrandingManagerSettings Settings from generic version payload
+     * @param newSettings BrandingManagerSettings
      */
-    public void setSettingsV2(BrandingManagerSettingsGeneric newSettingsGeneric) {
-         // Deep clone current BrandingManager Settings
-        BrandingManagerSettings clonedBrandingManagerSettings = SerializationUtils.clone(this.settings);
-        newSettingsGeneric.transformGenericToLegacySettings(clonedBrandingManagerSettings);
-        this.setSettings(clonedBrandingManagerSettings);
+    public void setSettingsV2(final BrandingManagerSettings newSettings) {
+        this.setSettings(newSettings);
     }
 
     /**
