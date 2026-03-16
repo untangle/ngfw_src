@@ -27,7 +27,7 @@ def format_tc_output(lines, wan_name, direction):
 def statusToJSON(input):
     #Parse patterns for qos-service.py status output
     firstLine='interface: {} class {} {} {} rate {} ceil {} burst {} cburst {}'
-    secondLine=' Sent {:d} bytes {:d} pkt (dropped {:d}, overlimits {:d} requeues {:d}) '
+    secondLine=' Sent {:d} bytes {:d} pkt (dropped {:d}, overlimits {:d} requeues {:d})'
     lastLine=' tokens: {} ctokens:{}'
     priorityParser='parent {} leaf {} prio {:d}'
     indexMap={1:firstLine, 2:secondLine, 3:lastLine}
@@ -38,6 +38,7 @@ def statusToJSON(input):
     entry = {}
     skipEntry=False
     for line in input:
+        line = line.rstrip()
         if count <= 3:
             res=parse.parse(indexMap[count],line)
             if res == None:
@@ -76,20 +77,22 @@ def status( qos_interfaces, wan_intfs ):
         result=''
         wan_dev = wan_intf.get('systemDev')
         imq_dev = wan_intf.get('imqDev')
+        ifb_dev = imq_dev.replace('imq', 'ifb') if imq_dev else None
         wan_name = wan_intf.get('name')
-        result = format_tc_output(get_tc_output(wan_dev), wan_name, "Outbound")
-        result.extend(format_tc_output(get_tc_output(imq_dev), wan_name, "Inbound"))
+
+        result= runSubprocess( "tc -s class ls dev %s | sed \"s/^class/interface: %s Outbound class/\"" % (wan_dev, wan_name) )
+        result.extend( runSubprocess( "tc -s class ls dev %s | sed \"s/^class/interface: %s Inbound class/\"" % (ifb_dev, wan_name)))
         json_objs.extend( statusToJSON(result) )
 
         #run("echo ------ Qdisc  ------")
         #run("tc -s qdisc ls dev %s" % wan_dev)
-        #run("tc -s qdisc ls dev %s" % imq_dev)
+        #run("tc -s qdisc ls dev %s" % ifb_dev)
         #run("echo ------ Class  ------")
         #run("tc -s class ls dev %s" % wan_dev)
-        #run("tc -s class ls dev %s" % imq_dev)
+        #run("tc -s class ls dev %s" % ifb_dev)
         #run("echo ------ Filter ------")
         #run("tc -s filter ls dev %s" % wan_dev)
-        #run("tc -s filter ls dev %s" % imq_dev)
+        #run("tc -s filter ls dev %s" % ifb_dev)
     print(json_objs)
 
 
@@ -129,6 +132,7 @@ for intf in interfaces:
         if intf.get('imqDev') == None:
             print("Failed to read imqDev on %s" % intf.get('name'))
             sys.exit(1)
+        # IFB device is derived from imqDev (imq0 -> ifb0)
         if intf.get('downloadBandwidthKbps') == None:
             print("Failed to read downloadBandwidthKbps on %s" % intf.get('name'))
             sys.exit(1)

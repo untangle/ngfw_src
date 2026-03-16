@@ -41,7 +41,7 @@ class Jars
     const_set(:GetText, [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ])
     const_set(:JakartaActivation, [ Jars.downloadTarget('jakarta.activation-1.2.1/jakarta.activation-1.2.1.jar') ])
     const_set(:JavaTransaction, [ Jars.downloadTarget('jta-1.1/jta-1.1.jar') ])
-    const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-2.0.9/slf4j-reload4j-2.0.9.jar'), 
+    const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-2.0.9/slf4j-nop-2.0.9.jar'),
                         Jars.downloadTarget( 'slf4j-2.0.9/slf4j-api-2.0.9.jar' ) ])
 
     const_set(:TomcatCommon, [ 'tomcat-embed-jasper.jar',

@@ -4,7 +4,11 @@ Suricata configuration file management
 import os
 import re
 import ruamel.yaml
-from ruamel.yaml.compat import text_type
+try:
+    from ruamel.yaml.compat import text_type
+except ImportError:
+    # ruamel.yaml 0.17+ removed text_type from compat
+    text_type = str
 
 from ruamel.yaml import YAML
 
