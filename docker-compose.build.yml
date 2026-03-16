@@ -17,10 +17,10 @@ services:
         git checkout $${PKGTOOLS_COMMIT} || true"
 
     build:
-      image: untangleinc/ngfw:${REPOSITORY:-bullseye}-build-multiarch
+      image: untangleinc/ngfw:${REPOSITORY:-bookworm}-build-multiarch
       environment:
         BUILD_TYPE: ${BUILD_TYPE:-rake}
-        REPOSITORY: ${REPOSITORY:-bullseye}
+        REPOSITORY: ${REPOSITORY:-bookworm}
         DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
@@ -35,7 +35,7 @@ services:
         # empty: "do not force the build when that version is already
         # present on the target mirror (default)"
         FORCE: ${FORCE}
-        TRAVIS_BRANCH: ${TRAVIS_BRANCH:-master}
+        TRAVIS_BRANCH: ${TRAVIS_BRANCH:-ngfw-bookworm}
         TRAVIS_PULL_REQUEST_BRANCH:
         TRAVIS_REPO_SLUG:
       privileged: ${PRIVILEGED:-false}
@@ -49,10 +49,10 @@ services:
         - /etc/apt/apt.conf.d/01proxy:/etc/apt/apt.conf.d/01proxy
 
     dev-build:
-      image: untangleinc/ngfw:${REPOSITORY:-bullseye}-build-multiarch
+      image: untangleinc/ngfw:${REPOSITORY:-bookworm}-build-multiarch
       environment:
         BUILD_TYPE: ${BUILD_TYPE:-rake}
-        REPOSITORY: ${REPOSITORY:-bullseye}
+        REPOSITORY: ${REPOSITORY:-bookworm}
         DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
@@ -67,7 +67,7 @@ services:
         # empty: "do not force the build when that version is already
         # present on the target mirror (default)"
         FORCE: ${FORCE}
-        TRAVIS_BRANCH: ${TRAVIS_BRANCH:-master}
+        TRAVIS_BRANCH: ${TRAVIS_BRANCH:-ngfw-bookworm}
         TRAVIS_PULL_REQUEST_BRANCH:
         TRAVIS_REPO_SLUG:
         RAKE_LOG: ${RAKE_LOG}
