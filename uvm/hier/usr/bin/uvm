@@ -261,11 +261,10 @@ def prepareSystem():
 def checkSystem():
     #debug("checkSystem()")
 
-    # check tune is loaded
+    # check tune is loaded (optional - custom kernel module, not available on bookworm 6.1+)
     ret = os.system('/sbin/modprobe -q iptable_tune || /bin/lsmod | grep -q iptable_tune');
     if ret != 0:
-        debug("ERROR: Incompatible kernel detected (no tune)");
-        sys.exit(1);
+        debug("WARNING: iptable_tune module not available (expected on bookworm 6.1+ kernels)");
 
     # check nfnetlink_queue is loaded
     if not os.path.exists("/proc/net/netfilter/nfnetlink_queue"):

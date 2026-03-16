@@ -86,13 +86,15 @@ insert_iptables_rules()
     ${IPTABLES} -t nat -N uvm-tcp-redirect >/dev/null 2>&1
     ${IPTABLES} -t nat -F uvm-tcp-redirect >/dev/null 2>&1
 
-    ${IPTABLES} -t tune -N queue-to-uvm >/dev/null 2>&1
-    ${IPTABLES} -t tune -F queue-to-uvm >/dev/null 2>&1
+    # Create nftables tune table with postrouting hook at priority 999
+    # Replaces iptable_tune kernel module (patch 0004) - no custom kernel module needed
+    # Priority 999 runs after NAT (100) and conntrack state is visible (tested/verified)
+    nft delete table inet tune 2>/dev/null
+    nft add table inet tune
+    nft 'add chain inet tune queue-to-uvm { type filter hook postrouting priority 999 ; policy accept ; }'
 
     # Insert redirect table in beginning of PREROUTING
     ${IPTABLES} -I PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm'
-
-    ${IPTABLES} -A POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM'
 
     # Pull and call insert calls from other iptables scripts that
     # want to be added to the top of the uvm-tcp-direct chain.
@@ -124,31 +126,30 @@ EOT
     # Redirect TCP traffic to the local ports (where the untangle-vm is listening)
     ${IPTABLES} -A uvm-tcp-redirect -t nat -i ${TUN_DEV} -t nat -p tcp -j REDIRECT --to-ports ${TCP_REDIRECT_PORTS} -m comment --comment 'Redirect reinjected packets to the untangle-vm'
 
-    # Ignore loopback traffic
-    ${IPTABLES} -A queue-to-uvm -t tune -i lo -j RETURN -m comment --comment 'Do not queue loopback traffic'
-    ${IPTABLES} -A queue-to-uvm -t tune -o lo -j RETURN -m comment --comment 'Do not queue loopback traffic'
-
-    # Ignore traffic that is related to a session we are not watching.
-    # If its "related" according to iptables, then original session must have been bypassed
-    ${IPTABLES} -A queue-to-uvm -t tune -m conntrack --ctstate RELATED  -j RETURN -m comment --comment 'Do not queue (bypass) sessions related to other bypassed sessions'
-
-    # Ignore traffic that has no conntrack info because we cant NAT it.
-    ${IPTABLES} -A queue-to-uvm -t tune -m conntrack --ctstate INVALID  -j RETURN -m comment --comment 'Do not queue (bypass) sessions without conntrack info'
-
-    # Ignore bypassed traffic.
-    ${IPTABLES} -A queue-to-uvm -t tune -m mark --mark ${MASK_BYPASS}/${MASK_BYPASS} -j RETURN -m comment --comment 'Do not queue (bypass) all packets with bypass bit set'
-
-    # Queue all of the SYN packets.
-    ${IPTABLES} -A queue-to-uvm -t tune -p tcp --syn -j NFQUEUE --queue-num 1981 -m comment --comment 'Queue TCP SYN packets to the untangle-vm'
-
-    # Queue all of the UDP packets.
-    ${IPTABLES} -A queue-to-uvm -t tune -m addrtype --dst-type unicast -p udp -j NFQUEUE --queue-num 1982 -m comment --comment 'Queue Unicast UDP packets to the untange-vm'
-
     # DROP all packets exiting the server with the source address of TUN_IP_ADDR
     # This happens whenever conntrack does not properly remap the reply packet from the redirect
-    # I have not been able to figure out the conditions in which this happens, but regardless its pointless to send a packet with this source address
-    # as the destination will simply ignore it
-    ${IPTABLES} -I queue-to-uvm -t tune -s ${TUN_IP_ADDR} -j DROP -m comment --comment 'Drop unmapped packets leaving server'
+    # Must be first rule in chain (was iptables -I, i.e. insert at top)
+    nft "add rule inet tune queue-to-uvm ip saddr ${TUN_IP_ADDR} drop comment \"Drop unmapped packets leaving server\""
+
+    # Ignore loopback traffic
+    nft 'add rule inet tune queue-to-uvm iifname "lo" return comment "Do not queue loopback traffic"'
+    nft 'add rule inet tune queue-to-uvm oifname "lo" return comment "Do not queue loopback traffic"'
+
+    # Ignore traffic that is related to a session we are not watching.
+    # If its "related" according to conntrack, then original session must have been bypassed
+    nft 'add rule inet tune queue-to-uvm ct state related return comment "Do not queue (bypass) sessions related to other bypassed sessions"'
+
+    # Ignore traffic that has no conntrack info because we cant NAT it.
+    nft 'add rule inet tune queue-to-uvm ct state invalid return comment "Do not queue (bypass) sessions without conntrack info"'
+
+    # Ignore bypassed traffic.
+    nft "add rule inet tune queue-to-uvm meta mark and ${MASK_BYPASS} == ${MASK_BYPASS} return comment \"Do not queue (bypass) all packets with bypass bit set\""
+
+    # Queue all of the SYN packets.
+    nft 'add rule inet tune queue-to-uvm tcp flags syn / fin,syn,rst,ack queue num 1981 comment "Queue TCP SYN packets to the untangle-vm"'
+
+    # Queue all of the UDP packets.
+    nft 'add rule inet tune queue-to-uvm fib daddr type unicast meta l4proto udp queue num 1982 comment "Queue Unicast UDP packets to the untangle-vm"'
 
     # Redirect packets destined to non-local sockets to local
     ${IPTABLES} -I prerouting-untangle-vm -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
@@ -184,7 +185,7 @@ EOT
 remove_iptables_rules()
 {
     ${IPTABLES} -t nat -F uvm-tcp-redirect >/dev/null 2>&1
-    ${IPTABLES} -t tune -F queue-to-uvm >/dev/null 2>&1
+    nft delete table inet tune >/dev/null 2>&1
 
     KERNVER=$(uname -r | awk -F. '{ printf("%02d%02d%02d\n",$1,$2,$3); }')
     ORIGVER=30000
@@ -197,7 +198,7 @@ remove_iptables_rules()
     ${IPTABLES} -D output-untangle-vm -t mangle -p udp -j MARK --set-mark ${MASK_BOGUS}/${MASK_BOGUS} -m comment --comment 'change the mark of all UDP packets to force re-route after OUTPUT' >/dev/null 2>&1
     ${IPTABLES} -D input-untangle-vm -t mangle -i utun -j MARK --set-mark 0x10000000/0x10000000 -m comment --comment "Set reinjected packet mark" >/dev/null 2>&1
     ${IPTABLES} -D PREROUTING -t nat -i ${TUN_DEV} -p tcp -g uvm-tcp-redirect -m comment --comment 'Redirect utun traffic to untangle-vm' >/dev/null 2>&1
-    ${IPTABLES} -D POSTROUTING -t tune -j queue-to-uvm -m comment --comment 'Queue packets to the Untangle-VM' >/dev/null 2>&1
+    # tune table cleanup handled by 'nft delete table inet tune' above
     ${IPTABLES} -D prerouting-untangle-vm -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local" >/dev/null 2>&1
     ${IPTABLES} -D prerouting-untangle-vm -t mangle -p icmp --icmp-type 3/4 -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route ICMP Unreachable Frag needed traffic to local" >/dev/null 2>&1
     
