@@ -407,7 +407,11 @@ class IPsecTests(NGFWTestCase):
 
         appDataRD = appAD.getSettings().get('radiusSettings')
         appFW = global_functions.uvmContext.appManager().instantiate(cls.appNameFW(), default_policy_id)
-        ipsecHostResult = subprocess.call(["ping","-c","1",IPSEC_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ipsecHostResult = subprocess.call(
+            ["nc", "-u", "-z", "-w", "2", IPSEC_HOST, "500"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         l2tpClientHostResult = subprocess.call(["ping","-c","1",L2TP_CLIENT_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
