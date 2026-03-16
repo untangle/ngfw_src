@@ -1,30 +1,24 @@
 Ext.define('Ung.apps.policymanager.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-policy-manager',
+    layout: 'border',
 
     controller: 'app-policy-manager',
 
     viewModel: {
         data: {
-            appsData: [],
-            newPolicy: null
-        },
-        stores: {
-            appsStore: {
-                data: '{appsData}',
-                // filters: [{
-                //     property: 'type',
-                //     value: 'FILTER'
-                // }],
-                sorters: 'viewPosition'
-            },
-            rules: { data: '{settings.rules.list}' }
+            vueMigrated: true
+        }
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/policy-manager', false);
         }
     },
 
     items: [
-        { xtype: 'app-policy-manager-status' },
-        { xtype: 'app-policy-manager-policies' },
-        { xtype: 'app-policy-manager-rules' }
+        Field.iframeHolder
     ]
 });
