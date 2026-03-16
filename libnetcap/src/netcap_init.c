@@ -158,9 +158,14 @@ static int _netcap_init()
         ip_sendnfmark = 28;
         is_new_kernel = 510;
     }
+    else if ( strstr(utsn.release,"6.1.") != NULL ) {
+        ip_saddr = 27;
+        ip_sendnfmark = 28;
+        is_new_kernel = 610;
+    }
     else {
         errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
-        errlog( ERR_WARNING, "Assuming 5.10.0\n" );
+        errlog( ERR_WARNING, "Assuming 6.1.0\n" );
         /* unknown kernel */ 
         ip_saddr = 27;
         ip_sendnfmark = 28;

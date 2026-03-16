@@ -8,7 +8,7 @@ class SuricataSignature:
     """
     Process signature from the suricata format.
     """
-    text_regex = re.compile(r'^(?i)([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|\<\>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)')
+    text_regex = re.compile(r'^([#\s]+|)(alert|log|pass|activate|dynamic|drop|reject|sdrop)\s+(([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+(\-\>|\<\>)\s+([^\s]+)\s+([^\s]+)\s+|)\((.+)\)', re.IGNORECASE)
     var_regex = re.compile(r'^\$(.+)')
     custom_gid = 2400
 
