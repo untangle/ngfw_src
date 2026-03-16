@@ -16,8 +16,9 @@ Build-Depends: debhelper (>= 10),
          libxml2-dev,
          lintian,
 	 openjdk-17-jdk-headless:native,
-	 gettext (>= 0.21.0-1~untangle1bullseye),
+	 gettext (>= 0.21),
 	 python3-javalang:native | python3-javalang,
+	 python3-six,
 	 python3-pytest:native | python3-pytest,
 	 python3-setuptools,
          rake (>= 10),
@@ -119,7 +120,7 @@ Architecture: all
 Conflicts: untangle-node-virus-blocker
 Replaces: untangle-node-virus-blocker
 Provides: untangle-node-virus-blocker
-Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-clamav-config | untangle-kernel-modules-buster | untangle-kernel-modules-bullseye, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
+Depends: ${misc:Depends}, untangle-vm, untangle-base-virus-blocker, untangle-clamav-config | untangle-kernel-modules-bookworm | untangle-kernel-modules-bullseye, untangle-app-http, untangle-app-ftp, untangle-app-smtp, untangle-app-license
 Description: Virus Blocker
  The Virus Blocker application.
 
@@ -300,7 +301,7 @@ Architecture: all
 Conflicts: untangle-node-wireguard-vpn
 Replaces: untangle-node-wireguard-vpn
 Provides: untangle-node-wireguard-vpn
-Depends: ${misc:Depends}, untangle-vm, wireguard-tools, wireguard-dkms, qrencode
+Depends: ${misc:Depends}, untangle-vm, wireguard-tools, qrencode
 Description: WireGuard VPN application
  The WireGuard VPN application.
 

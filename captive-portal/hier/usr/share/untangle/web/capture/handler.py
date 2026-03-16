@@ -9,7 +9,7 @@ if "@PREFIX@" != '':
 from uvm import Uvm
 import urllib.request, urllib.parse, urllib.error
 import pprint
-import imp
+import importlib.util
 import time
 import os
 import uvm.i18n_helper
@@ -18,7 +18,8 @@ from urllib.parse import urlparse
 
 from uvm import settings_reader
 
-_ = uvm.i18n_helper.get_translation('untangle').lgettext
+_trans = uvm.i18n_helper.get_translation('untangle')
+_ = getattr(_trans, 'lgettext', _trans.gettext)
 
 # Dictionary of Oauth providers by name, each with the following fields:
 # platform  Identifier to pass to auth-relay
@@ -243,7 +244,17 @@ def index(req):
 # Arguments include username and password along with several hidden fields
 # that store the details of the page originally requested.
 
-def authpost(req,username,password,method,nonce,appid,host,uri):
+def authpost(req,username=None,password=None,method=None,nonce=None,appid=None,host=None,uri=None):
+    # On Python 3.11, mod_python FieldStorage returns bytes keys
+    if username is None or method is None:
+        fields = _get_form_fields(req)
+        if username is None: username = fields.get('username', '')
+        if password is None: password = fields.get('password', '')
+        if method is None: method = fields.get('method', '')
+        if nonce is None: nonce = fields.get('nonce', '')
+        if appid is None: appid = fields.get('appid', '')
+        if host is None: host = fields.get('host', '')
+        if uri is None: uri = fields.get('uri', '')
     if type(username) == bytes:
         username = username.decode('utf-8')
     if type(password) == bytes:
@@ -321,7 +332,17 @@ def authpost(req,username,password,method,nonce,appid,host,uri):
 # in the POST data.  To handle this scenario, we use a function parameter
 # default of 'empty' which will cause app.userActivate to return false.
 
-def infopost(req,method,nonce,appid,host,uri,agree=b'empty'):
+def infopost(req,method=None,nonce=None,appid=None,host=None,uri=None,agree=b'empty'):
+    # On Python 3.11, mod_python FieldStorage returns bytes keys which
+    # don't match str parameter names in apply_fs_data, so args are empty
+    if method is None or nonce is None or appid is None or host is None or uri is None:
+        fields = _get_form_fields(req)
+        if method is None: method = fields.get('method', '')
+        if nonce is None: nonce = fields.get('nonce', '')
+        if appid is None: appid = fields.get('appid', '')
+        if host is None: host = fields.get('host', '')
+        if uri is None: uri = fields.get('uri', '')
+        if agree == b'empty': agree = fields.get('agree', 'empty')
     if type(method) == bytes:
         method = method.decode('utf-8')
     if type(nonce) == bytes:
@@ -620,6 +641,23 @@ def extjs_reply(status,message,filename=""):
     return(result)
 
 #-----------------------------------------------------------------------------
+# Extract form fields from req.form, handling bytes keys from Python 3.11
+
+def _get_form_fields(req):
+    fields = {}
+    form = getattr(req, 'form', None)
+    if form is not None and hasattr(form, 'list') and form.list:
+        for field in form.list:
+            name = field.name
+            value = field.value
+            if type(name) == bytes:
+                name = name.decode('utf-8')
+            if type(value) == bytes:
+                value = value.decode('utf-8')
+            fields[name] = value
+    return fields
+
+#-----------------------------------------------------------------------------
 # forces stuff loaded from settings files to be UTF-8 when plugged
 # into the page template files
 
@@ -672,5 +710,7 @@ def custom_handler(req):
 def _import_file(filename):
     (path, name) = os.path.split(filename)
     (name, ext) = os.path.splitext(name)
-    (file, filename, data) = imp.find_module(name, [path])
-    return imp.load_module(name, file, filename, data)
+    spec = importlib.util.spec_from_file_location(name, os.path.join(path, name + ext))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module

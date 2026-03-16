@@ -6,9 +6,9 @@ pkill -9 ntpd
 # stop the daemon first
 systemctl stop ntp	
 
-# force time sync with time.nist.gov server
+# force time sync with time.nist.gov server (timeout after 30s to avoid blocking UVM startup)
 echo "Syncing time..."
-ntpd -q -g time.nist.gov
+timeout 30 ntpd -q -g time.nist.gov
 CODE=$?
 
 # start the daemon
