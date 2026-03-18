@@ -3,9 +3,21 @@ Ext.define('Ung.apps.brandingmanager.Main', {
     alias: 'widget.app-branding-manager',
     controller: 'app-branding-manager',
 
+    viewModel: {
+        data: {
+            vueMigrated: true
+        }
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/branding-manager', false);
+        }
+    },
+
     items: [
-        { xtype: 'app-branding-manager-status' },
-        { xtype: 'app-branding-manager-settings' }
+        Field.iframeHolder
     ]
 
 });
