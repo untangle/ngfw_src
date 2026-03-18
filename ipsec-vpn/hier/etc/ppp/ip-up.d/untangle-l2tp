@@ -26,11 +26,11 @@ if [ "$PPP_IPPARAM" != "L2TP" ]; then
     exit
 fi
 
-/bin/echo -e "[INFO: `date`] Adding iptables rules for ${PPP_IFACE}"
+/bin/echo -e "[INFO: `date`] Adding mark rules for ${PPP_IFACE}"
 
 # mark traffic on the ppp interface with ID 251
-iptables -t mangle -I mark-src-intf 3 -i ${PPP_IFACE} -j MARK --set-mark 0xfb/0xff -m comment --comment "Set src interface mark for l2tp"
-iptables -t mangle -I mark-dst-intf 3 -o ${PPP_IFACE} -j MARK --set-mark 0xfb00/0xff00 -m comment --comment "Set dst interface mark for l2tp"
+iptables -t mangle -I mark-src-intf 3 -i ${PPP_IFACE} -j MARK --set-mark 0xfb/0xff -m comment --comment "Set src interface mark for l2tp" 2>/dev/null || true
+iptables -t mangle -I mark-dst-intf 3 -o ${PPP_IFACE} -j MARK --set-mark 0xfb00/0xff00 -m comment --comment "Set dst interface mark for l2tp" 2>/dev/null || true
 
 # call the connect function in the app
 /usr/share/untangle/bin/ipsec-virtual-user-event CONNECT L2TP $IPREMOTE $PEERNAME $IFNAME $PPPD_PID
