@@ -89,7 +89,7 @@ case "${PLUTO_VERB}" in
                 echo "$(date) [$SCRIPT_ID] inserting nat masquerade rule for ${PLUTO_MY_SOURCEIP} on ${VTI_IF}"
 
                 # This mode is pretty much a guarantee to need NAT for clients on our local networks
-                iptables -t nat -D tunnel-postrouting-rules -o ${VTI_IF} -j MASQUERADE
+                iptables -t nat -D tunnel-postrouting-rules -o ${VTI_IF} -j MASQUERADE 2>/dev/null || true
                 iptables -t nat -I tunnel-postrouting-rules -o ${VTI_IF} -j MASQUERADE
         fi
 
@@ -120,10 +120,10 @@ case "${PLUTO_VERB}" in
         ;;
     down-client)
         echo "$(date) [$SCRIPT_ID] removing tunnel"
-        iptables -t nat -D tunnel-postrouting-rules -o ${VTI_IF} -j MASQUERADE
-        ip tunnel del "${VTI_IF}"
-	ip route delete table ipsec default via "${PLUTO_PEER}"
-        ip route flush table uplink.ipsec
+        iptables -t nat -D tunnel-postrouting-rules -o ${VTI_IF} -j MASQUERADE 2>/dev/null || true
+        ip tunnel del "${VTI_IF}" 2>/dev/null || true
+        ip route delete table ipsec default via "${PLUTO_PEER}" 2>/dev/null || true
+        ip route flush table uplink.ipsec 2>/dev/null || true
         ;;
 esac
 
