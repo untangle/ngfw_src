@@ -1,5 +1,6 @@
 """tunnel_vpn tests"""
 import copy
+import os
 import time
 import subprocess
 
@@ -365,5 +366,35 @@ class TunnelVpnTests(NGFWTestCase):
         
         # set to original settings
         self._app.setSettings(org_appData)
+
+    def test_060_command_injection_prevented(self):
+        """
+        Verify that backtick command injection in provider argument is prevented by execCommand
+        """
+        exploit_marker = "/tmp/tunnel-vpn-exploit-test"
+        dummy_config = "/tmp/tunnel-vpn-dummy.ovpn"
+
+        # Clean up marker file if it exists from a previous run
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        # Create a dummy .ovpn file — content doesn't matter,
+        # the script just needs a file that exists with the right extension
+        with open(dummy_config, "w") as f:
+            f.write("client\n")
+
+        # Call importTunnelConfig with a provider containing backtick injection
+        # With old execSafe, this would execute: touch /tmp/tunnel-vpn-exploit-test
+        # With new execCommand, backticks are passed as literal string data
+        malicious_provider = "test`touch " + exploit_marker + "`"
+        try:
+            self._app.importTunnelConfig(dummy_config, malicious_provider, TUNNEL_ID)
+        except Exception:
+            # The import will fail due to unknown provider — that's expected,
+            # we only care that the injected command did NOT execute
+            pass
+
+        assert not os.path.exists(exploit_marker), \
+            "Command injection via backticks was executed! " + exploit_marker + " should not exist"
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
