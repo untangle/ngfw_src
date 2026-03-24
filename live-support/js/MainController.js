@@ -3,11 +3,11 @@ Ext.define('Ung.apps.livesupport.MainController', {
 
     alias: 'controller.app-live-support',
 
-    control: {
-        '#': {
-            afterrender: 'onAfterRender'
-        }
-    },
+    // control: {
+    //     '#': {
+    //         afterrender: 'onAfterRender'
+    //     }
+    // },
 
     onAfterRender: function(){
         var me = this, v = me.getView(), vm = me.getViewModel();

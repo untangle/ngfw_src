@@ -5,14 +5,18 @@ Ext.define('Ung.apps.livesupport.Main', {
 
     viewModel: {
         data: {
-            companyName: '',
-            companyURL: '',
-            serverUID: '',
-            fullVersionAndRevision: ''
+            vueMigrated: true
         }
     },
 
-    items: [{
-        xtype: 'app-live-support-status'
-    }]
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/live-support', false);
+        }
+    },
+
+    items: [
+        Field.iframeHolder
+    ]
 });
