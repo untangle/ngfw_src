@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
@@ -165,7 +166,7 @@ public class BackupManagerImpl implements BackupManager
 
         // run same command with nohup and without -c check-only flag
         logger.info("Restore Backup: launching restore {}", restoreFile);
-        UvmContextFactory.context().execManager().execSafe(System.getProperty("uvm.bin.dir") + "/ut-backup-restore-helper.sh restore " + restoreFile.getAbsolutePath() + "  \"" + maintainRegex +"\"");
+        UvmContextFactory.context().execManager().execCommand(System.getProperty("uvm.bin.dir") + "/ut-backup-restore-helper.sh", List.of("restore", restoreFile.getAbsolutePath(), maintainRegex != null ? maintainRegex : ""));
 
         logger.info("Restore Backup: returning");
         return new ExecManagerResult(0, i18nUtil.tr("The restore procedure is running. This may take several minutes. The server may be unavailable during this time. Once the process is complete you will be able to log in again."));
@@ -213,13 +214,13 @@ public class BackupManagerImpl implements BackupManager
          *        The file
          * @param argument
          *        Upload argument
-         * @return The upload result
-         * @throws Exception
+         * @return Deprecated response message
          */
+        @Deprecated
         @Override
-        public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
+        public ExecManagerResult handleFile(FileItem fileItem, String argument) 
         {
-            return restoreBackup(fileItem.get(), argument);
+            return new ExecManagerResult(1, "This endpoint is deprecated for 'restore' operations. Please use /v2/upload instead.");
         }
 
         /**

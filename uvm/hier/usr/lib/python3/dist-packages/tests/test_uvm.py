@@ -1040,7 +1040,87 @@ class UvmTests(NGFWTestCase):
 
         #compare original and modified certs
         assert(newline == newCertFileLines[1])
-        
+
+    def test_121_upload_restore_deprecated_endpoint_blocked(self):
+        """Verify /admin/upload rejects restore type with deprecation error (command injection fix)"""
+        poc_file = "/tmp/poc_backup.txt"
+        backup_file = "/tmp/untangleBackup.backup"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Download a real backup file to use as the upload payload
+        result = subprocess.call(global_functions.build_wget_command(output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+
+        malicious_argument = "poc`touch /tmp/poc_backup.txt`"
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_multipart_body("restore", malicious_argument, backup_file_bytes, filename="poc.zip")
+
+        req = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        response_json = json.loads(response_text)
+        # The fix makes /admin/upload return success=false with a deprecation message for restore
+        assert response_json.get("success") == False, \
+            f"Expected restore blocked on deprecated endpoint, got: {response_text}"
+        assert "deprecated" in response_json.get("msg", "").lower(), \
+            f"Expected deprecation message, got: {response_json.get('msg')}"
+
+        # Confirm no command was injected
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via /admin/upload (poc file was created)"
+
+    def test_122_v2_upload_restore_argument_injection_blocked(self):
+        """Verify /admin/v2/upload ignores malicious argument field (command injection fix)"""
+        poc_file = "/tmp/poc_backup.txt"
+        backup_file = "/tmp/untangleBackup.backup"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Download a real backup file to use as the upload payload
+        result = subprocess.call(global_functions.build_wget_command(output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+
+        # Corrupt the gzip magic bytes so ut-restore.sh -c rejects the file.
+        # This prevents an actual UVM restart while still exercising the full
+        # argument-sanitisation path (getRegExFromExceptions is called before
+        # the check script runs, which is where injection would have occurred).
+        backup_file_bytes = b'\x00\x00' + backup_file_bytes[2:]
+
+        malicious_argument = "poc`touch /tmp/poc_backup.txt`"
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_v2_multipart_body("restore", malicious_argument, backup_file_bytes)
+
+        req = urllib.request.Request(
+            "http://localhost/admin/v2/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        # Give time for any asynchronous command to execute if injection had occurred
+        time.sleep(2)
+
+        # The key assertion: argument field must not have been used as a shell argument
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via /admin/v2/upload argument field (poc file was created)"
+
+
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
         # Enable cloud connection  

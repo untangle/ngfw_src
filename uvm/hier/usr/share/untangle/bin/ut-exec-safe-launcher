@@ -17,7 +17,8 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/tunnel-vpn-validate",
     "/bin/ln",
     "/bin/mkdir",
-    "/bin/mv"
+    "/bin/mv",
+    "/usr/share/untangle/bin/ut-backup-restore-helper.sh"
 }
 
 while True:

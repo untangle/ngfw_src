@@ -397,4 +397,42 @@ class TunnelVpnTests(NGFWTestCase):
         assert not os.path.exists(exploit_marker), \
             "Command injection via backticks was executed! " + exploit_marker + " should not exist"
 
+    def test_061_upload_tunnel_vpn_argument_injection_blocked(self):
+        """Verify /admin/upload with type=tunnel_vpn ignores malicious argument field (command injection fix)"""
+        import zipfile
+        import io
+        import urllib.request
+
+        exploit_marker = "/tmp/tunnel-vpn-upload-exploit-test"
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        # Build a minimal zip containing a dummy .ovpn file.
+        # The handler will reject it due to an unknown provider — that's expected.
+        # We only care that the malicious argument is not shell-executed.
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, 'w') as zf:
+            zf.writestr("dummy.ovpn", "client\n")
+        config_bytes = buf.getvalue()
+
+        malicious_provider = f"test`touch {exploit_marker}`"
+        opener = global_functions.build_admin_http_opener()
+        boundary, body = global_functions.build_upload_multipart_body(
+            "tunnel_vpn", malicious_provider, config_bytes, filename="dummy.zip"
+        )
+
+        req = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            opener.open(req)
+        except Exception:
+            pass
+
+        time.sleep(1)
+        assert not os.path.exists(exploit_marker), \
+            "Command injection via tunnel_vpn upload argument field executed! " + exploit_marker + " should not exist"
+
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
