@@ -54,10 +54,6 @@ public class UploadServlet extends HttpServlet
             String uploadType = getUploadType(items);
             String arg = getArgument(items);
 
-            if ("restore".equals(uploadType)) {
-                createResponse(resp, false, "This endpoint is deprecated for 'restore' operations. Please use /v2/upload instead.");
-                return;
-            }
             logger.info("Handling Upload: " + uploadType + " (" + arg + ")");
             
             for ( FileItem item : items ) {

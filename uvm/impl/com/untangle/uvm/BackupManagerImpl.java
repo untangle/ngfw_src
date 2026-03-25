@@ -214,13 +214,13 @@ public class BackupManagerImpl implements BackupManager
          *        The file
          * @param argument
          *        Upload argument
-         * @return The upload result
-         * @throws Exception
+         * @return Deprecated response message
          */
+        @Deprecated
         @Override
-        public ExecManagerResult handleFile(FileItem fileItem, String argument) throws Exception
+        public ExecManagerResult handleFile(FileItem fileItem, String argument) 
         {
-            return restoreBackup(fileItem.get(), argument);
+            return new ExecManagerResult(1, "This endpoint is deprecated for 'restore' operations. Please use /v2/upload instead.");
         }
 
         /**

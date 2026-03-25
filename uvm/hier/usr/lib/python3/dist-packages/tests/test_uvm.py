@@ -1043,8 +1043,6 @@ class UvmTests(NGFWTestCase):
 
     def test_121_upload_restore_deprecated_endpoint_blocked(self):
         """Verify /admin/upload rejects restore type with deprecation error (command injection fix)"""
-        import http.cookiejar
-
         poc_file = "/tmp/poc_backup.txt"
         backup_file = "/tmp/untangleBackup.backup"
         subprocess.call(f"rm -f {poc_file}", shell=True)
@@ -1055,31 +1053,9 @@ class UvmTests(NGFWTestCase):
         with open(backup_file, "rb") as f:
             backup_file_bytes = f.read()
 
-        # Authenticate and acquire session cookie
-        cookie_jar = http.cookiejar.CookieJar()
-        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
-        login_data = urllib.parse.urlencode({
-            "fragment": "",
-            "username": Login_username,
-            "password": Login_password,
-        }).encode()
-        try:
-            opener.open("http://localhost/auth/login?url=/admin&realm=Administrator", login_data)
-        except urllib.error.HTTPError:
-            pass
-
-        # Build multipart body with malicious argument and real backup file
-        boundary = "atsboundary7654321"
         malicious_argument = "poc`touch /tmp/poc_backup.txt`"
-        body = (
-            f"--{boundary}\r\n"
-            f'Content-Disposition: form-data; name="type"\r\n\r\nrestore\r\n'
-            f"--{boundary}\r\n"
-            f'Content-Disposition: form-data; name="argument"\r\n\r\n{malicious_argument}\r\n'
-            f"--{boundary}\r\n"
-            f'Content-Disposition: form-data; name="file1"; filename="poc.zip"\r\n'
-            f"Content-Type: application/octet-stream\r\n\r\n"
-        ).encode() + backup_file_bytes + f"\r\n--{boundary}--\r\n".encode()
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_multipart_body("restore", malicious_argument, backup_file_bytes, filename="poc.zip")
 
         req = urllib.request.Request(
             "http://localhost/admin/upload",
@@ -1106,8 +1082,6 @@ class UvmTests(NGFWTestCase):
 
     def test_122_v2_upload_restore_argument_injection_blocked(self):
         """Verify /admin/v2/upload ignores malicious argument field (command injection fix)"""
-        import http.cookiejar
-
         poc_file = "/tmp/poc_backup.txt"
         backup_file = "/tmp/untangleBackup.backup"
         subprocess.call(f"rm -f {poc_file}", shell=True)
@@ -1124,35 +1098,9 @@ class UvmTests(NGFWTestCase):
         # the check script runs, which is where injection would have occurred).
         backup_file_bytes = b'\x00\x00' + backup_file_bytes[2:]
 
-        # Authenticate and acquire session cookie
-        cookie_jar = http.cookiejar.CookieJar()
-        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
-        login_data = urllib.parse.urlencode({
-            "fragment": "",
-            "username": Login_username,
-            "password": Login_password,
-        }).encode()
-        try:
-            opener.open("http://localhost/auth/login?url=/admin&realm=Administrator", login_data)
-        except urllib.error.HTTPError:
-            pass
-
-        # v2 endpoint expects base64-encoded data URL in the 'file' field
-        b64_content = base64.b64encode(backup_file_bytes).decode()
-        file_value = f"data:application/octet-stream;base64,{b64_content}"
         malicious_argument = "poc`touch /tmp/poc_backup.txt`"
-
-        # Build multipart body — v2 uses a text 'file' field with data URL
-        boundary = "atsboundary7654321"
-        body = (
-            f"--{boundary}\r\n"
-            f'Content-Disposition: form-data; name="type"\r\n\r\nrestore\r\n'
-            f"--{boundary}\r\n"
-            f'Content-Disposition: form-data; name="argument"\r\n\r\n{malicious_argument}\r\n'
-            f"--{boundary}\r\n"
-            f'Content-Disposition: form-data; name="file"\r\n\r\n{file_value}\r\n'
-            f"--{boundary}--\r\n"
-        ).encode()
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_v2_multipart_body("restore", malicious_argument, backup_file_bytes)
 
         req = urllib.request.Request(
             "http://localhost/admin/v2/upload",

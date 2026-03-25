@@ -13,6 +13,8 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/ut-certgen",
     "/usr/share/untangle/bin/ut-rootgen",
     "/usr/share/untangle/bin/ut-cert-parser",
+    "/usr/share/untangle/bin/tunnel-vpn-import",
+    "/usr/share/untangle/bin/tunnel-vpn-validate",
     "/bin/ln",
     "/bin/mkdir",
     "/bin/mv",
