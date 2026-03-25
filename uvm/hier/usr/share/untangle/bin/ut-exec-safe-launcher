@@ -15,7 +15,8 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/ut-cert-parser",
     "/bin/ln",
     "/bin/mkdir",
-    "/bin/mv"
+    "/bin/mv",
+    "/usr/share/untangle/bin/ut-backup-restore-helper.sh"
 }
 
 while True:

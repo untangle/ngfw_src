@@ -1040,7 +1040,139 @@ class UvmTests(NGFWTestCase):
 
         #compare original and modified certs
         assert(newline == newCertFileLines[1])
-        
+
+    def test_121_upload_restore_deprecated_endpoint_blocked(self):
+        """Verify /admin/upload rejects restore type with deprecation error (command injection fix)"""
+        import http.cookiejar
+
+        poc_file = "/tmp/poc_backup.txt"
+        backup_file = "/tmp/untangleBackup.backup"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Download a real backup file to use as the upload payload
+        result = subprocess.call(global_functions.build_wget_command(output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+
+        # Authenticate and acquire session cookie
+        cookie_jar = http.cookiejar.CookieJar()
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
+        login_data = urllib.parse.urlencode({
+            "fragment": "",
+            "username": Login_username,
+            "password": Login_password,
+        }).encode()
+        try:
+            opener.open("http://localhost/auth/login?url=/admin&realm=Administrator", login_data)
+        except urllib.error.HTTPError:
+            pass
+
+        # Build multipart body with malicious argument and real backup file
+        boundary = "atsboundary7654321"
+        malicious_argument = "poc`touch /tmp/poc_backup.txt`"
+        body = (
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="type"\r\n\r\nrestore\r\n'
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="argument"\r\n\r\n{malicious_argument}\r\n'
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="file1"; filename="poc.zip"\r\n'
+            f"Content-Type: application/octet-stream\r\n\r\n"
+        ).encode() + backup_file_bytes + f"\r\n--{boundary}--\r\n".encode()
+
+        req = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        response_json = json.loads(response_text)
+        # The fix makes /admin/upload return success=false with a deprecation message for restore
+        assert response_json.get("success") == False, \
+            f"Expected restore blocked on deprecated endpoint, got: {response_text}"
+        assert "deprecated" in response_json.get("msg", "").lower(), \
+            f"Expected deprecation message, got: {response_json.get('msg')}"
+
+        # Confirm no command was injected
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via /admin/upload (poc file was created)"
+
+    def test_122_v2_upload_restore_argument_injection_blocked(self):
+        """Verify /admin/v2/upload ignores malicious argument field (command injection fix)"""
+        import http.cookiejar
+
+        poc_file = "/tmp/poc_backup.txt"
+        backup_file = "/tmp/untangleBackup.backup"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Download a real backup file to use as the upload payload
+        result = subprocess.call(global_functions.build_wget_command(output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+
+        # Corrupt the gzip magic bytes so ut-restore.sh -c rejects the file.
+        # This prevents an actual UVM restart while still exercising the full
+        # argument-sanitisation path (getRegExFromExceptions is called before
+        # the check script runs, which is where injection would have occurred).
+        backup_file_bytes = b'\x00\x00' + backup_file_bytes[2:]
+
+        # Authenticate and acquire session cookie
+        cookie_jar = http.cookiejar.CookieJar()
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
+        login_data = urllib.parse.urlencode({
+            "fragment": "",
+            "username": Login_username,
+            "password": Login_password,
+        }).encode()
+        try:
+            opener.open("http://localhost/auth/login?url=/admin&realm=Administrator", login_data)
+        except urllib.error.HTTPError:
+            pass
+
+        # v2 endpoint expects base64-encoded data URL in the 'file' field
+        b64_content = base64.b64encode(backup_file_bytes).decode()
+        file_value = f"data:application/octet-stream;base64,{b64_content}"
+        malicious_argument = "poc`touch /tmp/poc_backup.txt`"
+
+        # Build multipart body — v2 uses a text 'file' field with data URL
+        boundary = "atsboundary7654321"
+        body = (
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="type"\r\n\r\nrestore\r\n'
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="argument"\r\n\r\n{malicious_argument}\r\n'
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="file"\r\n\r\n{file_value}\r\n'
+            f"--{boundary}--\r\n"
+        ).encode()
+
+        req = urllib.request.Request(
+            "http://localhost/admin/v2/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        # Give time for any asynchronous command to execute if injection had occurred
+        time.sleep(2)
+
+        # The key assertion: argument field must not have been used as a shell argument
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via /admin/v2/upload argument field (poc file was created)"
+
+
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
         # Enable cloud connection  
