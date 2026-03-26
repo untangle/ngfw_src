@@ -22,12 +22,12 @@ RADIUS_RESULT = 1
 
 # pdb.set_trace()
 ACTIVE_DIRECTORY = WG_REMOTE = overrides.get("ACTIVE_DIRECTORY", default={
-    "serverAddress": "10.112.56.46",
-    "serverAdminUser": "ATSadmin",
-    "serverAdminPassword": "passwd",
+    "serverAddress": "10.112.12.149",
+    "serverAdminUser": "administrator",
+    "serverAdminPassword": "Arista1234",
     "serverDomain": "adtest.adtesting.int",
     "clientUser": "user_28004",
-    "clientPassword": "passwd"
+    "clientPassword": "Passwd123!"
 })
 
 def create_ad_settings_with_complex_password(ldap_secure=False):
