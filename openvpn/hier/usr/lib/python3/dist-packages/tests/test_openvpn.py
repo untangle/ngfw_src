@@ -1023,7 +1023,7 @@ class OpenVpnTests(NGFWTestCase):
         assert(result == 0)
         
         #create credentials file containing username/password
-        remote_control.run_command("echo " + global_functions.AD_USER + " > /tmp/authUserPassFile; echo passwd >> /tmp/authUserPassFile", host=global_functions.VPN_CLIENT_IP)
+        remote_control.run_command("echo " + global_functions.AD_USER + " > /tmp/authUserPassFile; echo Passwd123! >> /tmp/authUserPassFile", host=global_functions.VPN_CLIENT_IP)
         #connect to openvpn using the file
         remote_control.run_command("cd /etc/openvpn; sudo nohup openvpn --config " + siteName + ".conf --auth-user-pass /tmp/authUserPassFile >/dev/null 2>&1 &", host=global_functions.VPN_CLIENT_IP)
 
