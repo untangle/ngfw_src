@@ -1,4 +1,5 @@
 """openvpn tests"""
+import os
 import time
 import re
 import subprocess
@@ -41,6 +42,65 @@ tunnelApp = None
 tunnelUp = False
 ovpnlocaluser = "ovpnlocaluser"
 ovpnPasswd = "passwd"
+
+# CLI injection test helpers
+CLI_INJECTION_MARKER = "/tmp/openvpn_cli_injection_marker"
+CLI_INJECTION_VALID_CLIENT = "testclientclean"
+
+
+def _cli_cleanup_marker():
+    if os.path.exists(CLI_INJECTION_MARKER):
+        os.remove(CLI_INJECTION_MARKER)
+
+
+def _cli_injection_succeeded():
+    return os.path.exists(CLI_INJECTION_MARKER)
+
+
+def _cli_make_client_entry(name, enabled=True):
+    return {
+        "enabled": enabled,
+        "export": False,
+        "exportNetwork": "127.0.0.1",
+        "groupId": 1,
+        "javaClass": "com.untangle.app.openvpn.OpenVpnRemoteClient",
+        "name": name,
+        "clientConfigItems": {"javaClass": "java.util.LinkedList", "list": []},
+    }
+
+
+def _cli_make_server_entry(name, enabled=True):
+    return {
+        "enabled": enabled,
+        "javaClass": "com.untangle.app.openvpn.OpenVpnRemoteServer",
+        "name": name,
+        "authUserPass": False,
+        "authUsername": "",
+        "authPassword": "",
+    }
+
+
+def _cli_find_remote_servers_dir():
+    candidates = [
+        "/usr/share/untangle/settings/openvpn/remote-servers",
+        "/var/lib/untangle/settings/openvpn/remote-servers",
+        "/etc/untangle/settings/openvpn/remote-servers",
+    ]
+    for c in candidates:
+        if os.path.isdir(c):
+            return c
+    try:
+        out = subprocess.run(
+            ["find", "/", "-maxdepth", "7", "-type", "d",
+             "-name", "remote-servers", "-path", "*/openvpn/*"],
+            capture_output=True, text=True, timeout=10,
+        ).stdout
+        for line in out.splitlines():
+            if os.path.isdir(line):
+                return line
+    except Exception:
+        pass
+    return None
 
 
 def setUpClient(vpn_enabled=True,vpn_export=False,vpn_exportNetwork="127.0.0.1",vpn_groupId=1,vpn_name=vpnClientName):
@@ -1161,6 +1221,347 @@ class OpenVpnTests(NGFWTestCase):
 
         # If VPN tunnel has failed to connect, fail the test,
         assert(connected)
+
+    # CLI Injection Security Tests (test_085 – test_092)
+
+    def test_085_import_filename_shell_injection(self):
+        """Shell metacharacters in importClientConfig filename must not be executed."""
+        payloads = [
+            (f"/tmp/config;touch {CLI_INJECTION_MARKER}",   "semicolon injection"),
+            (f"/tmp/config$(touch {CLI_INJECTION_MARKER})", "command substitution"),
+            (f"/tmp/config`touch {CLI_INJECTION_MARKER}`",  "backtick injection"),
+        ]
+        exec_path_reached = 0
+        for filename, label in payloads:
+            _cli_cleanup_marker()
+            try:
+                self._app.importClientConfig(filename)
+            except Exception:
+                pass  # file not found → non-zero exit → exception; expected
+
+            assert not _cli_injection_succeeded(), \
+                f"[{label}] INJECTION DETECTED: importClientConfig shell-executed the filename"
+
+            exec_path_reached += 1
+            _cli_cleanup_marker()
+
+        assert exec_path_reached > 0, (
+            "No payload reached the exec path — all were blocked by input validation. "
+            "Cannot confirm exec-level injection prevention."
+        )
+
+    def test_086_import_option_smuggling_injection(self):
+        """Filenames starting with '-' (option smuggling) must not reach exec or cause injection."""
+        payloads = [
+            (f"-x||touch {CLI_INJECTION_MARKER}",          "dash option with or injection"),
+            (f"--arg||touch {CLI_INJECTION_MARKER}",       "long-option with or injection"),
+            (f"-x$(touch {CLI_INJECTION_MARKER})",         "dash option with command substitution"),
+        ]
+        for filename, label in payloads:
+            _cli_cleanup_marker()
+            try:
+                self._app.importClientConfig(filename)
+            except Exception:
+                pass  # validation rejection or script failure; both are acceptable
+
+            assert not _cli_injection_succeeded(), \
+                f"[{label}] INJECTION DETECTED: option-smuggling injection reached exec"
+
+        _cli_cleanup_marker()
+
+    def test_087_client_name_injection_in_dist_link(self):
+        """Shell metacharacters in a client name must not be executed by getClientDistributionDownloadLink."""
+        malicious_names = [
+            (f"client;touch${{IFS}}{CLI_INJECTION_MARKER}",   "semicolon injection"),
+            (f"client$(touch${{IFS}}{CLI_INJECTION_MARKER})", "command substitution"),
+            (f"client`touch${{IFS}}{CLI_INJECTION_MARKER}`",  "backtick injection"),
+        ]
+
+        app_data = self._app.getSettings()
+        original_clients = list(app_data.get("remoteClients", {}).get("list", []))
+        exec_path_reached = 0
+
+        try:
+            for name, label in malicious_names:
+                _cli_cleanup_marker()
+
+                # Step 1: register the malicious client so the method can find it
+                app_data = self._app.getSettings()
+                app_data["remoteClients"]["list"] = original_clients + [_cli_make_client_entry(name)]
+                try:
+                    self._app.setSettings(app_data)
+                except Exception:
+                    print(f"  [{label}] setSettings rejected name - exec path not reached")
+                    continue
+
+                exec_path_reached += 1
+
+                try:
+                    self._app.getClientDistributionDownloadLink(name, "zip")
+                except Exception:
+                    pass  # cert generation fails for a bogus name - expected
+
+                assert not _cli_injection_succeeded(), \
+                    f"[{label}] INJECTION DETECTED: exec ran the injected touch command"
+        finally:
+            app_data = self._app.getSettings()
+            app_data["remoteClients"]["list"] = original_clients
+            try:
+                self._app.setSettings(app_data)
+            except Exception:
+                pass
+            _cli_cleanup_marker()
+
+        assert exec_path_reached > 0, (
+            "No payload reached the exec path - all were blocked by setSettings validation. "
+            "Cannot confirm exec-level injection prevention."
+        )
+
+    def test_088_server_name_injection_in_systemctl(self):
+        """Shell metacharacters in a server name must not be executed in systemctl start/stop/restart."""
+        app_data = self._app.getSettings()
+        original_servers = list(app_data.get("remoteServers", {}).get("list", []))
+        exec_path_reached = 0
+
+        malicious_server_names = [
+            (f"server;touch${{IFS}}{CLI_INJECTION_MARKER}${{IFS}}#",  "semicolon injection"),
+            (f"server$(touch${{IFS}}{CLI_INJECTION_MARKER})",         "command substitution"),
+        ]
+
+        try:
+            for name, label in malicious_server_names:
+                _cli_cleanup_marker()
+
+                # Add server disabled first, then enable to trigger systemctl start
+                app_data = self._app.getSettings()
+                app_data["remoteServers"]["list"] = original_servers + [
+                    _cli_make_server_entry(name, enabled=False)
+                ]
+                try:
+                    self._app.setSettings(app_data)
+                except Exception:
+                    print(f"  [{label}] setSettings (add disabled) rejected name - exec path not reached")
+                    continue
+
+                app_data = self._app.getSettings()
+                for srv in app_data["remoteServers"]["list"]:
+                    if srv["name"] == name:
+                        srv["enabled"] = True
+                try:
+                    self._app.setSettings(app_data)
+                except Exception:
+                    pass
+
+                exec_path_reached += 1
+
+                # Remove server - triggers systemctl stop + cleanServerSettings()
+                app_data = self._app.getSettings()
+                app_data["remoteServers"]["list"] = [
+                    s for s in app_data["remoteServers"]["list"] if s["name"] != name
+                ]
+                try:
+                    self._app.setSettings(app_data)
+                except Exception:
+                    pass
+
+                time.sleep(1)  # allow systemctl call to complete
+
+                assert not _cli_injection_succeeded(), \
+                    f"[{label}] INJECTION DETECTED: exec ran the injected touch command"
+        finally:
+            app_data = self._app.getSettings()
+            app_data["remoteServers"]["list"] = original_servers
+            try:
+                self._app.setSettings(app_data)
+            except Exception:
+                pass
+            _cli_cleanup_marker()
+
+        assert exec_path_reached > 0, (
+            "No payload reached the exec path - all were blocked by setSettings validation. "
+            "Cannot confirm exec-level injection prevention."
+        )
+
+    def test_089_site_name_injection_in_dist_scripts(self):
+        """Shell metacharacters in siteName must not be executed by createClientDistribution scripts."""
+        app_data = self._app.getSettings()
+        original_site_name = app_data.get("siteName", "")
+        original_clients = list(app_data.get("remoteClients", {}).get("list", []))
+        exec_path_reached = 0
+
+        malicious_site_names = [
+            (f"site;touch {CLI_INJECTION_MARKER}",   "semicolon injection in site name"),
+            (f"site$(touch {CLI_INJECTION_MARKER})", "command substitution in site name"),
+        ]
+        clean_client = _cli_make_client_entry(CLI_INJECTION_VALID_CLIENT)
+
+        try:
+            for site_name, label in malicious_site_names:
+                _cli_cleanup_marker()
+
+                app_data = self._app.getSettings()
+                app_data["siteName"] = site_name
+                app_data["remoteClients"]["list"] = original_clients + [clean_client]
+                try:
+                    self._app.setSettings(app_data)
+                except Exception:
+                    print(f"  [{label}] setSettings rejected site name - exec path not reached")
+                    continue
+
+                exec_path_reached += 1
+
+                for fmt in ("zip", "ovpn", "onc"):
+                    try:
+                        self._app.getClientDistributionDownloadLink(CLI_INJECTION_VALID_CLIENT, fmt)
+                    except Exception:
+                        pass  # cert errors are expected; we only care about injection
+
+                time.sleep(1)
+
+                assert not _cli_injection_succeeded(), \
+                    f"[{label}] INJECTION DETECTED: exec ran the injected touch command"
+        finally:
+            app_data = self._app.getSettings()
+            app_data["siteName"] = original_site_name
+            app_data["remoteClients"]["list"] = original_clients
+            try:
+                self._app.setSettings(app_data)
+            except Exception:
+                pass
+            _cli_cleanup_marker()
+
+        assert exec_path_reached > 0, (
+            "No payload reached the exec path - all were blocked by setSettings validation. "
+            "Cannot confirm exec-level injection prevention."
+        )
+
+    def test_090_valid_client_name_accepted(self):
+        """Regression check: clean alphanumeric client names must be accepted end-to-end."""
+        app_data = self._app.getSettings()
+        original_clients = list(app_data.get("remoteClients", {}).get("list", []))
+
+        try:
+            app_data["remoteClients"]["list"] = original_clients + [
+                _cli_make_client_entry(CLI_INJECTION_VALID_CLIENT)
+            ]
+            self._app.setSettings(app_data)  # must not raise
+
+            link_error = None
+            try:
+                self._app.getClientDistributionDownloadLink(CLI_INJECTION_VALID_CLIENT, "zip")
+            except Exception as e:
+                link_error = str(e).lower()
+
+            # Cert/generate errors are acceptable; name-rejection errors are not
+            if link_error is not None:
+                assert "cert" in link_error or "generate" in link_error or link_error == "", (
+                    f"Unexpected error for valid client name '{CLI_INJECTION_VALID_CLIENT}': {link_error}"
+                )
+        finally:
+            app_data = self._app.getSettings()
+            app_data["remoteClients"]["list"] = original_clients
+            try:
+                self._app.setSettings(app_data)
+            except Exception:
+                pass
+
+    @pytest.mark.slow
+    def test_091_monitor_thread_server_name_injection(self):
+        """OpenVpnMonitor must not shell-interpret server names in systemctl restart calls."""
+        malicious_name = f"srv-monitor;touch${{IFS}}{CLI_INJECTION_MARKER}${{IFS}}#"
+
+        _cli_cleanup_marker()
+        app_data = self._app.getSettings()
+        original_servers = list(app_data.get("remoteServers", {}).get("list", []))
+
+        app_data = self._app.getSettings()
+        app_data["remoteServers"]["list"] = original_servers + [
+            _cli_make_server_entry(malicious_name, enabled=True)
+        ]
+        try:
+            self._app.setSettings(app_data)
+        except Exception:
+            raise unittest.SkipTest(
+                "setSettings rejected the malicious server name - exec path not reachable"
+            )
+
+        try:
+            if str(self._app.getRunState()) != "RUNNING":
+                self._app.start()
+                time.sleep(3)
+        except Exception:
+            pass
+
+        # Wait for at least 2 monitor cycles (5 s each) + buffer
+        MONITOR_INTERVAL_SEC = 5
+        wait_sec = MONITOR_INTERVAL_SEC * 2 + 3
+        print(f"  Waiting {wait_sec}s for monitor thread to poll...")
+        time.sleep(wait_sec)
+
+        injected = _cli_injection_succeeded()
+
+        app_data = self._app.getSettings()
+        app_data["remoteServers"]["list"] = original_servers
+        try:
+            self._app.setSettings(app_data)
+        except Exception:
+            pass
+        _cli_cleanup_marker()
+
+        assert not injected, \
+            "Monitor thread INJECTION DETECTED: exec ran the injected touch command"
+
+    def test_092_orphaned_conf_server_name_injection(self):
+        """cleanServerSettings() must not shell-interpret metacharacters in orphaned .conf filenames."""
+        remote_servers_dir = _cli_find_remote_servers_dir()
+        if remote_servers_dir is None:
+            raise unittest.SkipTest("remote-servers directory not found")
+
+        if subprocess.run(["which", "logger"], capture_output=True).returncode != 0:
+            raise unittest.SkipTest("'logger' binary not available")
+
+        sentinel = "OPENVPN_ORPHAN_INJECT_SENTINEL_7B9E"
+        malicious_conf_name = f"srv-orphan;logger {sentinel}.conf"
+        malicious_conf_path = os.path.join(remote_servers_dir, malicious_conf_name)
+
+        try:
+            with open(malicious_conf_path, "w") as f:
+                f.write("# orphaned test conf - safe to delete\n")
+        except Exception as e:
+            raise unittest.SkipTest(f"Cannot write test conf file: {e}")
+
+        # Record journal cursor so we only scan new entries
+        pre = subprocess.run(
+            ["journalctl", "-n", "0", "--show-cursor", "--no-pager"],
+            capture_output=True, text=True,
+        )
+        cursor_args = []
+        for line in pre.stderr.splitlines() + pre.stdout.splitlines():
+            if line.strip().startswith("-- cursor:"):
+                cursor_args = ["--after-cursor", line.split(":", 1)[1].strip()]
+                break
+
+        # Trigger cleanServerSettings() which runs at the end of every setSettings()
+        app_data = self._app.getSettings()
+        try:
+            self._app.setSettings(app_data)
+        except Exception:
+            pass
+
+        time.sleep(1)
+
+        journal_cmd = ["journalctl", "--no-pager", "-n", "50"] + cursor_args
+        post = subprocess.run(journal_cmd, capture_output=True, text=True)
+        injected = sentinel in post.stdout
+
+        try:
+            os.remove(malicious_conf_path)
+        except Exception:
+            pass
+
+        assert not injected, (
+            f"cleanServerSettings() INJECTION DETECTED: sentinel '{sentinel}' found in journal"
+        )
 
     @classmethod
     def final_extra_tear_down(cls):

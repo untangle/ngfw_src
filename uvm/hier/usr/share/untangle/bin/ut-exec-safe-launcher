@@ -18,7 +18,13 @@ ALLOWED_EXECUTABLES = {
     "/bin/ln",
     "/bin/mkdir",
     "/bin/mv",
-    "/usr/share/untangle/bin/ut-backup-restore-helper.sh"
+    "/usr/share/untangle/bin/ut-backup-restore-helper.sh",
+    "/usr/share/untangle/bin/openvpn-generate-client-certs",
+    "/usr/share/untangle/bin/openvpn-generate-client-zip",
+    "/usr/share/untangle/bin/openvpn-generate-client-exec",
+    "/usr/share/untangle/bin/openvpn-generate-client-ovpn",
+    "/usr/share/untangle/bin/openvpn-generate-client-onc",
+    "/usr/bin/systemctl"
 }
 
 while True:
