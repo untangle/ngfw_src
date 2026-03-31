@@ -131,7 +131,7 @@ class OpenVpnMonitor implements Runnable
                     else updateServerStatus(false);
 
                 } catch (java.net.ConnectException e) {
-                    logger.debug("Unable to connect to OpenVPN - trying again in " + SLEEP_TIME_MSEC + " ms.");
+                    logger.debug("Unable to connect to OpenVPN - trying again in {} ms.", SLEEP_TIME_MSEC);
                 } catch (Exception e) {
                     logger.info("Error updating status", e);
                 }
@@ -336,7 +336,7 @@ class OpenVpnMonitor implements Runnable
             OpenVpnStatusEvent statusEvent = new OpenVpnStatusEvent(new Timestamp(stats.start.getTime()), stats.address, stats.port, stats.poolAddress, stats.name, stats.bytesRxTotal, stats.bytesTxTotal, stats.bytesRxDelta, stats.bytesTxDelta);
             statusEvent.setEnd(now);
 
-            if (logger.isDebugEnabled()) logger.debug("Logging stats for " + stats.name);
+            logger.debug("Logging stats for {}", stats.name);
             app.logEvent(statusEvent);
         }
     }
@@ -374,7 +374,7 @@ class OpenVpnMonitor implements Runnable
             }
 
             /* log event */
-            logger.info("OpenVPN client disconnected: " + stats.name);
+            logger.info("OpenVPN client disconnected: {}", stats.name);
             OpenVpnEvent connectEvent = new OpenVpnEvent(stats.address, stats.poolAddress, stats.name, OpenVpnEvent.EventType.DISCONNECT);
             app.logEvent(connectEvent);
 
@@ -401,7 +401,7 @@ class OpenVpnMonitor implements Runnable
         if (!valueArray[TYPE_INDEX].equals("CLIENT_LIST")) return;
 
         if (valueArray.length < TOTAL_INDEX) {
-            logger.info("Unexpected client description length: " + valueArray.length + " Ignoring: " + line);
+            logger.info("Unexpected client description length: {} Ignoring: {}", valueArray.length, line);
             return;
         }
 
@@ -412,13 +412,13 @@ class OpenVpnMonitor implements Runnable
 
         String addressAndPort[] = valueArray[ADDRESS_INDEX].split(":");
         if (addressAndPort.length != 2) {
-            logger.info("Strange address description, ignoring: " + line);
+            logger.info("Strange address description, ignoring: {}", line);
             return;
         }
 
         String poolAddressStr = valueArray[ADDRESS_POOL_INDEX];
         if ("127.0.0.1".equals(poolAddressStr)) {
-            logger.warn("Ignoring client with 127.0.0.1 address: " + name + " " + poolAddressStr);
+            logger.warn("Ignoring client with 127.0.0.1 address: {} {}", name, poolAddressStr);
             return;
         }
 
@@ -437,12 +437,12 @@ class OpenVpnMonitor implements Runnable
             bytesTx = Long.parseLong(valueArray[TX_INDEX]);
             start = new Date(Long.parseLong(valueArray[START_INDEX]) * 1000);
         } catch (Exception e) {
-            logger.warn("Unable to parse line: " + line, e);
+            logger.warn("Unable to parse line: {}", line, e);
             return;
         }
 
         if ("127.0.0.1".equals(poolAddress.getHostAddress())) {
-            logger.warn("Ignoring client with 127.0.0.1 address: " + name + " " + poolAddress.getHostAddress());
+            logger.warn("Ignoring client with 127.0.0.1 address: {} {}", name, poolAddress.getHostAddress());
             return;
         }
 
@@ -456,7 +456,7 @@ class OpenVpnMonitor implements Runnable
         ClientState stats = activeMap.get(name);
 
         if (stats != null) {
-            if (logger.isDebugEnabled()) logger.debug("OpenVPN client status updated: " + stats.name);
+            logger.debug("OpenVPN client status updated: {}", stats.name);
             stats.update(bytesRx, bytesTx);
 
             return;
@@ -472,7 +472,7 @@ class OpenVpnMonitor implements Runnable
             stats.isActive = true;
             stats.updated = true;
 
-            logger.info("OpenVPN client connected: " + stats.name);
+            logger.info("OpenVPN client connected: {}", stats.name);
             activeMap.put(name, stats);
         }
 
@@ -549,8 +549,8 @@ class OpenVpnMonitor implements Runnable
                 }
 
             } catch (Exception exn) {
-                logger.warn("OpenVPN process for " + server.getName() + " not found. " + exn.getMessage() + ". Restarting...");
-                UvmContextFactory.context().execManager().exec("systemctl restart openvpn@" + server.getName() + ".service");
+                logger.warn("OpenVPN process for {} not found. {}. Restarting...", server.getName(), exn.getMessage());
+                UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("restart", "openvpn@" + server.getName() + ".service"));
             }
             if (reader == null) {
                 continue;
@@ -589,13 +589,13 @@ class OpenVpnMonitor implements Runnable
             try {
                 pid = Integer.parseInt(contents);
             } catch (Exception e) {
-                logger.warn("Unable to parse pid file: " + contents);
+                logger.warn("Unable to parse pid file: {}", contents);
                 return;
             }
 
             File procFile = new File("/proc/" + pid);
             if (!procFile.exists()) {
-                logger.warn("OpenVpn server process (" + pid + ") missing. Restarting...");
+                logger.warn("OpenVpn server process ({}) missing. Restarting...", pid);
                 UvmContextFactory.context().execManager().exec("systemctl restart openvpn@server.service");
             }
         } catch (Exception e) {

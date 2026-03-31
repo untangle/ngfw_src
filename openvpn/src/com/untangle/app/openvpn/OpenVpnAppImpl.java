@@ -152,7 +152,7 @@ public class OpenVpnAppImpl extends AppBase
             logger.info("Loading Settings...");
             this.settings = readSettings;
             updateNetworkReservations(readSettings.getAddressSpace(), readSettings.getRemoteClients());
-            logger.debug("Settings: " + this.settings.toJSONString());
+            logger.debug("Settings: {}", this.settings.toJSONString());
         }
 
         /**
@@ -255,14 +255,14 @@ public class OpenVpnAppImpl extends AppBase
 
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(GENERATE_CERTS_SCRIPT + ": ");
+            logger.info("{}: ", GENERATE_CERTS_SCRIPT);
             for (String line : lines)
-                logger.info(GENERATE_CERTS_SCRIPT + ": " + line);
+                logger.info("{}: {}", GENERATE_CERTS_SCRIPT, line);
         } catch (Exception e) {
         }
 
         if (result.getResult() != 0) {
-            logger.error("Failed to generate CA (return code: " + result.getResult() + ")");
+            logger.error("Failed to generate CA (return code: {} ) ", result.getResult());
             throw new RuntimeException("Failed to generate CA");
         }
     }
@@ -328,7 +328,7 @@ public class OpenVpnAppImpl extends AppBase
         }
         updateNetworkReservations(newSettings.getAddressSpace(), newSettings.getRemoteClients());
         try {
-            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
+            logger.debug("New Settings: \n {} ", new org.json.JSONObject(this.settings).toString(2));
         } catch (Exception e) {
         }
 
@@ -613,16 +613,16 @@ public class OpenVpnAppImpl extends AppBase
             }
             break;
         default:
-            logger.error("Unknown Authenticate Method: " + getSettings().getAuthenticationType());
+            logger.error("Unknown Authenticate Method: {}", getSettings().getAuthenticationType());
 
         }
 
         if (!isAuthenticated) {
-            logger.info("Authenticate failure: " + username + " (" + getSettings().getAuthenticationType() + ")");
+            logger.info("Authenticate failure: {} ( {} )", username, getSettings().getAuthenticationType() );
             return (1);
         }
 
-        logger.info("Authenticate success: " + username + " (" + getSettings().getAuthenticationType() + ")");
+        logger.info("Authenticate success: {} ( {} )", username, getSettings().getAuthenticationType());
         return (0);
     }
 
@@ -687,17 +687,17 @@ public class OpenVpnAppImpl extends AppBase
         /**
          * Generate the certs ( if they already exist it will just return )
          */
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(GENERATE_CLIENT_CERTS_SCRIPT + " \"" + client.getName() + "\"");
+        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(GENERATE_CLIENT_CERTS_SCRIPT, List.of(client.getName()));
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(GENERATE_CLIENT_CERTS_SCRIPT + ": ");
+            logger.info("{}: ", GENERATE_CERTS_SCRIPT);
             for (String line : lines)
-                logger.info(GENERATE_CLIENT_CERTS_SCRIPT + ": " + line);
+                logger.info("{}: {}", GENERATE_CERTS_SCRIPT, line);
         } catch (Exception e) {
         }
 
         if (result.getResult() != 0) {
-            logger.error("Failed to generate client config (return code: " + result.getResult() + ")");
+            logger.error("Failed to generate client config (return code: {} ) ", result.getResult());
             throw new RuntimeException("Failed to generate client config");
         }
 
@@ -751,7 +751,7 @@ public class OpenVpnAppImpl extends AppBase
         
         //Prevent path traversal and option smuggling
         if (filename.contains(Constants.LOG_ELLIPSIS) || filename.startsWith(Constants.HYPHEN)) {
-            logger.error("Failed to import client config invalid filename: " + filename);
+            logger.error("Failed to import client config invalid filename: {} ", filename);
             throw new RuntimeException("Failed to import client config");
         }
         ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(IMPORT_CLIENT_SCRIPT , List.of(filename));
@@ -759,9 +759,9 @@ public class OpenVpnAppImpl extends AppBase
         String sitename = "siteName-" + (new Random().nextInt(10000));
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(IMPORT_CLIENT_SCRIPT + ": ");
+            logger.info( "{} : ", IMPORT_CLIENT_SCRIPT);
             for (String line : lines) {
-                logger.info(IMPORT_CLIENT_SCRIPT + ": " + line);
+                logger.info("{} : {} ", IMPORT_CLIENT_SCRIPT, line);
 
                 if (line.contains("SiteName: ")) {
                     String[] tokens = line.split(" ");
@@ -772,7 +772,7 @@ public class OpenVpnAppImpl extends AppBase
         }
 
         if (result.getResult() != 0) {
-            logger.error("Failed to import client config (return code: " + result.getResult() + ")");
+            logger.error("Failed to import client config (return code: {} )", result.getResult());
             throw new RuntimeException("Failed to import client config");
         }
 
@@ -965,7 +965,7 @@ public class OpenVpnAppImpl extends AppBase
             if (!name.startsWith("client-")) continue;
 
             String target = (directory + "/" + name);
-            logger.info("Cleanup checking: " + target);
+            logger.info("Cleanup checking: {}", target);
 
             // extract the client name from the directory name
             String clientName = name.substring(name.lastIndexOf("-") + 1);
@@ -982,7 +982,7 @@ public class OpenVpnAppImpl extends AppBase
             if (found == true) continue;
 
             // no matching client so get rid of the file
-            logger.info("Cleanup removing: " + target);
+            logger.info("Cleanup removing: {}", target);
             File trash = new File(target);
             trash.delete();
         }
@@ -1005,7 +1005,7 @@ public class OpenVpnAppImpl extends AppBase
 
         for (String name : list) {
             String target = (directory + "/" + name);
-            logger.info("Cleanup checking: " + target);
+            logger.info("Cleanup checking: {}", target);
 
             // check the settings to see if this is a valid client
             found = false;
@@ -1019,7 +1019,7 @@ public class OpenVpnAppImpl extends AppBase
             if (found == true) continue;
 
             // no matching client so get rid of the file
-            logger.info("Cleanup removing: " + target);
+            logger.info("Cleanup removing: {}", target);
             File trash = new File(target);
             trash.delete();
         }
@@ -1047,7 +1047,7 @@ public class OpenVpnAppImpl extends AppBase
             if (!name.endsWith(".conf")) continue;
 
             String target = (directory + "/" + name);
-            logger.info("Cleanup checking: " + target);
+            logger.info("Cleanup checking: {}", target);
 
             // extract the server name from the config file name
             String serverName = name.substring(0, name.lastIndexOf("."));
@@ -1064,17 +1064,17 @@ public class OpenVpnAppImpl extends AppBase
 
             if (found == true) {
                 if (enabled == false) {
-                    logger.info("Stopping client OpenVPN process for disabled openvpn@" + serverName + ".service");
-                    UvmContextFactory.context().execManager().exec("systemctl stop openvpn@" + serverName + ".service");
+                    logger.info("Stopping client OpenVPN process for disabled openvpn@{}.service", serverName);
+                    UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("stop", "openvpn@" + serverName + ".service"));
                 }
                 continue;
             }
 
-            logger.info("Stopping client OpenVPN process for removed openvpn@" + serverName + ".service");
-            UvmContextFactory.context().execManager().exec("systemctl stop openvpn@" + serverName + ".service");
+            logger.info("Stopping client OpenVPN process for removed openvpn@{}.service", serverName);
+            UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("stop", "openvpn@" + serverName + ".service"));
 
             // no matching server so get rid of the config file and keys
-            logger.info("Cleanup removing: " + target);
+            logger.info("Cleanup removing: {}", target);
 
             br = null;
             try {
@@ -1089,7 +1089,7 @@ public class OpenVpnAppImpl extends AppBase
                     if ((line.startsWith("cert ")) || (line.startsWith("key ")) || (line.startsWith("ca "))) {
                         part = line.split(" ");
                         junk = (directory + "/" + part[1]);
-                        logger.info("Cleanup removing: " + junk);
+                        logger.info("Cleanup removing: {}", junk);
                         File wipe = new File(junk);
                         wipe.delete();
                     }
@@ -1243,7 +1243,7 @@ public class OpenVpnAppImpl extends AppBase
                     if (currentLine.matches("^TCP/UDP read bytes,.*")) {
                         String[] parts = currentLine.split(",");
                         if (parts.length < 2) {
-                            logger.warn("Malformed line in openvpn status: " + currentLine);
+                            logger.warn("Malformed line in openvpn status: {}", currentLine);
                             continue;
                         }
 
@@ -1251,7 +1251,7 @@ public class OpenVpnAppImpl extends AppBase
                         try {
                             i = Long.parseLong(parts[1]);
                         } catch (Exception e) {
-                            logger.warn("Malformed int in openvpn status: " + currentLine);
+                            logger.warn("Malformed int in openvpn status: {}", currentLine);
                             continue;
                         }
 
@@ -1268,7 +1268,7 @@ public class OpenVpnAppImpl extends AppBase
                     if (currentLine.matches("^TCP/UDP write bytes,.*")) {
                         String[] parts = currentLine.split(",");
                         if (parts.length < 2) {
-                            logger.warn("Malformed line in openvpn status: " + currentLine);
+                            logger.warn("Malformed line in openvpn status: {}", currentLine);
                             continue;
                         }
 
@@ -1276,7 +1276,7 @@ public class OpenVpnAppImpl extends AppBase
                         try {
                             i = Long.parseLong(parts[1]);
                         } catch (Exception e) {
-                            logger.warn("Malformed int in openvpn status: " + currentLine);
+                            logger.warn("Malformed int in openvpn status: {}", currentLine);
                             continue;
                         }
 
@@ -1286,7 +1286,7 @@ public class OpenVpnAppImpl extends AppBase
 
                 results.add(result);
             } catch (Exception e) {
-                logger.warn("Malformed openvpn status file: " + "/var/run/openvpn/" + server.getName() + ".status", e);
+                logger.warn("Malformed openvpn status file: /var/run/openvpn/{}.status", server.getName(), e);
             } finally {
                 if (reader != null) {
                     try {
@@ -1358,13 +1358,13 @@ public class OpenVpnAppImpl extends AppBase
         {
             Object o = args[0];
             if (!(o instanceof NetworkSettings)) {
-                logger.warn("Invalid network settings: " + o);
+                logger.warn("Invalid network settings: {}", o);
                 return;
             }
 
             NetworkSettings settings = (NetworkSettings) o;
 
-            if (logger.isDebugEnabled()) logger.debug("network settings changed:" + settings);
+            logger.debug("network settings changed: {}", settings);
 
             try {
                 networkSettingsEvent(settings);
@@ -1400,13 +1400,13 @@ public class OpenVpnAppImpl extends AppBase
         {
             Object o = args[0];
             if (!(o instanceof NetworkSettings)) {
-                logger.warn("Invalid network settings: " + o);
+                logger.warn("Invalid network settings: {}", o);
                 return;
             }
 
             NetworkSettings settings = (NetworkSettings) o;
 
-            if (logger.isDebugEnabled()) logger.debug("network settings are about to change:" + settings);
+            logger.debug("network settings are about to change: {}", settings);
 
             try {
                 preNetworkSettingsEvent(settings);

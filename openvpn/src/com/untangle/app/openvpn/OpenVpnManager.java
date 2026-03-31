@@ -80,17 +80,17 @@ public class OpenVpnManager
     protected void start()
     {
         // the start script only does housekeeping
-        logger.info("Calling OpenVPN start script: " + VPN_START_SCRIPT);
+        logger.info("Calling OpenVPN start script: {}", VPN_START_SCRIPT);
 
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(VPN_START_SCRIPT);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(VPN_START_SCRIPT + ": ");
+            logger.info("{}: ", VPN_START_SCRIPT);
             for (String line : lines)
-                logger.info(VPN_START_SCRIPT + ": " + line);
+                logger.info("{}: {}", VPN_START_SCRIPT, line);
         } catch (Exception e) {
         }
-        if (result.getResult() != 0) logger.error("Failed calling OpenVPN start script (return code: " + result.getResult() + ")");
+        if (result.getResult() != 0) logger.error("Failed calling OpenVPN start script (return code: {})", result.getResult());
 
         logger.info("Starting OpenVPN server tasks");
 
@@ -109,8 +109,8 @@ public class OpenVpnManager
         // start any remote servers that are enabled
         for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
             if (!server.getEnabled()) continue;
-            logger.debug("Starting client OpenVPN process for openvpn@" + server.getName() + ".service");
-            UvmContextFactory.context().execManager().exec("systemctl start openvpn@" + server.getName() + ".service");
+            logger.debug("Starting client OpenVPN process for openvpn@{}.service", server.getName());
+            UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("start", "openvpn@" + server.getName() + ".service"));
         }
 
         insertIptablesRules();
@@ -128,8 +128,8 @@ public class OpenVpnManager
         UvmContextFactory.context().execManager().exec("systemctl stop openvpn@server.service");
 
         for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
-            logger.debug("Stopping client OpenVPN process for openvpn@" + server.getName() + ".service");
-            UvmContextFactory.context().execManager().exec("systemctl stop openvpn@" + server.getName() + ".service");
+            logger.debug("Stopping client OpenVPN process for openvpn@{}.service", server.getName());
+            UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("stop", "openvpn@" + server.getName() + ".service"));
         }
 
         insertIptablesRules(); // remove since openvpn is not running
@@ -140,13 +140,13 @@ public class OpenVpnManager
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(VPN_STOP_SCRIPT);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(VPN_STOP_SCRIPT + ": ");
+            logger.info("{}: ", VPN_STOP_SCRIPT);
             for (String line : lines)
-                logger.info(VPN_STOP_SCRIPT + ": " + line);
+                logger.info("{}: {}", VPN_STOP_SCRIPT, line);
         } catch (Exception e) {
         }
 
-        if (result.getResult() != 0) logger.error("Failed to stop OpenVPN daemon (return code: " + result.getResult() + ")");
+        if (result.getResult() != 0) logger.error("Failed to stop OpenVPN daemon (return code: {})", result.getResult());
     }
 
     /**
@@ -215,14 +215,12 @@ public class OpenVpnManager
         String cmdStr;
         ExecManagerResult result;
 
-        cmdStr = GENERATE_ZIP_SCRIPT + SPACE + "\"" + client.getName() + "\"" + SPACE + "\"" + settings.getSiteName() + "\"";
-        logger.debug("Executing: " + cmdStr);
-        result = UvmContextFactory.context().execManager().exec(cmdStr);
+        result = UvmContextFactory.context().execManager().execCommand(GENERATE_ZIP_SCRIPT, List.of(client.getName(), settings.getSiteName()));
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(GENERATE_ZIP_SCRIPT + ": ");
+            logger.info("{}: ", GENERATE_ZIP_SCRIPT);
             for (String line : lines)
-                logger.info(GENERATE_ZIP_SCRIPT + ": " + line);
+                logger.info("{}: {}", GENERATE_ZIP_SCRIPT, line);
         } catch (Exception e) {
         }
     }
@@ -242,14 +240,12 @@ public class OpenVpnManager
         String cmdStr;
         ExecManagerResult result;
 
-        cmdStr = GENERATE_EXE_SCRIPT + SPACE + "\"" + client.getName() + "\"" + SPACE + "\"" + settings.getSiteName() + "\"";
-        logger.debug("Executing: " + cmdStr);
-        result = UvmContextFactory.context().execManager().exec(cmdStr);
+        result = UvmContextFactory.context().execManager().execCommand(GENERATE_EXE_SCRIPT, List.of(client.getName(), settings.getSiteName()));
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(GENERATE_EXE_SCRIPT + ": ");
+            logger.info("{}: ", GENERATE_EXE_SCRIPT);
             for (String line : lines)
-                logger.info(GENERATE_EXE_SCRIPT + ": " + line);
+                logger.info("{}: {}", GENERATE_EXE_SCRIPT, line);
         } catch (Exception e) {
         }
     }
@@ -269,14 +265,12 @@ public class OpenVpnManager
         String cmdStr;
         ExecManagerResult result;
 
-        cmdStr = GENERATE_OVPN_SCRIPT + SPACE + "\"" + client.getName() + "\"" + SPACE + "\"" + settings.getSiteName() + "\"";
-        logger.debug("Executing: " + cmdStr);
-        result = UvmContextFactory.context().execManager().exec(cmdStr);
+        result = UvmContextFactory.context().execManager().execCommand(GENERATE_OVPN_SCRIPT, List.of(client.getName(), settings.getSiteName()));
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(GENERATE_OVPN_SCRIPT + ": ");
+            logger.info("{}: ", GENERATE_OVPN_SCRIPT);
             for (String line : lines)
-                logger.info(GENERATE_OVPN_SCRIPT + ": " + line);
+                logger.info("{}: {}", GENERATE_OVPN_SCRIPT, line);
         } catch (Exception e) {
         }
     }
@@ -318,14 +312,12 @@ public class OpenVpnManager
 
         JSONArray wanNetworkConfigs = createWanConfigList(client.getName(), settings.getSiteName(), wanInfoMap);
 
-        cmdStr = GENERATE_ONC_SCRIPT + SPACE + "\"" + client.getName() + "\"" + SPACE + "\"" + settings.getSiteName() + "\"" + SPACE + "\'" + wanNetworkConfigs + "\'";
-        logger.debug("Executing: " + cmdStr);
-        result = UvmContextFactory.context().execManager().exec(cmdStr);
+        result = UvmContextFactory.context().execManager().execCommand(GENERATE_ONC_SCRIPT, List.of(client.getName(), settings.getSiteName(), wanNetworkConfigs.toString()));
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(GENERATE_ONC_SCRIPT + ": ");
+            logger.info("{}: ", GENERATE_ONC_SCRIPT);
             for (String line : lines)
-                logger.info(GENERATE_ONC_SCRIPT + ": " + line);
+                logger.info("{}: {}", GENERATE_ONC_SCRIPT, line);
         } catch (Exception e) {
         }
     }
@@ -413,7 +405,7 @@ public class OpenVpnManager
 
             cfgstr = item.generateConfigString();
             if (cfgstr != null) {
-                logger.debug("ADDING server config: " + cfgstr);
+                logger.debug("ADDING server config: {}", cfgstr);
                 sb.append(cfgstr).append(LINE_BREAK);
             }
         }
@@ -475,7 +467,7 @@ public class OpenVpnManager
                     writeRoute(sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask());
                     writePushRoute(sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask());
                 } catch (Exception e) {
-                    logger.warn("Error processing network: " + net, e);
+                    logger.warn("Error processing network: {}", net, e);
                 }
             }
         }
@@ -510,25 +502,25 @@ public class OpenVpnManager
         for (OpenVpnConfigItem item : settings.getClientConfiguration()) {
             // ignore any default global config item when there is a custom global config item with the same option name
             if ((item.getReadOnly()) && (findCustomConfigItem(settings.getClientConfiguration(), item.getOptionName()) != null)) {
-                logger.debug("FOUND global custom IGNORING default: " + item.getOptionName());
+                logger.debug("FOUND global custom IGNORING default: {}", item.getOptionName());
                 continue;
             }
 
             // ignore global config items that exist in the client group config
             if ((item.getReadOnly()) && (findAnyConfigItem(group.getGroupConfigItems(), item.getOptionName()) != null)) {
-                logger.debug("FOUND group custom IGNORING default: " + item.getOptionName());
+                logger.debug("FOUND group custom IGNORING default: {}", item.getOptionName());
                 continue;
             }
 
             // ignore global config items that exist in the unique client config
             if ((item.getReadOnly()) && (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null)) {
-                logger.debug("FOUND client custom IGNORING default: " + item.getOptionName());
+                logger.debug("FOUND client custom IGNORING default: {}", item.getOptionName());
                 continue;
             }
 
             cfgstr = item.generateConfigString();
             if (cfgstr != null) {
-                logger.debug("ADDING global config: " + cfgstr);
+                logger.debug("ADDING global config: {}", cfgstr);
                 sb.append(cfgstr).append(LINE_BREAK);
             }
         }
@@ -537,13 +529,13 @@ public class OpenVpnManager
         for (OpenVpnConfigItem item : group.getGroupConfigItems()) {
             // ignore group config items that exist in the client config
             if (findAnyConfigItem(client.getClientConfigItems(), item.getOptionName()) != null) {
-                logger.debug("FOUND client custom IGNORING group: " + item.getOptionName());
+                logger.debug("FOUND client custom IGNORING group: {}", item.getOptionName());
                 continue;
             }
 
             cfgstr = item.generateConfigString();
             if (cfgstr != null) {
-                logger.debug("ADDING group config: " + cfgstr);
+                logger.debug("ADDING group config: {}", cfgstr);
                 sb.append(cfgstr).append(LINE_BREAK);
             }
         }
@@ -552,7 +544,7 @@ public class OpenVpnManager
         for (OpenVpnConfigItem item : client.getClientConfigItems()) {
             cfgstr = item.generateConfigString();
             if (cfgstr != null) {
-                logger.debug("ADDING client config: " + cfgstr);
+                logger.debug("ADDING client config: {}", cfgstr);
                 sb.append(cfgstr).append(LINE_BREAK);
             }
         }
@@ -650,7 +642,7 @@ public class OpenVpnManager
             if (!client.getEnabled() || (group == null)) continue;
 
             String name = client.getName();
-            logger.info("Writing client configuration file for [" + name + "]");
+            logger.info("Writing client configuration file for [{}]", name);
 
             StringBuilder sb = new StringBuilder();
 
@@ -685,7 +677,7 @@ public class OpenVpnManager
                         IPMaskedAddress maskedAddr = new IPMaskedAddress(net);
                         writeRemoteClientRoute(sb, maskedAddr.getMaskedAddress(), maskedAddr.getNetmask());
                     } catch (Exception e) {
-                        logger.warn("Error processing network: " + net, e);
+                        logger.warn("Error processing network: {}", net, e);
                     }
                 }
             }
@@ -707,11 +699,11 @@ public class OpenVpnManager
                 for (File f : baseDirectory.listFiles()) {
                     if (f.getName() == null) continue;
                     if (f.getName().endsWith(".conf")) {
-                        logger.debug("Deleting remoteServer conf file: " + f.getName());
+                        logger.debug("Deleting remoteServer conf file: {}", f.getName());
                         f.delete();
                     }
                     if (f.getName().endsWith(".auth")) {
-                        logger.debug("Deleting remoteServer auth file: " + f.getName());
+                        logger.debug("Deleting remoteServer auth file: {}", f.getName());
                         f.delete();
                     }
                 }
@@ -730,9 +722,7 @@ public class OpenVpnManager
             File baseDirectory = new File(OPENVPN_CCD_DIR);
             if (baseDirectory.exists()) {
                 for (File clientConfig : baseDirectory.listFiles()) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Deleting the file: " + clientConfig);
-                    }
+                    logger.debug("Deleting the file: {}", clientConfig);
                     clientConfig.delete();
                 }
             } else {
@@ -763,7 +753,7 @@ public class OpenVpnManager
             if (!server.getEnabled()) continue;
             String serverPassword;
             String name = server.getName();
-            logger.info("Writing server configuration file for [" + name + "]");
+            logger.info("Writing server configuration file for [{}]", name);
 
             /**
              * We copy each file line by line looking for the dev line so we can
@@ -825,8 +815,9 @@ public class OpenVpnManager
                 count += 1;
             } catch (Exception exn) {
                 logger.warn("Exception adjusting remote server configuration.", exn);
-                String cpCmd = "cp -f " + System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf /etc/openvpn/";
-                UvmContextFactory.context().execManager().exec(cpCmd);
+                UvmContextFactory.context().execManager().execCommand("cp", List.of("-f",
+                    System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf",
+                    "/etc/openvpn/"));
             } finally {
                 if (cfgReader != null) {
                     try {
@@ -966,7 +957,7 @@ public class OpenVpnManager
         try {
             return InetAddress.getByAddress(data);
         } catch (UnknownHostException e) {
-            logger.error("getByAddress failed: " + data.length + " bytes", e);
+            logger.error("getByAddress failed: {} bytes", data.length, e);
         }
         return null;
     }
@@ -986,7 +977,7 @@ public class OpenVpnManager
         try {
             return InetAddress.getByAddress(data);
         } catch (UnknownHostException e) {
-            logger.error("getByAddress failed: " + data.length + " bytes", e);
+            logger.error("getByAddress failed: {} bytes", data.length, e);
         }
         return null;
     }
@@ -1001,7 +992,7 @@ public class OpenVpnManager
      */
     private void writeFile(String fileName, StringBuilder sb)
     {
-        logger.info("Writing File: " + fileName);
+        logger.info("Writing File: {}", fileName);
         BufferedWriter out = null;
 
         try {
@@ -1009,7 +1000,7 @@ public class OpenVpnManager
             out = new BufferedWriter(new FileWriter(fileName));
             out.write(data, 0, data.length());
         } catch (Exception ex) {
-            logger.error("Error writing file " + fileName + ":", ex);
+            logger.error("Error writing file {}:", fileName, ex);
         }
 
         try {
@@ -1075,7 +1066,7 @@ public class OpenVpnManager
 
         FileWriter iptablesScript = null;
         try {
-            logger.info("Writing File: " + IPTABLES_SCRIPT);
+            logger.info("Writing File: {}", IPTABLES_SCRIPT);
 
             int httpsPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpsPort();
             int httpPort = UvmContextFactory.context().networkManager().getNetworkSettings().getHttpPort();
@@ -1173,14 +1164,14 @@ public class OpenVpnManager
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(IPTABLES_SCRIPT);
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(IPTABLES_SCRIPT + ": ");
+            logger.info("{}: ", IPTABLES_SCRIPT);
             for (String line : lines)
-                logger.info(IPTABLES_SCRIPT + ": " + line);
+                logger.info("{}: {}", IPTABLES_SCRIPT, line);
         } catch (Exception e) {
         }
 
         if (result.getResult() != 0) {
-            logger.error("Failed to start OpenVPN daemon (return code: " + result.getResult() + ")");
+            logger.error("Failed to start OpenVPN daemon (return code: {})", result.getResult());
             throw new RuntimeException("Failed to start OpenVPN daemon");
         }
     }
