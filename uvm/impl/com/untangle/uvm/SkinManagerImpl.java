@@ -28,7 +28,7 @@ import com.untangle.uvm.servlet.UploadHandler;
  */
 public class SkinManagerImpl implements SkinManager
 {
-    private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");;
+    private static final String SKINS_DIR = System.getProperty("uvm.skins.dir");
     private static final String DEFAULT_ADMIN_SKIN = "simple-gray";
 
     private final Logger logger = LogManager.getLogger(getClass());
@@ -70,15 +70,15 @@ public class SkinManagerImpl implements SkinManager
              */
             String skinName = this.settings.getSkinName();
             if (skinName == null) {
-                this.settings.setSkinName("simple-gray");
-                skinName = "simple-gray";
+                this.settings.setSkinName(DEFAULT_ADMIN_SKIN);
+                skinName = DEFAULT_ADMIN_SKIN;
                 this.setSettings(this.settings);
-            } else if (!skinName.equals("simple-gray") && !skinName.equals("modern-rack")) {
-                this.settings.setSkinName("simple-gray");
+            } else if (!skinName.equals(DEFAULT_ADMIN_SKIN) && !skinName.equals("modern-rack")) {
+                this.settings.setSkinName(DEFAULT_ADMIN_SKIN);
                 this.setSettings(this.settings);
             }
-
-            logger.debug("Loading Settings: " + this.settings.toJSONString());
+            if (logger.isDebugEnabled())
+                logger.debug("Loading Settings: {}", this.settings.toJSONString());
         }
 
         /**
@@ -86,7 +86,7 @@ public class SkinManagerImpl implements SkinManager
          */
         this.skinInfo = getSkinInfo(SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.json");
         if (this.skinInfo == null || this.skinInfo.isAdminSkinOutOfDate()) {
-            logger.warn("Unable to find skin \"" + this.settings.getSkinName() + "\" - reverting to default skin: " + DEFAULT_ADMIN_SKIN);
+            logger.warn("Unable to find skin  + this.settings.getSkinName() + {}{}", " - reverting to default skin: " , DEFAULT_ADMIN_SKIN);
             this.settings.setSkinName(DEFAULT_ADMIN_SKIN);
             this.setSettings(this.settings);
             this.skinInfo = getSkinInfo(SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.json");
@@ -242,7 +242,7 @@ public class SkinManagerImpl implements SkinManager
 
         File[] children = dir.listFiles();
         if (children == null) {
-            logger.warn("Skin dir \"" + SKINS_DIR + "\" does not exist");
+            logger.warn("Skin dir \"{}\" does not exist", SKINS_DIR);
         } else {
             for (int i = 0; i < children.length; i++) {
                 File file = children[i];
@@ -264,7 +264,7 @@ public class SkinManagerImpl implements SkinManager
                         }
                     });
                     if (skinFiles.length < 1) {
-                        logger.warn("Skin folder \"" + file.getName() + "\" does not have skin info file - skinInfo.json");
+                        logger.warn("Skin folder \"{}\" does not have skin info file - skinInfo.json", file.getName());
                     } else {
                         SkinInfo skinInfoTmp;
                         skinInfoTmp = getSkinInfo(skinFiles[0].getPath());
@@ -275,20 +275,17 @@ public class SkinManagerImpl implements SkinManager
                 }
             }
         }
-        Collections.sort(skins, new Comparator<SkinInfo>()
-        {
+        Collections.sort(skins, new Comparator<>() {
             /**
              * Compare for skink sorting
-             * 
-             * @param o1
-             *        Object one
-             * @param o2
-             *        Object two
+             *
+             * @param o1 Object one
+             * @param o2 Object two
              * @return Comparison result
              */
-            public int compare(SkinInfo o1, SkinInfo o2)
-            {
-                if (o1 != null && o2 != null && o1.getDisplayName() != null && o2.getDisplayName() != null) return o1.getDisplayName().compareTo(o2.getDisplayName());
+            public int compare(SkinInfo o1, SkinInfo o2) {
+                if (o1 != null && o2 != null && o1.getDisplayName() != null && o2.getDisplayName() != null)
+                    return o1.getDisplayName().compareTo(o2.getDisplayName());
                 return 0;
             }
         });
@@ -339,7 +336,8 @@ public class SkinManagerImpl implements SkinManager
          */
         this.settings = newSettings;
         try {
-            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
+            if (logger.isDebugEnabled())
+                logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
         } catch (Exception e) {
         }
 
@@ -377,7 +375,7 @@ public class SkinManagerImpl implements SkinManager
             if (dir.getAbsolutePath().length() > 3) UvmContextFactory.context().execManager().exec("rm -rf " + dir.getAbsolutePath() + "/*");
         } else {
             if (!dir.mkdirs()) {
-                logger.error("Error creating skin folder: " + dir);
+                logger.error("Error creating skin folder: {}", dir);
                 throw new UvmException("Error creating skin folder");
             }
         }
@@ -409,12 +407,13 @@ public class SkinManagerImpl implements SkinManager
          *        The uploaded argument
          * @return Upload result
          * @throws Exception
+         * @deprecated since 17.2 NGFW-13511, scheduled for removal.
          */
+        @Deprecated(forRemoval = true, since = "17.2")
         @Override
         public String handleFile(FileItem fileItem, String argument) throws Exception
         {
-            uploadSkin(fileItem);
-            return "Successfully updated a skin";
+            throw new NoSuchMethodException("Custom skin upload is no longer available");
         }
     }
 }
