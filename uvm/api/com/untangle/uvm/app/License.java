@@ -270,9 +270,6 @@ public class License implements Serializable
             return VIRUS_BLOCKER;
         case "kav":
             return VIRUS_BLOCKER;
-        //VIRUS_BLOCKER_LITE
-        case "clam":
-            return VIRUS_BLOCKER_LITE;
         //WAN_BALANCER
         case "splitd":
             return WAN_BALANCER;
