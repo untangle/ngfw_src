@@ -82,10 +82,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def initial_extra_setup(cls):
         global app, md5StdNum, appSSL, appSSLData, canRelay, ftp_result
         app = cls._app.getName()
-        #For pppoe server clamav takes more time to get ready for connection so need to validate it first
-        if app == "virus_blocker_lite":
-            global clamavNotReady
-            clamavNotReady = global_functions.clamav_not_ready_for_connections()
         ftp_result = subprocess.call(
             ["nc", "-z", global_functions.ftp_server, "21"],
             stdout=subprocess.PIPE,
