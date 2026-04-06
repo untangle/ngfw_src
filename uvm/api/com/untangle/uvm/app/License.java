@@ -51,7 +51,6 @@ public class License implements Serializable
     public static final String THREAT_PREVENTION = "threat-prevention";
     public static final String TUNNEL_VPN = "tunnel-vpn";
     public static final String VIRUS_BLOCKER = "virus-blocker";
-    public static final String VIRUS_BLOCKER_LITE = "virus-blocker-lite";
     public static final String WAN_BALANCER = "wan-balancer";
     public static final String WAN_FAILOVER = "wan-failover";
     public static final String WEB_CACHE = "web-cache";
@@ -271,9 +270,6 @@ public class License implements Serializable
             return VIRUS_BLOCKER;
         case "kav":
             return VIRUS_BLOCKER;
-        //VIRUS_BLOCKER_LITE
-        case "clam":
-            return VIRUS_BLOCKER_LITE;
         //WAN_BALANCER
         case "splitd":
             return WAN_BALANCER;
