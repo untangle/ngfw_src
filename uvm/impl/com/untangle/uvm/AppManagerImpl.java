@@ -927,6 +927,7 @@ public class AppManagerImpl implements AppManager
                                                        * hide spam blocker lite
                                                        * from left hand nav
                                                        */
+                                                       */
 
         /**
          * SPECIAL CASE: Virus Blocker Lite is being deprecated - hide it
@@ -1645,33 +1646,7 @@ public class AppManagerImpl implements AppManager
                 if (item.getAppName().equals("ips")) continue;
                 if (item.getAppName().equals("spam-blocker-lite")) continue;
                 if (item.getAppName().equals("idps")) continue;
-                if (item.getAppName().equals("virus-blocker-lite")) {
-                    // One-time 17.4 -> 17.5 upgrade migration; can be removed in the next release
-                    // once 17.4 is no longer a supported upgrade path.
-                    // If Lite was running, ensure Virus Blocker (same clamav backend) is also running.
-                    if (AppSettings.AppState.RUNNING.equals(item.getTargetState())) {
-                        final Integer policyId = item.getPolicyId();
-                        Optional<AppSettings> existingVb = readSettings.getApps().stream()
-                            .filter(s -> "virus-blocker".equals(s.getAppName())
-                                      && Objects.equals(s.getPolicyId(), policyId))
-                            .findFirst();
-                        if (existingVb.isPresent()) {
-                            existingVb.get().setTargetState(AppSettings.AppState.RUNNING);
-                        } else {
-                            // VB was never installed for this policy. Create an entry so the
-                            // customer retains virus protection after VBL is removed in 17.5.
-                            // restartUnloaded() picks this up; postInit() creates default
-                            // settings via initializeSettings() if no settings file exists.
-                            long newId = readSettings.getNextAppId();
-                            readSettings.setNextAppId(newId + 1);
-                            AppSettings newVb = new AppSettings(newId, policyId, "virus-blocker");
-                            newVb.setTargetState(AppSettings.AppState.RUNNING);
-                            cleanList.add(newVb);
-                        }
-                        settingsModified = true;
-                    }
-                    continue;
-                }
+                if (item.getAppName().equals("virus-blocker-lite")) continue;
                 cleanList.add(item);
             }
 
