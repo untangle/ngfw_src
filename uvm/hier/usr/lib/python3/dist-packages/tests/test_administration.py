@@ -460,4 +460,35 @@ class AdministrationTests(NGFWTestCase):
         #  certificates list should be unchanged after test execution
         assert(len(initial_certificates_list['list']) == len(final_certificates_list['list']))
 
+    def test_030_skin_upload_deprecated(self):
+        """Verify skin upload to /admin/upload is rejected (handleFile deprecated)"""
+        import zipfile
+        import io
+        import urllib.request
+
+        # Build a minimal zip to act as a skin upload
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, 'w') as zf:
+            zf.writestr("test-skin/skinInfo.json", '{"name":"test"}')
+        skin_bytes = buf.getvalue()
+
+        opener = global_functions.build_admin_http_opener()
+        boundary, body = global_functions.build_upload_multipart_body(
+            "skin", "test-skin", skin_bytes, filename="test-skin.zip"
+        )
+
+        req = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            resp = opener.open(req)
+            resp_body = resp.read().decode("utf-8", errors="replace")
+        except urllib.error.HTTPError as e:
+            resp_body = e.read().decode("utf-8", errors="replace")
+
+        assert "deprecated" in resp_body.lower() or "NoSuchMethodException" in resp_body, \
+            "Skin upload should be rejected as deprecated, got: " + resp_body
+
 test_registry.register_module("administration-tests", AdministrationTests)
