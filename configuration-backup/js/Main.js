@@ -4,17 +4,20 @@ Ext.define('Ung.apps.configurationbackup.Main', {
     controller: 'app-configuration-backup',
 
     viewModel: {
-        formulas: {
-            driveConfiguredText: function (get) {
-                return get('googleDriveIsConfigured') ? 'The Google Connector is configured'.t() : 'The Google Connector is unconfigured.'.t();
-            }
+        data: {
+            vueMigrated: true
+        }
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/configuration-backup', false);
         }
     },
 
     items: [
-        { xtype: 'app-configuration-backup-status' },
-        { xtype: 'app-configuration-backup-cloud' },
-        { xtype: 'app-configuration-backup-googleconnector' }
+        Field.iframeHolder
     ]
 
 });

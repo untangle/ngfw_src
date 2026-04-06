@@ -75,6 +75,24 @@ public class ConfigurationBackupApp extends AppBase
     }
 
     /**
+     * Get Configuration Backup settings.
+     *
+     * @return Configuration Backup settings
+     */
+    public ConfigurationBackupSettings getSettingsV2()
+    {
+        return this.settings;
+    }
+
+    /**
+     * Set ConfigurationBackupSettings Settings from generic version payload
+     * @param settings ConfigurationBackupSettings
+     */
+    public void setSettingsV2(final ConfigurationBackupSettings settings ) {
+        this.setSettings(settings);
+    }
+
+    /**
      * Write new settings.
      *
      * @param newSettings

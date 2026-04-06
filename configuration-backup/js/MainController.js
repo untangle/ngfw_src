@@ -6,11 +6,11 @@ Ext.define('Ung.apps.configurationbackup.MainController', {
         'Ung.cmp.GoogleDrive'
     ],
 
-    control: {
-        '#': {
-            afterrender: 'getSettings',
-        }
-    },
+    // control: {
+    //     '#': {
+    //         afterrender: 'getSettings',
+    //     }
+    // },
 
     backupNow: function (btn) {
         Ext.MessageBox.wait('Backing up... This may take a few minutes.'.t(), 'Please wait'.t());
