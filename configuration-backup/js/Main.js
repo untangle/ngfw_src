@@ -18,7 +18,9 @@ Ext.define('Ung.apps.configurationbackup.Main', {
                 enableRemoveHandler: true
             });
         },
-
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
+        }
     },
 
     items: [
