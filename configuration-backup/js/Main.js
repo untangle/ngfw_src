@@ -13,7 +13,12 @@ Ext.define('Ung.apps.configurationbackup.Main', {
         activate: function (panel) {
             var target = panel.down('#iframeHolder');
             Util.attachIframeToTarget(target, '/console/settings/services/configuration-backup', false);
-        }
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'configuration-backup',
+                enableRemoveHandler: true
+            });
+        },
+
     },
 
     items: [

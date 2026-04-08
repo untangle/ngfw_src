@@ -81,7 +81,7 @@ public class ConfigurationBackupApp extends AppBase
      */
     public ConfigurationBackupSettings getSettingsV2()
     {
-        return this.settings;
+        return this.getSettings();
     }
 
     /**
