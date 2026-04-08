@@ -86,7 +86,7 @@ public class SkinManagerImpl implements SkinManager
          */
         this.skinInfo = getSkinInfo(SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.json");
         if (this.skinInfo == null || this.skinInfo.isAdminSkinOutOfDate()) {
-            logger.warn("Unable to find skin  + this.settings.getSkinName() + {}{}", " - reverting to default skin: " , DEFAULT_ADMIN_SKIN);
+            logger.warn("Unable to find skin  \"{}\" - reverting to default skin: {}" , this.getSettings().getSkinName(), DEFAULT_ADMIN_SKIN);
             this.settings.setSkinName(DEFAULT_ADMIN_SKIN);
             this.setSettings(this.settings);
             this.skinInfo = getSkinInfo(SKINS_DIR + File.separator + this.settings.getSkinName() + File.separator + "skinInfo.json");
