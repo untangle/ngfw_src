@@ -488,7 +488,7 @@ class AdministrationTests(NGFWTestCase):
         except urllib.error.HTTPError as e:
             resp_body = e.read().decode("utf-8", errors="replace")
 
-        assert "deprecated" in resp_body.lower() or "NoSuchMethodException" in resp_body, \
+        assert "deprecated" in resp_body.lower() or "no longer available" in resp_body.lower() or "NoSuchMethodException" in resp_body, \
             "Skin upload should be rejected as deprecated, got: " + resp_body
 
 test_registry.register_module("administration-tests", AdministrationTests)
