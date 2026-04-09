@@ -924,7 +924,15 @@ public class AppManagerImpl implements AppManager
         installableAppsMap.remove("Spam Blocker Lite"); /*
                                                        * hide spam blocker lite
                                                        * from left hand nav
-                                                       */                                        
+                                                       */
+
+        /**
+         * SPECIAL CASE: Virus Blocker Lite is being deprecated - hide it
+         */
+        installableAppsMap.remove("Virus Blocker Lite"); /*
+                                                       * hide virus blocker lite
+                                                       * from left hand nav
+                                                       */
 
         /**
          * SPECIAL CASE: If Web Filter is installed in this rack OR licensed for
@@ -1634,6 +1642,7 @@ public class AppManagerImpl implements AppManager
                 if (item.getAppName().equals("ips")) continue;
                 if (item.getAppName().equals("spam-blocker-lite")) continue;
                 if (item.getAppName().equals("idps")) continue;
+                if (item.getAppName().equals("virus-blocker-lite")) continue;
                 cleanList.add(item);
             }
 
