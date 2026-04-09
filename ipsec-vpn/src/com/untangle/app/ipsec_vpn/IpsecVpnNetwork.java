@@ -9,6 +9,8 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+
 /**
  * This class is used to hold the settings for GRE networks. Yes, it probably
  * should have been called IpsecGreNetwork, but changing it now would require
@@ -24,9 +26,13 @@ public class IpsecVpnNetwork implements JSONString, Serializable
 {
     private int id;
     private boolean active;
+    @SafeCheck
     private String description;
+    @SafeCheck
     private String localAddress;
+    @SafeCheck
     private String remoteAddress;
+    @SafeCheck
     private String remoteNetworks;
     private int ttl = 64;
     private int mtu = 1476;

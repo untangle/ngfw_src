@@ -5,6 +5,7 @@
 package com.untangle.app.ipsec_vpn;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TimerTask;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -107,9 +108,9 @@ public class IpsecVpnPingTimer extends TimerTask
             tunnel = configList.get(x);
 
             // ignore disabled tunnels and those with no ping target configured
-            if (tunnel.getActive() == false) continue;
+            if (!tunnel.getActive()) continue;
             if (tunnel.getPingAddress() == null) continue;
-            if (tunnel.getPingAddress().length() == 0) continue;
+            if (tunnel.getPingAddress().isEmpty()) continue;
             if (tunnel.getRight().equals("%any")) continue;
 
             String leftAddress = app.getManager().resolveLeftAddress(tunnel.getLeft());
@@ -118,14 +119,14 @@ public class IpsecVpnPingTimer extends TimerTask
             watcher = watchTable.get(tunnel.getDescription());
 
             if (watcher == null) {
-                logger.debug("Creating new ping table entry for " + tunnel.getDescription());
+                logger.debug("Creating new ping table entry for {}", tunnel.getDescription());
                 watcher = new TunnelWatcher(tunnel.getDescription(), tunnel.getId());
                 lastLeftConnectAddressTable.put(tunnel.getDescription(), leftAddress);
                 watchTable.put(tunnel.getDescription(), watcher);
             }
 
             else {
-                logger.debug("Found existing ping table entry for " + tunnel.getDescription());
+                logger.debug("Found existing ping table entry for {}", tunnel.getDescription());
             }
 
             // update the cycle mark for the current tunnel
@@ -152,7 +153,8 @@ public class IpsecVpnPingTimer extends TimerTask
                     watcher.failCounter = 0;
                     IpsecVpnEvent event = new IpsecVpnEvent(leftAddress, tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.CONNECT);
                     app.logEvent(event);
-                    logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+                    if (logger.isDebugEnabled())
+                        logger.debug("logEvent(ipsec_vpn_events) {}", event.toSummaryString());
                 }
 
                 // continue the tunnel loop
@@ -171,7 +173,8 @@ public class IpsecVpnPingTimer extends TimerTask
                 watcher.activeFlag = false;
                 IpsecVpnEvent event = new IpsecVpnEvent(leftAddress, tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.DISCONNECT);
                 app.logEvent(event);
-                logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+                if (logger.isDebugEnabled())
+                    logger.debug("logEvent(ipsec_vpn_events) {}", event.toSummaryString());
             }
 
             // increment the ping fail counter for the tunnel
@@ -181,16 +184,17 @@ public class IpsecVpnPingTimer extends TimerTask
             if (watcher.failCounter < PING_FAIL_THRESHOLD) continue;
 
             // fail threshold reached so log event and bring tunnel down and back up
-            logger.warn("Attempting restart for inactive tunnel " + watcher.controlName);
+            logger.warn("Attempting restart for inactive tunnel {}", watcher.controlName);
 
             IpsecVpnEvent event = new IpsecVpnEvent(leftAddress, tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.RESTART);
             app.logEvent(event);
-            logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+            if (logger.isDebugEnabled())
+                logger.debug("logEvent(ipsec_vpn_events) {}", event.toSummaryString());
 
-            IpsecVpnApp.execManager().exec("ipsec down " + watcher.controlName);
+            IpsecVpnApp.execManager().execCommand("/sbin/ipsec", List.of("down", watcher.controlName));
 
             // run the up command in the background as it can block if the other side is unreachable
-            IpsecVpnApp.execManager().exec("nohup ipsec up " + watcher.controlName );
+            IpsecVpnApp.execManager().execCommand("/sbin/ipsec", List.of("up", watcher.controlName));
         }
 
         Iterator<String> ksi = watchTable.keySet().iterator();
@@ -203,7 +207,7 @@ public class IpsecVpnPingTimer extends TimerTask
             // it means we didn't find an enabled IPsec tunnel so we remove the entry
             // using the iterator remove function since the Java docs say it's safe
             if (watcher.cycleMark != cycleCounter) {
-                logger.debug("Removing stale ping table entry for " + watcher.tunnelName);
+                logger.debug("Removing stale ping table entry for {}", watcher.tunnelName);
                 ksi.remove();
             }
         }
@@ -221,22 +225,23 @@ public class IpsecVpnPingTimer extends TimerTask
     {
         if (tunnel == null) return (false);
         if (tunnel.getPingAddress() == null) return (false);
-        if (tunnel.getPingAddress().length() == 0) return (false);
+        if (tunnel.getPingAddress().isEmpty()) return (false);
         if (tunnel.getRight().equals("%any")) return (false);
 
         try {
             InetAddress target = InetAddress.getByName(tunnel.getPingAddress());
             if (target.isReachable(2000)) {
-                logger.debug("PING SUCCESS: " + tunnel.getPingAddress());
+                logger.debug("PING SUCCESS: {}", tunnel.getPingAddress());
                 return (true);
             }
         } catch (Exception exn) {
-            logger.debug("PING EXCEPTION: " + tunnel.getPingAddress(), exn);
+            logger.debug("PING EXCEPTION: {}", tunnel.getPingAddress(), exn);
         }
 
         IpsecVpnEvent event = new IpsecVpnEvent(app.getManager().resolveLeftAddress(tunnel.getLeft()), tunnel.getRight(), tunnel.getDescription(), IpsecVpnEvent.EventType.UNREACHABLE);
         app.logEvent(event);
-        logger.debug("logEvent(ipsec_vpn_events) " + event.toSummaryString());
+        if (logger.isDebugEnabled())
+            logger.debug("logEvent(ipsec_vpn_events) {}", event.toSummaryString());
         return (false);
     }
 }
