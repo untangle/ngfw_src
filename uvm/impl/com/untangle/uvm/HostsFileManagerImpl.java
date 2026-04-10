@@ -6,6 +6,7 @@ package com.untangle.uvm;
 
 import java.util.TimerTask;
 import java.util.Timer;
+import java.util.List;
 import java.io.File;
 
 import org.apache.logging.log4j.Logger;
@@ -166,7 +167,7 @@ public class HostsFileManagerImpl extends TimerTask implements HostsFileManager
         String fullName = UvmContextFactory.context().networkManager().getFullyQualifiedHostname();
 
         // call the script to update the hosts file
-        UvmContextFactory.context().execManager().exec(HOSTS_FILE_UPDATE_SCRIPT + " " + fullName);
+        UvmContextFactory.context().execManager().execCommand(HOSTS_FILE_UPDATE_SCRIPT, List.of(fullName));
 
         // execute the command to activate the updated hosts file
         UvmContextFactory.context().execManager().exec(HOSTS_FILE_RELOAD_COMMAND);

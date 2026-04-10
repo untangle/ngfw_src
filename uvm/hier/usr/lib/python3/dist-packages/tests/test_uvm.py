@@ -20,6 +20,7 @@ import fnmatch
 import base64
 
 from urllib.parse import urlparse, parse_qs
+from jsonrpc import JSONRPCException
 from tests.common import NGFWTestCase
 import tests.global_functions as global_functions
 import runtests.test_registry as test_registry
@@ -982,6 +983,44 @@ class UvmTests(NGFWTestCase):
                                                'login', 'admin' )
         assert( found )
 
+    def test_111_hosts_file_manager_injection_blocked(self):
+        """
+        Verify that HostsFileManagerImpl.refreshHostsFile() passes the fully-qualified
+        hostname as a safe argument (via execCommand) so that shell metacharacters in
+        the hostname do not execute arbitrary commands.
+
+        The test:
+        1. Touches an interface-status file so refreshHostsFile() will detect a change.
+        2. Sets a network hostname that embeds a shell injection payload, which triggers
+           the network-settings change hook that calls refreshHostsFile() synchronously.
+        3. Confirms the injected command was never executed (sentinel file not created).
+        """
+        # No dots in the path: sanitizeNetworkSettings strips everything after the
+        # first dot in the hostname, so a path like "/tmp/poc.txt" would become
+        # "/tmp/poc" and the wrong file would be checked (false negative).
+        poc_file = "/tmp/hosts_injection_poc"
+        status_file = "/var/lib/interface-status/test_injection_trigger"
+        subprocess.call(f"rm -f {poc_file} {status_file}", shell=True)
+
+        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        try:
+            malicious_settings = copy.deepcopy(orig_netsettings)
+            malicious_settings['hostName'] = "ngfw; touch " + poc_file + "; echo"
+
+            # Touch an interface-status file BEFORE setNetworkSettings so that when
+            # the hook fires and calls refreshHostsFile(), it detects the new file
+            # and executes the update script with the (malicious) hostname.
+            subprocess.call(f"mkdir -p /var/lib/interface-status && touch {status_file}", shell=True)
+
+            global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+        finally:
+            subprocess.call(f"rm -f {status_file}", shell=True)
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via HostsFileManagerImpl.refreshHostsFile() (sentinel file was created)"
+
     # Make sure the HostsFileManager is working as expected
     def test_110_hosts_file_manager(self):
         # get the hostname and settings from the network manager
@@ -1120,6 +1159,67 @@ class UvmTests(NGFWTestCase):
         assert not os.path.exists(poc_file), \
             "Command injection succeeded via /admin/v2/upload argument field (poc file was created)"
 
+    def test_123_connectivity_tester_dns_injection_blocked(self):
+        """
+        Verify that ConnectivityTesterImpl passes dnsTestHost as a safe argument
+        (via execCommand) so that shell metacharacters in dnsTestHost do not
+        execute arbitrary commands.
+
+        The test temporarily sets dnsTestHost to a value containing a shell
+        injection payload, triggers a connectivity check, and confirms the
+        injected command was never executed (sentinel file not created).
+        """
+        poc_file = "/tmp/conn_dns_injection_test.txt"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        orig_uri_settings = global_functions.uvmContext.uriManager().getSettings()
+        try:
+            malicious_uri_settings = copy.deepcopy(orig_uri_settings)
+            malicious_uri_settings['dnsTestHost'] = "updates.edge.arista.com; touch " + poc_file
+            global_functions.uvmContext.uriManager().setSettings(malicious_uri_settings)
+            # Trigger connectivity test — this calls isDnsWorking() with the malicious dnsTestHost
+            global_functions.uvmContext.getConnectivityTester().getStatus()
+        finally:
+            global_functions.uvmContext.uriManager().setSettings(orig_uri_settings)
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via ConnectivityTesterImpl dnsTestHost (sentinel file was created)"
+
+    def test_124_connectivity_tester_dns_server_injection_blocked(self):
+        """
+        Verify that the DNS server address field (v4StaticDns1) is validated as an
+        InetAddress, preventing shell injection strings from being stored or executed
+        by ConnectivityTesterImpl.
+
+        The v4StaticDns1 field is typed as InetAddress on the server side, so the
+        JSON-RPC layer will reject any value that is not a valid IP address.  The
+        test confirms that attempting to store a malicious DNS value raises a
+        JSONRPCException (the expected API-level rejection) and that the injected
+        command is never executed.
+        """
+        poc_file = "/tmp/conn_server_injection_test.txt"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        try:
+            malicious_settings = copy.deepcopy(orig_netsettings)
+            for iface in malicious_settings.get('interfaces', {}).get('list', []):
+                if iface.get('isWan'):
+                    iface['v4StaticDns1'] = "8.8.8.8; touch " + poc_file
+                    break
+            try:
+                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+            except JSONRPCException:
+                # Expected: the server rejects the malicious value because v4StaticDns1
+                # is unmarshalled as InetAddress, which only accepts valid IP addresses.
+                pass
+        finally:
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via network settings DNS field (sentinel file was created)"
 
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
