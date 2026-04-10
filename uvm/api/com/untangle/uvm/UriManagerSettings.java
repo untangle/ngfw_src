@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.LinkedList;
 
 import org.json.JSONString;
+
+import com.untangle.uvm.util.SafeCheck;
+
 import org.json.JSONObject;
 
 /**
@@ -19,6 +22,7 @@ public class UriManagerSettings implements Serializable, JSONString
     private Integer version = 6;
     private List<UriTranslation> uriTranslations = new LinkedList<>();
 
+    @SafeCheck
     private String dnsTestHost = "updates.edge.arista.com";
     private String tcpTestHost = "updates.edge.arista.com";
 
