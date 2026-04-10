@@ -9,6 +9,8 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+
 /**
  * This class contains all settings for each configured IPsec tunnel.
  * 
@@ -23,6 +25,7 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private boolean active;
     private int ikeVersion = 1;
     private String conntype;
+    @SafeCheck
     private String description;
     private String secret;
     private String runmode;
@@ -41,12 +44,14 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String left;
     private String leftId;
     private String leftSourceIp;
+    @SafeCheck
     private String leftSubnet;
     private String leftProtoPort;
     private String leftNextHop;
     private String right;
     private String rightId;
     private String rightSourceIp;
+    @SafeCheck
     private String rightSubnet;
     private String rightProtoPort;
     private String rightNextHop;
