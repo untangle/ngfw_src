@@ -1,3 +1,5 @@
+import os
+import shlex
 import subprocess
 import copy
 import re
@@ -236,6 +238,128 @@ class DynamicBlocklistsTests(NGFWTestCase):
         # If ping succeeds, fail — means not blocked
         assert pingResult != 0, f"DBL did not block IP {pingable_ip}"
         app.setSettingsV2(orig_dbl_settings)
+
+    def _get_result_type(self, result):
+        """
+        Extract the 'type' field from a runJobsByConfigIdsV2 result.
+        Handles jabsorb JABSORB-mode Map serialization which wraps the map under
+        a 'map' key (e.g. {"javaClass": "...", "map": {"type": "Error", ...}}).
+        """
+        if result is None:
+            return None
+        result_data = result.get("map", result)
+        return result_data.get("type")
+
+    def test_017_run_jobs_invalid_uuid_format_rejected(self):
+        """
+        Verify that runJobsByConfigIdsV2 rejects configIds that are not valid UUIDs.
+        A non-UUID string must never be used to look up or execute a cron command.
+        """
+        result = app.runJobsByConfigIdsV2(["not-a-valid-uuid"])
+        assert self._get_result_type(result) == "Error", \
+            f"Expected Error response for non-UUID configId, got: {result}"
+
+    def test_018_run_jobs_injection_chars_in_id_rejected(self):
+        """
+        Verify that configIds containing shell injection characters are rejected by
+        UUID format validation before any cron lookup or command execution occurs.
+        A sentinel file must not be created by the injected payload.
+        """
+        poc_file = "/tmp/dbl_injection_test.txt"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Looks UUID-ish but contains injection payload after a semicolon
+        malicious_id = "12345678-1234-1234-1234-123456789012; touch " + poc_file
+
+        result = app.runJobsByConfigIdsV2([malicious_id])
+        assert self._get_result_type(result) == "Error", \
+            f"Expected Error response for injection configId, got: {result}"
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via runJobsByConfigIdsV2 (sentinel file was created)"
+
+    def test_019_run_jobs_unknown_uuid_returns_error(self):
+        """
+        Verify that a well-formed UUID that has no matching cron job entry
+        returns an Error response without executing any command.
+        """
+        # This UUID is valid but will not match any entry in the dbl-crons file
+        unknown_uuid = "00000000-0000-0000-0000-000000000000"
+        result = app.runJobsByConfigIdsV2([unknown_uuid])
+        assert self._get_result_type(result) == "Error", \
+            f"Expected Error for unknown UUID, got: {result}"
+
+    def test_020_run_jobs_mixed_valid_invalid_ids(self):
+        """
+        Verify that when a list contains both invalid and valid UUIDs,
+        only the invalid ones are skipped and the overall response reflects
+        whether any valid UUID succeeded.
+        """
+        # Mix: one known-bad format, one unknown-but-valid UUID
+        result = app.runJobsByConfigIdsV2(["bad-id", "00000000-0000-0000-0000-000000000000"])
+        # Both should fail (bad format + not in cron), so the response must be Error
+        assert self._get_result_type(result) == "Error", \
+            f"Expected Error when all configIds fail, got: {result}"
+
+
+    def test_021_cron_job_source_url_is_shell_quoted(self):
+        """
+        Verify that when sync-settings writes /etc/cron.d/dbl-crons, user-supplied
+        fields containing shell metacharacters (source URL, parsingMethod) are
+        shell-quoted via shlex.quote() so they cannot break out and execute arbitrary
+        commands through the generated cron job.
+        """
+        global app, orig_dbl_settings
+
+        cron_file = "/etc/cron.d/dbl-crons"
+        sentinel_file = "/tmp/dbl_cron_write_injection_test.txt"
+        subprocess.call(["rm", "-f", sentinel_file])
+
+        # Craft a source URL with a shell injection payload embedded after a semicolon.
+        # Without proper quoting in the cron file, cron would execute:
+        #   /usr/share/untangle/bin/fetch_ip_list.py ... http://example.com/list.txt
+        #   ; touch /tmp/dbl_cron_write_injection_test.txt ...
+        malicious_url = "http://example.com/list.txt; touch " + sentinel_file
+
+        dblSettings = copy.deepcopy(orig_dbl_settings)
+        dblSettings['enabled'] = True
+        dblSettings['configurations'][0]['enabled'] = True
+        dblSettings['configurations'][0]['source'] = malicious_url
+
+        # setSettingsV2 triggers sync-settings, which calls write_cron_file()
+        app.setSettingsV2(dblSettings)
+        time.sleep(3)  # Allow sync-settings to finish writing the cron file
+
+        assert os.path.exists(cron_file), f"Cron file was not created at {cron_file}"
+
+        with open(cron_file) as f:
+            cron_content = f.read()
+
+        # The raw unquoted URL must NOT appear bare in the cron file.
+        # Note: the URL text also appears inside the single-quoted form produced by
+        # shlex.quote(), so we strip that quoted form out first and then check that
+        # no bare copy of the URL remains.
+        cron_without_quoted_url = cron_content.replace(shlex.quote(malicious_url), "QUOTED_URL")
+        assert malicious_url not in cron_without_quoted_url, (
+            "Shell injection payload found unquoted in cron file — "
+            "source URL is not being properly shell-escaped."
+        )
+
+        # shlex.quote() wraps the URL in single quotes so the semicolon is inert.
+        # Confirm the properly-quoted form IS present in the cron file.
+        assert shlex.quote(malicious_url) in cron_content, (
+            f"Expected shell-quoted URL '{shlex.quote(malicious_url)}' not found in cron file.\n"
+            f"Cron content:\n{cron_content}"
+        )
+
+        # Writing the cron file must never execute the injected payload.
+        assert not os.path.exists(sentinel_file), (
+            "Sentinel file was created — shell injection occurred during cron file write."
+        )
+
+        app.setSettingsV2(orig_dbl_settings)
+
 
 test_registry.register_module("dynamic-blocklists", DynamicBlocklistsTests)
 

@@ -5,6 +5,8 @@ package com.untangle.uvm.network;
 
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
+import com.untangle.uvm.util.SafeCheck;
+
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -36,7 +38,9 @@ public class NetworkSettings implements Serializable, JSONString
     private List<FilterRule> accessRules = null;
     private List<FilterRule> filterRules = null;
     
+    @SafeCheck
     private String hostName;
+    @SafeCheck
     private String domainName;
 
     private boolean dynamicDnsServiceEnabled = false;

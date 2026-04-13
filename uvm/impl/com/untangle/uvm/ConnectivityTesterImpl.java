@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
@@ -85,8 +86,8 @@ public class ConnectivityTesterImpl implements ConnectivityTester
 
         domainName = UvmContextFactory.context().uriManager().getSettings().getDnsTestHost();
 
-        if (primaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + primaryServer + " " + domainName) != 0) isWorking = false;
-        if (secondaryServer != null && UvmContextFactory.context().execManager().execResult(DNS_TEST_SCRIPT + " " + secondaryServer + " " + domainName) != 0) isWorking = false;
+        if (primaryServer != null && UvmContextFactory.context().execManager().execCommand(DNS_TEST_SCRIPT, List.of(primaryServer, domainName)).getResult() != 0) isWorking = false;
+        if (secondaryServer != null && UvmContextFactory.context().execManager().execCommand(DNS_TEST_SCRIPT, List.of(secondaryServer, domainName)).getResult() != 0) isWorking = false;
 
         return isWorking;
     }
