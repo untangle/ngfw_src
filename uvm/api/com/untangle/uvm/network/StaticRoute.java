@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.SafeCheck;
 
 /**
  * This in the implementation of a Static Route
@@ -32,6 +33,7 @@ public class StaticRoute implements JSONString, Serializable
     private String description = null; 
     private InetAddress network = null;
     private Integer prefix = null ; /* 0-32 */
+    @SafeCheck
     private String nextHop = null; /* Can store the dev name "eth1" or IP "1.2.3.4" */
     
     public StaticRoute() {}
