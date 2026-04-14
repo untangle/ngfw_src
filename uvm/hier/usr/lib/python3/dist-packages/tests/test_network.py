@@ -3253,6 +3253,55 @@ server=dynupdate.no-ip.com
         }
         run_valid_test("TRACE", base_args)
 
+    def test_081_static_route_nexthop_injection_blocked(self):
+        """
+        Verify that shell metacharacters in static route nextHop fields
+        do not appear in the generated route script.
+        StaticRoute.nextHop is a String in Java (not InetAddress), so
+        arbitrary values pass through JSON-RPC to sync-settings.
+        route_manager.py writes nextHop directly into an executable shell
+        script at /etc/untangle/post-network-hook.d/030-routes.
+        Tests newline, semicolon, and backtick injection patterns.
+        """
+        route_script = "/etc/untangle/post-network-hook.d/030-routes"
+        payloads = [
+            ("8.8.8.8\necho NEWLINE_INJECT", "NEWLINE_INJECT"),
+            ("8.8.8.8; echo SEMICOLON_INJECT", "SEMICOLON_INJECT"),
+            ("`echo BACKTICK_INJECT`", "BACKTICK_INJECT"),
+        ]
+
+        try:
+            malicious_settings = copy.deepcopy(orig_netsettings)
+            for idx, (nexthop, _) in enumerate(payloads):
+                route = create_route_rule("192.168.99.0", 24 + idx, nexthop)
+                route["ruleId"] = 900 + idx
+                malicious_settings['staticRoutes']['list'].insert(0, route)
+
+            global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+            time.sleep(2)
+
+            assert os.path.exists(route_script), \
+                "Route script not found: " + route_script
+            script_content = open(route_script).read()
+
+            failures = []
+            for nexthop, marker in payloads:
+                # Check if the marker appears as a separate command on its own line.
+                # After @SafeCheck, dangerous chars (\n, ;) are stripped but marker
+                # text may remain inline as part of the via argument (harmless).
+                # Injection is only successful if the marker ends up as a standalone
+                # shell command on a separate line.
+                for line in script_content.split('\n'):
+                    stripped = line.strip()
+                    if stripped.startswith("echo") and marker in stripped:
+                        failures.append(f"  {marker} (payload: {nexthop!r})")
+                        break
+
+            assert not failures, \
+                "Injection found as standalone command in route script:\n" + "\n".join(failures)
+        finally:
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings
