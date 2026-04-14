@@ -26,7 +26,9 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/openvpn-generate-client-onc",
     "/usr/bin/systemctl",
     "/usr/share/untangle/bin/ut-update-hosts-file",
-    "/usr/share/untangle/bin/ut-dns-test"
+    "/usr/share/untangle/bin/ut-dns-test",
+    "/usr/sbin/usermod",
+    "/usr/share/untangle/bin/ut-snmp.sh"
 
 }
 
