@@ -3,6 +3,7 @@
  */
 package com.untangle.uvm.network;
 
+import com.untangle.uvm.util.SafeCheck;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.Type;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.V4Alias;
@@ -39,9 +40,13 @@ public class InterfaceSettings implements Serializable, JSONString
     private int     interfaceId; /* the ID of the physical interface (1-254) */
     private String  name; /* human name: ie External, Internal, Wireless */
 
+    @SafeCheck
     private String  physicalDev; /* physical interface name: eth0, etc */
+    @SafeCheck
     private String  systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
+    @SafeCheck
     private String  symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, br.eth0 etc */
+    @SafeCheck
     private String  imqDev; /* IMQ device name: imq0, imq1, etc (only applies to WANs) */
 
     private Boolean hidden = null; /* Is this interface hidden? null means false */
