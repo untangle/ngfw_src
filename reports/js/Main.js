@@ -6,6 +6,8 @@ Ext.define('Ung.apps.reports.Main', {
 
     viewModel: {
         data: {
+            title: 'Reports'.t(),
+            iconName: 'reports',
             vueMigrated: true
         }
     },
