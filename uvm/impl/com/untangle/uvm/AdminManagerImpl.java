@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -356,8 +357,8 @@ public class AdminManagerImpl implements AdminManager
         if ( pass != null ) {
             logger.info("Setting root password.");
                     
-            ExecManagerResult result = UvmContextImpl.context().execManager().exec( "usermod -p '" + passwordHashShadow + "' root" );
-                    
+            ExecManagerResult result = UvmContextImpl.context().execManager().execCommand( "/usr/sbin/usermod", Arrays.asList("-p", passwordHashShadow, "root") );
+
             int exitCode = result.getResult();
             if ( exitCode != 0 ) {
                 logger.warn( "Setting root password returned non-zero exit code: " + exitCode );
@@ -371,7 +372,7 @@ public class AdminManagerImpl implements AdminManager
             if ( passwordHashShadow == null ) {
                 passwordHashShadow = "!";
             }
-            ExecManagerResult result = UvmContextImpl.context().execManager().exec( "usermod -p '" + passwordHashShadow + "' root" );
+            ExecManagerResult result = UvmContextImpl.context().execManager().execCommand( "/usr/sbin/usermod", Arrays.asList("-p", passwordHashShadow, "root") );
             int exitCode = result.getResult();
             if ( exitCode != 0 ) {
                 logger.warn( "Setting root password returned non-zero exit code: " + exitCode );

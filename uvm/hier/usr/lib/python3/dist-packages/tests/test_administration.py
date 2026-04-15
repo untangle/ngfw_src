@@ -491,4 +491,238 @@ class AdministrationTests(NGFWTestCase):
         assert "deprecated" in resp_body.lower() or "no longer available" in resp_body.lower() or "NoSuchMethodException" in resp_body, \
             "Skin upload should be rejected as deprecated, got: " + resp_body
 
+    def test_040_admin_password_hash_no_injection(self):
+        """Verify passwordHashShadow with shell metacharacters cannot inject commands (NGFW-15673 fix).
+
+        ut-exec-launcher runs commands via subprocess.Popen(cmd, shell=True), so
+        the old concatenated string:
+            exec("usermod -p '" + passwordHashShadow + "' root")
+        is vulnerable to shell injection.  A payload of the form:
+            x' root; touch /tmp/sentinel #
+        produces the shell string:
+            usermod -p 'x' root; touch /tmp/sentinel #' root
+        The single-quote after 'x' closes the first argument, the semicolon
+        separates commands, and '#' comments out the trailing fragment —
+        so 'touch' always runs regardless of usermod's exit code.
+
+        The fix replaces exec() with execCommand(), which sends the executable
+        and arguments as separate JSON fields to ut-exec-safe-launcher (no shell).
+        The payload is therefore treated as a literal -p value; usermod rejects
+        it as an invalid hash (non-zero exit, logged as a warning) and the
+        injected touch command never executes.
+        """
+        import copy
+        sentinel_file = "/tmp/admin_injection_test_sentinel"
+
+        # Remove any pre-existing sentinel so the assertion is unambiguous.
+        if os.path.exists(sentinel_file):
+            os.remove(sentinel_file)
+
+        orig_settings = global_functions.uvmContext.adminManager().getSettings()
+
+        try:
+            # Payload anatomy when inserted into the old template
+            # "usermod -p '" + payload + "' root":
+            #
+            #   usermod -p 'x' root; touch /tmp/...sentinel #' root
+            #                  ^──┘  ^─────────────────────┘ ^─────
+            #              closes     injected command        comment
+            #              the quote  (always runs via ;)
+            #
+            # With execCommand() the entire payload string is a single verbatim
+            # argument to usermod; the shell never sees it, so touch never runs.
+            payload = f"x' root; touch {sentinel_file} #"
+
+            settings = copy.deepcopy(orig_settings)
+            for user in settings["users"]["list"]:
+                if user.get("username") == "admin":
+                    user["passwordHashShadow"] = payload
+                    break
+
+            # setSettings() calls setRootPasswordAndShadowHash() internally,
+            # which is where the exec()/execCommand() call lives.
+            global_functions.uvmContext.adminManager().setSettings(settings)
+
+            assert not os.path.exists(sentinel_file), (
+                "Command injection succeeded: sentinel file was created. "
+                "passwordHashShadow is still being shell-interpolated in the usermod call."
+            )
+        finally:
+            # Always restore the original working settings regardless of outcome.
+            global_functions.uvmContext.adminManager().setSettings(orig_settings)
+            if os.path.exists(sentinel_file):
+                os.remove(sentinel_file)
+
+    def test_050_snmp_v3_fields_no_injection(self):
+        """Verify SNMP v3 fields are sanitized by @SafeCheck before reaching the shell command.
+
+        writeSnmpdV3User() in SystemManagerImpl builds this shell string:
+
+            ut-snmp.sh create_snmp3_user <v3Username> <v3AuthProto> "<v3AuthPass>" <v3PrivProto> "<v3PrivPass>"
+
+        Unquoted fields (v3Username, v3AuthenticationProtocol, v3PrivacyProtocol) allow
+        command chaining, e.g. a username of "user; touch /tmp/sentinel #" produces:
+
+            ut-snmp.sh create_snmp3_user user; touch /tmp/sentinel # sha "pass" aes "pass"
+
+        Double-quoted fields (v3AuthenticationPassphrase, v3PrivacyPassphrase) are still
+        vulnerable to subshell substitution that survives double quotes, e.g.
+        "pass$(touch /tmp/sentinel)" produces:
+
+            ut-snmp.sh ... "pass$(touch /tmp/sentinel)"
+
+        and the shell expands $(touch ...) inside the double quotes.
+
+        The fix annotates all five fields with @SafeCheck in SnmpSettings.java.
+        The JSON-RPC preInvokeCallback calls SafeCheckValidator.validateAll(), which
+        strips injection constructs ($(cmd), `cmd`, chaining operators, redirects,
+        newlines) before setSettings() processes the data.  Legitimate passphrase
+        characters such as standalone $, @, (, ), and ! are preserved.
+
+        SNMP is intentionally kept disabled so setSettings() does not start/stop
+        the snmpd daemon (which hangs in the test environment).  @SafeCheck runs
+        in the JSON-RPC layer before setSettings() is invoked, so the sanitization
+        is verified by reading the values back via getSettings().
+        """
+        import copy
+
+        orig_settings = global_functions.uvmContext.systemManager().getSettings()
+
+        try:
+            settings = copy.deepcopy(orig_settings)
+            snmp = settings["snmpSettings"]
+
+            # Keep SNMP disabled so no daemon start/stop is triggered.
+            snmp["enabled"] = False
+            snmp["v3Enabled"] = False
+
+            # --- Unquoted fields: chaining via ; ---
+            # SafeCheckValidator strips ';' when followed by command-like content,
+            # so "testuser; touch /tmp/sentinel #" becomes "testuser touch /tmp/sentinel #"
+            # (the ; separator is gone, breaking the injection chain).
+            snmp["v3Username"] = "testuser; touch /tmp/snmp_v3_sentinel #"
+            snmp["v3AuthenticationProtocol"] = "sha; touch /tmp/snmp_v3_sentinel #"
+            snmp["v3PrivacyProtocol"] = "aes; touch /tmp/snmp_v3_sentinel #"
+
+            # --- Double-quoted fields: subshell via $(...) ---
+            # SafeCheckValidator strips the entire $(…) construct, so
+            # "pass$(touch /tmp/snmp_v3_sentinel)" becomes "pass".
+            snmp["v3AuthenticationPassphrase"] = "pass$(touch /tmp/snmp_v3_sentinel)"
+            snmp["v3PrivacyPassphrase"] = "pass$(touch /tmp/snmp_v3_sentinel)"
+
+            # @SafeCheck runs in the JSON-RPC preInvokeCallback, stripping
+            # injection constructs before the call reaches SystemManagerImpl.
+            global_functions.uvmContext.systemManager().setSettings(settings)
+
+            # Read back the stored values and assert the injection constructs
+            # were stripped.  SafeCheckValidator removes the construct itself
+            # (the ; separator, the $(...) subshell) but leaves surrounding
+            # literal text intact — so the correct check is that the construct
+            # token is gone, not that surrounding words like "touch" vanished.
+            saved_snmp = global_functions.uvmContext.systemManager().getSettings()["snmpSettings"]
+
+            for field_name, payload, construct in (
+                # Unquoted fields: ; command-separator is stripped
+                ("v3Username",               "testuser; touch /tmp/snmp_v3_sentinel #",  ";"),
+                ("v3AuthenticationProtocol", "sha; touch /tmp/snmp_v3_sentinel #",        ";"),
+                ("v3PrivacyProtocol",        "aes; touch /tmp/snmp_v3_sentinel #",        ";"),
+                # Double-quoted fields: $(...) subshell construct is stripped entirely
+                ("v3AuthenticationPassphrase", "pass$(touch /tmp/snmp_v3_sentinel)",      "$("),
+                ("v3PrivacyPassphrase",        "pass$(touch /tmp/snmp_v3_sentinel)",      "$("),
+            ):
+                value = saved_snmp.get(field_name, "")
+                assert value != payload, (
+                    f"@SafeCheck did not sanitize field '{field_name}': "
+                    f"raw injection payload survived unchanged: {value!r}"
+                )
+                assert construct not in (value or ""), (
+                    f"Injection construct '{construct}' still present in field '{field_name}' "
+                    f"after sanitization: {value!r}"
+                )
+
+        finally:
+            global_functions.uvmContext.systemManager().setSettings(orig_settings)
+
+    def test_051_snmp_config_fields_no_newline_injection(self):
+        """Verify SNMP config-file fields are sanitized by @SafeCheck against newline injection.
+
+        writeSnmpdConfFile() in SystemManagerImpl writes user-controlled strings
+        directly into /etc/snmp/snmpd.conf without any sanitization:
+
+            trapsink <trapHost> <trapCommunity> <trapPort>
+            syslocation <sysLocation>
+            syscontact <sysContact>
+            com2sec local default <communityString>
+
+        A newline embedded in any of these fields lets an attacker append
+        arbitrary snmpd.conf directives.  The most dangerous is the 'extend'
+        directive, which executes a shell command whenever an SNMP OID is
+        queried:
+
+            trapHost = "trap.example.com\\nextend .1.2.3.4 /bin/touch /tmp/sentinel"
+
+        produces in snmpd.conf:
+
+            trapsink trap.example.com
+            extend .1.2.3.4 /bin/touch /tmp/sentinel
+             MY_COMMUNITY 162
+
+        The fix annotates all five fields with @SafeCheck in SnmpSettings.java.
+        SafeCheckValidator always strips \\n and \\r (newline injection is in the
+        INJECTION_PATTERN unconditionally), so the newline never reaches the file.
+
+        SNMP is intentionally kept disabled so setSettings() does not start/stop
+        the snmpd daemon (which hangs in the test environment).  @SafeCheck runs
+        in the JSON-RPC layer before setSettings() is invoked, so the sanitization
+        is verified by reading the values back via getSettings().
+        """
+        import copy
+
+        orig_settings = global_functions.uvmContext.systemManager().getSettings()
+
+        try:
+            settings = copy.deepcopy(orig_settings)
+            snmp = settings["snmpSettings"]
+
+            # Keep SNMP disabled so no daemon start/stop is triggered.
+            snmp["enabled"] = False
+            snmp["sendTraps"] = False
+
+            # Embed a literal newline in each field.  Without @SafeCheck the
+            # newline would survive into the config file, letting an attacker
+            # inject arbitrary snmpd directives (e.g. 'extend' for RCE).
+            # With @SafeCheck the newline is stripped in the JSON-RPC layer.
+            payloads = {
+                "trapHost":        "trap.example.com\nextend .1.2.3.4 /bin/id",
+                "trapCommunity":   "public\nextend .1.2.3.5 /bin/id",
+                "sysLocation":     "HQ\nextend .1.2.3.6 /bin/id",
+                "sysContact":      "admin@example.com\nextend .1.2.3.7 /bin/id",
+                "communityString": "public\nextend .1.2.3.8 /bin/id",
+            }
+            for field, value in payloads.items():
+                snmp[field] = value
+
+            # @SafeCheck strips \n and \r unconditionally in the JSON-RPC
+            # preInvokeCallback before this call reaches SystemManagerImpl.
+            global_functions.uvmContext.systemManager().setSettings(settings)
+
+            # Read the values back and assert every newline was stripped.
+            # SafeCheckValidator strips \n and \r unconditionally.  The text
+            # that followed the newline may still be present as a literal
+            # suffix — the correct check is that the newline itself is gone.
+            saved_snmp = global_functions.uvmContext.systemManager().getSettings()["snmpSettings"]
+
+            for field_name, raw_payload in payloads.items():
+                value = saved_snmp.get(field_name, "")
+                assert value != raw_payload, (
+                    f"@SafeCheck did not sanitize field '{field_name}': "
+                    f"raw payload with newline survived unchanged: {value!r}"
+                )
+                assert "\n" not in (value or "") and "\r" not in (value or ""), (
+                    f"Newline survived sanitization in field '{field_name}': {value!r}"
+                )
+
+        finally:
+            global_functions.uvmContext.systemManager().setSettings(orig_settings)
+
 test_registry.register_module("administration-tests", AdministrationTests)
