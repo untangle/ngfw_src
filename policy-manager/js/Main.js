@@ -3,18 +3,27 @@ Ext.define('Ung.apps.policymanager.Main', {
     alias: 'widget.app-policy-manager',
     layout: 'border',
 
-    controller: 'app-policy-manager',
-
     viewModel: {
         data: {
+            title: 'Policy Manager'.t(),
+            iconName: 'policy-manager',
             vueMigrated: true
-        }
+        },
     },
 
     listeners: {
         activate: function (panel) {
             var target = panel.down('#iframeHolder');
             Util.attachIframeToTarget(target, '/console/settings/services/policy-manager', false);
+
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'policy-manager',
+                enableRemoveHandler: true
+            });
+        },
+
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
         }
     },
 

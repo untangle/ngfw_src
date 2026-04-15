@@ -1,7 +1,6 @@
 Ext.define('Ung.apps.configurationbackup.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-configuration-backup',
-    controller: 'app-configuration-backup',
 
     viewModel: {
         data: {
