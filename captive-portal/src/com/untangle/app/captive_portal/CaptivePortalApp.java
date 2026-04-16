@@ -176,11 +176,35 @@ public class CaptivePortalApp extends AppBase
     }
 
     /**
+     * Get the application settings V2 format for Vue UI
+     * @return The settings for the application instance
+     */
+    public CaptivePortalSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
+     * Set the application settings from V2 format payload coming from Vue UI
+     * @param newSettings The new application settings
+     */
+    public void setSettingsV2(CaptivePortalSettings newSettings) {
+        this.setSettings(newSettings);
+    }
+
+    /**
      * @return A list of active captive portal users
      */
     public ArrayList<CaptivePortalUserEntry> getActiveUsers()
     {
         return (captureUserTable.buildUserList());
+    }
+
+    /**
+     * Get a list of active captive portal users V2 format for Vue UI
+     * @return A list of active captive portal users
+     */
+    public ArrayList<CaptivePortalUserEntry> getActiveUsersV2() {
+        return this.getActiveUsers();
     }
 
     /**
