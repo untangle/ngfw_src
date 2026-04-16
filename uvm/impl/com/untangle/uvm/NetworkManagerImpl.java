@@ -358,7 +358,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         // just bring the interface up and down 
-        result = UvmContextFactory.context().execManager().exec( "ifdown " + devName );
+        result = UvmContextFactory.context().execManager().execCommand("/sbin/ifdown", List.of(devName));
         try {
             String[] lines = result.getOutput().split("\\r?\\n");
             logger.info("ifdown {}: ", devName );
@@ -366,7 +366,7 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.info("ifdown: {}", line);
         } catch (Exception e) {}
 
-        result = UvmContextFactory.context().execManager().exec( "ifup " + devName );
+        result = UvmContextFactory.context().execManager().execCommand("/sbin/ifup", List.of(devName));
         try {
             String lines[] = result.getOutput().split("\\r?\\n");
             logger.info("ifup {}: ", devName );
@@ -909,12 +909,12 @@ public class NetworkManagerImpl implements NetworkManager
     @SuppressWarnings("unchecked") //JSON
     public List<DeviceStatus> getDeviceStatus( )
     {
-        String argStr = "";
+        List<String> args = new ArrayList<>();
         for (InterfaceSettings intfSettings : this.networkSettings.getInterfaces()) {
-            argStr = argStr + " " + intfSettings.getPhysicalDev() + " ";
+            args.add(intfSettings.getPhysicalDev());
         }
 
-        String output = UvmContextFactory.context().execManager().execOutput(deviceStatusScript + argStr);
+        String output = UvmContextFactory.context().execManager().execCommand(deviceStatusScript, args).getOutput();
         List<DeviceStatus> entryList = null;
         try {
             //expected Java class type
@@ -3481,7 +3481,7 @@ public class NetworkManagerImpl implements NetworkManager
     public String getLogFile(String device)
     {
         logger.debug("hostapd.log getLogFile()");
-        return UvmContextFactory.context().execManager().execOutput(String.format("%s %s", GET_LOGFILE_SCRIPT, device));
+        return UvmContextFactory.context().execManager().execCommand(GET_LOGFILE_SCRIPT, List.of(device)).getOutput();
     }
 
     /**

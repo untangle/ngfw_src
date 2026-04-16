@@ -29,6 +29,11 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/ut-dns-test",
     "/usr/sbin/usermod",
     "/usr/share/untangle/bin/ut-snmp.sh"
+    "/usr/share/untangle/bin/ut-dns-test",
+    "/usr/share/untangle/bin/ut-uvm-device-status.sh",
+    "/sbin/ifdown",
+    "/sbin/ifup",
+    "/usr/share/untangle/bin/hostapd-logfile"
 
 }
 
