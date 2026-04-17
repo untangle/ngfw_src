@@ -153,8 +153,8 @@ public class CertificateManagerImpl implements CertificateManager
         File localKeyFile = new File(LOCAL_KEY_FILE);
         if ((localCertFile.exists() == false) || (localKeyFile.exists() == false)) {
             String fqdn = UvmContextFactory.context().networkManager().getFullyQualifiedHostname();
-            logger.info("Creating default locally signed apache certificate for " + fqdn);
-            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + fqdn);
+            logger.info("Creating default locally signed apache certificate for {}", fqdn);
+            UvmContextFactory.context().execManager().execCommand(CERTIFICATE_GENERATOR_SCRIPT, List.of("APACHE", "/CN=" + fqdn));
         }
 
         // Get the fingerprint for the configured web cert and the active
@@ -666,10 +666,40 @@ public class CertificateManagerImpl implements CertificateManager
      * setActiveRootCertificate will set a specific root CA to the active root certificate
      * @param fileName
      */
-    public void setActiveRootCertificate(String fileName) {
-        // Use filename to get the parent dir
-        File rootCert = new File(fileName);
-        var certParent = rootCert.getParent();
+    public void setActiveRootCertificate(String fileName) { 
+        if (fileName == null || fileName.isEmpty()) {
+            logger.warn("setActiveRootCertificate: null or empty fileName rejected");
+            return;
+        }
+
+        // Resolve canonical path to prevent directory traversal
+        String canonicalPath;
+        try {
+            canonicalPath = new File(fileName).getCanonicalPath();
+        } catch (IOException e) {
+            logger.warn("setActiveRootCertificate: could not resolve canonical path for {}", fileName, e);
+            return;
+        }
+
+        // Must be a .crt file
+        if (!canonicalPath.endsWith(".crt")) {
+            logger.warn("setActiveRootCertificate: non-.crt file rejected: {}", canonicalPath);
+            return;
+        }
+
+        // Must reside inside CERT_STORE_PATH
+        String certStorePrefix = new File(CERT_STORE_PATH).getAbsolutePath();
+        if (!canonicalPath.startsWith(certStorePrefix + "/")) {
+            logger.warn("setActiveRootCertificate: path outside CERT_STORE_PATH rejected: {}", canonicalPath);
+            return;
+        }
+
+        // Must be in a subdirectory of CERT_STORE_PATH, not at the top level
+        String certParent = new File(canonicalPath).getParent();
+        if (certParent.equals(certStorePrefix)) {
+            logger.warn("setActiveRootCertificate: file must be in a CERT_STORE_PATH subdirectory: {}", canonicalPath);
+            return;
+        }
 
         // Use symlink function to replace CERT_STORE_PATH root certs
         symlinkRootCerts(CERT_STORE_PATH, certParent + "/", false);
@@ -1237,8 +1267,22 @@ public class CertificateManagerImpl implements CertificateManager
             // move cert, key, index, serial from old to new if move is specified
             UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "untangle.crt", sourceDir));
             UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "untangle.key", sourceDir));
-            UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "index*", sourceDir));
-            UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "serial*", sourceDir));
+
+            // execCommand uses shell=False so glob patterns are not expanded by the shell.
+            // Use Java's file listing to enumerate index* and serial* files individually.
+            File targetDirFile = new File(targetDir);
+            File[] indexFiles = targetDirFile.listFiles((dir, name) -> name.startsWith("index"));
+            if (indexFiles != null) {
+                for (File f : indexFiles) {
+                    UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(f.getAbsolutePath(), sourceDir));
+                }
+            }
+            File[] serialFiles = targetDirFile.listFiles((dir, name) -> name.startsWith("serial"));
+            if (serialFiles != null) {
+                for (File f : serialFiles) {
+                    UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(f.getAbsolutePath(), sourceDir));
+                }
+            }
         }
 
         // symlink cert, key, index, serial from new location to old
