@@ -1080,10 +1080,10 @@ class UvmTests(NGFWTestCase):
         #compare original and modified certs
         assert(newline == newCertFileLines[1])
 
-    def test_121_upload_restbackupore_deprecated_endpoint_blocked(self):
+    def test_121_upload_restore_deprecated_endpoint_blocked(self):
         """Verify /admin/upload rejects restore type with deprecation error (command injection fix)"""
         poc_file = "/tmp/poc_backup.txt"
-        backup_filebackup = "/tmp/untangleBackup.backup"
+        backup_file = "/tmp/untangleBackup.backup"
         subprocess.call(f"rm -f {poc_file}", shell=True)
 
         # Download a real backup file to use as the upload payload
