@@ -16,6 +16,7 @@ import org.json.JSONString;
 import java.util.stream.Collectors;
 
 import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.util.SafeCheck;
 
 import org.apache.commons.lang3.StringUtils;
 /**
@@ -49,9 +50,13 @@ public class SystemSettings implements Serializable, JSONString
      * to each by default, since that is the name of the cert that is
      * created and signed by our internal CA during the installation.
      */
+    @SafeCheck
     private String webCertificate = "apache.pem";
+    @SafeCheck
     private String mailCertificate = "apache.pem";
+    @SafeCheck
     private String ipsecCertificate = "apache.pem";
+    @SafeCheck
     private String radiusCertificate = "apache.pem";
 
     /**
