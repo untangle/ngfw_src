@@ -55,9 +55,9 @@ function doRestore()
     debug "Restoring files..."
 
     if [ "true" == $VERBOSE ]; then
-      tar zxhfv $WORKING_DIR/$TARBALL_FILE -C /
+      tar zxfv $WORKING_DIR/$TARBALL_FILE -C /
     else
-      tar zxhf $WORKING_DIR/$TARBALL_FILE -C /
+      tar zxf $WORKING_DIR/$TARBALL_FILE -C /
     fi
 
     # update date on all files
@@ -157,7 +157,17 @@ function expandFile()
     echo $BACKUP_VERSION | grep -qE "$ACCEPTED_PREVIOUS_VERSION"
     PREV_VERSION_CHECK=$?
     if [ "$BACKUP_VERSION" != "$CURRENT_VERSION" ] && [ $PREV_VERSION_CHECK != 0 ] ; then
-        err "Backup file version $BACKUP_VERSION is not supported, supported version(s) = $ACCEPTED_PREVIOUS_VERSION and $CURRENT_VERSION" 
+        err "Backup file version $BACKUP_VERSION is not supported, supported version(s) = $ACCEPTED_PREVIOUS_VERSION and $CURRENT_VERSION"
+        return 1
+    fi
+
+    # NGFW-15703 Validate all tar entries are under /usr/share/untangle/settings/
+    # Prevents Zip Slip path traversal (e.g. ../../etc/cron.d/backdoor)
+    UNSAFE_ENTRIES=$(tar tzf $WORKING_DIR/$TARBALL_FILE | grep -vE '^usr/share/untangle/settings/|^usr/share/untangle/$|^usr/share/$|^usr/$')
+    if [ ! -z "$UNSAFE_ENTRIES" ]; then
+        err "Backup file contains files outside /usr/share/untangle/settings/ (invalid backup):"
+        err "$UNSAFE_ENTRIES"
+        err "Aborting restore."
         return 1
     fi
 

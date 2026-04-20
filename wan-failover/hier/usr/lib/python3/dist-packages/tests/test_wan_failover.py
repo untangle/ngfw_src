@@ -417,4 +417,54 @@ class WanFailoverTests(NGFWTestCase):
 
 
 
+    def test_060_ping_hostname_injection_blocked(self):
+        """
+        Verify that shell metacharacters in pingHostname do not execute
+        arbitrary commands. WanTestSettings.pingHostname is a String field
+        that flows into execCommand(). @SafeCheck strips injection constructs.
+        Tests backtick, $(), and semicolon patterns.
+        """
+        if len(indexOfWans) == 0:
+            raise unittest.SkipTest("No WANS to test WAN Failover")
+
+        payloads = [
+            ("8.8.8.8`echo PING_BACKTICK`", "PING_BACKTICK"),
+            ("8.8.8.8$(echo PING_SUBSHELL)", "PING_SUBSHELL"),
+        ]
+
+        failures = []
+        for pingHost, marker in payloads:
+            payload = build_wan_test_payload(indexOfWans[0][0], "ping", pingHost=pingHost)
+            result = self._app.runTest(payload)
+            if result is not None and marker in str(result):
+                failures.append(f"  {marker} found in output (payload: {pingHost!r})")
+
+        assert not failures, \
+            "Injection found in ping test output:\n" + "\n".join(failures)
+
+    def test_061_http_url_injection_blocked(self):
+        """
+        Verify that shell metacharacters in httpUrl do not execute
+        arbitrary commands. WanTestSettings.httpUrl is a String field
+        that flows into execCommand(). @SafeCheck strips injection constructs.
+        """
+        if len(indexOfWans) == 0:
+            raise unittest.SkipTest("No WANS to test WAN Failover")
+
+        payloads = [
+            ("http://test.untangle.com`echo HTTP_BACKTICK`", "HTTP_BACKTICK"),
+            ("http://test.untangle.com$(echo HTTP_SUBSHELL)", "HTTP_SUBSHELL"),
+        ]
+
+        failures = []
+        for httpUrl, marker in payloads:
+            payload = build_wan_test_payload(indexOfWans[0][0], "http", httpURL=httpUrl)
+            result = self._app.runTest(payload)
+            if result is not None and marker in str(result):
+                failures.append(f"  {marker} found in output (payload: {httpUrl!r})")
+
+        assert not failures, \
+            "Injection found in HTTP test output:\n" + "\n".join(failures)
+
+
 test_registry.register_module("wan-failover", WanFailoverTests)

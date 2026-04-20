@@ -7,6 +7,8 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+
 /**
  * Settings for a given WAN Test
  */
@@ -25,7 +27,9 @@ public class WanTestSettings implements Serializable, JSONString
     private Integer testHistorySize = 10;
     private Integer failureThreshold = 3;
 
+    @SafeCheck
     private String pingHostname;
+    @SafeCheck
     private String httpUrl;
 
     public Boolean getEnabled()

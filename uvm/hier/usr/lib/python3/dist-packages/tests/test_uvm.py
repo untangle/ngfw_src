@@ -1080,10 +1080,10 @@ class UvmTests(NGFWTestCase):
         #compare original and modified certs
         assert(newline == newCertFileLines[1])
 
-    def test_121_upload_restore_deprecated_endpoint_blocked(self):
+    def test_121_upload_restbackupore_deprecated_endpoint_blocked(self):
         """Verify /admin/upload rejects restore type with deprecation error (command injection fix)"""
         poc_file = "/tmp/poc_backup.txt"
-        backup_file = "/tmp/untangleBackup.backup"
+        backup_filebackup = "/tmp/untangleBackup.backup"
         subprocess.call(f"rm -f {poc_file}", shell=True)
 
         # Download a real backup file to use as the upload payload
@@ -1783,5 +1783,74 @@ class UvmTests(NGFWTestCase):
             print(f"Expected redirect_uri: {expected.get('redirect_uri')}, actual: {redirect_uri}")
 
         assert(result)
+
+    def test_125_backup_restore_zipslip_blocked(self):
+        """
+        Verify that a crafted backup file with path traversal entries
+        (files outside usr/share/untangle/settings/) is rejected by
+        ut-restore.sh and does not extract malicious files to the filesystem.
+        """
+        malicious_file = "/tmp/zipslip_test_proof"
+        backup_file = "/tmp/test_backup.backup"
+        work_dir = "/tmp/zipslip_test_workdir"
+        subprocess.call(f"rm -f {malicious_file} {backup_file}", shell=True)
+        subprocess.call(f"rm -rf {work_dir}", shell=True)
+
+        try:
+            # Step 1: Download a legitimate backup
+            result = subprocess.call(
+                global_functions.build_wget_command(
+                    output_file=backup_file,
+                    post_data='type=backup',
+                    uri="http://localhost/admin/download"),
+                shell=True)
+            assert result == 0, "Failed to download backup"
+
+            # Step 2: Craft a malicious backup with a file outside settings/
+            os.makedirs(work_dir, exist_ok=True)
+
+            # Extract the outer tar
+            subprocess.call(f"tar xzf {backup_file} -C {work_dir}", shell=True)
+
+            # Find the inner files tarball
+            inner_tarball = glob.glob(f"{work_dir}/files-*.tar.gz")[0]
+            inner_name = os.path.basename(inner_tarball)
+
+            # Extract inner tarball, add malicious entry, repack
+            inner_dir = f"{work_dir}/inner"
+            os.makedirs(inner_dir, exist_ok=True)
+            subprocess.call(f"tar xzf {inner_tarball} -C {inner_dir}", shell=True)
+
+            # Add a file that would write to /tmp/ (outside settings/)
+            os.makedirs(f"{inner_dir}/tmp", exist_ok=True)
+            with open(f"{inner_dir}/tmp/zipslip_test_proof", "w") as f:
+                f.write("ZIPSLIP_PROOF")
+
+            # Repack inner tarball
+            subprocess.call(
+                f"tar czf {work_dir}/{inner_name} -C {inner_dir} .",
+                shell=True)
+
+            # Repack outer backup
+            subprocess.call(
+                f"tar czf {backup_file} -C {work_dir} ./PUBVERSION ./{inner_name}",
+                shell=True)
+
+            # Step 3: Run ut-restore.sh in check+restore mode
+            # Use the restore script directly with -c (check) first
+            restore_result = subprocess.run(
+                ["/usr/share/untangle/bin/ut-restore.sh", "-i", backup_file, "-v", "-c"],
+                capture_output=True, text=True, timeout=30)
+
+            # Step 4: Validate restore script rejected the file
+            assert restore_result.returncode != 0, \
+                "Restore script should have rejected backup with files outside usr/share/untangle/settings/"
+            assert not os.path.exists(malicious_file), \
+                "Zip Slip: malicious file was extracted to /tmp/zipslip_test_proof"
+
+        finally:
+            subprocess.call(f"rm -f {malicious_file} {backup_file}", shell=True)
+            subprocess.call(f"rm -rf {work_dir}", shell=True)
+
 
 test_registry.register_module("uvm", UvmTests)
