@@ -24,8 +24,9 @@ public class RuleActionGeneric implements JSONString, Serializable {
      * PRIORITY - Required for QoS Rules
      * SCAN, PASS - Required for Shield Rules
      * TARGET_POLICY - Required for Policy Manager
+     * CAPTURE - Required for Captive Portal Rules (paired with PASS for non-capture)
      */
-    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, SET_PRIORITY, SCAN, PASS, TARGET_POLICY }
+    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, SET_PRIORITY, SCAN, PASS, TARGET_POLICY, CAPTURE }
     // Common To All Rules
     private Type type;
 

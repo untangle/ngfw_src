@@ -22,9 +22,11 @@ import java.io.FileOutputStream;
 import java.io.BufferedReader;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.app.captive_portal.generic.CaptivePortalSettingsGeneric;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.OAuthDomain;
@@ -176,19 +178,31 @@ public class CaptivePortalApp extends AppBase
     }
 
     /**
-     * Get the application settings V2 format for Vue UI
-     * @return The settings for the application instance
+     * Get the settings in V2 (generic) format for the Vue UI.
+     *
+     * @return CaptivePortalSettingsGeneric
      */
-    public CaptivePortalSettings getSettingsV2() {
-        return this.getSettings();
+    public CaptivePortalSettingsGeneric getSettingsV2()
+    {
+        if (this.captureSettings != null)
+            return this.captureSettings.transformCaptivePortalSettingsToGeneric();
+        return new CaptivePortalSettingsGeneric();
     }
 
     /**
-     * Set the application settings from V2 format payload coming from Vue UI
-     * @param newSettings The new application settings
+     * Set the settings from a V2 (generic) format payload coming from the Vue UI.
+     * Deep-clones the current V1 settings so V1-only fields (secretKey, binaryKey,
+     * customFileName, deprecated checkServerCertificate handling, etc.) are preserved.
+     *
+     * @param newSettings CaptivePortalSettingsGeneric
      */
-    public void setSettingsV2(CaptivePortalSettings newSettings) {
-        this.setSettings(newSettings);
+    public void setSettingsV2(CaptivePortalSettingsGeneric newSettings)
+    {
+        if (this.captureSettings != null) {
+            CaptivePortalSettings cloned = SerializationUtils.clone(this.captureSettings);
+            newSettings.transformGenericToCaptivePortalSettings(cloned);
+            setSettings(cloned);  // existing V1 setter handles save, validation, and session cleanup
+        }
     }
 
     /**
