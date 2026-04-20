@@ -86,6 +86,11 @@ class UriAnalyzer():
         "https://wiki.edge.arista.com/get.php",
         "https://edge.arista.com/feedback",
 
+        # CMD plugin URIs (edge.arista.com equivalents of untangle.com URIs in UriManagerImpl)
+        "https://boxbackup.edge.arista.com/api/index.php",
+        "https://boxbackup.edge.arista.com/boxbackup/backup.php",
+        "https://queue.edge.arista.com/",
+
         # From test_network.py
         "http://1.2.3.4/test/testPage1.html",
         "http://{wan_address}:81/test/testPage1.html",
