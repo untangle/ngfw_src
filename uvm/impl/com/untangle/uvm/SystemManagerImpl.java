@@ -1590,8 +1590,11 @@ can look deeper. - mahotz
     public void activateApacheCertificate()
     {
         // copy the configured pem file to the apache directory and restart
-        UvmContextFactory.context().execManager().exec("cp " + CertificateManager.CERT_STORE_PATH + getSettings().getWebCertificate() + " " + CertificateManager.APACHE_PEM_FILE);
-        UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+        UvmContextFactory.context().execManager().execCommand("/bin/cp",
+            List.of(CertificateManager.CERT_STORE_PATH + getSettings().getWebCertificate(),
+                    CertificateManager.APACHE_PEM_FILE));
+        UvmContextFactory.context().execManager().execCommand("/usr/sbin/apache2ctl",
+            List.of("graceful"));
     }
 
     /**
@@ -1618,9 +1621,12 @@ can look deeper. - mahotz
         }
 
         // make sure the freeradius daemon can read the crt and key files
-        UvmContextFactory.context().execManager().exec("chmod a+r " + certBase + ".crt");
-        UvmContextFactory.context().execManager().exec("chmod a+r " + certBase + ".key");
-        UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
+        UvmContextFactory.context().execManager().execCommand("/bin/chmod",
+            List.of("a+r", certBase + ".crt"));
+        UvmContextFactory.context().execManager().execCommand("/bin/chmod",
+            List.of("a+r", certBase + ".key"));
+        UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl",
+            List.of("restart", "freeradius.service"));
     }
 
     /**
