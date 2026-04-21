@@ -215,8 +215,9 @@ public class BackupManagerImpl implements BackupManager
          * @param argument
          *        Upload argument
          * @return Deprecated response message
+         * @deprecated use handleV2File instead
          */
-        @Deprecated
+        @Deprecated(since = "17.5", forRemoval = true)
         @Override
         public ExecManagerResult handleFile(FileItem fileItem, String argument) 
         {
