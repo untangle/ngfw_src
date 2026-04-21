@@ -364,6 +364,22 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
+     * Get all groups from all AD for rule conditions - v2 for VueUI
+     * @return List of groups
+     */
+    public List<GroupEntry> getRuleConditionalGroupEntriesV2() {
+        return this.getRuleConditionalGroupEntries();
+    }
+
+    /**
+     * Get all domains from all AD for rule conditions - v2 for VueUI
+     * @return List of groups.
+     */
+    public List<String> getRuleConditionalDomainEntriesV2() {
+        return this.getRuleConditionalDomainEntries();
+    }
+
+    /**
      * Authenticate against all servers.
      *
      * @param username
