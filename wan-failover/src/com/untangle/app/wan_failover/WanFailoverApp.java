@@ -110,6 +110,16 @@ public class WanFailoverApp extends AppBase
     }
 
     /**
+     * Get a list of pingable hosts for the specified WAN interface (v2 API).
+     *
+     * @param uplinkID the interface ID of the WAN uplink to query
+     * @return list of IP addresses that are pingable on the given interface
+     */
+    public List<String> getPingableHostsV2(int uplinkID) {
+        return this.getPingableHosts(uplinkID);
+    }
+
+    /**
      * Get a list of pingable hosts
      * 
      * @param uplinkID
