@@ -145,9 +145,9 @@ public class WanFailoverApp extends AppBase
     }
 
     /**
-     * Get the WAN status
-     * 
-     * @return The WAN status
+     * Get the current status of all WAN interfaces (v2 API).
+     *
+     * @return list of {@link WanStatus} representing the state of each WAN interface
      */
     public List<WanStatus> getWanStatusV2()
     {
