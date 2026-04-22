@@ -145,6 +145,16 @@ public class WanFailoverApp extends AppBase
     }
 
     /**
+     * Get the WAN status
+     * 
+     * @return The WAN status
+     */
+    public List<WanStatus> getWanStatusV2()
+    {
+        return this.getWanStatus();
+    }
+
+    /**
      * Get the application settings
      * 
      * @return The application settings
@@ -152,6 +162,24 @@ public class WanFailoverApp extends AppBase
     public WanFailoverSettings getSettings()
     {
         return this.settings;
+    }
+
+    /**
+     * Get Wan Failover application settings.
+     *
+     * @return Wan Failover application settings
+     */
+    public WanFailoverSettings getSettingsV2()
+    {
+        return this.getSettings();
+    }
+
+    /**
+     * Set WanFailoverSettings Settings from generic version payload
+     * @param settings WanFailoverSettings
+     */
+    public void setSettingsV2(final WanFailoverSettings settings ) {
+        this.setSettings(settings);
     }
 
     /**
