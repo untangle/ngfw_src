@@ -516,6 +516,7 @@ class TunnelVpnMonitor implements Runnable
     public void recycleTunnel(int tunnelId)
     {
         TunnelVpnTunnelStatus status = tunnelStatusList.get(tunnelId);
+        if (status == null) return;
         status.setStateInfo(TunnelVpnTunnelStatus.STATE_DISCONNECTED);
         generateTunnelStatistics();
     }
