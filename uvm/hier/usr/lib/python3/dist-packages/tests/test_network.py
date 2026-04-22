@@ -3302,6 +3302,89 @@ server=dynupdate.no-ip.com
         finally:
             global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
+    def test_082_interface_mapping_v_eval_injection_blocked(self):
+        """
+        Verify interface-mapping.sh rejects the -v eval-arbitrary-code
+        option instead of running it (NGFW-15705 / Vuln 2).
+
+        Pre-fix: getopts spec is "d:i:l:t:r:v:" and the case arm
+        `v) eval "${OPTARG}"` runs the injected `touch` -> marker file
+        appears -> test FAILS, vulnerability confirmed.
+
+        Post-fix: -v is removed from getopts spec, getopts rejects it as
+        an unknown option, no eval runs -> marker absent -> test PASSES.
+        """
+        script = "/usr/share/untangle/bin/interface-mapping.sh"
+        exploit_marker = "/tmp/interface-mapping-eval-injection-test"
+
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        # -t true puts the script into TEST mode (no real `ip link set`
+        # operations), making the test side-effect-free regardless of the
+        # host NIC layout.
+        subprocess.call(
+            [script, "-t", "true", "-v", "touch " + exploit_marker],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+        assert not os.path.exists(exploit_marker), \
+            "interface-mapping.sh -v executed shell payload via eval! " \
+            + exploit_marker + " should not exist"
+
+    def test_083_static_route_nexthop_notification_injection_blocked(self):
+        """
+        Future-proof regression for NGFW-15705 / Vuln 4: ensure that even
+        with a SafeCheckValidator-bypass payload, NotificationManager's
+        testRoutesToReachableAddresses cannot reach a shell.
+
+        Defense layers (any one being broken is caught here):
+          1. SafeCheckValidator at JSON-RPC ingress (incomplete -- known
+             bypasses include `;'cmd'`, `|"cmd"`, `|&cmd`).
+          2. StaticRoute.getToAddr() anchored Pattern.matches dotted-quad
+             (gates the exec sites at NotificationManagerImpl:910/916/917).
+          3. Post-fix: call-site IP regex + execCommand(argv) so even a
+             nextHop containing shell chars cannot expand through /bin/sh.
+
+        Payload: `8.8.8.8;'touch /tmp/marker'` -- the `;` is followed by
+        `'`, which is NOT in the validator's lookahead class
+        [a-zA-Z0-9_/\\\\.], so SafeCheckValidator does NOT strip it.
+        Today this passes because layer 2 (getToAddr) rejects the value
+        before exec. After the call-site fix, layer 3 also blocks.
+
+        If anyone weakens getToAddr() in the future without also keeping
+        the call-site IP guard + execCommand, this test will FAIL.
+        """
+        exploit_marker = "/tmp/static-route-nexthop-notif-injection-test"
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        bypass_payload = "8.8.8.8;'touch " + exploit_marker + "'"
+
+        try:
+            malicious_settings = copy.deepcopy(orig_netsettings)
+            route = create_route_rule("192.168.99.0", 24, bypass_payload)
+            route["ruleId"] = 990
+            malicious_settings['staticRoutes']['list'].insert(0, route)
+            global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+            time.sleep(2)
+
+            # Trigger the notification cycle that runs
+            # testRoutesToReachableAddresses -> ut-notification-helpers.sh +
+            # ping. Pre-fix shell-string concat would fire the injection;
+            # the layered defense above prevents it.
+            global_functions.uvmContext.notificationManager().getNotifications()
+            time.sleep(1)
+
+            assert not os.path.exists(exploit_marker), \
+                "Notification reachability check shell-injected via " \
+                "nextHop bypass payload! " + exploit_marker + " should not exist"
+        finally:
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            if os.path.exists(exploit_marker):
+                os.remove(exploit_marker)
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings

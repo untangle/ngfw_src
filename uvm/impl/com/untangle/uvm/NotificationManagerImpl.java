@@ -904,23 +904,36 @@ public class NotificationManagerImpl implements NotificationManager
         for (StaticRoute route : routes) {
             if (!route.getToAddr()) continue;
 
+            String nextHop = route.getNextHop();
+            // Defense-in-depth: even though getToAddr() above is an anchored
+            // dotted-quad regex, re-validate at the call site so a future
+            // weakening of that gate cannot re-expose a shell injection here.
+            // Offline check (no DNS resolution) matching the getToAddr()
+            // contract.
+            if (!nextHop.matches("^([0-9]{1,3}\\.){3}[0-9]{1,3}$")) {
+                logger.warn("Skipping route reachability check; nextHop is not a valid IPv4: {}", nextHop);
+                continue;
+            }
+
+            String helper = System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh";
+
             /**
              * If already in the ARP table, continue
              */
-            result = this.execManager.execResult(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testRoutesToReachableAddresses1 " + route.getNextHop());
+            result = this.execManager.execCommand(helper, List.of("testRoutesToReachableAddresses1", nextHop)).getResult();
             if (result == 0) continue;
 
             /**
              * If not, force arp resolution with ping Then recheck ARP table
              */
-            result = this.execManager.execResult("ping -c1 -W1 " + route.getNextHop());
-            result = this.execManager.execResult(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testRoutesToReachableAddresses2 " + route.getNextHop());
+            this.execManager.execCommand("/bin/ping", List.of("-c1", "-W1", nextHop));
+            result = this.execManager.execCommand(helper, List.of("testRoutesToReachableAddresses2", nextHop)).getResult();
             if (result == 0) continue;
 
             String notificationText = StringUtils.EMPTY;
             notificationText += i18nUtil.tr("Route to unreachable address:");
             notificationText += StringUtils.SPACE;
-            notificationText += route.getNextHop();
+            notificationText += nextHop;
 
             notificationList.add(notificationText);
         }

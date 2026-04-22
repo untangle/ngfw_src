@@ -435,4 +435,99 @@ class TunnelVpnTests(NGFWTestCase):
         assert not os.path.exists(exploit_marker), \
             "Command injection via tunnel_vpn upload argument field executed! " + exploit_marker + " should not exist"
 
+    def test_070_route_up_script_eval_injection_blocked(self):
+        """
+        Verify tunnel-vpn-route-up.sh rejects shell metacharacters in
+        OpenVPN-pushed route values instead of executing them via `eval`
+        (NGFW-15705 / Vuln 1).
+
+        Pre-fix: the script's `eval $command` executes the injected `touch`
+        and the marker file appears -> test FAILS, vulnerability confirmed.
+
+        Post-fix: the input fails IPv4 validation, the route is rejected
+        with a logger warning, no shell expansion happens -> test PASSES.
+        """
+        script = "/usr/share/untangle/bin/tunnel-vpn-route-up.sh"
+        exploit_marker = "/tmp/tunnel-vpn-route-up-injection-test"
+
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        # Mimic openvpn --route-up env. `dev=tun99` keeps the script past its
+        # interface_id check; the malicious route_network_1 carries the payload.
+        env = os.environ.copy()
+        env["dev"] = "tun99"
+        env["ifconfig_local"] = "10.99.0.2"
+        env["ifconfig_remote"] = "10.99.0.1"
+        env["route_vpn_gateway"] = "10.99.0.1"
+        env["route_network_1"] = "10.20.0.0; touch " + exploit_marker
+        env["route_netmask_1"] = "255.255.0.0"
+        env["route_gateway_1"] = "10.20.0.1"
+
+        subprocess.call([script], env=env)
+
+        assert not os.path.exists(exploit_marker), \
+            "Shell injection via OpenVPN-pushed route value executed! " \
+            + exploit_marker + " should not exist"
+
+    def test_080_pid_file_injection_blocked(self):
+        """
+        Verify TunnelVpnManager.recycleTunnel() rejects shell metacharacters
+        in the openvpn PID file instead of executing them via shell-string
+        `execOutput("kill -INT " + pid)` (NGFW-15705 / Vuln 3).
+
+        Pre-fix: PID contents `"99999 ; touch /tmp/marker"` get concatenated
+        into `kill -INT 99999 ; touch /tmp/marker`, which ut-exec-launcher
+        runs via `subprocess.Popen(shell=True)` -> marker exists -> test
+        FAILS, vulnerability confirmed.
+
+        Post-fix: PID is validated against `\\d{1,10}` and dispatched as
+        structured argv via execCommand("kill", List.of(...)) -> no shell
+        expansion -> marker absent -> test PASSES.
+        """
+        fake_tunnel_id = 250
+        pid_dir = "/run/tunnelvpn"
+        pid_file = os.path.join(pid_dir, f"tunnel-{fake_tunnel_id}.pid")
+        exploit_marker = "/tmp/tunnel-vpn-pid-injection-test"
+
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        org_appData = self._app.getSettings()
+        appData = copy.deepcopy(org_appData)
+        appData['tunnels']['list'].append(create_tunnel_profile(
+            name="injection-test",
+            vpn_tunnel_id=fake_tunnel_id))
+        self._app.setSettings(appData)
+
+        try:
+            # Seed PID file AFTER setSettings — saving may trigger
+            # restartProcesses which sweeps /run/tunnelvpn/ first.
+            os.makedirs(pid_dir, exist_ok=True)
+            with open(pid_file, "w") as f:
+                # PID 99999 won't exist -> kill fails -> `;` runs touch
+                f.write("99999 ; touch " + exploit_marker)
+
+            # Trigger the kill path inside TunnelVpnManager.recycleTunnel.
+            # TunnelVpnApp.recycleTunnel runs tunnelVpnManager.recycleTunnel
+            # FIRST (the path under test), then tunnelVpnMonitor.recycleTunnel
+            # which NPEs because our fake tunnel has no live status entry.
+            # The NPE is expected and irrelevant -- the kill code already
+            # executed (or didn't, post-fix) before the NPE was thrown.
+            try:
+                self._app.recycleTunnel(fake_tunnel_id)
+            except Exception:
+                pass
+            time.sleep(2)
+
+            assert not os.path.exists(exploit_marker), \
+                "PID file shell injection executed via execOutput! " \
+                + exploit_marker + " should not exist"
+        finally:
+            if os.path.exists(pid_file):
+                os.remove(pid_file)
+            if os.path.exists(exploit_marker):
+                os.remove(exploit_marker)
+            self._app.setSettings(org_appData)
+
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)
