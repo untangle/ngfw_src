@@ -35,7 +35,11 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/ut-uvm-device-status.sh",
     "/sbin/ifdown",
     "/sbin/ifup",
-    "/usr/share/untangle/bin/hostapd-logfile"
+    "/usr/share/untangle/bin/hostapd-logfile",
+    "/usr/share/untangle/bin/wan-failover-arp-test.sh",
+    "/usr/share/untangle/bin/wan-failover-ping-test.sh",
+    "/usr/share/untangle/bin/wan-failover-http-test.sh",
+    "/usr/share/untangle/bin/wan-failover-dns-test.sh"
 
 }
 
