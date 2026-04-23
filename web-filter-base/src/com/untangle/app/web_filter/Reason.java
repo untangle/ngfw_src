@@ -21,7 +21,8 @@ public enum Reason
     PASS_UNBLOCK('B', "in Bypass list"),
     FILTER_RULE('F', "matched Rule list"),
     REDIRECT_KIDS('K', "redirected to kid-friendly search engine"),
-    DEFAULT('N', "no rule applied");
+    DEFAULT('N', "no rule applied"),
+    BLOCK_ECH('X',"ECH blocked");
 
 // THIS IS FOR ECLIPSE - @formatter:on
 

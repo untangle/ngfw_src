@@ -531,7 +531,7 @@ for more data when a full packet has not yet been received.
      */
     public String extractSNIhostname(ByteBuffer data) throws Exception
     {
-       return HttpUtility.extractSniHostname(data);
+       return HttpUtility.extractSniHostname(data, false);
     }
 
     /**
