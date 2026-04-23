@@ -95,11 +95,21 @@ public class TunnelVpnManager
             });
             if (matchingFiles != null) {
                 for (File f : matchingFiles) {
-                    String pid = new String(Files.readAllBytes(f.toPath())).replaceAll("(\r|\n)", "");
+                    String pid = new String(Files.readAllBytes(f.toPath())).trim();
+                    // Reject anything that isn't a bare positive integer up to
+                    // 10 digits -- covers Linux PID_MAX_LIMIT (4194304 today,
+                    // headroom for future kernel.pid_max bumps). Defends
+                    // against shell metacharacters in a tampered PID file.
+                    if (!pid.matches("\\d{1,10}")) {
+                        logger.warn("Skipping kill: invalid PID in {}: {}", f, pid);
+                        logger.info("Deleting: {}", f);
+                        f.delete();
+                        continue;
+                    }
                     logger.info("Killing OpenVPN process: {}", pid);
-                    UvmContextFactory.context().execManager().execOutput("kill -INT " + pid);
-                    UvmContextFactory.context().execManager().execOutput("kill -TERM " + pid);
-                    UvmContextFactory.context().execManager().execOutput("kill -KILL " + pid);
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-INT",  pid));
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-TERM", pid));
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-KILL", pid));
                     logger.info("Deleting: {}", f);
                     f.delete();
                 }
@@ -303,7 +313,7 @@ public class TunnelVpnManager
 
             try {
                 File pidFile = new File("/run/tunnelvpn/tunnel-" + tunnelSettings.getTunnelId() + ".pid");
-                String pidData = new String(Files.readAllBytes(pidFile.toPath())).replaceAll("(\r|\n)", "");
+                String pidData = new String(Files.readAllBytes(pidFile.toPath())).trim();
                 logger.info("Recycling tunnel connection: {} PID:{}", tunnelSettings.getName() , pidData);
                 logger.info("Deleting: {}", pidFile);
                 pidFile.delete();
@@ -316,9 +326,17 @@ public class TunnelVpnManager
                  * daemon know to terminate and hopefully begin a clean
                  * shutdown. The third tells it we do not want to wait.
                  */
-                UvmContextFactory.context().execManager().execOutput("kill -INT " + pidData);
-                UvmContextFactory.context().execManager().execOutput("kill -TERM " + pidData);
-                UvmContextFactory.context().execManager().execOutput("kill -KILL " + pidData);
+                // Reject anything that isn't a bare positive integer up to
+                // 10 digits -- covers Linux PID_MAX_LIMIT (4194304 today,
+                // headroom for future kernel.pid_max bumps). Defends against
+                // shell metacharacters in a tampered PID file.
+                if (pidData.matches("\\d{1,10}")) {
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-INT",  pidData));
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-TERM", pidData));
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-KILL", pidData));
+                } else {
+                    logger.warn("Skipping kill: invalid PID in {}: {}", pidFile, pidData);
+                }
 
                 processMap.remove(tunnelSettings.getTunnelId());
 

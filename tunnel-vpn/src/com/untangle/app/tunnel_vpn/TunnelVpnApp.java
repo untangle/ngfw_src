@@ -577,7 +577,7 @@ public class TunnelVpnApp extends AppBase
 
             // no matching tunnel so get rid of the directory
             logger.info("Cleanup removing: " + path);
-            UvmContextFactory.context().execManager().exec("rm -r -f " + path);
+            UvmContextFactory.context().execManager().execCommand("/bin/rm", List.of("-rf", path));
         }
     }
 
