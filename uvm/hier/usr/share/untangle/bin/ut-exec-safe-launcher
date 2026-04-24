@@ -39,7 +39,11 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/wan-failover-arp-test.sh",
     "/usr/share/untangle/bin/wan-failover-ping-test.sh",
     "/usr/share/untangle/bin/wan-failover-http-test.sh",
-    "/usr/share/untangle/bin/wan-failover-dns-test.sh"
+    "/usr/share/untangle/bin/wan-failover-dns-test.sh",
+    "/bin/kill",
+    "/bin/ping",
+    "/bin/rm",
+    "/usr/share/untangle/bin/ut-notification-helpers.sh"
 
 }
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 script_name=$0
 
 exec >> /var/log/uvm/tunnel.log 2>&1
@@ -21,12 +21,15 @@ if [ $? -ne 0 ] ; then
     echo "`date`: ${script_name}: unable to find table ${table_name}"
 fi
 
+_valid_ipv4() { [[ $1 =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; }
+_valid_dev()  { [[ $1 =~ ^[a-zA-Z0-9_.-]{1,15}$ ]]; }
+
 index=1
 while true; do
-    eval "route_network=\${route_network_$index}"
-    eval "route_netmask=\${route_netmask_$index}"
-    eval "route_gateway=\${route_gateway_$index}"
-    if [ "$route_network" = "" ] ; then
+    nv="route_network_$index"; route_network="${!nv}"
+    nm="route_netmask_$index"; route_netmask="${!nm}"
+    gw="route_gateway_$index"; route_gateway="${!gw}"
+    if [ -z "$route_network" ] ; then
         break
     fi
     index=$((index+1))
@@ -36,8 +39,13 @@ while true; do
         continue
     fi
 
-    command="ip route add table $table_name $route_network/$route_netmask via $route_gateway dev ${dev}"
-    echo "`date`: ${script_name}: $command"
-    eval $command
-done
+    if ! _valid_ipv4 "$route_network" || ! _valid_ipv4 "$route_netmask" \
+       || ! _valid_ipv4 "$route_gateway" || ! _valid_dev "$dev" ; then
+        logger -t tunnel-vpn "Rejected unsafe route push: net=$route_network mask=$route_netmask gw=$route_gateway dev=$dev"
+        echo "`date`: ${script_name}: rejected unsafe route push: net=$route_network mask=$route_netmask gw=$route_gateway dev=$dev"
+        continue
+    fi
 
+    echo "`date`: ${script_name}: ip route add table $table_name $route_network/$route_netmask via $route_gateway dev $dev"
+    ip route add table "$table_name" "$route_network/$route_netmask" via "$route_gateway" dev "$dev"
+done

@@ -41,14 +41,13 @@ RENAME_OPTION=
 ##
 ## Process command line arguments
 ##
-while getopts "d:i:l:t:r:v:" flag; do
+while getopts "d:i:l:t:r:" flag; do
     case "${flag}" in
         d) DEBUG=${OPTARG} ;;
         i) INTERACTIVE=${OPTARG} ;;
         l) LOG_WATCH=${OPTARG} ;;
         t) TEST=${OPTARG} ;;
         r) RENAME_OPTION=${OPTARG};;
-        v) eval "${OPTARG}" ;;
     esac
 done
 shift $((OPTIND-1))
