@@ -625,8 +625,17 @@ public class OpenVpnManager
     private void buildCommonConfiguration(OpenVpnSettings settings, StringBuilder sb) {
         sb.append("proto" + SPACE).append(settings.getProtocol()).append(LINE_BREAK);
         sb.append("port" + SPACE).append(settings.getPort()).append(LINE_BREAK);
-        sb.append("data-ciphers" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
-        sb.append("data-ciphers-fallback" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
+
+        // Negotiate modern AEAD ciphers when peer supports them, fall back to the
+        // configured legacy cipher for old clients (OpenVPN 2.6 ignores --cipher
+        // unless the same cipher is also in --data-ciphers).
+        String cipher = settings.getCipher();
+        String dataCiphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
+        if (cipher != null && !cipher.isEmpty() && !dataCiphers.contains(cipher)) {
+            dataCiphers = dataCiphers + ":" + cipher;
+        }
+        sb.append("data-ciphers" + SPACE).append(dataCiphers).append(LINE_BREAK);
+        sb.append("data-ciphers-fallback" + SPACE).append(cipher).append(LINE_BREAK);
     }
 
     /**
@@ -782,6 +791,8 @@ public class OpenVpnManager
                 cfgReader = new BufferedReader(new FileReader(readFile));
                 cfgWriter = new BufferedWriter(new FileWriter(writeFile));
                 String line;
+                String importedCipher = null;
+                boolean hasDataCiphers = false;
 
                 while ((line = cfgReader.readLine()) != null) {
                     // remove any existing auth-user-pass
@@ -795,8 +806,32 @@ public class OpenVpnManager
                         continue;
                     }
 
+                    // capture imported cipher info so we can synthesize a
+                    // backward-compatible data-ciphers list afterwards
+                    String trimmed = line.trim();
+                    if (trimmed.startsWith("cipher ") && importedCipher == null) {
+                        String[] parts = trimmed.split("\\s+", 2);
+                        if (parts.length == 2) importedCipher = parts[1].trim();
+                    } else if (trimmed.startsWith("data-ciphers ") || trimmed.startsWith("data-ciphers-fallback ")) {
+                        hasDataCiphers = true;
+                    }
+
                     // no special handling so write the line as-is
                     cfgWriter.write(line + LINE_BREAK);
+                }
+
+                // OpenVPN 2.6 ignores --cipher unless the same cipher is also in
+                // --data-ciphers. Imported configs from older NGFWs only have
+                // --cipher, so synthesize a backward-compatible data-ciphers list
+                // (modern AEAD first, legacy cipher appended) when the imported
+                // file did not already specify one.
+                if (!hasDataCiphers && importedCipher != null) {
+                    String dataCiphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
+                    if (!dataCiphers.contains(importedCipher)) {
+                        dataCiphers = dataCiphers + ":" + importedCipher;
+                    }
+                    cfgWriter.write("data-ciphers " + dataCiphers + LINE_BREAK);
+                    cfgWriter.write("data-ciphers-fallback " + importedCipher + LINE_BREAK);
                 }
 
                 // if user+pass auth is enabled add the auth-user-pass option
