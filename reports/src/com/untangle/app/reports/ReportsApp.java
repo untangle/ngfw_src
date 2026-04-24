@@ -254,6 +254,24 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     }
 
     /**
+     * getSettings gets the current settings in v2 (Generic) format
+     * @return ReportsSettings object
+     */
+    public ReportsSettings getSettingsV2()
+    {
+        return this.getSettings();
+    }
+
+    /**
+     * Set Reports Settings from generic version payload
+     * @param newSettings ReportsSettings
+     */
+    public void setSettingsV2(final ReportsSettings newSettings)
+    {
+        this.setSettings(newSettings);
+    }
+
+    /**
      * Setup the reports database for first time use.
      */
     public void initializeDB()

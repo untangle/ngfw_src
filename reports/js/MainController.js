@@ -2,15 +2,6 @@ Ext.define('Ung.apps.reports.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-reports',
 
-    control: {
-        '#': {
-            afterrender: 'getSettings',
-            activate: 'checkGoogleDrive'
-        },
-        '#email-templates': {
-            afterrender: 'emailTemplatesAfterRender'
-        }
-    },
 
     getSettings: function () {
         var me = this, v = me.getView(), vm = me.getViewModel();

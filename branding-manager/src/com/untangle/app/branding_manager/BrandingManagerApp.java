@@ -144,6 +144,22 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
     }
 
     /**
+     * getSettings gets the current settings in v2 (Generic) format
+     * @return BrandingManagerSettings object
+     */
+    public BrandingManagerSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
+     * Set BrandingManagerSettings Settings from generic version payload
+     * @param newSettings BrandingManagerSettings
+     */
+    public void setSettingsV2(final BrandingManagerSettings newSettings) {
+        this.setSettings(newSettings);
+    }
+
+    /**
      * Write branding manager settings
      *
      * @param newSettings

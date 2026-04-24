@@ -32,6 +32,8 @@ import com.untangle.app.smtp.quarantine.store.QuarantineStore;
 import com.untangle.uvm.util.Pair;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Quarantine.
@@ -282,6 +284,22 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     }
 
     /**
+     * Purge quarantine V2 API
+     * @param  account                             Quarantine account.
+     * @param  doomedMails                         List of email ids to purge.
+     * @return                                     InboxIndex
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If purge action failed.
+     */
+    // --QuarantineManipulation--
+    @Override
+    public InboxIndex purgeV2(String account, String... doomedMails) throws NoSuchInboxException,
+            QuarantineUserActionFailedException
+    {
+        return purge(account, doomedMails);
+    }
+
+    /**
      * Purge quarantine.
      * @param  account                             Quarantine account.
      * @param  doomedMails                         List of email ids to purge.
@@ -297,6 +315,21 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.purge(account, doomedMails);
         checkAndThrowCommonErrors(result.a, account);
         return result.b;
+    }
+
+    /**
+     * Release message from quarantine V2 API
+     * @param  account                             Quarantine account.
+     * @param  rescuedMails                        List of email ids to release.
+     * @return                                     InboxIndex
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
+    @Override
+    public InboxIndex rescueV2(String account, String... rescuedMails) throws NoSuchInboxException,
+            QuarantineUserActionFailedException
+    {
+        return rescue(account, rescuedMails);
     }
 
     /**
@@ -374,6 +407,20 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
      * @throws QuarantineUserActionFailedException If action failed.
      */
     @Override
+    public List<InboxRecord> getInboxRecordsV2(String account) throws NoSuchInboxException,
+            QuarantineUserActionFailedException
+    {
+        return getInboxRecords(account);
+    }
+
+    /**
+     * Get inbox records.
+     * @param  account                             Array of Quarantine account.
+     * @return List of InboxRecord.
+     * @throws NoSuchInboxException                If no such inbox.
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
+    @Override
     public List<InboxRecord> getInboxRecords(String account) throws NoSuchInboxException,
             QuarantineUserActionFailedException
     {
@@ -401,6 +448,26 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     public String getFormattedInboxesTotalSize(boolean inMB)
     {
         return this.store.getFormattedTotalSize(inMB);
+    }
+
+    /**
+     * Return inbox summaries and total disk space V2 API
+     *
+     * @return List of InboxSummary for all mailboxes and total disk space
+     * @throws QuarantineUserActionFailedException If action failed.
+     */
+    @Override
+    public JSONObject listInboxesV2() throws QuarantineUserActionFailedException
+    {
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("inboxesList", listInboxes());
+            json.put("totalDiskSpace", getInboxesTotalSize());
+        } catch (JSONException e) {
+            logger.error("Error getting inbox details", e);
+        }
+        return json;
     }
 
     /**

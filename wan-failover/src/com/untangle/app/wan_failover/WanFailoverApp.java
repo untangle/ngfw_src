@@ -110,6 +110,16 @@ public class WanFailoverApp extends AppBase
     }
 
     /**
+     * Get a list of pingable hosts for the specified WAN interface (v2 API).
+     *
+     * @param uplinkID the interface ID of the WAN uplink to query
+     * @return list of IP addresses that are pingable on the given interface
+     */
+    public List<String> getPingableHostsV2(int uplinkID) {
+        return this.getPingableHosts(uplinkID);
+    }
+
+    /**
      * Get a list of pingable hosts
      * 
      * @param uplinkID
@@ -145,6 +155,16 @@ public class WanFailoverApp extends AppBase
     }
 
     /**
+     * Get the current status of all WAN interfaces (v2 API).
+     *
+     * @return list of {@link WanStatus} representing the state of each WAN interface
+     */
+    public List<WanStatus> getWanStatusV2()
+    {
+        return this.getWanStatus();
+    }
+
+    /**
      * Get the application settings
      * 
      * @return The application settings
@@ -152,6 +172,24 @@ public class WanFailoverApp extends AppBase
     public WanFailoverSettings getSettings()
     {
         return this.settings;
+    }
+
+    /**
+     * Get Wan Failover application settings.
+     *
+     * @return Wan Failover application settings
+     */
+    public WanFailoverSettings getSettingsV2()
+    {
+        return this.getSettings();
+    }
+
+    /**
+     * Set WanFailoverSettings Settings from generic version payload
+     * @param settings WanFailoverSettings
+     */
+    public void setSettingsV2(final WanFailoverSettings settings ) {
+        this.setSettings(settings);
     }
 
     /**
