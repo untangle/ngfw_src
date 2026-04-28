@@ -1431,6 +1431,20 @@ server=dynupdate.no-ip.com
         print(f"wan_pppoe_devices={wan_pppoe_devices}")
         print(f"default_mtu_values={default_mtu_values}")
 
+        # Probe each WAN device's hardware-enforced maxmtu (vNIC/driver dependent — e.g. virtio_net
+        # without host_mtu rejects jumbo frames; vmxnet3 / most physical NICs accept 9000).
+        # Drop MTU values that exceed any device's cap so the test stays portable across
+        # hypervisors and prod hardware without false-failing on jumbo where unsupported.
+        device_max_mtus = []
+        for device in wan_physical_devices:
+            link_show = subprocess.check_output(f"ip -d link show {device}", shell=True).decode("utf-8")
+            max_mtu_match = re.search(r'maxmtu\s+(\d+)', link_show)
+            device_max_mtus.append(int(max_mtu_match.group(1)) if max_mtu_match else 1500)
+        min_supported_mtu = min(device_max_mtus) if device_max_mtus else 1500
+        print(f"device_max_mtus={device_max_mtus} min_supported_mtu={min_supported_mtu}")
+        mtus = [m for m in mtus if m is None or m == 0 or m <= min_supported_mtu]
+        print(f"effective mtus={mtus}")
+
         # Most tests use asserts to stop the test on the first failure.
         # However, because we're trying to preserve the concept of a "default"
         # MTU value, we can't break out of the test.
