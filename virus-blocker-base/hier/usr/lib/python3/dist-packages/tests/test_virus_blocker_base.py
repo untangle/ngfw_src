@@ -23,7 +23,7 @@ clamavNotReady = False
 testsite = global_functions.TEST_SERVER_HOST
 testsiteIP = socket.gethostbyname(testsite)
 # Local test server hosting /virus/* (test.untangle.com no longer serves these)
-virus_test_host = runtests.overrides.get("VIRUS_TEST_HOST", default="192.168.10.126")
+virus_test_host = runtests.overrides.get("VIRUS_TEST_HOST", default="10.112.56.226")
 
 def addPassSite(app, site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": site }
