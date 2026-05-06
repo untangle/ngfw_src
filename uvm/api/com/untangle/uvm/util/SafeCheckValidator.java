@@ -4,6 +4,7 @@
 
 package com.untangle.uvm.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -11,96 +12,93 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Sanitizes string values for shell-safety.
- * Detects actual command injection patterns rather than blindly
- * stripping individual characters. This preserves legitimate uses
- * of special characters (e.g. "$" in passwords, "|" in descriptions)
- * while catching injection constructs like `cmd`, $(cmd), ${var},
- * command chaining (;, &&, ||), pipes, redirects, and newline injection.
+ * Validates {@link SafeCheck}-annotated String fields on an object
+ * graph against the field's declared {@link SafeType}(s). Validation
+ * is fail-fast and read-only:
+ * <ul>
+ *   <li>A field whose value matches at least one of its declared
+ *       SafeTypes is accepted.</li>
+ *   <li>A field whose value matches none of them causes
+ *       {@link SafeCheckValidationException} to be thrown. Jabsorb
+ *       wraps this as a JSON-RPC error returned to the client.</li>
+ *   <li>The input object is never mutated. Validation runs against
+ *       {@code field.get(obj)} only - no {@code field.set} call. This
+ *       makes the validator safe on final fields under Java 9+.</li>
+ * </ul>
+ *
+ * <p>Empty / null values are accepted by every type - see
+ * {@link SafeType#validate(String)} for the rationale.</p>
+ *
+ * <h3>Object graph traversal</h3>
+ * The validator dispatches on the runtime class of every value:
+ * Collections recurse into elements, Maps recurse into both keys and
+ * values, arrays recurse into elements, custom objects recurse into
+ * their non-primitive non-{@code java.*} fields. {@code java.*}
+ * objects (String, Integer, etc.) are skipped because they cannot
+ * carry {@code @SafeCheck} annotations.
+ *
+ * <h3>Cycle and resource protection</h3>
+ * Cycles are broken by an identity-keyed visited-set. Recursion is
+ * bounded by {@link #MAX_DEPTH}; collection iteration is bounded by
+ * {@link #MAX_COLLECTION_ITER}. Exceeding either limit raises
+ * {@link SafeCheckValidationException}.
+ *
+ * <h3>Empty {@code @SafeCheck} fallback</h3>
+ * A field annotated with bare {@code @SafeCheck} (no SafeType
+ * specified) is treated as {@link SafeType#SIMPLE_TEXT} and a
+ * one-time warning is logged naming the field. This is a transitional
+ * compatibility shim; every shipped annotation should declare a type
+ * explicitly.
  */
 public class SafeCheckValidator
 {
-    /**
-     * Matches command injection constructs:
-     *
-     * Enclosed patterns (entire construct stripped):
-     *   `command`    backtick command substitution
-     *   $(command)   subshell command substitution
-     *   ${variable}  variable/command expansion
-     *
-     * Chaining operators (stripped when followed by command-like content):
-     *   &&           AND chaining
-     *   ||           OR chaining
-     *   ;            command separator
-     *   |            pipe to command
-     *
-     * Redirect operators (stripped when followed by path-like content):
-     *   > or >>      output redirect
-     *   <            input redirect / process substitution
-     *
-     * Always stripped:
-     *   \n \r        newline injection (acts as command separator)
-     */
-    private static final Pattern INJECTION_PATTERN = Pattern.compile(
-        String.join("|",
-            "`[^`]+`",                              // `command`  backtick substitution
-            "\\$\\([^)]*\\)",                        // $(command) subshell substitution
-            "\\$\\{[^}]*\\}",                        // ${var}     variable expansion
-            "&&(?=\\s*\\S)",                          // &&         AND chaining
-            "\\|\\|(?=\\s*\\S)",                      // ||         OR chaining
-            "[\\r\\n]",                               // \\n \\r    newline injection
-            ";(?=\\s*[a-zA-Z0-9_/\\\\.])",            // ;          command separator
-            "\\|(?=\\s*[a-zA-Z0-9_/\\\\.])",          // |          pipe to command
-            ">{1,2}(?=\\s*[a-zA-Z0-9_/\\\\.])",      // > >>       output redirect
-            "<(?=\\s*[a-zA-Z0-9_/(\\\\.])"            // <          input redirect / <()
-        )
-    );
+    private static final Logger logger = LogManager.getLogger(SafeCheckValidator.class);
+
     /** Prefix used to identify JDK classes that should not be reflectively scanned. */
     private static final String JAVA = "java.";
 
-    /** Per-class cache of @SafeCheck and traversable field metadata. Populated once per class on first encounter. */
+    /**
+     * Maximum recursion depth into the object graph. Real settings
+     * graphs in this codebase reach depth ~3-7; 64 leaves a comfortable
+     * margin while bounding pathological / cyclic inputs.
+     */
+    private static final int MAX_DEPTH = 64;
+
+    /**
+     * Maximum number of elements processed from any single Collection,
+     * Map, or array during one validateAll call. Caps the cost of an
+     * attacker-supplied multi-million-element collection.
+     */
+    private static final int MAX_COLLECTION_ITER = 100_000;
+
+    /** Per-class cache of @SafeCheck and traversable field metadata. */
     private static final ConcurrentHashMap<Class<?>, ClassInfo> CACHE = new ConcurrentHashMap<>();
 
     /**
-     * Per-class cache of subtree relevance. Stores whether a class (or any class
-     * reachable through its instance fields) contains @SafeCheck annotations.
-     * Classes cached as false are skipped entirely by validateAll(), avoiding
-     * unnecessary traversal of object graphs that have no fields to sanitize.
+     * Per-class cache of subtree relevance. Stores whether a class (or any
+     * class reachable through its instance fields) contains @SafeCheck
+     * annotations. Classes cached as false are skipped entirely by
+     * validateAll(), avoiding unnecessary traversal of object graphs that
+     * have no fields to validate.
      */
     private static final ConcurrentHashMap<Class<?>, Boolean> RELEVANCE_CACHE = new ConcurrentHashMap<>();
 
     /**
-     * Collects all instance fields from a class and its superclass chain,
-     * stopping at java.* classes. Static fields are excluded since @SafeCheck
-     * applies only to per-instance settings data. Walking the superclass chain
-     * ensures annotations on parent classes are not missed by getDeclaredFields().
-     *
-     * @param clazz
-     *        The class to inspect
-     * @return List of all instance fields in the class hierarchy
+     * Tracks fields for which we have already logged the
+     * "empty @SafeCheck() - falling back to SIMPLE_TEXT" warning.
+     * Prevents log spam.
      */
-    private static List<Field> getAllFields(Class<?> clazz)
-    {
-        List<Field> fields = new ArrayList<>();
-        while (clazz != null && !clazz.getName().startsWith(JAVA)) {
-            for (Field field : clazz.getDeclaredFields()) {
-                if (Modifier.isStatic(field.getModifiers())) {
-                    continue;
-                }
-                fields.add(field);
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return fields;
-    }
+    private static final Set<String> WARNED_EMPTY_VALUE = ConcurrentHashMap.newKeySet();
 
     /**
      * Cached reflection info for a class.
@@ -111,48 +109,73 @@ public class SafeCheckValidator
         final List<Field> traversableFields;
 
         /**
-         * Constructor for ClassInfo.
+         * Stores the pre-computed lists of fields used by the validator.
          *
-         * @param safeCheckFields
-         *        List of fields annotated with SafeCheck
-         * @param traversableFields
-         *        List of non-primitive fields to recurse into
+         * @param safeCheckFields   String fields directly carrying {@code @SafeCheck}.
+         * @param traversableFields fields the validator must recurse into to reach
+         *                          further {@code @SafeCheck} annotations.
          */
         ClassInfo(List<Field> safeCheckFields, List<Field> traversableFields)
         {
             this.safeCheckFields = safeCheckFields;
             this.traversableFields = traversableFields;
         }
-
     }
 
     /**
-     * Checks whether a class or any class reachable through its fields
-     * has @SafeCheck annotations. Results are cached per class so the
-     * reflection cost is paid only once. Classes with no @SafeCheck
-     * anywhere in their subtree are skipped entirely by validateAll().
+     * Collects all instance fields from a class and its superclass chain,
+     * stopping at java.* classes. Static and synthetic fields are
+     * excluded.
      *
-     * @param clazz
-     *        The class to check
-     * @return true if this class or any reachable class has @SafeCheck fields
+     * @param clazz the class to inspect; may be {@code null} (returns empty list).
+     * @return list of declared instance fields walking from {@code clazz} up to
+     *         (but not including) the first {@code java.*} ancestor.
+     */
+    private static List<Field> getAllFields(Class<?> clazz)
+    {
+        List<Field> fields = new ArrayList<>();
+        while (clazz != null && !clazz.getName().startsWith(JAVA)) {
+            for (Field field : clazz.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers())) continue;
+                if (field.isSynthetic()) continue;
+                fields.add(field);
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return fields;
+    }
+
+    /**
+     * Determines whether validating an instance of {@code clazz} could
+     * encounter any {@code @SafeCheck} field directly or via a reachable
+     * field. Cached. Conservatively returns {@code true} on cycle or on
+     * unknown shapes (raw collections, type variables) so traversal is
+     * never wrongly skipped.
+     *
+     * @param clazz the class to assess for relevance.
+     * @return {@code true} if the class (or any class reachable through its
+     *         instance fields) contains a {@code @SafeCheck} annotation;
+     *         {@code false} if the subtree is provably free of annotations.
      */
     private static boolean isRelevant(Class<?> clazz)
     {
         Boolean cached = RELEVANCE_CACHE.get(clazz);
-        if (cached != null) {
-            return cached;
-        }
-        return computeRelevance(clazz, new HashSet<>());
+        if (cached != null) return cached;
+        Set<Class<?>> visiting = Collections.newSetFromMap(new IdentityHashMap<>());
+        boolean rel = computeRelevance(clazz, visiting);
+        RELEVANCE_CACHE.putIfAbsent(clazz, rel);
+        return rel;
     }
 
     /**
-     * Recursive relevance check with cycle detection.
+     * Recursive worker for {@link #isRelevant(Class)}. Walks the field graph
+     * tracking the set of classes currently being analyzed to break cycles.
      *
-     * @param clazz
-     *        The class to check
-     * @param visiting
-     *        Set of classes currently being checked to prevent infinite recursion
-     * @return true if @SafeCheck is found in this class or its subtree
+     * @param clazz    the class being analyzed.
+     * @param visiting identity-keyed set of classes currently on the recursion
+     *                 stack; used to detect cycles.
+     * @return {@code true} if the class is relevant for {@code @SafeCheck}
+     *         traversal; {@code false} otherwise.
      */
     private static boolean computeRelevance(Class<?> clazz, Set<Class<?>> visiting)
     {
@@ -160,68 +183,101 @@ public class SafeCheckValidator
             return false;
         }
         Boolean cached = RELEVANCE_CACHE.get(clazz);
-        if (cached != null) {
-            return cached;
-        }
+        if (cached != null) return cached;
         if (!visiting.add(clazz)) {
-            return false;
+            // Cycle hit. Return conservative true so the traversal does
+            // not silently skip a cyclic graph. Do NOT cache here - the
+            // result is not yet stable.
+            return true;
         }
 
-        boolean relevant = false;
-        for (Field field : getAllFields(clazz)) {
-            // Direct @SafeCheck field found
-            if (field.isAnnotationPresent(SafeCheck.class) && field.getType() == String.class) {
-                relevant = true;
-                break;
-            }
+        try {
+            for (Field field : getAllFields(clazz)) {
+                if (field.isAnnotationPresent(SafeCheck.class) && field.getType() == String.class) {
+                    return true;
+                }
 
-            Class<?> fieldType = field.getType();
-            if (fieldType.isPrimitive()) {
-                continue;
-            }
+                Class<?> fieldType = field.getType();
+                if (fieldType.isPrimitive()) continue;
 
-            // Check Collection/Map generic type arguments
-            if (Collection.class.isAssignableFrom(fieldType) || Map.class.isAssignableFrom(fieldType)) {
-                Type genericType = field.getGenericType();
-                if (genericType instanceof ParameterizedType) {
-                    for (Type typeArg : ((ParameterizedType) genericType).getActualTypeArguments()) {
-                        if (typeArg instanceof Class<?> && computeRelevance((Class<?>) typeArg, visiting)) {
-                            relevant = true;
-                            break;
-                        }
+                if (fieldType.isArray()) {
+                    Class<?> component = fieldType.getComponentType();
+                    if (component != null && !component.isPrimitive()
+                        && !component.getName().startsWith(JAVA)
+                        && computeRelevance(component, visiting)) {
+                        return true;
                     }
+                    continue;
                 }
-                if (relevant) {
-                    break;
-                }
-                continue;
-            }
 
-            // Check non-java custom types
-            if (!fieldType.getName().startsWith(JAVA) && computeRelevance(fieldType, visiting)) {
-                relevant = true;
-                break;
+                if (Collection.class.isAssignableFrom(fieldType)
+                    || Map.class.isAssignableFrom(fieldType)) {
+                    Type generic = field.getGenericType();
+                    if (generic instanceof ParameterizedType) {
+                        for (Type arg : ((ParameterizedType) generic).getActualTypeArguments()) {
+                            if (isTypeRelevant(arg, visiting)) {
+                                return true;
+                            }
+                        }
+                    } else {
+                        // Raw Collection/Map -  element type is invisible.
+                        // Treat conservatively as relevant; warn once.
+                        logger.warn("@SafeCheck-aware traversal: raw {} field {}.{} - declare generic type",
+                            fieldType.getSimpleName(),
+                            clazz.getName(), field.getName());
+                        return true;
+                    }
+                    continue;
+                }
+
+                if (!fieldType.getName().startsWith(JAVA) && computeRelevance(fieldType, visiting)) {
+                    return true;
+                }
             }
+            return false;
+        } finally {
+            visiting.remove(clazz);
         }
-
-        RELEVANCE_CACHE.put(clazz, relevant);
-        return relevant;
     }
 
     /**
-     * Builds and caches reflection metadata for a class. Partitions instance
-     * fields into two groups:
-     * <ul>
-     *   <li>safeCheckFields: String fields annotated with @SafeCheck (to sanitize)</li>
-     *   <li>traversableFields: non-primitive fields that may contain nested
-     *       @SafeCheck objects. Includes Collection/Map fields (which hold
-     *       settings objects) and non-java custom types. Excludes java.* types
-     *       like String, Integer, etc. that can never have @SafeCheck.</li>
-     * </ul>
+     * Recursively check a generic Type (Class, ParameterizedType,
+     * WildcardType, GenericArrayType, TypeVariable) for relevance.
+     * Conservative - anything not analyzable is treated as relevant.
      *
-     * @param clazz
-     *        The class to inspect
-     * @return Cached ClassInfo with annotated and traversable fields
+     * @param type     the generic Type to inspect.
+     * @param visiting identity-keyed set of classes currently on the recursion
+     *                 stack; used to detect cycles.
+     * @return {@code true} if the type or any contained type argument is
+     *         relevant for {@code @SafeCheck} traversal; {@code false} otherwise.
+     */
+    private static boolean isTypeRelevant(Type type, Set<Class<?>> visiting)
+    {
+        if (type instanceof Class<?>) {
+            return computeRelevance((Class<?>) type, visiting);
+        }
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            Type raw = pt.getRawType();
+            if (raw instanceof Class<?>
+                && computeRelevance((Class<?>) raw, visiting)) {
+                return true;
+            }
+            for (Type arg : pt.getActualTypeArguments()) {
+                if (isTypeRelevant(arg, visiting)) return true;
+            }
+            return false;
+        }
+        // WildcardType / TypeVariable / GenericArrayType - assume relevant.
+        return true;
+    }
+
+    /**
+     * Builds and caches reflection metadata for a class.
+     *
+     * @param clazz the class whose metadata is required.
+     * @return the (possibly cached) {@link ClassInfo} describing the class's
+     *         {@code @SafeCheck} fields and traversable child fields.
      */
     private static ClassInfo getClassInfo(Class<?> clazz)
     {
@@ -230,13 +286,24 @@ public class SafeCheckValidator
             List<Field> traversable = new ArrayList<>();
 
             for (Field field : getAllFields(c)) {
-                if (field.isAnnotationPresent(SafeCheck.class) && field.getType() == String.class) {
-                    field.setAccessible(true);
-                    safeCheck.add(field);
-                } else if (!field.getType().isPrimitive()
-                           && (!field.getType().getName().startsWith(JAVA)
-                               || Collection.class.isAssignableFrom(field.getType())
-                               || Map.class.isAssignableFrom(field.getType()))) {
+                if (field.isAnnotationPresent(SafeCheck.class)) {
+                    if (field.getType() == String.class) {
+                        field.setAccessible(true);
+                        safeCheck.add(field);
+                    }
+                    // Non-String @SafeCheck fields are silently ignored
+                    // (matches the prior validator's behavior).
+                    continue;
+                }
+
+                Class<?> ft = field.getType();
+                if (ft.isPrimitive()) continue;
+
+                // Recurse into arrays, Collections, Maps, and user
+                // objects (anything not in java.*).
+                if (ft.isArray() || Collection.class.isAssignableFrom(ft)
+                    || Map.class.isAssignableFrom(ft)
+                    || !ft.getName().startsWith(JAVA)) {
                     field.setAccessible(true);
                     traversable.add(field);
                 }
@@ -244,98 +311,148 @@ public class SafeCheckValidator
 
             return new ClassInfo(
                 safeCheck.isEmpty() ? Collections.emptyList() : safeCheck,
-                traversable.isEmpty() ? Collections.emptyList() : traversable
-            );
+                traversable.isEmpty() ? Collections.emptyList() : traversable);
         });
     }
 
     /**
-     * Strips shell metacharacters from the given value.
+     * Validate a single value against the SafeType list of an
+     * annotation. Returns silently on success; throws
+     * {@link SafeCheckValidationException} on failure.
      *
-     * @param value
-     *        The string value to sanitize
-     * @return The sanitized string with unsafe characters removed, or null if input is null
+     * @param value     the field value being checked (may be null)
+     * @param ann       the SafeCheck annotation on the field
+     * @param fieldName "ClassSimpleName.fieldName" for error reporting
      */
-    public static String sanitize(String value)
+    private static void validateValue(String value, SafeCheck ann, String fieldName)
     {
-        if (value == null) {
-            return null;
+        SafeType[] types = ann.value();
+        if (types.length == 0) {
+            // Transitional fallback for un-typed @SafeCheck. Log once
+            // per field so the developer notices.
+            if (WARNED_EMPTY_VALUE.add(fieldName)) {
+                logger.warn("@SafeCheck on field {} has empty value() - falling back to SafeType.SIMPLE_TEXT. "
+                    + "Add an explicit SafeType to silence this warning.",
+                    fieldName);
+            }
+            types = new SafeType[]{SafeType.SIMPLE_TEXT};
         }
-        return INJECTION_PATTERN.matcher(value).replaceAll("");
+
+        for (SafeType type : types) {
+            if (type.validate(value)) return;
+        }
+
+        // No type accepted. Build the message - the offending value is
+        // never included (avoids credential leakage and pivot through
+        // error-channel echo).
+        String message;
+        String override = ann.errorMessage();
+        if (override != null && !override.isEmpty()) {
+            message = override;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < types.length; i++) {
+                if (i > 0) sb.append(" OR ");
+                sb.append(types[i].defaultMessage());
+            }
+            message = sb.toString();
+        }
+        throw new SafeCheckValidationException(
+            "Invalid value in field " + fieldName + ": " + message);
     }
 
     /**
-     * Scans the given object and all reachable nested objects for fields
-     * annotated with @SafeCheck and sanitizes their String values.
-     * Recurses into collections, maps, and object fields.
-     * Classes with no @SafeCheck in their subtree are skipped entirely.
+     * Top-level entry: validate every {@code @SafeCheck} field reachable
+     * from {@code obj}. Throws {@link SafeCheckValidationException} on
+     * the first failing field. Caller (Jabsorb preInvokeCallback or App
+     * setSettings method) propagates the exception.
      *
-     * @param obj
-     *        The object to sanitize
+     * @param obj the root object whose reachable {@code @SafeCheck} fields
+     *            should be validated; {@code null} is a no-op.
      */
     public static void validateAll(Object obj)
     {
-        validateAll(obj, new HashSet<>());
+        Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        validateAll(obj, visited, 0);
     }
 
     /**
-     * Recursive implementation that tracks visited objects to avoid cycles.
-     * Dispatches based on object type:
-     * <ul>
-     *   <li>Collection: iterates elements recursively</li>
-     *   <li>Map: iterates values recursively</li>
-     *   <li>java.* objects: skipped (no @SafeCheck possible)</li>
-     *   <li>Non-relevant classes: skipped via RELEVANCE_CACHE (subtree has no @SafeCheck)</li>
-     *   <li>Relevant classes: sanitizes @SafeCheck fields, then traverses into sub-objects</li>
-     * </ul>
+     * Recursive worker for {@link #validateAll(Object)}. Walks Collections,
+     * Maps, arrays, and user objects, validating any {@code @SafeCheck}
+     * field encountered. Bounded by {@link #MAX_DEPTH} and
+     * {@link #MAX_COLLECTION_ITER}; cycle-safe via the {@code visited} set.
      *
-     * @param obj
-     *        The object to sanitize
-     * @param visited
-     *        Set of already visited objects (identity-based) to prevent infinite recursion
+     * @param obj     the current object in the traversal; may be {@code null}.
+     * @param visited identity-keyed set of objects already validated; used to
+     *                break reference cycles.
+     * @param depth   current recursion depth; used to enforce {@link #MAX_DEPTH}.
      */
-    private static void validateAll(Object obj, Set<Object> visited)
+    private static void validateAll(Object obj, Set<Object> visited, int depth)
     {
-        if (obj == null) {
-            return;
+        if (obj == null) return;
+        if (depth > MAX_DEPTH) {
+            throw new SafeCheckValidationException(
+                "Validation aborted: object graph exceeds maximum depth of " + MAX_DEPTH);
         }
-        if (!visited.add(obj)) {
-            return;
-        }
+        if (!visited.add(obj)) return;
+
         if (obj instanceof Collection) {
+            int n = 0;
             for (Object item : (Collection<?>) obj) {
-                validateAll(item, visited);
+                if (++n > MAX_COLLECTION_ITER) {
+                    throw new SafeCheckValidationException(
+                        "Validation aborted: collection exceeds maximum size of " + MAX_COLLECTION_ITER);
+                }
+                validateAll(item, visited, depth + 1);
             }
             return;
         }
         if (obj instanceof Map) {
-            for (Object val : ((Map<?, ?>) obj).values()) {
-                validateAll(val, visited);
+            int n = 0;
+            for (Map.Entry<?, ?> entry : ((Map<?, ?>) obj).entrySet()) {
+                if (++n > MAX_COLLECTION_ITER) {
+                    throw new SafeCheckValidationException(
+                        "Validation aborted: map exceeds maximum size of " + MAX_COLLECTION_ITER);
+                }
+                validateAll(entry.getKey(), visited, depth + 1);
+                validateAll(entry.getValue(), visited, depth + 1);
             }
             return;
         }
-        if (obj.getClass().getName().startsWith(JAVA)) {
+        if (obj.getClass().isArray()) {
+            // Skip primitive arrays - they cannot carry @SafeCheck.
+            if (obj.getClass().getComponentType().isPrimitive()) return;
+            int len = Array.getLength(obj);
+            if (len > MAX_COLLECTION_ITER) {
+                throw new SafeCheckValidationException(
+                    "Validation aborted: array exceeds maximum size of " + MAX_COLLECTION_ITER);
+            }
+            for (int i = 0; i < len; i++) {
+                validateAll(Array.get(obj, i), visited, depth + 1);
+            }
             return;
         }
+        if (obj.getClass().getName().startsWith(JAVA)) return;
 
-        // Skip classes that have no @SafeCheck anywhere in their subtree
-        if (!isRelevant(obj.getClass())) {
-            return;
-        }
+        // Skip subtrees we know contain no @SafeCheck.
+        if (!isRelevant(obj.getClass())) return;
 
         ClassInfo info = getClassInfo(obj.getClass());
 
         try {
             for (Field field : info.safeCheckFields) {
                 String value = (String) field.get(obj);
-                field.set(obj, sanitize(value));
+                SafeCheck ann = field.getAnnotation(SafeCheck.class);
+                String fieldName = obj.getClass().getSimpleName() + "." + field.getName();
+                validateValue(value, ann, fieldName);
             }
             for (Field field : info.traversableFields) {
                 Object child = field.get(obj);
-                validateAll(child, visited);
+                validateAll(child, visited, depth + 1);
             }
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to sanitize object of type: " + obj.getClass().getName(), e);
+            throw new SafeCheckValidationException(
+                "Failed to access field on " + obj.getClass().getName() + ": " + e.getMessage());
         }
     }
 }

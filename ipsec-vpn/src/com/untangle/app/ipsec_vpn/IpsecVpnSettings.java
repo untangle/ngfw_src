@@ -9,6 +9,7 @@ import org.json.JSONString;
 import org.json.JSONObject;
 
 import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * This class represents all of the settings for the IPsec application.
@@ -35,7 +36,7 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
     private String virtualNetworkPool = ""; // used for GRE
     private String virtualAddressPool = ""; // used for L2TP
-    @SafeCheck
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String virtualXauthPool = ""; // used for XAUTH
     private String virtualSecret = "Please_Change_Me";
     private String virtualDnsOne = "";
