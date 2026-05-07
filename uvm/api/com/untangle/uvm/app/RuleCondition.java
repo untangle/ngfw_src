@@ -151,19 +151,19 @@ public class RuleCondition implements JSONString, Serializable
      * They are stored here so that repetative evaluation is quick
      * They are prepared by calling computeMatchers()
      */
-    private boolean initialized = false; /* marked as true once computeMatchers is called */
-    private IPMatcher           ipMatcher        = null;
-    private IntMatcher          intMatcher       = null;
-    private IntfMatcher         intfMatcher      = null;
-    private UserMatcher         userMatcher      = null;
-    private GroupMatcher        groupMatcher     = null;
-    private DomainMatcher       domainMatcher    = null;
-    private GlobMatcher         globMatcher      = null;
-    private ProtocolMatcher     protocolMatcher  = null;
-    private BitmaskMatcher      bitmaskMatcher   = null;
-    private TimeOfDayMatcher    timeOfDayMatcher = null;
-    private DayOfWeekMatcher    dayOfWeekMatcher = null;
-    private UrlMatcher          urlMatcher       = null;
+    private transient boolean initialized = false; /* marked as true once computeMatchers is called */
+    private transient IPMatcher           ipMatcher        = null;
+    private transient IntMatcher          intMatcher       = null;
+    private transient IntfMatcher         intfMatcher      = null;
+    private transient UserMatcher         userMatcher      = null;
+    private transient GroupMatcher        groupMatcher     = null;
+    private transient DomainMatcher       domainMatcher    = null;
+    private transient GlobMatcher         globMatcher      = null;
+    private transient ProtocolMatcher     protocolMatcher  = null;
+    private transient BitmaskMatcher      bitmaskMatcher   = null;
+    private transient TimeOfDayMatcher    timeOfDayMatcher = null;
+    private transient DayOfWeekMatcher    dayOfWeekMatcher = null;
+    private transient UrlMatcher          urlMatcher       = null;
 
     private static DirectoryConnector directoryConnector = null;
     
