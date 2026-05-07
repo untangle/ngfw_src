@@ -32,12 +32,12 @@ create_snmp3_user()
     mkdir $SNMP_HACK_PATH
     mount --bind $SNMP_ETC_PATH $SNMP_HACK_PATH
 
-    privacy_passphrase_argument=""
+    args=( --create-snmpv3-user -a "$auth_protocol" -A "$auth_passphrase" )
     if [ "$privacy_passphrase" != "" ]; then
-        privacy_passphrase_argument="-x $privacy_protocol -X \"$privacy_passphrase\""
+        args+=( -x "$privacy_protocol" -X "$privacy_passphrase" )
     fi
-    command="$SNMP_CONFIG --create-snmpv3-user -a $auth_protocol -A \"$auth_passphrase\" $privacy_passphrase_argument $user_name"
-    eval $command
+    args+=( "$user_name" )
+    "$SNMP_CONFIG" "${args[@]}"
     EXIT_CODE=$?
 
     umount $SNMP_HACK_PATH
