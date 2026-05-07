@@ -243,6 +243,14 @@ public interface ReportsManager
     List<JSONObject> getCurrentApplications();
 
     /**
+     * Get all report categories in V2 format: system categories (Hosts, Devices, etc.)
+     * followed by installed and license-active application categories, sorted by viewPosition.
+     *
+     * @return List of JSONObject with fields: name, displayName, viewPosition, type ("system" or "app")
+     */
+    List<JSONObject> getAllCategoriesV2();
+
+    /**
      * Get all applications available.  Used for common includes.
      *
      * @return

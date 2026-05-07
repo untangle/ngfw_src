@@ -207,7 +207,63 @@ public class ReportsManagerImpl implements ReportsManager
         return entries;
     }
 
-    /** 
+    /**
+     * Get all report categories in V2 format.
+     * Returns system categories (Hosts, Devices, etc.) followed by
+     * installed and license-active application categories, sorted by viewPosition.
+     *
+     * @return List of JSONObject with fields: name, displayName, viewPosition, type ("system" or "app")
+     */
+    public List<JSONObject> getAllCategoriesV2()
+    {
+        ArrayList<JSONObject> categories = new ArrayList<>();
+
+        String[][] systemCategories = {
+            { "hosts",          "Hosts",          "1" },
+            { "devices",        "Devices",        "2" },
+            { "network",        "Network",        "3" },
+            { "administration", "Administration", "4" },
+            { "system",         "System",         "5" },
+            { "shield",         "Shield",         "6" },
+            { "users",          "Users",          "7" },
+            { "events",         "Events",         "8" },
+        };
+
+        for ( String[] cat : systemCategories ) {
+            JSONObject json = new JSONObject();
+            try {
+                json.put("name",         cat[0]);
+                json.put("displayName",  cat[1]);
+                json.put("viewPosition", Integer.parseInt(cat[2]));
+                json.put("type",         "system");
+            } catch (Exception e) {
+                logger.error("Error building system category list", e);
+            }
+            categories.add(json);
+        }
+
+        for ( AppProperties appProperties : this.appPropertiesList ) {
+            if ( appProperties.getInvisible() ) continue;
+            App app = UvmContextFactory.context().appManager().app( appProperties.getName() );
+            if ( app == null ) continue;
+            if ( !app.isLicenseValid() ) continue;
+
+            JSONObject json = new JSONObject();
+            try {
+                json.put("name",         appProperties.getName());
+                json.put("displayName",  appProperties.getDisplayName());
+                json.put("viewPosition", appProperties.getViewPosition());
+                json.put("type",         "app");
+            } catch (Exception e) {
+                logger.error("Error building app category list", e);
+            }
+            categories.add(json);
+        }
+
+        return categories;
+    }
+
+    /**
      * Get all installed and license-active NGFW applications
      *
      * @return
