@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * This class is used to hold the settings for GRE networks. Yes, it probably
@@ -26,13 +27,13 @@ public class IpsecVpnNetwork implements JSONString, Serializable
 {
     private int id;
     private boolean active;
-    @SafeCheck
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String description;
-    @SafeCheck
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String localAddress;
-    @SafeCheck
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String remoteAddress;
-    @SafeCheck
+    @SafeCheck(SafeType.IP_OR_CIDR_LIST)
     private String remoteNetworks;
     private int ttl = 64;
     private int mtu = 1476;

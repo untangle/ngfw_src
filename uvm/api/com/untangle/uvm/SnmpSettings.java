@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * For those not familiar with SNMP, here is a bit of an explanation
@@ -64,30 +65,30 @@ public class SnmpSettings implements Serializable, JSONString
 
     private boolean enabled;
     private int port;
-    @SafeCheck
+    @SafeCheck(SafeType.ALPHANUM)
     private String communityString;
-    @SafeCheck
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String sysContact;
-    @SafeCheck
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String sysLocation;
 
     private boolean v3Enabled;
     private boolean v3Required;
-    @SafeCheck
+    @SafeCheck(SafeType.ALPHANUM)
     private String v3Username;
-    @SafeCheck
+    @SafeCheck(SafeType.ALPHANUM)
     private String v3AuthenticationProtocol;
-    @SafeCheck
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String v3AuthenticationPassphrase;
-    @SafeCheck
+    @SafeCheck(SafeType.ALPHANUM)
     private String v3PrivacyProtocol;
-    @SafeCheck
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String v3PrivacyPassphrase;
 
     private boolean sendTraps;
-    @SafeCheck
+    @SafeCheck(SafeType.HOSTNAME)
     private String trapHost;
-    @SafeCheck
+    @SafeCheck(SafeType.ALPHANUM)
     private String trapCommunity;
     private int trapPort;
 

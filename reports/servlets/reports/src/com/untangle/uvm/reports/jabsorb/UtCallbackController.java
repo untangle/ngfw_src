@@ -9,6 +9,8 @@ import java.lang.reflect.Method;
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.callback.CallbackController;
 
+import com.untangle.uvm.util.SafeCheckValidator;
+
 /**
  * Untangle Callback controller.
  */
@@ -44,6 +46,11 @@ public class UtCallbackController extends CallbackController
     public void preInvokeCallback(Object context, Object instance, Method method,
                                   Object[] arguments)
     {
+        if (arguments != null) {
+            for (Object arg : arguments) {
+                SafeCheckValidator.validateAll(arg);
+            }
+        }
     }
 
     /**
