@@ -6,29 +6,26 @@ Ext.define('Ung.apps.wan-balancer.Main', {
     viewModel: {
 
         data: {
-            autoRefresh: false,
-            interfaceWeightData: [],
-            destinationWanData: []
-        },
+            vueMigrated: true
+        }
+    },
 
-        stores: {
-            routeRules: {
-                data: '{settings.routeRules.list}'
-            },
-            interfaceWeightList: {
-                data: '{interfaceWeightData}'
-            },
-            destinationWanList: {
-                fields: [ 'index', 'name' ],
-                data: '{destinationWanData}'
-            }
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/wan-balancer', false);
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'wan-balancer',
+                enableRemoveHandler: true
+            });
+        },
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
         }
     },
 
     items: [
-        { xtype: 'app-wan-balancer-status' },
-        { xtype: 'app-wan-balancer-trafficallocation' },
-        { xtype: 'app-wan-balancer-routerules' }
+        Field.iframeHolder
     ]
 
 });
