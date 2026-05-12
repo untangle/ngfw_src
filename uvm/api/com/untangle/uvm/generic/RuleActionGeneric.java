@@ -25,8 +25,9 @@ public class RuleActionGeneric implements JSONString, Serializable {
      * SCAN, PASS - Required for Shield Rules
      * TARGET_POLICY - Required for Policy Manager
      * CAPTURE - Required for Captive Portal Rules (paired with PASS for non-capture)
+     * DESTINATION_WAN - Required for Wan Balancer
      */
-    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, SET_PRIORITY, SCAN, PASS, TARGET_POLICY, CAPTURE }
+    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, SET_PRIORITY, SCAN, PASS, TARGET_POLICY, CAPTURE, DESTINATION_WAN }
     // Common To All Rules
     private Type type;
 
@@ -59,6 +60,12 @@ public class RuleActionGeneric implements JSONString, Serializable {
 
     public Integer getTargetPolicy() { return targetPolicy; }
     public void setTargetPolicy(Integer targetPolicy) { this.targetPolicy = targetPolicy; }
+
+    // Required for Wan Balancer Rules
+    private Integer destinationWan;
+
+    public Integer getDestinationWan() { return destinationWan; }
+    public void setDestinationWan(Integer destinationWan) { this.destinationWan = destinationWan; }
 
 
     public String toJSONString() {
