@@ -1,7 +1,6 @@
 Ext.define('Ung.apps.wan-balancer.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-wan-balancer',
-    controller: 'app-wan-balancer',
 
     viewModel: {
 
