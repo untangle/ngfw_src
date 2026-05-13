@@ -22,7 +22,9 @@ import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
+import com.untangle.uvm.servlet.SafeFileItem;
 import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.util.SafeUpload;
 
 /**
  * A servlet for uploading a file
@@ -57,15 +59,22 @@ public class UploadServlet extends HttpServlet
             logger.info("Handling Upload: " + uploadType + " (" + arg + ")");
             
             for ( FileItem item : items ) {
-                if (!item.isFormField()) {
-                    UploadHandler handler = UvmContextFactory.context().servletFileManager().getUploadHandler(uploadType);
-                    if ( handler == null ) {
-                        handleNoUploadHandler(resp, uploadType);
-                        return;
-                    } else {
-                        result = handler.handleFile(item, arg);
-                    }                    
+                if (item.isFormField()) continue;
+
+                UploadHandler handler = UvmContextFactory.context().servletFileManager().getUploadHandler(uploadType);
+                if ( handler == null ) {
+                    handleNoUploadHandler(resp, uploadType);
+                    return;
                 }
+
+                String safeName = SafeUpload.safeUploadName(item.getName(), handler.getAllowedExtensions());
+                // Forensic log: handlers see only safeName, but we record the original
+                // attacker-controlled name once here for incident response. CR/LF
+                // stripped to neutralize log-injection if appender is line-based.
+                logger.info("Upload received: type={} originalName='{}' safeName='{}'",
+                            uploadType, SafeUpload.safeForLog(item.getName()), safeName);
+                FileItem safe = new SafeFileItem(item, safeName);
+                result = handler.handleFile(safe, arg);
             }
         } catch (Exception exn) {
             logger.warn("could not upload", exn);

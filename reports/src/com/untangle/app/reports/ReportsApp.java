@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -1088,7 +1089,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         try {
             //validate zip
             if (!item.getName().endsWith(".gz")) {
-                throw new RuntimeException("Invalid name: " + item.getName());
+                throw new RuntimeException("Invalid file extension. Allowed: .gz");
             }
 
             String filename = "/tmp/reports_restore_data.sql.gz";
@@ -1506,7 +1507,19 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         {
             return "reportsDataRestore";
         }
-        
+
+        /**
+         * Allowlist of file extensions accepted by this handler. Used by the
+         * upload servlet to sanitize the user-supplied filename.
+         *
+         * @return the set of allowed extensions (lowercase, no leading dot)
+         */
+        @Override
+        public Set<String> getAllowedExtensions()
+        {
+            return Set.of("gz");
+        }
+
         /**
          * Perform restore of fille into database.
          *

@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.Collections;
+import java.util.Set;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -628,8 +629,20 @@ public class TunnelVpnApp extends AppBase
         }
 
         /**
+         * Allowlist of file extensions accepted by this handler. Used by the
+         * upload servlet to sanitize the user-supplied filename.
+         *
+         * @return the set of allowed extensions (lowercase, no leading dot)
+         */
+        @Override
+        public Set<String> getAllowedExtensions()
+        {
+            return Set.of("zip", "conf", "ovpn");
+        }
+
+        /**
          * Handler for uploaded files
-         * 
+         *
          * @param fileItem
          *        The uploaded file
          * @param argument
@@ -665,7 +678,8 @@ public class TunnelVpnApp extends AppBase
                 } else if (filename.endsWith(".ovpn")) {
                     temp = File.createTempFile("tunnel-vpn-newconfig-", ".ovpn");
                 } else {
-                    return new ExecManagerResult(1, "Unknown file extension for Tunnel VPN" + ": " + fileItem.getName());
+                    return new ExecManagerResult(1, "Unknown file extension for Tunnel VPN. Allowed: " +
+                        getAllowedExtensions().stream().sorted().map(e -> "." + e).collect(Collectors.joining(", ")));
                 }
 
                 temp.deleteOnExit();
@@ -677,7 +691,7 @@ public class TunnelVpnApp extends AppBase
                     outputStream.write(data, 0, len);
             } catch (IOException e) {
                 logger.warn("Unable to validate client file.", e);
-                return new ExecManagerResult(1, e.getMessage() + ": " + (fileItem != null ? fileItem.getName() : ""));
+                return new ExecManagerResult(1, e.getMessage());
             } finally {
                 try {
                     if (outputStream != null) outputStream.close();
@@ -696,7 +710,7 @@ public class TunnelVpnApp extends AppBase
                 tunnelVpnManager.validateTunnelConfig(temp.getPath(), argument);
             } catch (Exception e) {
                 logger.warn("Unable to validate the client configuration", e);
-                return new ExecManagerResult(1, e.getMessage() + ": " + fileItem.getName());
+                return new ExecManagerResult(1, e.getMessage());
             }
 
             return new ExecManagerResult(0, temp.getPath() + '&' + "Validated" + ": " + (fileItem != null ? fileItem.getName(): "" ));
