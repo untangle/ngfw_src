@@ -4,7 +4,10 @@ import base64
 import sys
 import requests
 import json
-import crypt
+try:
+    import crypt
+except ImportError:
+    import legacycrypt as crypt
 import time
 import os
 import urllib

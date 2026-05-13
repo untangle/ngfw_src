@@ -109,7 +109,7 @@ task :targets => :download do
   require "#{SRC_HOME}/wan-failover/package.rb"
   require "#{SRC_HOME}/web-cache/package.rb"
   require "#{SRC_HOME}/license/package.rb"
-  if File.exists?("#{SRC_HOME}/plugins/package.rb")
+  if File.exist?("#{SRC_HOME}/plugins/package.rb")
     require "#{SRC_HOME}/plugins/package.rb"
   end
 end
@@ -128,10 +128,10 @@ task :devel => [:build, :hier, :installuvmcore] do
   Rake::Task[BuildEnv::SRC.installTarget].invoke
   ## Ad Blocker hack to rename ad-blocker.js to ab.js NGFW-10728
   ## Make this copy target and put it in the first servlet after admin
-  if File.exists?("#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ad-blocker.js")
+  if File.exist?("#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ad-blocker.js")
     FileUtils.cp("#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ad-blocker.js", "#{SRC_HOME}/dist/usr/share/untangle/web/admin/script/apps/ab.js")
   end
-  if File.exists?("#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ad-blocker.js")
+  if File.exist?("#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ad-blocker.js")
     FileUtils.cp("#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ad-blocker.js", "#{SRC_HOME}/debian/untangle-libuvm/usr/share/untangle/web/admin/script/apps/ab.js")
   end
 end
