@@ -10,6 +10,8 @@ import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.app.DayOfWeekMatcher;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.Constants;
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +46,9 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     /**
      * These are required for Hostname Settings
      */
+    @SafeCheck(SafeType.HOSTNAME)
     private String hostName;
+    @SafeCheck(SafeType.HOSTNAME)
     private String domainName;
 
     private boolean supportEnabled = false;
