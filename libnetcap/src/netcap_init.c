@@ -163,6 +163,11 @@ static int _netcap_init()
         ip_sendnfmark = 28;
         is_new_kernel = 610;
     }
+    else if ( strstr(utsn.release,"6.12.") != NULL ) {
+        ip_saddr = 27;
+        ip_sendnfmark = 28;
+        is_new_kernel = 612;
+    }
     else {
         errlog( ERR_WARNING, "Unknown kernel: %s\n", utsn.release );
         errlog( ERR_WARNING, "Assuming 6.1.0\n" );
