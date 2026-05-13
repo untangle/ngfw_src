@@ -9,6 +9,8 @@ import com.untangle.uvm.network.InterfaceSettings.DhcpType;
 import com.untangle.uvm.network.InterfaceSettings.InterfaceAlias;
 import com.untangle.uvm.network.InterfaceSettings.WirelessEncryption;
 import com.untangle.uvm.network.InterfaceSettings.WirelessMode;
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 import com.untangle.uvm.util.StringUtil;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -30,9 +32,13 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private int interfaceId;        /* the ID of the physical interface (1-254) */
     private String name;            /* human name: ie External, Internal, Wireless */
 
+    @SafeCheck(SafeType.INTERFACE)
     private String  physicalDev;    /* physical interface name: eth0, etc */
+    @SafeCheck(SafeType.INTERFACE)
     private String  systemDev;      /* iptables interface name: eth0, eth0:0, eth0.1, etc */
+    @SafeCheck(SafeType.INTERFACE)
     private String  symbolicDev;    /* symbolic interface name: eth0, eth0:0, eth0.1, br.eth0 etc */
+    @SafeCheck(SafeType.INTERFACE)
     private String  imqDev;         /* IMQ device name: imq0, imq1, etc (only applies to WANs) */
     private String device;          /* physical interface name: eth0, etc */
 
