@@ -11,7 +11,10 @@ import re
 import signal
 import sys
 import traceback
-import crypt
+try:
+    import crypt
+except ImportError:
+    import legacycrypt as crypt
 
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
