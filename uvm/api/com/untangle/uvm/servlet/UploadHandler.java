@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import com.untangle.uvm.util.SafeType;
+
 public interface UploadHandler
 {
     public String getName();
@@ -35,4 +37,22 @@ public interface UploadHandler
      *         extension should be exposed to the handler
      */
     default Set<String> getAllowedExtensions() { return Collections.emptySet(); }
+
+    /**
+     * v2 args schema: arg name to {@link SafeType}[]. Keys not in this map
+     * are REJECTED at the v2 servlet boundary. Empty map (the default)
+     * means the handler accepts no v2 args - every non-reserved form field
+     * is rejected.
+     *
+     * <p>The {@code "type"} form field is reserved (it is the dispatch key)
+     * and is filtered out before the schema check, so handlers must not
+     * declare it.</p>
+     *
+     * <p>Each value is validated against its declared SafeType list using
+     * {@link com.untangle.uvm.util.SafeCheckValidator#validate(String,
+     * SafeType[], String)}; the first matching type accepts the value.</p>
+     *
+     * @return the per-key SafeType allowlist, or empty for "no v2 args accepted"
+     */
+    default Map<String, SafeType[]> getArgumentTypes() { return Collections.emptyMap(); }
 }

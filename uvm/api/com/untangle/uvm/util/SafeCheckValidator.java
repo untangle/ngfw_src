@@ -338,6 +338,52 @@ public class SafeCheckValidator
             types = new SafeType[]{SafeType.SIMPLE_TEXT};
         }
 
+        validateInternal(value, types, fieldName, ann.errorMessage());
+    }
+
+    /**
+     * Validate a single value against an explicit SafeType list. Returns
+     * silently on success; throws {@link SafeCheckValidationException} on
+     * failure.
+     *
+     * <p>Use this from non-annotation call sites such as servlet boundaries
+     * that validate request parameters directly. For SafeCheck-driven
+     * validation use {@link #validateAll(Object)}.</p>
+     *
+     * <p>Caller contract: types must be non-null and non-empty. A null or
+     * empty types argument is treated as a caller bug and surfaces an
+     * unchecked exception; this is intentionally fail-fast.</p>
+     *
+     * @param value     the value being checked (may be null - all types accept null)
+     * @param types     the allowed SafeTypes; must be non-null and non-empty
+     * @param fieldName identifier shown in the error message (e.g.
+     *                  "HandlerClass.args[key]"); never include the offending
+     *                  value here
+     */
+    public static void validate(String value, SafeType[] types, String fieldName)
+    {
+        if (types == null) {
+            throw new NullPointerException("SafeType[] must not be null");
+        }
+        if (types.length == 0) {
+            throw new IllegalArgumentException("SafeType[] must not be empty");
+        }
+        validateInternal(value, types, fieldName, null);
+    }
+
+    /**
+     * Core validation: try each {@link SafeType} in turn; throw with a
+     * descriptive message (override or built from defaults) if none accept.
+     *
+     * @param value           the value being checked
+     * @param types           the allowed SafeTypes (caller-validated non-empty)
+     * @param fieldName       identifier shown in the error message
+     * @param overrideMessage optional message replacing the default; pass
+     *                        {@code null} (or empty) to build one from
+     *                        {@link SafeType#defaultMessage()}
+     */
+    private static void validateInternal(String value, SafeType[] types, String fieldName, String overrideMessage)
+    {
         for (SafeType type : types) {
             if (type.validate(value)) return;
         }
@@ -346,9 +392,8 @@ public class SafeCheckValidator
         // never included (avoids credential leakage and pivot through
         // error-channel echo).
         String message;
-        String override = ann.errorMessage();
-        if (override != null && !override.isEmpty()) {
-            message = override;
+        if (overrideMessage != null && !overrideMessage.isEmpty()) {
+            message = overrideMessage;
         } else {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < types.length; i++) {

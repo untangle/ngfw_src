@@ -1159,6 +1159,88 @@ class UvmTests(NGFWTestCase):
         assert not os.path.exists(poc_file), \
             "Command injection succeeded via /admin/v2/upload argument field (poc file was created)"
 
+    def test_128_v2_upload_unknown_arg_rejected(self):
+        """
+        Verify the v2 upload servlet strict-rejects any form-field key not
+        declared in the handler's getArgumentTypes() schema.
+
+        This closes the v2 extra-field smuggling class: any future v2 handler
+        that reads args.get("destPath") or similar would otherwise be RCE-
+        vulnerable. After C3, the boundary rejects unknown keys before the
+        handler runs.
+        """
+        backup_file = "/tmp/untangleBackup.backup"
+        result = subprocess.call(global_functions.build_wget_command(
+            output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        # Send a bogus 'evil' field that's not in RestoreUploadHandler's schema.
+        boundary, body = global_functions.build_upload_v2_multipart_body_with_args(
+            "restore", {"evil": "value"}, backup_file_bytes)
+
+        req = urllib.request.Request(
+            "http://localhost/admin/v2/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        response_json = json.loads(response_text)
+        assert response_json.get("success") == False, \
+            f"Expected unknown-arg rejection, got: {response_text}"
+        assert "Unknown argument" in (response_json.get("msg") or ""), \
+            f"Expected 'Unknown argument' in message, got: {response_json.get('msg')}"
+
+    def test_130_v2_upload_exceptions_field_accepted(self):
+        """
+        Regression test for the RESERVED_KEYS filter and the RestoreUploadHandler
+        schema declaration. The 'exceptions' arg is in the schema, and 'type' is
+        a reserved key (filtered before strict-rejection); this request must
+        reach the handler and fail downstream (corrupted backup magic) rather
+        than be rejected at the boundary.
+        """
+        backup_file = "/tmp/untangleBackup.backup"
+        result = subprocess.call(global_functions.build_wget_command(
+            output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+        # Corrupt magic bytes so ut-restore.sh -c rejects the file (same trick
+        # test_122 uses to short-circuit before any actual UVM restart).
+        backup_file_bytes = b'\x00\x00' + backup_file_bytes[2:]
+
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_v2_multipart_body_with_args(
+            "restore", {"exceptions": "network"}, backup_file_bytes)
+
+        req = urllib.request.Request(
+            "http://localhost/admin/v2/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        response_json = json.loads(response_text)
+        msg = response_json.get("msg") or ""
+        # Validation MUST have passed - the request reached the handler. Anything
+        # other than "Unknown argument" / "Invalid argument" indicates the
+        # boundary let it through.
+        assert "Unknown argument" not in msg, \
+            f"'exceptions' was wrongly rejected at the boundary: {response_text}"
+        assert "Invalid argument" not in msg, \
+            f"'exceptions=network' was wrongly rejected at the boundary: {response_text}"
+
     def test_126_v1_upload_filename_traversal_blocked(self):
         """
         Verify the v1 upload servlet drops the user-supplied Content-Disposition
