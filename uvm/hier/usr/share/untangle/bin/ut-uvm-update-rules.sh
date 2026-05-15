@@ -151,6 +151,14 @@ EOT
     # Queue all of the UDP packets.
     nft 'add rule inet tune queue-to-uvm fib daddr type unicast meta l4proto udp queue num 1982 comment "Queue Unicast UDP packets to the untangle-vm"'
 
+    # NGFW-15749: QoS connmark save for UDP — preserve QoS priority across packets in same flow.
+    # Gated by flag file managed by sync-settings/qos_manager.py. Was previously emitted by
+    # 300-qos but raced against 010-flush deleting the inet tune table before this script
+    # (= 800-uvm symlink) recreated it, so the rule was never installed.
+    if [ -f /usr/share/untangle/conf/qos-enabled ]; then
+        nft 'add rule inet tune queue-to-uvm meta l4proto udp meta mark & 0x000f0000 != 0 ct mark set mark comment "save non-zero QoS mark"'
+    fi
+
     # Redirect packets destined to non-local sockets to local
     ${IPTABLES} -I prerouting-untangle-vm -t mangle -p tcp -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route traffic to non-locally bound sockets to local"
     ${IPTABLES} -I prerouting-untangle-vm -t mangle -p icmp --icmp-type 3/4 -m socket -j MARK --set-mark 0xFE00/0xFF00 -m comment --comment "route ICMP Unreachable Frag needed traffic to local"
