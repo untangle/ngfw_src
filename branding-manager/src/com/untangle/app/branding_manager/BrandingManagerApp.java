@@ -11,6 +11,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -366,6 +368,18 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
         }
 
         /**
+         * Allowlist of file extensions accepted by this handler. Used by the
+         * upload servlet to sanitize the user-supplied filename.
+         *
+         * @return the set of allowed extensions (lowercase, no leading dot)
+         */
+        @Override
+        public Set<String> getAllowedExtensions()
+        {
+            return Set.of("gif", "png", "jpg", "jpeg");
+        }
+
+        /**
          * If file ends with supported filetype, save.
          * 
          * @param fileItem
@@ -389,7 +403,8 @@ public class BrandingManagerApp extends AppBase implements com.untangle.uvm.Bran
                 /* Use the context in order to properly handler premium vs normal. */
                 app.setLogo(logo);
             } else {
-                throw new Exception("Branding logo must be GIF, PNG, or JPG");
+                throw new Exception("Branding logo extension must be one of: " +
+                    getAllowedExtensions().stream().sorted().map(e -> "." + e).collect(Collectors.joining(", ")));
             }
             return "Uploaded new branding logo";
         }

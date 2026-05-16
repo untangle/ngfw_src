@@ -1977,3 +1977,20 @@ def build_upload_v2_multipart_body(type_field, argument, file_bytes):
     ).encode()
     return boundary, body
 
+def build_upload_v2_multipart_body_with_args(type_field, args, file_bytes):
+    """
+    Build a multipart/form-data body for /admin/v2/upload with an arbitrary
+    args dict (instead of the hardcoded 'argument' field used by the older
+    helper). The 'type' field is added automatically and need not be in args.
+    Returns (boundary, body_bytes).
+    """
+    boundary = "atsboundary7654321"
+    b64_content = base64.b64encode(file_bytes).decode()
+    file_value = f"data:application/octet-stream;base64,{b64_content}"
+    parts = [f'--{boundary}\r\nContent-Disposition: form-data; name="type"\r\n\r\n{type_field}\r\n']
+    for key, value in args.items():
+        parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{key}"\r\n\r\n{value}\r\n')
+    parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="file"\r\n\r\n{file_value}\r\n')
+    parts.append(f'--{boundary}--\r\n')
+    return boundary, "".join(parts).encode()
+

@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.IOUtil;
+import com.untangle.uvm.util.SafeType;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.DownloadHandler;
 
@@ -205,6 +206,20 @@ public class BackupManagerImpl implements BackupManager
         public String getName()
         {
             return "restore";
+        }
+
+        /**
+         * v2 args schema for restore: only {@code "exceptions"} is accepted,
+         * validated as {@link SafeType#SIMPLE_TEXT}. The v2 servlet
+         * strict-rejects any other key before this handler runs.
+         *
+         * @return single-entry schema mapping {@code "exceptions"} to
+         *         {@link SafeType#SIMPLE_TEXT}
+         */
+        @Override
+        public Map<String, SafeType[]> getArgumentTypes()
+        {
+            return Map.of(EXCEPTIONS, new SafeType[]{ SafeType.SIMPLE_TEXT });
         }
 
         /**
