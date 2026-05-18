@@ -29,6 +29,9 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * The cloud manager
  */
@@ -76,7 +79,8 @@ public class CloudManagerImpl implements CloudManager
      * @return The login result
      * @throws Exception
      */
-    public JSONObject accountLogin(String email, String password) throws Exception
+    public JSONObject accountLogin(@SafeCheckParam(SafeType.EMAIL)         String email,
+                                   @SafeCheckParam(SafeType.OPAQUE_SECRET) String password) throws Exception
     {
         return accountLogin(email, password, UvmContextImpl.getInstance().getServerUID(), "", "", "");
     }
@@ -99,7 +103,12 @@ public class CloudManagerImpl implements CloudManager
      * @return The login result
      * @throws Exception
      */
-    public JSONObject accountLogin(String email, String password, String uid, String applianceModel, String majorVersion, String installType) throws Exception
+    public JSONObject accountLogin(@SafeCheckParam(SafeType.EMAIL)         String email,
+                                   @SafeCheckParam(SafeType.OPAQUE_SECRET) String password,
+                                   @SafeCheckParam(SafeType.ALPHANUM)      String uid,
+                                   @SafeCheckParam(SafeType.ALPHANUM)      String applianceModel,
+                                   @SafeCheckParam(SafeType.ALPHANUM)      String majorVersion,
+                                   @SafeCheckParam(SafeType.ALPHANUM)      String installType) throws Exception
     {
         try {
             CloseableHttpClient httpClient = HttpClients.custom().build();
@@ -159,7 +168,15 @@ public class CloudManagerImpl implements CloudManager
      * @return The create account result
      * @throws Exception
      */
-    public JSONObject accountCreate(String email, String password, String firstName, String lastName, String companyName, String uid, String applianceModel, String majorVersion, String installType) throws Exception
+    public JSONObject accountCreate(@SafeCheckParam(SafeType.EMAIL)         String email,
+                                    @SafeCheckParam(SafeType.OPAQUE_SECRET) String password,
+                                    @SafeCheckParam(SafeType.SIMPLE_TEXT)   String firstName,
+                                    @SafeCheckParam(SafeType.SIMPLE_TEXT)   String lastName,
+                                    @SafeCheckParam(SafeType.SIMPLE_TEXT)   String companyName,
+                                    @SafeCheckParam(SafeType.ALPHANUM)      String uid,
+                                    @SafeCheckParam(SafeType.ALPHANUM)      String applianceModel,
+                                    @SafeCheckParam(SafeType.ALPHANUM)      String majorVersion,
+                                    @SafeCheckParam(SafeType.ALPHANUM)      String installType) throws Exception
     {
         try {
             CloseableHttpClient httpClient = HttpClients.custom().build();

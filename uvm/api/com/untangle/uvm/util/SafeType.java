@@ -107,10 +107,19 @@ public enum SafeType
         "must be alphanumeric (letters, digits, '_', '.', '-'; first char alphanumeric or '_'; max 64)"),
 
     /**
-     * Permissive text for descriptions, contact strings, system locations.
-     * Allows Unicode letters, digits, whitespace, and the safe punctuation
-     * set [. _ - @ : , / + ( )]. Excludes shell metacharacters
-     * ({@code $ & ` ; | < > \n \r " '}).
+     * Permissive text for descriptions, contact strings, system locations,
+     * and natural-language names like {@code O'Brien} or {@code John's Folder}.
+     * Allows Unicode letters, digits, whitespace, the safe punctuation
+     * set [. _ - @ : , / + ( )], and the apostrophe ['].
+     * Excludes shell metacharacters ({@code $ & ` ; | < > \n \r "}).
+     *
+     * <p>The apostrophe is permitted because every current sink consumes
+     * {@code SIMPLE_TEXT} values either argv-form (e.g. openssl), URL-encoded
+     * (URIBuilder), or as JSON HTTP-body content - none string-concatenate
+     * the value into a shell command line. Future sinks that do shell
+     * interpolation must quote with {@code shlex.quote(...)} (Python) or
+     * {@code execCommand(List.of(...))} (Java); this is the same contract
+     * already required for {@link #OPAQUE_SECRET}.</p>
      */
     SIMPLE_TEXT(
         Pattern.compile("^[\\p{L}\\p{N}\\p{Zs}._@:,/+()-]{1,256}$"),
@@ -174,7 +183,144 @@ public enum SafeType
     OPAQUE_SECRET(
         null, // validated programmatically, see validate()
         256,
-        "must be 1-256 characters; no control characters allowed");
+        "must be 1-256 characters; control characters (NUL, ESC, BEL, etc.) are not allowed"),
+
+    /**
+     * RFC 5321-style email address. Length 1-254 (the SMTP path limit).
+     * Pattern requires a single '@', a non-empty local part starting
+     * with an alphanumeric character (closes argv-option-injection),
+     * and a domain with at least one dot and a 2+ letter TLD. The
+     * local-part character class is the conservative subset
+     * {@code [A-Za-z0-9._%+-]} - quoted-local-parts and IP-literal
+     * domains are not accepted; neither has ever been used in this
+     * codebase's UI flows.
+     */
+    EMAIL(
+        Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._%+-]*@[A-Za-z0-9][A-Za-z0-9.-]*\\.[A-Za-z]{2,}$"),
+        254,
+        "must be an email address like user@example.com , local part must start with a letter or digit, domain must have at least one dot and a 2+ letter TLD (max 254 chars)"),
+
+    /**
+     * Multi-line email subject/body template that may contain
+     * {@code ${var}} placeholders. Length up to 8192 chars to fit
+     * realistic alert templates with multiple variable substitutions.
+     *
+     * <p>Validated programmatically: rejects any character whose
+     * Unicode category is {@code Cc} (control) <i>except</i> the line
+     * separators {@code \r} and {@code \n} and the horizontal tab
+     * {@code \t}. This blocks NUL, ESC, BEL, etc. - vectors that could
+     * be smuggled into a subject header or body for downstream
+     * mail-injection - while preserving normal multiline content.</p>
+     */
+    EMAIL_TEMPLATE(
+        null, // validated programmatically, see validate()
+        8192,
+        "must contain only printable text, line breaks (CR/LF), and tabs , other control characters (NUL, ESC, BEL, etc.) are not allowed (max 8192 chars)"),
+
+    /**
+     * PEM-encoded data block (certificate, key, or chain). Length cap
+     * 16384 chars - sized to cover a worst-case real-world chain
+     * (server + 3 RSA-4096 intermediates &asymp; 9-12 KB) with margin
+     * for unusual but legitimate cases (cross-sign certs, long DNs).
+     * Rejects gross abuse (multi-MB blobs) without blocking real uploads.
+     *
+     * <p>Validated programmatically: requires at least one
+     * {@code -----BEGIN <LABEL>-----} ... {@code -----END <LABEL>-----}
+     * envelope; permits multiple concatenated blocks separated by
+     * whitespace (legal for cert chains). Body characters between the
+     * BEGIN/END markers are restricted to the base64 alphabet plus
+     * whitespace. Cryptographic validity is <b>not</b> checked here -
+     * the OpenSSL sink layer handles that.</p>
+     */
+    PEM(
+        null, // validated programmatically, see validate()
+        16384,
+        "must be a PEM block bounded by -----BEGIN ...----- and -----END ...----- markers with a base64 body (max 16 KB)"),
+
+    /**
+     * X.500 distinguished name as composed by the certificate UI:
+     * {@code /CN=Foo/C=US/ST=CA/L=City/O=Org} etc. Each RDN is a 1-4
+     * letter type label, an {@code =}, and a value drawn from the
+     * conservative subset {@code [A-Za-z0-9 ._@:+()*-]}. No quoted
+     * RDNs, no embedded slashes inside values - both legal in X.500
+     * but neither used by the UI dialog. {@code *} is permitted to
+     * support wildcard CNs (e.g. {@code /CN=*.example.com}); this is
+     * safe because the value is passed argv-form to openssl and never
+     * interpreted by a shell. Length capped at 512.
+     */
+    CERT_SUBJECT(
+        Pattern.compile("^/[A-Za-z]{1,4}=[A-Za-z0-9 ._@:+()*-]+(/[A-Za-z]{1,4}=[A-Za-z0-9 ._@:+()*-]+)*$"),
+        512,
+        "each field in the certificate subject must be non-empty and use only letters, digits, spaces, or . _ @ : + ( ) * - (e.g. /CN=Host/C=US/ST=California/L=City/O=Org or /CN=*.example.com; max 512 chars)"),
+
+    /**
+     * X.509 Subject Alternative Name list as composed by the certificate
+     * UI. Comma-separated entries; each entry is one of:
+     * <ul>
+     *   <li>{@code DNS:hostname} or {@code DNS:*.hostname} (wildcard SAN)</li>
+     *   <li>{@code IP:ipv4}</li>
+     *   <li>bare hostname (with optional {@code *.} prefix)</li>
+     *   <li>bare IPv4 literal</li>
+     * </ul>
+     *
+     * <p>Length cap 1024 - covers realistic multi-SAN certs without
+     * permitting pathological input. Each entry is trimmed; blank
+     * entries are skipped.</p>
+     *
+     * <p>Sink: passed argv-form to openssl as the {@code subjectAltName}
+     * extension. {@code *} is permitted for wildcard SANs and is not a
+     * shell metacharacter in this argv path.</p>
+     */
+    SAN_LIST(
+        null,  // validated programmatically, see validate()
+        1024,
+        "must be a comma-separated list of SAN entries (e.g. DNS:host.example.com, DNS:*.example.com, IP:10.0.0.1; max 1024 chars)"),
+
+    /**
+     * Regular-expression pattern. Permits any printable Unicode -
+     * including all regex metacharacters ({@code . * + ? ^ $ ( ) [ ] { } | \})
+     * and chars like {@code $ & ;} - so legitimate patterns such as
+     * {@code .*\/network.*} or {@code ^/etc/.*\.conf$} are not rejected.
+     *
+     * <p>The only chars rejected are control characters (Unicode {@code Cc}
+     * category) other than the horizontal tab. This blocks NUL, ESC, BEL,
+     * CR, LF - vectors for log-line smuggling, terminal-escape injection,
+     * and string-truncation in C-based regex engines.</p>
+     *
+     * <p>Length cap 1024 - large enough for any realistic regex, small
+     * enough to bound pathological input.</p>
+     *
+     * <p><b>Sink contract:</b> use only when the value is passed
+     * <i>argv-form</i> (e.g. {@code execCommand(script, List.of(..., regex))}).
+     * Never string-concatenate a {@code REGEX_PATTERN} value into a shell
+     * command line - regex chars like {@code $ ` ( )} are also shell metas
+     * and will execute if the value reaches a shell.</p>
+     */
+    REGEX_PATTERN(
+        null,  // validated programmatically, see validate()
+        1024,
+        "must be a regular expression up to 1024 characters; control characters (NUL, ESC, BEL, CR, LF) are not allowed"),
+
+    /**
+     * Absolute filesystem path for a server-controlled file (e.g. a
+     * tempfile path returned by an upload handler). Length up to 4096
+     * (Linux {@code PATH_MAX}).
+     *
+     * <p>Pattern: must begin with {@code /} (absolute) - this closes the
+     * argv-option-injection class (a value starting with {@code -}
+     * cannot pass). Body characters limited to
+     * {@code [A-Za-z0-9._/-]} - no whitespace, no shell metacharacters,
+     * no backslash. The validator additionally rejects any {@code ..}
+     * substring to block path traversal.</p>
+     *
+     * <p>This is a content check only; canonicalisation and the
+     * "must live under {@code /tmp/...}" check (where applicable)
+     * remain the responsibility of the sink.</p>
+     */
+    FILE_PATH(
+        Pattern.compile("^/[A-Za-z0-9._/-]+$"),
+        4096,
+        "must be an absolute path starting with '/' using only letters, digits, '.', '_', '/', or '-' , no '..', whitespace, or shell metacharacters (max 4096 chars)");
 
     /** Strict IPv4 dotted-quad: each octet 0-255, no leading zeros beyond a single 0. */
     private static final Pattern IPV4_PATTERN = Pattern.compile(
@@ -275,8 +421,21 @@ public enum SafeType
                 return validateUrl(value);
             case OPAQUE_SECRET:
                 return validateOpaqueSecret(value);
+            case EMAIL_TEMPLATE:
+                return validateEmailTemplate(value);
+            case PEM:
+                return validatePem(value);
+            case SAN_LIST:
+                return validateSanList(value);
+            case REGEX_PATTERN:
+                return validateRegexPattern(value);
             case FILENAME:
                 if (value.indexOf('/') >= 0 || value.contains("..")) {
+                    return false;
+                }
+                return pattern.matcher(value).matches();
+            case FILE_PATH:
+                if (value.contains("..")) {
                     return false;
                 }
                 return pattern.matcher(value).matches();
@@ -309,6 +468,78 @@ public enum SafeType
                 continue;
             }
             if (!validateIpOrCidr(trimmed)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Hostname segment with optional leading '*.' wildcard. */
+    private static final Pattern SAN_HOSTNAME_PATTERN = Pattern.compile(
+        "^(\\*\\.)?[A-Za-z0-9][A-Za-z0-9._-]*$");
+
+    /**
+     * Comma-separated SAN list. Each entry is one of:
+     *   DNS:hostname (with optional '*.' wildcard)
+     *   IP:ipv4
+     *   bare hostname (with optional '*.' wildcard)
+     *   bare ipv4
+     * Bounded to 64 entries; blank entries skipped.
+     *
+     * @param value the candidate list; assumed non-null and non-empty.
+     * @return {@code true} if every non-blank entry parses as one of the
+     *         shapes above; {@code false} otherwise.
+     */
+    private static boolean validateSanList(String value)
+    {
+        String[] entries = value.split(",", -1);
+        if (entries.length > 64) {
+            return false;
+        }
+        for (String entry : entries) {
+            String trimmed = entry.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            String body = trimmed;
+            if (trimmed.startsWith("DNS:")) {
+                body = trimmed.substring(4);
+                if (body.isEmpty()) return false;
+                if (!SAN_HOSTNAME_PATTERN.matcher(body).matches()) return false;
+            } else if (trimmed.startsWith("IP:")) {
+                body = trimmed.substring(3);
+                if (body.isEmpty()) return false;
+                if (!IPV4_PATTERN.matcher(body).matches()
+                    && !IPV6_PATTERN.matcher(body).matches()) {
+                    return false;
+                }
+            } else {
+                // bare entry: IPv4 literal or hostname (with optional '*.' )
+                if (!IPV4_PATTERN.matcher(trimmed).matches()
+                    && !SAN_HOSTNAME_PATTERN.matcher(trimmed).matches()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Regex pattern body. Permissive: rejects only Unicode {@code Cc}
+     * (control) characters other than the horizontal tab. All other
+     * printable code points - including regex metas {@code . * + ? ^ $ ( ) [ ] { } | \}
+     * and shell-shaped chars like {@code $ & ;} - are accepted.
+     *
+     * @param value the candidate regex; assumed non-null and non-empty.
+     * @return {@code true} if {@code value} contains no disallowed control
+     *         characters; {@code false} otherwise.
+     */
+    private static boolean validateRegexPattern(String value)
+    {
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '\t') continue;
+            if (Character.getType(c) == Character.CONTROL) {
                 return false;
             }
         }
@@ -400,6 +631,85 @@ public enum SafeType
             if (Character.getType(c) == Character.CONTROL) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    /**
+     * Multi-line template body. Permits CR, LF, and TAB; rejects every
+     * other Cc-class control character (NUL, ESC, BEL, etc.) - those are
+     * the vectors for SMTP header smuggling and similar downstream
+     * mail-injection attacks.
+     *
+     * @param value the candidate template string; assumed non-null and non-empty.
+     * @return {@code true} if no disallowed control characters are present.
+     */
+    private static boolean validateEmailTemplate(String value)
+    {
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '\r' || c == '\n' || c == '\t') continue;
+            if (Character.getType(c) == Character.CONTROL) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Recognises lines like "-----BEGIN CERTIFICATE-----" / "-----END CERTIFICATE-----". */
+    private static final Pattern PEM_BEGIN = Pattern.compile("-----BEGIN ([A-Z0-9 ]+)-----");
+    private static final Pattern PEM_END   = Pattern.compile("-----END ([A-Z0-9 ]+)-----");
+
+    /** Base64 alphabet plus PEM line-wrap whitespace. */
+    private static final Pattern PEM_BODY_CHARS = Pattern.compile("^[A-Za-z0-9+/=\\s]*$");
+
+    /**
+     * PEM envelope check. Requires at least one
+     * {@code -----BEGIN <LABEL>-----} ... {@code -----END <LABEL>-----}
+     * pair with matching label and a base64-only body. Permits multiple
+     * concatenated blocks (cert chain) separated by whitespace. Rejects
+     * any character outside the base64 alphabet within a block - this
+     * blocks shell metacharacter smuggling between BEGIN/END markers.
+     *
+     * <p>Cryptographic validity is not checked - the OpenSSL sink
+     * parses the PEM for real before use.</p>
+     *
+     * @param value the candidate PEM string; assumed non-null and non-empty.
+     * @return {@code true} if at least one well-formed envelope is present
+     *         and the entire input parses as a sequence of envelopes.
+     */
+    private static boolean validatePem(String value)
+    {
+        java.util.regex.Matcher beginM = PEM_BEGIN.matcher(value);
+        java.util.regex.Matcher endM   = PEM_END.matcher(value);
+        int pos = 0;
+        int blocks = 0;
+        while (beginM.find(pos)) {
+            int beginStart = beginM.start();
+            int beginEnd   = beginM.end();
+            String label   = beginM.group(1);
+
+            // Anything between pos and beginStart must be whitespace
+            // (blank lines or stray newlines between blocks are legal;
+            // shell metacharacters / commentary are not).
+            for (int i = pos; i < beginStart; i++) {
+                if (!Character.isWhitespace(value.charAt(i))) return false;
+            }
+
+            if (!endM.find(beginEnd)) return false;
+            if (!label.equals(endM.group(1))) return false; // mismatched label
+
+            String body = value.substring(beginEnd, endM.start());
+            if (!PEM_BODY_CHARS.matcher(body).matches()) return false;
+
+            pos = endM.end();
+            blocks++;
+        }
+        if (blocks == 0) return false;
+
+        // Trailing whitespace (only) after the last END marker is OK.
+        for (int i = pos; i < value.length(); i++) {
+            if (!Character.isWhitespace(value.charAt(i))) return false;
         }
         return true;
     }

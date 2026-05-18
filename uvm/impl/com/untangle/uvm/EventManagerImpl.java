@@ -17,6 +17,8 @@ import com.untangle.uvm.event.TriggerRule;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 import com.untangle.uvm.util.StringUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -372,7 +374,10 @@ public class EventManagerImpl implements EventManager
      * @param  convert         If true, pass convert to human readable.  Otherwise, don't.
      * @return                 Map containing emailSubject and emailBody.
      */
-    public Map<String, String> emailAlertFormatPreview(AlertRule rule, LogEvent event, String subjectTemplate, String bodyTemplate, boolean convert){
+    public Map<String, String> emailAlertFormatPreview(AlertRule rule, LogEvent event,
+                                                       @SafeCheckParam(SafeType.EMAIL_TEMPLATE) String subjectTemplate,
+                                                       @SafeCheckParam(SafeType.EMAIL_TEMPLATE) String bodyTemplate,
+                                                       boolean convert){
         if(mostRecentPreviewEvent != null){
             event = mostRecentPreviewEvent;
         }
