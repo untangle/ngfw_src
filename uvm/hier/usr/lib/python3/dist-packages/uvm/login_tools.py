@@ -98,7 +98,7 @@ class Totp:
             raw_uri=file.read()
 
         # Format of file is:
-        # otpauth://totp/Edge%20Threat%20Management%20Appliance%20Login%20%28FirstName%20LastName%29?secret=O7OLTABU3XUPCD4Q7MWCZQR2I4JXF5MQTT5MYDHE5SHIGTWROUKZ2IIP6UPLTPBIZWKPYBBB4LSX2CAKWYS6RXWGSKKZDBWMC45N4SQ
+        # otpauth://totp/Edge%20Threat%20Management%20Appliance%20Login%20%28FirstName%20LastName%29?secret=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         # We need to extract the secret query parameter
 
         raw_uri = raw_uri.replace('\/', '/')
