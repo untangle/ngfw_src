@@ -1,0 +1,80 @@
+FROM untangleinc/ngfw:trixie-base-multiarch
+LABEL maintainer="Rohit Singh <rohit@arista.com>"
+
+# do not gzip apt lists files (for apt-show-versions)
+RUN rm -f /etc/apt/apt.conf.d/docker-gzip-indexes
+
+RUN apt update -q
+
+# add foreign architectures and their corresponding crossbuild package
+RUN dpkg --add-architecture arm64
+RUN apt install --yes crossbuild-essential-arm64
+
+# install required packages
+RUN apt install --yes build-essential
+RUN apt install --yes debhelper
+RUN apt install --yes devscripts
+RUN apt install --yes git
+# NGFW-15749: git 2.47 (trixie) enforces safe.directory stricter than bookworm's 2.39.
+# Bind-mounted /opt/untangle/build at runtime triggers "dubious ownership" → empty git log
+# → empty timestamp → malformed debian/changelog → libapache2-mod-python setup.py fails.
+RUN git config --system --add safe.directory '*'
+RUN apt install --yes apt-show-versions
+RUN apt install --yes openssh-client
+RUN apt install --yes dput
+RUN apt install --yes curl
+RUN apt install --yes procps
+RUN apt install --yes gawk
+RUN apt install --yes apt-utils
+
+# kernel build dependencies
+RUN apt install --yes kernel-wedge
+RUN apt install --yes quilt
+RUN apt install --yes bc
+RUN apt install --yes flex
+RUN apt install --yes bison
+RUN apt install --yes libelf-dev
+RUN apt install --yes libssl-dev
+RUN apt install --yes rsync
+RUN apt install --yes kmod
+RUN apt install --yes cpio
+RUN apt install --yes python3
+RUN apt install --yes python3-jinja2
+RUN apt install --yes dwarves
+RUN apt install --yes dh-exec
+
+# ISO build dependencies
+RUN apt install --yes simple-cdd
+RUN apt install --yes reprepro
+RUN apt install --yes dose-distcheck
+RUN apt install --yes mtools
+RUN apt install --yes dosfstools
+RUN apt install --yes xorriso
+RUN apt install --yes debian-archive-keyring
+RUN apt install --yes fakeroot
+RUN apt install --yes dpkg-dev
+
+# cleanup
+RUN apt clean
+RUN rm -rf /var/lib/apt/lists/* /var/cache/apt-show-versions/*
+
+# do not use official Debian mirrors during build
+RUN rm -f /etc/apt/sources.list
+
+# base dir
+ENV UNTANGLE=/opt/untangle
+RUN mkdir -p ${UNTANGLE}
+
+# pkgtools
+ENV PKGTOOLS=${UNTANGLE}/ngfw_pkgtools
+VOLUME ${PKGTOOLS}
+
+# source to build
+ENV SRC=/opt/untangle/build
+RUN mkdir -p ${SRC}
+VOLUME ${SRC}
+
+WORKDIR ${SRC}
+
+
+CMD [ "bash", "-c", "${PKGTOOLS}/build.sh" ]
