@@ -14,6 +14,8 @@ import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType; 
 import com.untangle.uvm.app.AppMetric;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.vnet.Affinity;
@@ -221,7 +223,7 @@ public class BandwidthControlApp extends AppBase
      * This is called by the setup wizard
      * @param defaultConfiguration (ie "school")
      */
-    public void wizardLoadDefaults( String defaultConfiguration )
+    public void wizardLoadDefaults( @SafeCheckParam(SafeType.ALPHANUM) String defaultConfiguration )
     {
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         BandwidthControlSettings readSettings = null;

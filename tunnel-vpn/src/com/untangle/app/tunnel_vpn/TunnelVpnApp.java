@@ -33,6 +33,8 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * The Tunnel VPN application connects to 3rd party VPN tunnel providers.
@@ -444,7 +446,9 @@ public class TunnelVpnApp extends AppBase
      * @param tunnelId
      *        The tunnel ID
      */
-    public void importTunnelConfig(String filename, String provider, int tunnelId)
+    public void importTunnelConfig(@SafeCheckParam(SafeType.FILE_PATH) String filename,
+                                   @SafeCheckParam(SafeType.ALPHANUM)  String provider,
+                                   int tunnelId)
     {
         this.tunnelVpnManager.importTunnelConfig(filename, provider, tunnelId);
 
