@@ -52,6 +52,11 @@ RUN apt install --yes dosfstools
 RUN apt install --yes xorriso
 RUN apt install --yes debian-archive-keyring
 RUN apt install --yes fakeroot
+# NGFW-15749: Travis CI Docker container's IPC namespace restricts SysV semaphores,
+# causing fakeroot (default sysv backend) to hang indefinitely on `fakeroot debian/rules
+# clean` after dput. Switch to the TCP backend which uses sockets instead and works in
+# any IPC environment. Local builds also unaffected (libfakeroot-tcp.so is upstream-shipped).
+RUN update-alternatives --set fakeroot /usr/bin/fakeroot-tcp
 RUN apt install --yes dpkg-dev
 
 # cleanup
