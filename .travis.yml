@@ -18,6 +18,7 @@ env:
   jobs:
     - REPOSITORY: trixie
       ARCHITECTURE: amd64
+      NO_CLEAN: 1
 
 before_install:
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
