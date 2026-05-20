@@ -259,7 +259,14 @@ def getuid():
     return uid
 
 
-AUTH_REQUEST_HEADER_TOKEN = 'B132C885-962B-4D63-8B2F-441B7A43CD93'
+CLOUD_AUTH_CREDENTIALS_PATH = '/var/lib/untangle-cloud-auth/credentials.json'
+
+
+def get_auth_request_token():
+    with open(CLOUD_AUTH_CREDENTIALS_PATH) as f:
+        encrypted = json.load(f)['cloud']['encrypted_auth_request']
+    from sync import EncryptionUtil
+    return EncryptionUtil.execute_password_manager('-d', encrypted)
 
 
 def valid_token(token):
@@ -277,7 +284,7 @@ def valid_token(token):
             headers={
                 "Content-Type": 'application/json',
                 'Accept': 'application/json',
-                'AuthRequest': AUTH_REQUEST_HEADER_TOKEN})
+                'AuthRequest': get_auth_request_token()})
         response.raise_for_status()
         value = response.json()
         return value

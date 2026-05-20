@@ -355,7 +355,7 @@ Description: Captive Portal
 
 Package: untangle-base-virus-blocker
 Architecture: all
-Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-app-smtp
+Depends: ${misc:Depends}, untangle-vm, untangle-app-http, untangle-app-smtp, untangle-cloud-auth-credentials
 Description: Virus Blocker Base
  The Virus Blocker Base.
 
@@ -395,6 +395,7 @@ Depends: ${misc:Depends},
 	 untangle-python3-runtests,
          untangle-python3-support-diagnostics,
          untangle-vue-ui,
+         untangle-cloud-auth-credentials,
 	 unzip,
          zip
 Description: UVM Platform
