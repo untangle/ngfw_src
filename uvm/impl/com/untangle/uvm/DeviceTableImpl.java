@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 public class DeviceTableImpl implements DeviceTable
 {
     private static final String CLOUD_LOOKUP_URL = UvmContextFactory.context().uriManager().getUri("https://labs.edge.arista.com/Utility/v1/mac");
-    private static final String CLOUD_LOOKUP_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
     private static final String CONTENT_LENGTH = "Content-length";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_TYPE_VALUE = "application/json";
@@ -318,7 +317,7 @@ public class DeviceTableImpl implements DeviceTable
                 mycon.setRequestProperty(CONTENT_LENGTH, String.valueOf(body.length()));
                 mycon.setRequestProperty(CONTENT_TYPE, CONTENT_TYPE_VALUE);
                 mycon.setRequestProperty(USER_AGENT, USER_AGENT_VALUE);
-                mycon.setRequestProperty(AUTH_REQUEST, CLOUD_LOOKUP_KEY);
+                mycon.setRequestProperty(AUTH_REQUEST, CloudAuthCredentialsUtil.getAuthRequestToken());
                 mycon.setDoOutput(true);
                 mycon.setDoInput(true);
 
