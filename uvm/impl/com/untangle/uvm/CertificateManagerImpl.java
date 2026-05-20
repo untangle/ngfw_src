@@ -38,6 +38,8 @@ import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * The Certificate Manager handles the internal certificate authority that is
@@ -398,7 +400,7 @@ public class CertificateManagerImpl implements CertificateManager
      * @return The certificate details
      */
     // called by getCertificateList to retrieve details about a certificate
-    public CertificateInformation getServerCertificateInformation(String fileName)
+    public CertificateInformation getServerCertificateInformation(@SafeCheckParam(SafeType.FILENAME) String fileName)
     {
         CertificateInformation certInfo = new CertificateInformation();
         FileInputStream certStream;
@@ -569,7 +571,7 @@ public class CertificateManagerImpl implements CertificateManager
      * 
      * @return The CA root certificate details
      */
-    public CertificateInformation getRootCertificateInformation(String fileName)
+    public CertificateInformation getRootCertificateInformation(@SafeCheckParam(SafeType.FILENAME) String fileName)
     {
         CertificateInformation certInfo = new CertificateInformation();
         X509Certificate certObject;
@@ -603,7 +605,8 @@ public class CertificateManagerImpl implements CertificateManager
      *        The subject for the new CA root certificate
      * @return True
      */
-    public boolean generateCertificateAuthority(String commonName, String certSubject)
+    public boolean generateCertificateAuthority(@SafeCheckParam(SafeType.SIMPLE_TEXT) String commonName,
+                                                @SafeCheckParam(SafeType.CERT_SUBJECT) String certSubject)
     {
         try {
             rejectSuspiciousCharacter(commonName, "commonName");
@@ -641,7 +644,8 @@ public class CertificateManagerImpl implements CertificateManager
      *        The subject alternative names for the new certificate
      * @return True
      */
-    public boolean generateServerCertificate(String certSubject, String altNames)
+    public boolean generateServerCertificate(@SafeCheckParam(SafeType.CERT_SUBJECT) String certSubject,
+                                             @SafeCheckParam(SafeType.SAN_LIST)    String altNames)
     {
         try {
             rejectSuspiciousCharacter(altNames, "altNames");
@@ -732,7 +736,10 @@ public class CertificateManagerImpl implements CertificateManager
      *        Optional intermediate certificates
      * @return The result of the operation
      */
-    public ExecManagerResult uploadCertificate(String certMode, String certData, String keyData, String extraData)
+    public ExecManagerResult uploadCertificate(@SafeCheckParam(SafeType.ALPHANUM) String certMode,
+                                               @SafeCheckParam(SafeType.PEM)      String certData,
+                                               @SafeCheckParam(SafeType.PEM)      String keyData,
+                                               @SafeCheckParam(SafeType.PEM)      String extraData)
     {
         String baseName = Long.toString(System.currentTimeMillis() / 1000l);
         int certLen = 0;
@@ -832,7 +839,8 @@ public class CertificateManagerImpl implements CertificateManager
      *        Optional intermediate certificates
      * @return The result of the operation
      */
-    public ExecManagerResult importSignedRequest(String certData, String extraData)
+    public ExecManagerResult importSignedRequest(@SafeCheckParam(SafeType.PEM) String certData,
+                                                 @SafeCheckParam(SafeType.PEM) String extraData)
     {
         String baseName = Long.toString(System.currentTimeMillis() / 1000l);
         FileOutputStream fileStream = null;
@@ -901,7 +909,8 @@ public class CertificateManagerImpl implements CertificateManager
      * @param fileName
      *        The certificate file to delete
      */
-    public void removeCertificate(String type, String fileName)
+    public void removeCertificate(@SafeCheckParam(SafeType.ALPHANUM) String type,
+                                  @SafeCheckParam(SafeType.FILENAME) String fileName)
     {
         String fileBase;
         int dotLocation;

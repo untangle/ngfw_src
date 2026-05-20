@@ -4,11 +4,13 @@
 package com.untangle.uvm.admin.jabsorb;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.callback.CallbackController;
 
+import com.untangle.uvm.util.SafeCheckParam;
 import com.untangle.uvm.util.SafeCheckValidator;
 
 /**
@@ -38,8 +40,21 @@ public class UtCallbackController extends CallbackController
     @Override
     public void preInvokeCallback(Object context, Object instance, Method method, Object[] arguments)
     {
-        if (arguments != null) {
-            for (Object arg : arguments) {
+        if (arguments == null) return;
+        Annotation[][] paramAnns = method.getParameterAnnotations();
+        String mLabel = method.getDeclaringClass().getSimpleName() + "." + method.getName();
+        for (int i = 0; i < arguments.length; i++) {
+            Object arg = arguments[i];
+            if (arg instanceof String) {
+                String s = (String) arg;
+                for (Annotation a : paramAnns[i]) {
+                    if (a instanceof SafeCheckParam) {
+                        SafeCheckParam scp = (SafeCheckParam) a;
+                        SafeCheckValidator.validate(s, scp.value(), scp.errorMessage(),
+                            mLabel + "(arg " + i + ")");
+                    }
+                }
+            } else {
                 SafeCheckValidator.validateAll(arg);
             }
         }

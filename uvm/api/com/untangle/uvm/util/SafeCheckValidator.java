@@ -316,6 +316,61 @@ public class SafeCheckValidator
     }
 
     /**
+     * Validate a single String value against an explicit SafeType list.
+     * Returns silently on success; throws
+     * {@link SafeCheckValidationException} on failure.
+     *
+     * <p>This is the entry point for the {@link SafeCheckParam}
+     * parameter-path used by the Jabsorb {@code preInvokeCallback}.
+     * It is a sibling to {@link #validateValue(String, SafeCheck, String)}
+     * (the field-path) - the two share identical OR-semantics and
+     * error-formatting rules, but stay independent so a change to one
+     * cannot regress the other.</p>
+     *
+     * <p>OR-semantics: the value is accepted if at least one listed
+     * type accepts it. The offending value is never echoed in the
+     * error message (avoids credential leakage and pivot through the
+     * error channel).</p>
+     *
+     * @param value           the value being checked (may be null - accepted by every type)
+     * @param types           the SafeType list to check against; null or empty falls back
+     *                        to {@link SafeType#SIMPLE_TEXT} with a one-time warning
+     * @param overrideMessage optional override for the per-type default error message;
+     *                        empty/null means concatenate the type defaults with " OR "
+     * @param contextLabel    short identifier for what is being validated
+     *                        (e.g. {@code "ClassName.method(arg 2)"}) used in the error
+     */
+    public static void validate(String value, SafeType[] types, String overrideMessage, String contextLabel)
+    {
+        if (types == null || types.length == 0) {
+            if (WARNED_EMPTY_VALUE.add("param:" + contextLabel)) {
+                logger.warn("@SafeCheckParam at {} has empty value() - falling back to SafeType.SIMPLE_TEXT. "
+                    + "Add an explicit SafeType to silence this warning.",
+                    contextLabel);
+            }
+            types = new SafeType[]{SafeType.SIMPLE_TEXT};
+        }
+
+        for (SafeType type : types) {
+            if (type.validate(value)) return;
+        }
+
+        String message;
+        if (overrideMessage != null && !overrideMessage.isEmpty()) {
+            message = overrideMessage;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < types.length; i++) {
+                if (i > 0) sb.append(" OR ");
+                sb.append(types[i].defaultMessage());
+            }
+            message = sb.toString();
+        }
+        throw new SafeCheckValidationException(
+            "Invalid value in " + contextLabel + ": " + message);
+    }
+
+    /**
      * Validate a single value against the SafeType list of an
      * annotation. Returns silently on success; throws
      * {@link SafeCheckValidationException} on failure.

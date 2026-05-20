@@ -53,6 +53,8 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSettings.SendMethod;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * Note that this class is designed to be used <b>BOTH</b> inside the UVM and as
@@ -421,7 +423,7 @@ public class MailSenderImpl implements MailSender
      *        The recipient
      * @return The send result
      */
-    public String sendTestMessage(String recipient)
+    public String sendTestMessage(@SafeCheckParam(SafeType.EMAIL) String recipient)
     {
         UvmContext context = UvmContextFactory.context();
         Map<String, String> i18nMap = context.languageManager().getTranslations("untangle");

@@ -11,6 +11,8 @@ import com.untangle.uvm.network.DhcpStaticEntry;
 import com.untangle.uvm.network.DeviceStatus;
 import com.untangle.uvm.event.EventSettings;
 import com.untangle.uvm.app.Reporting;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -236,7 +238,7 @@ public class ConfigManagerImpl implements ConfigManager
      *        The new host name
      * @return A JSON object with the old and new hostname
      */
-    public JSONObject setHostName(String argName)
+    public JSONObject setHostName(@SafeCheckParam(SafeType.HOSTNAME) String argName)
     {
         logger.info("CMAN_HIST setHostName() = {}", argName);
 
@@ -273,7 +275,7 @@ public class ConfigManagerImpl implements ConfigManager
      *        The new domain name
      * @return A JSON object with the old and new domain name
      */
-    public JSONObject setDomainName(String argName)
+    public JSONObject setDomainName(@SafeCheckParam(SafeType.HOSTNAME) String argName)
     {
         logger.info("CMAN_HIST setDomainName() = {}", argName);
 
@@ -759,7 +761,8 @@ public class ConfigManagerImpl implements ConfigManager
      *        should not be replaced by content in the backup.
      * @return A JSON object with the result code and message
      */
-    public Object restoreSystemBackup(String argFileName, String maintainRegex)
+    public Object restoreSystemBackup(@SafeCheckParam(SafeType.FILE_PATH)     String argFileName,
+                                      @SafeCheckParam(SafeType.REGEX_PATTERN) String maintainRegex)
     {
         logger.info("CMAN_HIST restoreSystemBackup() = {}|{}", argFileName , maintainRegex);
 

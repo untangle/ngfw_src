@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 import com.untangle.uvm.util.Pulse;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -314,7 +316,7 @@ public class GoogleManagerImpl implements GoogleManager
      * @return
      */
     @Override
-    public String getAppSpecificGoogleDrivePath(String appDirectory) {
+    public String getAppSpecificGoogleDrivePath(@SafeCheckParam(SafeType.ALPHANUM) String appDirectory) {
         if (getSettings() == null)
             return null;
 
@@ -334,7 +336,8 @@ public class GoogleManagerImpl implements GoogleManager
      * @param windowLocation domain/hostname
      * @return Built URL
      */
-    public String getAuthorizationUrl( String windowProtocol, String windowLocation )
+    public String getAuthorizationUrl( @SafeCheckParam(SafeType.SIMPLE_TEXT) String windowProtocol,
+                                       @SafeCheckParam(SafeType.SIMPLE_TEXT) String windowLocation )
     {
         try {
             URIBuilder builder = new URIBuilder(this.cloudOAuth2App.getAuthUri());
@@ -396,7 +399,7 @@ public class GoogleManagerImpl implements GoogleManager
      * @param code the code to send.
      * @return null on success or the error string
      */
-    public String provideDriveCode( String code )
+    public String provideDriveCode( @SafeCheckParam(SafeType.SIMPLE_TEXT) String code )
     {
         logger.info("Providing code [{}] to exchange for the access token", code);
 
@@ -687,7 +690,8 @@ public class GoogleManagerImpl implements GoogleManager
      * @throws GoogleDriveOperationFailedException
      */
     @Override
-    public int uploadToDrive(String filePath, String parentFolder) throws GoogleDriveOperationFailedException {
+    public int uploadToDrive(@SafeCheckParam(SafeType.FILE_PATH) String filePath,
+                             @SafeCheckParam(SafeType.SIMPLE_TEXT) String parentFolder) throws GoogleDriveOperationFailedException {
         if (StringUtils.isBlank(filePath)) {
             throw new GoogleDriveOperationFailedException("File path not present, not uploading");
         }

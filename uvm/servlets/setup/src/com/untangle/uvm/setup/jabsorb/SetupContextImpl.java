@@ -27,6 +27,8 @@ import com.untangle.uvm.SystemSettings;
 import com.untangle.uvm.WizardSettings;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.AdminUserSettings;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 /** SetupContextImpl */
 public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
 {
@@ -52,7 +54,8 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
      * @param language
      * @param source
      */
-    public void setLanguage( String language, String source )
+    public void setLanguage( @SafeCheckParam(SafeType.ALPHANUM) String language,
+                             @SafeCheckParam(SafeType.ALPHANUM) String source )
     {
         LanguageManager lm = this.context.languageManager();
         LanguageSettings ls = lm.getLanguageSettings();
@@ -68,7 +71,9 @@ public class SetupContextImpl implements UtJsonRpcServlet.SetupContext
      * @param installType
      * @throws TransactionRolledbackException
      */
-    public void setAdminPassword( String password, String email, String installType ) throws TransactionRolledbackException
+    public void setAdminPassword( @SafeCheckParam(SafeType.OPAQUE_SECRET) String password,
+                                  @SafeCheckParam(SafeType.EMAIL)         String email,
+                                  @SafeCheckParam(SafeType.ALPHANUM)      String installType ) throws TransactionRolledbackException
     {
         AdminSettings adminSettings = this.context.adminManager().getSettings();
         SystemSettings systemSettings = this.context.systemManager().getSettings();
