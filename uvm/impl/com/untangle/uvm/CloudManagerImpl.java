@@ -106,7 +106,7 @@ public class CloudManagerImpl implements CloudManager
     public JSONObject accountLogin(@SafeCheckParam(SafeType.EMAIL)         String email,
                                    @SafeCheckParam(SafeType.OPAQUE_SECRET) String password,
                                    @SafeCheckParam(SafeType.ALPHANUM)      String uid,
-                                   @SafeCheckParam(SafeType.ALPHANUM)      String applianceModel,
+                                   @SafeCheckParam(SafeType.SIMPLE_TEXT)   String applianceModel,
                                    @SafeCheckParam(SafeType.ALPHANUM)      String majorVersion,
                                    @SafeCheckParam(SafeType.ALPHANUM)      String installType) throws Exception
     {
@@ -174,7 +174,7 @@ public class CloudManagerImpl implements CloudManager
                                     @SafeCheckParam(SafeType.SIMPLE_TEXT)   String lastName,
                                     @SafeCheckParam(SafeType.SIMPLE_TEXT)   String companyName,
                                     @SafeCheckParam(SafeType.ALPHANUM)      String uid,
-                                    @SafeCheckParam(SafeType.ALPHANUM)      String applianceModel,
+                                    @SafeCheckParam(SafeType.SIMPLE_TEXT)   String applianceModel,
                                     @SafeCheckParam(SafeType.ALPHANUM)      String majorVersion,
                                     @SafeCheckParam(SafeType.ALPHANUM)      String installType) throws Exception
     {

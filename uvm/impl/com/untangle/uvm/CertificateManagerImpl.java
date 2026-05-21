@@ -609,7 +609,7 @@ public class CertificateManagerImpl implements CertificateManager
      *        The subject for the new CA root certificate
      * @return True
      */
-    public boolean generateCertificateAuthority(@SafeCheckParam(SafeType.SIMPLE_TEXT) String commonName,
+    public boolean generateCertificateAuthority(@SafeCheckParam(SafeType.NATURAL_NAME) String commonName,
                                                 @SafeCheckParam(SafeType.CERT_SUBJECT) String certSubject)
     {
         try {
@@ -674,43 +674,61 @@ public class CertificateManagerImpl implements CertificateManager
      * setActiveRootCertificate will set a specific root CA to the active root certificate
      * @param fileName
      */
-    public void setActiveRootCertificate(String fileName) { 
+    public void setActiveRootCertificate(String fileName) {
         if (fileName == null || fileName.isEmpty()) {
             logger.warn("setActiveRootCertificate: null or empty fileName rejected");
             return;
         }
 
-        // Resolve canonical path to prevent directory traversal
+        String certParent = validateCertStoreSubdirPath(fileName, "setActiveRootCertificate");
+        if (certParent == null) return;
+
+        // Use symlink function to replace CERT_STORE_PATH root certs
+        symlinkRootCerts(CERT_STORE_PATH, certParent + "/", false);
+    }
+
+    /**
+     * Validates that {@code fileName} canonicalizes to a .crt file inside a
+     * subdirectory of CERT_STORE_PATH. Returns the canonical parent directory
+     * on success, or {@code null} (with a warning logged) on any rejection.
+     *
+     * Resolves symlinks on the CERT_STORE_PATH prefix too so the comparison
+     * is apples-to-apples even when settings/ or untangle-certificates/
+     * themselves are symlinks (common in dev).
+     *
+     * @param fileName  the candidate certificate file path to validate
+     * @param callerTag short label identifying the caller, used in log messages
+     * @return the canonical parent directory path on success, or {@code null} if validation fails
+     */
+    private String validateCertStoreSubdirPath(String fileName, String callerTag) {
         String canonicalPath;
         try {
             canonicalPath = new File(fileName).getCanonicalPath();
         } catch (IOException e) {
-            logger.warn("setActiveRootCertificate: could not resolve canonical path for {}", fileName, e);
-            return;
+            logger.warn("{}: could not resolve canonical path for {}", callerTag, fileName, e);
+            return null;
         }
-
-        // Must be a .crt file
         if (!canonicalPath.endsWith(".crt")) {
-            logger.warn("setActiveRootCertificate: non-.crt file rejected: {}", canonicalPath);
-            return;
+            logger.warn("{}: non-.crt file rejected: {}", callerTag, canonicalPath);
+            return null;
         }
-
-        // Must reside inside CERT_STORE_PATH
-        String certStorePrefix = new File(CERT_STORE_PATH).getAbsolutePath();
+        String certStorePrefix;
+        try {
+            certStorePrefix = new File(CERT_STORE_PATH).getCanonicalPath();
+        } catch (IOException e) {
+            logger.warn("{}: could not resolve canonical CERT_STORE_PATH", callerTag, e);
+            return null;
+        }
         if (!canonicalPath.startsWith(certStorePrefix + "/")) {
-            logger.warn("setActiveRootCertificate: path outside CERT_STORE_PATH rejected: {}", canonicalPath);
-            return;
+            logger.warn("{}: path outside CERT_STORE_PATH rejected: {}", callerTag, canonicalPath);
+            return null;
         }
-
-        // Must be in a subdirectory of CERT_STORE_PATH, not at the top level
         String certParent = new File(canonicalPath).getParent();
-        if (certParent.equals(certStorePrefix)) {
-            logger.warn("setActiveRootCertificate: file must be in a CERT_STORE_PATH subdirectory: {}", canonicalPath);
-            return;
+        if (certParent == null || certParent.equals(certStorePrefix)) {
+            logger.warn("{}: file must be in a CERT_STORE_PATH subdirectory: {}", callerTag, canonicalPath);
+            return null;
         }
-
-        // Use symlink function to replace CERT_STORE_PATH root certs
-        symlinkRootCerts(CERT_STORE_PATH, certParent + "/", false);
+        return certParent;
     }
 
     /**
@@ -914,11 +932,13 @@ public class CertificateManagerImpl implements CertificateManager
      *        The certificate file to delete
      */
     public void removeCertificate(@SafeCheckParam(SafeType.ALPHANUM) String type,
-                                  @SafeCheckParam(SafeType.FILENAME) String fileName)
+                                  String fileName)
     {
         String fileBase;
         int dotLocation;
         File killFile;
+
+        if (fileName == null || fileName.isEmpty()) return;
 
         // don't let them delete the original system certificate
         if (fileName.equals("apache.pem")) return;
@@ -930,6 +950,14 @@ public class CertificateManagerImpl implements CertificateManager
         if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate())) return;
 
         if(type.equalsIgnoreCase("SERVER")){
+            // SERVER deletion takes a bare filename like "apache.pem".
+            // Validate at the FILENAME boundary here (the parameter is unannotated
+            // because the ROOT branch needs a path containing '/').
+            if (!SafeType.FILENAME.validate(fileName)) {
+                logger.warn("removeCertificate(SERVER): rejecting fileName {}", fileName);
+                return;
+            }
+
             // extract the file name without the extension
             dotLocation = fileName.indexOf('.');
             if (dotLocation < 0) return;
@@ -947,22 +975,20 @@ public class CertificateManagerImpl implements CertificateManager
             killFile = new File(CERT_STORE_PATH + fileBase + ".pfx");
             killFile.delete();
         } else if(type.equalsIgnoreCase("ROOT")) {
-            // Use filename to get the parent dir
-            File rootCert = new File(fileName);
-            var certParent = rootCert.getParent();
+            // ROOT deletion takes an absolute path to a .crt in a CERT_STORE_PATH subdirectory.
+            // Validate via canonicalization so we cannot be tricked into deleting
+            // arbitrary directories.
+            String certParent = validateCertStoreSubdirPath(fileName, "removeCertificate(ROOT)");
+            if (certParent == null) return;
 
-            // verify dotLocation is not top level
-            if(!certParent.equalsIgnoreCase(CERT_STORE_PATH)) {
-                File parentFile = new File(certParent);
-
-                // rm the index, crt, key, serial files in here
-                for(File child : parentFile.listFiles()) {
+            File parentFile = new File(certParent);
+            File[] children = parentFile.listFiles();
+            if (children != null) {
+                for (File child : children) {
                     child.delete();
                 }
-                
-                // rm the directory
-                parentFile.delete();
             }
+            parentFile.delete();
         }
     }
 
