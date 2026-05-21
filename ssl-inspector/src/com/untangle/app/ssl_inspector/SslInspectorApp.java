@@ -180,18 +180,26 @@ public class SslInspectorApp extends AppBase
                 if (readSettings.getVersion().intValue() < 3) {
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect Duck Duck Go", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Duck Duck Go*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect KidzSearch", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*kidzsearch*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-                    
+
                     readSettings.setVersion(3);
                     setSettings(readSettings);
                     renumberRules = true;
                 }
 
-                // v3 to v4: add hostname verification settings and port 25 IGNORE rule
+                // v3 to v4: add hostname verification, port 25 IGNORE rule,
+                // and force-disable TLSv1/TLSv1.1 for JDK21 compatibility
                 if (readSettings.getVersion().intValue() < 4) {
                     logger.info("Migrating settings from v{} to v4: adding hostname verification", readSettings.getVersion());
                     readSettings.setVerifyServerCertHostname(false);
                     readSettings.setHostnameVerificationBypassList(new LinkedList<>());
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Ignore SMTP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
+
+                    boolean changed = false;
+                    if (readSettings.getClient_TLSv10()) { readSettings.setClient_TLSv10(false); changed = true; }
+                    if (readSettings.getClient_TLSv11()) { readSettings.setClient_TLSv11(false); changed = true; }
+                    if (readSettings.getServer_TLSv10()) { readSettings.setServer_TLSv10(false); changed = true; }
+                    if (readSettings.getServer_TLSv11()) { readSettings.setServer_TLSv11(false); changed = true; }
+                    if (changed) logger.warn("NGFW-15749: forced TLSv1/TLSv1.1 off on upgrade to v4 (JDK21 compatibility)");
 
                     readSettings.setVersion(4);
                     setSettings(readSettings);
