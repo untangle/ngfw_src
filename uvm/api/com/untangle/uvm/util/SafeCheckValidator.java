@@ -381,6 +381,15 @@ public class SafeCheckValidator
      */
     private static void validateValue(String value, SafeCheck ann, String fieldName)
     {
+        // Literal allowlist short-circuit. Matched values bypass the SafeType
+        // regex. Null and empty values are skipped here and fall through to
+        // the SafeType path (which accepts null/empty per its own contract).
+        if (value != null) {
+            for (String literal : ann.allow()) {
+                if (literal.equals(value)) return;
+            }
+        }
+
         SafeType[] types = ann.value();
         if (types.length == 0) {
             // Transitional fallback for un-typed @SafeCheck. Log once

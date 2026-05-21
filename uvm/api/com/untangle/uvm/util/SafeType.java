@@ -176,6 +176,21 @@ public enum SafeType
         "must be a 44-character base64-encoded key"),
 
     /**
+     * IEEE 802 MAC address (RFC 7042) in standard hex-octet form,
+     * separated by ':' or '-'. Examples: {@code aa:bb:cc:dd:ee:ff},
+     * {@code AA-BB-CC-DD-EE-FF}.
+     *
+     * <p>Length is fixed at 17 (12 hex digits + 5 separators). The regex
+     * matches the existing UI rule {@code macAddressRegex} in
+     * {@code vuntangle/src/plugins/init-vee-validate.js:26} so backend and
+     * UI agree exactly.</p>
+     */
+    MAC_ADDRESS(
+        Pattern.compile("^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$"),
+        17,
+        "must be a valid MAC address (e.g. aa:bb:cc:dd:ee:ff or AA-BB-CC-DD-EE-FF)"),
+
+    /**
      * Free-form secret. Accepts any printable Unicode including shell
      * metacharacters; rejects only control characters. See class
      * Javadoc for the sink-side handling contract.

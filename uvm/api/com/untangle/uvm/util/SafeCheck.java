@@ -74,6 +74,24 @@ public @interface SafeCheck
     SafeType[] value() default {};
 
     /**
+     * Optional literal allowlist. Values matching any entry exactly
+     * (case-sensitive {@link String#equals}) bypass the {@link #value()}
+     * regex check. Use ONLY for legitimate magic values that cannot fit
+     * a structured SafeType (e.g. strongSwan {@code "%any"}, {@code "%config"}).
+     *
+     * <p>Reviewer rule: every entry MUST be a sink-special-cased keyword
+     * (parser keyword in every downstream sink, not raw-interpolated).
+     * If the sink interpolates the value raw, the allowlist becomes an
+     * RCE vector.</p>
+     *
+     * <p>If the value does not match any allow entry, the {@link #value()}
+     * SafeType check applies as normal. The error message on rejection
+     * does not mention the allowlist - the UI sees the standard
+     * SafeType-default message.</p>
+     */
+    String[] allow() default {};
+
+    /**
      * Optional override for the per-type default error message, useful
      * when a UI-facing label gives the admin clearer guidance than the
      * generic type description. Empty string means "use the default

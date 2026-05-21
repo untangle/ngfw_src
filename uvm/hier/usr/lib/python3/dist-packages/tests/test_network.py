@@ -3256,49 +3256,48 @@ server=dynupdate.no-ip.com
     def test_081_static_route_nexthop_injection_blocked(self):
         """
         Verify that shell metacharacters in static route nextHop fields
-        do not appear in the generated route script.
-        StaticRoute.nextHop is a String in Java (not InetAddress), so
-        arbitrary values pass through JSON-RPC to sync-settings.
-        route_manager.py writes nextHop directly into an executable shell
-        script at /etc/untangle/post-network-hook.d/030-routes.
-        Tests newline, semicolon, and backtick injection patterns.
+        are rejected by @SafeCheck at the JSON-RPC boundary.
+
+        StaticRoute.nextHop is annotated @SafeCheck({IP_OR_CIDR, INTERFACE})
+        by NGFW-15741. The redesigned validator is fail-fast: setNetworkSettings
+        raises SafeCheckValidationException (JSON-RPC code 490) on a malicious
+        nextHop, so the value never reaches route_manager.py and the generated
+        route script at /etc/untangle/post-network-hook.d/030-routes is never
+        even rewritten with the bad value.
+
+        REWRITTEN: original test pushed all 3 payloads in one settings batch
+        and then grepped the script for "echo MARKER" lines. With fail-fast,
+        the FIRST payload aborts setNetworkSettings — so no two-route batch is
+        possible. This rewrite pushes each payload separately, asserts each is
+        rejected, and verifies the previously stored staticRoutes list is
+        unchanged (no partial-apply).
         """
-        route_script = "/etc/untangle/post-network-hook.d/030-routes"
         payloads = [
-            ("8.8.8.8\necho NEWLINE_INJECT", "NEWLINE_INJECT"),
-            ("8.8.8.8; echo SEMICOLON_INJECT", "SEMICOLON_INJECT"),
-            ("`echo BACKTICK_INJECT`", "BACKTICK_INJECT"),
+            "8.8.8.8\necho NEWLINE_INJECT",
+            "8.8.8.8; echo SEMICOLON_INJECT",
+            "`echo BACKTICK_INJECT`",
         ]
 
         try:
-            malicious_settings = copy.deepcopy(orig_netsettings)
-            for idx, (nexthop, _) in enumerate(payloads):
+            baseline_routes = copy.deepcopy(orig_netsettings['staticRoutes']['list'])
+            for idx, nexthop in enumerate(payloads):
+                bad_settings = copy.deepcopy(orig_netsettings)
                 route = create_route_rule("192.168.99.0", 24 + idx, nexthop)
                 route["ruleId"] = 900 + idx
-                malicious_settings['staticRoutes']['list'].insert(0, route)
+                bad_settings['staticRoutes']['list'].insert(0, route)
 
-            global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
-            time.sleep(2)
+                with pytest.raises(Exception):
+                    global_functions.uvmContext.networkManager().setNetworkSettings(bad_settings)
 
-            assert os.path.exists(route_script), \
-                "Route script not found: " + route_script
-            script_content = open(route_script).read()
-
-            failures = []
-            for nexthop, marker in payloads:
-                # Check if the marker appears as a separate command on its own line.
-                # After @SafeCheck, dangerous chars (\n, ;) are stripped but marker
-                # text may remain inline as part of the via argument (harmless).
-                # Injection is only successful if the marker ends up as a standalone
-                # shell command on a separate line.
-                for line in script_content.split('\n'):
-                    stripped = line.strip()
-                    if stripped.startswith("echo") and marker in stripped:
-                        failures.append(f"  {marker} (payload: {nexthop!r})")
-                        break
-
-            assert not failures, \
-                "Injection found as standalone command in route script:\n" + "\n".join(failures)
+                # Stored staticRoutes list must equal the original — the
+                # rejected setNetworkSettings cannot partially-apply.
+                current_routes = global_functions.uvmContext.networkManager() \
+                    .getNetworkSettings()['staticRoutes']['list']
+                assert current_routes == baseline_routes, (
+                    f"NGFW-15741: staticRoutes list mutated despite SafeCheckValidator "
+                    f"rejection of nextHop={nexthop!r}. "
+                    f"Stored: {current_routes!r}, expected: {baseline_routes!r}"
+                )
         finally:
             global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
@@ -3340,21 +3339,22 @@ server=dynupdate.no-ip.com
         testRoutesToReachableAddresses cannot reach a shell.
 
         Defense layers (any one being broken is caught here):
-          1. SafeCheckValidator at JSON-RPC ingress (incomplete -- known
-             bypasses include `;'cmd'`, `|"cmd"`, `|&cmd`).
+          1. SafeCheckValidator at JSON-RPC ingress — under NGFW-15741 this
+             is the typed @SafeCheck({IP_OR_CIDR, INTERFACE}) on
+             StaticRoute.nextHop. The historical `8.8.8.8;'cmd'` bypass
+             ALSO fails this (programmatic IP_OR_CIDR rejects, INTERFACE
+             regex rejects ';'). setNetworkSettings now raises 490 at the
+             RPC boundary, so the value never reaches sync-settings.
           2. StaticRoute.getToAddr() anchored Pattern.matches dotted-quad
              (gates the exec sites at NotificationManagerImpl:910/916/917).
           3. Post-fix: call-site IP regex + execCommand(argv) so even a
              nextHop containing shell chars cannot expand through /bin/sh.
 
-        Payload: `8.8.8.8;'touch /tmp/marker'` -- the `;` is followed by
-        `'`, which is NOT in the validator's lookahead class
-        [a-zA-Z0-9_/\\\\.], so SafeCheckValidator does NOT strip it.
-        Today this passes because layer 2 (getToAddr) rejects the value
-        before exec. After the call-site fix, layer 3 also blocks.
-
-        If anyone weakens getToAddr() in the future without also keeping
-        the call-site IP guard + execCommand, this test will FAIL.
+        REWRITTEN: under the redesigned validator, layer 1 alone rejects
+        the bypass payload at setNetworkSettings. We assert that the RPC
+        throws AND, defense-in-depth, that the historical sentinel file
+        never appears even if a future regex regression lets a payload
+        slip through to layers 2/3.
         """
         exploit_marker = "/tmp/static-route-nexthop-notif-injection-test"
         if os.path.exists(exploit_marker):
@@ -3367,13 +3367,14 @@ server=dynupdate.no-ip.com
             route = create_route_rule("192.168.99.0", 24, bypass_payload)
             route["ruleId"] = 990
             malicious_settings['staticRoutes']['list'].insert(0, route)
-            global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
-            time.sleep(2)
 
-            # Trigger the notification cycle that runs
-            # testRoutesToReachableAddresses -> ut-notification-helpers.sh +
-            # ping. Pre-fix shell-string concat would fire the injection;
-            # the layered defense above prevents it.
+            # Layer 1 — typed @SafeCheck on StaticRoute.nextHop must reject.
+            with pytest.raises(Exception):
+                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+
+            # Trigger the notification cycle anyway — layers 2/3 must also
+            # hold. (No bad route was inserted, so nothing should fire, but
+            # this guards against partial-apply regressions.)
             global_functions.uvmContext.notificationManager().getNotifications()
             time.sleep(1)
 
@@ -3384,6 +3385,120 @@ server=dynupdate.no-ip.com
             global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
             if os.path.exists(exploit_marker):
                 os.remove(exploit_marker)
+
+    def test_084_safecheck_interface_settings_fields(self):
+        """Verify NGFW-15768 @SafeCheck annotations on InterfaceSettings.
+
+        Retained fields (TIER B RCE-class):
+          - v4PPPoERootDev       (INTERFACE)      sink: /etc/network/interfaces pre-up
+          - v4PPPoEUsername      (ALPHANUM)       sink: /etc/ppp/peers/* connect=
+          - dhcpDnsOverride      (IP_OR_CIDR_LIST) sink: dnsmasq dhcp-script=
+
+        Per-field RCE audit (2026-05-20) dropped:
+          - v4PPPoEPassword (pap-secrets data, no exec directives)
+          - wirelessSsid / wirelessPassword / wirelessCountryCode (hostapd.conf
+            has no exec directives)
+        """
+        netsettings_before = global_functions.uvmContext.networkManager().getNetworkSettings()
+        try:
+            positive = copy.deepcopy(netsettings_before)
+            iface = positive["interfaces"]["list"][0]
+            iface["v4PPPoERootDev"]  = "eth0"
+            iface["v4PPPoEUsername"] = "pppoe_user"
+            iface["dhcpDnsOverride"] = "8.8.8.8, 1.1.1.1"
+            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
+
+            baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
+            negative_payloads = {
+                "v4PPPoERootDev":  "eth0; touch /tmp/x",
+                "v4PPPoEUsername": "user`id`",
+                "dhcpDnsOverride": "8.8.8.8\ndhcp-script=/tmp/x",
+            }
+            for field, payload in negative_payloads.items():
+                bad = copy.deepcopy(baseline)
+                bad["interfaces"]["list"][0][field] = payload
+                with pytest.raises(Exception):
+                    global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+                current_iface = global_functions.uvmContext.networkManager() \
+                    .getNetworkSettings()["interfaces"]["list"][0]
+                expected = baseline["interfaces"]["list"][0].get(field)
+                assert current_iface.get(field) == expected, (
+                    f"NGFW-15768: InterfaceSettings.{field} mutated despite "
+                    f"SafeCheckValidator rejection. Stored: "
+                    f"{current_iface.get(field)!r}, expected: {expected!r}"
+                )
+        finally:
+            global_functions.uvmContext.networkManager().setNetworkSettings(netsettings_before)
+
+    def test_085_safecheck_dns_dhcp_entries(self):
+        """Verify NGFW-15768 @SafeCheck annotations on Phase 2 DNS/DHCP entry POJOs.
+
+        Fields covered (TIER B - dnsmasq config-file injection RCE):
+          - DnsLocalServer.domain         (HOSTNAME)
+          - DhcpStaticEntry.macAddress    (MAC_ADDRESS)
+          - DhcpStaticEntry.description   (SIMPLE_TEXT)
+          - DhcpRelay.description         (SIMPLE_TEXT)
+
+        All sinks land in /etc/dnsmasq.conf or /etc/dnsmasq.d/* where dnsmasq's
+        dhcp-script= / dhcp-luascript= / lease-change-script= directives trigger
+        shell exec. Newline injection in any field is RCE.
+        """
+        netsettings_before = global_functions.uvmContext.networkManager().getNetworkSettings()
+        try:
+            # Positive: each entry type round-trips with a valid value.
+            positive = copy.deepcopy(netsettings_before)
+            positive.setdefault("dnsSettings", {"javaClass": "com.untangle.uvm.network.DnsSettings"})
+            positive["dnsSettings"].setdefault("localServers", {"javaClass": "java.util.LinkedList", "list": []})
+            positive["dnsSettings"]["localServers"]["list"] = [{
+                "javaClass": "com.untangle.uvm.network.DnsLocalServer",
+                "domain":      "internal.example.com",
+                "localServer": "10.0.0.53",
+            }]
+            positive.setdefault("staticDhcpEntries", {"javaClass": "java.util.LinkedList", "list": []})
+            positive["staticDhcpEntries"]["list"] = [{
+                "javaClass":   "com.untangle.uvm.network.DhcpStaticEntry",
+                "macAddress":  "aa:bb:cc:dd:ee:ff",
+                "address":     "10.0.0.100",
+                "description": "Office printer",
+            }]
+            positive.setdefault("dhcpRelays", {"javaClass": "java.util.LinkedList", "list": []})
+            positive["dhcpRelays"]["list"] = [{
+                "javaClass":     "com.untangle.uvm.network.DhcpRelay",
+                "enabled":       False,
+                "description":   "Branch office relay",
+                "rangeStart":    "10.1.0.100",
+                "rangeEnd":      "10.1.0.200",
+                "leaseDuration": 86400,
+                "gateway":       "10.1.0.1",
+                "prefix":        24,
+                "dns":           "8.8.8.8",
+            }]
+            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
+            baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
+
+            # Negative: newline-injected dhcp-script= payload is rejected for each field.
+            INJECT = "\ndhcp-script=/tmp/evil"
+            negative_cases = [
+                ("dnsSettings.localServers.0.domain",      "evil" + INJECT),
+                ("staticDhcpEntries.0.macAddress",          "aa:bb:cc:dd:ee:ff" + INJECT),
+                ("staticDhcpEntries.0.description",         "evil" + INJECT),
+                ("dhcpRelays.0.description",                "evil" + INJECT),
+            ]
+            for path, payload in negative_cases:
+                bad = copy.deepcopy(baseline)
+                # Navigate the dotted path and set the leaf.
+                node = bad
+                parts = path.split(".")
+                for p in parts[:-1]:
+                    if p.isdigit():
+                        node = node["list"][int(p)]
+                    else:
+                        node = node[p]
+                node[parts[-1]] = payload
+                with pytest.raises(Exception):
+                    global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+        finally:
+            global_functions.uvmContext.networkManager().setNetworkSettings(netsettings_before)
 
     @classmethod
     def final_extra_tear_down(cls):

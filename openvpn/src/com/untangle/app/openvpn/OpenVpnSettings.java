@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * Settings for the open vpn app.
@@ -37,6 +39,7 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     private String cipher = "AES-128-CBC";
     private boolean clientToClient = true;
     
+    @SafeCheck(SafeType.ALPHANUM)
     private String siteName = "untangle";
     private IPMaskedAddress addressSpace;
 

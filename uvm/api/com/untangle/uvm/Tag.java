@@ -29,6 +29,9 @@ public class Tag implements Serializable, JSONString
     public static final int EXPIRE_END_OF_WEEK  = -3;
     public static final int EXPIRE_END_OF_MONTH = -4;
 
+    // No @SafeCheck: HostTableImpl.refreshTagIpset() sanitizes via
+    // replaceAll("[^a-zA-Z0-9]", "") before any ipset exec. Sync-settings
+    // iptables_util.py does the same. No RCE path reaches the value.
     private String name;
     private long expirationTime = 1;
 

@@ -45,11 +45,22 @@ public class NetworkSettings implements Serializable, JSONString
     private String domainName;
 
     private boolean dynamicDnsServiceEnabled = false;
+    // Dynamic DNS fields flow into /etc/ddclient.conf where the `cmd='...'`
+    // directive triggers shell exec by ddclient. Newline injection in any
+    // of these would inject a malicious cmd= line. RCE-class.
+    @SafeCheck(SafeType.ALPHANUM)
     private String  dynamicDnsServiceName = null;
+    @SafeCheck(SafeType.ALPHANUM)
     private String  dynamicDnsServiceUsername = null;
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String  dynamicDnsServicePassword = null;
+    @SafeCheck(SafeType.HOSTNAME)
     private String  dynamicDnsServiceZone = null;
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String  dynamicDnsServiceHostnames = null;
+    // No @SafeCheck on dynamicDnsServiceWan: used only as a lookup key against
+    // interface names; the looked-up systemDev (already INTERFACE-annotated)
+    // is what's interpolated into ddclient `cmd=`. Not RCE-class directly.
     private String  dynamicDnsServiceWan = "Default";
     private boolean enableSipNatHelper = false;
     private boolean sendIcmpRedirects = true;
