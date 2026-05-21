@@ -592,21 +592,29 @@ for more data when a full packet has not yet been received.
     {
         ArrayList<String> protoList = new ArrayList<>();
 
+        // NGFW-15749: TLSv1 and TLSv1.1 are unconditionally stripped from the
+        // JSSE protocol list regardless of UI flag. JDK21 (trixie) rejects the
+        // entire protocol list if these are included, breaking SSL Inspector
+        // for ALL HTTPS traffic — not just legacy sites. The UI flags exist
+        // only as historical fields; toggling them on is a footgun that we
+        // refuse to honor. Customers needing to MITM a legacy-TLS-only intranet
+        // server should add an SSL Inspector rule with Action=IGNORE for that
+        // destination so NGFW passes the encrypted bytes through without JSSE.
         switch (listType)
         {
         case CLIENT:
             if (app.getSettings().getClient_SSLv2Hello()) protoList.add("SSLv2Hello");
             if (app.getSettings().getClient_SSLv3()) protoList.add("SSLv3");
-            if (app.getSettings().getClient_TLSv10()) protoList.add("TLSv1");
-            if (app.getSettings().getClient_TLSv11()) protoList.add("TLSv1.1");
+            if (app.getSettings().getClient_TLSv10()) logger.warn("NGFW-15749: ignoring client_TLSv10=true (incompatible with JDK21 JSSE); use IGNORE rule for legacy targets");
+            if (app.getSettings().getClient_TLSv11()) logger.warn("NGFW-15749: ignoring client_TLSv11=true (incompatible with JDK21 JSSE); use IGNORE rule for legacy targets");
             if (app.getSettings().getClient_TLSv12()) protoList.add("TLSv1.2");
             if (app.getSettings().getClient_TLSv13()) protoList.add("TLSv1.3");
             break;
         case SERVER:
             if (app.getSettings().getServer_SSLv2Hello()) protoList.add("SSLv2Hello");
             if (app.getSettings().getServer_SSLv3()) protoList.add("SSLv3");
-            if (app.getSettings().getServer_TLSv10()) protoList.add("TLSv1");
-            if (app.getSettings().getServer_TLSv11()) protoList.add("TLSv1.1");
+            if (app.getSettings().getServer_TLSv10()) logger.warn("NGFW-15749: ignoring server_TLSv10=true (incompatible with JDK21 JSSE); use IGNORE rule for legacy targets");
+            if (app.getSettings().getServer_TLSv11()) logger.warn("NGFW-15749: ignoring server_TLSv11=true (incompatible with JDK21 JSSE); use IGNORE rule for legacy targets");
             if (app.getSettings().getServer_TLSv12()) protoList.add("TLSv1.2");
             if (app.getSettings().getServer_TLSv13()) protoList.add("TLSv1.3");
             break;
