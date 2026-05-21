@@ -144,7 +144,7 @@ public class SslInspectorApp extends AppBase
                 logger.warn("No settings found... initializing with defaults");
                 SslInspectorSettings makeSettings = new SslInspectorSettings();
                 makeSettings.setIgnoreRules(generateDefaultRules());
-                makeSettings.setVersion(3);
+                makeSettings.setVersion(4);
                 setSettings(makeSettings);
             }
 
@@ -171,10 +171,28 @@ public class SslInspectorApp extends AppBase
                 if (readSettings.getVersion().intValue() < 3) {
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect Duck Duck Go", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Duck Duck Go*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect KidzSearch", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*kidzsearch*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-                    
+
                     readSettings.setVersion(3);
                     setSettings(readSettings);
                     renumberRules = true;
+                }
+
+                // NGFW-15749: between v3 to v4 force-disable TLSv1 and TLSv1.1
+                // for both client and server. JDK21 (trixie) rejects the JSSE
+                // protocol list when these are included, breaking SSL Inspector
+                // for ALL HTTPS — not just legacy sites. Existing installs
+                // upgraded from bookworm/bullseye carry the legacy True default
+                // and would land in the broken state without this flip.
+                if (readSettings.getVersion().intValue() < 4) {
+                    boolean changed = false;
+                    if (readSettings.getClient_TLSv10()) { readSettings.setClient_TLSv10(false); changed = true; }
+                    if (readSettings.getClient_TLSv11()) { readSettings.setClient_TLSv11(false); changed = true; }
+                    if (readSettings.getServer_TLSv10()) { readSettings.setServer_TLSv10(false); changed = true; }
+                    if (readSettings.getServer_TLSv11()) { readSettings.setServer_TLSv11(false); changed = true; }
+                    if (changed) logger.warn("NGFW-15749: forced TLSv1/TLSv1.1 off on upgrade to v4 (JDK21 compatibility)");
+
+                    readSettings.setVersion(4);
+                    setSettings(readSettings);
                 }
 
                 if(renumberRules) {

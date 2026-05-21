@@ -56,15 +56,19 @@ public class SslInspectorSettings implements Serializable, JSONString
 
         client_SSLv2Hello = false;
         client_SSLv3 = false;
-        client_TLSv10 = true;
-        client_TLSv11 = true;
+        // NGFW-15749: TLSv1 and TLSv1.1 default-disabled. JDK21 (trixie) rejects
+        // the JSSE protocol list if these are included, breaking SSL Inspector
+        // for ALL HTTPS traffic, not just legacy. See SslInspectorManager
+        // generateProtocolList() for the corresponding defensive guard.
+        client_TLSv10 = false;
+        client_TLSv11 = false;
         client_TLSv12 = true;
         client_TLSv13 = true;
 
         server_SSLv2Hello = false;
         server_SSLv3 = false;
-        server_TLSv10 = true;
-        server_TLSv11 = true;
+        server_TLSv10 = false;
+        server_TLSv11 = false;
         server_TLSv12 = true;
         server_TLSv13 = true;
     }
