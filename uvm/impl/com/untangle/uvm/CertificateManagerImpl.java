@@ -163,7 +163,11 @@ public class CertificateManagerImpl implements CertificateManager
         // apache cert.  If they don't match we copy the configured cert to
         // the apache directory and restart the server to activate the cert. 
         String apacheFingerprint = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -fingerprint -in " + APACHE_PEM_FILE);
-        String configFingerprint = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -fingerprint -in " + CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate());
+        String webCertFile = CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate();
+        String configFingerprint = UvmContextFactory.context().execManager().execCommand(
+            "/usr/bin/openssl",
+            List.of("x509", "-noout", "-fingerprint", "-in", webCertFile)
+        ).getOutput();
         if (apacheFingerprint.equals(configFingerprint) == false) {
             logger.info("Replacing existing apache certificate [" + apacheFingerprint + "] with configured certificate [" + configFingerprint + "]");
             UvmContextFactory.context().systemManager().activateApacheCertificate();

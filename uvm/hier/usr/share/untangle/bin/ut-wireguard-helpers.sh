@@ -5,7 +5,7 @@
 
 showPublicKey()
 {
-    echo $2 | $3 pubkey
+    echo "$2" | "$3" pubkey
 }
 
 $1 "$@"

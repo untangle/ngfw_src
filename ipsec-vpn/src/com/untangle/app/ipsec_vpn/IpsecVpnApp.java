@@ -536,7 +536,8 @@ public class IpsecVpnApp extends AppBase
 
         for (VirtualUserEntry entry : virtualUserTable.buildUserList()) {
             logger.info("Disconnecting L2TP client " + entry.getClientUsername() + " address " + entry.getClientAddress().getHostAddress());
-            IpsecVpnApp.execManager().exec("kill -HUP " + entry.getNetProcess());
+            IpsecVpnApp.execManager().execCommand(
+                "/bin/kill", List.of("-HUP", entry.getNetProcess()));
             counter++;
         }
 
@@ -770,13 +771,13 @@ public class IpsecVpnApp extends AppBase
 
         if (entry.getClientProtocol().equals("L2TP")) {
             // for L2TP clients we send a HUP signal to the pppd process
-            IpsecVpnApp.execManager().exec("kill -HUP " + entry.getNetProcess());
+            IpsecVpnApp.execManager().execCommand("/bin/kill", List.of("-HUP", entry.getNetProcess()));
         }else if (entry.getClientProtocol().equals("XAUTH")) {
             // for Xauth clients we call ipsec down using the connection and unique id
-            IpsecVpnApp.execManager().exec("ipsec down " + entry.getNetInterface() + "[" + entry.getNetProcess() + "]");
+            IpsecVpnApp.execManager().execCommand("/sbin/ipsec", List.of("down", entry.getNetInterface() + "[" + entry.getNetProcess() + "]"));
         }else if (entry.getClientProtocol().equals("IKEv2")) {
             // for IKEv2 clients we call ipsec down using the connection and unique id
-            IpsecVpnApp.execManager().exec("ipsec down " + entry.getNetInterface() + "[" + entry.getNetProcess() + "]");
+            IpsecVpnApp.execManager().execCommand("/sbin/ipsec", List.of("down", entry.getNetInterface() + "[" + entry.getNetProcess() + "]"));
         }else{
             logger.warn("Unknown protocol " + entry.getClientProtocol());
         }
@@ -865,7 +866,7 @@ public class IpsecVpnApp extends AppBase
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
-        String result = IpsecVpnApp.execManager().execOutput(GRAB_TUNNEL_STATUS_SCRIPT + " " + tunnel.getWorkName());
+        String result = IpsecVpnApp.execManager().execCommand(GRAB_TUNNEL_STATUS_SCRIPT, List.of(tunnel.getWorkName())).getOutput();
 
         /*
          * If the tunnel is active, update the mode and continue parsing.

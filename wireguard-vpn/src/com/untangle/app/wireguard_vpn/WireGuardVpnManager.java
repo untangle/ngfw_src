@@ -158,7 +158,6 @@ public class WireGuardVpnManager
             return;
         }
 
-        ArrayList<String> commands = new ArrayList<String>();
         ArrayList<String> allowedIps = new ArrayList<String>();
         // Make sure we have our peer address in allowed list.
         allowedIps.add(addTunnel.getPeerAddress().getHostAddress() + "/32");
@@ -169,21 +168,21 @@ public class WireGuardVpnManager
             allowedIps.add(networks[x].trim());
         }
         // Add tunnel to WireGuard
-        commands.add(
-            WIREGUARD_APP +
-            " set wg0 peer " + publicKey +
-            ( addTunnel.getEndpointDynamic() != true
-                ? " endpoint " + addTunnel.getEndpointHostname() + ":" + addTunnel.getEndpointPort()
-                : ""
-            ) +
-            " persistent-keepalive " + app.getSettings().getKeepaliveInterval() +
-            " allowed-ips " + String.join(",", allowedIps)
-        );
-        for(String allowedIp :allowedIps){
-            commands.add("ip -4 route add " + allowedIp + " dev wg0");
+        ArrayList<String> wgArgs = new ArrayList<String>(List.of("set", "wg0", "peer", publicKey));
+        if (addTunnel.getEndpointDynamic() != true) {
+            wgArgs.add("endpoint");
+            wgArgs.add(addTunnel.getEndpointHostname() + ":" + addTunnel.getEndpointPort());
         }
-        for ( String cmd: commands ) 
-            this.wireguardCommand(cmd);
+        wgArgs.add("persistent-keepalive");
+        wgArgs.add(String.valueOf(app.getSettings().getKeepaliveInterval()));
+        wgArgs.add("allowed-ips");
+        wgArgs.add(String.join(",", allowedIps));
+        this.wireguardCommand(WIREGUARD_APP, wgArgs);
+
+        for (String allowedIp : allowedIps) {
+            this.wireguardCommand("/sbin/ip",
+                List.of("-4", "route", "add", allowedIp, "dev", "wg0"));
+        }
     }
 
     /**
@@ -205,17 +204,18 @@ public class WireGuardVpnManager
                 networks = removeTunnel.getNetworks().split("\\n");
             }
         }
-        ArrayList<String> commands = new ArrayList<String>();
-        if(removeTunnel != null){
+        if (removeTunnel != null) {
             for (int index = 0; index < networks.length; index++) {
                 if (networks[index].trim().length() == 0) continue;
-                commands.add("ip -4 route delete " + networks[index].trim() + " dev wg0");
+                this.wireguardCommand("/sbin/ip",
+                    List.of("-4", "route", "delete", networks[index].trim(), "dev", "wg0"));
             }
-            commands.add("ip -4 route delete " + removeTunnel.getPeerAddress().getHostAddress() + "/32" + " dev wg0");
+            this.wireguardCommand("/sbin/ip",
+                List.of("-4", "route", "delete",
+                    removeTunnel.getPeerAddress().getHostAddress() + "/32", "dev", "wg0"));
         }
-        commands.add(WIREGUARD_APP + " set wg0 peer " + publicKey + " remove");
-        for ( String cmd: commands ) 
-            this.wireguardCommand(cmd);
+        this.wireguardCommand(WIREGUARD_APP,
+            List.of("set", "wg0", "peer", publicKey, "remove"));
     }
 
     /**
@@ -272,7 +272,7 @@ public class WireGuardVpnManager
      */
     public String createPrivateKey()
     {
-        return wireguardCommand(WIREGUARD_APP + " genkey");
+        return wireguardCommand(WIREGUARD_APP, List.of("genkey"));
     }
 
     /**
@@ -288,7 +288,9 @@ public class WireGuardVpnManager
             return "";
 
         } 
-        String result = wireguardCommand(System.getProperty("uvm.bin.dir") + "/ut-wireguard-helpers.sh showPublicKey " + privateKey + " " + WIREGUARD_APP );
+        String result = wireguardCommand(
+            System.getProperty("uvm.bin.dir") + "/ut-wireguard-helpers.sh",
+            List.of("showPublicKey", privateKey, WIREGUARD_APP));
         return result;
     }
 
@@ -304,7 +306,10 @@ public class WireGuardVpnManager
 
         }
         File file = getRemoteConfigFile(publicKey);
-        return (file != null) ? wireguardCommand("/usr/bin/qrencode -t SVG -o - -r " + file.getAbsolutePath())  : "";
+        return (file != null)
+            ? wireguardCommand("/usr/bin/qrencode",
+                List.of("-t", "SVG", "-o", "-", "-r", file.getAbsolutePath()))
+            : "";
     }
 
     /**
@@ -314,7 +319,9 @@ public class WireGuardVpnManager
      */
     public String getConfig(String publicKey){
         File file = getRemoteConfigFile(publicKey);
-        return (file != null) ? wireguardCommand("/bin/cat " + file.getAbsolutePath()) : "";
+        return (file != null)
+            ? wireguardCommand("/bin/cat", List.of(file.getAbsolutePath()))
+            : "";
     }
 
     /**
@@ -336,13 +343,14 @@ public class WireGuardVpnManager
 
     /**
      * Call wireguard and get output
-     * @param command String of command to pass to wg
-     * @return String of result of call to wg.
+     * @param executable Absolute path of executable to invoke.
+     * @param args Argument list passed verbatim (no shell interpretation).
+     * @return String of result of call.
      */
-    private String wireguardCommand(String command)
+    private String wireguardCommand(String executable, List<String> args)
     {
         String wireguardResult = "";
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(command);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(executable, args);
         try {
             wireguardResult = result.getOutput();
         } catch (Exception e) {

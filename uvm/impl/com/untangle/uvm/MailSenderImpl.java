@@ -474,7 +474,9 @@ public class MailSenderImpl implements MailSender
 
             //force sending of this email now (if previous emails failed for this host, 
             //the email is currently queued waiting for a timeout)
-            String strM = UvmContextFactory.context().execManager().execOutput("exim -M " + logId);
+            String strM = UvmContextFactory.context().execManager().execCommand(
+                "/usr/sbin/exim4", List.of("-M", logId)
+            ).getOutput();
 
             //String log = UvmContextFactory.context().execManager().execOutput("exim -Mvl "+logId);
             //now read the rest of the logs

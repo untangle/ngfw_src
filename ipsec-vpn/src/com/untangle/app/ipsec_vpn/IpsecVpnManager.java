@@ -182,7 +182,8 @@ public class IpsecVpnManager
             tunnel = tunnelList.get(x);
             if (tunnel.getActive() != true) continue;
             if (tunnel.getRunmode().equals("start") && tunnel.getAllSubnetNegotation() == false) {
-                UvmContextFactory.context().execManager().exec("ipsec route " + tunnel.getWorkName());
+                UvmContextFactory.context().execManager().execCommand(
+                    IPSEC_APP, List.of("route", tunnel.getWorkName()));
             }
         }
     }
