@@ -43,7 +43,19 @@ ALLOWED_EXECUTABLES = {
     "/bin/kill",
     "/bin/ping",
     "/bin/rm",
-    "/usr/share/untangle/bin/ut-notification-helpers.sh"
+    "/usr/share/untangle/bin/ut-notification-helpers.sh",
+    "/usr/bin/net",
+    "/usr/sbin/ipset",
+    "/usr/bin/openssl",
+    "/sbin/ip",
+    "/usr/bin/pgrep",
+    "/usr/sbin/exim4",
+    "/bin/cat",
+    "/usr/bin/wg",
+    "/usr/share/untangle/bin/ut-radius-proxy",
+    "/usr/share/untangle/bin/ipsec-tunnel-status",
+    "/usr/share/untangle/bin/wan-failover-pingable-hosts.sh",
+    "/usr/share/untangle/bin/ut-wireguard-helpers.sh"
 
 }
 

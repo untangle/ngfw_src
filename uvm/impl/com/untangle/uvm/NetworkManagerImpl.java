@@ -862,13 +862,15 @@ public class NetworkManagerImpl implements NetworkManager
             return false;
         }
 
-        String command = "ip add list " + intfSettings.getSymbolicDev() + " | grep '" + vrrpAddress.getHostAddress() + "/'";
-        int retCode = UvmContextFactory.context().execManager().execResult( command );
-
-        if ( retCode == 0 )
-            return true;
-        else
-            return false;
+        String output = UvmContextFactory.context().execManager().execCommand(
+            "/sbin/ip", List.of("add", "list", intfSettings.getSymbolicDev())
+        ).getOutput();
+        String needle = vrrpAddress.getHostAddress() + "/";
+        if (output == null) return false;
+        for (String line : output.split("\\R")) {
+            if (line.contains(needle)) return true;
+        }
+        return false;
     }
         
     /**
