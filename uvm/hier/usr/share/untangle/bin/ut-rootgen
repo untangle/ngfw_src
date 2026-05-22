@@ -41,25 +41,25 @@ echo " "
 }
 
 # The first argument should be a unique name for us to identify the root CA
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
     show_usage
     exit 1
 fi
 
 # The second argument is the subject field for the root CA
-if [ -z $2 ]; then
+if [ -z "$2" ]; then
     show_usage
     exit 1
 fi
 
 # first we make sure the root CA directory exists
-if [ ! -d $UT_ROOT_PATH ]; then
-    mkdir -p $UT_ROOT_PATH
+if [ ! -d "$UT_ROOT_PATH" ]; then
+    mkdir -p "$UT_ROOT_PATH"
 fi
 
 # next we make sure the cert directory exists
-if [ ! -d $CERT_PATH ]; then
-    mkdir -p $CERT_PATH
+if [ ! -d "$CERT_PATH" ]; then
+    mkdir -p "$CERT_PATH"
 fi
 
 # if they pass anything other than DEFAULT for name ($1) then we use the provided name
@@ -72,27 +72,32 @@ if [ "$2" != "DEFAULT" ]; then
     SUBJECT="$2"
 fi
 
-# next cleanup any existing files
-rm -f $UT_ROOT_PATH/untangle.crt
-rm -f $UT_ROOT_PATH/untangle.key
-rm -f $UT_ROOT_PATH/index*
-rm -f $UT_ROOT_PATH/serial*
-rm -f $UT_ROOT_PATH/$CA_NAME/untangle.crt
-rm -f $UT_ROOT_PATH/$CA_NAME/untangle.key
-rm -f $UT_ROOT_PATH/$CA_NAME/index*
-rm -f $UT_ROOT_PATH/$CA_NAME/serial*
+# next cleanup any existing files. $CA_NAME comes from the UI / JSON-RPC client
+# and is validated upstream with SafeType.NATURAL_NAME (no '..', no shell-metas
+# outside the documented allowlist), but it can still contain '&', '*', '(' ')'
+# and whitespace - so every expansion is double-quoted to keep the shell from
+# re-tokenizing those characters. The trailing glob (e.g. /serial*) is left
+# outside the quotes so the filesystem glob still matches.
+rm -f "$UT_ROOT_PATH/untangle.crt"
+rm -f "$UT_ROOT_PATH/untangle.key"
+rm -f "$UT_ROOT_PATH"/index*
+rm -f "$UT_ROOT_PATH"/serial*
+rm -f "$UT_ROOT_PATH/$CA_NAME/untangle.crt"
+rm -f "$UT_ROOT_PATH/$CA_NAME/untangle.key"
+rm -f "$UT_ROOT_PATH/$CA_NAME"/index*
+rm -f "$UT_ROOT_PATH/$CA_NAME"/serial*
 
 # create the CA_NAME directory
-mkdir -p $UT_ROOT_PATH/$CA_NAME/
+mkdir -p "$UT_ROOT_PATH/$CA_NAME/"
 
 # create the initial serial using the current epoch time plus six extra digits
-date +%s000000 > $UT_ROOT_PATH/$CA_NAME/serial.txt
+date +%s000000 > "$UT_ROOT_PATH/$CA_NAME/serial.txt"
 
 # create the certificate index file
-touch $UT_ROOT_PATH/$CA_NAME/index.txt
+touch "$UT_ROOT_PATH/$CA_NAME/index.txt"
 
 # create the CA certificate and key
-$OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -x509 -extensions v3_root -newkey rsa:2048 -keyout $UT_ROOT_PATH/$CA_NAME/untangle.key -out $UT_ROOT_PATH/$CA_NAME/untangle.crt -days 7305 -subj "$SUBJECT"
+"$OPENSSL_TOOL" req -batch -nodes -config "$OPENSSL_CONF" -new -x509 -extensions v3_root -newkey rsa:2048 -keyout "$UT_ROOT_PATH/$CA_NAME/untangle.key" -out "$UT_ROOT_PATH/$CA_NAME/untangle.crt" -days 7305 -subj "$SUBJECT"
 
 # only root should have access to the key
-chmod 600 $UT_ROOT_PATH/$CA_NAME/untangle.key
+chmod 600 "$UT_ROOT_PATH/$CA_NAME/untangle.key"
