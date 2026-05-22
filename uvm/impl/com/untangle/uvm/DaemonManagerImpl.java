@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.DaemonManager;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * This is a utility class for starting/stopping daemons and keeping reference
@@ -239,7 +241,10 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      * @return True if the monitor is successfully applied, false if no daemon
      *         with the argumented name was found
      */
-    public boolean enableDaemonMonitoring(String daemonName, long secondInterval, String searchString)
+    public boolean enableDaemonMonitoring(
+        @SafeCheckParam(SafeType.ALPHANUM) String daemonName,
+        long secondInterval,
+        @SafeCheckParam(SafeType.ALPHANUM) String searchString)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null) return (false);
@@ -272,7 +277,13 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      * @return True if the monitor is successfully applied, false if no daemon
      *         with the argumented name was found
      */
-    public boolean enableRequestMonitoring(String daemonName, long secondInterval, String hostString, int hostPort, String transmitString, String searchString)
+    public boolean enableRequestMonitoring(
+        @SafeCheckParam(SafeType.ALPHANUM) String daemonName,
+        long secondInterval,
+        String hostString,
+        int hostPort,
+        String transmitString,
+        @SafeCheckParam(SafeType.ALPHANUM) String searchString)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null) return (false);
@@ -295,7 +306,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      * @return True if all monitoring is successfully disabled, false if no
      *         daemon with the argumented name was found
      */
-    public boolean disableAllMonitoring(String daemonName)
+    public boolean disableAllMonitoring(@SafeCheckParam(SafeType.ALPHANUM) String daemonName)
     {
         DaemonObject daemonObject = daemonHashMap.get(daemonName);
         if (daemonObject == null) return (false);

@@ -549,4 +549,11 @@ class DirectoryConnectorTests(NGFWTestCase):
         print('test_result_string %s attempts %s' % (test_result_string, attempts) ) # debug line
         assert ("success" in test_result_string)
 
+    # NGFW-15768 test removed: RadiusSettings.{server, sharedSecret,
+    # authenticationMethod} annotations were dropped after per-field RCE audit
+    # confirmed all three sinks are auth-data only (radiusclient/servers,
+    # radiusclient.conf, strongswan.radius) with no shell-exec directives.
+    # authenticationMethod is switch-matched against hardcoded constants in
+    # DirectoryConnectorApp.java:731 — value never concatenated. Not RCE-class.
+
 test_registry.register_module("directory-connector", DirectoryConnectorTests)

@@ -25,10 +25,12 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private int id;
     private boolean active;
     private int ikeVersion = 1;
+    @SafeCheck(SafeType.ALPHANUM)
     private String conntype;
     @SafeCheck(SafeType.SIMPLE_TEXT)
     private String description;
     private String secret;
+    @SafeCheck(SafeType.ALPHANUM)
     private String runmode;
     private String dpddelay = "30";
     private String dpdtimeout = "120";
@@ -42,15 +44,25 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String phase2Hash = "md5";
     private String phase2Group = "modp2048";
     private String phase2Lifetime = "3600";
+    @SafeCheck({SafeType.HOSTNAME, SafeType.IP_OR_CIDR})
     private String left;
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String leftId;
+    // %config is the strongSwan keyword for "request virtual IP from peer"; set
+    // by the "Request From Peer" checkbox in the IPsec tunnel editor.
+    @SafeCheck(value = SafeType.IP_OR_CIDR, allow = {"%config"})
     private String leftSourceIp;
     @SafeCheck(SafeType.IP_OR_CIDR_LIST)
     private String leftSubnet;
     private String leftProtoPort;
     private String leftNextHop;
+    // %any is the strongSwan keyword for "accept any peer"; set by the
+    // "Any Remote Host" checkbox in the IPsec tunnel editor.
+    @SafeCheck(value = {SafeType.HOSTNAME, SafeType.IP_OR_CIDR}, allow = {"%any"})
     private String right;
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String rightId;
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String rightSourceIp;
     @SafeCheck(SafeType.IP_OR_CIDR_LIST)
     private String rightSubnet;

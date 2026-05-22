@@ -985,15 +985,19 @@ class UvmTests(NGFWTestCase):
 
     def test_111_hosts_file_manager_injection_blocked(self):
         """
-        Verify that HostsFileManagerImpl.refreshHostsFile() passes the fully-qualified
-        hostname as a safe argument (via execCommand) so that shell metacharacters in
-        the hostname do not execute arbitrary commands.
+        Verify that shell metacharacters in NetworkSettings.hostName are rejected
+        by @SafeCheck at the JSON-RPC boundary BEFORE refreshHostsFile() runs.
 
-        The test:
-        1. Touches an interface-status file so refreshHostsFile() will detect a change.
-        2. Sets a network hostname that embeds a shell injection payload, which triggers
-           the network-settings change hook that calls refreshHostsFile() synchronously.
-        3. Confirms the injected command was never executed (sentinel file not created).
+        REWRITTEN for NGFW-15741: NetworkSettings.hostName is annotated
+        @SafeCheck(SafeType.HOSTNAME) — the regex rejects ';', spaces, and every
+        shell metacharacter. setNetworkSettings raises SafeCheckValidationException
+        (JSON-RPC code 490) at the preInvokeCallback. The malicious hostname never
+        reaches the on-disk hosts file or refreshHostsFile()'s exec sink.
+
+        Defense-in-depth: even if a future regex regression let a payload through,
+        HostsFileManagerImpl uses execCommand(argv) so the shell would never
+        interpret the metacharacters. The poc_file assertion remains as a
+        regression guard for that layer.
         """
         # No dots in the path: sanitizeNetworkSettings strips everything after the
         # first dot in the hostname, so a path like "/tmp/poc.txt" would become
@@ -1007,17 +1011,21 @@ class UvmTests(NGFWTestCase):
             malicious_settings = copy.deepcopy(orig_netsettings)
             malicious_settings['hostName'] = "ngfw; touch " + poc_file + "; echo"
 
-            # Touch an interface-status file BEFORE setNetworkSettings so that when
-            # the hook fires and calls refreshHostsFile(), it detects the new file
-            # and executes the update script with the (malicious) hostname.
+            # Touch an interface-status file BEFORE setNetworkSettings so that if
+            # the hook EVER fires with the malicious hostname (regression), the
+            # exec path is exercised and the sentinel check below will catch it.
             subprocess.call(f"mkdir -p /var/lib/interface-status && touch {status_file}", shell=True)
 
-            global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+            # Layer 1 — typed @SafeCheck must reject at the RPC boundary.
+            with pytest.raises(Exception):
+                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
         finally:
             subprocess.call(f"rm -f {status_file}", shell=True)
             global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         time.sleep(1)
+        # Layer 2 defense-in-depth — even if layer 1 was bypassed somehow,
+        # execCommand(argv) in refreshHostsFile() must not shell-expand.
         assert not os.path.exists(poc_file), \
             "Command injection succeeded via HostsFileManagerImpl.refreshHostsFile() (sentinel file was created)"
 
@@ -1305,13 +1313,20 @@ class UvmTests(NGFWTestCase):
 
     def test_123_connectivity_tester_dns_injection_blocked(self):
         """
-        Verify that ConnectivityTesterImpl passes dnsTestHost as a safe argument
-        (via execCommand) so that shell metacharacters in dnsTestHost do not
-        execute arbitrary commands.
+        Verify that shell metacharacters in UriManagerSettings.dnsTestHost are
+        rejected by @SafeCheck at the JSON-RPC boundary BEFORE ConnectivityTester
+        runs its DNS probe.
 
-        The test temporarily sets dnsTestHost to a value containing a shell
-        injection payload, triggers a connectivity check, and confirms the
-        injected command was never executed (sentinel file not created).
+        REWRITTEN for NGFW-15741: UriManagerSettings.dnsTestHost is annotated
+        @SafeCheck(SafeType.HOSTNAME) — the regex rejects ';', space, and every
+        shell metacharacter. uriManager().setSettings raises
+        SafeCheckValidationException at the preInvokeCallback before the value
+        is stored. The connectivity-tester probe never sees the malicious host.
+
+        Defense-in-depth: even if a future regex regression let a payload
+        through, ConnectivityTesterImpl uses execCommand(argv) so the shell
+        cannot expand the metacharacters. The poc_file assertion remains as a
+        regression guard for that layer.
         """
         poc_file = "/tmp/conn_dns_injection_test.txt"
         subprocess.call(f"rm -f {poc_file}", shell=True)
@@ -1320,8 +1335,14 @@ class UvmTests(NGFWTestCase):
         try:
             malicious_uri_settings = copy.deepcopy(orig_uri_settings)
             malicious_uri_settings['dnsTestHost'] = "updates.edge.arista.com; touch " + poc_file
-            global_functions.uvmContext.uriManager().setSettings(malicious_uri_settings)
-            # Trigger connectivity test — this calls isDnsWorking() with the malicious dnsTestHost
+
+            # Layer 1 — typed @SafeCheck must reject at the RPC boundary.
+            with pytest.raises(Exception):
+                global_functions.uvmContext.uriManager().setSettings(malicious_uri_settings)
+
+            # Defense-in-depth — exercise the connectivity tester anyway.
+            # If layer 1 was bypassed, the probe would fire with the malicious
+            # dnsTestHost and the sentinel check below would catch it.
             global_functions.uvmContext.getConnectivityTester().getStatus()
         finally:
             global_functions.uvmContext.uriManager().setSettings(orig_uri_settings)

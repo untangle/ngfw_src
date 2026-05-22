@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import com.untangle.uvm.app.IPMaskedAddress;
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * Settings for the WireGuardVpn app.
@@ -26,9 +28,12 @@ public class WireGuardVpnSettings implements Serializable, JSONString
     private Integer mtu = 1500;
     private boolean mapTunnelDescUser = false;
     private IPMaskedAddress addressPool;
+    @SafeCheck(SafeType.BASE64_KEY)
     private String privateKey = "";
+    @SafeCheck(SafeType.BASE64_KEY)
     private String publicKey = "";
     private InetAddress dnsServer;
+    @SafeCheck(SafeType.HOSTNAME)
     private String dnsSearchDomain = "";
     private List<WireGuardVpnNetwork> networks;
     private List<WireGuardVpnNetworkProfile> networkProfiles;

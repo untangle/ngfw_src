@@ -1383,7 +1383,22 @@ class OpenVpnTests(NGFWTestCase):
         )
 
     def test_089_site_name_injection_in_dist_scripts(self):
-        """Shell metacharacters in siteName must not be executed by createClientDistribution scripts."""
+        """Shell metacharacters in siteName must be rejected by @SafeCheck before
+        createClientDistribution is ever invoked.
+
+        REWRITTEN for NGFW-15768: OpenVpnSettings.siteName now carries
+        @SafeCheck(SafeType.ALPHANUM), which fail-fast rejects every shell
+        metacharacter at the JSON-RPC preInvokeCallback. setSettings raises
+        SafeCheckValidationException (code 490) BEFORE the value reaches the
+        OpenVPN dist-script generation path.
+
+        Original test expected at least one malicious payload to bypass
+        setSettings so the deeper exec sink could be exercised. With the new
+        annotation, every payload is rejected at the input boundary — which is
+        the **stronger** guarantee. The assertion is inverted accordingly:
+        we now require exec_path_reached == 0 (every payload blocked) AND
+        verify the stored siteName is unchanged after each rejection.
+        """
         app_data = self._app.getSettings()
         original_site_name = app_data.get("siteName", "")
         original_clients = list(app_data.get("remoteClients", {}).get("list", []))
@@ -1392,6 +1407,9 @@ class OpenVpnTests(NGFWTestCase):
         malicious_site_names = [
             (f"site;touch {CLI_INJECTION_MARKER}",   "semicolon injection in site name"),
             (f"site$(touch {CLI_INJECTION_MARKER})", "command substitution in site name"),
+            (f"site`touch {CLI_INJECTION_MARKER}`", "backtick injection in site name"),
+            (f"site|touch {CLI_INJECTION_MARKER}",  "pipe injection in site name"),
+            (f"site\ntouch {CLI_INJECTION_MARKER}", "newline injection in site name"),
         ]
         clean_client = _cli_make_client_entry(CLI_INJECTION_VALID_CLIENT)
 
@@ -1400,21 +1418,30 @@ class OpenVpnTests(NGFWTestCase):
                 _cli_cleanup_marker()
 
                 app_data = self._app.getSettings()
+                baseline_site_name = app_data.get("siteName", "")
                 app_data["siteName"] = site_name
                 app_data["remoteClients"]["list"] = original_clients + [clean_client]
                 try:
                     self._app.setSettings(app_data)
                 except Exception:
-                    print(f"  [{label}] setSettings rejected site name - exec path not reached")
+                    print(f"  [{label}] setSettings rejected site name (expected) - exec path not reached")
+                    # Confirm stored value unchanged (no partial-apply).
+                    current_site_name = self._app.getSettings().get("siteName", "")
+                    assert current_site_name == baseline_site_name, (
+                        f"[{label}] NGFW-15768: siteName mutated despite SafeCheckValidator "
+                        f"rejection. Stored: {current_site_name!r}, expected: {baseline_site_name!r}"
+                    )
                     continue
 
+                # If we get here the validator failed to reject — record it so
+                # the assertion below catches the regression.
                 exec_path_reached += 1
 
                 for fmt in ("zip", "ovpn", "onc"):
                     try:
                         self._app.getClientDistributionDownloadLink(CLI_INJECTION_VALID_CLIENT, fmt)
                     except Exception:
-                        pass  # cert errors are expected; we only care about injection
+                        pass
 
                 time.sleep(1)
 
@@ -1430,9 +1457,11 @@ class OpenVpnTests(NGFWTestCase):
                 pass
             _cli_cleanup_marker()
 
-        assert exec_path_reached > 0, (
-            "No payload reached the exec path - all were blocked by setSettings validation. "
-            "Cannot confirm exec-level injection prevention."
+        assert exec_path_reached == 0, (
+            f"NGFW-15768 regression: {exec_path_reached} of {len(malicious_site_names)} "
+            "malicious siteName payload(s) bypassed @SafeCheck(SafeType.ALPHANUM) at the "
+            "JSON-RPC preInvokeCallback. Every payload must be rejected with error 490 "
+            "before reaching createClientDistribution."
         )
 
     def test_090_valid_client_name_accepted(self):
@@ -1562,6 +1591,54 @@ class OpenVpnTests(NGFWTestCase):
         assert not injected, (
             f"cleanServerSettings() INJECTION DETECTED: sentinel '{sentinel}' found in journal"
         )
+
+    def test_095_safecheck_site_name(self):
+        """Verify NGFW-15768 @SafeCheck(ALPHANUM) on OpenVpnSettings.siteName.
+
+        Sink: OpenVpnManager createClientDistribution scripts use the value as
+        a filename / script argument (zip/exe/ovpn/onc bundle path). The legacy
+        permissive value flowed into shell-form exec strings.
+
+        NOTE: existing test_089_site_name_injection_in_dist_scripts asserts
+        that >=1 malicious payload bypassed setSettings (so the deeper exec
+        path is exercised). With this annotation, every malicious payload is
+        rejected at the RPC boundary and test_089's `exec_path_reached > 0`
+        assertion will start failing. test_089 needs to be updated to flip
+        that assertion (or remove it) — flagged in the NGFW-15768 PR
+        description.
+        """
+        import copy
+        app_data = self._app.getSettings()
+        orig_settings = copy.deepcopy(app_data)
+        try:
+            # Positive — a valid alphanumeric site name round-trips.
+            positive = copy.deepcopy(app_data)
+            positive["siteName"] = "branch_office_01"
+            self._app.setSettings(positive)
+            saved = self._app.getSettings()
+            assert saved["siteName"] == "branch_office_01"
+
+            baseline = self._app.getSettings()
+            for payload in (
+                "site;touch /tmp/x",
+                "site$(id)",
+                "site`whoami`",
+                "site|cat /etc/passwd",
+                "site\necho INJECT",
+                "site && touch /tmp/x",
+            ):
+                bad = copy.deepcopy(baseline)
+                bad["siteName"] = payload
+                with pytest.raises(Exception):
+                    self._app.setSettings(bad)
+                current = self._app.getSettings()
+                assert current["siteName"] == baseline["siteName"], (
+                    f"NGFW-15768: OpenVpnSettings.siteName mutated despite "
+                    f"SafeCheckValidator rejection. Stored: "
+                    f"{current['siteName']!r}, expected: {baseline['siteName']!r}"
+                )
+        finally:
+            self._app.setSettings(orig_settings)
 
     @classmethod
     def final_extra_tear_down(cls):
