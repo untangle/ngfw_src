@@ -86,8 +86,14 @@ public class ConnectivityTesterImpl implements ConnectivityTester
 
         domainName = UvmContextFactory.context().uriManager().getSettings().getDnsTestHost();
 
-        if (primaryServer != null && UvmContextFactory.context().execManager().execCommand(DNS_TEST_SCRIPT, List.of(primaryServer, domainName)).getResult() != 0) isWorking = false;
-        if (secondaryServer != null && UvmContextFactory.context().execManager().execCommand(DNS_TEST_SCRIPT, List.of(secondaryServer, domainName)).getResult() != 0) isWorking = false;
+        if (primaryServer != null) {
+            Integer rc = UvmContextFactory.context().execManager().execCommand(DNS_TEST_SCRIPT, List.of(primaryServer, domainName)).getResult();
+            if (rc == null || rc != 0) isWorking = false;
+        }
+        if (secondaryServer != null) {
+            Integer rc = UvmContextFactory.context().execManager().execCommand(DNS_TEST_SCRIPT, List.of(secondaryServer, domainName)).getResult();
+            if (rc == null || rc != 0) isWorking = false;
+        }
 
         return isWorking;
     }

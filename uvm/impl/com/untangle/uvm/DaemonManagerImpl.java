@@ -4,6 +4,7 @@
 
 package com.untangle.uvm;
 
+import java.util.List;
 import java.util.TimerTask;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -325,9 +326,14 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
 
         String daemonSearchString = ( (daemonObject.monitorType == MonitorType.DAEMON && daemonObject.searchString != null) ? daemonObject.searchString : daemonName);
         daemonSearchString = "[" + daemonSearchString.substring(0,1) + "]" + daemonSearchString.substring(1);
-        
-        int result = UvmContextFactory.context().execManager().execResult("pgrep -x " + daemonSearchString);
-        return ( result == 1 ) ? true : false;
+
+        // Argv-form passes the search string as a single argument so shell
+        // metacharacters in daemonName cannot escape. Comparison preserved
+        // verbatim from the prior shell-form implementation.
+        Integer result = UvmContextFactory.context().execManager().execCommand(
+            "/usr/bin/pgrep", List.of("-x", daemonSearchString)
+        ).getResult();
+        return ( result != null && result == 1 ) ? true : false;
     }
 
     /**
@@ -363,9 +369,15 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      */
     private void execDaemonControlEvil(String daemonName, String command)
     {
-        String cmd = (daemonName == null ? command : "systemctl " + command + " " + daemonName);
         try {
-            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(cmd);
+            ExecManagerResultReader reader;
+            if (daemonName == null) {
+                // raw extraRestartCommand path - preserved by API contract
+                reader = UvmContextFactory.context().execManager().execEvil(command);
+            } else {
+                reader = UvmContextFactory.context().execManager().execEvil(
+                    new String[] { "/usr/bin/systemctl", command, daemonName });
+            }
             reader.waitFor();
         } catch (Exception exn) {
             logger.warn("Failed to run command: " + command, exn);
@@ -405,13 +417,23 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
      */
     private String execDaemonControlSafe(String daemonName, String command, boolean log)
     {
-        String cmd = (daemonName == null ? command : "systemctl " + command + " " + daemonName);
-        String output = UvmContextFactory.context().execManager().execOutput(cmd);
-        if(log){
+        String output;
+        String cmdLabel;
+        if (daemonName == null) {
+            // raw extraRestartCommand path - preserved by API contract
+            cmdLabel = command;
+            output = UvmContextFactory.context().execManager().execOutput(command);
+        } else {
+            cmdLabel = "systemctl " + command + " " + daemonName;
+            output = UvmContextFactory.context().execManager().execCommand(
+                "/usr/bin/systemctl", List.of(command, daemonName)
+            ).getOutput();
+        }
+        if (log) {
             try {
                 String lines[] = output.split("\\r?\\n");
                 for (String line : lines)
-                    logger.info(cmd + ": " + line);
+                    logger.info(cmdLabel + ": " + line);
             } catch (Exception exn) {
             }
         }
@@ -428,8 +450,15 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     private void handleDaemonCheck(DaemonObject object)
     {
         synchronized (object) {
-            // run a spiffy command to count the number of process instances
-            int count = UvmContextFactory.context().execManager().execOutput("pgrep " + object.searchString).split("\r\n|\r|\n").length;
+            // run a spiffy command to count the number of process instances.
+            // Argv-form prevents shell metachar escape via searchString; the
+            // split-length semantics (empty output = length 1) are preserved
+            // verbatim from the prior shell-form implementation.
+            String pgrepOutput = UvmContextFactory.context().execManager().execCommand(
+                "/usr/bin/pgrep", List.of(object.searchString)
+            ).getOutput();
+            if (pgrepOutput == null) pgrepOutput = "";
+            int count = pgrepOutput.split("\r\n|\r|\n").length;
 
             logger.debug("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
 

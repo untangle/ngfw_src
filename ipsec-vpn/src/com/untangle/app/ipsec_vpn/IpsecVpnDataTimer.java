@@ -5,6 +5,7 @@
 package com.untangle.app.ipsec_vpn;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TimerTask;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -154,7 +155,9 @@ public class IpsecVpnDataTimer extends TimerTask
          * the script should return the tunnel status in the following format:
          * | TUNNNEL:tunnel_name LOCAL:1.2.3.4 REMOTE:5.6.7.8 STATE:active IN:123 OUT:456 |
          */
-        result = IpsecVpnApp.execManager().execOutput(TUNNEL_STATUS_SCRIPT + " " + watcher.tunnelName);
+        result = IpsecVpnApp.execManager().execCommand(
+            TUNNEL_STATUS_SCRIPT, List.of(watcher.tunnelName)
+        ).getOutput();
 
 // THIS IS FOR ECLIPSE - @formatter:on
 
