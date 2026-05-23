@@ -9,14 +9,22 @@ import java.net.InetAddress;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * Dhcp static entry.
  */
 @SuppressWarnings("serial")
 public class DhcpStaticEntry implements Serializable, JSONString
 {
+    // Flows into /etc/dnsmasq.d/dhcp-static as `dhcp-host={mac},{ip}` and
+    // `# {description}` comment. dnsmasq supports `dhcp-script=` exec directive,
+    // so newline injection in either field is RCE.
+    @SafeCheck(SafeType.MAC_ADDRESS)
     private String macAddress;
     private InetAddress address;
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String description;
     
     public DhcpStaticEntry( String macAddress, InetAddress address)

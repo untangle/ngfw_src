@@ -316,7 +316,7 @@ public class GoogleManagerImpl implements GoogleManager
      * @return
      */
     @Override
-    public String getAppSpecificGoogleDrivePath(@SafeCheckParam(SafeType.ALPHANUM) String appDirectory) {
+    public String getAppSpecificGoogleDrivePath(@SafeCheckParam(SafeType.SIMPLE_TEXT) String appDirectory) {
         if (getSettings() == null)
             return null;
 
@@ -399,7 +399,7 @@ public class GoogleManagerImpl implements GoogleManager
      * @param code the code to send.
      * @return null on success or the error string
      */
-    public String provideDriveCode( @SafeCheckParam(SafeType.SIMPLE_TEXT) String code )
+    public String provideDriveCode( @SafeCheckParam(SafeType.OAUTH_CODE) String code )
     {
         logger.info("Providing code [{}] to exchange for the access token", code);
 

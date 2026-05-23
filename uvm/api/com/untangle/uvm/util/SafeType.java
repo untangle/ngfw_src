@@ -108,23 +108,26 @@ public enum SafeType
 
     /**
      * Permissive text for descriptions, contact strings, system locations,
-     * and natural-language names like {@code O'Brien} or {@code John's Folder}.
-     * Allows Unicode letters, digits, whitespace, the safe punctuation
-     * set [. _ - @ : , / + ( )], and the apostrophe ['].
-     * Excludes shell metacharacters ({@code $ & ` ; | < > \n \r "}).
+     * and natural-language names like {@code O'Brien}, {@code John's Folder},
+     * or {@code Smith &amp; Co}. Allows Unicode letters, digits, whitespace,
+     * the safe punctuation set [. _ - @ : , / + ( )], the apostrophe ['],
+     * and the ampersand [&amp;]. Excludes the remaining shell metacharacters
+     * ({@code $ ` ; | < > \n \r "}).
      *
-     * <p>The apostrophe is permitted because every current sink consumes
-     * {@code SIMPLE_TEXT} values either argv-form (e.g. openssl), URL-encoded
-     * (URIBuilder), or as JSON HTTP-body content - none string-concatenate
-     * the value into a shell command line. Future sinks that do shell
-     * interpolation must quote with {@code shlex.quote(...)} (Python) or
-     * {@code execCommand(List.of(...))} (Java); this is the same contract
-     * already required for {@link #OPAQUE_SECRET}.</p>
+     * <p>The apostrophe and ampersand are permitted because every current
+     * sink consumes {@code SIMPLE_TEXT} values either argv-form (e.g.
+     * openssl), URL-encoded (URIBuilder), or as JSON HTTP-body content -
+     * none string-concatenate the value into a shell command line.
+     * URL-encoders turn {@code &amp;} into {@code %26}; JSON bodies treat
+     * it as a literal; argv vectors do not re-tokenize. Future sinks that
+     * do shell interpolation must quote with {@code shlex.quote(...)}
+     * (Python) or {@code execCommand(List.of(...))} (Java); this is the
+     * same contract already required for {@link #OPAQUE_SECRET}.</p>
      */
     SIMPLE_TEXT(
-        Pattern.compile("^[\\p{L}\\p{N}\\p{Zs}._@:,/+()-]{1,256}$"),
+        Pattern.compile("^[\\p{L}\\p{N}\\p{Zs}._@:,/+()&-]{1,256}$"),
         256,
-        "must contain only letters, digits, spaces, and the safe punctuation . _ - @ : , / + ( ) (max 256)"),
+        "must contain only letters, digits, spaces, and the safe punctuation . _ - @ : , / + ( ) & (max 256)"),
 
     /**
      * IPv4/IPv6 literal address (no DNS lookup) with optional CIDR prefix.
@@ -174,6 +177,21 @@ public enum SafeType
         Pattern.compile("^[A-Za-z0-9+/]{43}=$"),
         44,
         "must be a 44-character base64-encoded key"),
+
+    /**
+     * IEEE 802 MAC address (RFC 7042) in standard hex-octet form,
+     * separated by ':' or '-'. Examples: {@code aa:bb:cc:dd:ee:ff},
+     * {@code AA-BB-CC-DD-EE-FF}.
+     *
+     * <p>Length is fixed at 17 (12 hex digits + 5 separators). The regex
+     * matches the existing UI rule {@code macAddressRegex} in
+     * {@code vuntangle/src/plugins/init-vee-validate.js:26} so backend and
+     * UI agree exactly.</p>
+     */
+    MAC_ADDRESS(
+        Pattern.compile("^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$"),
+        17,
+        "must be a valid MAC address (e.g. aa:bb:cc:dd:ee:ff or AA-BB-CC-DD-EE-FF)"),
 
     /**
      * Free-form secret. Accepts any printable Unicode including shell
@@ -226,32 +244,80 @@ public enum SafeType
      *
      * <p>Validated programmatically: requires at least one
      * {@code -----BEGIN <LABEL>-----} ... {@code -----END <LABEL>-----}
-     * envelope; permits multiple concatenated blocks separated by
-     * whitespace (legal for cert chains). Body characters between the
-     * BEGIN/END markers are restricted to the base64 alphabet plus
-     * whitespace. Cryptographic validity is <b>not</b> checked here -
-     * the OpenSSL sink layer handles that.</p>
+     * envelope with matching label, and rejects control characters
+     * other than {@code \r}, {@code \n}, {@code \t}. The body is
+     * <i>not</i> constrained to a strict base64 alphabet, so real-world
+     * exports work: openssl's {@code x509 -text} preamble, PKCS12
+     * {@code Bag Attributes:} headers, encrypted-key
+     * {@code Proc-Type:}/{@code DEK-Info:} headers, and benign
+     * commentary between blocks are all accepted.</p>
+     *
+     * <p><b>RCE contract:</b> the PEM payload is written to a file
+     * with {@code FileOutputStream} and then read by openssl - it is
+     * never interpolated into a shell command line, so body characters
+     * have no path to a shell. The control-char check still blocks NUL
+     * (which truncates C strings) and the BEL/ESC class that can
+     * corrupt downstream log handling. Cryptographic validity is left
+     * to the openssl sink.</p>
      */
     PEM(
         null, // validated programmatically, see validate()
         16384,
-        "must be a PEM block bounded by -----BEGIN ...----- and -----END ...----- markers with a base64 body (max 16 KB)"),
+        "must contain at least one -----BEGIN ...----- / -----END ...----- envelope with matching label and no control characters other than CR/LF/TAB (max 16 KB)"),
 
     /**
      * X.500 distinguished name as composed by the certificate UI:
      * {@code /CN=Foo/C=US/ST=CA/L=City/O=Org} etc. Each RDN is a 1-4
      * letter type label, an {@code =}, and a value drawn from the
-     * conservative subset {@code [A-Za-z0-9 ._@:+()*-]}. No quoted
-     * RDNs, no embedded slashes inside values - both legal in X.500
-     * but neither used by the UI dialog. {@code *} is permitted to
-     * support wildcard CNs (e.g. {@code /CN=*.example.com}); this is
-     * safe because the value is passed argv-form to openssl and never
-     * interpreted by a shell. Length capped at 512.
+     * subset {@code [\p{L}\p{N} ._@:+()*'&,-]} - Unicode letters and
+     * digits, spaces, and the safe punctuation needed by real-world
+     * subjects ({@code O'Brien}, {@code Smith & Co}, {@code Foo, Inc.},
+     * names with accented characters). No quoted RDNs and no embedded
+     * slashes inside values - both legal in X.500 but neither used by
+     * the UI dialog. {@code *} is permitted to support wildcard CNs
+     * (e.g. {@code /CN=*.example.com}); apostrophe, ampersand and
+     * comma are safe because the value is passed argv-form to openssl
+     * and the helper script uses {@code "$2"}-quoted parameter
+     * expansion, neither of which re-interprets these as shell metas.
+     * Shell metacharacters {@code $ ` ; | < > " \\} and newlines remain
+     * rejected. Length capped at 512.
      */
     CERT_SUBJECT(
-        Pattern.compile("^/[A-Za-z]{1,4}=[A-Za-z0-9 ._@:+()*-]+(/[A-Za-z]{1,4}=[A-Za-z0-9 ._@:+()*-]+)*$"),
+        Pattern.compile("^/[A-Za-z]{1,4}=[\\p{L}\\p{N} ._@:+()*'&,-]+(/[A-Za-z]{1,4}=[\\p{L}\\p{N} ._@:+()*'&,-]+)*$"),
         512,
-        "each field in the certificate subject must be non-empty and use only letters, digits, spaces, or . _ @ : + ( ) * - (e.g. /CN=Host/C=US/ST=California/L=City/O=Org or /CN=*.example.com; max 512 chars)"),
+        "each field in the certificate subject must be non-empty and use only letters, digits, spaces, or . _ @ : + ( ) * ' & , - (e.g. /CN=Host/C=US/ST=California/L=City/O=Org or /CN=*.example.com; max 512 chars)"),
+
+    /**
+     * Natural-language proper name - a person's name, an organization name,
+     * a CA common name, or any other single-segment free-form name field
+     * that needs to accommodate real-world punctuation. Examples:
+     * {@code O'Brien}, {@code Smith & Co}, {@code Foo, Inc.},
+     * {@code Sao Paulo Org}, {@code Acme Root CA}.
+     *
+     * <p>Charset: Unicode letters/digits, spaces, and the safe punctuation
+     * {@code . _ - @ : + ( ) * ' & ,}. Shell metacharacters
+     * ({@code $ ; | < > " \ ` }) and newlines remain rejected. The path
+     * separator {@code /} is intentionally <i>not</i> in the charset:
+     * NATURAL_NAME values are single segments (one CA name, one person's
+     * name) and several sinks ({@code ut-rootgen}, cert-store directory
+     * layout) use the value as a single filesystem path component.
+     * Path traversal sequences ({@code ..}) are also rejected
+     * programmatically - see {@link #validate(String)}.</p>
+     *
+     * <p><b>Sink contract:</b> safe wherever the value is consumed
+     * argv-form (openssl, exec arrays), URL-encoded (URIBuilder), or as
+     * JSON HTTP-body content. If the value is interpolated into a shell
+     * command - even argv-passed and then re-expanded inside a script -
+     * <b>the receiving shell variable must be double-quoted</b>
+     * ({@code "$VAR"}), otherwise the allowed {@code &amp;}, {@code *},
+     * space, and {@code (} {@code )} characters become shell-active.
+     * This is the contract that {@code ut-rootgen} satisfies for the CA
+     * directory name.</p>
+     */
+    NATURAL_NAME(
+        Pattern.compile("^[\\p{L}\\p{N} ._@:+()*'&,-]{1,256}$"),
+        256,
+        "must contain only letters, digits, spaces, and the safe punctuation . _ - @ : + ( ) * ' & , (no '..' or '/'; max 256 chars)"),
 
     /**
      * X.509 Subject Alternative Name list as composed by the certificate
@@ -300,6 +366,33 @@ public enum SafeType
         null,  // validated programmatically, see validate()
         1024,
         "must be a regular expression up to 1024 characters; control characters (NUL, ESC, BEL, CR, LF) are not allowed"),
+
+    /**
+     * OAuth 2.0 authorization code / token shape. Used for values received
+     * from third-party identity providers (Google Drive, etc.) that are
+     * then submitted back to the provider's token endpoint as
+     * {@code application/x-www-form-urlencoded} body content.
+     *
+     * <p>Real-world codes include the base64url alphabet
+     * ({@code A-Z a-z 0-9 _ -}), the standard-base64 alphabet
+     * ({@code / + =} padding), the JWT segment separator {@code .},
+     * and occasionally {@code %} from upstream percent-encoding. Length
+     * cap 4096 covers JWT-shaped responses and long Google "4/..." codes
+     * with margin.</p>
+     *
+     * <p><b>Leading-char rule:</b> first character is restricted to
+     * {@code [A-Za-z0-9]} (no leading {@code -} or {@code /}) to close
+     * argv-option-injection in case any future sink shells the value.</p>
+     *
+     * <p><b>Sink contract:</b> the value is URL-encoded into a form body
+     * and POSTed to the provider - it never reaches a shell. The
+     * allowlist still blocks NUL / CR / LF and other control bytes that
+     * could smuggle header lines into a downstream HTTP client.</p>
+     */
+    OAUTH_CODE(
+        Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._\\-/=+%]*$"),
+        4096,
+        "must be an OAuth code/token (letters, digits, '.', '_', '-', '/', '=', '+', '%'; first char alphanumeric; max 4096 chars)"),
 
     /**
      * Absolute filesystem path for a server-controlled file (e.g. a
@@ -435,6 +528,15 @@ public enum SafeType
                 }
                 return pattern.matcher(value).matches();
             case FILE_PATH:
+                if (value.contains("..")) {
+                    return false;
+                }
+                return pattern.matcher(value).matches();
+            case NATURAL_NAME:
+                // Block path-traversal sequences. The charset does not
+                // include '/', but ".." in a single segment must still be
+                // rejected because sinks like ut-rootgen use the value as
+                // a filesystem path component.
                 if (value.contains("..")) {
                     return false;
                 }
@@ -660,57 +762,49 @@ public enum SafeType
     private static final Pattern PEM_BEGIN = Pattern.compile("-----BEGIN ([A-Z0-9 ]+)-----");
     private static final Pattern PEM_END   = Pattern.compile("-----END ([A-Z0-9 ]+)-----");
 
-    /** Base64 alphabet plus PEM line-wrap whitespace. */
-    private static final Pattern PEM_BODY_CHARS = Pattern.compile("^[A-Za-z0-9+/=\\s]*$");
-
     /**
      * PEM envelope check. Requires at least one
      * {@code -----BEGIN <LABEL>-----} ... {@code -----END <LABEL>-----}
-     * pair with matching label and a base64-only body. Permits multiple
-     * concatenated blocks (cert chain) separated by whitespace. Rejects
-     * any character outside the base64 alphabet within a block - this
-     * blocks shell metacharacter smuggling between BEGIN/END markers.
+     * pair with matching label, and rejects control characters other
+     * than CR/LF/TAB anywhere in the input. The body and inter-block
+     * regions are otherwise unrestricted so real-world exports work
+     * (openssl preambles, PKCS12 {@code Bag Attributes:} headers,
+     * encrypted-key headers, benign commentary).
      *
-     * <p>Cryptographic validity is not checked - the OpenSSL sink
-     * parses the PEM for real before use.</p>
+     * <p>This is intentionally permissive: the payload is written to a
+     * file and parsed by openssl - it never reaches a shell. The
+     * control-character check still blocks NUL / BEL / ESC and similar
+     * vectors. Cryptographic validity is left to the openssl sink.</p>
      *
      * @param value the candidate PEM string; assumed non-null and non-empty.
-     * @return {@code true} if at least one well-formed envelope is present
-     *         and the entire input parses as a sequence of envelopes.
+     * @return {@code true} if at least one well-formed envelope (matching
+     *         BEGIN/END labels) is present and no disallowed control
+     *         characters appear.
      */
     private static boolean validatePem(String value)
     {
+        // Reject control chars except CR/LF/TAB. NUL truncates C strings;
+        // BEL/ESC corrupt downstream log handling. Everything printable
+        // is fine - openssl is the real parser.
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '\r' || c == '\n' || c == '\t') continue;
+            if (Character.getType(c) == Character.CONTROL) return false;
+        }
+
+        // Require at least one BEGIN/END pair with matching label.
         java.util.regex.Matcher beginM = PEM_BEGIN.matcher(value);
         java.util.regex.Matcher endM   = PEM_END.matcher(value);
         int pos = 0;
         int blocks = 0;
         while (beginM.find(pos)) {
-            int beginStart = beginM.start();
-            int beginEnd   = beginM.end();
-            String label   = beginM.group(1);
-
-            // Anything between pos and beginStart must be whitespace
-            // (blank lines or stray newlines between blocks are legal;
-            // shell metacharacters / commentary are not).
-            for (int i = pos; i < beginStart; i++) {
-                if (!Character.isWhitespace(value.charAt(i))) return false;
-            }
-
+            int beginEnd = beginM.end();
+            String label = beginM.group(1);
             if (!endM.find(beginEnd)) return false;
-            if (!label.equals(endM.group(1))) return false; // mismatched label
-
-            String body = value.substring(beginEnd, endM.start());
-            if (!PEM_BODY_CHARS.matcher(body).matches()) return false;
-
+            if (!label.equals(endM.group(1))) return false;
             pos = endM.end();
             blocks++;
         }
-        if (blocks == 0) return false;
-
-        // Trailing whitespace (only) after the last END marker is OK.
-        for (int i = pos; i < value.length(); i++) {
-            if (!Character.isWhitespace(value.charAt(i))) return false;
-        }
-        return true;
+        return blocks > 0;
     }
 }

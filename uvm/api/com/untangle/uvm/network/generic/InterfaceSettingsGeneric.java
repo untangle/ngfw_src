@@ -70,6 +70,9 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private LinkedList<V4Alias> v4Aliases = new LinkedList<>();     /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
     private LinkedList<V6Alias> v6Aliases = new LinkedList<>();     /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
 
+    // Mirror of InterfaceSettings.v4PPPoEUsername - closes V2 RPC bypass.
+    // pppd peers file has connect= shell-exec directive.
+    @SafeCheck(SafeType.ALPHANUM)
     private String v4PPPoEUsername;             /* PPPoE Username */
     private String v4PPPoEPassword;             /* PPPoE Password */
     private Boolean v4PPPoEUsePeerDNS;          /* If the DNS should be determined via PPP */
@@ -96,6 +99,9 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private Integer dhcpLeaseDuration;          /* DHCP lease duration in seconds */
     private InetAddress dhcpGatewayOverride;    /* DHCP gateway override, if null defaults to this interface's IP */
     private Integer dhcpPrefixOverride;         /* DHCP netmask override, if null defaults to this interface's netmask */
+    // Mirror of InterfaceSettings.dhcpDnsOverride - closes V2 RPC bypass.
+    // dnsmasq.conf supports dhcp-script= exec directive.
+    @SafeCheck(SafeType.IP_OR_CIDR_LIST)
     private String dhcpDNSOverride;             /* DHCP DNS override, if null defaults to this interface's IP */
     private LinkedList<DhcpOption> dhcpOptions = new LinkedList<>();       /* DHCP dnsmasq options */ /* Declared using LinkedList to ensure correct type during Jabsorb deserialization */
 

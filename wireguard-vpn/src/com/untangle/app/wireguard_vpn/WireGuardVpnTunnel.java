@@ -12,6 +12,9 @@ import org.json.JSONString;
 import java.net.InetAddress;
 import java.util.List;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * Settings for the WireGuardVpn app.
  */
@@ -20,15 +23,20 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
 {
     private Integer id;
     private Boolean enabled = true;
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String description = "";
     // Only required for dynamic endpoints
+    @SafeCheck(SafeType.BASE64_KEY)
     private String publicKey = "";
+    @SafeCheck(SafeType.BASE64_KEY)
     private String privateKey = "";
     private Boolean endpointDynamic = true;
     private InetAddress endpointAddress = null;
+    @SafeCheck(SafeType.HOSTNAME)
     private String endpointHostname = "";
     private Integer endpointPort = 51820;
     private InetAddress peerAddress;
+    @SafeCheck(SafeType.IP_OR_CIDR_LIST)
     private String networks = "";
     private InetAddress pingAddress = null;
     private Integer pingInterval = 60;
@@ -38,6 +46,7 @@ public class WireGuardVpnTunnel implements Serializable, JSONString
     private Boolean assignDnsServer = false;
     // Routed Network Profiles
     private List<String> routedNetworkProfiles = null;
+    @SafeCheck(SafeType.IP_OR_CIDR_LIST)
     private String routedNetworks = "";
 
     public Boolean getEnabled() { return enabled; }

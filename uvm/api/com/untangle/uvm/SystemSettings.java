@@ -70,10 +70,15 @@ public class SystemSettings implements Serializable, JSONString
      * These are used for RADIUS proxy support
      */
     private boolean radiusProxyEnabled = false;
+    @SafeCheck(SafeType.HOSTNAME)
     private String radiusProxyServer = StringUtils.EMPTY;
+    @SafeCheck(SafeType.ALPHANUM)
     private String radiusProxyWorkgroup = StringUtils.EMPTY;
+    @SafeCheck(SafeType.HOSTNAME)
     private String radiusProxyRealm = StringUtils.EMPTY;
+    @SafeCheck(SafeType.ALPHANUM)
     private String radiusProxyUsername = StringUtils.EMPTY;
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String radiusProxyPassword = StringUtils.EMPTY;
     private String radiusProxyEncryptedPassword = StringUtils.EMPTY;
 
