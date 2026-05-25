@@ -3500,6 +3500,44 @@ server=dynupdate.no-ip.com
         finally:
             global_functions.uvmContext.networkManager().setNetworkSettings(netsettings_before)
 
+    def test_086_safecheckparam_config_hostname_domain(self):
+        """ConfigManagerImpl.setHostName / setDomainName (HOSTNAME).
+
+        Both methods land in NetworkSettings.hostName/domainName, which sync-
+        settings writes into /etc/hosts and /etc/hostname. The HOSTNAME
+        SafeType rejects shell metachars (e.g. ';reboot', backticks, '$()').
+        """
+        cfg_mgr = global_functions.uvmContext.configManager()
+        # Snapshot current hostname/domain so we can restore after the
+        # positive case.
+        orig_hostname = cfg_mgr.getHostName().get("HostName")
+        orig_domain   = cfg_mgr.getDomainName().get("DomainName")
+        try:
+            # INVALID — semicolon should be rejected before any state change.
+            with pytest.raises(Exception):
+                cfg_mgr.setHostName("firewall;reboot")
+            with pytest.raises(Exception):
+                cfg_mgr.setHostName("firewall`id`.example.com")
+            # Verify hostname did NOT change.
+            assert cfg_mgr.getHostName().get("HostName") == orig_hostname
+
+            # INVALID — domainName injection rejected.
+            with pytest.raises(Exception):
+                cfg_mgr.setDomainName("example.com$(id)")
+            assert cfg_mgr.getDomainName().get("DomainName") == orig_domain
+
+            # VALID — well-formed hostname/domain match HOSTNAME regex.
+            cfg_mgr.setHostName("ats-firewall")
+            assert cfg_mgr.getHostName().get("HostName") == "ats-firewall"
+            cfg_mgr.setDomainName("ats.example.com")
+            assert cfg_mgr.getDomainName().get("DomainName") == "ats.example.com"
+        finally:
+            # Restore initial values regardless of outcome.
+            if orig_hostname:
+                cfg_mgr.setHostName(orig_hostname)
+            if orig_domain:
+                cfg_mgr.setDomainName(orig_domain)
+
     @classmethod
     def final_extra_tear_down(cls):
         # Restore original settings to return to initial settings

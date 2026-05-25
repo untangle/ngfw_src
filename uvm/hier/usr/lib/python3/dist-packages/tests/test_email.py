@@ -201,6 +201,28 @@ class EmailTests(NGFWTestCase):
         assert elapsed_time < uvm_context_timeout, f"network settings completed in under {uvm_context_timeout}s"
         global_functions.uvmContext.mailSender().setSettings(orig_mail_settings)
 
+    def test_020_safecheckparam_mailsender_send_test_message(self):
+        """MailSenderImpl.sendTestMessage(recipient: EMAIL).
+
+        sendTestMessage drops the recipient straight into an exim envelope.
+        The EMAIL SafeType rejects shell metachars, embedded whitespace and
+        addresses without a valid TLD.
+        """
+        mail_sender = global_functions.uvmContext.mailSender()
+        # INVALID — semicolon inside local part (shell-style injection)
+        with pytest.raises(Exception):
+            mail_sender.sendTestMessage("admin;id@example.com")
+        # INVALID — no TLD
+        with pytest.raises(Exception):
+            mail_sender.sendTestMessage("admin@localhost")
+        # VALID — well-formed RFC-style address. The exim delivery may
+        # subsequently fail (no real SMTP) but the validator should accept.
+        try:
+            mail_sender.sendTestMessage("ats-test@example.com")
+        except Exception as e:
+            assert "Invalid value in" not in str(e), \
+                f"validator unexpectedly rejected a well-formed EMAIL: {e!r}"
+
     @classmethod
     def final_extra_tear_down(cls):
         if EmailTests.original_mail_settings is not None:

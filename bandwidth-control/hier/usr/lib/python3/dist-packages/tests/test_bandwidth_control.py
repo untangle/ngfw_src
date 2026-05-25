@@ -674,6 +674,33 @@ class BandwidthControlTests(NGFWTestCase):
         networkSettings = uvmContext.networkManager().getNetworkSettings()
         assert networkSettings['qosSettings']['qosEnabled'] == False, "Test Failed: The Qos Enabled for invalid values."        
 
+    def test_120_safecheckparam_wizard_load_defaults(self):
+        """BandwidthControlApp.wizardLoadDefaults(defaultConfiguration: ALPHANUM).
+
+        Loads /usr/share/untangle/lib/bandwidth-control/defaults_<arg>.json,
+        replacing the live BandwidthControl settings. ALPHANUM forbids dashes,
+        spaces, and every shell metachar — those would let an attacker target
+        arbitrary on-disk JSON or inject shell tokens upstream.
+        """
+        # INVALID — leading dash (argv injection shape)
+        with pytest.raises(Exception):
+            self._app.wizardLoadDefaults("-school")
+        # INVALID — semicolon
+        with pytest.raises(Exception):
+            self._app.wizardLoadDefaults("school;id")
+        # INVALID — embedded space
+        with pytest.raises(Exception):
+            self._app.wizardLoadDefaults("sch ool")
+        # VALID — capture-and-restore current settings around the positive
+        # call, since wizardLoadDefaults overwrites BandwidthControlSettings.
+        orig_settings = self._app.getSettings()
+        try:
+            # 'school' is a built-in profile; if the JSON is missing the
+            # method just logs and returns — validation passes either way.
+            self._app.wizardLoadDefaults("school")
+        finally:
+            self._app.setSettings(orig_settings)
+
     @classmethod
     def final_extra_tear_down(cls):
         global orig_network_settings
