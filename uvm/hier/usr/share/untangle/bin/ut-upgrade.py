@@ -784,9 +784,28 @@ def post_upgrade_fixups_trixie():
     cmd_to_log("systemctl start postgresql || true")
     cmd_to_log("for i in $(seq 1 30); do pg_isready -q && break; sleep 1; done")
     cmd_to_log("su - postgres -c \"psql -d uvm -c 'REINDEX DATABASE uvm;'\" 2>&1 | tail -5 || true")
-    cmd_to_log("su - postgres -c \"psql -d uvm -c 'ALTER DATABASE uvm REFRESH COLLATION VERSION;'\" 2>&1 | tail -3 || true")
-    cmd_to_log("su - postgres -c \"psql -d postgres -c 'ALTER DATABASE postgres REFRESH COLLATION VERSION;'\" 2>&1 | tail -3 || true")
-    cmd_to_log("su - postgres -c \"psql -d template1 -c 'ALTER DATABASE template1 REFRESH COLLATION VERSION;'\" 2>&1 | tail -3 || true")
+
+    # REFRESH COLLATION VERSION is PG15+ syntax. On a direct bullseye->trixie
+    # upgrade PG13 may still be serving (PG17 package installed but cluster
+    # not auto-created when PG13 owns 5432), and PG13/14 syntax-error on these
+    # ALTERs. Gate to avoid harmless but noisy errors in the upgrade log.
+    pg_server_version_num = 0
+    try:
+        r = subprocess.run(
+            ["su", "-", "postgres", "-c",
+             "psql -tAc \"SELECT current_setting('server_version_num')::int\""],
+            capture_output=True, text=True, timeout=10)
+        pg_server_version_num = int(r.stdout.strip())
+    except Exception:
+        pass
+
+    if pg_server_version_num >= 150000:
+        log("Post-upgrade: PG server_version_num=%d, running REFRESH COLLATION VERSION" % pg_server_version_num)
+        cmd_to_log("su - postgres -c \"psql -d uvm -c 'ALTER DATABASE uvm REFRESH COLLATION VERSION;'\" 2>&1 | tail -3 || true")
+        cmd_to_log("su - postgres -c \"psql -d postgres -c 'ALTER DATABASE postgres REFRESH COLLATION VERSION;'\" 2>&1 | tail -3 || true")
+        cmd_to_log("su - postgres -c \"psql -d template1 -c 'ALTER DATABASE template1 REFRESH COLLATION VERSION;'\" 2>&1 | tail -3 || true")
+    else:
+        log("Post-upgrade: PG server_version_num=%d (<150000), skipping REFRESH COLLATION VERSION (PG15+ only)" % pg_server_version_num)
 
     log("Post-upgrade: waiting 30s for systemd postinst cascade to settle")
     time.sleep(30)
