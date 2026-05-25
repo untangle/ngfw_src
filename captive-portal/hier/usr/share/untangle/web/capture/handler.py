@@ -2,7 +2,8 @@ from mod_python import apache
 from mod_python import util
 from mod_python import Cookie
 import sys
-
+import requests
+import json
 if "@PREFIX@" != '':
     sys.path.insert(0, '@PREFIX@/usr/lib/python3/dist-packages')
 
@@ -94,7 +95,7 @@ def index(req):
 
     # get the original destination and other arguments passed
     # in the URL when the redirect was generated
-    args_keys = ['AUTHCODE', 'AUTHMODE', 'APPID', 'METHOD', 'NONCE', 'HOST','URI']
+    args_keys = ['AUTHCODE', 'AUTHMODE', 'APPID', 'METHOD', 'NONCE', 'HOST','URI', "CP"]
     args = _split_args(req.args);
     for key in args_keys:
         if not key in args:
@@ -105,6 +106,21 @@ def index(req):
 
     # load the configuration data
     appid = args['APPID']
+    #adding suport for direct captive portal page, covers multiple cp's scenario
+    if args.get('CP') == "Direct":
+        if args.get('APPID') == "Empty":
+            appid = Uvm().getUvmContext().appManager().app("captive-portal").getAppSettings().get("id")
+        else:
+            appid = args.get('APPID')
+
+        if appid:
+            #this url needs to be overriden
+            args['HOST'] = 'microsoft.com'
+            args['METHOD'] = 'GET'
+            args['URI'] = '/'
+            args['APPID'] = str(appid)
+            args['NONCE'] = Uvm().getUvmContext().appManager().app(appid).generateNonce(
+            args['HOST'], args['METHOD'], args['URI'])
     captureSettings = _load_capture_settings(req,appid)
     captureApp = None
 
@@ -414,7 +430,11 @@ def _generate_page(req,captureSettings,args,extra='',page=None,template_name=Non
                 page = "<html><head><title>Captive Portal Error</title></head><body><h2>Invalid Captive Portal configuration</h2></body></html>"
                 return(page)
 
-        path = req.filename[:req.filename.rindex('/')]
+        #handle direct captive portal page scenraio, need to get actual path for pickpage.html
+        if args.get('CP', None) and args['CP'] == "Direct":
+            path = req.filename[:req.filename.rfind('/login/')]
+        else:
+            path = req.filename[:req.filename.rindex('/')]
         template_file_name = f"{path}/{template_name}"
 
         webfile = open(template_file_name, "r")
