@@ -125,7 +125,10 @@ public class RuleGeneric implements JSONString, Serializable {
         // Transform Action
         if(ruleGeneric.getAction() != null) {
             portForwardRule.setNewDestination(ruleGeneric.getAction().getDnat_address());
-            portForwardRule.setNewPort(StringUtil.getInstance().parseInt(ruleGeneric.getAction().getDnat_port(), 80));
+            String dnatPort = ruleGeneric.getAction().getDnat_port();
+            portForwardRule.setNewPort((dnatPort != null && !dnatPort.trim().isEmpty())
+                ? StringUtil.getInstance().parseInt(dnatPort, 80)
+                : null);
         }
 
         // Transform Conditions
