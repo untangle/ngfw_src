@@ -340,6 +340,15 @@ def post_upgrade_fixups():
                 f.write("Bookworm upgrade completed, reboot required\n")
         except:
             pass
+        # Auto-reboot 1 minute out. UI-driven upgrades have no admin watching
+        # the script; without auto-reboot the system sits on the old kernel
+        # until someone notices. SSH users get a wall-broadcast warning and
+        # can `shutdown -c` to cancel.
+        log("")
+        log("Post-upgrade: scheduling reboot in 1 minute to activate new kernel")
+        log("Post-upgrade: TO CANCEL the auto-reboot run: shutdown -c")
+        log("")
+        cmd_to_log("shutdown -r +1 'Bookworm upgrade complete - rebooting to activate kernel. Run shutdown -c to cancel.'")
 
 # ---- Trixie upgrade helpers ---- #
 
@@ -386,21 +395,73 @@ def is_trixie_upgrade():
         log("Trixie post-upgrade fixups needed: flag file missing on kernel %s" % running_kernel)
         return True
 
+    # Self-healing: even if flag file says "done", re-run fixups if the
+    # pipeline state is broken (nft binary missing or required tables gone).
+    # Mirrors the bookworm detector. Defensive against scenarios where the
+    # flag was written but downstream state was later disturbed (e.g.
+    # nftables removed by a script, partial sync-settings).
+    if not os.path.exists("/usr/sbin/nft"):
+        log("Trixie post-upgrade fixups needed: nft binary missing despite flag on kernel %s" % running_kernel)
+        return True
+    try:
+        result = subprocess.run(["/usr/sbin/nft", "list", "tables"],
+                                capture_output=True, text=True, timeout=5)
+        if "inet tune" not in result.stdout or "bridge broute" not in result.stdout:
+            log("Trixie post-upgrade fixups needed: nft tables incomplete despite flag on kernel %s" % running_kernel)
+            return True
+    except:
+        pass
+
     log("Trixie upgrade: system appears fully migrated on kernel %s" % running_kernel)
     return False
 
 def pre_upgrade_cleanup_trixie():
     """
-    Pre-upgrade fixups for bookworm->trixie:
+    Pre-upgrade fixups for bookworm->trixie AND bullseye->trixie direct:
+    - Purge wireguard-dkms. trixie kernel 6.12 has wireguard built-in; DKMS
+      module would fail to build against newer kernel headers.
+    - Pre-install nftables. Required by ut-uvm-update-rules.sh which wires
+      the inet tune table + NFQUEUE divert (queue 1981/1982) for the entire
+      NGFW userspace inspection pipeline. On bullseye->trixie direct, the
+      bullseye system uses iptables-legacy and never had nftables installed;
+      no trixie package hard-depends on it, so apt won't pull it in. Without
+      nftables, every pipeline app (SSL Inspector, Web Filter, App Control,
+      IPS, Captive Portal, Threat Prev) silently inspects nothing.
     - Pre-install openjdk-21-jre-headless. trixie untangle-vm needs JDK21 for
       SSL Inspector compat (NGFW-15749 afe4c8650a) but untangle-vm's Depends
       doesn't hard-pull it in, so apt would otherwise keep stale openjdk-17.
+    - Persist ifb module to /etc/modules so QoS survives reboot. trixie
+      kernel 6.12 (like bookworm 6.1) doesn't auto-create ifb0 on modprobe.
     - Preserve wizard-complete flag so the setup wizard doesn't re-appear.
     """
     log("Pre-upgrade: Trixie target detected -- installing prerequisites")
 
+    log("Pre-upgrade: purging wireguard-dkms (trixie kernel has wireguard built-in)")
+    cmd_to_log("dpkg --list wireguard-dkms 2>/dev/null | grep -q '^ii' && apt-get purge -y wireguard-dkms || true")
+
+    log("Pre-upgrade: installing nftables (required for ut-uvm-update-rules.sh / NFQUEUE divert)")
+    cmd_to_log("apt-get install -y nftables")
+
     log("Pre-upgrade: pre-installing openjdk-21-jre-headless (required for SSL Inspector JDK21 compat)")
     cmd_to_log("apt-get install -y --no-install-recommends openjdk-21-jre-headless")
+
+    log("Pre-upgrade: ensuring ifb module loads on boot (QoS survives reboot)")
+    try:
+        ifb_in_modules = False
+        if os.path.exists("/etc/modules"):
+            with open("/etc/modules") as f:
+                for line in f:
+                    if line.strip() == "ifb":
+                        ifb_in_modules = True
+                        break
+        if not ifb_in_modules:
+            with open("/etc/modules", "a") as f:
+                f.write("ifb\n")
+            log("Pre-upgrade: added 'ifb' to /etc/modules")
+        else:
+            log("Pre-upgrade: 'ifb' already in /etc/modules")
+    except:
+        log("Pre-upgrade: WARNING - could not update /etc/modules")
 
     wizard_flag = "/usr/share/untangle/conf/wizard-complete"
     if os.path.exists(wizard_flag):
@@ -432,8 +493,28 @@ def post_upgrade_fixups_trixie():
     log("Post-upgrade: configuring pending packages")
     cmd_to_log("dpkg --configure -a")
 
+    log("Post-upgrade: creating IFB device for QoS (module persisted in pre-upgrade)")
+    cmd_to_log("modprobe ifb 2>/dev/null || true")
+    cmd_to_log("ip link add ifb0 type ifb 2>/dev/null || true")
+    cmd_to_log("ip link set ifb0 up 2>/dev/null || true")
+
     log("Post-upgrade: regenerating runtime configs via sync-settings")
     cmd_to_log("sync-settings || true")
+
+    log("Post-upgrade: validating nftables ruleset")
+    cmd_to_log("/usr/sbin/nft list ruleset 2>&1 | head -50 || true")
+
+    # Check for required nft tables. inet tune is the NFQUEUE divert chain;
+    # if missing, the entire userspace inspection pipeline is dead even
+    # though apps load cleanly. This validation would have caught the
+    # bullseye->trixie nftables-not-installed regression (2026-05-26).
+    result = subprocess.run("nft list tables 2>/dev/null || true",
+                            shell=True, capture_output=True, text=True)
+    for table in ["bridge broute", "bridge mangle", "inet tune"]:
+        if table in result.stdout:
+            log("Post-upgrade: OK - %s present" % table)
+        else:
+            log("Post-upgrade: WARNING - %s missing" % table)
 
     log("Post-upgrade: refreshing PG collation metadata (glibc 2.36 -> 2.41 on trixie changes collation version)")
     # Ensure PostgreSQL is up before REFRESH. dpkg --configure / sync-settings can transition
@@ -482,6 +563,31 @@ def post_upgrade_fixups_trixie():
     except:
         log("Post-upgrade: WARNING - could not write fixup done flag")
 
+    # Flag that reboot is needed if still on a pre-trixie kernel. Mirrors the
+    # bookworm reboot-required pattern so UI/admin tooling can detect "trixie
+    # packages installed but old kernel still active". Covers both
+    # bullseye->trixie direct (kernel 5.x) and bookworm->trixie (kernel 6.1.x).
+    running_kernel = platform.release()
+    if not running_kernel.startswith("6.12."):
+        log("")
+        log("=" * 60)
+        log("REBOOT REQUIRED")
+        log("Trixie packages installed but still running kernel %s" % running_kernel)
+        log("Reboot to activate kernel 6.12 and complete the migration.")
+        log("=" * 60)
+        log("")
+        try:
+            with open("/tmp/.trixie-reboot-required", "w") as f:
+                f.write("Trixie upgrade completed, reboot required\n")
+        except:
+            pass
+
+        log("")
+        log("Post-upgrade: scheduling reboot in 1 minute to activate new kernel")
+        log("Post-upgrade: TO CANCEL the auto-reboot run: shutdown -c")
+        log("")
+        cmd_to_log("shutdown -r +1 'Trixie upgrade complete - rebooting to activate kernel. Run shutdown -c to cancel.'")
+
     log("Post-upgrade: Trixie fixups complete")
 
 def protect_untangle_packages_from_autoremove():
@@ -525,6 +631,7 @@ def protect_untangle_packages_from_autoremove():
     # only marks packages that are actually installed; missing packages are
     # silently skipped.
     runtime_tools = [
+        "nftables",          # nft binary used by ut-uvm-update-rules.sh for NFQUEUE divert; if missing the entire userspace inspection pipeline is dead
         "smartmontools",     # smartctl used by ut-upgrade.py check_disk_health
         "wireguard-tools",   # wg, wg-quick for WireGuard VPN userland
         "lsb-release",       # /usr/bin/lsb_release used by various NGFW scripts
