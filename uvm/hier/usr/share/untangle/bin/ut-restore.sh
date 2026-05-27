@@ -11,7 +11,7 @@ WORKING_DIR=""
 TARBALL_FILE=""
 VERSION_FILE=""
 # To support multiple versions, separate with pipe character like:
-ACCEPTED_PREVIOUS_VERSION="17.4"
+ACCEPTED_PREVIOUS_VERSION="17.5"
 
 function debug() {
   if [ "true" == $VERBOSE ]; then
