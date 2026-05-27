@@ -530,4 +530,32 @@ class TunnelVpnTests(NGFWTestCase):
                 os.remove(exploit_marker)
             self._app.setSettings(org_appData)
 
+    def test_090_safecheckparam_import_tunnel_config(self):
+        """TunnelVpnApp.importTunnelConfig(filename: FILE_PATH,
+                                            provider: ALPHANUM, tunnelId: int).
+
+        Both String params carry @SafeCheckParam. Negative cases assert the
+        Jabsorb interceptor rejects shell-injecting payloads BEFORE the
+        method body runs (so no exploit marker is created and no tunnel
+        state is mutated). Positive case uses well-formed values with a
+        nonexistent file — the validator passes; the underlying import then
+        fails for unrelated reasons, which proves validation cleared.
+        """
+        # INVALID — filename violates FILE_PATH (relative path)
+        with pytest.raises(Exception):
+            self._app.importTunnelConfig("tmp/upload.zip", "openvpn", TUNNEL_ID)
+        # INVALID — filename carries shell metachar
+        with pytest.raises(Exception):
+            self._app.importTunnelConfig("/tmp/foo;id.zip", "openvpn", TUNNEL_ID)
+        # INVALID — provider violates ALPHANUM (pipe)
+        with pytest.raises(Exception):
+            self._app.importTunnelConfig("/tmp/upload.zip", "open|vpn", TUNNEL_ID)
+        # VALID-shape — well-formed; file doesn't exist so the underlying
+        # call will error, but that error must NOT be the SafeCheck 490.
+        try:
+            self._app.importTunnelConfig("/tmp/ats-nonexistent-import.zip", "openvpn", TUNNEL_ID)
+        except Exception as e:
+            assert "Invalid value in" not in str(e), \
+                f"validator unexpectedly rejected a well-formed input: {e!r}"
+
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)

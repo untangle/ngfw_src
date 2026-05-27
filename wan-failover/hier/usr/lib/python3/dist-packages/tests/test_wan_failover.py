@@ -419,52 +419,61 @@ class WanFailoverTests(NGFWTestCase):
 
     def test_060_ping_hostname_injection_blocked(self):
         """
-        Verify that shell metacharacters in pingHostname do not execute
-        arbitrary commands. WanTestSettings.pingHostname is a String field
-        that flows into execCommand(). @SafeCheck strips injection constructs.
-        Tests backtick, $(), and semicolon patterns.
+        Verify shell metacharacters in pingHostname are rejected by the
+        fail-fast SafeCheckValidator at the JSON-RPC boundary.
+
+        REWRITTEN for NGFW-15741 failfast: WanTestSettings.pingHostname is
+        annotated @SafeCheck({HOSTNAME, IP_OR_CIDR}). The redesigned validator
+        throws SafeCheckValidationException (JSON-RPC code 490) in
+        preInvokeCallback BEFORE runTest() runs. The previous version of this
+        test expected runTest() to return a result that was then grep'd for
+        an exploit marker; that pattern no longer applies because the call
+        raises before any tester runs.
+
+        Defense layers verified:
+          1. @SafeCheck rejects the payload at the JSON-RPC entry (this test).
+          2. wanFailoverTesterMonitor.runTest uses execCommand(argv) so even
+             if layer 1 were bypassed the shell would not interpret the
+             metacharacters (covered by code review, not exercised here).
         """
         if len(indexOfWans) == 0:
             raise unittest.SkipTest("No WANS to test WAN Failover")
 
         payloads = [
-            ("8.8.8.8`echo PING_BACKTICK`", "PING_BACKTICK"),
-            ("8.8.8.8$(echo PING_SUBSHELL)", "PING_SUBSHELL"),
+            "8.8.8.8`echo PING_BACKTICK`",
+            "8.8.8.8$(echo PING_SUBSHELL)",
+            "8.8.8.8; echo PING_SEMI",
         ]
 
-        failures = []
-        for pingHost, marker in payloads:
+        for pingHost in payloads:
             payload = build_wan_test_payload(indexOfWans[0][0], "ping", pingHost=pingHost)
-            result = self._app.runTest(payload)
-            if result is not None and marker in str(result):
-                failures.append(f"  {marker} found in output (payload: {pingHost!r})")
-
-        assert not failures, \
-            "Injection found in ping test output:\n" + "\n".join(failures)
+            with pytest.raises(Exception):
+                self._app.runTest(payload)
 
     def test_061_http_url_injection_blocked(self):
         """
-        Verify that shell metacharacters in httpUrl do not execute
-        arbitrary commands. WanTestSettings.httpUrl is a String field
-        that flows into execCommand(). @SafeCheck strips injection constructs.
+        Verify shell metacharacters in httpUrl are rejected by the fail-fast
+        SafeCheckValidator at the JSON-RPC boundary.
+
+        REWRITTEN for NGFW-15741 failfast: WanTestSettings.httpUrl is
+        annotated @SafeCheck(SafeType.URL). The redesigned validator throws
+        SafeCheckValidationException (JSON-RPC code 490) in preInvokeCallback
+        BEFORE runTest() runs. Old assertion shape (grep marker in result)
+        no longer applies — the call raises before any tester runs.
         """
         if len(indexOfWans) == 0:
             raise unittest.SkipTest("No WANS to test WAN Failover")
 
         payloads = [
-            ("http://test.untangle.com`echo HTTP_BACKTICK`", "HTTP_BACKTICK"),
-            ("http://test.untangle.com$(echo HTTP_SUBSHELL)", "HTTP_SUBSHELL"),
+            "http://test.untangle.com`echo HTTP_BACKTICK`",
+            "http://test.untangle.com$(echo HTTP_SUBSHELL)",
+            "http://test.untangle.com; echo HTTP_SEMI",
         ]
 
-        failures = []
-        for httpUrl, marker in payloads:
+        for httpUrl in payloads:
             payload = build_wan_test_payload(indexOfWans[0][0], "http", httpURL=httpUrl)
-            result = self._app.runTest(payload)
-            if result is not None and marker in str(result):
-                failures.append(f"  {marker} found in output (payload: {httpUrl!r})")
-
-        assert not failures, \
-            "Injection found in HTTP test output:\n" + "\n".join(failures)
+            with pytest.raises(Exception):
+                self._app.runTest(payload)
 
 
 test_registry.register_module("wan-failover", WanFailoverTests)

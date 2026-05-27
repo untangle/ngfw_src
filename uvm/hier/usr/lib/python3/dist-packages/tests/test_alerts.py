@@ -154,4 +154,31 @@ class AlertTests(NGFWTestCase):
         assert(events != None)
         assert(found)
 
+    def test_080_safecheckparam_email_alert_format_preview(self):
+        """EventManagerImpl.emailAlertFormatPreview(rule, event,
+                                                    subjectTemplate: EMAIL_TEMPLATE,
+                                                    bodyTemplate:    EMAIL_TEMPLATE,
+                                                    convert).
+
+        EMAIL_TEMPLATE permits CR/LF/TAB and ${var} placeholders but rejects
+        every other Cc-class control character (NUL, BEL, ESC). Those would
+        enable SMTP header smuggling at the downstream mailer.
+        """
+        evt_mgr = uvmContext.eventManager()
+        NUL = chr(0x00)
+        BEL = chr(0x07)
+        # INVALID — NUL in subject template
+        with pytest.raises(Exception):
+            evt_mgr.emailAlertFormatPreview(None, None, "Alert " + NUL, "Body OK", False)
+        # INVALID — BEL in body template
+        with pytest.raises(Exception):
+            evt_mgr.emailAlertFormatPreview(None, None, "Subject", "Body " + BEL, False)
+        # VALID — placeholders + newlines + tabs are permitted; this is
+        # read-only (no persistent state change).
+        result = evt_mgr.emailAlertFormatPreview(None, None,
+                                                 "Alert ${type} fired",
+                                                 "Time:\t${time}\nHost:\t${host}",
+                                                 False)
+        assert result is not None
+
 test_registry.register_module("alerts", AlertTests)
