@@ -17,6 +17,7 @@ import com.untangle.uvm.network.UpnpRule;
 import com.untangle.uvm.network.UpnpRuleCondition;
 import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -125,7 +126,10 @@ public class RuleGeneric implements JSONString, Serializable {
         // Transform Action
         if(ruleGeneric.getAction() != null) {
             portForwardRule.setNewDestination(ruleGeneric.getAction().getDnat_address());
-            portForwardRule.setNewPort(StringUtil.getInstance().parseInt(ruleGeneric.getAction().getDnat_port(), 80));
+            String dnatPort = ruleGeneric.getAction().getDnat_port();
+            portForwardRule.setNewPort(StringUtils.isNotBlank(dnatPort)
+                ? StringUtil.getInstance().parseInt(dnatPort, 80)
+                : null);
         }
 
         // Transform Conditions
