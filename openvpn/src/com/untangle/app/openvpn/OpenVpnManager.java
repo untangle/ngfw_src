@@ -815,7 +815,7 @@ public class OpenVpnManager
                 count += 1;
             } catch (Exception exn) {
                 logger.warn("Exception adjusting remote server configuration.", exn);
-                UvmContextFactory.context().execManager().execCommand("cp", List.of("-f",
+                UvmContextFactory.context().execManager().execCommand("/bin/cp", List.of("-f",
                     System.getProperty("uvm.settings.dir") + "/openvpn/remote-servers/" + name + ".conf",
                     "/etc/openvpn/"));
             } finally {

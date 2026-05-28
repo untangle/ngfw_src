@@ -60,7 +60,7 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     // "Any Remote Host" checkbox in the IPsec tunnel editor.
     @SafeCheck(value = {SafeType.HOSTNAME, SafeType.IP_OR_CIDR}, allow = {"%any"})
     private String right;
-    @SafeCheck(SafeType.SIMPLE_TEXT)
+    @SafeCheck(value = SafeType.SIMPLE_TEXT, allow = {"%any"})
     private String rightId;
     @SafeCheck(SafeType.IP_OR_CIDR)
     private String rightSourceIp;
