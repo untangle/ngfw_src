@@ -1,12 +1,19 @@
 """branding_manager tests"""
+import json
 import re
 import unittest
+import urllib.error
+import urllib.request
 import pytest
 
 from tests.common import NGFWTestCase
+import runtests.overrides as overrides
 import runtests.remote_control as remote_control
 import runtests.test_registry as test_registry
 import tests.global_functions as global_functions
+
+Login_username = overrides.get("Login_username", default="admin")
+Login_password = overrides.get("Login_password", default="passwd")
 
 app = None
 appWeb = None
@@ -134,6 +141,42 @@ class BrandingManagerTests(NGFWTestCase):
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html</b> and<br/>multiple<br/>lines.*', re.DOTALL|re.MULTILINE)
         assert(not re.match(myRegex, result))
         
+    def test_129_logo_upload_zip_extension_blocked(self):
+        """
+        Verify the v1 upload servlet's per-handler extension allowlist drops a
+        wrong-extension upload.
+
+        Posts a logo upload with filename='evil.zip'. The Logo handler's
+        allowlist is {gif,png,jpg,jpeg}, so SafeUpload.safeUploadName collapses
+        the basename to 'upload' (no extension survives). The handler's
+        endsWith() checks then fail and it throws
+        "Branding logo extension must be one of: .gif, .jpeg, .jpg, .png".
+        """
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_multipart_body(
+            "logo", "", b"x" * 16, filename="evil.zip")
+
+        req = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        response_json = json.loads(response_text)
+        assert response_json.get("success") == False, \
+            f"Expected logo .zip rejected, got: {response_text}"
+        msg = response_json.get("msg") or ""
+        assert "extension must be one of" in msg, \
+            f"Expected LogoUploadHandler extension rejection, got: {msg}"
+        msg_upper = msg.upper()
+        assert all(ext in msg_upper for ext in (".GIF", ".PNG", ".JPG", ".JPEG")), \
+            f"Expected allowlist {{gif,png,jpg,jpeg}} in rejection, got: {msg}"
+
     @classmethod
     def final_extra_tear_down(cls):
         global appWeb
