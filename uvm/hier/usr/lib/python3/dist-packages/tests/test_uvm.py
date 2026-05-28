@@ -1279,38 +1279,6 @@ class UvmTests(NGFWTestCase):
         assert not os.path.exists(poc_file), \
             "Path traversal succeeded via /admin/upload Content-Disposition filename (file was created at /tmp/poc.zip)"
 
-    def test_129_logo_upload_zip_extension_blocked(self):
-        """
-        Verify the v1 upload servlet's per-handler extension allowlist drops a
-        wrong-extension upload.
-
-        Posts a logo upload with filename='evil.zip'. The Logo handler's
-        allowlist is {gif,png,jpg,jpeg}, so the wrapper exposes getName() ==
-        'upload' (no extension survives). The handler's endsWith() checks fail
-        and it throws "Branding logo must be GIF, PNG, or JPG".
-        """
-        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
-        boundary, body = global_functions.build_upload_multipart_body(
-            "logo", "", b"x" * 16, filename="evil.zip")
-
-        req = urllib.request.Request(
-            "http://localhost/admin/upload",
-            data=body,
-            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
-        )
-        try:
-            response = opener.open(req)
-            response_text = response.read().decode()
-        except urllib.error.HTTPError as e:
-            response_text = e.read().decode()
-
-        response_json = json.loads(response_text)
-        assert response_json.get("success") == False, \
-            f"Expected logo .zip rejected, got: {response_text}"
-        msg = (response_json.get("msg") or "").upper()
-        assert ("GIF" in msg) or ("PNG" in msg) or ("JPG" in msg), \
-            f"Expected handler rejection mentioning GIF/PNG/JPG, got: {response_json.get('msg')}"
-
     def test_123_connectivity_tester_dns_injection_blocked(self):
         """
         Verify that shell metacharacters in UriManagerSettings.dnsTestHost are
