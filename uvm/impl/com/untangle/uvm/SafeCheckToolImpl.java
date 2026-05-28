@@ -4,10 +4,6 @@
 
 package com.untangle.uvm;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import com.untangle.uvm.util.SafeCheckValidationException;
 import com.untangle.uvm.util.SafeCheckValidator;
 import com.untangle.uvm.util.SafeType;
@@ -21,7 +17,6 @@ public class SafeCheckToolImpl implements SafeCheckTool
 {
     private static final String OK = "OK";
     private static final String CONTEXT_LABEL = "safeCheckTool.validate";
-    private static final String UID_FILE = "/usr/share/untangle/conf/uid";
 
     /**
      * Constructor
@@ -76,16 +71,6 @@ public class SafeCheckToolImpl implements SafeCheckTool
             return "REJECTED: " + ex.getMessage();
         } catch (RuntimeException ex) {
             return "REJECTED: validator error: " + ex.getMessage();
-        }
-    }
-
-    @Override
-    public String getUid()
-    {
-        try {
-            return new String(Files.readAllBytes(Paths.get(UID_FILE))).trim();
-        } catch (IOException | RuntimeException ex) {
-            return "";
         }
     }
 }

@@ -475,19 +475,6 @@ class RpcValidator:
     def validate(self, value: str, safetypes: List[str], allow: List[str]) -> str:
         return self.tool.validate(value, safetypes, allow)
 
-    def get_uid(self) -> str:
-        """Return the appliance UID via safeCheckTool.getUid() RPC.
-
-        Returns "" on any error (missing method, RPC failure, empty file
-        on the box). Caller decides whether to error out or fall back to
-        --uid in that case.
-        """
-        try:
-            return self.tool.getUid() or ""
-        except Exception as ex:
-            logger.warning("safeCheckTool.getUid() RPC failed: %s", ex)
-            return ""
-
 
 def build_rpc_validator(ngfw: str, username: Optional[str], password: Optional[str],
                         scheme: str):
@@ -984,8 +971,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         "      --remove-after --ngfw 192.168.56.5 \\\n"
         "      --username admin --password 'admin123'\n"
         "\n"
-        "  # Live mode — uid auto-read from the box via safeCheckTool.getUid():\n"
-        "  %(prog)s --live --ngfw 192.168.56.5 \\\n"
+        "  # Live mode — uid must be passed explicitly:\n"
+        "  %(prog)s --live --uid <uid> --ngfw 192.168.56.5 \\\n"
         "      --username admin --password 'admin123'\n"
         "\n"
         "  # Dump the @SafeCheck inventory (offline, no NGFW needed):\n"
@@ -1042,11 +1029,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                         "clear stale state)")
     p.add_argument("--uid", default=None, metavar="UID",
                    help="appliance UID to key rejections under. Required "
-                        "for --file. For --settings-dir, used only if "
-                        "<root>/conf/uid is missing. Ignored for --dir "
-                        "(per-file uid is derived from filename). For "
-                        "--live, used only if the box's getUid() returns "
-                        "an empty string.")
+                        "for --file and --live. For --settings-dir, used "
+                        "only if <root>/conf/uid is missing. Ignored for "
+                        "--dir (per-file uid is derived from filename).")
     p.add_argument("--remove-after", action="store_true",
                    help="ONLY valid with --settings-dir. After a successful "
                         "sweep, recursively remove the parent untangle "
@@ -1125,18 +1110,14 @@ def main(argv: Optional[List[str]] = None) -> int:
                 f"pulls conf/uid) or pass --uid <value> explicitly.")
         sweep_settings_dir(args.settings_dir, uid, inventory, validator, rows)
     elif args.live:
-        # Reuse the same uvm context build_rpc_validator authenticated to,
-        # then resolve uid via the RPC.
+        if not args.uid:
+            raise SystemExit(
+                "--live requires --uid <value> (the appliance UID from "
+                "/usr/share/untangle/conf/uid on the target box).")
         from uvm import Uvm  # type: ignore
         ctx = Uvm().getUvmContext(hostname=args.ngfw, username=args.username,
                                   password=args.password, timeout=240, scheme=args.scheme)
-        uid = validator.get_uid() or args.uid
-        if not uid:
-            raise SystemExit(
-                "--live: safeCheckTool.getUid() returned empty and --uid was "
-                "not provided. Either ensure /usr/share/untangle/conf/uid is "
-                "populated on the box or pass --uid <value>.")
-        sweep_live(ctx, uid, validator, inventory, rows)
+        sweep_live(ctx, args.uid, validator, inventory, rows)
 
     total_after, _cleared, updated = merge_and_write(out, rows)
     total_values = sum(r.total_count for r in rows.values())

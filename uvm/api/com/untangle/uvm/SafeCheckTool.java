@@ -41,15 +41,4 @@ public interface SafeCheckTool
      * @return {@code "OK"} if the value is accepted, {@code "REJECTED: <reason>"} otherwise
      */
     String validate(String value, String[] safeTypeNames, String[] allow);
-
-    /**
-     * Return the appliance UID from {@code /usr/share/untangle/conf/uid}.
-     * Used by the safecheck-sweep tooling to key per-appliance rejection
-     * findings in its persistent CSV without requiring the operator to
-     * pass the uid as a CLI flag.
-     *
-     * @return the trimmed uid string, or empty string if the file is
-     *         missing or unreadable (never throws to the RPC caller).
-     */
-    String getUid();
 }
