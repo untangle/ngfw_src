@@ -157,6 +157,16 @@ public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
     }
 
     /**
+     * Get SafeCheckTool
+     * @return SafeCheckTool
+     */
+    @Override
+    public SafeCheckTool safeCheckTool()
+    {
+        return UvmContextFactory.context().safeCheckTool();
+    }
+
+    /**
      * Get AppManager
      * @return AppManager
      */

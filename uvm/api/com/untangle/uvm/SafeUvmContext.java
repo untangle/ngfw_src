@@ -109,6 +109,14 @@ public interface SafeUvmContext
     DaemonManager daemonManager();
 
     /**
+     * Get the SafeCheckTool singleton for this instance.
+     * Test-only RPC bridge exposing SafeCheckValidator for offline sweep tooling.
+     *
+     * @return the singleton
+     */
+    SafeCheckTool safeCheckTool();
+
+    /**
      * The LocalDirectory for managing/authenticating users
      *
      * @return the local directory

@@ -107,6 +107,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private UriManagerImpl uriManager;
     private AuthenticationManagerImpl authenticationManager;
     private DaemonManagerImpl daemonManager;
+
+    private SafeCheckToolImpl safeCheckTool;
     private HostsFileManagerImpl hostsFileManager;
     private BrandingManagerImpl brandingManager;
     private SkinManagerImpl skinManager;
@@ -261,6 +263,15 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     public DaemonManager daemonManager()
     {
         return this.daemonManager;
+    }
+
+    /**
+     * Get SafeCheckTool
+     * @return SafeCheckTool
+     */
+    public SafeCheckTool safeCheckTool()
+    {
+        return this.safeCheckTool;
     }
 
     /**
@@ -1568,6 +1579,8 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
         this.geographyManager = new GeographyManagerImpl();
 
         this.daemonManager = new DaemonManagerImpl();
+
+        this.safeCheckTool = new SafeCheckToolImpl();
 
         this.hostsFileManager = new HostsFileManagerImpl();
 
