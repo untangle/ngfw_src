@@ -213,6 +213,23 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
+     * Get directory connector settings (V2 API).
+     * @return DirectoryConnectorSettings
+     */
+    public DirectoryConnectorSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
+     * Set directory connector settings (V2 API).
+     * @param newSettings
+     *      New settings to configure.
+     */
+    public void setSettingsV2(final DirectoryConnectorSettings newSettings) {
+        this.setSettings(newSettings);
+    }
+
+    /**
      * Set directory connector settings.
      *
      * @param newSettings
