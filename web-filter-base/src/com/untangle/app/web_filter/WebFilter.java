@@ -40,14 +40,14 @@ public interface WebFilter extends App
     /**
      * Get the settings in V2 (generic) format for the Vue UI.
      *
-     * @return {@link WebFilterSettingsGeneric} populated from the current V1 settings
+     * @return WebFilterSettingsGeneric
      */
     WebFilterSettingsGeneric getSettingsV2();
 
     /**
-     * Set the settings from a V2 (generic) payload coming from the Vue UI.
+     * Set the settings from a V2 (generic) format payload coming from the Vue UI.
      *
-     * @param newSettings V2 generic settings from the Vue UI
+     * @param newSettings WebFilterSettingsGeneric
      */
     void setSettingsV2(WebFilterSettingsGeneric newSettings);
 

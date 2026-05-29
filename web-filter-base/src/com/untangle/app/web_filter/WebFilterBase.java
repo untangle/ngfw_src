@@ -565,14 +565,9 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     }
 
     /**
-     * Get the application settings in V2 (generic) format for the Vue UI.
+     * Get the settings in V2 (generic) format for the Vue UI.
      *
-     * <p>Delegates to {@link WebFilterSettings#transformWebFilterSettingsToGeneric()}
-     * which copies all scalar fields and converts the {@code filterRules} list
-     * from {@link WebFilterRule} to the shared {@link com.untangle.uvm.generic.RuleGeneric}
-     * shape.  Returns an empty generic settings object if no settings are loaded yet.
-     *
-     * @return {@link WebFilterSettingsGeneric} populated from the current V1 settings
+     * @return WebFilterSettingsGeneric
      */
     public WebFilterSettingsGeneric getSettingsV2() {
         if (this.getSettings() != null)
@@ -581,17 +576,11 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     }
 
     /**
-     * Set the application settings from a V2 (generic) payload coming from
-     * the Vue UI.
+     * Set the settings from a V2 (generic) format payload coming from the Vue UI.
+     * Deep-clones the current V1 settings so V1-only fields (version,
+     * blockedMimeTypes, blockedExtensions) are preserved.
      *
-     * <p>Deep-clones the current V1 settings so V1-only fields are preserved through
-     * the round-trip. The clone is then mutated by
-     * {@link WebFilterSettingsGeneric#transformGenericToWebFilterSettings} and
-     * passed to the existing {@link #setSettings(WebFilterSettings)} which
-     * handles ID reassignment, flagged/blocked enforcement, persistence, and
-     * decision-engine reconfiguration.
-     *
-     * @param newSettings V2 generic settings payload from the Vue UI
+     * @param newSettings WebFilterSettingsGeneric
      */
     public void setSettingsV2(WebFilterSettingsGeneric newSettings)
     {

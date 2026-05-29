@@ -177,16 +177,9 @@ public class WebFilterSettings implements Serializable, JSONString
 
     /**
      * Transforms this V1 settings object into its generic V2 representation
-     * for the Vue UI.
+     * for the Vue UI. Used by getSettingsV2().
      *
-     * <p>All scalar fields are copied directly. The {@code filterRules} list
-     * is structurally transformed from {@link WebFilterRule} to
-     * {@link com.untangle.uvm.generic.RuleGeneric} via
-     * {@link WebFilterRule#transformWebFilterRulesToGeneric}.  GenericRule-typed
-     * lists (passedClients, passedUrls, blockedUrls, categories, searchTerms)
-     * are assigned directly — they share the same type in both V1 and V2.
-     *
-     * @return a new {@link WebFilterSettingsGeneric} populated from this V1 object
+     * @return WebFilterSettingsGeneric populated from this V1 object
      */
     public WebFilterSettingsGeneric transformWebFilterSettingsToGeneric()
     {

@@ -34,7 +34,7 @@ public class RuleActionGeneric implements JSONString, Serializable {
     public Type getType() { return type; }
     public void setType(Type type) { this.type = type; }
 
-    // Required for Web Filter Rules — indicates the rule should flag matching traffic
+    // Required for Web Filter Rules indicates the rule should flag matching traffic
     private Boolean flagged;
 
     public Boolean getFlagged() { return flagged; }

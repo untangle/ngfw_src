@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package com.untangle.app.web_filter.generic;
 
 import java.io.Serializable;
@@ -13,15 +16,9 @@ import org.json.JSONString;
 
 /**
  * Generic (V2) settings for the Web Filter app, consumed by the Vue UI.
- *
- * <p>All scalar/list fields mirror their V1 {@link WebFilterSettings} counterparts
- * with the same names and types, so they can be copied without translation.
- * The sole structural transformation is {@code filterRules}: the V1
- * {@link WebFilterRule} list is converted to/from the shared
- * {@link RuleGeneric} shape defined by the generic API contract.
- *
- * <p>V1-only fields ({@code version}, {@code blockedMimeTypes},
- * {@code blockedExtensions}) are intentionally omitted here.
+ * Keeps V1 field names where structurally identical; transforms only the
+ * filterRules list into the shared RuleGeneric shape.
+ * V1-only fields (version, blockedMimeTypes, blockedExtensions) are omitted.
  */
 @SuppressWarnings("serial")
 public class WebFilterSettingsGeneric implements Serializable, JSONString
@@ -144,23 +141,12 @@ public class WebFilterSettingsGeneric implements Serializable, JSONString
     }
 
     /**
-     * Transforms this V2 generic settings object into V1 by mutating the
-     * passed-in (deep-cloned) {@link WebFilterSettings} object.
+     * Transforms this V2 settings object into V1 by mutating the passed-in
+     * (deep-cloned) V1 settings object. Preserves V1-only fields like
+     * version, blockedMimeTypes, blockedExtensions.
      *
-     * <p>All scalar fields are copied directly. The {@code filterRules} list
-     * is structurally transformed from {@link RuleGeneric} back to
-     * {@link WebFilterRule}, preserving existing V1 rule objects by ruleId
-     * and removing any rules that were deleted in the UI.  GenericRule-typed
-     * lists (passedClients, passedUrls, blockedUrls, categories, searchTerms)
-     * are assigned directly — they share the same type in both V1 and V2.
-     *
-     * <p>V1-only fields ({@code version}, {@code blockedMimeTypes},
-     * {@code blockedExtensions}) are intentionally untouched so they survive
-     * the round-trip through the Vue UI unchanged.
-     *
-     * @param v1 deep-cloned V1 settings to mutate in place; a fresh instance
-     *           is created if {@code null}
-     * @return the same {@code v1} reference populated from this V2 object
+     * @param v1 deep-cloned V1 settings (mutated in place)
+     * @return the same v1 reference, populated from this V2 object
      */
     public WebFilterSettings transformGenericToWebFilterSettings(WebFilterSettings v1)
     {

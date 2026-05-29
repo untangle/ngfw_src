@@ -75,21 +75,10 @@ public class WebFilterRule implements JSONString, Serializable
     }
 
     /**
-     * Transforms a list of V1 {@link WebFilterRule} objects into the generic
-     * {@link RuleGeneric} shape consumed by the Vue UI (V2 API).
+     * Transforms a list of WebFilterRule into the generic RuleGeneric form for
+     * the V2 API. Used by getSettingsV2().
      *
-     * <p>Action type mapping:
-     * <ul>
-     *   <li>{@code blocked=true}  &rarr; {@link RuleActionGeneric.Type#REJECT},
-     *       {@code action.flagged=true} (blocked implies flagged)</li>
-     *   <li>{@code blocked=false} &rarr; {@link RuleActionGeneric.Type#ACCEPT},
-     *       {@code action.flagged} reflects the V1 {@code flagged} value</li>
-     * </ul>
-     * The {@code flagged} property is carried as a dedicated field on
-     * {@link RuleActionGeneric} rather than being encoded in the action type,
-     * keeping it independent and directly readable by the Vue UI.
-     *
-     * @param v1Rules V1 filter rule list; returns an empty list if {@code null}
+     * @param v1Rules list of V1 WebFilterRule objects
      * @return LinkedList of RuleGeneric
      */
     public static LinkedList<RuleGeneric> transformWebFilterRulesToGeneric(List<WebFilterRule> v1Rules)
@@ -103,15 +92,7 @@ public class WebFilterRule implements JSONString, Serializable
     }
 
     /**
-     * Transforms a single V1 {@link WebFilterRule} into its {@link RuleGeneric}
-     * representation for the V2 API.
-     *
-     * <p>Action type is {@code REJECT} when the rule blocks traffic, {@code ACCEPT}
-     * otherwise. The {@code flagged} property on the action carries the V1
-     * {@code flagged} boolean independently of the block/pass decision.
-     *
-     * @param v1 the V1 rule to convert
-     * @return a new RuleGeneric populated from {@code v1}
+     * Transforms a single WebFilterRule into its RuleGeneric representation.
      */
     private static RuleGeneric toGeneric(WebFilterRule v1)
     {
@@ -139,25 +120,13 @@ public class WebFilterRule implements JSONString, Serializable
     }
 
     /**
-     * Transforms a list of V2 {@link RuleGeneric} objects back into V1
-     * {@link WebFilterRule} objects, preserving existing V1 rule state by
-     * ruleId and removing orphaned rules that were deleted in the UI.
+     * Transforms a list of generic RuleGeneric into V1 WebFilterRule, preserving
+     * existing V1 rule objects (matched by ruleId) and removing orphaned rules.
+     * Used by setSettingsV2().
      *
-     * <p>Action type mapping (reverse of {@link #transformWebFilterRulesToGeneric}):
-     * <ul>
-     *   <li>{@link RuleActionGeneric.Type#REJECT} &rarr; {@code blocked=true}</li>
-     *   <li>{@link RuleActionGeneric.Type#ACCEPT} &rarr; {@code blocked=false}</li>
-     *   <li>{@code action.flagged}                &rarr; {@code flagged} (read directly)</li>
-     * </ul>
-     * Note: {@code _setSettings()} enforces {@code flagged=true} whenever
-     * {@code blocked=true}, so that invariant is guaranteed on save regardless
-     * of the value sent from the UI.
-     *
-     * <p>New rules sent from the UI carry a UUID string as their ruleId;
-     * {@code _setSettings()} re-assigns sequential integer IDs on save.
-     *
-     * @param genRules    V2 rule list from the Vue UI
-     * @param legacyRules current V1 rule list used for orphan detection and state preservation
+     * @param genRules    list of V2 RuleGeneric objects from the UI
+     * @param legacyRules current V1 WebFilterRule list (to preserve internal state
+     *                    on update and detect deletions)
      * @return list of updated/preserved V1 WebFilterRule objects
      */
     public static List<WebFilterRule> transformGenericToWebFilterRules(
@@ -184,19 +153,8 @@ public class WebFilterRule implements JSONString, Serializable
     }
 
     /**
-     * Transforms a single {@link RuleGeneric} back into a V1
-     * {@link WebFilterRule}, mutating the passed-in existing rule (or
-     * creating a new one if {@code null}).
-     *
-     * <p>{@code blocked} is derived from the action type ({@code REJECT} → true,
-     * {@code ACCEPT} → false). {@code flagged} is read directly from
-     * {@link RuleActionGeneric#getFlagged()}; if absent it defaults to
-     * {@code false} ({@code _setSettings()} will force it to {@code true}
-     * whenever {@code blocked} is {@code true}).
-     *
-     * @param g        the V2 generic rule from the UI
-     * @param existing the matching V1 rule to update, or {@code null} for a new rule
-     * @return the populated V1 WebFilterRule
+     * Transforms a single RuleGeneric back into a V1 WebFilterRule, mutating the
+     * passed-in existing rule (or creating a new one if null).
      */
     private static WebFilterRule toLegacy(RuleGeneric g, WebFilterRule existing)
     {
