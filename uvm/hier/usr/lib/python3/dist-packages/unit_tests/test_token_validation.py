@@ -11,8 +11,11 @@ class TestTokenValid(unittest.TestCase):
     def __do_token_run(self, isValid):
         token_value = 'token'
         uid = 'uid'
-        with patch('uvm.login_tools.getuid') as mock_getuid:
+        auth_request_token = 'TEST-AUTH-REQUEST-TOKEN'
+        with patch('uvm.login_tools.getuid') as mock_getuid, \
+                patch('uvm.login_tools.get_auth_request_token') as mock_get_token:
             mock_getuid.return_value = uid
+            mock_get_token.return_value = auth_request_token
             if isValid:
                 self.assertTrue(login_tools.valid_token(token_value))
             else:
@@ -25,7 +28,7 @@ class TestTokenValid(unittest.TestCase):
             headers={
                 "Content-Type": 'application/json',
                 'Accept': 'application/json',
-                'AuthRequest': login_tools.AUTH_REQUEST_HEADER_TOKEN})
+                'AuthRequest': auth_request_token})
 
     @patch('requests.post')
     def test_token_validity(self, mock_post):

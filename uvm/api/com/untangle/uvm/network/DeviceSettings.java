@@ -8,12 +8,16 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * Device settings.
  */
 @SuppressWarnings("serial")
 public class DeviceSettings implements Serializable, JSONString
 {
+    @SafeCheck(SafeType.INTERFACE)
     private String deviceName;
 
     public static enum Duplex { AUTO,

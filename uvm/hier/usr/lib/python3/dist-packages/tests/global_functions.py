@@ -1,4 +1,5 @@
 """ngfw test utilities"""
+import base64
 import subprocess
 import time
 import re
@@ -31,9 +32,9 @@ RADIUS_SERVER = "10.112.56.28"
 RADIUS_SERVER_PASSWORD = "chakas"
 RADIUS_USER = "normal"
 RADIUS_PASSWORD = "passwd"
-AD_SERVER = "10.112.56.46"
-AD_ADMIN = "ATSadmin"
-AD_PASSWORD = "passwd"
+AD_SERVER = "10.112.12.149"
+AD_ADMIN = "administrator"
+AD_PASSWORD = "Arista1234"
 AD_DOMAIN = "adtest.adtesting.int"
 AD_USER = "user_28004"
 TEST_SERVER_HOST = overrides.get("TEST_SERVER_HOST", default='test.untangle.com')
@@ -1920,4 +1921,76 @@ def restart_apache():
         time.sleep(5)
     except subprocess.CalledProcessError:
         print("Failed to restart Apache")
+
+def build_admin_http_opener(username="admin", password="passwd"):
+    """
+    Return an authenticated urllib opener for the local admin interface.
+    Performs the /auth/login handshake and stores the session cookie.
+    """
+    import http.cookiejar
+    cookie_jar = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
+    login_data = urllib.parse.urlencode({
+        "fragment": "",
+        "username": username,
+        "password": password,
+    }).encode()
+    try:
+        opener.open("http://localhost/auth/login?url=/admin&realm=Administrator", login_data)
+    except urllib.error.HTTPError:
+        pass
+    return opener
+
+def build_upload_multipart_body(type_field, argument, file_bytes, filename="upload.zip"):
+    """
+    Build a multipart/form-data body for /admin/upload (binary file field).
+    Returns (boundary, body_bytes).
+    """
+    boundary = "atsboundary7654321"
+    body = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="type"\r\n\r\n{type_field}\r\n'
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="argument"\r\n\r\n{argument}\r\n'
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="file1"; filename="{filename}"\r\n'
+        f"Content-Type: application/octet-stream\r\n\r\n"
+    ).encode() + file_bytes + f"\r\n--{boundary}--\r\n".encode()
+    return boundary, body
+
+def build_upload_v2_multipart_body(type_field, argument, file_bytes):
+    """
+    Build a multipart/form-data body for /admin/v2/upload (base64 data-URL file field).
+    Returns (boundary, body_bytes).
+    """
+    boundary = "atsboundary7654321"
+    b64_content = base64.b64encode(file_bytes).decode()
+    file_value = f"data:application/octet-stream;base64,{b64_content}"
+    body = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="type"\r\n\r\n{type_field}\r\n'
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="argument"\r\n\r\n{argument}\r\n'
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="file"\r\n\r\n{file_value}\r\n'
+        f"--{boundary}--\r\n"
+    ).encode()
+    return boundary, body
+
+def build_upload_v2_multipart_body_with_args(type_field, args, file_bytes):
+    """
+    Build a multipart/form-data body for /admin/v2/upload with an arbitrary
+    args dict (instead of the hardcoded 'argument' field used by the older
+    helper). The 'type' field is added automatically and need not be in args.
+    Returns (boundary, body_bytes).
+    """
+    boundary = "atsboundary7654321"
+    b64_content = base64.b64encode(file_bytes).decode()
+    file_value = f"data:application/octet-stream;base64,{b64_content}"
+    parts = [f'--{boundary}\r\nContent-Disposition: form-data; name="type"\r\n\r\n{type_field}\r\n']
+    for key, value in args.items():
+        parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{key}"\r\n\r\n{value}\r\n')
+    parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="file"\r\n\r\n{file_value}\r\n')
+    parts.append(f'--{boundary}--\r\n')
+    return boundary, "".join(parts).encode()
 

@@ -5,6 +5,8 @@ package com.untangle.uvm.network.generic;
 
 import com.untangle.uvm.app.IPMaskedAddress;
 import com.untangle.uvm.network.StaticRoute;
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -25,6 +27,7 @@ public class StaticRouteGeneric implements JSONString, Serializable {
     private Integer ruleId;
     private String description;
     private String network;
+    @SafeCheck({SafeType.IP_OR_CIDR, SafeType.INTERFACE})
     private String nextHop;
 
     public StaticRouteGeneric() {}

@@ -14,11 +14,17 @@ public class RadiusSettings implements java.io.Serializable, JSONString
 {
     private boolean isEnabled = false;
     private Long id;
+    // No @SafeCheck on server/sharedSecret: sinks are /etc/radiusclient/servers,
+    // /etc/radiusclient/radiusclient.conf, and /etc/strongswan.radius - all
+    // auth-data config formats with no shell-exec directives. Not RCE-class.
     private String server;
     private int authPort = 1812;
     private int acctPort = 1813;
     private String sharedSecret;
-    
+
+    // No @SafeCheck on authenticationMethod: DirectoryConnectorApp.java:731
+    // does switch{case "PAP"/"CHAP"/"MSCHAPV1"/"MSCHAPV2"} - value is never
+    // concatenated to any sink. Not RCE-class.
     //public enum AuthenticationMethod { CLEARTEXT, PAP, CHAP, MSCHAPV1, MSCHAPV2 };
     private String authenticationMethod = "PAP";
 

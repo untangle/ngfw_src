@@ -358,21 +358,25 @@ public class NetworkManagerImpl implements NetworkManager
         }
         
         // just bring the interface up and down 
-        result = UvmContextFactory.context().execManager().exec( "ifdown " + devName );
-        try {
-            String[] lines = result.getOutput().split("\\r?\\n");
-            logger.info("ifdown {}: ", devName );
-            for ( String line : lines )
-                logger.info("ifdown: {}", line);
-        } catch (Exception e) {}
+        result = UvmContextFactory.context().execManager().execCommand("/sbin/ifdown", List.of(devName));
+        if (result != null) {
+            try {
+                String[] lines = result.getOutput().split("\\r?\\n");
+                logger.info("ifdown {}: ", devName );
+                for ( String line : lines )
+                    logger.info("ifdown: {}", line);
+            } catch (Exception e) {}
+        }
 
-        result = UvmContextFactory.context().execManager().exec( "ifup " + devName );
-        try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info("ifup {}: ", devName );
-            for ( String line : lines )
-                logger.info("ifup: {}", line);
-        } catch (Exception e) {}
+        result = UvmContextFactory.context().execManager().execCommand("/sbin/ifup", List.of(devName));
+        if (result != null) {
+            try {
+                String lines[] = result.getOutput().split("\\r?\\n");
+                logger.info("ifup {}: ", devName );
+                for ( String line : lines )
+                    logger.info("ifup: {}", line);
+            } catch (Exception e) {}
+        }
     }
         
     /**
@@ -858,13 +862,15 @@ public class NetworkManagerImpl implements NetworkManager
             return false;
         }
 
-        String command = "ip add list " + intfSettings.getSymbolicDev() + " | grep '" + vrrpAddress.getHostAddress() + "/'";
-        int retCode = UvmContextFactory.context().execManager().execResult( command );
-
-        if ( retCode == 0 )
-            return true;
-        else
-            return false;
+        String output = UvmContextFactory.context().execManager().execCommand(
+            "/sbin/ip", List.of("add", "list", intfSettings.getSymbolicDev())
+        ).getOutput();
+        String needle = vrrpAddress.getHostAddress() + "/";
+        if (output == null) return false;
+        for (String line : output.split("\\R")) {
+            if (line.contains(needle)) return true;
+        }
+        return false;
     }
         
     /**
@@ -909,12 +915,13 @@ public class NetworkManagerImpl implements NetworkManager
     @SuppressWarnings("unchecked") //JSON
     public List<DeviceStatus> getDeviceStatus( )
     {
-        String argStr = "";
+        List<String> args = new ArrayList<>();
         for (InterfaceSettings intfSettings : this.networkSettings.getInterfaces()) {
-            argStr = argStr + " " + intfSettings.getPhysicalDev() + " ";
+            args.add(intfSettings.getPhysicalDev());
         }
 
-        String output = UvmContextFactory.context().execManager().execOutput(deviceStatusScript + argStr);
+        ExecManagerResult execResult = UvmContextFactory.context().execManager().execCommand(deviceStatusScript, args);
+        String output = execResult != null ? execResult.getOutput() : "";
         List<DeviceStatus> entryList = null;
         try {
             //expected Java class type
@@ -3386,7 +3393,8 @@ public class NetworkManagerImpl implements NetworkManager
             );
         }
     
-        return execManager.execCommand(statusScript, args).getOutput();
+        ExecManagerResult execResult = execManager.execCommand(statusScript, args);
+        return execResult != null ? execResult.getOutput() : "";
     }
     
     /**
@@ -3481,7 +3489,8 @@ public class NetworkManagerImpl implements NetworkManager
     public String getLogFile(String device)
     {
         logger.debug("hostapd.log getLogFile()");
-        return UvmContextFactory.context().execManager().execOutput(String.format("%s %s", GET_LOGFILE_SCRIPT, device));
+        ExecManagerResult execResult = UvmContextFactory.context().execManager().execCommand(GET_LOGFILE_SCRIPT, List.of(device));
+        return execResult != null ? execResult.getOutput() : "";
     }
 
     /**

@@ -3,6 +3,8 @@
  */
 package com.untangle.uvm.network;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.Type;
 import com.untangle.uvm.network.generic.InterfaceSettingsGeneric.V4Alias;
@@ -39,9 +41,13 @@ public class InterfaceSettings implements Serializable, JSONString
     private int     interfaceId; /* the ID of the physical interface (1-254) */
     private String  name; /* human name: ie External, Internal, Wireless */
 
+    @SafeCheck(SafeType.INTERFACE)
     private String  physicalDev; /* physical interface name: eth0, etc */
+    @SafeCheck(SafeType.INTERFACE)
     private String  systemDev; /* iptables interface name: eth0, eth0:0, eth0.1, etc */
+    @SafeCheck(SafeType.INTERFACE)
     private String  symbolicDev; /* symbolic interface name: eth0, eth0:0, eth0.1, br.eth0 etc */
+    @SafeCheck(SafeType.INTERFACE)
     private String  imqDev; /* IMQ device name: imq0, imq1, etc (only applies to WANs) */
 
     private Boolean hidden = null; /* Is this interface hidden? null means false */
@@ -78,8 +84,12 @@ public class InterfaceSettings implements Serializable, JSONString
     private List<InterfaceAlias> v4Aliases = new LinkedList<>();
     private List<InterfaceAlias> v6Aliases = new LinkedList<>();
     
+    @SafeCheck(SafeType.INTERFACE)
     private String      v4PPPoERootDev; /* The PPPoE root device (the device ppp is based on)  */
+    @SafeCheck(SafeType.ALPHANUM)
     private String      v4PPPoEUsername; /* PPPoE Username */
+    // No @SafeCheck: pap-secrets (the only sink) is auth-data only - pppd
+    // parses but never execs values. Not RCE-class.
     private String      v4PPPoEPassword; /* PPPoE Password */
     private Boolean     v4PPPoEUsePeerDns; /* If the DNS should be determined via PPP */
     private InetAddress v4PPPoEDns1; /* the dns1  of this interface if configured static */
@@ -109,6 +119,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private Integer dhcpLeaseDuration; /* DHCP lease duration in seconds */
     private InetAddress dhcpGatewayOverride; /* DHCP gateway override, if null defaults to this interface's IP */
     private Integer     dhcpPrefixOverride; /* DHCP netmask override, if null defaults to this interface's netmask */
+    @SafeCheck(SafeType.IP_OR_CIDR_LIST)
     private String dhcpDnsOverride; /* DHCP DNS override, if null defaults to this interface's IP */
     private List<DhcpOption> dhcpOptions; /* DHCP dnsmasq options */
 
@@ -125,6 +136,8 @@ public class InterfaceSettings implements Serializable, JSONString
     private Integer vrrpPriority; /* VRRP priority 1-255, highest priority is master */
     private List<InterfaceAlias> vrrpAliases = new LinkedList<>();
 
+    // No @SafeCheck on wireless* fields: hostapd.conf and wpa_supplicant.conf
+    // (the only sinks) have no shell-exec directives. Not RCE-class.
     private String wirelessSsid = null;
     public static enum WirelessEncryption { NONE, WPA1, WPA12, WPA2 };
     private WirelessEncryption wirelessEncryption = null;

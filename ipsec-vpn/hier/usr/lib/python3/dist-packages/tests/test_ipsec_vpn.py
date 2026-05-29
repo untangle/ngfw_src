@@ -23,7 +23,7 @@ L2TP_SERVER_HOSTS = overrides.get("L2TP_SERVER_HOSTS", default=
     ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
     "10.112.56.91","10.112.56.94","10.112.56.57","10.112.56.58","10.112.56.59"]
 )
-L2TP_CLIENT_HOST = overrides.get("L2TP_CLIENT_HOST", default="10.112.56.84")  # Windows 10 using builtin OpenSSH
+L2TP_CLIENT_HOST = overrides.get("L2TP_CLIENT_HOST", default="10.112.12.155")  # Windows 10 using builtin OpenSSH
 L2TP_ALIAS_IP = overrides.get("L2TP_ALIAS_IP", default="10.112.56.200")
 L2TP_LOCAL_USER = overrides.get("L2TP_LOCAL_USER", default="test")
 L2TP_LOCAL_PASSWORD = overrides.get("L2TP_LOCAL_PASSWORD", default="passwd")
@@ -34,7 +34,7 @@ IPSEC_HOST_LAN_IP = overrides.get("IPSEC_HOST_LAN_IP", default="192.168.235.96")
 IPSEC_PC_LAN_IP = overrides.get("IPSEC_PC_LAN_IP", default="192.168.235.83")
 IPSEC_HOST_NAME = overrides.get("IPSEC_HOST_NAME", default="ipsecsite.untangle.int")
 IPSEC_CONFIGURED_HOST_IPS = overrides.get("IPSEC_CONFIGURED_HOST_IPS", default=
-                        [('10.112.13.36','192.168.10.1','192.168.10.1/24'), # ATS
+                        [('10.112.13.179','192.168.10.1','192.168.10.1/24'), # ATS
                         ('10.112.56.89','10.112.56.89','10.112.56.0/24'),  # QA 3 Bridged
                         ('10.112.56.57','192.168.10.1','192.168.10.0/24'),  # QA box .57
                         ('10.112.56.58','192.168.10.1','192.168.10.0/24'),  # QA box .58
@@ -407,7 +407,11 @@ class IPsecTests(NGFWTestCase):
 
         appDataRD = appAD.getSettings().get('radiusSettings')
         appFW = global_functions.uvmContext.appManager().instantiate(cls.appNameFW(), default_policy_id)
-        ipsecHostResult = subprocess.call(["ping","-c","1",IPSEC_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ipsecHostResult = subprocess.call(
+            ["nc", "-u", "-z", "-w", "2", IPSEC_HOST, "500"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         l2tpClientHostResult = subprocess.call(["ping","-c","1",L2TP_CLIENT_HOST],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         radiusResult = subprocess.call(["ping","-c","1",global_functions.RADIUS_SERVER],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
@@ -1175,6 +1179,162 @@ class IPsecTests(NGFWTestCase):
 
             # Restore original WAN Balancer settings
             app_wan_balancer.setSettings(orig_wb_settings)
+    def test_090_safecheck_tunnel_fields(self):
+        """Verify NGFW-15768 @SafeCheck annotations on IpsecVpnTunnel fields.
+
+        Fields covered (12, see JIRA NGFW-15768 Tier B rows 5-16):
+          - conntype           (ALPHANUM)
+          - runmode            (ALPHANUM)
+          - left               ({HOSTNAME, IP_OR_CIDR})  dual-type per Open Item 1
+          - leftId             (SIMPLE_TEXT)
+          - leftSourceIp       (IP_OR_CIDR)
+          - leftProtoPort      (ALPHANUM)
+          - leftNextHop        (IP_OR_CIDR)
+          - right              ({HOSTNAME, IP_OR_CIDR})  dual-type
+          - rightId            (SIMPLE_TEXT)
+          - rightSourceIp      (IP_OR_CIDR)
+          - rightProtoPort     (ALPHANUM)
+          - rightNextHop       (IP_OR_CIDR)
+
+        Sink: ipsec_manager.py writes these into /etc/ipsec.conf where
+        leftupdown= references an executable script — newline + script-name
+        injection yields root RCE.
+
+        The validator is fail-fast; bad values raise an exception from
+        setSettings() and leave the previously stored tunnel list untouched.
+        """
+        ipsec_settings = self._app.getSettings()
+        orig_tunnel_list = copy.deepcopy(ipsec_settings["tunnels"]["list"])
+        try:
+            # Build a minimal positive baseline tunnel INLINE — do NOT use
+            # build_ipsec_tunnel() because it SkipTest's when the host WAN IP
+            # isn't in IPSEC_CONFIGURED_HOST_IPS. The SafeCheck validator fires
+            # at the JSON-RPC boundary BEFORE any tunnel-up logic, so the tunnel
+            # never needs to actually work — it only needs to be a structurally
+            # valid IpsecVpnTunnel dict that setSettings will accept.
+            base_tunnel = {
+                "active":         False,  # disabled so strongSwan doesn't try to bring it up
+                "adapter":        "- Custom -",
+                "conntype":       "tunnel",
+                "description":    "ngfw-15768 safecheck test",
+                "id":             1,
+                "javaClass":      "com.untangle.app.ipsec_vpn.IpsecVpnTunnel",
+                "left":           "203.0.113.10",   # RFC 5737 TEST-NET-3 (won't conflict)
+                "leftId":         "left-id-1",
+                "leftSourceIp":   "10.0.0.1",
+                "leftSubnet":     "10.0.0.0/24",
+                "leftProtoPort":  "udp_500",
+                "leftNextHop":    "10.0.0.254",
+                "right":          "198.51.100.10",  # RFC 5737 TEST-NET-2
+                "rightId":        "right-id-1",
+                "rightSourceIp":  "10.0.1.1",
+                "rightSubnet":    "10.0.1.0/24",
+                "rightProtoPort": "udp_500",
+                "rightNextHop":   "10.0.1.254",
+                "runmode":        "start",
+                "secret":         "supersecret",
+                "phase1Manual":   True,
+                "phase1Lifetime": "28800",
+                "phase1Group":    "modp2048",
+                "phase1Hash":     "sha1",
+                "phase1Cipher":   "aes128",
+                "dpdtimeout":     "120",
+                "phase2Manual":   True,
+                "phase2Lifetime": "3600",
+                "phase2Group":    "modp2048",
+                "phase2Hash":     "sha1",
+                "phase2Cipher":   "aes256gcm128",
+                "ikeVersion":     2,
+                "pfs":            True,
+            }
+
+            positive_settings = copy.deepcopy(ipsec_settings)
+            positive_settings["tunnels"]["list"] = [base_tunnel]
+            self._app.setSettings(positive_settings)
+
+            # `left` dual-type — both IP literal and DNS hostname must round-trip.
+            for left_value in ("203.0.113.10", "vpn.example.com"):
+                t = copy.deepcopy(base_tunnel)
+                t["left"] = left_value
+                t["right"] = left_value
+                s = copy.deepcopy(positive_settings)
+                s["tunnels"]["list"] = [t]
+                self._app.setSettings(s)
+
+            baseline = self._app.getSettings()
+
+            # Negative payloads — historically-confirmed RCE classes.
+            # Dead fields (leftProtoPort/rightProtoPort/leftNextHop/rightNextHop)
+            # removed per audit: zero callers outside the POJO getter, no sink.
+            negative_payloads = {
+                "conntype":       "tunnel; touch /tmp/x",
+                "runmode":        "start`id`",
+                "left":           "1.2.3.4; rm -rf /tmp/x",
+                "leftId":         "id\necho INJECT",  # SIMPLE_TEXT rejects \n
+                "leftSourceIp":   "10.0.0.1; id",
+                "right":          "evil; echo INJECT",
+                "rightId":        "id|whoami",
+                "rightSourceIp":  "10.0.1.1`id`",
+            }
+            for field, payload in negative_payloads.items():
+                bad_tunnel = copy.deepcopy(base_tunnel)
+                bad_tunnel[field] = payload
+                bad_settings = copy.deepcopy(baseline)
+                bad_settings["tunnels"]["list"] = [bad_tunnel]
+                with pytest.raises(Exception):
+                    self._app.setSettings(bad_settings)
+                # Confirm stored tunnel list is unchanged (still equals baseline).
+                current = self._app.getSettings()
+                stored = current["tunnels"]["list"][0]
+                assert stored.get(field) != payload, (
+                    f"NGFW-15768: IpsecVpnTunnel.{field} stored the rejected "
+                    f"payload verbatim: {stored.get(field)!r}"
+                )
+
+            # --- Allowlist: strongSwan magic values bypass SafeType regex. ---
+            # right="%any" (Any Remote Host checkbox in UI) and
+            # leftSourceIp="%config" (Request From Peer checkbox) must round-trip.
+            for magic, field in (("%any", "right"), ("%config", "leftSourceIp")):
+                t = copy.deepcopy(base_tunnel)
+                t[field] = magic
+                s = copy.deepcopy(baseline)
+                s["tunnels"]["list"] = [t]
+                self._app.setSettings(s)
+                stored = self._app.getSettings()["tunnels"]["list"][0]
+                assert stored.get(field) == magic, (
+                    f"NGFW-15768: allowlist round-trip failed for "
+                    f"{field}={magic!r}; got {stored.get(field)!r}"
+                )
+
+            # Allowlist negatives: payloads SHAPED like the magic value but not
+            # exact-equal must still be rejected (no superset, no trailing
+            # injection, no case-insensitivity, no leading whitespace).
+            allowlist_negatives = [
+                ("%anything",       "right"),
+                ("%any\necho X",    "right"),
+                ("%any extra",      "right"),
+                ("%ANY",            "right"),
+                (" %any",           "right"),
+                ("%configurable",   "leftSourceIp"),
+                ("%config\n",       "leftSourceIp"),
+                (" %config",        "leftSourceIp"),
+            ]
+            for payload, field in allowlist_negatives:
+                t = copy.deepcopy(base_tunnel)
+                t[field] = payload
+                s = copy.deepcopy(baseline)
+                s["tunnels"]["list"] = [t]
+                with pytest.raises(Exception):
+                    self._app.setSettings(s)
+                stored = self._app.getSettings()["tunnels"]["list"][0]
+                assert stored.get(field) != payload, (
+                    f"NGFW-15768: allowlist-shaped negative {field}={payload!r} "
+                    f"survived rejection; got {stored.get(field)!r}"
+                )
+        finally:
+            ipsec_settings["tunnels"]["list"] = orig_tunnel_list
+            self._app.setSettings(ipsec_settings)
+
     @classmethod
     def final_extra_tear_down(cls):
         global appAD, appFW

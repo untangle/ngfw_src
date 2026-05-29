@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Comparator;
@@ -1142,19 +1143,27 @@ public class HostTableImpl implements HostTable
                 if (currentIps == null) {
                     currentIps = new HashSet<>();
                     currentIpSets.put(tagName, currentIps);
-                    output = UvmContextFactory.context().execManager().execOutput("ipset create tag-" + tagName + " iphash");
-                    lines = output.split("\\r?\\n");
-                    for (String line : lines)
-                        logger.info("ipset create: " + line);
+                    output = UvmContextFactory.context().execManager().execCommand(
+                        "/usr/sbin/ipset", List.of("create", "tag-" + tagName, "iphash")
+                    ).getOutput();
+                    if (output != null) {
+                        lines = output.split("\\r?\\n");
+                        for (String line : lines)
+                            logger.info("ipset create: " + line);
+                    }
                 }
 
                 if (!currentIps.contains(address)) {
                     logger.info("Tag " + tagName + " added to " + entry.getAddress().getHostAddress());
                     currentIps.add(address);
-                    output = UvmContextFactory.context().execManager().execOutput("ipset add tag-" + tagName + " " + address);
-                    lines = output.split("\\r?\\n");
-                    for (String line : lines)
-                        logger.info("ipset add: " + line);
+                    output = UvmContextFactory.context().execManager().execCommand(
+                        "/usr/sbin/ipset", List.of("add", "tag-" + tagName, address)
+                    ).getOutput();
+                    if (output != null) {
+                        lines = output.split("\\r?\\n");
+                        for (String line : lines)
+                            logger.info("ipset add: " + line);
+                    }
                 }
             } catch (Exception e) {
                 logger.warn("Exception", e);
@@ -1221,10 +1230,14 @@ public class HostTableImpl implements HostTable
 
                 if (currentIps.contains(address)) {
                     currentIps.remove(address);
-                    output = UvmContextFactory.context().execManager().execOutput("ipset del tag-" + tagName + " " + entry.getAddress().getHostAddress());
-                    lines = output.split("\\r?\\n");
-                    for (String line : lines)
-                        logger.info("ipset del: " + line);
+                    output = UvmContextFactory.context().execManager().execCommand(
+                        "/usr/sbin/ipset", List.of("del", "tag-" + tagName, entry.getAddress().getHostAddress())
+                    ).getOutput();
+                    if (output != null) {
+                        lines = output.split("\\r?\\n");
+                        for (String line : lines)
+                            logger.info("ipset del: " + line);
+                    }
                 }
             } catch (Exception e) {
                 logger.warn("Exception", e);

@@ -29,6 +29,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -739,9 +740,8 @@ can look deeper. - mahotz
             try {
                 logger.info("Downloading " + url);
 
-                // String[] strs = {"/bin/bash", "-c", "wget -c --progress=dot -P /var/cache/apt/archives/ " + url};
-                // ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil( strs );
-                ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil("wget -c --progress=dot -P /var/cache/apt/archives/ " + url);
+                ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(
+                    new String[]{"wget", "-c", "--progress=dot", "-P", "/var/cache/apt/archives/", url});
 
                 String bufferedOutput = "";
                 // read from stdout/stderr
@@ -1259,13 +1259,15 @@ can look deeper. - mahotz
             /*
              * Add v3 user
              */
-            ExecManagerResult result = UvmContextFactory.context().execManager().exec( SNMP_SCRIPT +
-                " create_snmp3_user" +
-                " " + settings.getV3Username() +
-                " " + settings.getV3AuthenticationProtocol() +
-                " \"" + settings.getV3AuthenticationPassphrase() + "\"" +
-                " " + settings.getV3PrivacyProtocol() +
-                " \"" + settings.getV3PrivacyPassphrase() + "\""
+            ExecManagerResult result = UvmContextFactory.context().execManager().execCommand( SNMP_SCRIPT,
+                Arrays.asList(
+                    "create_snmp3_user",
+                    settings.getV3Username(),
+                    settings.getV3AuthenticationProtocol(),
+                    settings.getV3AuthenticationPassphrase(),
+                    settings.getV3PrivacyProtocol(),
+                    settings.getV3PrivacyPassphrase()
+                )
             );
             logger.warn("result=" + result.getResult() + ", output=" + result.getOutput());
         }
@@ -1597,8 +1599,11 @@ can look deeper. - mahotz
     public void activateApacheCertificate()
     {
         // copy the configured pem file to the apache directory and restart
-        UvmContextFactory.context().execManager().exec("cp " + CertificateManager.CERT_STORE_PATH + getSettings().getWebCertificate() + " " + CertificateManager.APACHE_PEM_FILE);
-        UvmContextFactory.context().execManager().exec("/usr/sbin/apache2ctl graceful");
+        UvmContextFactory.context().execManager().execCommand("/bin/cp",
+            List.of(CertificateManager.CERT_STORE_PATH + getSettings().getWebCertificate(),
+                    CertificateManager.APACHE_PEM_FILE));
+        UvmContextFactory.context().execManager().execCommand("/usr/sbin/apache2ctl",
+            List.of("graceful"));
     }
 
     /**
@@ -1625,9 +1630,12 @@ can look deeper. - mahotz
         }
 
         // make sure the freeradius daemon can read the crt and key files
-        UvmContextFactory.context().execManager().exec("chmod a+r " + certBase + ".crt");
-        UvmContextFactory.context().execManager().exec("chmod a+r " + certBase + ".key");
-        UvmContextFactory.context().execManager().exec("systemctl restart freeradius.service");
+        UvmContextFactory.context().execManager().execCommand("/bin/chmod",
+            List.of("a+r", certBase + ".crt"));
+        UvmContextFactory.context().execManager().execCommand("/bin/chmod",
+            List.of("a+r", certBase + ".key"));
+        UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl",
+            List.of("restart", "freeradius.service"));
     }
 
     /**

@@ -388,13 +388,11 @@ class SslInspectorManager
         }
 
         // call the external script to generate the new certificate
-        String argList[] = new String[3];
-        argList[0] = certFileName;
-        argList[1] = certSubject.toString();
-        argList[2] = certSANlist.toString();
-        String argString = UvmContextFactory.context().execManager().argBuilder(argList);
-        logger.debug("SCRIPT_ARGS = {}", argString);
-        UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + argString);
+        // Use execCommand with a structured argument list to prevent shell injection
+        // via malicious TLS certificate fields (CN, SAN) containing backticks or $()
+        UvmContextFactory.context().execManager().execCommand(
+            CERTIFICATE_GENERATOR_SCRIPT,
+            List.of(certFileName, certSubject.toString(), certSANlist.toString()));
     }
 
     /**

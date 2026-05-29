@@ -8,6 +8,9 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * For those not familiar with SNMP, here is a bit of an explanation
  * of the relationship between properties:
@@ -62,20 +65,30 @@ public class SnmpSettings implements Serializable, JSONString
 
     private boolean enabled;
     private int port;
+    @SafeCheck(SafeType.ALPHANUM)
     private String communityString;
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String sysContact;
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String sysLocation;
 
     private boolean v3Enabled;
     private boolean v3Required;
+    @SafeCheck(SafeType.ALPHANUM)
     private String v3Username;
+    @SafeCheck(SafeType.ALPHANUM)
     private String v3AuthenticationProtocol;
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String v3AuthenticationPassphrase;
+    @SafeCheck(SafeType.ALPHANUM)
     private String v3PrivacyProtocol;
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String v3PrivacyPassphrase;
 
     private boolean sendTraps;
+    @SafeCheck(SafeType.HOSTNAME)
     private String trapHost;
+    @SafeCheck(SafeType.ALPHANUM)
     private String trapCommunity;
     private int trapPort;
 

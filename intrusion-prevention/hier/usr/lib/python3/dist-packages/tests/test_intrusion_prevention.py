@@ -383,7 +383,11 @@ class IntrusionPreventionTests(NGFWTestCase):
         """
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        ftp_result = subprocess.call(
+            ["nc", "-z", global_functions.ftp_server, "21"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         result = remote_control.run_command(global_functions.build_wget_command(user=self.ftp_user_name, password=self.ftp_password, uri=f"ftp://{global_functions.ftp_server}/test.zip"))

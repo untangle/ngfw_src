@@ -6,6 +6,7 @@ package com.untangle.app.tunnel_vpn;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.io.FilenameFilter;
 import java.io.File;
 import java.nio.file.Files;
@@ -94,12 +95,22 @@ public class TunnelVpnManager
             });
             if (matchingFiles != null) {
                 for (File f : matchingFiles) {
-                    String pid = new String(Files.readAllBytes(f.toPath())).replaceAll("(\r|\n)", "");
-                    logger.info("Killing OpenVPN process: " + pid);
-                    UvmContextFactory.context().execManager().execOutput("kill -INT " + pid);
-                    UvmContextFactory.context().execManager().execOutput("kill -TERM " + pid);
-                    UvmContextFactory.context().execManager().execOutput("kill -KILL " + pid);
-                    logger.info("Deleting: " + f);
+                    String pid = new String(Files.readAllBytes(f.toPath())).trim();
+                    // Reject anything that isn't a bare positive integer up to
+                    // 10 digits -- covers Linux PID_MAX_LIMIT (4194304 today,
+                    // headroom for future kernel.pid_max bumps). Defends
+                    // against shell metacharacters in a tampered PID file.
+                    if (!pid.matches("\\d{1,10}")) {
+                        logger.warn("Skipping kill: invalid PID in {}: {}", f, pid);
+                        logger.info("Deleting: {}", f);
+                        f.delete();
+                        continue;
+                    }
+                    logger.info("Killing OpenVPN process: {}", pid);
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-INT",  pid));
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-TERM", pid));
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-KILL", pid));
+                    logger.info("Deleting: {}", f);
                     f.delete();
                 }
             }
@@ -110,14 +121,14 @@ public class TunnelVpnManager
                 Integer entry = it.next();
                 Process p = processMap.get(entry);
                 if (p.isAlive()) {
-                    logger.warn("Killing OpenVPN process " + entry);
+                    logger.warn("Killing OpenVPN process {}", entry);
                     p.destroy();
                 }
                 if (p.isAlive()) {
                     logger.warn("OpenVPN process still alive");
                 }
                 if (p.isAlive()) {
-                    logger.warn("Forcibly Killing OpenVPN process " + entry);
+                    logger.warn("Forcibly Killing OpenVPN process {}", entry);
                     p.destroyForcibly();
                 }
                 if (p.isAlive()) {
@@ -149,7 +160,7 @@ public class TunnelVpnManager
     protected synchronized void launchProcess(TunnelVpnTunnelSettings tunnelSettings)
     {
         if (!tunnelSettings.getEnabled()) {
-            logger.info("Tunnel " + tunnelSettings.getTunnelId() + " not enabled. Skipping...");
+            logger.info("Tunnel {} not enabled. Skipping...", tunnelSettings.getTunnelId() );
             return;
         }
         int tunnelId = tunnelSettings.getTunnelId();
@@ -160,7 +171,7 @@ public class TunnelVpnManager
             try {
                 proc.waitFor();
             } catch (InterruptedException e) {
-                logger.warn("Interrupted",e);
+                logger.warn("Interrupted", e);
             }
         }
 
@@ -215,30 +226,26 @@ public class TunnelVpnManager
             throw new RuntimeException("Invalid Arguments");
         }
 
-        TunnelVpnSettings settings = app.getSettings();
-
         if (tunnelId < 1) {
             logger.warn("Failed to find available tunnel ID");
             throw new RuntimeException("Failed to find available tunnel ID");
         }
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().execSafe(IMPORT_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(IMPORT_SCRIPT, List.of(filename, provider, String.valueOf(tunnelId)));
 
         try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(IMPORT_SCRIPT + ": ");
+            String[] lines = result.getOutput().split("\\r?\\n");
+            logger.info("{}: ", IMPORT_SCRIPT );
             for (String line : lines) {
-                logger.info(IMPORT_SCRIPT + ": " + line);
+                logger.info("{}: {}", IMPORT_SCRIPT , line);
             }
         } catch (Exception e) {
         }
 
         if (result.getResult() != 0) {
-            logger.error("Failed to import client config (return code: " + result.getResult() + ")");
+            logger.error("Failed to import client config (return code: {})", result.getResult() );
             throw new RuntimeException("Failed to import client config");
         }
-
-        return;
     }
 
     /**
@@ -264,23 +271,21 @@ public class TunnelVpnManager
             throw new RuntimeException("Failed to find available tunnel ID");
         }
 
-        ExecManagerResult result = UvmContextFactory.context().execManager().execSafe(VALIDATE_SCRIPT + " \"" + filename + "\" \"" + provider + "\" " + tunnelId);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(VALIDATE_SCRIPT, List.of(filename, provider, String.valueOf(tunnelId)));
 
         try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(VALIDATE_SCRIPT + ": ");
+            String[] lines = result.getOutput().split("\\r?\\n");
+            logger.info("{}: ", VALIDATE_SCRIPT );
             for (String line : lines) {
-                logger.info(VALIDATE_SCRIPT + ": " + line);
+                logger.info("{}: {}", VALIDATE_SCRIPT , line);
             }
         } catch (Exception e) {
         }
 
         if (result.getResult() != 0) {
-            logger.error("Failed to validate client config (return code: " + result.getResult() + ")");
+            logger.error("Failed to validate client config (return code: {})", result.getResult() );
             throw new RuntimeException("Failed to validate client config: " + result.getOutput().trim());
         }
-
-        return;
     }
 
     /**
@@ -308,9 +313,9 @@ public class TunnelVpnManager
 
             try {
                 File pidFile = new File("/run/tunnelvpn/tunnel-" + tunnelSettings.getTunnelId() + ".pid");
-                String pidData = new String(Files.readAllBytes(pidFile.toPath())).replaceAll("(\r|\n)", "");
-                logger.info("Recycling tunnel connection: " + tunnelSettings.getName() + "PID:" + pidData);
-                logger.info("Deleting: " + pidFile);
+                String pidData = new String(Files.readAllBytes(pidFile.toPath())).trim();
+                logger.info("Recycling tunnel connection: {} PID:{}", tunnelSettings.getName() , pidData);
+                logger.info("Deleting: {}", pidFile);
                 pidFile.delete();
 
                 /*
@@ -321,9 +326,17 @@ public class TunnelVpnManager
                  * daemon know to terminate and hopefully begin a clean
                  * shutdown. The third tells it we do not want to wait.
                  */
-                UvmContextFactory.context().execManager().execOutput("kill -INT " + pidData);
-                UvmContextFactory.context().execManager().execOutput("kill -TERM " + pidData);
-                UvmContextFactory.context().execManager().execOutput("kill -KILL " + pidData);
+                // Reject anything that isn't a bare positive integer up to
+                // 10 digits -- covers Linux PID_MAX_LIMIT (4194304 today,
+                // headroom for future kernel.pid_max bumps). Defends against
+                // shell metacharacters in a tampered PID file.
+                if (pidData.matches("\\d{1,10}")) {
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-INT",  pidData));
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-TERM", pidData));
+                    UvmContextFactory.context().execManager().execCommand("/bin/kill", List.of("-KILL", pidData));
+                } else {
+                    logger.warn("Skipping kill: invalid PID in {}: {}", pidFile, pidData);
+                }
 
                 processMap.remove(tunnelSettings.getTunnelId());
 
@@ -344,15 +357,15 @@ public class TunnelVpnManager
 
         ExecManagerResult result = UvmContextFactory.context().execManager().exec(IPTABLES_SCRIPT);
         try {
-            String lines[] = result.getOutput().split("\\r?\\n");
-            logger.info(IPTABLES_SCRIPT + ": ");
+            String[] lines = result.getOutput().split("\\r?\\n");
+            logger.info("{}: ", IPTABLES_SCRIPT );
             for (String line : lines)
-                logger.info(IPTABLES_SCRIPT + ": " + line);
+                logger.info("{}: {}", IPTABLES_SCRIPT , line);
         } catch (Exception e) {
         }
 
         if (result.getResult() != 0) {
-            logger.error("Failed to execute iptables script (return code: " + result.getResult() + ")");
+            logger.error("Failed to execute iptables script (return code: {})", result.getResult() );
             throw new RuntimeException("Failed to execute iptables script");
         }
     }

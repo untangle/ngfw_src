@@ -38,6 +38,8 @@ import com.untangle.uvm.servlet.UploadHandler;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.network.InterfaceSettings;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * The Certificate Manager handles the internal certificate authority that is
@@ -153,15 +155,19 @@ public class CertificateManagerImpl implements CertificateManager
         File localKeyFile = new File(LOCAL_KEY_FILE);
         if ((localCertFile.exists() == false) || (localKeyFile.exists() == false)) {
             String fqdn = UvmContextFactory.context().networkManager().getFullyQualifiedHostname();
-            logger.info("Creating default locally signed apache certificate for " + fqdn);
-            UvmContextFactory.context().execManager().exec(CERTIFICATE_GENERATOR_SCRIPT + " APACHE /CN=" + fqdn);
+            logger.info("Creating default locally signed apache certificate for {}", fqdn);
+            UvmContextFactory.context().execManager().execCommand(CERTIFICATE_GENERATOR_SCRIPT, List.of("APACHE", "/CN=" + fqdn));
         }
 
         // Get the fingerprint for the configured web cert and the active
         // apache cert.  If they don't match we copy the configured cert to
         // the apache directory and restart the server to activate the cert. 
         String apacheFingerprint = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -fingerprint -in " + APACHE_PEM_FILE);
-        String configFingerprint = UvmContextFactory.context().execManager().execOutput("openssl x509 -noout -fingerprint -in " + CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate());
+        String webCertFile = CERT_STORE_PATH + UvmContextFactory.context().systemManager().getSettings().getWebCertificate();
+        String configFingerprint = UvmContextFactory.context().execManager().execCommand(
+            "/usr/bin/openssl",
+            List.of("x509", "-noout", "-fingerprint", "-in", webCertFile)
+        ).getOutput();
         if (apacheFingerprint.equals(configFingerprint) == false) {
             logger.info("Replacing existing apache certificate [" + apacheFingerprint + "] with configured certificate [" + configFingerprint + "]");
             UvmContextFactory.context().systemManager().activateApacheCertificate();
@@ -398,7 +404,7 @@ public class CertificateManagerImpl implements CertificateManager
      * @return The certificate details
      */
     // called by getCertificateList to retrieve details about a certificate
-    public CertificateInformation getServerCertificateInformation(String fileName)
+    public CertificateInformation getServerCertificateInformation(@SafeCheckParam(SafeType.FILENAME) String fileName)
     {
         CertificateInformation certInfo = new CertificateInformation();
         FileInputStream certStream;
@@ -569,7 +575,7 @@ public class CertificateManagerImpl implements CertificateManager
      * 
      * @return The CA root certificate details
      */
-    public CertificateInformation getRootCertificateInformation(String fileName)
+    public CertificateInformation getRootCertificateInformation(@SafeCheckParam(SafeType.FILENAME) String fileName)
     {
         CertificateInformation certInfo = new CertificateInformation();
         X509Certificate certObject;
@@ -603,7 +609,8 @@ public class CertificateManagerImpl implements CertificateManager
      *        The subject for the new CA root certificate
      * @return True
      */
-    public boolean generateCertificateAuthority(String commonName, String certSubject)
+    public boolean generateCertificateAuthority(@SafeCheckParam(SafeType.NATURAL_NAME) String commonName,
+                                                @SafeCheckParam(SafeType.CERT_SUBJECT) String certSubject)
     {
         try {
             rejectSuspiciousCharacter(commonName, "commonName");
@@ -641,7 +648,8 @@ public class CertificateManagerImpl implements CertificateManager
      *        The subject alternative names for the new certificate
      * @return True
      */
-    public boolean generateServerCertificate(String certSubject, String altNames)
+    public boolean generateServerCertificate(@SafeCheckParam(SafeType.CERT_SUBJECT) String certSubject,
+                                             @SafeCheckParam(SafeType.SAN_LIST)    String altNames)
     {
         try {
             rejectSuspiciousCharacter(altNames, "altNames");
@@ -667,12 +675,60 @@ public class CertificateManagerImpl implements CertificateManager
      * @param fileName
      */
     public void setActiveRootCertificate(String fileName) {
-        // Use filename to get the parent dir
-        File rootCert = new File(fileName);
-        var certParent = rootCert.getParent();
+        if (fileName == null || fileName.isEmpty()) {
+            logger.warn("setActiveRootCertificate: null or empty fileName rejected");
+            return;
+        }
+
+        String certParent = validateCertStoreSubdirPath(fileName, "setActiveRootCertificate");
+        if (certParent == null) return;
 
         // Use symlink function to replace CERT_STORE_PATH root certs
         symlinkRootCerts(CERT_STORE_PATH, certParent + "/", false);
+    }
+
+    /**
+     * Validates that {@code fileName} canonicalizes to a .crt file inside a
+     * subdirectory of CERT_STORE_PATH. Returns the canonical parent directory
+     * on success, or {@code null} (with a warning logged) on any rejection.
+     *
+     * Resolves symlinks on the CERT_STORE_PATH prefix too so the comparison
+     * is apples-to-apples even when settings/ or untangle-certificates/
+     * themselves are symlinks (common in dev).
+     *
+     * @param fileName  the candidate certificate file path to validate
+     * @param callerTag short label identifying the caller, used in log messages
+     * @return the canonical parent directory path on success, or {@code null} if validation fails
+     */
+    private String validateCertStoreSubdirPath(String fileName, String callerTag) {
+        String canonicalPath;
+        try {
+            canonicalPath = new File(fileName).getCanonicalPath();
+        } catch (IOException e) {
+            logger.warn("{}: could not resolve canonical path for {}", callerTag, fileName, e);
+            return null;
+        }
+        if (!canonicalPath.endsWith(".crt")) {
+            logger.warn("{}: non-.crt file rejected: {}", callerTag, canonicalPath);
+            return null;
+        }
+        String certStorePrefix;
+        try {
+            certStorePrefix = new File(CERT_STORE_PATH).getCanonicalPath();
+        } catch (IOException e) {
+            logger.warn("{}: could not resolve canonical CERT_STORE_PATH", callerTag, e);
+            return null;
+        }
+        if (!canonicalPath.startsWith(certStorePrefix + "/")) {
+            logger.warn("{}: path outside CERT_STORE_PATH rejected: {}", callerTag, canonicalPath);
+            return null;
+        }
+        String certParent = new File(canonicalPath).getParent();
+        if (certParent == null || certParent.equals(certStorePrefix)) {
+            logger.warn("{}: file must be in a CERT_STORE_PATH subdirectory: {}", callerTag, canonicalPath);
+            return null;
+        }
+        return certParent;
     }
 
     /**
@@ -702,7 +758,10 @@ public class CertificateManagerImpl implements CertificateManager
      *        Optional intermediate certificates
      * @return The result of the operation
      */
-    public ExecManagerResult uploadCertificate(String certMode, String certData, String keyData, String extraData)
+    public ExecManagerResult uploadCertificate(@SafeCheckParam(SafeType.ALPHANUM) String certMode,
+                                               @SafeCheckParam(SafeType.PEM)      String certData,
+                                               @SafeCheckParam(SafeType.PEM)      String keyData,
+                                               @SafeCheckParam(SafeType.PEM)      String extraData)
     {
         String baseName = Long.toString(System.currentTimeMillis() / 1000l);
         int certLen = 0;
@@ -802,7 +861,8 @@ public class CertificateManagerImpl implements CertificateManager
      *        Optional intermediate certificates
      * @return The result of the operation
      */
-    public ExecManagerResult importSignedRequest(String certData, String extraData)
+    public ExecManagerResult importSignedRequest(@SafeCheckParam(SafeType.PEM) String certData,
+                                                 @SafeCheckParam(SafeType.PEM) String extraData)
     {
         String baseName = Long.toString(System.currentTimeMillis() / 1000l);
         FileOutputStream fileStream = null;
@@ -871,11 +931,14 @@ public class CertificateManagerImpl implements CertificateManager
      * @param fileName
      *        The certificate file to delete
      */
-    public void removeCertificate(String type, String fileName)
+    public void removeCertificate(@SafeCheckParam(SafeType.ALPHANUM) String type,
+                                  String fileName)
     {
         String fileBase;
         int dotLocation;
         File killFile;
+
+        if (fileName == null || fileName.isEmpty()) return;
 
         // don't let them delete the original system certificate
         if (fileName.equals("apache.pem")) return;
@@ -887,6 +950,14 @@ public class CertificateManagerImpl implements CertificateManager
         if (fileName.equals(UvmContextFactory.context().systemManager().getSettings().getRadiusCertificate())) return;
 
         if(type.equalsIgnoreCase("SERVER")){
+            // SERVER deletion takes a bare filename like "apache.pem".
+            // Validate at the FILENAME boundary here (the parameter is unannotated
+            // because the ROOT branch needs a path containing '/').
+            if (!SafeType.FILENAME.validate(fileName)) {
+                logger.warn("removeCertificate(SERVER): rejecting fileName {}", fileName);
+                return;
+            }
+
             // extract the file name without the extension
             dotLocation = fileName.indexOf('.');
             if (dotLocation < 0) return;
@@ -904,22 +975,20 @@ public class CertificateManagerImpl implements CertificateManager
             killFile = new File(CERT_STORE_PATH + fileBase + ".pfx");
             killFile.delete();
         } else if(type.equalsIgnoreCase("ROOT")) {
-            // Use filename to get the parent dir
-            File rootCert = new File(fileName);
-            var certParent = rootCert.getParent();
+            // ROOT deletion takes an absolute path to a .crt in a CERT_STORE_PATH subdirectory.
+            // Validate via canonicalization so we cannot be tricked into deleting
+            // arbitrary directories.
+            String certParent = validateCertStoreSubdirPath(fileName, "removeCertificate(ROOT)");
+            if (certParent == null) return;
 
-            // verify dotLocation is not top level
-            if(!certParent.equalsIgnoreCase(CERT_STORE_PATH)) {
-                File parentFile = new File(certParent);
-
-                // rm the index, crt, key, serial files in here
-                for(File child : parentFile.listFiles()) {
+            File parentFile = new File(certParent);
+            File[] children = parentFile.listFiles();
+            if (children != null) {
+                for (File child : children) {
                     child.delete();
                 }
-                
-                // rm the directory
-                parentFile.delete();
             }
+            parentFile.delete();
         }
     }
 
@@ -1237,8 +1306,22 @@ public class CertificateManagerImpl implements CertificateManager
             // move cert, key, index, serial from old to new if move is specified
             UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "untangle.crt", sourceDir));
             UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "untangle.key", sourceDir));
-            UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "index*", sourceDir));
-            UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "serial*", sourceDir));
+
+            // execCommand uses shell=False so glob patterns are not expanded by the shell.
+            // Use Java's file listing to enumerate index* and serial* files individually.
+            File targetDirFile = new File(targetDir);
+            File[] indexFiles = targetDirFile.listFiles((dir, name) -> name.startsWith("index"));
+            if (indexFiles != null) {
+                for (File f : indexFiles) {
+                    UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(f.getAbsolutePath(), sourceDir));
+                }
+            }
+            File[] serialFiles = targetDirFile.listFiles((dir, name) -> name.startsWith("serial"));
+            if (serialFiles != null) {
+                for (File f : serialFiles) {
+                    UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(f.getAbsolutePath(), sourceDir));
+                }
+            }
         }
 
         // symlink cert, key, index, serial from new location to old

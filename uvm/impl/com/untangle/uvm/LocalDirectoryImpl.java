@@ -96,9 +96,11 @@ public class LocalDirectoryImpl implements LocalDirectory
             logger.error("Exception occured while fetching original password", exn);
             return "Unable to decrypt the encrypted password for AD server" + systemSettings.getRadiusProxyServer();
         }
-        String command = String.format("%s \"%s\" \"%s\"", FREERADIUS_PROXY_SCRIPT, systemSettings.getRadiusProxyUsername(), userPassword);
-
-        return UvmContextFactory.context().execManager().execOutput(false, command);
+        String output = UvmContextFactory.context().execManager().execCommand(
+            FREERADIUS_PROXY_SCRIPT,
+            List.of(systemSettings.getRadiusProxyUsername(), userPassword)
+        ).getOutput();
+        return output != null ? output : "";
     }
 
     /**
@@ -133,19 +135,23 @@ public class LocalDirectoryImpl implements LocalDirectory
             logger.error("Exception occured while fetching original password", exn);
             return new ExecManagerResult(1, "Unable to decrypt the encrypted password of AD server " + systemSettings.getRadiusProxyServer());
         }
-        String command = ("/usr/bin/net ads --no-dns-updates join");
-        command += String.format(" -U \"%s%%%s\"", systemSettings.getRadiusProxyUsername(), userPassword);
-        command += (" -S " + systemSettings.getRadiusProxyServer());
-        command += (" osName=\"Untangle NG Firewall\"");
-        command += (" osVer=\"" + UvmContextFactory.context().getFullVersion() + "\"");
-
-        ExecManagerResult result =  UvmContextFactory.context().execManager().exec(command, false, false, false);
+        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(
+            "/usr/bin/net",
+            List.of(
+                "ads", "--no-dns-updates", "join",
+                "-U", systemSettings.getRadiusProxyUsername() + "%" + userPassword,
+                "-S", systemSettings.getRadiusProxyServer(),
+                "osName=Untangle NG Firewall",
+                "osVer=" + UvmContextFactory.context().getFullVersion()
+            )
+        );
 
         // NGFW-13595 The winbind service must be restarted after we create
         // the computer account because it requires the SID that gets created
         // by the "net ads" call we made above.
-        if (result.result == 0) {
-            UvmContextFactory.context().execManager().exec("systemctl restart winbind.service");
+        if (result.getResult() != null && result.getResult() == 0) {
+            UvmContextFactory.context().execManager().execCommand(
+                "/usr/bin/systemctl", List.of("restart", "winbind.service"));
         }
 
         return result;
@@ -196,7 +202,8 @@ public class LocalDirectoryImpl implements LocalDirectory
         args.add("--username=" + userName);
         args.add("--password=" + userPass);
 
-        return UvmContextFactory.context().execManager().execCommand(FREERADIUS_NTLM_CMD,args).getOutput();
+        String output = UvmContextFactory.context().execManager().execCommand(FREERADIUS_NTLM_CMD, args).getOutput();
+        return output != null ? output : "";
     }
 
     /**

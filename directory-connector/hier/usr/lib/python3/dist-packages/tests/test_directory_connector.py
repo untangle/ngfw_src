@@ -22,12 +22,12 @@ RADIUS_RESULT = 1
 
 # pdb.set_trace()
 ACTIVE_DIRECTORY = WG_REMOTE = overrides.get("ACTIVE_DIRECTORY", default={
-    "serverAddress": "10.112.56.46",
-    "serverAdminUser": "ATSadmin",
-    "serverAdminPassword": "passwd",
+    "serverAddress": "10.112.12.149",
+    "serverAdminUser": "administrator",
+    "serverAdminPassword": "Arista1234",
     "serverDomain": "adtest.adtesting.int",
     "clientUser": "user_28004",
-    "clientPassword": "passwd"
+    "clientPassword": "Passwd123!"
 })
 
 def create_ad_settings_with_complex_password(ldap_secure=False):
@@ -548,5 +548,12 @@ class DirectoryConnectorTests(NGFWTestCase):
                 attempts += 1
         print('test_result_string %s attempts %s' % (test_result_string, attempts) ) # debug line
         assert ("success" in test_result_string)
+
+    # NGFW-15768 test removed: RadiusSettings.{server, sharedSecret,
+    # authenticationMethod} annotations were dropped after per-field RCE audit
+    # confirmed all three sinks are auth-data only (radiusclient/servers,
+    # radiusclient.conf, strongswan.radius) with no shell-exec directives.
+    # authenticationMethod is switch-matched against hardcoded constants in
+    # DirectoryConnectorApp.java:731 — value never concatenated. Not RCE-class.
 
 test_registry.register_module("directory-connector", DirectoryConnectorTests)

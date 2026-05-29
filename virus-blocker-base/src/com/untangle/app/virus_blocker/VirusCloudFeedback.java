@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.CloudAuthCredentialsUtil;
 import com.untangle.uvm.vnet.AppSession;
 
 /**
@@ -24,7 +25,6 @@ public class VirusCloudFeedback extends Thread
     private final Logger logger = LogManager.getLogger(VirusBlockerBaseApp.class);
 
     private static final String CLOUD_FEEDBACK_URL = UvmContextFactory.context().uriManager().getUri("https://telemetry.edge.arista.com/ngfw/v1/infection");
-    private static final String CLOUD_SCANNER_KEY = "B132C885-962B-4D63-8B2F-441B7A43CD93";
 
     VirusBlockerState virusState = null;
     long fileLength = 0;
@@ -113,7 +113,7 @@ public class VirusCloudFeedback extends Thread
             mycon.setRequestProperty("Content-length", String.valueOf(feedback.length()));
             mycon.setRequestProperty("User-Agent", "Untangle NGFW Virus Blocker");
             mycon.setRequestProperty("UID", UvmContextFactory.context().getServerUID());
-            mycon.setRequestProperty("AuthRequest", CLOUD_SCANNER_KEY);
+            mycon.setRequestProperty("AuthRequest", CloudAuthCredentialsUtil.getAuthRequestToken());
             mycon.setDoOutput(true);
             mycon.setDoInput(true);
 

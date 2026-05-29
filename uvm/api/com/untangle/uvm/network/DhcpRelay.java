@@ -12,6 +12,9 @@ import java.util.List;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * Dns static entry.
  */
@@ -20,6 +23,10 @@ public class DhcpRelay implements Serializable, JSONString
 {
     // !! default values
     private boolean enabled;
+    // Flows into dnsmasq.conf as `# {description}` comment AND as the
+    // dhcp-range tag (whitespace-normalized). dnsmasq supports
+    // `dhcp-script=` exec directive, so newline injection is RCE.
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String description;
     private InetAddress rangeStart;
     private InetAddress rangeEnd;

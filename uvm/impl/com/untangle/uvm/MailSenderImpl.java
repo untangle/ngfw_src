@@ -48,6 +48,8 @@ import com.sun.mail.smtp.SMTPTransport;
 import com.untangle.uvm.MailSettings.SendMethod;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.SafeCheckParam;
+import com.untangle.uvm.util.SafeType;
 
 /**
  * Note that this class is designed to be used <b>BOTH</b> inside the UVM and as
@@ -451,7 +453,7 @@ public class MailSenderImpl implements MailSender
      *        The recipient
      * @return The send result
      */
-    public String sendTestMessage(String recipient)
+    public String sendTestMessage(@SafeCheckParam(SafeType.EMAIL) String recipient)
     {
         UvmContext context = UvmContextFactory.context();
         Map<String, String> i18nMap = context.languageManager().getTranslations("untangle");
@@ -502,7 +504,9 @@ public class MailSenderImpl implements MailSender
 
             //force sending of this email now (if previous emails failed for this host, 
             //the email is currently queued waiting for a timeout)
-            String strM = UvmContextFactory.context().execManager().execOutput("exim -M " + logId);
+            String strM = UvmContextFactory.context().execManager().execCommand(
+                "/usr/sbin/exim4", List.of("-M", logId)
+            ).getOutput();
 
             //String log = UvmContextFactory.context().execManager().execOutput("exim -Mvl "+logId);
             //now read the rest of the logs

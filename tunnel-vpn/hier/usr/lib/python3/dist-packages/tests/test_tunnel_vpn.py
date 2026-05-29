@@ -1,5 +1,6 @@
 """tunnel_vpn tests"""
 import copy
+import os
 import time
 import subprocess
 
@@ -16,7 +17,7 @@ default_policy_id = 1
 app = None
 TUNNEL_ID = 200
 VPN_TUNNEL_URI = overrides.get( "VPN_TUNNEL_URI", default="http://10.112.56.29/openvpn-ats-test-tunnelvpn-config.zip")
-TUNNEL_VPN_ISOLATED_CLIENT = overrides.get( "TUNNEL_VPN_ISOLATED_CLIENT", default="192.168.200.56")
+TUNNEL_VPN_ISOLATED_CLIENT = overrides.get( "TUNNEL_VPN_ISOLATED_CLIENT", default="192.168.100.56")
 CLIENT_TAGGED_CONDITION = {
             "javaClass": "java.util.LinkedList",
             "list": [
@@ -365,5 +366,196 @@ class TunnelVpnTests(NGFWTestCase):
         
         # set to original settings
         self._app.setSettings(org_appData)
+
+    def test_060_command_injection_prevented(self):
+        """
+        Verify that backtick command injection in provider argument is prevented by execCommand
+        """
+        exploit_marker = "/tmp/tunnel-vpn-exploit-test"
+        dummy_config = "/tmp/tunnel-vpn-dummy.ovpn"
+
+        # Clean up marker file if it exists from a previous run
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        # Create a dummy .ovpn file — content doesn't matter,
+        # the script just needs a file that exists with the right extension
+        with open(dummy_config, "w") as f:
+            f.write("client\n")
+
+        # Call importTunnelConfig with a provider containing backtick injection
+        # With old execSafe, this would execute: touch /tmp/tunnel-vpn-exploit-test
+        # With new execCommand, backticks are passed as literal string data
+        malicious_provider = "test`touch " + exploit_marker + "`"
+        try:
+            self._app.importTunnelConfig(dummy_config, malicious_provider, TUNNEL_ID)
+        except Exception:
+            # The import will fail due to unknown provider — that's expected,
+            # we only care that the injected command did NOT execute
+            pass
+
+        assert not os.path.exists(exploit_marker), \
+            "Command injection via backticks was executed! " + exploit_marker + " should not exist"
+
+    def test_061_upload_tunnel_vpn_argument_injection_blocked(self):
+        """Verify /admin/upload with type=tunnel_vpn ignores malicious argument field (command injection fix)"""
+        import zipfile
+        import io
+        import urllib.request
+
+        exploit_marker = "/tmp/tunnel-vpn-upload-exploit-test"
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        # Build a minimal zip containing a dummy .ovpn file.
+        # The handler will reject it due to an unknown provider — that's expected.
+        # We only care that the malicious argument is not shell-executed.
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, 'w') as zf:
+            zf.writestr("dummy.ovpn", "client\n")
+        config_bytes = buf.getvalue()
+
+        malicious_provider = f"test`touch {exploit_marker}`"
+        opener = global_functions.build_admin_http_opener()
+        boundary, body = global_functions.build_upload_multipart_body(
+            "tunnel_vpn", malicious_provider, config_bytes, filename="dummy.zip"
+        )
+
+        req = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            opener.open(req)
+        except Exception:
+            pass
+
+        time.sleep(1)
+        assert not os.path.exists(exploit_marker), \
+            "Command injection via tunnel_vpn upload argument field executed! " + exploit_marker + " should not exist"
+
+    def test_070_route_up_script_eval_injection_blocked(self):
+        """
+        Verify tunnel-vpn-route-up.sh rejects shell metacharacters in
+        OpenVPN-pushed route values instead of executing them via `eval`
+        (NGFW-15705 / Vuln 1).
+
+        Pre-fix: the script's `eval $command` executes the injected `touch`
+        and the marker file appears -> test FAILS, vulnerability confirmed.
+
+        Post-fix: the input fails IPv4 validation, the route is rejected
+        with a logger warning, no shell expansion happens -> test PASSES.
+        """
+        script = "/usr/share/untangle/bin/tunnel-vpn-route-up.sh"
+        exploit_marker = "/tmp/tunnel-vpn-route-up-injection-test"
+
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        # Mimic openvpn --route-up env. `dev=tun99` keeps the script past its
+        # interface_id check; the malicious route_network_1 carries the payload.
+        env = os.environ.copy()
+        env["dev"] = "tun99"
+        env["ifconfig_local"] = "10.99.0.2"
+        env["ifconfig_remote"] = "10.99.0.1"
+        env["route_vpn_gateway"] = "10.99.0.1"
+        env["route_network_1"] = "10.20.0.0; touch " + exploit_marker
+        env["route_netmask_1"] = "255.255.0.0"
+        env["route_gateway_1"] = "10.20.0.1"
+
+        subprocess.call([script], env=env)
+
+        assert not os.path.exists(exploit_marker), \
+            "Shell injection via OpenVPN-pushed route value executed! " \
+            + exploit_marker + " should not exist"
+
+    def test_080_pid_file_injection_blocked(self):
+        """
+        Verify TunnelVpnManager.recycleTunnel() rejects shell metacharacters
+        in the openvpn PID file instead of executing them via shell-string
+        `execOutput("kill -INT " + pid)` (NGFW-15705 / Vuln 3).
+
+        Pre-fix: PID contents `"99999 ; touch /tmp/marker"` get concatenated
+        into `kill -INT 99999 ; touch /tmp/marker`, which ut-exec-launcher
+        runs via `subprocess.Popen(shell=True)` -> marker exists -> test
+        FAILS, vulnerability confirmed.
+
+        Post-fix: PID is validated against `\\d{1,10}` and dispatched as
+        structured argv via execCommand("kill", List.of(...)) -> no shell
+        expansion -> marker absent -> test PASSES.
+        """
+        fake_tunnel_id = 250
+        pid_dir = "/run/tunnelvpn"
+        pid_file = os.path.join(pid_dir, f"tunnel-{fake_tunnel_id}.pid")
+        exploit_marker = "/tmp/tunnel-vpn-pid-injection-test"
+
+        if os.path.exists(exploit_marker):
+            os.remove(exploit_marker)
+
+        org_appData = self._app.getSettings()
+        appData = copy.deepcopy(org_appData)
+        appData['tunnels']['list'].append(create_tunnel_profile(
+            name="injection-test",
+            vpn_tunnel_id=fake_tunnel_id))
+        self._app.setSettings(appData)
+
+        try:
+            # Seed PID file AFTER setSettings — saving may trigger
+            # restartProcesses which sweeps /run/tunnelvpn/ first.
+            os.makedirs(pid_dir, exist_ok=True)
+            with open(pid_file, "w") as f:
+                # PID 99999 won't exist -> kill fails -> `;` runs touch
+                f.write("99999 ; touch " + exploit_marker)
+
+            # Trigger the kill path inside TunnelVpnManager.recycleTunnel.
+            # TunnelVpnApp.recycleTunnel runs tunnelVpnManager.recycleTunnel
+            # FIRST (the path under test), then tunnelVpnMonitor.recycleTunnel
+            # which NPEs because our fake tunnel has no live status entry.
+            # The NPE is expected and irrelevant -- the kill code already
+            # executed (or didn't, post-fix) before the NPE was thrown.
+            try:
+                self._app.recycleTunnel(fake_tunnel_id)
+            except Exception:
+                pass
+            time.sleep(2)
+
+            assert not os.path.exists(exploit_marker), \
+                "PID file shell injection executed via execOutput! " \
+                + exploit_marker + " should not exist"
+        finally:
+            if os.path.exists(pid_file):
+                os.remove(pid_file)
+            if os.path.exists(exploit_marker):
+                os.remove(exploit_marker)
+            self._app.setSettings(org_appData)
+
+    def test_090_safecheckparam_import_tunnel_config(self):
+        """TunnelVpnApp.importTunnelConfig(filename: FILE_PATH,
+                                            provider: ALPHANUM, tunnelId: int).
+
+        Both String params carry @SafeCheckParam. Negative cases assert the
+        Jabsorb interceptor rejects shell-injecting payloads BEFORE the
+        method body runs (so no exploit marker is created and no tunnel
+        state is mutated). Positive case uses well-formed values with a
+        nonexistent file — the validator passes; the underlying import then
+        fails for unrelated reasons, which proves validation cleared.
+        """
+        # INVALID — filename violates FILE_PATH (relative path)
+        with pytest.raises(Exception):
+            self._app.importTunnelConfig("tmp/upload.zip", "openvpn", TUNNEL_ID)
+        # INVALID — filename carries shell metachar
+        with pytest.raises(Exception):
+            self._app.importTunnelConfig("/tmp/foo;id.zip", "openvpn", TUNNEL_ID)
+        # INVALID — provider violates ALPHANUM (pipe)
+        with pytest.raises(Exception):
+            self._app.importTunnelConfig("/tmp/upload.zip", "open|vpn", TUNNEL_ID)
+        # VALID-shape — well-formed; file doesn't exist so the underlying
+        # call will error, but that error must NOT be the SafeCheck 490.
+        try:
+            self._app.importTunnelConfig("/tmp/ats-nonexistent-import.zip", "openvpn", TUNNEL_ID)
+        except Exception as e:
+            assert "Invalid value in" not in str(e), \
+                f"validator unexpectedly rejected a well-formed input: {e!r}"
 
 test_registry.register_module("tunnel-vpn", TunnelVpnTests)

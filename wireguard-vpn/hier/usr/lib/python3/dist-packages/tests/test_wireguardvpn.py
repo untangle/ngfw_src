@@ -24,7 +24,7 @@ wanIP = None
 
 WG_LOCAL_CONFIG = overrides.get("WG_LOCAL_CONFIG", default=
                         [
-                        ('10.112.13.36','192.168.10.0/24',"qP9f5uaOS/0tLJ2SW5AeAJoueaAIJOod8v14x/WD4mY=","10.133.201.1/24"), # ATS Dynamics
+                        ('10.112.13.179','192.168.10.0/24',"qP9f5uaOS/0tLJ2SW5AeAJoueaAIJOod8v14x/WD4mY=","10.133.201.1/24"), # ATS Dynamics
                         ('10.112.56.89','172.16.54.0/24',"sGy3LyIUAKMxjJYQNyppBuJw9ibqCcvdOoOrUT0BQGE=","10.133.202.1/24"),  # QA 3 Bridged
                         ('10.112.56.57','192.168.10.0/24',"sBgaDBcvqmxAdJJrVJB1FoK8VyxpAF5KyRrBdox0yGo=","10.133.203.1/24"),  # QA box .57
                         ('10.112.56.58','192.168.10.0/24',"OFuDMenzEmR87trbLa+nF0akxPBfeXBbEohKX94dlHg=","10.133.204.1/24"),  # QA box .58
@@ -794,5 +794,91 @@ class WireGuardVpnTests(NGFWTestCase):
 
         # Set app back to normal
         self._app.setSettings(origWGSettings)
+
+    def test_080_safecheck_tunnel_and_settings_fields(self):
+        """Verify NGFW-15768 @SafeCheck annotations on WireGuardVpnTunnel and
+        WireGuardVpnSettings.
+
+        Tunnel fields (6):
+          - publicKey         (BASE64_KEY)
+          - privateKey        (BASE64_KEY)
+          - description       (SIMPLE_TEXT)
+          - endpointHostname  (HOSTNAME)
+          - networks          (IP_OR_CIDR_LIST)
+          - routedNetworks    (IP_OR_CIDR_LIST)
+
+        Settings fields (3):
+          - publicKey         (BASE64_KEY)
+          - privateKey        (BASE64_KEY)
+          - dnsSearchDomain   (HOSTNAME)
+
+        Sink: wireguard_manager.py writes these into /etc/wireguard/wg0.conf,
+        where PostUp= / PostDown= reference executable scripts — newline +
+        script-name injection yields RCE.
+        """
+        appData = self._app.getSettings()
+        orig_settings = copy.deepcopy(appData)
+        try:
+            # --- Tunnel positive: build a valid tunnel with all 6 fields populated. ---
+            positive_tunnel = build_wireguard_tunnel()
+            positive_tunnel["description"]      = "Office VPN"
+            positive_tunnel["endpointHostname"] = "vpn.example.com"
+            positive_tunnel["networks"]         = "192.168.235.0/24, 192.168.236.0/24"
+            positive_tunnel["routedNetworks"]   = "10.0.0.0/8"
+            positive_tunnel["publicKey"]        = WG_REMOTE["publicKey"]  # known-valid 44-char base64
+            positive_tunnel["privateKey"]       = ""  # blank is allowed by validator (null/empty pass)
+
+            positive_appData = copy.deepcopy(appData)
+            positive_appData["tunnels"]["list"] = [positive_tunnel]
+            # Settings-level positive values too.
+            positive_appData["publicKey"]       = WG_REMOTE["publicKey"]
+            positive_appData["privateKey"]      = ""
+            positive_appData["dnsSearchDomain"] = "internal.example.com"
+            self._app.setSettings(positive_appData)
+            baseline = self._app.getSettings()
+
+            # --- Tunnel negatives. ---
+            tunnel_negative = {
+                "publicKey":        "not-a-base64-key!!",                # BASE64_KEY rejects
+                "description":      "evil$(touch /tmp/x)",               # SIMPLE_TEXT rejects $
+                "endpointHostname": "evil; echo INJECT",                 # HOSTNAME rejects ;
+                "networks":         "10.0.0.0/24\nPostUp=touch /tmp/x",  # IP_OR_CIDR_LIST rejects garbage
+                "routedNetworks":   "10.0.0.0/8|whoami",                 # rejects |
+            }
+            for field, payload in tunnel_negative.items():
+                bad_tunnel = copy.deepcopy(positive_tunnel)
+                bad_tunnel[field] = payload
+                bad_app = copy.deepcopy(baseline)
+                bad_app["tunnels"]["list"] = [bad_tunnel]
+                with pytest.raises(Exception):
+                    self._app.setSettings(bad_app)
+                stored = self._app.getSettings()["tunnels"]["list"][0]
+                assert stored.get(field) != payload, (
+                    f"NGFW-15768: WireGuardVpnTunnel.{field} stored rejected "
+                    f"payload verbatim: {stored.get(field)!r}"
+                )
+
+            # privateKey negative is exercised at the settings level below to avoid
+            # depending on whether the tunnel's privateKey is required non-blank.
+
+            # --- Settings negatives. ---
+            settings_negative = {
+                "publicKey":       "evil; echo INJECT",
+                "privateKey":      "evil$(id)",
+                "dnsSearchDomain": "evil\necho INJECT",
+            }
+            for field, payload in settings_negative.items():
+                bad_app = copy.deepcopy(baseline)
+                bad_app[field] = payload
+                with pytest.raises(Exception):
+                    self._app.setSettings(bad_app)
+                current = self._app.getSettings()
+                assert current.get(field) != payload, (
+                    f"NGFW-15768: WireGuardVpnSettings.{field} stored rejected "
+                    f"payload verbatim: {current.get(field)!r}"
+                )
+        finally:
+            self._app.setSettings(orig_settings)
+
 
 test_registry.register_module("wireguard-vpn", WireGuardVpnTests)

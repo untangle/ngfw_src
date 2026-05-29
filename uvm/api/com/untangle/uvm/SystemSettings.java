@@ -16,6 +16,8 @@ import org.json.JSONString;
 import java.util.stream.Collectors;
 
 import com.untangle.uvm.app.DayOfWeekMatcher;
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
 
 import org.apache.commons.lang3.StringUtils;
 /**
@@ -49,9 +51,13 @@ public class SystemSettings implements Serializable, JSONString
      * to each by default, since that is the name of the cert that is
      * created and signed by our internal CA during the installation.
      */
+    @SafeCheck(SafeType.FILENAME)
     private String webCertificate = "apache.pem";
+    @SafeCheck(SafeType.FILENAME)
     private String mailCertificate = "apache.pem";
+    @SafeCheck(SafeType.FILENAME)
     private String ipsecCertificate = "apache.pem";
+    @SafeCheck(SafeType.FILENAME)
     private String radiusCertificate = "apache.pem";
 
     /**
@@ -64,10 +70,15 @@ public class SystemSettings implements Serializable, JSONString
      * These are used for RADIUS proxy support
      */
     private boolean radiusProxyEnabled = false;
+    @SafeCheck(SafeType.HOSTNAME)
     private String radiusProxyServer = StringUtils.EMPTY;
+    @SafeCheck(SafeType.ALPHANUM)
     private String radiusProxyWorkgroup = StringUtils.EMPTY;
+    @SafeCheck(SafeType.HOSTNAME)
     private String radiusProxyRealm = StringUtils.EMPTY;
+    @SafeCheck(SafeType.ALPHANUM)
     private String radiusProxyUsername = StringUtils.EMPTY;
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String radiusProxyPassword = StringUtils.EMPTY;
     private String radiusProxyEncryptedPassword = StringUtils.EMPTY;
 

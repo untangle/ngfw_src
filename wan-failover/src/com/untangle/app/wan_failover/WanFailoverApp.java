@@ -134,7 +134,10 @@ public class WanFailoverApp extends AppBase
             throw new RuntimeException("Invalid interface id: " + uplinkID);
         }
 
-        String output = UvmContextFactory.context().execManager().execOutput(PINGABLE_HOSTS_SCRIPT + " " + uplinkID + " " + intfSettings.getSymbolicDev());
+        String output = UvmContextFactory.context().execManager().execCommand(
+            PINGABLE_HOSTS_SCRIPT,
+            List.of(String.valueOf(uplinkID), intfSettings.getSymbolicDev())
+        ).getOutput();
 
         if (output.trim().length() == 0) {
             throw new RuntimeException("Unable to determine pingable hosts.");

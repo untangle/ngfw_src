@@ -5,11 +5,13 @@
 package com.untangle.app.wan_failover;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.network.InterfaceSettings;
@@ -260,7 +262,8 @@ public class WanFailoverTester implements Runnable
 
         try {
             if ("arp".equals(testType)) {
-                result.output = WanFailoverApp.execManager.execOutput(ARP_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs));
+                ExecManagerResult execResult = WanFailoverApp.execManager.execCommand(ARP_TEST, List.of(String.valueOf(interfaceId), osName, String.valueOf(timeoutMs)));
+                result.output = execResult != null ? execResult.getOutput() : "";
             }
 
             else if ("ping".equals(testType)) {
@@ -273,11 +276,13 @@ public class WanFailoverTester implements Runnable
                     result.message = "Error: Empty ping hostname";
                     return result;
                 }
-                result.output = WanFailoverApp.execManager.execOutput(PING_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs) + " " + pingHost);
+                ExecManagerResult execResult = WanFailoverApp.execManager.execCommand(PING_TEST, List.of(String.valueOf(interfaceId), osName, String.valueOf(timeoutMs), pingHost));
+                result.output = execResult != null ? execResult.getOutput() : "";
             }
 
             else if ("dns".equals(testType)) {
-                result.output = WanFailoverApp.execManager.execOutput(DNS_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs));
+                ExecManagerResult execResult = WanFailoverApp.execManager.execCommand(DNS_TEST, List.of(String.valueOf(interfaceId), osName, String.valueOf(timeoutMs)));
+                result.output = execResult != null ? execResult.getOutput() : "";
             }
 
             else if ("http".equals(testType)) {
@@ -290,7 +295,8 @@ public class WanFailoverTester implements Runnable
                     result.message = "Error: Empty URL";
                     return result;
                 }
-                result.output = WanFailoverApp.execManager.execOutput(HTTP_TEST + " " + String.valueOf(interfaceId) + " " + osName + " " + String.valueOf(timeoutMs) + " " + httpUrl);
+                ExecManagerResult execResult = WanFailoverApp.execManager.execCommand(HTTP_TEST, List.of(String.valueOf(interfaceId), osName, String.valueOf(timeoutMs), httpUrl));
+                result.output = execResult != null ? execResult.getOutput() : "";
             }
 
             else {

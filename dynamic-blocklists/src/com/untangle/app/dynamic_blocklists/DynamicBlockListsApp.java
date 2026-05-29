@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import com.untangle.uvm.ExecManagerResult;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -216,8 +217,39 @@ public class DynamicBlockListsApp extends AppBase
      * @throws Exception if the job execution is interrupted.
      */
     public Object runJobsByConfigIdsV2(LinkedList<String> configIds) throws Exception {
-        List<String> cronLines = Files.readAllLines(Paths.get(CRON_FILE));
         List<String> successfulIds = new ArrayList<>();
+
+        // Validate all configIds as UUIDs before doing any file I/O
+        for (String configId : configIds) {
+            try {
+                UUID.fromString(configId);
+            } catch (IllegalArgumentException e) {
+                logger.error("Invalid configId format (must be UUID): {}", configId);
+                Map<String, Object> messageMap = new HashMap<>();
+                messageMap.put("message", "invalid_config_id_format");
+                messageMap.put("vars", null);
+                return Map.of(
+                    "type", "Error",
+                    "success", false,
+                    "messages", List.of(messageMap)
+                );
+            }
+        }
+
+        List<String> cronLines;
+        try {
+            cronLines = Files.readAllLines(Paths.get(CRON_FILE));
+        } catch (java.nio.file.NoSuchFileException e) {
+            logger.warn("Cron file not found: {}", CRON_FILE);
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("message", "download_blocklist_to_appliance_failure");
+            messageMap.put("vars", null);
+            return Map.of(
+                "type", "Error",
+                "success", false,
+                "messages", List.of(messageMap)
+            );
+        }
 
         for (String configId : configIds) {
             boolean found = false;
@@ -241,7 +273,10 @@ public class DynamicBlockListsApp extends AppBase
                         command = command.replace("2>&1 | logger -t dynamic_list_manager", "").trim();
                     }
                     try {
-                        ExecManagerResult result = UvmContextFactory.context().execManager().exec(command);
+                        String[] cmdParts = command.split("\\s+");
+                        String script = cmdParts[0];
+                        List<String> args = Arrays.asList(Arrays.copyOfRange(cmdParts, 1, cmdParts.length));
+                        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(script, args);
                         String resultOutput = result.getOutput();
                         // Mark as failed if output contains [ERROR]/[WARNING]
                         if ( (resultOutput != null && (resultOutput.contains("[ERROR]") || resultOutput.contains("[WARNING]")))) {

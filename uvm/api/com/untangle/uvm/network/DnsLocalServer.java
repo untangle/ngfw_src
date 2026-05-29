@@ -9,12 +9,18 @@ import java.net.InetAddress;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * Dns local server.
  */
 @SuppressWarnings("serial")
 public class DnsLocalServer implements Serializable, JSONString
 {
+    // Flows into /etc/dnsmasq.d/* `local=/{domain}/{ip}` - dnsmasq supports
+    // `dhcp-script=` exec directive, so newline injection in domain is RCE.
+    @SafeCheck(SafeType.HOSTNAME)
     private String domain;
     private InetAddress localServer;
     

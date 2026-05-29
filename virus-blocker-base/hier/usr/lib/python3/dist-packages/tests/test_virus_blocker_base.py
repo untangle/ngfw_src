@@ -22,6 +22,8 @@ canRelay = True
 clamavNotReady = False
 testsite = global_functions.TEST_SERVER_HOST
 testsiteIP = socket.gethostbyname(testsite)
+# Local test server hosting /virus/* (test.untangle.com no longer serves these)
+virus_test_host = runtests.overrides.get("VIRUS_TEST_HOST", default="10.112.56.226")
 
 def addPassSite(app, site, enabled=True, description="description"):
     newRule =  { "enabled": enabled, "description": description, "javaClass": "com.untangle.uvm.app.GenericRule", "string": site }
@@ -80,21 +82,22 @@ class VirusBlockerBaseTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global app, md5StdNum, appSSL, appSSLData, canRelay
+        global app, md5StdNum, appSSL, appSSLData, canRelay, ftp_result
         app = cls._app.getName()
-        #For pppoe server clamav takes more time to get ready for connection so need to validate it first
-        if app == "virus_blocker_lite":
-            global clamavNotReady
-            clamavNotReady = global_functions.clamav_not_ready_for_connections()
+        ftp_result = subprocess.call(
+            ["nc", "-z", global_functions.ftp_server, "21"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
 
         # download eicar and trojan files before installing virus
         # blocker, using HTTPS to avoid any scanner potentially
         # sitting on our path
         cls.ftp_user_name, cls.ftp_password = global_functions.get_live_account_info("ftp")
         remote_control.run_command("rm -f /tmp/eicar /tmp/std_022_ftpVirusBlocked_file /tmp/temp_022_ftpVirusPassSite_file")
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/eicar", uri="https://test.untangle.com/virus/eicar.com"))
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/eicar", uri="https://" + virus_test_host + "/virus/eicar.com"))
         assert (result == 0)
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/std_022_ftpVirusBlocked_file", uri="https://test.untangle.com/virus/fedexvirus.zip"))
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/std_022_ftpVirusBlocked_file", uri="https://" + virus_test_host + "/virus/fedexvirus.zip"))
         assert (result == 0)
         md5StdNum = remote_control.run_command("\"md5sum /tmp/std_022_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         cls.md5StdNum = md5StdNum
@@ -146,7 +149,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         pre_events_scan = global_functions.get_app_metric_value(self._app,"scan")
         pre_events_block = global_functions.get_app_metric_value(self._app,"block")
 
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/virus/eicar.zip") + " 2>&1 | grep -q blocked")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + virus_test_host + "/virus/eicar.zip") + " 2>&1 | grep -q blocked")
         assert (result == 0)
 
         post_events_scan = global_functions.get_app_metric_value(self._app,"scan")
@@ -161,7 +164,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("local scanner not available on ARM")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/virus/virus.exe") + " 2>&1 | grep -q blocked")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + virus_test_host + "/virus/virus.exe") + " 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block virus http download zip
@@ -170,7 +173,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("local scanner not available on ARM")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + testsite + "/virus/fedexvirus.zip") + " 2>&1 | grep -q blocked")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + virus_test_host + "/virus/fedexvirus.zip") + " 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can block a partial fetch after full fetch (using cache)
@@ -179,16 +182,16 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("local scanner not available on ARM")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")
-        result = remote_control.run_command(global_functions.build_curl_command(uri="http://" + testsite + "/virus/virus.exe", location=True) + " 2>&1 | grep -q blocked")
+        result = remote_control.run_command(global_functions.build_curl_command(uri="http://" + virus_test_host + "/virus/virus.exe", location=True) + " 2>&1 | grep -q blocked")
         assert (result == 0)
-        result = remote_control.run_command(global_functions.build_curl_command(uri="http://" + testsite + "/virus/virus.exe", location=True, range="'5-'") + " 2>&1 | grep -q blocked")
+        result = remote_control.run_command(global_functions.build_curl_command(uri="http://" + virus_test_host + "/virus/virus.exe", location=True, range="'5-'") + " 2>&1 | grep -q blocked")
         assert (result == 0)
 
     # test that client can download virus http zip from pass site
     @pytest.mark.failure_behind_ngfw
     def test_019_httpEicarPassSite(self):
-        addPassSite(self._app, testsite)
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + testsite + "/virus/eicar.zip") + " 2>&1 | grep -q blocked")
+        addPassSite(self._app, virus_test_host)
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + virus_test_host + "/virus/eicar.zip") + " 2>&1 | grep -q blocked")
         nukePassSites(self._app)
         assert (result == 1)
 
@@ -196,7 +199,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_021_ftpNonVirusNotBlocked(self):
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/test.zip"))
@@ -206,7 +208,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_023_ftpNonVirusPDFNotBlocked(self):
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         result = remote_control.run_command(global_functions.build_wget_command(output_file="/dev/null", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/test/test.pdf"))
@@ -221,11 +222,10 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("Unable to obtain FTP credentials")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         remote_control.run_command("rm -f /tmp/temp_025_ftpVirusBlocked_file")
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_025_ftpVirusBlocked_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip"))
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_025_ftpVirusBlocked_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + virus_test_host + "/virus/fedexvirus.zip"))
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_025_ftpVirusBlocked_file | awk '{print $1}'\"", stdout=True)
         print("md5StdNum <%s> vs md5TestNum <%s>" % (md5StdNum, md5TestNum))
@@ -234,7 +234,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "s_server_addr", global_functions.ftp_server,
+                                            "s_server_addr", virus_test_host,
                                             "c_client_addr", remote_control.client_ip,
                                             "uri", "fedexvirus.zip",
                                             self.shortName() + '_clean', False )
@@ -245,12 +245,11 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_027_ftpVirusPassSite(self):
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
-        addPassSite(self._app, global_functions.ftp_server)
+        addPassSite(self._app, virus_test_host)
         remote_control.run_command("rm -f /tmp/temp_027_ftpVirusPassSite_file")
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_027_ftpVirusPassSite_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip"))
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_027_ftpVirusPassSite_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + virus_test_host + "/virus/fedexvirus.zip"))
         nukePassSites(self._app)
         assert (result == 0)
         md5TestNum = remote_control.run_command("\"md5sum /tmp/temp_027_ftpVirusPassSite_file | awk '{print $1}'\"", stdout=True)
@@ -262,13 +261,13 @@ class VirusBlockerBaseTests(NGFWTestCase):
         if platform.machine().startswith('arm'):
             raise unittest.SkipTest("local scanner not available on ARM")
         fname = sys._getframe().f_code.co_name
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + testsite + f"/virus/eicar.zip?arg={fname}") + " 2>&1 | grep -q blocked")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + virus_test_host + f"/virus/eicar.zip?arg={fname}") + " 2>&1 | grep -q blocked")
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Infected Web Events',None,1)
         assert(events != None)
         found = global_functions.check_events( events.get('list'), 5,
-                                            "host", testsite,
+                                            "host", virus_test_host,
                                             "uri", ("/virus/eicar.zip?arg=%s" % fname),
                                             self.shortName() + '_clean', False )
         assert( found )
@@ -294,11 +293,10 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("local scanner not available on ARM")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_022_ftpVirusBlocked_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + global_functions.ftp_server + "/virus/fedexvirus.zip"))
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="/tmp/temp_022_ftpVirusBlocked_file", user=self.ftp_user_name, password=self.ftp_password, uri="ftp://" + virus_test_host + "/virus/fedexvirus.zip"))
         assert (result == 0)
 
         events = global_functions.get_events(self.displayName(),'Infected Ftp Events',None,1)
@@ -311,7 +309,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
     def test_103_eventlog_ftpNonVirus(self):
         if self.ftp_user_name is None:
             raise unittest.SkipTest("Unable to obtain FTP credentials")
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         fname = sys._getframe().f_code.co_name
@@ -453,7 +450,6 @@ class VirusBlockerBaseTests(NGFWTestCase):
             raise unittest.SkipTest("Unable to obtain FTP credentials")
         if clamavNotReady:
             raise unittest.SkipTest(" ClamAV not ready to accept connections")    
-        ftp_result = subprocess.call(["ping","-c","1",global_functions.ftp_server ],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         if (ftp_result != 0):
             raise unittest.SkipTest("FTP server not available")
         md5LargePDFClean = "06b3cc0a1430c2aaf449b46c72fecee5"
@@ -491,7 +487,7 @@ class VirusBlockerBaseTests(NGFWTestCase):
         virusSettings['enableLocalScan'] = False
         self._app.setSettings(virusSettings)
 
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://test.untangle.com/virus/eicar.zip") + " 2>&1 | grep -q blocked")
+        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri="http://" + virus_test_host + "/virus/eicar.zip") + " 2>&1 | grep -q blocked")
 
         virusSettings['enableCloudScan'] = True
         virusSettings['enableLocalScan'] = True
