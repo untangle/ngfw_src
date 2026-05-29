@@ -1,6 +1,7 @@
 """branding_manager tests"""
 import json
 import re
+import time
 import unittest
 import urllib.error
 import urllib.request
@@ -24,6 +25,50 @@ default_contact_email  = ""
 default_banner_message = ""
 
 default_policy_id = 1
+
+
+def _fetch_uvm_root_with_retry(retries=10, retry_sleep=2, all_parameters=True):
+    """
+    GET the UVM root URL via remote wget and retry until the response body
+    looks like the UVM login page (contains a populated <title> with company
+    name in it), not Apache's mod_python "Permission denied" fallback.
+
+    Right after untangle-vm restart Apache mod_python's DbmSession isn't fully
+    initialized for some seconds and any unauthenticated GET to / returns the
+    "<title>Server</title> ... Permission denied" page instead of the actual
+    login HTML. Observed as 2 branding-manager failures (test_020/021) at T+9m
+    in the 2026-05-28 ATS bookworm->trixie post-upgrade run; both pages render
+    correctly on re-run minutes later.
+
+    Returns the (string) response body. Raises AssertionError if no retry
+    succeeds.
+    """
+    title_re = re.compile(r'<title>(.*?)</title>', re.IGNORECASE | re.DOTALL)
+    last = ""
+    for attempt in range(retries):
+        result = remote_control.run_command(
+            global_functions.build_wget_command(
+                output_file="-",
+                ignore_certificate=True,
+                all_parameters=all_parameters,
+                uri=global_functions.get_http_url(),
+            ),
+            stdout=True,
+        ) or ""
+        m = title_re.search(result)
+        title = m.group(1).strip() if m else ""
+        # Apache fallback page renders as "<title>Server</title>"; UVM login
+        # renders with the company name in the title (e.g. "Arista Administrator
+        # Login"). Any non-"Server" title with content means the UVM stack served.
+        if title and title.lower() != "server":
+            return result
+        last = result
+        time.sleep(retry_sleep)
+    raise AssertionError(
+        f"UVM root never returned the login page after {retries} attempts; "
+        f"last body title was empty or 'Server' (mod_python fallback). "
+        f"Apache mod_python likely not warm after untangle-vm restart."
+    )
     
 @pytest.mark.branding_manager
 class BrandingManagerTests(NGFWTestCase):
@@ -162,8 +207,8 @@ class BrandingManagerTests(NGFWTestCase):
     @pytest.mark.failure_behind_ngfw
     def test_020_check_login_page_branding(self):
         # Check login page for branding
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
-        
+        result = _fetch_uvm_root_with_retry()
+
         # Verify Title of blockpage as company name
         myRegex = re.compile('<title>(.*?)</title>', re.IGNORECASE|re.DOTALL)
         matchText = myRegex.search(result).group(1)
@@ -175,17 +220,17 @@ class BrandingManagerTests(NGFWTestCase):
 
     def test_021_changeBranding_bannerMessage(self):
         global app, appWeb, appData
-        
+
         # TODO Just like the changes above, I think this may be unnecessary. Not sure though. Do we need to test multi-line?
         appData['bannerMessage'] = "A regulation banner requirement containing a mix of text including <b>html</b> and\nmultiple\nlines"
         app.setSettings(appData)
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
+        result = _fetch_uvm_root_with_retry()
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html</b> and<br/>multiple<br/>lines.*', re.DOTALL|re.MULTILINE)
         assert(re.match(myRegex, result))
-            
+
         appData['bannerMessage'] = default_banner_message
         app.setSettings(appData)
-        result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
+        result = _fetch_uvm_root_with_retry()
         myRegex = re.compile('.*A regulation banner requirement containing a mix of text including <b>html</b> and<br/>multiple<br/>lines.*', re.DOTALL|re.MULTILINE)
         assert(not re.match(myRegex, result))
         
