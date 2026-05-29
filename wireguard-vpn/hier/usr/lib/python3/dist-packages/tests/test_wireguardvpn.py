@@ -823,7 +823,7 @@ class WireGuardVpnTests(NGFWTestCase):
             positive_tunnel = build_wireguard_tunnel()
             positive_tunnel["description"]      = "Office VPN"
             positive_tunnel["endpointHostname"] = "vpn.example.com"
-            positive_tunnel["networks"]         = "192.168.10.0/24, 192.168.11.0/24"
+            positive_tunnel["networks"]         = "192.168.235.0/24, 192.168.236.0/24"
             positive_tunnel["routedNetworks"]   = "10.0.0.0/8"
             positive_tunnel["publicKey"]        = WG_REMOTE["publicKey"]  # known-valid 44-char base64
             positive_tunnel["privateKey"]       = ""  # blank is allowed by validator (null/empty pass)
