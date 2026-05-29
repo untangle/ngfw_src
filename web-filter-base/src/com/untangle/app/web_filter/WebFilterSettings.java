@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.app.web_filter.generic.WebFilterSettingsGeneric;
 import com.untangle.uvm.app.GenericRule;
 
 /**
@@ -172,5 +173,57 @@ public class WebFilterSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms this V1 settings object into its generic V2 representation
+     * for the Vue UI.
+     *
+     * <p>All scalar fields are copied directly. The {@code filterRules} list
+     * is structurally transformed from {@link WebFilterRule} to
+     * {@link com.untangle.uvm.generic.RuleGeneric} via
+     * {@link WebFilterRule#transformWebFilterRulesToGeneric}.  GenericRule-typed
+     * lists (passedClients, passedUrls, blockedUrls, categories, searchTerms)
+     * are assigned directly — they share the same type in both V1 and V2.
+     *
+     * @return a new {@link WebFilterSettingsGeneric} populated from this V1 object
+     */
+    public WebFilterSettingsGeneric transformWebFilterSettingsToGeneric()
+    {
+        WebFilterSettingsGeneric g = new WebFilterSettingsGeneric();
+
+        g.setEnableHttpsSni(this.enableHttpsSni);
+        g.setEnableHttpsSniCertFallback(this.enableHttpsSniCertFallback);
+        g.setEnableHttpsSniIpFallback(this.enableHttpsSniIpFallback);
+        g.setUnblockPasswordEnabled(this.unblockPasswordEnabled);
+        g.setUnblockPasswordAdmin(this.unblockPasswordAdmin);
+        g.setUnblockPassword(this.unblockPassword);
+        g.setUnblockMode(this.unblockMode);
+        g.setUnblockTimeout(this.unblockTimeout);
+        g.setEnforceSafeSearch(this.enforceSafeSearch);
+        g.setForceKidFriendly(this.forceKidFriendly);
+        g.setRestrictYoutube(this.restrictYoutube);
+        g.setBlockQuic(this.blockQuic);
+        g.setLogQuic(this.logQuic);
+        g.setBlockAllIpHosts(this.blockAllIpHosts);
+        g.setPassReferers(this.passReferers);
+        g.setRestrictGoogleApps(this.restrictGoogleApps);
+        g.setRestrictGoogleAppsDomain(this.restrictGoogleAppsDomain);
+        g.setBlockECH(this.blockECH);
+        g.setCustomBlockPageEnabled(this.customBlockPageEnabled);
+        g.setCustomBlockPageUrl(this.customBlockPageUrl);
+        g.setCloseHttpsBlockEnabled(this.closeHttpsBlockEnabled);
+
+        // GenericRule lists - shared type, copy to avoid aliasing; always set (empty list when null)
+        g.setPassedClients(this.passedClients != null ? new LinkedList<>(this.passedClients) : new LinkedList<>());
+        g.setPassedUrls(this.passedUrls != null       ? new LinkedList<>(this.passedUrls)    : new LinkedList<>());
+        g.setBlockedUrls(this.blockedUrls != null     ? new LinkedList<>(this.blockedUrls)   : new LinkedList<>());
+        g.setCategories(this.categories != null       ? new LinkedList<>(this.categories)    : new LinkedList<>());
+        g.setSearchTerms(this.searchTerms != null     ? new LinkedList<>(this.searchTerms)   : new LinkedList<>());
+
+        // filterRules - the ONE structural transformation; returns empty list when null
+        g.setFilterRules(WebFilterRule.transformWebFilterRulesToGeneric(this.filterRules));
+
+        return g;
     }
 }

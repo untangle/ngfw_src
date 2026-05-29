@@ -27,6 +27,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.commons.codec.digest.Crypt;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import com.untangle.app.web_filter.generic.WebFilterSettingsGeneric;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.SettingsManager;
@@ -559,6 +562,44 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     public void setSettings(WebFilterSettings settings)
     {
         _setSettings(settings);
+    }
+
+    /**
+     * Get the application settings in V2 (generic) format for the Vue UI.
+     *
+     * <p>Delegates to {@link WebFilterSettings#transformWebFilterSettingsToGeneric()}
+     * which copies all scalar fields and converts the {@code filterRules} list
+     * from {@link WebFilterRule} to the shared {@link com.untangle.uvm.generic.RuleGeneric}
+     * shape.  Returns an empty generic settings object if no settings are loaded yet.
+     *
+     * @return {@link WebFilterSettingsGeneric} populated from the current V1 settings
+     */
+    public WebFilterSettingsGeneric getSettingsV2() {
+        if (this.getSettings() != null)
+            return this.getSettings().transformWebFilterSettingsToGeneric();
+        return new WebFilterSettingsGeneric();
+    }
+
+    /**
+     * Set the application settings from a V2 (generic) payload coming from
+     * the Vue UI.
+     *
+     * <p>Deep-clones the current V1 settings so V1-only fields are preserved through
+     * the round-trip. The clone is then mutated by
+     * {@link WebFilterSettingsGeneric#transformGenericToWebFilterSettings} and
+     * passed to the existing {@link #setSettings(WebFilterSettings)} which
+     * handles ID reassignment, flagged/blocked enforcement, persistence, and
+     * decision-engine reconfiguration.
+     *
+     * @param newSettings V2 generic settings payload from the Vue UI
+     */
+    public void setSettingsV2(WebFilterSettingsGeneric newSettings)
+    {
+        if (this.getSettings() != null) {
+            WebFilterSettings cloned = SerializationUtils.clone(this.getSettings());
+            newSettings.transformGenericToWebFilterSettings(cloned);
+            this.setSettings(cloned);
+        }
     }
 
     /**
