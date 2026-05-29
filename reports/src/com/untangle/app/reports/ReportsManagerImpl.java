@@ -513,6 +513,31 @@ public class ReportsManagerImpl implements ReportsManager
     }
 
     /**
+     * Query report data in v2 format.
+     *
+     * @param entry
+     *  ReportEntry to use.
+     * @param startDate
+     *  Beginning date.
+     * @param endDate
+     *  Ending date.
+     * @param extraSelects
+     *  Extra selects.
+     * @param extraConditions
+     *  Additional SQL query options.
+     * @param fromType
+     *  If null, use the table, otherwise construct using information in object.
+     * @param limit
+     *  Restrict number of results to this number.
+     * @return
+     *  Results of query as a List of JSONObjects.
+     */
+    public List<JSONObject> getDataForReportEntryV2( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit )
+    {
+        return getDataForReportEntry( entry, startDate, endDate, extraSelects, extraConditions, fromType, limit );
+    }
+
+    /**
      * Query report data.
      *
      * @param entry
