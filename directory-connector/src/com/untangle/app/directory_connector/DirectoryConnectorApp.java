@@ -213,6 +213,23 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
+     * Get directory connector settings (V2 API).
+     * @return DirectoryConnectorSettings
+     */
+    public DirectoryConnectorSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
+     * Set directory connector settings (V2 API).
+     * @param newSettings
+     *      New settings to configure.
+     */
+    public void setSettingsV2(final DirectoryConnectorSettings newSettings) {
+        this.setSettings(newSettings);
+    }
+
+    /**
      * Set directory connector settings.
      *
      * @param newSettings
@@ -361,6 +378,22 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     public List<String> getRuleConditionalDomainEntries()
     {
         return activeDirectoryManager.getDomains();
+    }
+
+    /**
+     * Get all groups from all AD for rule conditions - v2 for VueUI
+     * @return List of groups
+     */
+    public List<GroupEntry> getRuleConditionalGroupEntriesV2() {
+        return this.getRuleConditionalGroupEntries();
+    }
+
+    /**
+     * Get all domains from all AD for rule conditions - v2 for VueUI
+     * @return List of groups.
+     */
+    public List<String> getRuleConditionalDomainEntriesV2() {
+        return this.getRuleConditionalDomainEntries();
     }
 
     /**

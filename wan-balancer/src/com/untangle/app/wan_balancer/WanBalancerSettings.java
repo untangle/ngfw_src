@@ -9,6 +9,8 @@ import java.util.List;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.app.wan_balancer.generic.WanBalancerSettingsGeneric;
+
 /**
  * wan balancer setting object
  */
@@ -35,5 +37,24 @@ public class WanBalancerSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms this V1 settings object into its generic V2 representation
+     * for the Vue UI. Only routeRules is transformed into the shared RuleGeneric form.
+     *
+     * @return WanBalancerSettingsGeneric
+     */
+    public WanBalancerSettingsGeneric transformWanBalancerSettingsToGeneric()
+    {
+        WanBalancerSettingsGeneric g = new WanBalancerSettingsGeneric();
+
+        g.setVersion(this.version);
+        g.setWeights(this.weights);
+
+        if (this.routeRules != null)
+            g.setRoute_rules(RouteRule.transformRouteRulesToGeneric(this.routeRules));
+
+        return g;
     }
 }

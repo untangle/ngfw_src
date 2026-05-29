@@ -13,12 +13,16 @@ import java.util.Map;
  */
 public interface MailSender
 {
+    void setSettingsV2(MailSettings newSettings);
+
     /**
      * Set the mail settings.
      *
      * @param settings the new mail settings.
      */
     void setSettings(MailSettings settings);
+
+    MailSettings getSettingsV2();
 
     /**
      * Get the mail settings.
@@ -127,6 +131,8 @@ public interface MailSender
      * that matches the File's name.
      */
     void sendMessageWithAttachments(String[] recipients, String subject, String bodyHTML, List<String> extraLocations, List<File> extras);
+
+    String sendTestMessageV2(String recipient);
 
     /**
      * Used by the UI to test saved MailSettings.  A static test email

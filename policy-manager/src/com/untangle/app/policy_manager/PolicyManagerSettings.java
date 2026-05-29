@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.app.policy_manager.generic.PolicyManagerSettingsGeneric;
+
 /**
  * Policy Manager Settings
  */
@@ -42,4 +44,20 @@ public class PolicyManagerSettings implements Serializable, JSONString
         return jO.toString();
     }
 
+    /**
+     * Transforms legacy Policy Manager Settings to Generic v2 format
+     * Used for Vue UI
+     * @return PolicyManagerSettingsGeneric
+     */
+    public PolicyManagerSettingsGeneric transformLegacyToGenericSettings() {
+        PolicyManagerSettingsGeneric policyManagerSettingsGeneric = new PolicyManagerSettingsGeneric();
+
+        if (this.getPolicies() != null)
+            policyManagerSettingsGeneric.setPolicies(new LinkedList<>(this.getPolicies()));
+        if (this.getRules() != null)
+            policyManagerSettingsGeneric.setPolicy_rules(PolicyRule.transformPolicyRulesToGeneric(this.getRules()));
+        policyManagerSettingsGeneric.setNextPolicyId(this.getNextPolicyId());
+
+        return policyManagerSettingsGeneric;
+    }
 }

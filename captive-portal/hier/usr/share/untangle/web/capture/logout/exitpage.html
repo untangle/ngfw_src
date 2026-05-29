@@ -2,38 +2,21 @@
 <html>
 <head>
 <meta name="viewport" content="initial-scale=1.0, width=device-width" charset="UTF-8">
-<link href="/images/favicon-captive-portal.png" type="image/png" rel="icon"></link>
+<link href="/images/favicon-captive-portal.png" type="image/png" rel="icon">
 
 <title>$.CompanyName.$ | $.PageTitle.$</title>
-<style type="text/css">
-/* <![CDATA[ */
-@import url(/images/base.css);
-/* ]]> */
-</style>
-
-<style type="text/css">
-.styleTitle {
-    font-size: 20px !important;
-}
-.styleNormal {
-    color: #4c4c4c !important;
-    font-weight: normal !important;
-}
-.styleProblem {
-    color: rgb(255,0,0) !important;
-    font-weight: normal !important;
-}
-</style>
+<link rel="stylesheet" href="/capture/captive.css">
 </head>
 <body>
 
-<header>
-    <img src="/images/BrandingLogo.png" style="max-width: 300px; max-height: 48px;"><br/>
-    <h1 style="letter-spacing: normal; color: #CCC; font-weight: bold;">$.PageTitle.$</h1>
-</header>
-
-<div class="form-login" style="padding: 15px;">
-    <h2 class="$.ExitStyle.$" style="border: 0; padding: 10px; margin: 30px 0; font-weight: bold; letter-spacing: normal;">$.ExitMessage.$</h2>
+<div class="form-login">
+    <header>
+        <img src="/images/BrandingLogo.png" alt="">
+        <h1>$.PageTitle.$</h1>
+    </header>
+    <div class="cp-content">
+        <h2 class="styleTitle $.ExitStyle.$">$.ExitMessage.$</h2>
+    </div>
 </div>
 <!--DEBUG-->
 </body>
