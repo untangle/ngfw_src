@@ -233,6 +233,15 @@ public class ActiveDirectoryManagerImpl
     }
 
     /**
+     * Get AD server status with the specified server settings (V2 API).
+     * @param testServerSettings Server settings to test.
+     * @return JSON object indicating status of test.
+     */
+    public JSONObject getStatusForSettingsV2( ActiveDirectoryServer testServerSettings ) {
+        return this.getStatusForSettings(testServerSettings);
+    }
+
+    /**
      * Get AD server status with the specified server settings.
      *
      * @param testServerSettings Server settings to test.
