@@ -27,6 +27,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.commons.codec.digest.Crypt;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import com.untangle.app.web_filter.generic.WebFilterSettingsGeneric;
 import com.untangle.uvm.AdminSettings;
 import com.untangle.uvm.AdminUserSettings;
 import com.untangle.uvm.SettingsManager;
@@ -559,6 +562,33 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
     public void setSettings(WebFilterSettings settings)
     {
         _setSettings(settings);
+    }
+
+    /**
+     * Get the settings in V2 (generic) format for the Vue UI.
+     *
+     * @return WebFilterSettingsGeneric
+     */
+    public WebFilterSettingsGeneric getSettingsV2() {
+        if (this.getSettings() != null)
+            return this.getSettings().transformWebFilterSettingsToGeneric();
+        return new WebFilterSettingsGeneric();
+    }
+
+    /**
+     * Set the settings from a V2 (generic) format payload coming from the Vue UI.
+     * Deep-clones the current V1 settings so V1-only fields (version,
+     * blockedMimeTypes, blockedExtensions) are preserved.
+     *
+     * @param newSettings WebFilterSettingsGeneric
+     */
+    public void setSettingsV2(WebFilterSettingsGeneric newSettings)
+    {
+        if (this.getSettings() != null) {
+            WebFilterSettings cloned = SerializationUtils.clone(this.getSettings());
+            newSettings.transformGenericToWebFilterSettings(cloned);
+            this.setSettings(cloned);
+        }
     }
 
     /**
