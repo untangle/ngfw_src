@@ -1086,12 +1086,10 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     private int restoreData( FileItem item )
     {
+        if (!item.getName().endsWith(".gz")) {
+            throw new RuntimeException("Invalid file extension. Allowed: .gz");
+        }
         try {
-            //validate zip
-            if (!item.getName().endsWith(".gz")) {
-                throw new RuntimeException("Invalid file extension. Allowed: .gz");
-            }
-
             String filename = "/tmp/reports_restore_data.sql.gz";
             File file = new File(filename);
             if (file.exists())
@@ -1535,18 +1533,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         @Override
         public String handleFile(FileItem fileItem, String argument) throws Exception
         {
-            try {
-                int ret = restoreData(fileItem);
-
-                if ( ret == 0 ) {
-                    return I18nUtil.marktr("Successfully restored data");
-                } else {
-                    return I18nUtil.marktr("Error restoring data:") + " " + ret;
-                }
-                    
-            } catch ( Exception e ) {
-                return I18nUtil.marktr("Error restoring data:") + " " + e.toString();
+            int ret = restoreData(fileItem);
+            if ( ret == 0 ) {
+                return I18nUtil.marktr("Successfully restored data");
             }
+            throw new RuntimeException(I18nUtil.marktr("Error restoring data:") + " exit code " + ret);
          }
     }
     
