@@ -3390,9 +3390,9 @@ server=dynupdate.no-ip.com
         """Verify NGFW-15768 @SafeCheck annotations on InterfaceSettings.
 
         Retained fields (TIER B RCE-class):
-          - v4PPPoERootDev       (INTERFACE)      sink: /etc/network/interfaces pre-up
-          - v4PPPoEUsername      (ALPHANUM)       sink: /etc/ppp/peers/* connect=
-          - dhcpDnsOverride      (IP_OR_CIDR_LIST) sink: dnsmasq dhcp-script=
+          - v4PPPoERootDev       (INTERFACE)        sink: /etc/network/interfaces pre-up
+          - v4PPPoEUsername      (USERNAME_OR_EMAIL) sink: /etc/ppp/peers/* connect=
+          - dhcpDnsOverride      (IP_OR_CIDR_LIST)  sink: dnsmasq dhcp-script=
 
         Per-field RCE audit (2026-05-20) dropped:
           - v4PPPoEPassword (pap-secrets data, no exec directives)
@@ -3407,6 +3407,17 @@ server=dynupdate.no-ip.com
             iface["v4PPPoEUsername"] = "pppoe_user"
             iface["dhcpDnsOverride"] = "8.8.8.8, 1.1.1.1"
             global_functions.uvmContext.networkManager().setNetworkSettings(positive)
+
+            # USERNAME_OR_EMAIL accepts email-format PPPoE usernames (ALPHANUM rejected '@').
+            # ~32% of real-world PPPoE deployments use user@isp.com format (BT, CenturyLink, DTAG).
+            iface = positive["interfaces"]["list"][0]
+            iface["v4PPPoEUsername"] = "user@isp.com"
+            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
+            saved_iface = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]
+            assert saved_iface["v4PPPoEUsername"] == "user@isp.com", (
+                "NGFW-15768: USERNAME_OR_EMAIL failed to accept email-format PPPoE "
+                f"username; got {saved_iface['v4PPPoEUsername']!r}"
+            )
 
             baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
             negative_payloads = {

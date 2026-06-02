@@ -86,7 +86,10 @@ public class InterfaceSettings implements Serializable, JSONString
     
     @SafeCheck(SafeType.INTERFACE)
     private String      v4PPPoERootDev; /* The PPPoE root device (the device ppp is based on)  */
-    @SafeCheck(SafeType.ALPHANUM)
+    // Production sweep: ~32% of PPPoE appliances store user@isp.com format.
+    // ALPHANUM rejects '@'; USERNAME_OR_EMAIL admits it safely (pap-secrets
+    // is a colon-delimited data file with no shell-exec directives).
+    @SafeCheck(SafeType.USERNAME_OR_EMAIL)
     private String      v4PPPoEUsername; /* PPPoE Username */
     // No @SafeCheck: pap-secrets (the only sink) is auth-data only - pppd
     // parses but never execs values. Not RCE-class.

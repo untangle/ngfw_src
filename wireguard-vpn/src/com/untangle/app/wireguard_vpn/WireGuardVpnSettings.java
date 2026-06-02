@@ -33,7 +33,10 @@ public class WireGuardVpnSettings implements Serializable, JSONString
     @SafeCheck(SafeType.BASE64_KEY)
     private String publicKey = "";
     private InetAddress dnsServer;
-    @SafeCheck(SafeType.HOSTNAME)
+
+    // wg-quick DNS= line accepts comma-separated search domains; HOSTNAME_LIST
+    // validates each segment and rejects newlines (single-line config slot).
+    @SafeCheck(SafeType.HOSTNAME_LIST)
     private String dnsSearchDomain = "";
     private List<WireGuardVpnNetwork> networks;
     private List<WireGuardVpnNetworkProfile> networkProfiles;

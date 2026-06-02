@@ -219,9 +219,8 @@ Ext.define('Ung.apps.reports.MainController', {
                 Util.successToast('Upload Data Succeeded'.t());
             },
             failure: function (form, action) {
-                // var errorMsg = 'Upload Data Failed'.t() + ' ' + action.result;
-                // Ext.MessageBox.alert('Failed'.t(), errorMsg);
-                Util.handleException('Upload Data Failed'.t() + ' ' + action.result);
+                var msg = (action.result && action.result.msg) ? action.result.msg : 'Upload Data Failed'.t();
+                Util.handleException(msg);
             }
         });
     },

@@ -1190,7 +1190,7 @@ class IPsecTests(NGFWTestCase):
           - leftSourceIp       (IP_OR_CIDR)
           - leftProtoPort      (ALPHANUM)
           - leftNextHop        (IP_OR_CIDR)
-          - right              ({HOSTNAME, IP_OR_CIDR})  dual-type
+          - right              (PEER_LIST)  comma-separated HOSTNAME-or-IP_OR_CIDR; LF/CR rejected
           - rightId            (SIMPLE_TEXT)
           - rightSourceIp      (IP_OR_CIDR)
           - rightProtoPort     (ALPHANUM)
