@@ -1424,6 +1424,76 @@ class UvmTests(NGFWTestCase):
             "to execEvil() in SystemManagerImpl.downloadUpgrades()."
         )
 
+    def test_131_safecheck_bypass_flag_field(self):
+        """
+        Verify the safecheck-disabled-flag escape hatch for @SafeCheck-annotated fields.
+
+        Uses NetworkSettings.hostName (@SafeCheck(SafeType.HOSTNAME)) with a value
+        containing a semicolon, which SafeType.HOSTNAME rejects. The test covers:
+          1. No flag: setNetworkSettings raises SafeCheckValidationException (JSON-RPC 490).
+          2. Flag present: the same save succeeds — bypass is active, no restart required.
+          3. Flag removed: the save is rejected again (490).
+
+        The field-path (validateInternal) and param-path (validate) are intentionally
+        independent; test_132 exercises the param-path with the same flag.
+        """
+        bypass_flag = "/usr/share/untangle/conf/safecheck-disabled-flag"
+        bad_hostname = "ngfw;injected"  # semicolon violates SafeType.HOSTNAME
+
+        orig = global_functions.uvmContext.networkManager().getNetworkSettings()
+        bad = copy.deepcopy(orig)
+        bad['hostName'] = bad_hostname
+
+        try:
+            # No flag: SafeCheck must reject the bad hostName at the RPC boundary.
+            with pytest.raises(Exception):
+                global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+
+            # Flag present: bypass allows the save through without a UVM restart.
+            subprocess.call(f"touch {bypass_flag}", shell=True)
+            global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+
+            # Flag removed: SafeCheck must reject the bad hostName again.
+            subprocess.call(f"rm -f {bypass_flag}", shell=True)
+            with pytest.raises(Exception):
+                global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+
+        finally:
+            subprocess.call(f"rm -f {bypass_flag}", shell=True)
+            global_functions.uvmContext.networkManager().setNetworkSettings(orig)
+
+    def test_132_safecheck_bypass_flag_param(self):
+        """
+        Verify the safecheck-disabled-flag escape hatch for @SafeCheckParam method params.
+
+        Uses googleManager().getAppSpecificGoogleDrivePath() whose appDirectory param is
+        annotated @SafeCheckParam(SafeType.SIMPLE_TEXT). A semicolon falls outside
+        SIMPLE_TEXT's allowed set and is rejected by SafeCheckValidator.validate()
+        (the param-path). The test covers the same round-trip as test_131 but via the
+        param-path, which is kept independent of the field-path by design.
+        """
+        bypass_flag = "/usr/share/untangle/conf/safecheck-disabled-flag"
+        bad_dir = "reports;bad"  # semicolon violates SafeType.SIMPLE_TEXT
+
+        try:
+            # No flag: SafeCheck must reject the bad param at the RPC boundary.
+            with pytest.raises(Exception):
+                global_functions.uvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
+
+            # Flag present: bypass allows the call through.
+            # getAppSpecificGoogleDrivePath returns null when Google Drive is unconfigured,
+            # so the call completes without error regardless of the bypassed param value.
+            subprocess.call(f"touch {bypass_flag}", shell=True)
+            global_functions.uvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
+
+            # Flag removed: SafeCheck must reject the bad param again.
+            subprocess.call(f"rm -f {bypass_flag}", shell=True)
+            with pytest.raises(Exception):
+                global_functions.uvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
+
+        finally:
+            subprocess.call(f"rm -f {bypass_flag}", shell=True)
+
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
         # Enable cloud connection  
