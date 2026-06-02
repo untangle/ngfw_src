@@ -107,22 +107,32 @@ public enum SafeType
         "must be alphanumeric (letters, digits, '_', '.', '-'; first char alphanumeric or '_'; max 64)"),
 
     /**
-     * Permissive text for descriptions, contact strings, system locations,
-     * and natural-language names like {@code O'Brien}, {@code John's Folder},
-     * or {@code Smith &amp; Co}. Allows Unicode letters, digits, whitespace,
-     * the safe punctuation set [. _ - @ : , / + ( )], the apostrophe ['],
-     * and the ampersand [&amp;]. Excludes the remaining shell metacharacters
-     * ({@code $ ` ; | < > \n \r "}).
+     * Structured free-text for descriptions, contact strings, system
+     * locations, and similar label fields. Allows Unicode letters, digits,
+     * Unicode whitespace ({@link Character#SPACE_SEPARATOR}), and the
+     * explicitly-safe punctuation set {@code . _ - @ : , / + ( ) &}.
      *
-     * <p>The apostrophe and ampersand are permitted because every current
-     * sink consumes {@code SIMPLE_TEXT} values either argv-form (e.g.
-     * openssl), URL-encoded (URIBuilder), or as JSON HTTP-body content -
-     * none string-concatenate the value into a shell command line.
-     * URL-encoders turn {@code &amp;} into {@code %26}; JSON bodies treat
-     * it as a literal; argv vectors do not re-tokenize. Future sinks that
-     * do shell interpolation must quote with {@code shlex.quote(...)}
-     * (Python) or {@code execCommand(List.of(...))} (Java); this is the
-     * same contract already required for {@link #OPAQUE_SECRET}.</p>
+     * <p><b>Design intent -- all special characters are blocked.</b>
+     * Rather than trying to enumerate which special characters are safe
+     * for every current and future sink, {@code SIMPLE_TEXT} takes the
+     * opposite approach: it allows only characters that have no
+     * shell-metacharacter meaning in any context. The excluded set
+     * therefore includes <em>all</em> of the following, even though some
+     * are harmless in certain sinks today:
+     * {@code ' " ` $ ; | < > ! { } [ ] # ? * \ \n \r \t}.
+     * Note: {@code &} is in the <em>allowed</em> set (it is not a
+     * shell-exec operator in the sinks SIMPLE_TEXT fields currently
+     * reach). In particular, the apostrophe ({@code '}) is intentionally
+     * excluded -- it terminates single-quoted shell strings and can break
+     * out of any config-file format that uses single-quote delimiters.
+     * Customers whose stored descriptions contain these characters will
+     * receive an error on the next settings save; this is a documented
+     * migration side-effect, not a bug.</p>
+     *
+     * <p><b>Migration note:</b> real-world descriptions with apostrophes
+     * (e.g. {@code "admin's device"}) or pipe characters
+     * (e.g. {@code "Server | DMZ"}) are correctly rejected. Customers
+     * must remove those characters before saving.</p>
      */
     SIMPLE_TEXT(
         Pattern.compile("^[\\p{L}\\p{N}\\p{Zs}._@:,/+()&-]{1,256}$"),
@@ -151,14 +161,56 @@ public enum SafeType
      * validation; blank entries are skipped. Accepts LF, CRLF, comma,
      * or any combination as separators.</p>
      *
-     * <p><b>Limits:</b> total string length lessthan equals 8192 chars; max 256
+     * <p><b>Limits:</b> total string length &le; 8192 chars; max 256
      * entries - both well above the size of any realistic VPN config
      * but bounded to avoid pathological input.</p>
+     *
+     * <p><b>Sink contract:</b> this type accepts LF and CR as entry
+     * separators. Any sink that interpolates an {@code IP_OR_CIDR_LIST}
+     * value into a <em>single-line</em> config slot (e.g. an ipsec.conf
+     * {@code leftsubnet=} directive) MUST join the parsed entries with
+     * commas before writing -- never write the raw multi-line value
+     * verbatim, because a literal newline would inject a new ipsec.conf
+     * directive into the same conn block. Sinks that write to
+     * newline-tolerant formats (e.g. a UI textarea) may use the value
+     * verbatim.</p>
      */
     IP_OR_CIDR_LIST(
         null,  // validated programmatically, see validate()
         8192,
         "must be a comma- or newline-separated list of valid IPv4/IPv6 addresses or CIDRs (max 256 entries)"),
+
+    /**
+     * Comma-separated list of {@link #HOSTNAME} entries. Used for multi-domain
+     * fields like {@code WireGuardVpnSettings.dnsSearchDomain}. LF and CR are
+     * intentionally rejected (unlike {@link #IP_OR_CIDR_LIST}) because every
+     * current sink writes this field to a single-line config slot -- a newline
+     * in the value would inject a new wg-quick directive line.
+     *
+     * <p><b>Limits:</b> total string length &le; 8192 chars; max 256 entries.
+     * Each entry validates as {@link #HOSTNAME}.</p>
+     */
+    HOSTNAME_LIST(
+        null,  // validated programmatically, see validate()
+        8192,
+        "must be a comma-separated list of valid hostnames (max 256 entries; no newlines; each: alphanumeric, '.', '_', '-'; first char alphanumeric; max 253)"),
+
+    /**
+     * Comma-separated list of {@link #HOSTNAME}-or-{@link #IP_OR_CIDR} entries.
+     * Used for peer-address fields that accept either a FQDN or an IP literal
+     * (e.g. {@code IpsecVpnTunnel.right}). LF and CR are rejected because the
+     * field feeds into a single-line ipsec.conf directive -- a newline would
+     * inject a {@code leftupdown=} directive in the same conn block.
+     * Magic values like {@code %any} can be passed through the
+     * {@link SafeCheck#allow()} allowlist.
+     *
+     * <p><b>Limits:</b> total string length &le; 8192 chars; max 256 entries.
+     * Each entry validates as {@link #HOSTNAME} or {@link #IP_OR_CIDR}.</p>
+     */
+    PEER_LIST(
+        null,  // validated programmatically, see validate()
+        8192,
+        "must be a comma-separated list of hostnames or IPv4/IPv6 addresses/CIDRs (max 256 entries; no newlines)"),
 
     /** http(s) URL with required host and no embedded credentials. */
     URL(
@@ -219,6 +271,41 @@ public enum SafeType
         "must be an email address like user@example.com , local part must start with a letter or digit, domain must have at least one dot and a 2+ letter TLD (max 254 chars)"),
 
     /**
+     * Username or email-address shape for credentials like PPPoE usernames
+     * and dynamic-DNS login IDs. Pattern {@code ^[A-Za-z0-9][A-Za-z0-9._%+@-]*$}
+     * -- the conservative subset that covers both plain usernames
+     * ({@code alice}, {@code admin}) and email-format usernames common in ISP
+     * PPPoE deployments ({@code user@isp.com}, {@code alice@bt.com}). Length
+     * cap 254 matches the SMTP path limit.
+     *
+     * <p><b>Why not {@link #ALPHANUM}?</b> {@code ALPHANUM} rejects {@code @}
+     * and {@code +}, which appear in real-world PPPoE usernames (BT, CenturyLink,
+     * German DTAG). Production-data sweep found {@code @}-format usernames in
+     * approximately 32% of sampled appliances with PPPoE configured -- using
+     * {@code ALPHANUM} would produce widespread migration failures.</p>
+     *
+     * <p><b>Why not {@link #EMAIL}?</b> {@code EMAIL} requires a full
+     * {@code user@domain.tld} form with a 2+ letter TLD. Plain usernames like
+     * {@code alice} or {@code admin} would be rejected.</p>
+     *
+     * <p><b>RCE safety:</b> all accepted characters ({@code . _ % + @ -}) are
+     * inert in every current sink. {@code pppoe_manager.py} writes the value
+     * to both {@code /etc/ppp/peers/*} (as {@code user "value"} -- double-quoted)
+     * and {@code pap-secrets}/{@code chap-secrets}. The peers file has
+     * {@code connect=}/{@code pty=} exec directives, so {@code \n} and {@code "}
+     * are the dangerous characters there; both are excluded from this type's
+     * character set, closing the newline-injection and double-quote-escape
+     * vectors. {@code ddclient.conf} {@code login=} is an unquoted INI value
+     * token -- {@code \n} would inject a {@code cmd=} exec directive, also
+     * excluded. Shell metacharacters ({@code $ ` ; | < > " ' \\})
+     * remain rejected.</p>
+     */
+    USERNAME_OR_EMAIL(
+        Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._%+@-]*$"),
+        254,
+        "must be a username or email address (letters, digits, '.', '_', '%', '+', '@', '-'; first char alphanumeric; max 254)"),
+
+    /**
      * Multi-line email subject/body template that may contain
      * {@code ${var}} placeholders. Length up to 8192 chars to fit
      * realistic alert templates with multiple variable substitutions.
@@ -229,6 +316,15 @@ public enum SafeType
      * {@code \t}. This blocks NUL, ESC, BEL, etc. - vectors that could
      * be smuggled into a subject header or body for downstream
      * mail-injection - while preserving normal multiline content.</p>
+     *
+     * <p><b>Sink contract:</b> values of this type are consumed by the
+     * mail API (JavaMail) only -- they are <b>never</b> interpolated into
+     * a shell command line. Shell metacharacters admitted by this type
+     * ({@code $ ` ; | < > " ' \}) are inert in a mail-API context but
+     * would execute if the value ever reached a shell. Any future sink
+     * that consumes an {@code EMAIL_TEMPLATE} value must use
+     * {@code execCommand(argv)} form or {@code shlex.quote()} -- the same
+     * contract required for {@link #OPAQUE_SECRET}.</p>
      */
     EMAIL_TEMPLATE(
         null, // validated programmatically, see validate()
@@ -459,8 +555,8 @@ public enum SafeType
      *
      * @param pattern        compiled regex used by {@link #validate(String)} for
      *                       regex-based types; {@code null} for types validated
-     *                       programmatically (IP_OR_CIDR, IP_OR_CIDR_LIST, URL,
-     *                       OPAQUE_SECRET).
+     *                       programmatically (IP_OR_CIDR, IP_OR_CIDR_LIST,
+     *                       HOSTNAME_LIST, PEER_LIST, URL, OPAQUE_SECRET).
      * @param maxLength      maximum permitted length of an accepted value.
      * @param defaultMessage human-readable description of the format requirement,
      *                       used when an annotation does not supply its own
@@ -480,6 +576,394 @@ public enum SafeType
     public String defaultMessage()
     {
         return defaultMessage;
+    }
+
+    /**
+     * @return the maximum permitted length of an accepted value for this type.
+     */
+    public int maxLength()
+    {
+        return maxLength;
+    }
+
+    /**
+     * Returns a short human-readable reason explaining WHY {@code value}
+     * would be rejected by {@link #validate(String)}. Designed for
+     * inclusion in user-facing error messages.
+     *
+     * <p><b>Never echoes the offending value or any character from it.</b>
+     * The reason is a category label and (for most types) a 1-based
+     * position - never the character itself. This preserves the
+     * credential-leak protection that the SafeCheckValidator error path
+     * relies on.</p>
+     *
+     * <p>{@link #OPAQUE_SECRET} always returns a generic phrase with no
+     * position info, to prevent character-class disclosure to anyone
+     * who can submit values and watch the error channel.</p>
+     *
+     * @param value the value that {@link #validate(String)} returned false for;
+     *              {@code null}/empty returns the empty string (those are always accepted).
+     * @return a short reason phrase suitable for inclusion in error messages;
+     *         empty if the value is null/empty (which would not have been rejected).
+     */
+    public String describeRejection(String value)
+    {
+        if (value == null || value.isEmpty()) return "";
+
+        // Length is the cheapest and most informative check.
+        if (value.length() > maxLength) {
+            return "value is " + value.length() + " characters (maximum allowed is " + maxLength + ")";
+        }
+
+        switch (this) {
+            case OPAQUE_SECRET:
+                // Generic only - do not reveal which character class triggered.
+                return "value contains a disallowed character";
+            case EMAIL_TEMPLATE:
+                return classifyControlCharAllowCrLfTab(value);
+            case REGEX_PATTERN:
+                return classifyControlCharAllowTabOnly(value);
+            case PEM:
+                return describePemRejection(value);
+            case IP_OR_CIDR:
+                return "value is not a valid IPv4 or IPv6 literal (with optional /CIDR prefix)";
+            case IP_OR_CIDR_LIST:
+                return describeIpListRejection(value);
+            case HOSTNAME_LIST:
+                return describeHostnameListRejection(value);
+            case PEER_LIST:
+                return describePeerListRejection(value);
+            case URL:
+                return "value is not a valid http(s) URL with a host and no embedded credentials";
+            case SAN_LIST:
+                return "value contains an entry that is not a valid SAN "
+                     + "(expected DNS:hostname, IP:address, bare hostname, or bare IPv4)";
+            case FILENAME:
+                if (value.indexOf('/') >= 0) return "value contains '/' which is not allowed in a filename";
+                if (value.contains("..")) return "value contains '..' which is not allowed in a filename";
+                return describeRegexRejection(value);
+            case FILE_PATH:
+                if (value.contains("..")) return "value contains '..' which is not allowed in a path";
+                if (!value.startsWith("/")) return "value must start with '/' (absolute path required)";
+                return describeRegexRejection(value);
+            case NATURAL_NAME:
+                if (value.contains("..")) return "value contains '..' which is not allowed in a natural name";
+                return describeRegexRejection(value);
+            default:
+                return describeRegexRejection(value);
+        }
+    }
+
+    /**
+     * Regex-type rejection classifier. Distinguishes
+     *   (a) a char that is invalid everywhere (classify by category at the
+     *       position it first appears), from
+     *   (b) a body-valid char that is forbidden specifically in the leading
+     *       position (report leading-position restriction).
+     *
+     * Never returns the character itself, only its category and 1-based
+     * position.
+     *
+     * @param value the value that failed regex validation; must be non-null and non-empty
+     * @return a human-readable reason phrase; never null
+     */
+    private String describeRegexRejection(String value)
+    {
+        char first = value.charAt(0);
+        // If the leading char is invalid even in the body charset, it is
+        // invalid everywhere - classify it by category. This gives a much
+        // crisper message than "not allowed in first position" for cases
+        // like a leading space in HOSTNAME or a leading shell-meta in
+        // SIMPLE_TEXT (which has no leading-only restriction at all).
+        if (!isBodyCharAllowed(first)) {
+            return classifyDisallowedChar(first, 0);
+        }
+        // Body-valid but leading-restricted (e.g. '-', '.', or '_' as the
+        // first char of a HOSTNAME).
+        if (!isLeadingCharAllowed(first)) {
+            return "value starts with a character not allowed in the first position";
+        }
+        // Walk body chars; return on first disallowed.
+        for (int i = 1; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (!isBodyCharAllowed(c)) {
+                return classifyDisallowedChar(c, i);
+            }
+        }
+        // All per-char checks passed but the full regex still failed.
+        // Possible for shape-rigid types (BASE64_KEY, MAC_ADDRESS, EMAIL).
+        return "value does not match the required format";
+    }
+
+    /**
+     * Per-type leading-character predicate. Mirrors the regex's
+     * leading-position character class. Used by
+     * {@link #describeRegexRejection(String)} so the error can name
+     * whether the failure is at the first position.
+     *
+     * @param c the character at position 0 of the candidate value
+     * @return {@code true} if {@code c} is permitted in the leading position for this type
+     */
+    private boolean isLeadingCharAllowed(char c)
+    {
+        switch (this) {
+            case HOSTNAME:
+            case INTERFACE:
+            case FILENAME:
+            case EMAIL:
+            case OAUTH_CODE:
+                return isAsciiAlnum(c);
+            case ALPHANUM:
+                return isAsciiAlnum(c) || c == '_';
+            case FILE_PATH:
+                return c == '/';
+            case CERT_SUBJECT:
+                return c == '/';
+            case MAC_ADDRESS:
+                return isAsciiHex(c);
+            case BASE64_KEY:
+                return isAsciiAlnum(c) || c == '+' || c == '/';
+            case USERNAME_OR_EMAIL:
+                return isAsciiAlnum(c);
+            case SIMPLE_TEXT:
+            case NATURAL_NAME:
+                // No leading-char restriction beyond the body charset.
+                return isBodyCharAllowed(c);
+            default:
+                return true;
+        }
+    }
+
+    /**
+     * Per-type body-character predicate. Mirrors the regex's body
+     * character class. Used by {@link #describeRegexRejection(String)} to
+     * find the first disallowed character.
+     *
+     * @param c the character to test
+     * @return {@code true} if {@code c} is permitted anywhere in the body of a value of this type
+     */
+    private boolean isBodyCharAllowed(char c)
+    {
+        switch (this) {
+            case HOSTNAME:
+            case FILENAME:
+                return isAsciiAlnum(c) || c == '.' || c == '_' || c == '-';
+            case INTERFACE:
+                return isAsciiAlnum(c) || c == '.' || c == '_' || c == ':' || c == '-';
+            case ALPHANUM:
+                return isAsciiAlnum(c) || c == '.' || c == '_' || c == '-';
+            case SIMPLE_TEXT:
+                // [\p{L}\p{N}\p{Zs}._@:,/+()&-]
+                if (Character.isLetter(c) || Character.isDigit(c)) return true;
+                if (Character.getType(c) == Character.SPACE_SEPARATOR) return true;
+                return ".-_@:,/+()&".indexOf(c) >= 0;
+            case EMAIL:
+                // Local part is [A-Za-z0-9._%+-], domain adds nothing more
+                // dangerous; classify at char level only.
+                return isAsciiAlnum(c) || ".-_%+@".indexOf(c) >= 0;
+            case USERNAME_OR_EMAIL:
+                return isAsciiAlnum(c) || "._-%+@".indexOf(c) >= 0;
+            case OAUTH_CODE:
+                return isAsciiAlnum(c) || "._-/=+%".indexOf(c) >= 0;
+            case FILE_PATH:
+                return isAsciiAlnum(c) || c == '.' || c == '_' || c == '/' || c == '-';
+            case BASE64_KEY:
+                return isAsciiAlnum(c) || c == '+' || c == '/' || c == '=';
+            case MAC_ADDRESS:
+                return isAsciiHex(c) || c == ':' || c == '-';
+            case NATURAL_NAME:
+                if (Character.isLetter(c) || Character.isDigit(c)) return true;
+                return " ._@:+()*'&,-".indexOf(c) >= 0;
+            case CERT_SUBJECT:
+                if (Character.isLetter(c) || Character.isDigit(c)) return true;
+                return " ._@:+()*'&,-=/".indexOf(c) >= 0;
+            default:
+                return true;
+        }
+    }
+
+    /**
+     * @param c the character to test
+     * @return {@code true} if {@code c} is an ASCII letter or digit
+     */
+    private static boolean isAsciiAlnum(char c)
+    {
+        return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+    }
+
+    /**
+     * @param c the character to test
+     * @return {@code true} if {@code c} is an ASCII hexadecimal digit (0-9, A-F, a-f)
+     */
+    private static boolean isAsciiHex(char c)
+    {
+        return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+    }
+
+    /**
+     * Category-labels a disallowed character by class. 1-based position
+     * for human-friendly output. Never returns the character itself.
+     *
+     * @param c the disallowed character
+     * @param zeroBasedPos zero-based index of {@code c} in the original value
+     * @return a human-readable category phrase including the 1-based position; never null
+     */
+    private static String classifyDisallowedChar(char c, int zeroBasedPos)
+    {
+        int pos = zeroBasedPos + 1;
+        if (Character.getType(c) == Character.CONTROL) {
+            return "value contains a control character at position " + pos;
+        }
+        if (Character.isWhitespace(c)) {
+            return "value contains a whitespace character at position " + pos;
+        }
+        if (c == '"' || c == '\'' || c == '\\') {
+            return "value contains a quote or backslash at position " + pos;
+        }
+        if ("$`;|<>&".indexOf(c) >= 0) {
+            return "value contains a shell metacharacter at position " + pos;
+        }
+        if (c > 127) {
+            return "value contains a non-ASCII character at position " + pos;
+        }
+        return "value contains a disallowed character at position " + pos;
+    }
+
+    /**
+     * Classifies control-character rejection for EMAIL_TEMPLATE, which
+     * permits CR/LF/TAB and rejects every other Cc-class character.
+     *
+     * @param value the candidate string; assumed non-null and non-empty
+     * @return a human-readable reason phrase identifying the offending position; never null
+     */
+    private static String classifyControlCharAllowCrLfTab(String value)
+    {
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '\r' || c == '\n' || c == '\t') continue;
+            if (Character.getType(c) == Character.CONTROL) {
+                return "value contains a control character at position " + (i + 1)
+                     + " (NUL, ESC, BEL, etc.)";
+            }
+        }
+        return "value does not match the required format";
+    }
+
+    /**
+     * Classifies control-character rejection for REGEX_PATTERN, which
+     * permits TAB only and rejects every other Cc-class character
+     * (including CR/LF).
+     *
+     * @param value the candidate string; assumed non-null and non-empty
+     * @return a human-readable reason phrase identifying the offending position; never null
+     */
+    private static String classifyControlCharAllowTabOnly(String value)
+    {
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '\t') continue;
+            if (Character.getType(c) == Character.CONTROL) {
+                return "value contains a control character at position " + (i + 1)
+                     + " (NUL, CR, LF, ESC, BEL, etc.; only TAB is allowed)";
+            }
+        }
+        return "value does not match the required format";
+    }
+
+    /**
+     * IP_OR_CIDR_LIST rejection classifier. Distinguishes "too many entries"
+     * from "an entry is not a valid IP/CIDR".
+     *
+     * @param value the candidate list string; assumed non-null and non-empty
+     * @return a human-readable reason phrase; never null
+     */
+    private static String describeIpListRejection(String value)
+    {
+        String[] entries = value.split("[,\\r\\n]+", -1);
+        if (entries.length > 256) {
+            return "list has " + entries.length + " entries (maximum allowed is 256)";
+        }
+        for (int i = 0; i < entries.length; i++) {
+            String trimmed = entries[i].trim();
+            if (trimmed.isEmpty()) continue;
+            if (!validateIpOrCidr(trimmed)) {
+                return "entry " + (i + 1) + " is not a valid IPv4/IPv6 address or CIDR";
+            }
+        }
+        return "value does not match the required list format";
+    }
+
+    /**
+     * HOSTNAME_LIST rejection classifier. Checks for disallowed newlines,
+     * entry-count overflow, and invalid individual hostname entries.
+     *
+     * @param value the candidate list string; assumed non-null and non-empty
+     * @return a human-readable reason phrase; never null
+     */
+    private static String describeHostnameListRejection(String value)
+    {
+        if (value.indexOf('\n') >= 0 || value.indexOf('\r') >= 0) {
+            return "list contains a newline character; only comma-separated entries are allowed";
+        }
+        String[] entries = value.split(",", -1);
+        if (entries.length > 256) {
+            return "list has " + entries.length + " entries (maximum allowed is 256)";
+        }
+        for (int i = 0; i < entries.length; i++) {
+            String trimmed = entries[i].trim();
+            if (trimmed.isEmpty()) continue;
+            if (!HOSTNAME.validate(trimmed)) {
+                return "entry " + (i + 1) + " is not a valid hostname";
+            }
+        }
+        return "value does not match the required hostname list format";
+    }
+
+    /**
+     * PEER_LIST rejection classifier. Checks for disallowed newlines,
+     * entry-count overflow, and invalid individual peer entries.
+     *
+     * @param value the candidate list string; assumed non-null and non-empty
+     * @return a human-readable reason phrase; never null
+     */
+    private static String describePeerListRejection(String value)
+    {
+        if (value.indexOf('\n') >= 0 || value.indexOf('\r') >= 0) {
+            return "list contains a newline character; only comma-separated entries are allowed";
+        }
+        String[] entries = value.split(",", -1);
+        if (entries.length > 256) {
+            return "list has " + entries.length + " entries (maximum allowed is 256)";
+        }
+        for (int i = 0; i < entries.length; i++) {
+            String trimmed = entries[i].trim();
+            if (trimmed.isEmpty()) continue;
+            if (!HOSTNAME.validate(trimmed) && !IP_OR_CIDR.validate(trimmed)) {
+                return "entry " + (i + 1) + " is not a valid hostname or IP/CIDR";
+            }
+        }
+        return "value does not match the required peer list format";
+    }
+
+    /**
+     * PEM rejection classifier. Distinguishes control-char rejection
+     * from missing/mismatched envelope.
+     *
+     * @param value the candidate PEM string; assumed non-null and non-empty
+     * @return a human-readable reason phrase; never null
+     */
+    private static String describePemRejection(String value)
+    {
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '\r' || c == '\n' || c == '\t') continue;
+            if (Character.getType(c) == Character.CONTROL) {
+                return "value contains a control character at position " + (i + 1)
+                     + " (only CR, LF, TAB are allowed)";
+            }
+        }
+        return "value is missing a valid -----BEGIN <LABEL>-----/-----END <LABEL>----- envelope "
+             + "with matching labels";
     }
 
     /**
@@ -522,6 +1006,10 @@ public enum SafeType
                 return validateSanList(value);
             case REGEX_PATTERN:
                 return validateRegexPattern(value);
+            case HOSTNAME_LIST:
+                return validateHostnameList(value);
+            case PEER_LIST:
+                return validatePeerList(value);
             case FILENAME:
                 if (value.indexOf('/') >= 0 || value.contains("..")) {
                     return false;
@@ -570,6 +1058,65 @@ public enum SafeType
                 continue;
             }
             if (!validateIpOrCidr(trimmed)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Comma-separated HOSTNAME list. LF and CR are rejected entirely --
+     * every current sink for HOSTNAME_LIST writes the value to a single-line
+     * config slot; a newline would inject a new directive.
+     *
+     * @param value the candidate list; assumed non-null and non-empty
+     * @return {@code true} if every non-blank entry is a valid HOSTNAME and
+     *         no newlines are present and the entry count does not exceed 256
+     */
+    private static boolean validateHostnameList(String value)
+    {
+        if (value.indexOf('\n') >= 0 || value.indexOf('\r') >= 0) {
+            return false;
+        }
+        String[] entries = value.split(",", -1);
+        if (entries.length > 256) {
+            return false;
+        }
+        for (String entry : entries) {
+            String trimmed = entry.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            if (!HOSTNAME.validate(trimmed)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Comma-separated list of HOSTNAME-or-IP_OR_CIDR entries. LF and CR are
+     * rejected for the same single-line-sink reason as HOSTNAME_LIST.
+     *
+     * @param value the candidate list; assumed non-null and non-empty
+     * @return {@code true} if every non-blank entry validates as either HOSTNAME
+     *         or IP_OR_CIDR, no newlines are present, and the count is &lt;= 256
+     */
+    private static boolean validatePeerList(String value)
+    {
+        if (value.indexOf('\n') >= 0 || value.indexOf('\r') >= 0) {
+            return false;
+        }
+        String[] entries = value.split(",", -1);
+        if (entries.length > 256) {
+            return false;
+        }
+        for (String entry : entries) {
+            String trimmed = entry.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            if (!HOSTNAME.validate(trimmed) && !IP_OR_CIDR.validate(trimmed)) {
                 return false;
             }
         }

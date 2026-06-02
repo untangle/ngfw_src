@@ -50,7 +50,9 @@ public class NetworkSettings implements Serializable, JSONString
     // of these would inject a malicious cmd= line. RCE-class.
     @SafeCheck(SafeType.ALPHANUM)
     private String  dynamicDnsServiceName = null;
-    @SafeCheck(SafeType.ALPHANUM)
+    // DDNS providers (No-IP, Cloudflare, DynDNS) use email-format login IDs;
+    // USERNAME_OR_EMAIL admits '@' safely (ddclient.conf login= is a value token).
+    @SafeCheck(SafeType.USERNAME_OR_EMAIL)
     private String  dynamicDnsServiceUsername = null;
     @SafeCheck(SafeType.OPAQUE_SECRET)
     private String  dynamicDnsServicePassword = null;

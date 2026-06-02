@@ -355,19 +355,8 @@ public class SafeCheckValidator
             if (type.validate(value)) return;
         }
 
-        String message;
-        if (overrideMessage != null && !overrideMessage.isEmpty()) {
-            message = overrideMessage;
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < types.length; i++) {
-                if (i > 0) sb.append(" OR ");
-                sb.append(types[i].defaultMessage());
-            }
-            message = sb.toString();
-        }
         throw new SafeCheckValidationException(
-            "Invalid value in " + contextLabel + ": " + message);
+            buildErrorMessage("Invalid value in " + contextLabel, value, types, overrideMessage));
     }
 
     /**
@@ -452,22 +441,84 @@ public class SafeCheckValidator
             if (type.validate(value)) return;
         }
 
-        // No type accepted. Build the message - the offending value is
-        // never included (avoids credential leakage and pivot through
-        // error-channel echo).
-        String message;
+        // No type accepted. Build the message. The offending value is
+        // included verbatim for non-OPAQUE_SECRET fields so the admin can
+        // see exactly what was rejected. For OPAQUE_SECRET fields it is
+        // suppressed to avoid credential leakage through the error channel.
+        // The "why" clause from describeRejection() never echoes characters
+        // from the value regardless of field type.
+        throw new SafeCheckValidationException(
+            buildErrorMessage("Invalid value in field " + fieldName, value, types, overrideMessage));
+    }
+
+    /**
+     * Builds a user-facing error message of the form:
+     *
+     * <pre>
+     *   {prefix} - {why}; expected: {what}
+     * </pre>
+     *
+     * Where {why} comes from {@code types[0].describeRejection(value)}
+     * and {what} comes from {@code overrideMessage} (if non-empty) or
+     * the {@code OR}-joined {@code defaultMessage()} of every type.
+     *
+     * <p>For non-credential fields the rejected value is included verbatim
+     * after the prefix (e.g. {@code "Invalid value in field Foo.bar ('bad value')"})
+     * so admins can immediately see what they sent. For {@link SafeType#OPAQUE_SECRET}
+     * fields the value is suppressed to prevent password leakage through
+     * the JSON-RPC error channel. The {why} clause from
+     * {@link SafeType#describeRejection(String)} never echoes the value
+     * regardless. The {what} clause is static per-type text.</p>
+     *
+     * @param prefix          leading clause naming the field/param
+     *                        (e.g. {@code "Invalid value in field Foo.bar"})
+     * @param value           the rejected value - used only to compute the
+     *                        {why} reason; never embedded in the output
+     * @param types           the SafeTypes the value was checked against
+     * @param overrideMessage the annotation's {@code errorMessage()} override,
+     *                        or {@code null}/empty to use per-type defaults
+     * @return formatted error message string; never null
+     */
+    private static String buildErrorMessage(String prefix, String value, SafeType[] types, String overrideMessage)
+    {
+        // {why} from the first listed type - shortest message; matches
+        // how multi-type validators usually frame the error.
+        String why = types[0].describeRejection(value);
+
+        // {what} from override (if any), else OR-joined per-type defaults.
+        String what;
         if (overrideMessage != null && !overrideMessage.isEmpty()) {
-            message = overrideMessage;
+            what = overrideMessage;
         } else {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < types.length; i++) {
                 if (i > 0) sb.append(" OR ");
                 sb.append(types[i].defaultMessage());
             }
-            message = sb.toString();
+            what = sb.toString();
         }
-        throw new SafeCheckValidationException(
-            "Invalid value in field " + fieldName + ": " + message);
+
+        // Include the rejected value verbatim for non-credential fields so
+        // admins can see exactly what they sent. Suppressed for OPAQUE_SECRET
+        // fields (passwords, passphrases) to avoid leaking secrets through
+        // the JSON-RPC error channel.
+        boolean sensitive = false;
+        for (SafeType type : types) {
+            if (type == SafeType.OPAQUE_SECRET) {
+                sensitive = true;
+                break;
+            }
+        }
+
+        StringBuilder out = new StringBuilder(prefix);
+        if (!sensitive && value != null && !value.isEmpty()) {
+            out.append(" ('").append(value).append("')");
+        }
+        if (!why.isEmpty()) {
+            out.append(" - ").append(why);
+        }
+        out.append("; expected: ").append(what);
+        return out.toString();
     }
 
     /**

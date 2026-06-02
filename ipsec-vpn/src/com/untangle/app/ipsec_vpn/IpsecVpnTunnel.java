@@ -58,7 +58,9 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String leftNextHop;
     // %any is the strongSwan keyword for "accept any peer"; set by the
     // "Any Remote Host" checkbox in the IPsec tunnel editor.
-    @SafeCheck(value = {SafeType.HOSTNAME, SafeType.IP_OR_CIDR}, allow = {"%any"})
+    // PEER_LIST validates each comma-separated entry as HOSTNAME or IP_OR_CIDR
+    // and rejects newlines (ipsec.conf conn block is single-line per directive).
+    @SafeCheck(value = SafeType.PEER_LIST, allow = {"%any"})
     private String right;
     @SafeCheck(value = SafeType.SIMPLE_TEXT, allow = {"%any"})
     private String rightId;

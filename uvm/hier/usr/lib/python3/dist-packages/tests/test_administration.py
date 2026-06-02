@@ -1431,7 +1431,7 @@ class AdministrationTests(NGFWTestCase):
 
         Fields validated (5):
           - dynamicDnsServiceName       (ALPHANUM)
-          - dynamicDnsServiceUsername   (ALPHANUM)
+          - dynamicDnsServiceUsername   (USERNAME_OR_EMAIL)  admits @ for email-format logins
           - dynamicDnsServicePassword   (OPAQUE_SECRET)
           - dynamicDnsServiceZone       (HOSTNAME)
           - dynamicDnsServiceHostnames  (SIMPLE_TEXT)
@@ -1460,6 +1460,16 @@ class AdministrationTests(NGFWTestCase):
             assert saved["dynamicDnsServiceUsername"]  == "ddns_user"
             assert saved["dynamicDnsServiceZone"]      == "example.com"
             assert saved["dynamicDnsServiceHostnames"] == "vpn.example.com,www.example.com"
+
+            # USERNAME_OR_EMAIL accepts email-format logins (ALPHANUM rejected '@').
+            # Cloudflare, No-IP, DynDNS all use email as the login identifier.
+            positive["dynamicDnsServiceUsername"] = "user@provider.com"
+            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
+            saved = global_functions.uvmContext.networkManager().getNetworkSettings()
+            assert saved["dynamicDnsServiceUsername"] == "user@provider.com", (
+                "NGFW-15768: USERNAME_OR_EMAIL failed to accept email-format DDNS "
+                f"username; got {saved['dynamicDnsServiceUsername']!r}"
+            )
 
             # Negative: each historically-confirmed RCE payload is rejected.
             baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
