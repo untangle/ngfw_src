@@ -810,7 +810,7 @@ class WireGuardVpnTests(NGFWTestCase):
         Settings fields (3):
           - publicKey         (BASE64_KEY)
           - privateKey        (BASE64_KEY)
-          - dnsSearchDomain   (HOSTNAME)
+          - dnsSearchDomain   (HOSTNAME_LIST)  comma-separated; LF/CR rejected
 
         Sink: wireguard_manager.py writes these into /etc/wireguard/wg0.conf,
         where PostUp= / PostDown= reference executable scripts — newline +
@@ -835,6 +835,14 @@ class WireGuardVpnTests(NGFWTestCase):
             positive_appData["privateKey"]      = ""
             positive_appData["dnsSearchDomain"] = "internal.example.com"
             self._app.setSettings(positive_appData)
+            # HOSTNAME_LIST accepts comma-separated domains (HOSTNAME alone would reject this).
+            positive_appData["dnsSearchDomain"] = "internal.example.com, search.local"
+            self._app.setSettings(positive_appData)
+            saved = self._app.getSettings()
+            assert saved["dnsSearchDomain"] == "internal.example.com, search.local", (
+                "NGFW-15768: HOSTNAME_LIST dnsSearchDomain failed to round-trip "
+                f"comma-separated value; got {saved['dnsSearchDomain']!r}"
+            )
             baseline = self._app.getSettings()
 
             # --- Tunnel negatives. ---

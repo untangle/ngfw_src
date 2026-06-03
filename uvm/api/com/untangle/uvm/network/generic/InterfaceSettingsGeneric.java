@@ -72,7 +72,8 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
 
     // Mirror of InterfaceSettings.v4PPPoEUsername - closes V2 RPC bypass.
     // pppd peers file has connect= shell-exec directive.
-    @SafeCheck(SafeType.ALPHANUM)
+    // Must match main POJO: USERNAME_OR_EMAIL (admits @ for user@isp.com PPPoE).
+    @SafeCheck(SafeType.USERNAME_OR_EMAIL)
     private String v4PPPoEUsername;             /* PPPoE Username */
     private String v4PPPoEPassword;             /* PPPoE Password */
     private Boolean v4PPPoEUsePeerDNS;          /* If the DNS should be determined via PPP */
