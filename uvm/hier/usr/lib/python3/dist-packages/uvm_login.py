@@ -168,18 +168,21 @@ def is_local_process_uid_authorized(req):
 
     if remote_ip != "127.0.0.1" and remote_ip != "::1":
         return False
-    # If came in from ipv6, set to ipv4
-    remote_ip = "127.0.0.1"
 
     # This determines the PID of the connecting process
     # and determines if it is from a process who is owned by root
     # or a user in uvm_login group. If so, auto-authenticate it.
     uids = get_uvmlogin_uids()
 
-    q = remote_ip.split(".")
-    q.reverse()
-    n = reduce(lambda a, b: int(a) * 256 + int(b), q)
-    hexaddr = "%08X" % n
+    if remote_ip == "::1":
+        hexaddr = "00000000000000000000000001000000"
+        proc_net_file = "/proc/net/tcp6"
+    else:
+        q = remote_ip.split(".")
+        q.reverse()
+        n = reduce(lambda a, b: int(a) * 256 + int(b), q)
+        hexaddr = "%08X" % n
+        proc_net_file = "/proc/net/tcp"
     hexport = "%04X" % remote_port
 
     # We have to attempt to read /proc/net/tcp several times.
@@ -187,7 +190,7 @@ def is_local_process_uid_authorized(req):
     uid = None
     for count in range(0, 5):
         try:
-            infile = open("/proc/net/tcp", "r")
+            infile = open(proc_net_file, "r")
             # for l in infile.read(500000).splitlines():
             for l in infile.readlines():
                 a = l.split()
@@ -218,11 +221,11 @@ def is_local_process_uid_authorized(req):
                                 return False
                     except Exception as e:
                         apache.log_error(
-                            'Bad line in /proc/net/tcp: %s: %s' % (line, traceback.format_exc(e)))
+                            'Bad line in %s: %s: %s' % (proc_net_file, line, traceback.format_exc(e)))
 
         except Exception as e:
-            apache.log_error('Exception reading /proc/net/tcp: %s' %
-                             traceback.format_exc(e))
+            apache.log_error('Exception reading %s: %s' % (proc_net_file,
+                             traceback.format_exc(e)))
         finally:
             infile.close()
 
