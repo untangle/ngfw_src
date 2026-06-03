@@ -46,7 +46,7 @@ class UvmContext:
         """
         while tries > 0:
             try:
-                self.context = uvm.Uvm().getUvmContext( "localhost", None, None, 60 )
+                self.context = uvm.Uvm().getUvmContext( "127.0.0.1", None, None, 60 )
                 return
             except (JSONRPCException, JSONDecodeException) as e:
                 self.context = None
