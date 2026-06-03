@@ -4,6 +4,7 @@
 
 package com.untangle.uvm.util;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -59,6 +60,20 @@ import org.apache.logging.log4j.Logger;
  * one-time warning is logged naming the field. This is a transitional
  * compatibility shim; every shipped annotation should declare a type
  * explicitly.
+ *
+ * <h3>Support-flow bypass flag</h3>
+ * If a regex regression in production blocks a customer's
+ * {@code setSettings} call, support can instruct the customer to
+ * {@code touch /usr/share/untangle/conf/safecheck-disabled-flag}.
+ * While the flag exists, every value-rejection becomes a one-time
+ * WARN log line of the form
+ * {@code SafeCheck BYPASS active for <field> - value '<value>' would have been rejected. ...}
+ * and validation returns silently, letting the customer save their
+ * settings. After the save succeeds the flag should be removed and
+ * the WARN lines forwarded so the underlying regex can be fixed.
+ * The flag is checked on every would-be rejection - no UVM restart
+ * is required to enable or disable it. Resource-limit guards
+ * (depth, collection/map/array size) are deliberately NOT bypassed.
  */
 public class SafeCheckValidator
 {
@@ -99,6 +114,28 @@ public class SafeCheckValidator
      * Prevents log spam.
      */
     private static final Set<String> WARNED_EMPTY_VALUE = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Support-flow bypass flag. When this file exists, every
+     * {@code @SafeCheck} value rejection becomes a one-time WARN log
+     * line and validation returns silently. Resource-limit guards
+     * (depth, collection/map/array size) are unaffected.
+     *
+     * <p>Use case: a regex regression in production blocks a
+     * customer's {@code setSettings} call. Support instructs the
+     * customer to {@code touch} this file, retry the save, then
+     * {@code rm} it and forward the WARN lines so the regex can be
+     * fixed in the next patch. No UVM restart required - the flag
+     * is checked on every would-be rejection.</p>
+     */
+    private static final String BYPASS_FLAG_FILE =
+        System.getProperty("uvm.conf.dir") + "/safecheck-disabled-flag";
+
+    /**
+     * Throttles bypass-WARN logs to once per field/contextLabel per
+     * JVM lifetime. Independent of {@link #WARNED_EMPTY_VALUE}.
+     */
+    private static final Set<String> WARNED_BYPASS = ConcurrentHashMap.newKeySet();
 
     /**
      * Cached reflection info for a class.
@@ -316,6 +353,35 @@ public class SafeCheckValidator
     }
 
     /**
+     * Returns {@code true} if the operator has enabled the SafeCheck
+     * bypass by touching {@link #BYPASS_FLAG_FILE}. When {@code true},
+     * also emits a one-time WARN naming the field/contextLabel and the
+     * bypassed value so support can diagnose the offending regex. The
+     * caller must then return without throwing.
+     *
+     * <p>The filesystem stat runs only on the failure path (after every
+     * declared {@link SafeType} has rejected the value), so successful
+     * saves pay no cost.</p>
+     *
+     * @param contextKey unique key for log throttling (fieldName or contextLabel).
+     * @param value      the value that failed validation; logged verbatim for
+     *                   diagnostics (deliberate exception to the "never echo
+     *                   values" rule - support needs to see what the regex
+     *                   rejected to fix it).
+     * @return {@code true} if validation should be silently skipped.
+     */
+    private static boolean bypassActive(String contextKey, String value)
+    {
+        if (!new File(BYPASS_FLAG_FILE).exists()) return false;
+        if (WARNED_BYPASS.add(contextKey)) {
+            logger.warn("SafeCheck BYPASS active for {} - value '{}' would have been rejected. "
+                + "Remove {} once the underlying regex is fixed.",
+                contextKey, value, BYPASS_FLAG_FILE);
+        }
+        return true;
+    }
+
+    /**
      * Validate a single String value against an explicit SafeType list.
      * Returns silently on success; throws
      * {@link SafeCheckValidationException} on failure.
@@ -355,6 +421,7 @@ public class SafeCheckValidator
             if (type.validate(value)) return;
         }
 
+        if (bypassActive(contextLabel, value)) return;
         throw new SafeCheckValidationException(
             buildErrorMessage("Invalid value in " + contextLabel, value, types, overrideMessage));
     }
@@ -441,12 +508,7 @@ public class SafeCheckValidator
             if (type.validate(value)) return;
         }
 
-        // No type accepted. Build the message. The offending value is
-        // included verbatim for non-OPAQUE_SECRET fields so the admin can
-        // see exactly what was rejected. For OPAQUE_SECRET fields it is
-        // suppressed to avoid credential leakage through the error channel.
-        // The "why" clause from describeRejection() never echoes characters
-        // from the value regardless of field type.
+        if (bypassActive(fieldName, value)) return;
         throw new SafeCheckValidationException(
             buildErrorMessage("Invalid value in field " + fieldName, value, types, overrideMessage));
     }
