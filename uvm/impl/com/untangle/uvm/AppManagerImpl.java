@@ -1642,7 +1642,18 @@ public class AppManagerImpl implements AppManager
                 if (item.getAppName().equals("ips")) continue;
                 if (item.getAppName().equals("spam-blocker-lite")) continue;
                 if (item.getAppName().equals("idps")) continue;
-                if (item.getAppName().equals("virus-blocker-lite")) continue;
+                if (item.getAppName().equals("virus-blocker-lite")) {
+                    // If Lite was running, ensure Virus Blocker (same clamav backend) is also running.
+                    if (AppSettings.AppState.RUNNING.equals(item.getTargetState())) {
+                        final Integer policyId = item.getPolicyId();
+                        readSettings.getApps().stream()
+                            .filter(s -> "virus-blocker".equals(s.getAppName())
+                                      && java.util.Objects.equals(s.getPolicyId(), policyId))
+                            .findFirst()
+                            .ifPresent(vb -> vb.setTargetState(AppSettings.AppState.RUNNING));
+                    }
+                    continue;
+                }
                 cleanList.add(item);
             }
 
