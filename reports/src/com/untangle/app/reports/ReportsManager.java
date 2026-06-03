@@ -145,24 +145,27 @@ public interface ReportsManager
     /**
      * Get the data for a specific report entry in v2 format.
      *
-     * @param entry
-     *  ReportEntry to query.
-     * @param startDate
-     *  Start date of query.
-     * @param endDate
-     *  End date of query.
-     * @param extraSelects
-     *  Extra selects.
-     * @param extraConditions
-     *  Additional SQL conditions to use in query.
-     * @param fromType
-     *  If null, use the table, otherwise construct using information in object.
-     * @param limit
-     *  Maximum number of results to return.
-     * @return
-     *  List of JSONObject of results.
+     * For chart types (TIME_GRAPH, TIME_GRAPH_DYNAMIC, PIE_GRAPH) returns a pre-processed
+     * JSONObject with metadata and pre-built series or slices - no UI-side transformation needed:
+     *   metadata - rendering hints (timeStyle/pieStyle, units, colors, approximation, columnOrder)
+     *   series[] - TIME_GRAPH/DYNAMIC: [{ key, label, data:[[ms,val]...] }]
+     *   slices[] - PIE_GRAPH: [{ name, value }] (top-N applied, Others grouped)
+     *
+     * For other types (EVENT_LIST, TEXT) wraps raw rows in { list: [...] }.
+     *
+     * time_trunc is returned as plain long milliseconds (no jabsorb Date wrapping).
+     * Interface, policy, and protocol names are resolved server-side.
+     *
+     * @param entry           ReportEntry to query.
+     * @param startDate       Start date of query.
+     * @param endDate         End date of query.
+     * @param extraSelects    Extra selects.
+     * @param extraConditions Additional SQL conditions to use in query.
+     * @param fromType        If null, use the table, otherwise construct using information in object.
+     * @param limit           Maximum number of results to return.
+     * @return                Pre-processed JSONObject for chart types; { list:[...] } for others.
      */
-    List<JSONObject> getDataForReportEntryV2( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit );
+    JSONObject getDataForReportEntryV2( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit );
 
     /**
      * Query events in the reports database
