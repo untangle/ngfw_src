@@ -990,9 +990,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 }
 
                 _mapLicenses();
-                if (!this.settings.toJSONString().equals(oldSettingsString)) {
-                    _saveSettings(this.settings);
-                }
+                _saveSettings(this.settings);   // always save on successful sync, bounds disk file age to last successful contact
             }
             _cleanLicenseFiles();
             _runAppManagerSync();
