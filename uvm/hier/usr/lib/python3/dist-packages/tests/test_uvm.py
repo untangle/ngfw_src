@@ -1893,7 +1893,8 @@ class UvmTests(NGFWTestCase):
 
     def test_310_system_logs(self):
         subprocess.call(global_functions.build_wget_command(log_file="/dev/null", output_file="/tmp/system_logs.zip", post_data="type=SystemSupportLogs", uri="http://localhost/admin/download"), shell=True)
-        subprocess.call("unzip -q /tmp/system_logs -d /tmp/system_logs && rm -rf /tmp/system_logs.zip", shell=True)
+        subprocess.call("rm -rf /tmp/system_logs", shell=True)
+        subprocess.call("unzip -o -q /tmp/system_logs.zip -d /tmp/system_logs && rm -rf /tmp/system_logs.zip", shell=True)
         uvm = subprocess.check_output("ls /tmp/system_logs | grep -c uvm", shell=True, stderr=subprocess.STDOUT)
         app = subprocess.check_output("ls /tmp/system_logs | grep -c app", shell=True, stderr=subprocess.STDOUT)
         console = subprocess.check_output("ls /tmp/system_logs | grep -c console", shell=True, stderr=subprocess.STDOUT)
