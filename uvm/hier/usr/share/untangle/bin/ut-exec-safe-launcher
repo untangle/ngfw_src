@@ -55,7 +55,8 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/ut-radius-proxy",
     "/usr/share/untangle/bin/ipsec-tunnel-status",
     "/usr/share/untangle/bin/wan-failover-pingable-hosts.sh",
-    "/usr/share/untangle/bin/ut-wireguard-helpers.sh"
+    "/usr/share/untangle/bin/ut-wireguard-helpers.sh",
+    "/usr/share/untangle/bin/fetch_ip_list.py",
 
 }
 

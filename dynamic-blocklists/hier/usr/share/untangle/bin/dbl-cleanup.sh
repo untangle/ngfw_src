@@ -1,15 +1,11 @@
 #!/bin/bash
-
-# Exit immediately if a command exits with a non-zero status
-set -e
-
 # Remove the DROP rule from the dynamic-block-list chain
 echo "Removing DROP rule from dynamic-block-list chain..."
-iptables -t filter -D dynamic-block-list -m set --match-set dblsets dst -j DROP ||
+iptables -t filter -D dynamic-block-list -m set --match-set dblsets dst -j DROP 2>/dev/null || true
 
 # Remove the NFLOG rule from the dynamic-block-list chain
 echo "Removing NFLOG rule from dynamic-block-list chain..."
-iptables -t filter -D dynamic-block-list -m set --match-set dblsets dst -j NFLOG --nflog-prefix "dynamic_block_list_blocked" ||
+iptables -t filter -D dynamic-block-list -m set --match-set dblsets dst -j NFLOG --nflog-prefix "dynamic_block_list_blocked" 2>/dev/null || true
 
 # Remove rule from FORWARD chain
 echo "Removing rule from FORWARD chain..."
@@ -28,7 +24,7 @@ echo "Destroying specified IP sets..."
 ipset_members=$(sudo ipset list dblsets | awk '/Members:/ {flag=1; next} flag && NF {print $1} /done/ {flag=0}')
 
 # Destroy parent set
-ipset destroy dblsets ||
+ipset destroy dblsets || true
 
 # Check if members exist
 if [ -z "$ipset_members" ]; then
