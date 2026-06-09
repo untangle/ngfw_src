@@ -29,7 +29,6 @@ ipset destroy dblsets || true
 # Check if members exist
 if [ -z "$ipset_members" ]; then
     echo "No members found in the ipset set dblsets."
-    exit 1
 fi
 
 # Loop through each member and delete it from the ipset set
