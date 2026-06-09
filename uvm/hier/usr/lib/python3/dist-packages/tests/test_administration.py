@@ -208,10 +208,13 @@ def _login_and_upload_cert(cert_path, retries=10, retry_sleep=2):
             response = s.post(f"{url}/admin/upload", headers=headers, files=files)
         last_status = response.status_code
         if response.text:
-            return json.loads(response.text)
+            try:
+                return json.loads(response.text)
+            except json.JSONDecodeError:
+                pass
         time.sleep(retry_sleep)
     raise AssertionError(
-        f"/admin/upload returned empty body after {retries} attempts "
+        f"/admin/upload returned non-JSON body after {retries} attempts "
         f"(last HTTP={last_status}); Apache mod_python session store likely "
         f"not warm after untangle-vm restart"
     )
