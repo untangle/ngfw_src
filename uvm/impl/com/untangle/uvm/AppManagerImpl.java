@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
@@ -1636,6 +1638,7 @@ public class AppManagerImpl implements AppManager
             // UPDATE settings if necessary
 
             // look for and remove old apps that no longer exist
+            boolean settingsModified = false;
             LinkedList<AppSettings> cleanList = new LinkedList<>();
             for (AppSettings item : readSettings.getApps()) {
                 if (item.getAppName().equals("webfilter-lite")) continue;
@@ -1643,22 +1646,37 @@ public class AppManagerImpl implements AppManager
                 if (item.getAppName().equals("spam-blocker-lite")) continue;
                 if (item.getAppName().equals("idps")) continue;
                 if (item.getAppName().equals("virus-blocker-lite")) {
+                    // One-time 17.4 -> 17.5 upgrade migration; can be removed in the next release
+                    // once 17.4 is no longer a supported upgrade path.
                     // If Lite was running, ensure Virus Blocker (same clamav backend) is also running.
                     if (AppSettings.AppState.RUNNING.equals(item.getTargetState())) {
                         final Integer policyId = item.getPolicyId();
-                        readSettings.getApps().stream()
+                        Optional<AppSettings> existingVb = readSettings.getApps().stream()
                             .filter(s -> "virus-blocker".equals(s.getAppName())
-                                      && java.util.Objects.equals(s.getPolicyId(), policyId))
-                            .findFirst()
-                            .ifPresent(vb -> vb.setTargetState(AppSettings.AppState.RUNNING));
+                                      && Objects.equals(s.getPolicyId(), policyId))
+                            .findFirst();
+                        if (existingVb.isPresent()) {
+                            existingVb.get().setTargetState(AppSettings.AppState.RUNNING);
+                        } else {
+                            // VB was never installed for this policy. Create an entry so the
+                            // customer retains virus protection after VBL is removed in 17.5.
+                            // restartUnloaded() picks this up; postInit() creates default
+                            // settings via initializeSettings() if no settings file exists.
+                            long newId = readSettings.getNextAppId();
+                            readSettings.setNextAppId(newId + 1);
+                            AppSettings newVb = new AppSettings(newId, policyId, "virus-blocker");
+                            newVb.setTargetState(AppSettings.AppState.RUNNING);
+                            cleanList.add(newVb);
+                        }
+                        settingsModified = true;
                     }
                     continue;
                 }
                 cleanList.add(item);
             }
 
-            // if we removed anything update the app list and save
-            if (cleanList.size() != readSettings.getApps().size()) {
+            // if we removed or added anything, update the app list and save
+            if (cleanList.size() != readSettings.getApps().size() || settingsModified) {
                 readSettings.setApps(cleanList);
                 this._setSettings(readSettings);
             }
