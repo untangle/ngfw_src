@@ -177,7 +177,7 @@ invalid_certificate_payload={"certData": "-----BEGIN CERTIFICATE----\n-----END C
 username = overrides.get("Login_username", default="admin")
 password = overrides.get("Login_password", default="passwd")
 
-def _login_and_upload_cert(cert_path, retries=10, retry_sleep=2):
+def _login_and_upload_cert(cert_path, retries=20, retry_sleep=3):
     """
     Authenticate to /auth/login then POST cert_path as multipart to /admin/upload.
     Returns the parsed JSON response.
