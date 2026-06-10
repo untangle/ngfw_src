@@ -378,6 +378,10 @@ def post_upgrade_fixups():
 
 # ---- Trixie upgrade helpers ---- #
 
+def is_trixie_system():
+    """Return True if running on a trixie kernel (6.12.x+), regardless of upgrade state."""
+    return platform.release().startswith("6.12.")
+
 def is_trixie_upgrade():
     """
     Detect if apt sources point to trixie while the system is still on
@@ -729,11 +733,12 @@ if r > 1:
     log("apt-get -s dist-upgrade returned an error (%i). Abort." % r)
     sys.exit(1)
 if r == 1:
-    # Packages kept back. Tolerate for trixie major-version upgrade where
-    # a transitional library (e.g. libmanette-0.2-0) commonly can't be
-    # reconciled by apt's resolver mid-hop; abort otherwise.
-    if trixie_upgrade:
-        log("Packages kept back during trixie upgrade -- proceeding anyway (may need manual install post-upgrade)")
+    # Packages kept back. Tolerate on trixie systems (both mid-upgrade and
+    # steady-state) — dist-upgrade with changed dependencies is normal for
+    # regular updates. Only abort on bullseye/bookworm where kept-back
+    # packages signal a resolver conflict that needs manual intervention.
+    if trixie_upgrade or is_trixie_system():
+        log("Packages kept back on trixie -- proceeding (dist-upgrade will resolve)")
     else:
         log("Packages have been kept back. Abort.")
         sys.exit(1)

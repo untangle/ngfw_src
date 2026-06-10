@@ -69,6 +69,10 @@ class SuricataConf:
         """
         Save suricata configuration
         """
+        for group in list(self.conf.get("vars", {})):
+            bad_keys = [k for k in self.conf["vars"][group] if not re.match(r'^[A-Z][A-Z0-9_]+$', k.strip())]
+            for k in bad_keys:
+                del self.conf["vars"][group][k]
         temp_file_name = SuricataConf.file_name + ".tmp"
         with open(temp_file_name, 'w') as stream:
             try:
