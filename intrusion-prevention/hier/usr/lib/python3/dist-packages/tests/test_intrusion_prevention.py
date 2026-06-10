@@ -222,6 +222,9 @@ class IntrusionPreventionTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
+        if len(appSettings['rules']['list']) == 0:
+            appSettings['rules']['list'].insert(0, create_rule(action="block", rule_type="CATEGORY", type_value="compromised"))
+            app.setSettings(appSettings, True, True)
         appSettings['rules']['list'][0]['action'] = "log"
         app.setSettings(appSettings, True, True)
 

@@ -35,10 +35,11 @@ IPSEC_PC_LAN_IP = overrides.get("IPSEC_PC_LAN_IP", default="192.168.235.83")
 IPSEC_HOST_NAME = overrides.get("IPSEC_HOST_NAME", default="ipsecsite.untangle.int")
 IPSEC_CONFIGURED_HOST_IPS = overrides.get("IPSEC_CONFIGURED_HOST_IPS", default=
                         [('10.112.13.168','192.168.10.1','192.168.10.1/24'), # ATS
-                        ('10.112.56.89','10.112.56.89','10.112.56.0/24'),  # QA 3 Bridged
+                        ('10.112.56.89','10.112.56.89','10.112.56.0/24'),   # QA 3 Bridged
                         ('10.112.56.57','192.168.10.1','192.168.10.0/24'),  # QA box .57
                         ('10.112.56.58','192.168.10.1','192.168.10.0/24'),  # QA box .58
-                        ('10.112.56.59','192.168.10.1','192.168.10.0/24')] # QA box Dual .59
+                        ('10.112.56.59','192.168.10.1','192.168.10.0/24'),  # QA box Dual .59
+                        ('10.112.56.180','192.168.10.1','192.168.10.0/24')] # trixie server
 )
 
 default_policy_id = 1
