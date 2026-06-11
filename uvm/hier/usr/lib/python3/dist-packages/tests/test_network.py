@@ -1167,6 +1167,8 @@ class NetworkTests(NGFWTestCase):
     # Test static DNS entry
     def test_090_static_dns_entry(self):
         # Test static entries in Config -> Networking -> Advanced -> DNS
+        if device_is_pppoe:
+            raise unittest.SkipTest("PPPoE WAN IP is on ISP-side network and unreachable from remote_control client")
         nuke_dns_rules()
         add_dns_rule(create_dns_rule(global_functions.ftp_server,"www.foobar.com"))
         result_mod = remote_control.run_command("host -R3 -4 www.foobar.com " + wan_ip, stdout=True)
@@ -1174,6 +1176,7 @@ class NetworkTests(NGFWTestCase):
         global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         match = re.search(r'address \d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', result_mod)
+        assert match is not None, f"DNS query produced no address line. host output: {result_mod!r}"
         ip_address_foobar = (match.group()).replace('address ','')
         # print("IP address of www.foobar.com <%s>" % ip_address_foobar)
         print(("Result expected:\"%s\" actual:\"%s\"" % (str(global_functions.ftp_server),str(ip_address_foobar))))
@@ -2425,13 +2428,26 @@ server=dynupdate.no-ip.com
                 status = global_functions.uvmContext.networkManager().getInterfaceStatus(interface.get("interfaceId"))
                 print(status)
                 wan_address = status["v4Address"]
-                (wan_network, wan_prefix) = status["v4MaskedAddress"].split("/")
+                # v4MaskedAddress is "<ip>/<prefix>" for normal networks, but a bare IP when prefix is /32
+                # (PPPoE point-to-point WAN) — see IPMaskedAddress.toString(). It can also be None when
+                # v4PrefixLength is unset. Use the separate v4PrefixLength field instead of parsing.
+                masked = status.get("v4MaskedAddress")
+                if masked and "/" in masked:
+                    (wan_network, wan_prefix) = masked.split("/")
+                else:
+                    wan_network = masked or wan_address
+                    wan_prefix = status.get("v4PrefixLength") or 32
             else:
                 if lan_network is None:
                     print("LAN interface status=")
                     status = global_functions.uvmContext.networkManager().getInterfaceStatus(interface.get("interfaceId"))
                     print(status)
-                    (lan_network, lan_prefix) = status["v4MaskedAddress"].split("/")
+                    masked = status.get("v4MaskedAddress")
+                    if masked and "/" in masked:
+                        (lan_network, lan_prefix) = masked.split("/")
+                    else:
+                        lan_network = masked or status.get("v4Address")
+                        lan_prefix = status.get("v4PrefixLength") or 24
 
         network_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
         network_settings["dynamicRoutingSettings"]["enabled"] = True
