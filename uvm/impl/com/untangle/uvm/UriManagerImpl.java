@@ -21,7 +21,7 @@ import org.apache.hc.core5.net.URIBuilder;
  */
 public class UriManagerImpl implements UriManager
 {
-    private static final Integer SettingsCurrentVersion = 6;
+    private static final Integer SettingsCurrentVersion = 7;
 
     private static final String URIS_OVERRIDE_FILE_NAME = System.getProperty("uvm.conf.dir") + "/uris_override.js";
 
@@ -272,7 +272,7 @@ public class UriManagerImpl implements UriManager
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
-        uriTranslation.setUri("http://updates.edge.arista.com/");
+        uriTranslation.setUri("https://updates.edge.arista.com/");
         uriTranslations.add(uriTranslation);
 
         uriTranslation = new UriTranslation();
