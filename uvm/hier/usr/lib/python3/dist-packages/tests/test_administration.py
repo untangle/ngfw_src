@@ -181,15 +181,14 @@ def _login_and_upload_cert(cert_path, retries=20, retry_sleep=3):
     """
     Authenticate to /auth/login then POST cert_path as multipart to /admin/upload.
     Returns the parsed JSON response.
-
-    Retries on empty response.text: in the window right after untangle-vm restart
-    Apache mod_python's DbmSession DB hasn't fully initialized -- /auth/login
-    returns 200 + Set-Cookie but the cookie isn't persisted server-side, so
-    /admin/upload sees no auth context and returns an empty body. Observed as 4
-    administration cert-upload failures in the 2026-05-28 ATS bookworm->trixie
-    post-upgrade run, all 4 passed cleanly on re-run minutes later.
+    Waits for admin.js to exist (UVM writes it late in startup).
     """
-    url = global_functions.get_http_url()
+    admin_settings_path = "/usr/share/untangle/settings/untangle-vm/admin.js"
+    if not os.path.exists(admin_settings_path):
+        admin = global_functions.uvmContext.adminManager().getSettings()
+        global_functions.uvmContext.adminManager().setSettings(admin)
+
+    url = global_functions.get_http_url().rstrip('/')
     headers = {'accept': 'application/json'}
     last_status = None
     for attempt in range(retries):
