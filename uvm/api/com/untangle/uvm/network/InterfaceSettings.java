@@ -618,6 +618,7 @@ public class InterfaceSettings implements Serializable, JSONString
      * @return InterfaceSettingsGeneric.V4ConfigType
      */
     private InterfaceSettingsGeneric.V4ConfigType transformV4ConfigTypeEnum(V4ConfigType v4ConfigType) {
+        if (this.v4ConfigType == null) return InterfaceSettingsGeneric.V4ConfigType.DHCP;
         return  (this.v4ConfigType == V4ConfigType.AUTO) ? InterfaceSettingsGeneric.V4ConfigType.DHCP
                 : InterfaceSettingsGeneric.V4ConfigType.valueOf(this.v4ConfigType.name());
     }
@@ -628,6 +629,7 @@ public class InterfaceSettings implements Serializable, JSONString
      * @return InterfaceSettingsGeneric.V6ConfigType
      */
     private InterfaceSettingsGeneric.V6ConfigType transformV6ConfigTypeEnum(V6ConfigType v6ConfigType) {
+        if (this.v6ConfigType == null) return InterfaceSettingsGeneric.V6ConfigType.DISABLED;
         return  (this.v6ConfigType == V6ConfigType.AUTO) ? InterfaceSettingsGeneric.V6ConfigType.SLAAC
                 : InterfaceSettingsGeneric.V6ConfigType.valueOf(this.v6ConfigType.name());
     }
