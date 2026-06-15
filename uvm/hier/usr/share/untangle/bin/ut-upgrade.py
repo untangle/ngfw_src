@@ -174,6 +174,28 @@ def check_disk_health():
     except Exception as e:
         log(f"Disk health check encountered an error {e}, proceeding with upgrade.")
 
+# ---- Shared upgrade helpers ---- #
+
+SETTINGS_DIR = "/usr/share/untangle/settings/untangle-vm"
+SETTINGS_BACKUP = "/tmp/.ut-upgrade-settings-backup"
+
+def backup_uvm_settings():
+    if os.path.isdir(SETTINGS_DIR):
+        log("Pre-upgrade: backing up UVM settings directory")
+        cmd_to_log("rm -rf %s" % SETTINGS_BACKUP)
+        cmd_to_log("cp -a %s %s" % (SETTINGS_DIR, SETTINGS_BACKUP))
+    else:
+        log("Pre-upgrade: no UVM settings directory to back up")
+
+def restore_uvm_settings():
+    if os.path.isdir(SETTINGS_BACKUP):
+        log("Post-upgrade: restoring UVM settings from pre-upgrade backup")
+        os.makedirs(SETTINGS_DIR, exist_ok=True)
+        cmd_to_log("cp -an %s/* %s/ 2>/dev/null || true" % (SETTINGS_BACKUP, SETTINGS_DIR))
+        cmd_to_log("rm -rf %s" % SETTINGS_BACKUP)
+    else:
+        log("Post-upgrade: no settings backup to restore")
+
 # ---- Bookworm upgrade helpers ---- #
 
 def is_bookworm_upgrade():
@@ -268,6 +290,8 @@ def pre_upgrade_cleanup():
         except:
             log("Pre-upgrade: WARNING - could not create wizard-complete flag")
 
+    backup_uvm_settings()
+
 def post_upgrade_fixups():
     """
     After dist-upgrade to Bookworm, set up components that the upgrade
@@ -281,6 +305,8 @@ def post_upgrade_fixups():
     # Configure any half-installed packages left over from upgrade
     log("Post-upgrade: configuring pending packages")
     cmd_to_log("dpkg --configure -a")
+
+    restore_uvm_settings()
 
     # IFB device: kernel 6.1 modprobe ifb doesn't auto-create devices.
     # Also ensure the module loads on boot so IFB survives reboot.
@@ -475,6 +501,8 @@ def pre_upgrade_cleanup_trixie():
         except:
             log("Pre-upgrade: WARNING - could not create wizard-complete flag")
 
+    backup_uvm_settings()
+
 def post_upgrade_fixups_trixie():
     """
     Post-upgrade fixups for bookworm->trixie:
@@ -548,6 +576,8 @@ def post_upgrade_fixups_trixie():
 
     log("Post-upgrade: waiting 30s for systemd postinst cascade to settle")
     time.sleep(30)
+
+    restore_uvm_settings()
 
     log("Post-upgrade: clean restart of untangle-vm to clear JDK21/jabsorb parallel-load race")
     cmd_to_log("systemctl stop untangle-vm")
