@@ -1,5 +1,6 @@
 """captive_portal tests"""
 import inspect
+import os
 import time
 import socket
 import subprocess
@@ -287,6 +288,33 @@ class CaptivePortalTests(NGFWTestCase):
         else:
             appWeb = uvmContext.appManager().instantiate(cls.appNameWeb(), default_policy_id)
 
+        # Self-heal root CA symlinks if a prior test run left them dangling.
+        # Without valid symlinks SSL Inspector cannot MITM connections and
+        # test_028_captive_ssl_inspector fails with curl exit code 35.
+        cert_dir = "/usr/share/untangle/settings/untangle-certificates/"
+        if os.path.isdir(cert_dir):
+            root_crt = os.path.join(cert_dir, "untangle.crt")
+            root_key = os.path.join(cert_dir, "untangle.key")
+            if os.path.islink(root_crt) and not os.path.exists(root_crt):
+                print("captive-portal setup: dangling root CA symlink detected, repairing...")
+                # Find an existing CA subdirectory that has untangle.crt
+                repaired = False
+                for d in sorted(os.listdir(cert_dir)):
+                    ca_dir = os.path.join(cert_dir, d)
+                    ca_crt = os.path.join(ca_dir, "untangle.crt")
+                    ca_key = os.path.join(ca_dir, "untangle.key")
+                    if os.path.isdir(ca_dir) and os.path.isfile(ca_crt) and os.path.isfile(ca_key):
+                        print(f"captive-portal setup: restoring root CA symlinks to {d}/")
+                        os.remove(root_crt)
+                        os.symlink(ca_crt, root_crt)
+                        if os.path.islink(root_key):
+                            os.remove(root_key)
+                        os.symlink(ca_key, root_key)
+                        repaired = True
+                        break
+                if not repaired:
+                    print("captive-portal setup: no valid CA subdirectory found, skipping repair")
+
         if (uvmContext.appManager().isInstantiated(cls.appNameSSLInspector())):
             if cls.skip_instantiated():
                 pytest.skip('app %s already instantiated' % cls.appNameSSLInspector())
@@ -497,15 +525,18 @@ class CaptivePortalTests(NGFWTestCase):
         assert (search != 0)
 
     def test_028_captive_ssl_inspector(self):
-        global app, appData, appSSL, aapSSL
+        global app, appData, appSSL, appSSLData
         # Add SSL Inspector and check that HTTPS pages not inspected still show captive pages
-        appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(2))
+        appData['captureRules']['list'] = []
+        appData['captureRules']['list'].append(create_capture_non_wan_nic_rule(1))
         appData['authenticationType']="NONE"
         appData['pageType'] = "BASIC_MESSAGE"
         appData['userTimeout'] = 3600  # default
         self._app.setSettings(appData)
 
+        appSSL.stop()
         appSSL.start()
+        time.sleep(5)
         result = remote_control.run_command(global_functions.build_curl_command(output_file="/tmp/capture_test_028.out"))
         appSSL.stop()
         assert (result == 0)

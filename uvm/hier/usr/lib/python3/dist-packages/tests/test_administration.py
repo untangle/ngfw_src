@@ -1607,29 +1607,13 @@ class AdministrationTests(NGFWTestCase):
         # INVALID — certSubject missing required '/CN=' anchor
         with pytest.raises(Exception):
             cert_mgr.generateCertificateAuthority("Test CA", "CN=NoSlash")
-        # VALID — both args match their SafeTypes; method writes to disk so
-        # we don't actually invoke it (would create a CA), and the rejection
-        # paths above are sufficient to prove the annotation fires. The
-        # validator runs before any side effects, so any non-rejection
-        # response counts as 'validation passed'.
-        #
-        # We still want one valid-shape probe: call with values that pass
-        # validation but use a unique throwaway CN; then restore by removing
-        # the generated CA directory below.
-        common_name = "atstest-safecheck-ca"
-        cert_subject = "/CN=" + common_name + "/O=ATS/L=Test"
-        cert_dir = "/usr/share/untangle/settings/untangle-certificates/"
-        before_dirs = set(os.listdir(cert_dir)) if os.path.isdir(cert_dir) else set()
-        try:
-            cert_mgr.generateCertificateAuthority(common_name, cert_subject)
-        finally:
-            # Best-effort cleanup of any new CA dir whose name starts with
-            # the throwaway prefix.
-            if os.path.isdir(cert_dir):
-                for d in os.listdir(cert_dir):
-                    if d not in before_dirs and d.startswith(common_name):
-                        import shutil
-                        shutil.rmtree(os.path.join(cert_dir, d), ignore_errors=True)
+        # Positive call skipped: generateCertificateAuthority() overwrites
+        # the active root-CA symlinks (untangle.crt/key) via symlinkRootCerts()
+        # and creates a new CA directory.  Cleaning this up reliably is fragile
+        # — previous attempts left dangling symlinks that broke SSL Inspector
+        # in downstream suites (captive-portal test_028).  The two negative
+        # cases above are sufficient to prove the @SafeCheckParam annotation
+        # fires; the validator runs before any side effects.
 
     def test_083_safecheckparam_generate_server_certificate(self):
         """CertificateManagerImpl.generateServerCertificate(certSubject: CERT_SUBJECT,
