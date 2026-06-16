@@ -181,13 +181,7 @@ def _login_and_upload_cert(cert_path, retries=20, retry_sleep=3):
     """
     Authenticate to /auth/login then POST cert_path as multipart to /admin/upload.
     Returns the parsed JSON response.
-    Waits for admin.js to exist (UVM writes it late in startup).
     """
-    admin_settings_path = "/usr/share/untangle/settings/untangle-vm/admin.js"
-    if not os.path.exists(admin_settings_path):
-        admin = global_functions.uvmContext.adminManager().getSettings()
-        global_functions.uvmContext.adminManager().setSettings(admin)
-
     url = global_functions.get_http_url().rstrip('/')
     headers = {'accept': 'application/json'}
     last_status = None
