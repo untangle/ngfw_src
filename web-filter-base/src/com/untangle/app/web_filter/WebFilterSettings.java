@@ -208,9 +208,9 @@ public class WebFilterSettings implements Serializable, JSONString
         g.setCloseHttpsBlockEnabled(this.closeHttpsBlockEnabled);
 
         // GenericRule lists - shared type, copy to avoid aliasing; always set (empty list when null)
-        g.setPassedClients(this.passedClients != null ? new LinkedList<>(this.passedClients) : new LinkedList<>());
-        g.setPassedUrls(this.passedUrls != null       ? new LinkedList<>(this.passedUrls)    : new LinkedList<>());
-        g.setBlockedUrls(this.blockedUrls != null     ? new LinkedList<>(this.blockedUrls)   : new LinkedList<>());
+        g.setPassClients(this.passedClients != null ? new LinkedList<>(this.passedClients) : new LinkedList<>());
+        g.setPassList(this.passedUrls != null       ? new LinkedList<>(this.passedUrls)    : new LinkedList<>());
+        g.setBlockList(this.blockedUrls != null     ? new LinkedList<>(this.blockedUrls)   : new LinkedList<>());
         g.setCategories(this.categories != null       ? new LinkedList<>(this.categories)    : new LinkedList<>());
         g.setSearchTerms(this.searchTerms != null     ? new LinkedList<>(this.searchTerms)   : new LinkedList<>());
 
