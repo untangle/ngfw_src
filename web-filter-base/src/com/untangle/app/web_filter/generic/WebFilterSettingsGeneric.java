@@ -47,9 +47,9 @@ public class WebFilterSettingsGeneric implements Serializable, JSONString
     private Boolean closeHttpsBlockEnabled = false;
 
     private LinkedList<RuleGeneric> filterRules = new LinkedList<>();
-    private LinkedList<GenericRule> passedClients = new LinkedList<>();
-    private LinkedList<GenericRule> passedUrls = new LinkedList<>();
-    private LinkedList<GenericRule> blockedUrls = new LinkedList<>();
+    private LinkedList<GenericRule> passClients = new LinkedList<>();
+    private LinkedList<GenericRule> passList = new LinkedList<>();
+    private LinkedList<GenericRule> blockList = new LinkedList<>();
     private LinkedList<GenericRule> categories = new LinkedList<>();
     private LinkedList<GenericRule> searchTerms = new LinkedList<>();
 
@@ -119,14 +119,14 @@ public class WebFilterSettingsGeneric implements Serializable, JSONString
     public LinkedList<RuleGeneric> getFilterRules() { return filterRules; }
     public void setFilterRules(LinkedList<RuleGeneric> filterRules) { this.filterRules = filterRules; }
 
-    public LinkedList<GenericRule> getPassedClients() { return passedClients; }
-    public void setPassedClients(LinkedList<GenericRule> passedClients) { this.passedClients = passedClients; }
+    public LinkedList<GenericRule> getPassClients() { return passClients; }
+    public void setPassClients(LinkedList<GenericRule> passClients) { this.passClients = passClients; }
 
-    public LinkedList<GenericRule> getPassedUrls() { return passedUrls; }
-    public void setPassedUrls(LinkedList<GenericRule> passedUrls) { this.passedUrls = passedUrls; }
+    public LinkedList<GenericRule> getPassList() { return passList; }
+    public void setPassList(LinkedList<GenericRule> passList) { this.passList = passList; }
 
-    public LinkedList<GenericRule> getBlockedUrls() { return blockedUrls; }
-    public void setBlockedUrls(LinkedList<GenericRule> blockedUrls) { this.blockedUrls = blockedUrls; }
+    public LinkedList<GenericRule> getBlockList() { return blockList; }
+    public void setBlockList(LinkedList<GenericRule> blockList) { this.blockList = blockList; }
 
     public LinkedList<GenericRule> getCategories() { return categories; }
     public void setCategories(LinkedList<GenericRule> categories) { this.categories = categories; }
@@ -175,9 +175,9 @@ public class WebFilterSettingsGeneric implements Serializable, JSONString
         v1.setCloseHttpsBlockEnabled(this.closeHttpsBlockEnabled);
 
         // GenericRule lists - shared type, assign directly; always set (empty list when null)
-        v1.setPassedClients(this.passedClients != null ? new LinkedList<>(this.passedClients) : new LinkedList<>());
-        v1.setPassedUrls(this.passedUrls != null       ? new LinkedList<>(this.passedUrls)    : new LinkedList<>());
-        v1.setBlockedUrls(this.blockedUrls != null     ? new LinkedList<>(this.blockedUrls)   : new LinkedList<>());
+        v1.setPassedClients(this.passClients != null ? new LinkedList<>(this.passClients) : new LinkedList<>());
+        v1.setPassedUrls(this.passList != null       ? new LinkedList<>(this.passList)    : new LinkedList<>());
+        v1.setBlockedUrls(this.blockList != null     ? new LinkedList<>(this.blockList)   : new LinkedList<>());
         v1.setCategories(this.categories != null       ? new LinkedList<>(this.categories)    : new LinkedList<>());
         v1.setSearchTerms(this.searchTerms != null     ? new LinkedList<>(this.searchTerms)   : new LinkedList<>());
 
