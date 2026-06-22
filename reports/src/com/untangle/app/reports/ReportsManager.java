@@ -143,12 +143,22 @@ public interface ReportsManager
     List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit );
 
     /**
+     * Executes a report data query and returns a type-aware chart payload.
+     *
+     * For TIME_GRAPH / TIME_GRAPH_DYNAMIC returns: { series: [{key, label, data:[[ms,val]]}] }
+     * For PIE_GRAPH returns:                        { slices: [{name, value}] }
+     * For TEXT returns:                             { text: "..." }
+     * For EVENT_LIST returns:                       { list: [...raw rows...] }
+     */
+    JSONObject getDataForReportEntryV2( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit );
+
+    /**
      * Query events in the reports database
      *
      * @param entry
      *  ReportEntry to query.
      * @param extraConditions
-     *  Additional SQL conditions to use in query. 
+     *  Additional SQL conditions to use in query.
      * @param limit
      *  Maximum number of results to return.
      * @return
