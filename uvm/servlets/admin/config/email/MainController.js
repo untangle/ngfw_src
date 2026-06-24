@@ -248,7 +248,7 @@ Ext.define('Ung.config.email.MainController', {
         var me = this;
         me.dialog = me.getView().add({
             xtype: 'window',
-            title: 'Email Quarantine Details for:'.t() + ' ' + record.get('address'),
+            title: 'Email Quarantine Details for:'.t() + ' ' + Ext.String.htmlEncode(record.get('address')),
             width: Ext.getBody().getViewSize().width - 20,
             maxHeight: Ext.getBody().getViewSize().height - 20,
             modal: true,
@@ -290,13 +290,15 @@ Ext.define('Ung.config.email.MainController', {
                     header: 'Sender'.t(),
                     width: Renderer.emailWidth,
                     dataIndex: 'sender',
-                    filter: { type: 'string' }
+                    filter: { type: 'string' },
+                    renderer: Ext.util.Format.htmlEncode
                 }, {
                     header: 'Subject'.t(),
                     width: Renderer.messageWidth,
                     flex: 1,
                     dataIndex: 'subject',
-                    filter: { type: 'string' }
+                    filter: { type: 'string' },
+                    renderer: Ext.util.Format.htmlEncode
                 }, {
                     header: 'Size (KB)'.t(),
                     width: Renderer.sizeWidth,
@@ -307,7 +309,8 @@ Ext.define('Ung.config.email.MainController', {
                     header: 'Category'.t(),
                     width: Renderer.idWidth,
                     dataIndex: 'quarantineCategory',
-                    filter: { type: 'string' }
+                    filter: { type: 'string' },
+                    renderer: Ext.util.Format.htmlEncode
                 }, {
                     header: 'Detail'.t(),
                     width: Renderer.sizeWidth,
@@ -321,7 +324,7 @@ Ext.define('Ung.config.email.MainController', {
                         } else {
                             return parseFloat(detail).toFixed(3);
                         }
-                        return detail;
+                        return Ext.String.htmlEncode(detail);
                     },
                     filter: { type: 'numeric' }
                 }],
