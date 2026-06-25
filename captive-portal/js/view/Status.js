@@ -68,6 +68,7 @@ Ext.define('Ung.apps.captive-portal.view.Status', {
                     dataIndex: 'userName',
                     width: Renderer.usernameWidth,
                     flex: 1,
+                    renderer: Ext.util.Format.htmlEncode,
                     filter: Renderer.stringFilter
                 }, {
                     header: 'Login Time'.t(),

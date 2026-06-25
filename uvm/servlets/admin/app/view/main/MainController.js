@@ -59,7 +59,7 @@ Ext.define('Ung.view.main.MainController', {
                 btn.show();
                 notificationArr += '<h3>' + 'Notifications:'.t() + '</h3><ul>';
                 for (i = 0; i < result.list.length; i += 1) {
-                    notificationArr += '<li>' + result.list[i] + '</li>';
+                    notificationArr += '<li>' + Ext.String.htmlEncode(result.list[i]) + '</li>';
                 }
                 notificationArr += '</ul>';
                 btn.setText(result.list.length);

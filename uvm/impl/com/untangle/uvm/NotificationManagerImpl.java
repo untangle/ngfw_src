@@ -380,12 +380,12 @@ public class NotificationManagerImpl implements NotificationManager
         ExecManagerResult result;
         result = this.execManager.exec(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testDiskError1");
         if (result.getResult() == 0) {
-            notificationList.add(i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n", "<br/>\n"));
+            notificationList.add(i18nUtil.tr("Disk errors reported.") + " | " + result.getOutput().replaceAll("\n", " | "));
         }
 
         result = this.execManager.exec(System.getProperty(UVM_BIN_DIR) + "/ut-notification-helpers.sh testDiskError2");
         if (result.getResult() == 0) {
-            notificationList.add(i18nUtil.tr("Disk errors reported.") + "<br/>\n" + result.getOutput().replaceAll("\n", "<br/>\n"));
+            notificationList.add(i18nUtil.tr("Disk errors reported.") + " | " + result.getOutput().replaceAll("\n", " | "));
         }
     }
 
@@ -837,7 +837,7 @@ public class NotificationManagerImpl implements NotificationManager
         boolean fullFlag = reports.getDiskFullFlag();
         if (fullFlag) {
             String notificationText = StringUtils.EMPTY;
-            notificationText += i18nUtil.tr("Reports event processing disabled due to low disk space. <a href='/admin/index.do#service/reports/data'>Manage reports data here</a>");
+            notificationText += i18nUtil.tr("Reports event processing disabled due to low disk space. Manage reports data at /admin/index.do#service/reports/data");
             notificationList.add(notificationText);
         }
     }
@@ -979,7 +979,7 @@ public class NotificationManagerImpl implements NotificationManager
     private void testUserPasswords(List<String> notificationList)
     {
         if (UvmContextFactory.context().adminManager().getWeakPasswordHashes()) {
-            String notificationText = i18nUtil.tr("Some admin user accounts are using weak password hashes.  <a href='/admin/index.do#config/administration/admin'> Update them here </a>");
+            String notificationText = i18nUtil.tr("Some admin user accounts are using weak password hashes. Update them at /admin/index.do#config/administration/admin");
             notificationList.add(notificationText);
         }
     }
