@@ -51,7 +51,10 @@ Ext.define('Ung.widget.Notifications', {
                 var notificationArr = '<ul style="margin: 0; padding: 0 10px 30px 30px;">', i;
                 if (result != null && result.list.length > 0) {
                     for (i = 0; i < result.list.length; i += 1) {
-                        notificationArr += '<li>' + Ext.String.htmlEncode(result.list[i]) + '</li>';
+                        var safe = Ext.String.htmlEncode(result.list[i]);
+                        safe = safe.replace(/&lt;br\/&gt;/g, '<br/>');
+                        safe = safe.replace(/&lt;a href=&#39;(\/admin\/[^&]*)&#39;&gt;(.*?)&lt;\/a&gt;/g, '<a href="$1">$2</a>');
+                        notificationArr += '<li>' + safe + '</li>';
                     }
                     notificationArr += '</ul>';
                     notifCmp.setHtml(notificationArr);

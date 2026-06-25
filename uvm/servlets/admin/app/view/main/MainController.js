@@ -59,7 +59,10 @@ Ext.define('Ung.view.main.MainController', {
                 btn.show();
                 notificationArr += '<h3>' + 'Notifications:'.t() + '</h3><ul>';
                 for (i = 0; i < result.list.length; i += 1) {
-                    notificationArr += '<li>' + Ext.String.htmlEncode(result.list[i]) + '</li>';
+                    var safe = Ext.String.htmlEncode(result.list[i]);
+                    safe = safe.replace(/&lt;br\/&gt;/g, '<br/>');
+                    safe = safe.replace(/&lt;a href=&#39;(\/admin\/[^&]*)&#39;&gt;(.*?)&lt;\/a&gt;/g, '<a href="$1">$2</a>');
+                    notificationArr += '<li>' + safe + '</li>';
                 }
                 notificationArr += '</ul>';
                 btn.setText(result.list.length);
