@@ -18,6 +18,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 
+import java.net.InetAddress;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.OAuthDomain;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.SafeType;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.AppTCPSession;
 import com.untangle.uvm.vnet.AbstractEventHandler;
@@ -69,6 +71,23 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         super();
         this.clientSide = clientSide;
         this.app = app;
+    }
+
+    /**
+     * Render an SNI value safely for a single-line log entry by stripping
+     * CR/LF/TAB and capping length. Used only when logging the value of an
+     * SNI that failed validation -- attacker-controlled bytes must never
+     * land on a log line raw (log injection vector demonstrated under
+     * SNI SSRF, NGFW-15841).
+     *
+     * @param s the value to sanitize (may be null)
+     * @return a single-line, length-capped representation
+     */
+    private static String safeForLog(String s)
+    {
+        if (s == null) return "null";
+        String stripped = s.replace('\r', ' ').replace('\n', ' ').replace('\t', ' ');
+        return stripped.length() > 80 ? stripped.substring(0, 77) + "..." : stripped;
     }
 
     /**
@@ -679,12 +698,49 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         if (sniHostname != null) {
             session.globalAttach(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME, sniHostname);
             logger.debug("SSL_INSPECTOR_SNI_HOSTNAME = " + sniHostname);
-            serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(sniHostname);
+
+            // SNI SSRF (NGFW-15841): SNI bytes come straight off the wire from
+            // the client (HttpUtility.extractedSNIHostname reads `nameLength`
+            // raw bytes into a String). Without validation they reach
+            // CertCacheManagerImpl which builds `new URL("https://" + sni)`
+            // and connects -- an SSRF primitive that lets an attacker steer
+            // the firewall's outbound TCP. Validate against SafeType.HOSTNAME
+            // (RFC 1035 LDH + NetBIOS underscore, max 253 chars, starts
+            // [A-Za-z0-9]). If the SNI is malformed, fall back to the actual
+            // server IP -- the same primitive the SNI-absent branch below
+            // already uses every day in production. CertCacheManagerImpl
+            // validates again at the sink as defense-in-depth.
+            //
+            // SafeType.HOSTNAME accepts null / empty (per SafeType.java:983);
+            // empty SNI is treated the same as malformed here (fall back to
+            // IP). Null can't appear inside this branch.
+            String certCacheKey = null;
+            if (!sniHostname.isEmpty() && SafeType.HOSTNAME.validate(sniHostname)) {
+                certCacheKey = sniHostname;
+            } else {
+                InetAddress addr = session.getServerAddr();
+                if (addr != null) {
+                    certCacheKey = addr.getHostAddress();
+                    logger.warn("SNI SSRF: rejected malformed SNI for cert prefetch, falling back to server IP "
+                        + certCacheKey + ": " + safeForLog(sniHostname));
+                } else {
+                    logger.warn("SNI SSRF: rejected malformed SNI for cert prefetch, no server IP available for fallback: "
+                        + safeForLog(sniHostname));
+                }
+            }
+            if (certCacheKey != null) {
+                serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(certCacheKey);
+            }
         }
 
-        // grab the cached certificate for the server but only for non-SMTP traffic 
+        // grab the cached certificate for the server but only for non-SMTP traffic
+        // SNI SSRF (NGFW-15841): null-guard on getServerAddr() for parity with the
+        // SNI-fallback path above; corner case is a partially-set-up session.
         if (session.getServerPort() != 25 && sniHostname == null) {
-            serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(session.getServerAddr().getHostAddress().toString());
+            InetAddress addr = session.getServerAddr();
+            if (addr != null) {
+                serverCert = UvmContextFactory.context().certCacheManager().fetchServerCertificate(addr.getHostAddress());
+            }
         }
 
         // attach the subject and issuer names for use by the rule matcher
