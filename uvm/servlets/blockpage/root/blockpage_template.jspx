@@ -36,10 +36,10 @@
 
     <uvm:inlineScript>
       <![CDATA[
-          var nonce = '${param.nonce}';
-          var appid = '${param.appid}';
-          var tid = '${param.tid}';
-          var url = '${bd.url}';
+          var nonce = '${safeNonceJs}';
+          var appid = '${safeAppidJs}';
+          var tid = '${safeTidJs}';
+          var url = '${safeBdUrlJs}';
       ]]>
     </uvm:inlineScript>
 
