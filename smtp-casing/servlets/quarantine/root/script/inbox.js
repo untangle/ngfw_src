@@ -438,6 +438,7 @@ Ext.define('Ung.view.Messages', {
         width: Renderer.emailWidth,
         flex: 1,
         sortable: true,
+        renderer: Ext.util.Format.htmlEncode,
         filter: { type: 'string' }
     }, {
         header: 'Attachments'.t(),
@@ -464,6 +465,7 @@ Ext.define('Ung.view.Messages', {
         flex: 1,
         width: Renderer.messageWidth,
         sortable: true,
+        renderer: Ext.util.Format.htmlEncode,
         filter: { type : 'string' }
     }, {
         header: 'Date'.t(),
