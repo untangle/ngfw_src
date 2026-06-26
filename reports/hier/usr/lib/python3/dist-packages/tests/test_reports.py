@@ -1451,6 +1451,8 @@ class ReportsTests(NGFWTestCase):
         assert (resultLoginPage == 0)
         # Restore original settings
         self._app.setSettings(original_settings)
+
+
     def test_111_data_retention_days(self):
         """
         Day retention removal
