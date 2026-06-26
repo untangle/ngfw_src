@@ -533,6 +533,27 @@ SQL_INJECT_REPORTENTRIES = overrides.get(
     }
 })
 
+def reports_realm_rpc_login(user, password):
+    """
+    Authenticate to the /reports realm and return a JSON-RPC session, nonce,
+    and the reportsManager objectID and javaClass.
+    Returns (session, rpc_url, nonce, object_id, java_class)
+    """
+    url = global_functions.get_http_url()
+    rpc_url = f"{url}/reports/JSON-RPC"
+    s = requests.Session()
+    s.post(
+        f"{url}/auth/login?url=/reports&realm=Reports",
+        data=f"fragment=&username={user}&password={password}",
+        verify=False
+    )
+    r = s.post(rpc_url, json={"id": 1, "nonce": "", "method": "system.getNonce", "params": []}, verify=False)
+    nonce = json.loads(r.text)["result"]
+    r = s.post(rpc_url, json={"id": 2, "nonce": nonce, "method": "ReportsContext.reportsManager", "params": []}, verify=False)
+    result = json.loads(r.text).get("result", {})
+    return s, rpc_url, nonce, result.get("objectID", ""), result.get("javaClass", "")
+
+
 def sql_injection(user, password, inject_filename_base, report_entry_type):
     """
     Run SQL injection
@@ -1430,8 +1451,6 @@ class ReportsTests(NGFWTestCase):
         assert (resultLoginPage == 0)
         # Restore original settings
         self._app.setSettings(original_settings)
-
-
     def test_111_data_retention_days(self):
         """
         Day retention removal
@@ -1546,6 +1565,73 @@ class ReportsTests(NGFWTestCase):
         # After cleaning, expecting to have less records
         print(f"Pre/post record counts: {start_count} < {end_count}")
         assert(end_count < start_count)
+
+    def test_120_reports_proxy_access_control(self):
+        """
+        Verify the ReportsManager proxy is correctly instantiated in the /reports realm and enforces access control.
+
+        Checks:
+        - reportsManager() returns the restricted proxy class, not the base singleton
+        - Write methods (saveReportEntry, removeReportEntry, setReportEntries, reinitializeDatabase) are blocked for reports-realm users
+        - Read method (getReportEntries) remains accessible through the proxy
+        """
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email, access=True))
+        self._app.setSettings(settings)
+
+        s, rpc_url, nonce, oid, java_class = reports_realm_rpc_login(test_email, "passwd")
+
+        # Verify the proxy class is returned, not the unrestricted base singleton
+        assert "ReportsContextImpl" in java_class, \
+            f"Expected restricted proxy class, got base singleton: {java_class}"
+
+        probe = {"javaClass": "com.untangle.app.reports.ReportEntry", "uniqueId": "unt06-test-probe",
+                 "title": "unt06-test", "category": "Hosts", "type": "TEXT", "table": "sessions",
+                 "textColumns": ["1"], "enabled": True, "readOnly": False, "displayOrder": 99999}
+
+        # Verify all write methods are blocked for reports-realm users
+        blocked_methods = [
+            (f".obj#{oid}.saveReportEntry", [probe]),
+            (f".obj#{oid}.removeReportEntry", [probe]),
+            (f".obj#{oid}.setReportEntries", [{"javaClass": "java.util.LinkedList", "list": []}]),
+            (f".obj#{oid}.reinitializeDatabase", []),
+        ]
+        errors = []
+        for method, params in blocked_methods:
+            r = s.post(rpc_url, json={"id": 3, "nonce": nonce, "method": method, "params": params}, verify=False)
+            resp = json.loads(r.text)
+            if "error" not in resp:
+                errors.append(f"{method} was NOT blocked (expected error)")
+        assert len(errors) == 0, f"Write methods not blocked for reports-realm user: {errors}"
+
+        # Verify read-only methods remain accessible through the proxy
+        r = s.post(rpc_url, json={"id": 4, "nonce": nonce, "method": f".obj#{oid}.getReportEntries", "params": []}, verify=False)
+        resp = json.loads(r.text)
+        assert "error" not in resp, f"getReportEntries() blocked unexpectedly: {resp.get('error')}"
+        assert "result" in resp, "getReportEntries() did not return a result"
+
+        self._app.setSettings(original_settings)
+
+    def test_129_admin_realm_write_methods_allowed(self):
+        """
+        UNT-06 non-regression: verify that admin can still call saveReportEntry
+        and removeReportEntry via the admin realm (unaffected by the proxy fix).
+        """
+        reports_manager = global_functions.uvmContext.appManager().app("reports").getReportsManager()
+        java_class = type(reports_manager).__name__
+
+        probe = {"javaClass": "com.untangle.app.reports.ReportEntry", "uniqueId": f"unt06-admin-probe-{int(time.time())}",
+                 "title": "unt06-admin-test", "category": "Hosts", "type": "TEXT", "table": "sessions",
+                 "textColumns": ["1"], "enabled": True, "readOnly": False, "displayOrder": 99999}
+
+        reports_manager.saveReportEntry(probe)
+        reports_manager.removeReportEntry(probe)
+
+        assert "ReportsContextImpl" not in java_class, \
+            f"Admin should receive unrestricted base singleton, not proxy: {java_class}"
 
     # tests for each report type:
     #    case EVENT_LIST:

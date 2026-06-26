@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.app.reports.ReportEntry;
+import com.untangle.app.reports.ReportsApp;
 import com.untangle.app.reports.ReportsManager;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.LanguageSettings;
@@ -37,7 +38,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     private final SkinManager skinManager = new SkinManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
-    private final ReportsManager reportsManager = ReportsManagerImpl.getInstance();
+    private final ReportsManager reportsManager = this.new ReportsManagerImpl();
 
     /**
      * Initialize reportscontext with UVM context.
@@ -244,6 +245,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
          * @param newEntries
          *  New report entries.
          */
+        @Override
         public void setReportEntries( List<ReportEntry> newEntries ) { throw new RuntimeException("Unable to set the report entries."); }
         /**
          * Save report entry.
@@ -251,6 +253,28 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
          * @param entry
          *  Report entry to save.
          */
-        public void saveReportEntry( ReportEntry entry ) { throw new RuntimeException("Unable to set the event entries."); }
+        @Override
+        public void saveReportEntry( ReportEntry entry ) { throw new RuntimeException("Unable to save the report entry."); }
+        /**
+         * Remove report entry.
+         *
+         * @param entry
+         *  Report entry to remove.
+         */
+        @Override
+        public void removeReportEntry( ReportEntry entry ) { throw new RuntimeException("Unable to remove the report entry."); }
+        /**
+         * Set reports app.
+         *
+         * @param app
+         *  Reports app to set.
+         */
+        @Override
+        public void setReportsApp( ReportsApp app ) { throw new RuntimeException("Unable to set the reports app."); }
+        /**
+         * Reinitialize database.
+         */
+        @Override
+        public void reinitializeDatabase() { throw new RuntimeException("Unable to reinitialize the database."); }
     }
 }
