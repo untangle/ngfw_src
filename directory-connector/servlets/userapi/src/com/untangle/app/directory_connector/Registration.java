@@ -72,12 +72,17 @@ public class Registration extends HttpServlet
             }
             if (requiredSecretKey == null || "".equals(requiredSecretKey)) {
                 logger.warn("Download rejected: API secret key is not configured.");
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "A Secret Key must be configured before downloading the login script. " +
+                    "The script uses this key to authenticate user registration requests. " +
+                    "Set one in Apps > Directory Connector > User Notification API > Secret Key.");
                 return;
             }
             if (!requiredSecretKey.equals(dlSecretKey)) {
                 logger.warn("Download rejected: secret key does not match.");
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "The provided secret key does not match. " +
+                    "Verify the key in Apps > Directory Connector > User Notification API > Secret Key.");
                 return;
             }
             generateInstaller( request, response );
