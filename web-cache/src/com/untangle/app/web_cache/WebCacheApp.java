@@ -103,6 +103,15 @@ public class WebCacheApp extends AppBase
     }
 
     /**
+     * Get the web cache statistics in v2 format
+     *
+     * @return The web cache statistics
+     */
+    public WebCacheStatistics getStatisticsV2() {
+        return this.getStatistics();
+    }
+
+    /**
      * Gets the application settings
      * 
      * @return The application settings
@@ -111,6 +120,25 @@ public class WebCacheApp extends AppBase
     {
         logger.debug("WebCache getSettings()");
         return (settings);
+    }
+
+    /**
+     * Get the WebCacheSettings settings in v2 format
+     *
+     * @return The WebCacheSettings settings
+     */
+    public WebCacheSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
+     * Set the WebCacheSettings settings from v2 format
+     *
+     * @param newSettings
+     *        The new settings
+     */
+    public void setSettingsV2(WebCacheSettings newSettings) {
+        this.setSettings(newSettings);
     }
 
     /**
