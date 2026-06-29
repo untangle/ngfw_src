@@ -223,6 +223,237 @@ class EmailTests(NGFWTestCase):
             assert "Invalid value in" not in str(e), \
                 f"validator unexpectedly rejected a well-formed EMAIL: {e!r}"
 
+    @staticmethod
+    def _get_smtp_app():
+        """Return the smtp app handle, or None if not installed."""
+        try:
+            app = global_functions.uvmContext.appManager().app("smtp")
+            if app is None:
+                return None
+            return app
+        except Exception:
+            return None
+
+    def test_200_quarantine_path_traversal_deleteInbox(self):
+        """Quarantine deleteInbox must reject path-traversal addresses."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        quarantine = smtp_app.getQuarantineMaintenenceView()
+        traversal_addresses = [
+            "../../../etc/passwd",
+            "../../shadow",
+            "user@example.com/../../etc",
+            "user\\..\\..\\windows",
+        ]
+        for addr in traversal_addresses:
+            with pytest.raises(Exception):
+                quarantine.deleteInbox(addr)
+
+    def test_210_quarantine_path_traversal_getInboxRecords(self):
+        """Quarantine getInboxRecords must reject path-traversal addresses."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        quarantine = smtp_app.getQuarantineUserView()
+        traversal_addresses = [
+            "../../../etc/passwd",
+            "..%2f..%2fetc/shadow",
+            "evil/../../../root",
+        ]
+        for addr in traversal_addresses:
+            with pytest.raises(Exception):
+                quarantine.getInboxRecords(addr)
+
+    def test_220_quarantine_path_traversal_purge(self):
+        """Quarantine purge must reject path-traversal account addresses."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        quarantine = smtp_app.getQuarantineUserView()
+        with pytest.raises(Exception):
+            quarantine.purge("../../etc/passwd", ["fake-mail-id"])
+
+    def test_230_quarantine_path_traversal_rescue(self):
+        """Quarantine rescue must reject path-traversal account addresses."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        quarantine = smtp_app.getQuarantineUserView()
+        with pytest.raises(Exception):
+            quarantine.rescue("../../etc/shadow", ["fake-mail-id"])
+
+    def test_240_quarantine_control_char_rejection(self):
+        """Quarantine must reject addresses containing control characters."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        quarantine = smtp_app.getQuarantineMaintenenceView()
+        control_char_addresses = [
+            "user\x00@example.com",
+            "user\n@example.com",
+            "user\t@example.com",
+        ]
+        for addr in control_char_addresses:
+            with pytest.raises(Exception):
+                quarantine.deleteInbox(addr)
+
+    def test_250_quarantine_slash_rejection(self):
+        """Quarantine must reject addresses with slashes even without '..'."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        quarantine = smtp_app.getQuarantineMaintenenceView()
+        with pytest.raises(Exception):
+            quarantine.deleteInbox("user/subdir@example.com")
+        with pytest.raises(Exception):
+            quarantine.deleteInbox("user\\subdir@example.com")
+
+    def test_260_quarantine_valid_address_accepted(self):
+        """Quarantine operations with valid addresses must not be blocked
+        by the security validator (they may raise NoSuchInboxException which
+        is the expected non-security error)."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        quarantine = smtp_app.getQuarantineMaintenenceView()
+        valid_addresses = [
+            "user@example.com",
+            "admin+tag@test.example.org",
+            "dotted.name@company.co.uk",
+            "_user@example.com",
+            "+tag@example.com",
+            "-list@example.com",
+            "user_name@example.com",
+            "user%tag@example.com",
+        ]
+        for addr in valid_addresses:
+            try:
+                quarantine.deleteInbox(addr)
+            except Exception as e:
+                err = str(e)
+                assert "Invalid" not in err and "path traversal" not in err.lower(), \
+                    f"valid address '{addr}' wrongly rejected by security validator: {e!r}"
+
+    def test_270_quarantine_remap_traversal(self):
+        """Quarantine remapSelfService must reject path-traversal targets."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        quarantine = smtp_app.getQuarantineUserView()
+        with pytest.raises(Exception):
+            quarantine.remapSelfService("legit@example.com", "../../../etc/passwd")
+
+    def test_300_safecheck_email_address_rule_injection(self):
+        """@SafeCheck(EMAIL_WILDCARD) on EmailAddressRule must reject
+        addresses with shell metacharacters not in the allowed charset."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        settings = smtp_app.getSmtpSettings()
+        orig_settings = copy.deepcopy(settings)
+        try:
+            injections = [
+                "admin;rm -rf /@example.com",
+                "user$(id)@example.com",
+                "../../../etc/passwd",
+            ]
+            for injection_addr in injections:
+                settings = copy.deepcopy(orig_settings)
+                settings['quarantineSettings']['allowedAddressPatterns'] = {
+                    "javaClass": "java.util.LinkedList",
+                    "list": [{
+                        "javaClass": "com.untangle.app.smtp.EmailAddressRule",
+                        "addr": injection_addr
+                    }]
+                }
+                with pytest.raises(Exception):
+                    smtp_app.setSmtpSettings(settings)
+        finally:
+            smtp_app.setSmtpSettings(orig_settings)
+
+    def test_310_safecheck_email_address_rule_valid(self):
+        """@SafeCheck(EMAIL_WILDCARD) must accept valid wildcard addresses."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        settings = smtp_app.getSmtpSettings()
+        orig_settings = copy.deepcopy(settings)
+        try:
+            valid_addrs = [
+                "*",
+                "*@example.com",
+                "*@hhs.com",
+                "*@*.com",
+                "admin@example.org",
+                "_user@example.com",
+                "+tag@example.com",
+                "-list@example.com",
+            ]
+            for valid_addr in valid_addrs:
+                settings = copy.deepcopy(orig_settings)
+                settings['quarantineSettings']['allowedAddressPatterns'] = {
+                    "javaClass": "java.util.LinkedList",
+                    "list": [{
+                        "javaClass": "com.untangle.app.smtp.EmailAddressRule",
+                        "addr": valid_addr
+                    }]
+                }
+                try:
+                    smtp_app.setSmtpSettings(settings)
+                except Exception as e:
+                    assert "Invalid value in" not in str(e), \
+                        f"valid wildcard address '{valid_addr}' rejected: {e!r}"
+        finally:
+            smtp_app.setSmtpSettings(orig_settings)
+
+    def test_315_safecheck_email_pair_rule_valid(self):
+        """@SafeCheck(EMAIL_GLOB) on EmailAddressPairRule must accept valid
+        email and glob addresses in quarantine forwards."""
+        smtp_app = self._get_smtp_app()
+        if smtp_app is None:
+            raise unittest.SkipTest("smtp app not installed")
+
+        settings = smtp_app.getSmtpSettings()
+        orig_settings = copy.deepcopy(settings)
+        try:
+            valid_pairs = [
+                ("user@example.com", "admin@example.com"),
+                ("*@example.com", "admin@example.com"),
+                ("*@hhs.com", "admin@example.com"),
+                ("*@*.com", "admin@example.com"),
+                ("_user@example.com", "admin@example.com"),
+                ("+tag@example.com", "admin@example.com"),
+                ("-list@example.com", "admin@example.com"),
+            ]
+            for addr1, addr2 in valid_pairs:
+                settings = copy.deepcopy(orig_settings)
+                settings['quarantineSettings']['addressRemaps'] = {
+                    "javaClass": "java.util.LinkedList",
+                    "list": [{
+                        "javaClass": "com.untangle.app.smtp.EmailAddressPairRule",
+                        "address1": addr1,
+                        "address2": addr2
+                    }]
+                }
+                try:
+                    smtp_app.setSmtpSettings(settings)
+                except Exception as e:
+                    assert "Invalid value in" not in str(e), \
+                        f"valid forward pair ('{addr1}', '{addr2}') rejected: {e!r}"
+        finally:
+            smtp_app.setSmtpSettings(orig_settings)
+
     @classmethod
     def final_extra_tear_down(cls):
         if EmailTests.original_mail_settings is not None:

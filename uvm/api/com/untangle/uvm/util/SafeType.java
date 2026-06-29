@@ -271,6 +271,59 @@ public enum SafeType
         "must be an email address like user@example.com , local part must start with a letter or digit, domain must have at least one dot and a 2+ letter TLD (max 254 chars)"),
 
     /**
+     * Backend counterpart of the UI {@code email} vtype
+     * ({@code VTypes.js:111-114}, mask pattern at {@code VTypes.js:12}).
+     *
+     * <p><b>UI vtype:</b> {@code email} &mdash; used on Quarantine Forwards
+     * fields {@code addr1} and {@code addr2} ({@code email.js:986,997}).
+     * The UI mask is negation-based:
+     * {@code [^<>()\[\]\\.,;:\s@"]+} for the local part,
+     * {@code [a-zA-Z\-0-9\*]+} for domain labels (allows {@code *}
+     * for glob matching).</p>
+     *
+     * <p><b>Backend translation:</b> converts the UI negation class to
+     * an equivalent positive allowlist. The leading character allows
+     * {@code [A-Za-z0-9*_+\-]} to match the UI (which accepts
+     * {@code _user@}, {@code +tag@}, {@code -list@} via its
+     * negation class). Characters like {@code !} and {@code #} are
+     * excluded despite the UI accepting them because
+     * {@code SettingsManagerImpl.VALID_CHARACTERS} rejects them in
+     * filenames, causing empty quarantine inbox directories.
+     * IP-literal domains ({@code [1.2.3.4]}) are excluded for the
+     * same reason. Quoted local parts ({@code "foo"@bar.com}) are
+     * rejected to prevent path-traversal in quarantine inbox paths.</p>
+     *
+     * <p><b>Sink contract:</b> values are consumed by
+     * {@code GlobEmailAddressMapper} which converts {@code *} to
+     * {@code .*} for regex matching &mdash; never interpolated into
+     * shell commands.</p>
+     */
+    EMAIL_GLOB(
+        Pattern.compile("^[A-Za-z0-9*_+\\-][A-Za-z0-9._%+*\\-]*@[A-Za-z0-9*][A-Za-z0-9*.-]*\\.[A-Za-z]{2,}$"),
+        254,
+        "must be an email address or glob pattern like *@example.com , local part must start with a letter, digit, *, _, +, or -, domain must have at least one dot and a 2+ letter TLD (max 254 chars)"),
+
+    /**
+     * Backend counterpart of the UI {@code emailwildcard} vtype
+     * ({@code VTypes.js:117-120}).
+     *
+     * <p><b>UI vtype:</b> {@code emailwildcard} &mdash; used on the
+     * Quarantinable Addresses field ({@code email.js:938}).
+     * The UI logic is {@code v == '*' || mask.email.test(v)},
+     * accepting either a bare {@code *} (meaning "quarantine all
+     * addresses") or a full email / glob pattern.</p>
+     *
+     * <p><b>Backend translation:</b> standalone {@code *} <b>or</b>
+     * an email glob pattern identical to {@link #EMAIL_GLOB}.
+     * Same character restrictions apply. See {@link #EMAIL_GLOB}
+     * for details on excluded characters and sink contract.</p>
+     */
+    EMAIL_WILDCARD(
+        Pattern.compile("^(\\*|[A-Za-z0-9*_+\\-][A-Za-z0-9._%+*\\-]*@[A-Za-z0-9*][A-Za-z0-9*.-]*\\.[A-Za-z]{2,})$"),
+        254,
+        "must be a standalone wildcard (*) or an email address / glob pattern like *@example.com (max 254 chars)"),
+
+    /**
      * Username or email-address shape for credentials like PPPoE usernames
      * and dynamic-DNS login IDs. Pattern {@code ^[A-Za-z0-9][A-Za-z0-9._%+@-]*$}
      * -- the conservative subset that covers both plain usernames
@@ -713,6 +766,9 @@ public enum SafeType
             case EMAIL:
             case OAUTH_CODE:
                 return isAsciiAlnum(c);
+            case EMAIL_GLOB:
+            case EMAIL_WILDCARD:
+                return isAsciiAlnum(c) || c == '*' || c == '_' || c == '+' || c == '-';
             case ALPHANUM:
                 return isAsciiAlnum(c) || c == '_';
             case FILE_PATH:
@@ -761,6 +817,9 @@ public enum SafeType
                 // Local part is [A-Za-z0-9._%+-], domain adds nothing more
                 // dangerous; classify at char level only.
                 return isAsciiAlnum(c) || ".-_%+@".indexOf(c) >= 0;
+            case EMAIL_GLOB:
+            case EMAIL_WILDCARD:
+                return isAsciiAlnum(c) || "._+*%-".indexOf(c) >= 0;
             case USERNAME_OR_EMAIL:
                 return isAsciiAlnum(c) || "._-%+@".indexOf(c) >= 0;
             case OAUTH_CODE:

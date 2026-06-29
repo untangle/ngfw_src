@@ -20,6 +20,7 @@ import com.untangle.app.smtp.quarantine.InboxRecord;
 import com.untangle.app.smtp.quarantine.NoSuchInboxException;
 import com.untangle.app.smtp.quarantine.QuarantineUserActionFailedException;
 import com.untangle.app.smtp.quarantine.QuarantineUserView;
+import com.untangle.app.smtp.quarantine.store.QuarantineAddressValidator;
 import com.untangle.app.smtp.safelist.NoSuchSafelistException;
 import com.untangle.app.smtp.safelist.SafelistActionFailedException;
 import com.untangle.app.smtp.safelist.SafelistManipulation;
@@ -55,6 +56,10 @@ public class JsonInterfaceImpl implements JsonInterface
     {
         if (account == null)
             throw new RuntimeException("Missing account");
+
+        if (!QuarantineAddressValidator.isValidAddress(account)) {
+            throw new RuntimeException("Invalid Email Address"); 
+        }
 
         // Validate at least basic format
         try {
