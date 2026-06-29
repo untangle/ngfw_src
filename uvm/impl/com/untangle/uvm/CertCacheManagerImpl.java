@@ -53,27 +53,6 @@ public class CertCacheManagerImpl implements CertCacheManager
     private final int prefetchTimeout = 1000;
 
     /**
-     * Render a serverAddress value safely for a single-line log entry by
-     * stripping CR/LF/TAB and capping length. Defense-in-depth against log
-     * injection: the entry guard in {@link #fetchServerCertificate(String)}
-     * already rejects anything containing these characters via
-     * {@link SafeType#HOSTNAME}, so callers that go through the public
-     * fetch path cannot reach the wrapped log lines with attacker bytes
-     * today. This helper protects (a) the new SNI SSRF rejection WARN itself
-     * and (b) any future caller / code path that might bypass the entry
-     * guard.
-     *
-     * @param s the value to sanitize (may be null)
-     * @return a single-line, length-capped representation
-     */
-    private static String safeForLog(String s)
-    {
-        if (s == null) return "null";
-        String stripped = s.replace('\r', ' ').replace('\n', ' ').replace('\t', ' ');
-        return stripped.length() > 80 ? stripped.substring(0, 77) + "..." : stripped;
-    }
-
-    /**
      * Holder for certificates that are cached in our hash map
      */
     class CertificateHolder
@@ -150,7 +129,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         if (serverAddress == null || serverAddress.isEmpty()
             || !SafeType.HOSTNAME.validate(serverAddress)) {
             logger.warn("SNI SSRF: rejecting invalid cert-cache serverAddress: "
-                + safeForLog(serverAddress));
+                + StringEscaperUtil.safeForLog(serverAddress));
             return null;
         }
 
@@ -159,7 +138,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         boolean certWaiter = false;
         int certTimer = 0;
 
-        logger.debug("CertCache Search " + safeForLog(serverAddress));
+        logger.debug("CertCache Search " + StringEscaperUtil.safeForLog(serverAddress));
 
         // first lets see if the certificate holder already exists
         certHolder = certTable.get(serverAddress);
@@ -168,7 +147,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         if (certHolder != null) {
             serverCertificate = certHolder.getCertificate();
             if (serverCertificate != null) {
-                logger.debug("CertCache Found " + safeForLog(serverAddress) + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
+                logger.debug("CertCache Found " + StringEscaperUtil.safeForLog(serverAddress) + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
                 return (serverCertificate);
             }
         }
@@ -178,9 +157,9 @@ public class CertCacheManagerImpl implements CertCacheManager
         synchronized (certLocker) {
             if ((certLocker.contains(serverAddress)) == false) {
                 certLocker.add(serverAddress);
-                logger.debug("CertLocker fetching " + safeForLog(serverAddress));
+                logger.debug("CertLocker fetching " + StringEscaperUtil.safeForLog(serverAddress));
             } else {
-                logger.debug("CertLocker waiting " + safeForLog(serverAddress));
+                logger.debug("CertLocker waiting " + StringEscaperUtil.safeForLog(serverAddress));
                 certWaiter = true;
             }
         }
@@ -201,7 +180,7 @@ public class CertCacheManagerImpl implements CertCacheManager
                 certTimer += 10;
 
                 if (certTimer > prefetchTimeout) {
-                    logger.debug("CertLocker timeout " + safeForLog(serverAddress));
+                    logger.debug("CertLocker timeout " + StringEscaperUtil.safeForLog(serverAddress));
                     return (null);
                 }
                 continue;
@@ -212,8 +191,8 @@ public class CertCacheManagerImpl implements CertCacheManager
             certHolder = certTable.get(serverAddress);
             serverCertificate = certHolder.getCertificate();
 
-            if (serverCertificate == null) logger.debug("CertLocker empty " + safeForLog(serverAddress));
-            else logger.debug("CertLocker acquire " + safeForLog(serverAddress));
+            if (serverCertificate == null) logger.debug("CertLocker empty " + StringEscaperUtil.safeForLog(serverAddress));
+            else logger.debug("CertLocker acquire " + StringEscaperUtil.safeForLog(serverAddress));
 
             return (serverCertificate);
         }
@@ -254,19 +233,19 @@ public class CertCacheManagerImpl implements CertCacheManager
             serverCertificate = (X509Certificate) certList[0];
             certTable.remove(serverAddress);
             certTable.put(serverAddress, new CertificateHolder(serverCertificate));
-            logger.info("CertCache Fetch " + safeForLog(serverAddress) + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
+            logger.info("CertCache Fetch " + StringEscaperUtil.safeForLog(serverAddress) + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
         }
 
         // we log and ignore all socket timeout exceptions 
         catch (SocketTimeoutException tex) {
-            logger.debug("Socket timeout fetching server certificate from " + safeForLog(serverAddress));
+            logger.debug("Socket timeout fetching server certificate from " + StringEscaperUtil.safeForLog(serverAddress));
             certTable.remove(serverAddress);
             certTable.put(serverAddress, new CertificateHolder());
         }
 
         // we log and ignore all other socket exceptions
         catch (SocketException soc) {
-            logger.debug("Socket exception fetching server certificate from " + safeForLog(serverAddress));
+            logger.debug("Socket exception fetching server certificate from " + StringEscaperUtil.safeForLog(serverAddress));
             certTable.remove(serverAddress);
             certTable.put(serverAddress, new CertificateHolder());
         }
@@ -275,7 +254,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         catch (Exception exn) {
             String exmess = exn.getMessage();
             if (exmess == null) exmess = "unknown";
-            logger.warn("Exception(" + exmess + ") fetching server certificate from " + safeForLog(serverAddress));
+            logger.warn("Exception(" + exmess + ") fetching server certificate from " + StringEscaperUtil.safeForLog(serverAddress));
             certTable.remove(serverAddress);
             certTable.put(serverAddress, new CertificateHolder());
         }
@@ -284,7 +263,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         // to remember to remove the address from the certlocker.
         synchronized (certLocker) {
             certLocker.remove(serverAddress);
-            logger.debug("CertLocker cleanup " + safeForLog(serverAddress));
+            logger.debug("CertLocker cleanup " + StringEscaperUtil.safeForLog(serverAddress));
         }
 
         return (serverCertificate);
@@ -322,7 +301,7 @@ public class CertCacheManagerImpl implements CertCacheManager
         // not found, null or expired certificate so replace
         certTable.remove(serverAddress);
         certTable.put(serverAddress, new CertificateHolder(serverCertificate));
-        logger.debug("CertCache Update " + safeForLog(serverAddress) + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
+        logger.debug("CertCache Update " + StringEscaperUtil.safeForLog(serverAddress) + " SubjectDN(" + serverCertificate.getSubjectX500Principal().toString() + ") IssuerDN(" + serverCertificate.getIssuerX500Principal().toString() + ")");
     }
 
     /**

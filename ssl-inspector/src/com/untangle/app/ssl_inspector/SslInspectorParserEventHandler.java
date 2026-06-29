@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.untangle.uvm.OAuthDomain;
+import com.untangle.uvm.StringEscaperUtil;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.util.SafeType;
 import com.untangle.uvm.vnet.AppSession;
@@ -71,23 +72,6 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         super();
         this.clientSide = clientSide;
         this.app = app;
-    }
-
-    /**
-     * Render an SNI value safely for a single-line log entry by stripping
-     * CR/LF/TAB and capping length. Used only when logging the value of an
-     * SNI that failed validation -- attacker-controlled bytes must never
-     * land on a log line raw (log injection vector demonstrated under
-     * SNI SSRF, NGFW-15841).
-     *
-     * @param s the value to sanitize (may be null)
-     * @return a single-line, length-capped representation
-     */
-    private static String safeForLog(String s)
-    {
-        if (s == null) return "null";
-        String stripped = s.replace('\r', ' ').replace('\n', ' ').replace('\t', ' ');
-        return stripped.length() > 80 ? stripped.substring(0, 77) + "..." : stripped;
     }
 
     /**
@@ -722,10 +706,10 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 if (addr != null) {
                     certCacheKey = addr.getHostAddress();
                     logger.warn("SNI SSRF: rejected malformed SNI for cert prefetch, falling back to server IP "
-                        + certCacheKey + ": " + safeForLog(sniHostname));
+                        + certCacheKey + ": " + StringEscaperUtil.safeForLog(sniHostname));
                 } else {
                     logger.warn("SNI SSRF: rejected malformed SNI for cert prefetch, no server IP available for fallback: "
-                        + safeForLog(sniHostname));
+                        + StringEscaperUtil.safeForLog(sniHostname));
                 }
             }
             if (certCacheKey != null) {
