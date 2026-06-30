@@ -468,7 +468,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
         PreparedStatement statement = null;
         try{
-            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType);
+            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType, limit );
         } catch ( Exception e) {
             logger.info("getDataForReportEntry: "+ e);
             return null;
@@ -550,6 +550,8 @@ public class ReportsManagerImpl implements ReportsManager
                 JSONObject empty = new JSONObject();
                 try { empty.put( "text", "" ); } catch ( Exception ignored ) {}
                 return empty;
+            case EVENT_LIST:
+                return buildEventListData( entry, rows );
             default:
                 JSONObject result = new JSONObject();
                 JSONArray list = new JSONArray();
@@ -588,6 +590,62 @@ public class ReportsManagerImpl implements ReportsManager
             try { err.put( "list", new JSONArray() ); } catch ( Exception ignored ) {}
             return err;
         }
+    }
+
+    /**
+     * Wraps raw EVENT_LIST rows in a JSON list for the Vue path only.
+     * Converts java.sql.Timestamp values to plain long ms so jabsorb does not
+     * re-wrap them as { javaClass, time } objects on the wire.
+     *
+     * @param entry
+     *  Report entry describing the EVENT_LIST query.
+     * @param rows
+     *  Raw result rows returned by the SQL query.
+     * @return
+     *  JSONObject with a "list" array of timestamp-normalized rows.
+     */
+    private JSONObject buildEventListData( ReportEntry entry, List<JSONObject> rows )
+    {
+        JSONObject result = new JSONObject();
+        JSONArray list = new JSONArray();
+        if ( rows != null ) {
+            for ( JSONObject row : rows )
+                list.put( normalizeTimestampsInRow( row ) );
+        }
+        try { result.put( "list", list ); } catch ( Exception e ) {
+            logger.warn( "buildEventListData: list wrap failed", e );
+        }
+        return result;
+    }
+
+    /**
+     * Replaces java.sql.Timestamp and java.util.Date values in a row JSONObject
+     * with their getTime() long (epoch ms), preventing jabsorb from wrapping them
+     * as { javaClass, time } objects at serialization time.
+     *
+     * @param row
+     *  Single result row to normalize.
+     * @return
+     *  New JSONObject with timestamp fields replaced by epoch millisecond longs.
+     */
+    private JSONObject normalizeTimestampsInRow( JSONObject row )
+    {
+        if ( row == null ) return new JSONObject();
+        String[] names = JSONObject.getNames( row );
+        if ( names == null ) return row;
+        JSONObject out = new JSONObject();
+        for ( String key : names ) {
+            Object val = row.opt( key );
+            try {
+                if ( val instanceof java.sql.Timestamp )
+                    out.put( key, ( (java.sql.Timestamp) val ).getTime() );
+                else if ( val instanceof java.util.Date )
+                    out.put( key, ( (java.util.Date) val ).getTime() );
+                else
+                    out.put( key, val );
+            } catch ( Exception ignored ) {}
+        }
+        return out;
     }
 
     /**
