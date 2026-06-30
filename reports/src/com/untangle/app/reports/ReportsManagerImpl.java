@@ -468,7 +468,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
         PreparedStatement statement = null;
         try{
-            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType);
+            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType, limit );
         } catch ( Exception e) {
             logger.info("getDataForReportEntry: "+ e);
             return null;
