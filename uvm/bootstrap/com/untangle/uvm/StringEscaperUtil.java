@@ -326,4 +326,32 @@ public class StringEscaperUtil {
     public static Map<CharSequence, CharSequence> invert(final Map<CharSequence, CharSequence> map) {
         return map.entrySet().stream().collect(Collectors.toMap(Entry::getValue, Entry::getKey));
     }
+
+    /**
+     * Render an arbitrary string safely for a single-line log entry by
+     * stripping CR/LF/TAB to spaces and capping length at 80 characters
+     * (truncated values end with {@code "..."}).
+     *
+     * Defense-in-depth against log injection: callers that interpolate
+     * potentially-attacker-controlled bytes (e.g. an SNI hostname read off
+     * the TLS wire) must wrap the value with this helper so a CR/LF in the
+     * value cannot forge a synthetic log entry on a line-based appender.
+     * The length cap protects shared appenders from oversized values.
+     *
+     * Different log-sanitization needs use different helpers in this codebase
+     * -- see {@code SafeUpload.safeForLog} for the upload-pipeline variant
+     * which preserves longer forensic values and uses {@code '_'} as its
+     * replacement sentinel. Pick the helper that matches the call site's
+     * contract; don't conflate the two.
+     *
+     * @param s the value to sanitize (may be null)
+     * @return a single-line, length-capped representation; the literal string
+     *         {@code "null"} if {@code s} is null
+     */
+    public static String safeForLog(String s)
+    {
+        if (s == null) return "null";
+        String stripped = s.replace('\r', ' ').replace('\n', ' ').replace('\t', ' ');
+        return stripped.length() > 80 ? stripped.substring(0, 77) + "..." : stripped;
+    }
 }
