@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,6 +81,17 @@ public class SettingsManagerImpl implements SettingsManager
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmmss.SSS");
 
     public static final int MAX_DIFF_SIZE = 5242880;
+
+    /**
+     * Maximum number of versioned settings files to retain for devices.js.
+     * Older versions beyond this limit are automatically pruned on each save.
+     */
+    public static final int MAX_VERSION_FILES = 20;
+
+    /**
+     * Settings file subject to version pruning due to high save frequency.
+     */
+    private static final String DEVICES_FILE_NAME = "devices.js";
 
     /**
      * This is the actual JSON serializer
@@ -616,8 +628,12 @@ public class SettingsManagerImpl implements SettingsManager
             //old way
             //String linkCmd = "ln -sf ./"+filename + " " + link.toString();
             //UvmContextImpl.context().execManager().exec(linkCmd);
+
+            if ( fileName.endsWith( DEVICES_FILE_NAME ) ) {
+                _pruneOldVersions( fileName );
+            }
         }
-        
+
     }
 
     /**
@@ -682,6 +698,45 @@ public class SettingsManagerImpl implements SettingsManager
         }
 
         return null;
+    }
+
+    /**
+     * Prune old versioned settings files, keeping only the most recent MAX_VERSION_FILES.
+     * Versioned files use the naming pattern: {baseName}-version-{timestamp}{extension}
+     * where the timestamp format (yyyy-MM-dd-HHmmss.SSS) sorts chronologically.
+     *
+     * @param fileName
+     *          The base settings file path (e.g., /usr/share/.../devices.js)
+     */
+    private void _pruneOldVersions( String fileName )
+    {
+        try {
+            File baseFile = new File( fileName );
+            File parentDir = baseFile.getParentFile();
+            if ( parentDir == null || !parentDir.isDirectory() ) {
+                return;
+            }
+
+            String baseName = baseFile.getName();
+            String prefix = baseName + "-version-";
+
+            File[] versionFiles = parentDir.listFiles( (dir, name) -> name.startsWith( prefix ) );
+            if ( versionFiles == null || versionFiles.length <= MAX_VERSION_FILES ) {
+                return;
+            }
+
+            Arrays.sort( versionFiles, (a, b) -> a.getName().compareTo( b.getName() ) );
+
+            int deleteCount = versionFiles.length - MAX_VERSION_FILES;
+            for ( int i = 0; i < deleteCount; i++ ) {
+                if ( !versionFiles[i].delete() ) {
+                    logger.warn( "Failed to prune old version file: " + versionFiles[i].getAbsolutePath() );
+                }
+            }
+            logger.info( "Pruned " + deleteCount + " old version(s) of " + baseName + ", kept " + MAX_VERSION_FILES );
+        } catch ( Exception e ) {
+            logger.warn( "Failed to prune old version files for: " + fileName, e );
+        }
     }
 
     /**
