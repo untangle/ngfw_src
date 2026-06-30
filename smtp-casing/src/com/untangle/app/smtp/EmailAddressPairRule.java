@@ -5,13 +5,18 @@ package com.untangle.app.smtp;
 
 import java.io.Serializable;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * Class used to associate two email addresses
  */
 @SuppressWarnings("serial")
 public class EmailAddressPairRule implements Serializable
 {
+    @SafeCheck(SafeType.EMAIL_GLOB)
     private String addr1;
+    @SafeCheck(SafeType.EMAIL_GLOB)
     private String addr2;
 
     /**

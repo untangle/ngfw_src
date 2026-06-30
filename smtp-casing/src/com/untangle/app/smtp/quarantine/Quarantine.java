@@ -28,6 +28,7 @@ import com.untangle.app.smtp.SmtpImpl;
 import com.untangle.app.smtp.SmtpSettings;
 import com.untangle.app.smtp.mime.MIMEUtil;
 import com.untangle.app.smtp.quarantine.store.InboxSummary;
+import com.untangle.app.smtp.quarantine.store.QuarantineAddressValidator;
 import com.untangle.app.smtp.quarantine.store.QuarantineStore;
 import com.untangle.uvm.util.Pair;
 import com.untangle.uvm.UvmContextFactory;
@@ -231,12 +232,25 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
             }
 
             String recipientAddress = eAddr.getAddress().toLowerCase();
+
+            if (!QuarantineAddressValidator.isValidAddress(recipientAddress)) {
+                logger.warn("Quarantine rejecting recipient with invalid address: "
+                    + QuarantineAddressValidator.getViolation(recipientAddress));
+                continue;
+            }
+
             String inboxAddress = this.addressAliases.getAddressMapping(recipientAddress);
 
             if (inboxAddress != null) {
                 logger.debug("Recipient \"" + recipientAddress + "\" remaps to \"" + inboxAddress + "\"");
             } else {
                 inboxAddress = recipientAddress;
+            }
+
+            if (!QuarantineAddressValidator.isValidAddress(inboxAddress)) {
+                logger.warn("Quarantine rejecting inbox alias with invalid address: "
+                    + QuarantineAddressValidator.getViolation(inboxAddress));
+                continue;
             }
 
             List<String> listForInbox = recipientGroupings.get(inboxAddress);
@@ -294,6 +308,11 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     public InboxIndex purge(String account, String... doomedMails) throws NoSuchInboxException,
             QuarantineUserActionFailedException
     {
+        if (!QuarantineAddressValidator.isValidAddress(account)) {
+            logger.warn("Rejecting purge for invalid account: "
+                + QuarantineAddressValidator.getViolation(account));
+            throw new QuarantineUserActionFailedException("Invalid account address");
+        }
         Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.purge(account, doomedMails);
         checkAndThrowCommonErrors(result.a, account);
         return result.b;
@@ -311,6 +330,11 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     public InboxIndex rescue(String account, String... rescuedMails) throws NoSuchInboxException,
             QuarantineUserActionFailedException
     {
+        if (!QuarantineAddressValidator.isValidAddress(account)) {
+            logger.warn("Rejecting rescue for invalid account: "
+                + QuarantineAddressValidator.getViolation(account));
+            throw new QuarantineUserActionFailedException("Invalid account address");
+        }
         Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.rescue(account, rescuedMails);
         checkAndThrowCommonErrors(result.a, account);
         return result.b;
@@ -361,6 +385,11 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
      */
     private InboxIndex getInboxIndex(String account) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
+        if (!QuarantineAddressValidator.isValidAddress(account)) {
+            logger.warn("Rejecting inbox access for invalid account: "
+                + QuarantineAddressValidator.getViolation(account));
+            throw new QuarantineUserActionFailedException("Invalid account address");
+        }
         Pair<QuarantineStore.GenericStatus, InboxIndex> result = this.store.getIndex(account);
         checkAndThrowCommonErrors(result.a, account);
         return result.b;
@@ -423,6 +452,11 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
     @Override
     public void deleteInbox(String account) throws NoSuchInboxException, QuarantineUserActionFailedException
     {
+        if (!QuarantineAddressValidator.isValidAddress(account)) {
+            logger.warn("Rejecting deleteInbox for invalid account: "
+                + QuarantineAddressValidator.getViolation(account));
+            throw new QuarantineUserActionFailedException("Invalid account address");
+        }
         switch (this.store.deleteInbox(account)) {
             case NO_SUCH_INBOX:
                 // Just supress this one for now
@@ -464,7 +498,14 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
             throw new BadTokenException(token);
         }
 
-        return p.b;
+        String account = p.b;
+        if (!QuarantineAddressValidator.isValidAddress(account)) {
+            logger.warn("Token decrypted to invalid account: "
+                + QuarantineAddressValidator.getViolation(account));
+            throw new BadTokenException(token);
+        }
+
+        return account;
     }
 
     /**
@@ -516,6 +557,12 @@ public class Quarantine implements QuarantineAppView, QuarantineMaintenenceView,
         if ((from.length() == 0) || (to.length() == 0)) {
             logger.warn("empty from or to string.");
             return;
+        }
+
+        if (!QuarantineAddressValidator.isValidAddress(to)) {
+            logger.warn("Rejecting remap target with invalid address: "
+                + QuarantineAddressValidator.getViolation(to));
+            throw new QuarantineUserActionFailedException("Invalid target address");
         }
 
         GlobEmailAddressMapper currentMapper = null;
