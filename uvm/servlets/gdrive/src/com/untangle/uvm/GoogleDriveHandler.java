@@ -61,6 +61,14 @@ public class GoogleDriveHandler extends HttpServlet
         UvmContext uvmContext = UvmContextFactory.context();
         String error = uvmContext.googleManager().provideDriveCode(nonce, code);
 
+        // Any non-null error means the token exchange did NOT happen (bad nonce,
+        // failed Google exchange, etc.). Reflect that in the HTTP status so
+        // callers/tests can distinguish success from failure without parsing
+        // the HTML body. Body still renders the message for admin visibility.
+        if (error != null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
         writer.println("<html>");
