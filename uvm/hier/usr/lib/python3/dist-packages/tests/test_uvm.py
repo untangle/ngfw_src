@@ -1987,6 +1987,61 @@ class UvmTests(NGFWTestCase):
 
         assert(result)
 
+    def test_321_google_drive_oauth_nonce_cap(self):
+        """getAuthorizationUrl throws GoogleDriveOperationFailedException
+        once the outstanding-nonce cap (100) is reached; the exception message
+        instructs the caller to retry after 10 minutes."""
+        g_mgr = global_functions.uvmContext.googleManager()
+        lan_ip = global_functions.get_lan_ip()
+        issued_nonces = []
+        cap_hit_details = None
+
+        try:
+            # Issue past the cap; expect eventual throw. Buffer of 150 covers
+            # small numbers of pre-existing nonces from earlier tests / recent
+            # admin activity, and is well below Google OAuth's own limits.
+            for _ in range(150):
+                try:
+                    auth_url = g_mgr.getAuthorizationUrl('http:', lan_ip)
+                    state = parse_qs(urlparse(auth_url).query).get('state', [''])[0]
+                    # state is "<proto>//<host>/gdrive/gdrive/<nonce>"
+                    nonce = state.rsplit('/', 1)[-1] if state else ''
+                    if nonce:
+                        issued_nonces.append(nonce)
+                except Exception as e:
+                    # Untangle's jsonrpc.JSONRPCException stores the wrapped Java
+                    # error dict ({msg, trace, code}) in e.error; Exception.__init__
+                    # is called with no args, so str(e) is empty and e.args is ().
+                    # str(dict) contains all keys/values, so trace and msg both flow in.
+                    parts = [repr(e)]
+                    for attr in ('error', 'msg', 'trace', 'message'):
+                        val = getattr(e, attr, None)
+                        if val:
+                            parts.append(str(val))
+                    cap_hit_details = ' '.join(parts).lower()
+                    break
+
+            assert cap_hit_details is not None, \
+                "expected cap to be hit within 150 issuances"
+            assert ('retry' in cap_hit_details
+                    or 'too many' in cap_hit_details
+                    or 'googledriveoperationfailedexception' in cap_hit_details), \
+                f"expected cap-related exception, got: {cap_hit_details!r}"
+            # Should have issued roughly 100 successful nonces before the cap fired.
+            # Lower bound accounts for pre-existing nonces from earlier tests.
+            assert 80 <= len(issued_nonces) <= 100, \
+                f"expected ~100 successful issuances, got {len(issued_nonces)}"
+        finally:
+            # Drain issued nonces so subsequent tests (and admin's real Drive
+            # setup) aren't blocked by our test churn. provideDriveCode calls
+            # removeNonce first; the Google exchange then fails harmlessly for
+            # the shape-valid but bogus code.
+            for nonce in issued_nonces:
+                try:
+                    g_mgr.provideDriveCode(nonce, "4/test-cleanup")
+                except Exception:
+                    pass
+
     def test_125_backup_restore_zipslip_blocked(self):
         """
         Verify that a crafted backup file with path traversal entries

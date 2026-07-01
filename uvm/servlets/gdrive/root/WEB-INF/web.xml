@@ -19,6 +19,6 @@
 
   <servlet-mapping>
     <servlet-name>GoogleDriveHandler</servlet-name>
-    <url-pattern>/gdrive</url-pattern>
+    <url-pattern>/gdrive/*</url-pattern>
   </servlet-mapping>
 </web-app>
