@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.StringEscaperUtil;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -86,7 +87,9 @@ public class BlockPageUtil
             } catch (java.io.UnsupportedEncodingException exc) {
                 logger.warn("unsupported encoding", exc);
             }
-            contactHtml = "<a href='mailto:" + bm.getContactEmail() + "?subject=" + emailSubject + "&body=" + emailBody + "'>" + bm.getContactName() + "</a>";
+            String safeEmail = StringEscaperUtil.escapeHtml4(bm.getContactEmail());
+            String safeName  = StringEscaperUtil.escapeHtml4(bm.getContactName() != null ? bm.getContactName() : "");
+            contactHtml = "<a href=\"mailto:" + safeEmail + "?subject=" + emailSubject + "&body=" + emailBody + "\">" + safeName + "</a>";
         }
 
         request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", contactHtml, i18n_map));

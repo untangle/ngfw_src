@@ -112,6 +112,54 @@ class BrandingManagerTests(NGFWTestCase):
         assert(default_company_url in matchText)
         
     @pytest.mark.failure_behind_ngfw
+    def test_019_xss_contactEmail_rejected(self):
+        """UNT-41: @SafeCheck(EMAIL) must reject XSS payload in contactEmail"""
+        global app, appData
+        saved_email = appData['contactEmail']
+        xss_payload = 'x"></a><img/src/onerror=document.title="XSS41"><a href="'
+        appData['contactEmail'] = xss_payload
+        try:
+            app.setSettings(appData)
+            assert False, "setSettings should have rejected XSS in contactEmail"
+        except Exception:
+            pass
+        finally:
+            appData['contactEmail'] = saved_email
+
+    @pytest.mark.failure_behind_ngfw
+    def test_019_xss_contactName_rejected(self):
+        """UNT-41: @SafeCheck(NATURAL_NAME) must reject XSS payload in contactName"""
+        global app, appData
+        saved_name = appData['contactName']
+        xss_payload = '<script>alert("XSS")</script>'
+        appData['contactName'] = xss_payload
+        try:
+            app.setSettings(appData)
+            assert False, "setSettings should have rejected XSS in contactName"
+        except Exception:
+            pass
+        finally:
+            appData['contactName'] = saved_name
+
+    @pytest.mark.failure_behind_ngfw
+    def test_019_valid_contact_renders_on_blockpage(self):
+        """UNT-41: Valid contactEmail/contactName render correctly on block page"""
+        global app, appData
+        saved_email = appData['contactEmail']
+        saved_name = appData['contactName']
+        appData['contactEmail'] = "security@example.com"
+        appData['contactName'] = "John O'Brien"
+        try:
+            app.setSettings(appData)
+            result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri="www.playboy.com"), stdout=True)
+            assert "security@example.com" in result, "Valid email not found on block page"
+            assert "John O" in result, "Valid contact name not found on block page"
+        finally:
+            appData['contactEmail'] = saved_email
+            appData['contactName'] = saved_name
+            app.setSettings(appData)
+
+    @pytest.mark.failure_behind_ngfw
     def test_020_check_login_page_branding(self):
         # Check login page for branding
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", ignore_certificate=True, all_parameters=True, uri=global_functions.get_http_url()),stdout=True)
