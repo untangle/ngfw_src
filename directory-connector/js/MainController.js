@@ -87,7 +87,9 @@ Ext.define('Ung.apps.directory-connector.MainController', {
     },
 
     downloadUserApiScript: function(){
-        window.open("../userapi/");
+        var vm = this.getViewModel();
+        var secretKey = vm.get('settings.apiSecretKey') || '';
+        window.open("../userapi/registration?download=download&secretKey=" + encodeURIComponent(secretKey));
     },
 
     closeWindow: function (button) {

@@ -71,8 +71,12 @@ def login(req, url=None, realm='Administrator', token=None):
                 return apache.OK
             else:
                 url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
+                if url == '' or not re.fullmatch(r'/[^/].*|/', url):
+                    url = '/'
                 if 'fragment' in form and form['fragment'] != '':
-                    url = url + form['fragment']
+                    fragment = re.sub('[^A-Za-z0-9-_/.#?=]','',form['fragment'])
+                    if fragment != '' and re.fullmatch(r'#[^/].*|#', fragment):
+                        url = url + fragment
                 util.redirect(req, url)
                 return
 
@@ -95,8 +99,12 @@ def login(req, url=None, realm='Administrator', token=None):
                 return apache.OK
             else:
                 url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
+                if url == '' or not re.fullmatch(r'/[^/].*|/', url):
+                    url = '/'
                 if 'fragment' in form and form['fragment'] != '':
-                    url = url + form['fragment']
+                    fragment = re.sub('[^A-Za-z0-9-_/.#?=]','',form['fragment'])
+                    if fragment != '' and re.fullmatch(r'#[^/].*|#', fragment):
+                        url = url + fragment
                 util.redirect(req, url)
                 return
 
@@ -125,6 +133,8 @@ def logout(req, url=None, realm='Administrator'):
         return apache.OK
     else:
         url = re.sub('[^A-Za-z0-9-_/.#?=]','',url) # sanitize input
+        if url == '' or not re.fullmatch(r'/[^/].*|/', url):
+            url = '/'
         util.redirect(req, url)
         return
 

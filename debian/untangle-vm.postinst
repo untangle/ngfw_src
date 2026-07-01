@@ -89,4 +89,26 @@ systemctl unmask suricata # NGFW-12939, NGFW-13217
 usermod -a -G winbindd_priv freerad
 chown root:winbindd_priv /var/lib/samba/winbindd_privileged
 
+# UNT-30: Archive any quarantine inbox directories with path-traversal names.
+# Moves suspicious entries to inboxes-archive/ (never deletes). Idempotent.
+QUARANTINE_INBOXES="/usr/share/untangle/conf/quarantine/inboxes"
+QUARANTINE_ARCHIVE="/usr/share/untangle/conf/quarantine/inboxes-archive"
+if [ -d "$QUARANTINE_INBOXES" ] ; then
+    for inbox in "$QUARANTINE_INBOXES"/* ; do
+        [ -d "$inbox" ] || continue
+        dirname="$(basename "$inbox")"
+        case "$dirname" in
+            *..* | *\\*)
+                if [ ! -d "$QUARANTINE_ARCHIVE" ] ; then
+                    mkdir -p "$QUARANTINE_ARCHIVE"
+                fi
+                if [ ! -e "$QUARANTINE_ARCHIVE/$dirname" ] ; then
+                    mv "$inbox" "$QUARANTINE_ARCHIVE/$dirname"
+                    logger -t untangle-vm "UNT-30: Archived quarantine inbox with suspicious name"
+                fi
+                ;;
+        esac
+    done
+fi
+
 exit 0

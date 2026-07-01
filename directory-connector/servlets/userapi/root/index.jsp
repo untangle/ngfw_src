@@ -18,6 +18,13 @@ UvmContext uvm = UvmContextFactory.context();
 String company = uvm.brandingManager().getCompanyName();
 String companyUrl = uvm.brandingManager().getCompanyUrl();
 request.setAttribute( "i18n_map", uvm.languageManager().getTranslations("directory-connector"));
+
+com.untangle.app.directory_connector.DirectoryConnectorApp dcApp =
+    (com.untangle.app.directory_connector.DirectoryConnectorApp)uvm.appManager().app("directory-connector");
+String apiSecretKey = "";
+if (dcApp != null && dcApp.getSettings() != null && dcApp.getSettings().getApiSecretKey() != null) {
+    apiSecretKey = java.net.URLEncoder.encode(dcApp.getSettings().getApiSecretKey(), "UTF-8");
+}
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -48,7 +55,7 @@ request.setAttribute( "i18n_map", uvm.languageManager().getTranslations("directo
 
         <span class="un_login_sub_title"><uvm:i18n>Download</uvm:i18n></span>
         <br /><br />
-         <a href="/userapi/registration?download=download"><b><uvm:i18n>User Notification Login Script</uvm:i18n></b></a>
+         <a href="/userapi/registration?download=download&amp;secretKey=<%=apiSecretKey%>"><b><uvm:i18n>User Notification Login Script</uvm:i18n></b></a>
          <div  class="un_login_sub_text">
     <p>
          <uvm:i18n>The User Notification Login Script is a small script that runs on client machines that notifies the <%=company%> server when a user logs in. This allows the <%=company%> server to add the username to the appropriate host in the Host Table so the appropriate rules can apply for that user and the events will be recorded as associated with that user.</uvm:i18n>
