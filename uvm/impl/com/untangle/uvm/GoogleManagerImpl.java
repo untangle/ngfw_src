@@ -9,6 +9,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.untangle.uvm.util.NonceFactory;
 import com.untangle.uvm.util.Pulse;
 import com.untangle.uvm.util.SafeCheckParam;
 import com.untangle.uvm.util.SafeType;
@@ -68,7 +71,27 @@ public class GoogleManagerImpl implements GoogleManager
      */
     private GoogleCloudApp cloudOAuth2App;
     private Pulse tokenRefreshJob = null;
-    
+
+    /**
+     * One-shot OAuth state nonces (CSRF defense). Issued in
+     * {@link #getAuthorizationUrl} and consumed in
+     * {@link #provideDriveCode} from the /gdrive servlet.
+     * Value = admin username at issue time (for audit logging only;
+     * not enforced at validate time). NonceFactory expires entries
+     * after 10 minutes (matches Google's OAuth code lifetime) and
+     * removes them on successful consumption.
+     */
+    private final NonceFactory<String> oauthStateNonces = new NonceFactory<>();
+
+    /**
+     * Soft cap on outstanding OAuth state nonces. Bounds worst-case memory
+     * and log volume under misuse patterns (rapid repeated "Connect Drive"
+     * clicks, test churn, etc.). Legitimate concurrent admin setups fit in
+     * far less than this.
+     */
+    private static final int MAX_OUTSTANDING_NONCES = 100;
+
+
     /**
      * Initialize Google authenticator.
      */
@@ -335,13 +358,27 @@ public class GoogleManagerImpl implements GoogleManager
      * @param windowProtocol TCP/IP protocol to use.
      * @param windowLocation domain/hostname
      * @return Built URL
+     * @throws GoogleDriveOperationFailedException if the outstanding-nonce cap
+     *         has been reached; caller should retry after the 10-minute TTL
      */
     public String getAuthorizationUrl( @SafeCheckParam(SafeType.SIMPLE_TEXT) String windowProtocol,
-                                       @SafeCheckParam(SafeType.SIMPLE_TEXT) String windowLocation )
+                                       @SafeCheckParam(SafeType.SIMPLE_TEXT) String windowLocation ) throws GoogleDriveOperationFailedException
     {
+        if (oauthStateNonces.size() >= MAX_OUTSTANDING_NONCES) {
+            logger.warn("gdrive oauth nonce issuance rejected: cap of {} outstanding nonces reached", MAX_OUTSTANDING_NONCES);
+            throw new GoogleDriveOperationFailedException("Too many concurrent Google Drive authorization requests in progress. Please retry after 10 minutes.");
+        }
         try {
+            String adminUsername = null;
+            InheritableThreadLocal<HttpServletRequest> threadRequest = UvmContextImpl.getInstance().threadRequest();
+            if (threadRequest != null && threadRequest.get() != null) {
+                adminUsername = threadRequest.get().getRemoteUser();
+            }
+            if (adminUsername == null) adminUsername = "unknown";
+            String nonce = oauthStateNonces.generateNonce(adminUsername);
+
             URIBuilder builder = new URIBuilder(this.cloudOAuth2App.getAuthUri());
-            String state = windowProtocol + DOUBLE_SLASH + windowLocation + SLASH + "gdrive" + SLASH + "gdrive";
+            String state = windowProtocol + DOUBLE_SLASH + windowLocation + SLASH + "gdrive" + SLASH + "gdrive" + SLASH + nonce;
             builder.setParameter("client_id", this.cloudOAuth2App.getClientId());
             builder.setParameter("redirect_uri", this.cloudOAuth2App.getRedirectUrl());
             builder.setParameter("response_type", "code");
@@ -349,7 +386,7 @@ public class GoogleManagerImpl implements GoogleManager
             builder.setParameter("access_type", "offline");
             builder.setParameter("state", state);
             builder.setParameter("approval_prompt", "force");
-            logger.info("Authorization URL: {}", builder);
+            logger.info("Issued gdrive oauth nonce for admin={}, ttl=10m", adminUsername);
             return builder.toString();
         } catch (Exception e) {
             logger.error("Failed to construct authorization URL.",e);
@@ -391,17 +428,26 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
-     * This launches the google drive command line app and provides the code.
-     * The google drive app will then fetch and save the refreshToken for future use.
+     * Validate the one-shot CSRF nonce, then exchange the Google OAuth code
+     * for Drive tokens. See {@link GoogleManager#provideDriveCode(String, String)}.
      *
-     * This also reads the refershToken and saves it in settings
-     *
-     * @param code the code to send.
-     * @return null on success or the error string
+     * @param nonce the one-shot CSRF nonce from the /gdrive callback path
+     * @param code  the OAuth authorization code
+     * @return null on success or an error string
      */
-    public String provideDriveCode( @SafeCheckParam(SafeType.OAUTH_CODE) String code )
+    @Override
+    public String provideDriveCode(String nonce, @SafeCheckParam(SafeType.OAUTH_CODE) String code)
     {
-        logger.info("Providing code [{}] to exchange for the access token", code);
+        if (nonce == null || nonce.isEmpty()) {
+            logger.warn("gdrive callback rejected: missing nonce");
+            return "Invalid authorization state";
+        }
+        String issuedFor = oauthStateNonces.removeNonce(nonce);
+        if (issuedFor == null) {
+            logger.warn("gdrive callback rejected: csrf nonce invalid/expired/already-used");
+            return "Invalid authorization state";
+        }
+        logger.info("gdrive callback accepted: consumed nonce issued to admin={}", issuedFor);
 
         // construct request body required to retrieve new access and refresh tokens
         String body = "code=" + code +

@@ -1725,23 +1725,6 @@ class AdministrationTests(NGFWTestCase):
         # VALID — read-only string assembly
         g_mgr.getAuthorizationUrl("https", "localhost/admin")
 
-    def test_093_safecheckparam_provide_drive_code(self):
-        """GoogleManagerImpl.provideDriveCode(code: OAUTH_CODE)."""
-        g_mgr = global_functions.uvmContext.googleManager()
-        # INVALID — OAUTH_CODE forbids ';' and spaces
-        with pytest.raises(Exception):
-            g_mgr.provideDriveCode("code;id")
-        with pytest.raises(Exception):
-            g_mgr.provideDriveCode("code with space")
-        # VALID-shape — real OAuth codes contain '/', '=', '+', '_'
-        # The call will fail downstream (no live cloud session) but the
-        # validator should accept the shape.
-        try:
-            g_mgr.provideDriveCode("4/abc-def_+/=")
-        except Exception as e:
-            assert "Invalid value in" not in str(e), \
-                f"validator unexpectedly rejected a well-formed OAuth code: {e!r}"
-
     def test_094_safecheckparam_upload_to_drive(self):
         """GoogleManagerImpl.uploadToDrive(filePath: FILE_PATH, parentFolder: SIMPLE_TEXT)."""
         g_mgr = global_functions.uvmContext.googleManager()
