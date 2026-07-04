@@ -18,6 +18,8 @@ class EmailTests(NGFWTestCase):
 
     not_an_app= True
     original_mail_settings = None
+    _smtp_app = None
+    _smtp_installed_by_test = False
 
     @staticmethod
     def module_name():
@@ -27,6 +29,12 @@ class EmailTests(NGFWTestCase):
     def initial_extra_setup(cls):
         if EmailTests.original_mail_settings is None:
             EmailTests.original_mail_settings = global_functions.uvmContext.mailSender().getSettings()
+        if not global_functions.uvmContext.appManager().isInstantiated("smtp"):
+            cls._smtp_app = global_functions.uvmContext.appManager().instantiate("smtp", 1)
+            cls._smtp_app.start()
+            cls._smtp_installed_by_test = True
+        else:
+            cls._smtp_app = global_functions.uvmContext.appManager().app("smtp")
 
     @pytest.mark.slow
     def test_010_mail_send_method_modes(self):
@@ -223,14 +231,23 @@ class EmailTests(NGFWTestCase):
             assert "Invalid value in" not in str(e), \
                 f"validator unexpectedly rejected a well-formed EMAIL: {e!r}"
 
-    @staticmethod
-    def _get_smtp_app():
-        """Return the smtp app handle, or None if not installed."""
+    @classmethod
+    def _get_smtp_app(cls):
+        """Return the smtp app handle, installing if necessary."""
+        if cls._smtp_app is not None:
+            try:
+                cls._smtp_app.getAppSettings()
+                return cls._smtp_app
+            except Exception:
+                cls._smtp_app = None
         try:
-            app = global_functions.uvmContext.appManager().app("smtp")
-            if app is None:
-                return None
-            return app
+            if global_functions.uvmContext.appManager().isInstantiated("smtp"):
+                cls._smtp_app = global_functions.uvmContext.appManager().app("smtp")
+            else:
+                cls._smtp_app = global_functions.uvmContext.appManager().instantiate("smtp", 1)
+                cls._smtp_app.start()
+                cls._smtp_installed_by_test = True
+            return cls._smtp_app
         except Exception:
             return None
 
@@ -458,5 +475,9 @@ class EmailTests(NGFWTestCase):
     def final_extra_tear_down(cls):
         if EmailTests.original_mail_settings is not None:
             global_functions.uvmContext.mailSender().setSettings(EmailTests.original_mail_settings)
+        if cls._smtp_installed_by_test and cls._smtp_app is not None:
+            global_functions.uvmContext.appManager().destroy(cls._smtp_app.getAppSettings()["id"])
+            cls._smtp_app = None
+            cls._smtp_installed_by_test = False
 
 test_registry.register_module("email", EmailTests)
