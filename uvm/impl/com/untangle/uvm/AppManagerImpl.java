@@ -920,13 +920,13 @@ public class AppManagerImpl implements AppManager
         installableAppsMap.remove("Web Filter Lite"); /*
                                                        * hide web filter lite
                                                        * from left hand nav
+                                                       */
         /**
          * SPECIAL CASE: Spam Blocker Lite is being deprecated - hide it
          */
         installableAppsMap.remove("Spam Blocker Lite"); /*
                                                        * hide spam blocker lite
                                                        * from left hand nav
-                                                       */
                                                        */
 
         /**
