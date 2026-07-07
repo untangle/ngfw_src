@@ -55,7 +55,7 @@ import com.untangle.uvm.util.Constants;
 public class OpenVpnAppImpl extends AppBase
 {
 
-    private static final Integer SETTINGS_CURRENT_VERSION = 2;
+    private static final Integer SETTINGS_CURRENT_VERSION = 3;
 
     private final Logger logger = LogManager.getLogger(getClass());
 
@@ -460,6 +460,9 @@ public class OpenVpnAppImpl extends AppBase
         // Cipher changes
         if (!oldSettings.getCipher().equals(newSettings.getCipher())) { logger.debug("Server Cipher has changed."); return true;}
 
+        // Fallback cipher changes
+        if (!Objects.equals(oldSettings.getDataCiphersFallback(), newSettings.getDataCiphersFallback())) { logger.debug("Server Fallback Cipher has changed."); return true;}
+
         // Client to client enabled/disabled
         if (oldSettings.getClientToClient() != newSettings.getClientToClient()) { logger.debug("Server Client to Client has changed."); return true;}
 
@@ -479,13 +482,14 @@ public class OpenVpnAppImpl extends AppBase
      * @return          Nothing
      */
     private void updateSettings(OpenVpnSettings settings){
-        if(settings.getVersion() < SETTINGS_CURRENT_VERSION){
-            logger.info("OpenVPN Settings require an update...");
+        if(settings.getVersion() >= SETTINGS_CURRENT_VERSION) return;
 
+        logger.info("OpenVPN Settings require an update...");
+
+        if (settings.getVersion() < 2) {
             /**
              * Fix up the "compress lz4" compression settings for the server
              */
-
             for (OpenVpnConfigItem serverConfig : settings.getServerConfiguration()) {
                 if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "compress lz4")) {
                     serverConfig.setOptionName("compress");
@@ -502,10 +506,32 @@ public class OpenVpnAppImpl extends AppBase
                     clientConfig.setOptionValue("lz4");
                 }
             }
-
-            settings.setVersion(SETTINGS_CURRENT_VERSION);
-            this.setSettings( settings );
         }
+
+        if (settings.getVersion() < 3) {
+            /**
+             * Populate dataCiphersFallback from the existing cipher value.
+             * data-ciphers-fallback accepts only a single cipher name (see OpenVPN manpage
+             * and crypto.c:init_key_type which M_FATALs on invalid names). For pre-v3 installs
+             * whose cipher field held a colon-separated list, that would produce an invalid
+             * fallback line and abort the daemon; fall back to the static default in that case.
+             * For single-cipher installs, copy verbatim so server.conf output is byte-identical
+             * to pre-migration.
+             */
+            String cipher = settings.getCipher();
+            String fallback;
+            if (cipher == null || cipher.trim().isEmpty()) {
+                fallback = OpenVpnSettings.DEFAULT_CIPHER;
+            } else if (cipher.trim().contains(":")) {
+                fallback = OpenVpnSettings.DEFAULT_CIPHER;
+            } else {
+                fallback = cipher.trim();
+            }
+            settings.setDataCiphersFallback(fallback);
+        }
+
+        settings.setVersion(SETTINGS_CURRENT_VERSION);
+        this.setSettings( settings );
     }
 
     /**

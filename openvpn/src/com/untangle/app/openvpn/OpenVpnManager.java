@@ -618,7 +618,22 @@ public class OpenVpnManager
         sb.append("proto" + SPACE).append(settings.getProtocol()).append(LINE_BREAK);
         sb.append("port" + SPACE).append(settings.getPort()).append(LINE_BREAK);
         sb.append("data-ciphers" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
-        sb.append("data-ciphers-fallback" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
+
+        String fallbackRaw = settings.getDataCiphersFallback();
+        String fallback;
+        if (fallbackRaw == null || fallbackRaw.trim().isEmpty()) {
+            fallback = OpenVpnSettings.DEFAULT_CIPHER;
+        } else {
+            fallback = fallbackRaw.split(":", 2)[0].trim();
+            if (fallback.isEmpty()) {
+                // Pathological input like ":X" - first colon-token is empty; use default so .conf stays valid.
+                logger.warn("data-ciphers-fallback started with a colon ('{}') - falling back to default '{}'", fallbackRaw, OpenVpnSettings.DEFAULT_CIPHER);
+                fallback = OpenVpnSettings.DEFAULT_CIPHER;
+            } else if (fallbackRaw.contains(":")) {
+                logger.warn("data-ciphers-fallback contained a colon ('{}') - normalized to '{}' (fallback accepts one cipher only)", fallbackRaw, fallback);
+            }
+        }
+        sb.append("data-ciphers-fallback" + SPACE).append(fallback).append(LINE_BREAK);
     }
 
     /**
