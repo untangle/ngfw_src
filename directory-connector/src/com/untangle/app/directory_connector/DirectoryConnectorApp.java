@@ -397,6 +397,14 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     }
 
     /**
+     * Get all users from all AD for rule conditions - v2 for VueUI
+     * @return List of users
+     */
+    public List<UserEntry> getRuleConditionalUserEntriesV2() {
+        return this.getRuleConditonalUserEntries();
+    }
+
+    /**
      * Authenticate against all servers.
      *
      * @param username
