@@ -989,7 +989,7 @@ class UvmTests(NGFWTestCase):
         by @SafeCheck at the JSON-RPC boundary BEFORE refreshHostsFile() runs.
 
         REWRITTEN for NGFW-15741: NetworkSettings.hostName is annotated
-        @SafeCheck(SafeType.HOSTNAME) — the regex rejects ';', spaces, and every
+        @SafeCheck(SafeType.HOSTNAME) - the regex rejects ';', spaces, and every
         shell metacharacter. setNetworkSettings raises SafeCheckValidationException
         (JSON-RPC code 490) at the preInvokeCallback. The malicious hostname never
         reaches the on-disk hosts file or refreshHostsFile()'s exec sink.
@@ -1016,7 +1016,7 @@ class UvmTests(NGFWTestCase):
             # exec path is exercised and the sentinel check below will catch it.
             subprocess.call(f"mkdir -p /var/lib/interface-status && touch {status_file}", shell=True)
 
-            # Layer 1 — typed @SafeCheck must reject at the RPC boundary.
+            # Layer 1 - typed @SafeCheck must reject at the RPC boundary.
             with pytest.raises(Exception):
                 global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
         finally:
@@ -1024,7 +1024,7 @@ class UvmTests(NGFWTestCase):
             global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         time.sleep(1)
-        # Layer 2 defense-in-depth — even if layer 1 was bypassed somehow,
+        # Layer 2 defense-in-depth - even if layer 1 was bypassed somehow,
         # execCommand(argv) in refreshHostsFile() must not shell-expand.
         assert not os.path.exists(poc_file), \
             "Command injection succeeded via HostsFileManagerImpl.refreshHostsFile() (sentinel file was created)"
@@ -1286,7 +1286,7 @@ class UvmTests(NGFWTestCase):
         runs its DNS probe.
 
         REWRITTEN for NGFW-15741: UriManagerSettings.dnsTestHost is annotated
-        @SafeCheck(SafeType.HOSTNAME) — the regex rejects ';', space, and every
+        @SafeCheck(SafeType.HOSTNAME) - the regex rejects ';', space, and every
         shell metacharacter. uriManager().setSettings raises
         SafeCheckValidationException at the preInvokeCallback before the value
         is stored. The connectivity-tester probe never sees the malicious host.
@@ -1304,11 +1304,11 @@ class UvmTests(NGFWTestCase):
             malicious_uri_settings = copy.deepcopy(orig_uri_settings)
             malicious_uri_settings['dnsTestHost'] = "updates.edge.arista.com; touch " + poc_file
 
-            # Layer 1 — typed @SafeCheck must reject at the RPC boundary.
+            # Layer 1 - typed @SafeCheck must reject at the RPC boundary.
             with pytest.raises(Exception):
                 global_functions.uvmContext.uriManager().setSettings(malicious_uri_settings)
 
-            # Defense-in-depth — exercise the connectivity tester anyway.
+            # Defense-in-depth - exercise the connectivity tester anyway.
             # If layer 1 was bypassed, the probe would fire with the malicious
             # dnsTestHost and the sentinel check below would catch it.
             global_functions.uvmContext.getConnectivityTester().getStatus()
@@ -1431,7 +1431,7 @@ class UvmTests(NGFWTestCase):
         Uses NetworkSettings.hostName (@SafeCheck(SafeType.HOSTNAME)) with a value
         containing a semicolon, which SafeType.HOSTNAME rejects. The test covers:
           1. No flag: setNetworkSettings raises SafeCheckValidationException (JSON-RPC 490).
-          2. Flag present: the same save succeeds — bypass is active, no restart required.
+          2. Flag present: the same save succeeds - bypass is active, no restart required.
           3. Flag removed: the save is rejected again (490).
 
         The field-path (validateInternal) and param-path (validate) are intentionally
@@ -1493,6 +1493,51 @@ class UvmTests(NGFWTestCase):
 
         finally:
             subprocess.call(f"rm -f {bypass_flag}", shell=True)
+
+    def test_129_settings_manager_path_traversal_blocked(self):
+        """
+        Verify SettingsManagerImpl.save(String, String, boolean) rejects an
+        inputFilename outside the settings/conf directories.
+
+        The RPC-exposed save(fileName, inputFilename, saveVersion) overload
+        now calls _checkSettingsPath on both arguments, restricting them to
+        the settings and conf directories only.
+
+        This test creates a real file in /tmp and attempts to move it into
+        the settings directory via save(). With the fix, _checkSettingsPath
+        rejects the /tmp inputFilename BEFORE _saveImpl runs, so the source
+        file remains untouched. Without the fix, _saveImpl would successfully
+        move the file - the source disappears and an attacker-controlled file
+        lands in the settings tree.
+        """
+        sm = global_functions.uvmContext.settingsManager()
+        settings_dir = "/usr/share/untangle/settings"
+        tmp_input = "/tmp/test_sm_path_validation.js"
+        settings_output = settings_dir + "/untangle-vm/test_sm_path_validation.js"
+        sentinel_content = "SETTINGS_MANAGER_PATH_TEST"
+
+        subprocess.call(f"rm -f {tmp_input} {settings_output}", shell=True)
+
+        try:
+            with open(tmp_input, "w") as f:
+                f.write(sentinel_content)
+            assert os.path.exists(tmp_input), "failed to create temp input file"
+
+            threw = False
+            try:
+                sm.save(settings_output, tmp_input, True)
+            except Exception:
+                threw = True
+
+            assert threw, \
+                "save() accepted inputFilename outside settings/conf dir - " \
+                "_checkSettingsPath is not blocking /tmp paths"
+
+            assert os.path.exists(tmp_input), \
+                "source file was moved despite path being outside settings dir - " \
+                "_saveImpl ran before _checkSettingsPath could block it"
+        finally:
+            subprocess.call(f"rm -f {tmp_input} {settings_output}", shell=True)
 
     def test_130_check_cmd_connected(self):
         """Check if cmd is connected using alert rule"""
