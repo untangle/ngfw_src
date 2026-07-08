@@ -1640,6 +1640,166 @@ class OpenVpnTests(NGFWTestCase):
         finally:
             self._app.setSettings(orig_settings)
 
+    def test_096_cipher_and_fallback_written_separately_to_server_conf(self):
+        """OpenVpnManager.buildCommonConfiguration must emit data-ciphers and
+        data-ciphers-fallback from separate settings fields (cipher / dataCiphersFallback),
+        not the same value twice. Prevents invalid fallback lines that abort the daemon
+        with M_FATAL when the Cipher field holds a colon-list."""
+        import copy
+        app_data = self._app.getSettings()
+        orig_settings = copy.deepcopy(app_data)
+        try:
+            new_settings = copy.deepcopy(app_data)
+            new_settings["cipher"] = "AES-256-GCM:AES-128-CBC"
+            new_settings["dataCiphersFallback"] = "AES-128-CBC"
+            self._app.setSettings(new_settings)
+
+            with open("/etc/openvpn/server.conf", "r") as f:
+                conf = f.read()
+
+            assert "data-ciphers AES-256-GCM:AES-128-CBC" in conf, (
+                "server.conf missing expected data-ciphers list. Full content:\n" + conf
+            )
+            assert "data-ciphers-fallback AES-128-CBC" in conf, (
+                "server.conf missing expected single-value data-ciphers-fallback. Full content:\n" + conf
+            )
+            assert "data-ciphers-fallback AES-256-GCM:AES-128-CBC" not in conf, (
+                "server.conf still has the invalid colon-list fallback line - the split fix did not take effect"
+            )
+        finally:
+            self._app.setSettings(orig_settings)
+
+    def test_097_cipher_and_fallback_round_trip_via_settings(self):
+        """setSettings(cipher=X, dataCiphersFallback=Y) must persist both fields
+        independently, getSettings() must return them unchanged, and the generated
+        server.conf must contain both directives with those exact distinct values.
+        Guards against a regression where the .conf emitter reverts to writing the
+        same value to both directives - round-trip alone would silently pass such
+        a regression, so the .conf inspection is essential."""
+        import copy
+        app_data = self._app.getSettings()
+        orig_settings = copy.deepcopy(app_data)
+        try:
+            new_settings = copy.deepcopy(app_data)
+            new_settings["cipher"] = "AES-256-GCM"
+            new_settings["dataCiphersFallback"] = "AES-128-CBC"
+            self._app.setSettings(new_settings)
+
+            saved = self._app.getSettings()
+            assert saved["cipher"] == "AES-256-GCM", (
+                f"cipher did not round-trip: got {saved.get('cipher')!r}"
+            )
+            assert saved["dataCiphersFallback"] == "AES-128-CBC", (
+                f"dataCiphersFallback did not round-trip: got {saved.get('dataCiphersFallback')!r}"
+            )
+
+            with open("/etc/openvpn/server.conf", "r") as f:
+                conf = f.read()
+            assert "data-ciphers AES-256-GCM" in conf, (
+                "server.conf missing expected data-ciphers value from cipher field. Full content:\n" + conf
+            )
+            assert "data-ciphers-fallback AES-128-CBC" in conf, (
+                "server.conf missing expected data-ciphers-fallback value from dataCiphersFallback field. Full content:\n" + conf
+            )
+            # Regression guard: if the emitter reverts to writing cipher to both, the fallback
+            # line would show AES-256-GCM (the cipher value) rather than AES-128-CBC.
+            assert "data-ciphers-fallback AES-256-GCM" not in conf, (
+                "server.conf fallback line has the cipher value, not the dataCiphersFallback value - "
+                "emitter regression: it is writing cipher to both directives"
+            )
+        finally:
+            self._app.setSettings(orig_settings)
+
+    def test_098_fallback_defensive_normalization_on_colon(self):
+        """OpenVpnManager defensive normalization must strip colon-lists from
+        dataCiphersFallback at emit time so server.conf is never syntactically
+        invalid, even when a colon slips past UI validation (hand-edited settings
+        JSON, older API caller, etc.). Backend takes the first colon-token."""
+        import copy
+        app_data = self._app.getSettings()
+        orig_settings = copy.deepcopy(app_data)
+        try:
+            new_settings = copy.deepcopy(app_data)
+            new_settings["cipher"] = "AES-128-CBC"
+            # Bypasses UI validation - simulates hand-edit / older RPC caller
+            new_settings["dataCiphersFallback"] = "AES-256-GCM:AES-128-CBC"
+            self._app.setSettings(new_settings)
+
+            with open("/etc/openvpn/server.conf", "r") as f:
+                conf = f.read()
+
+            assert "data-ciphers-fallback AES-256-GCM" in conf, (
+                "defensive normalization should have emitted the first colon-token as fallback. Full content:\n" + conf
+            )
+            assert "data-ciphers-fallback AES-256-GCM:AES-128-CBC" not in conf, (
+                "defensive normalization failed - full colon-list still present in server.conf"
+            )
+        finally:
+            self._app.setSettings(orig_settings)
+
+    def test_099_fallback_defensive_normalization_on_leading_colon(self):
+        """Pathological leading colon (e.g. ':AES-128-CBC') would produce an empty
+        first-token if we only did split-and-take-first. OpenVpnManager must detect
+        the empty result and fall back to the DEFAULT_CIPHER so server.conf never
+        contains an empty 'data-ciphers-fallback' line."""
+        import copy
+        app_data = self._app.getSettings()
+        orig_settings = copy.deepcopy(app_data)
+        try:
+            new_settings = copy.deepcopy(app_data)
+            new_settings["cipher"] = "AES-128-CBC"
+            new_settings["dataCiphersFallback"] = ":AES-256-GCM"
+            self._app.setSettings(new_settings)
+
+            with open("/etc/openvpn/server.conf", "r") as f:
+                conf = f.read()
+
+            assert "data-ciphers-fallback AES-128-CBC" in conf, (
+                "leading-colon fallback should have fallen back to default AES-128-CBC. Full content:\n" + conf
+            )
+            # server.conf must not contain a line with empty cipher value (trailing space + newline)
+            assert "data-ciphers-fallback \n" not in conf and "data-ciphers-fallback\n" not in conf, (
+                "server.conf contains an empty data-ciphers-fallback line - defensive normalization missed the leading-colon edge"
+            )
+        finally:
+            self._app.setSettings(orig_settings)
+
+    def test_100_settings_schema_invariants_post_migration(self):
+        """Post-migration schema invariants: settings on any installed box must be at
+        SETTINGS_CURRENT_VERSION (3) and must expose the dataCiphersFallback key with
+        a non-null string value. Catches regressions where SETTINGS_CURRENT_VERSION
+        wasn't bumped, the migration branch never populated the new field, or the
+        Java getter was accidentally renamed/removed.
+
+        NOTE: the migration LOGIC branching itself (single cipher preserved vs
+        colon-list defaulted to AES-128-CBC vs empty/null defaulted) cannot be
+        exercised from an integration test because updateSettings() runs only from
+        postInit() when a settings file is first loaded from disk. Triggering that
+        codepath requires either a full uvm restart (would break the test harness
+        connection) or app destroy+instantiate (assigns a new app id, so the pre-
+        written v2 settings fixture is orphaned). No other test in the NGFW repo
+        tests settings migration at integration level - this is a codebase-wide
+        limitation. The migration logic is verified manually per the plan's
+        Verification section (steps 7-9): write a v2 fixture with each cipher
+        shape, restart uvm, assert the migrated state, and inspect server.conf."""
+        saved = self._app.getSettings()
+        assert saved.get("version", 0) >= 3, (
+            f"settings version regressed - expected >= 3, got {saved.get('version')!r}. "
+            "Either SETTINGS_CURRENT_VERSION was un-bumped or the v3 migration never ran."
+        )
+        assert "dataCiphersFallback" in saved, (
+            "dataCiphersFallback key absent from getSettings() JSON - "
+            "check the Java getter/setter and the serializer."
+        )
+        assert isinstance(saved["dataCiphersFallback"], str) and saved["dataCiphersFallback"], (
+            f"dataCiphersFallback is null or non-string: {saved['dataCiphersFallback']!r}. "
+            "Migration should have populated a non-empty default."
+        )
+        assert ":" not in saved["dataCiphersFallback"], (
+            f"dataCiphersFallback contains a colon: {saved['dataCiphersFallback']!r}. "
+            "Migration should have defaulted colon-lists to AES-128-CBC."
+        )
+
     @classmethod
     def final_extra_tear_down(cls):
         global appWeb, appDC, tunnelApp
