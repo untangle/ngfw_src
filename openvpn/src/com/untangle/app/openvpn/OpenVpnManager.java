@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -621,7 +622,7 @@ public class OpenVpnManager
 
         String fallbackRaw = settings.getDataCiphersFallback();
         String fallback;
-        if (fallbackRaw == null || fallbackRaw.trim().isEmpty()) {
+        if (StringUtils.isBlank(fallbackRaw)) {
             fallback = OpenVpnSettings.DEFAULT_CIPHER;
         } else {
             fallback = fallbackRaw.split(":", 2)[0].trim();
@@ -709,7 +710,7 @@ public class OpenVpnManager
     private void deleteFiles()
     {
         try {
-            File baseDirectory = new File("/etc/openvpn");
+            File baseDirectory = new File(OPENVPN_CONF_DIR);
             if (baseDirectory.exists()) {
                 for (File f : baseDirectory.listFiles()) {
                     if (f.getName() == null) continue;
@@ -817,7 +818,7 @@ public class OpenVpnManager
 
                     serverPassword = PasswordUtil.getDecryptPassword(server.getRemoteServerEncryptedPassword());
                     if(serverPassword == null){
-                        logger.warn("Error occured while decrypting the encrypted passowrd for server : { }", name);
+                        logger.warn("Error occurred while decrypting the encrypted password for server : {}", name);
                         continue;
                     }
                     
@@ -1207,7 +1208,7 @@ public class OpenVpnManager
 
         for (OpenVpnConfigItem item : argList) {
             if (item.getOptionName() == null) continue;
-            if (item.getOptionName().trim().toLowerCase().equals(findName.trim().toLowerCase())) return (item);
+            if (item.getOptionName().trim().equalsIgnoreCase(findName.trim())) return (item);
         }
 
         return (null);
@@ -1229,9 +1230,9 @@ public class OpenVpnManager
         if (findName == null) return (null);
 
         for (OpenVpnConfigItem item : argList) {
-            if (item.getReadOnly() == true) continue;
+            if (item.getReadOnly()) continue;
             if (item.getOptionName() == null) continue;
-            if (item.getOptionName().trim().toLowerCase().equals(findName.trim().toLowerCase())) return (item);
+            if (item.getOptionName().trim().equalsIgnoreCase(findName.trim())) return (item);
         }
 
         return (null);
