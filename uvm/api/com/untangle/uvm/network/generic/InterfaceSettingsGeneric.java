@@ -30,6 +30,7 @@ public class InterfaceSettingsGeneric implements Serializable, JSONString {
     private boolean enabled;        /* enabled/disabled status of interface */
 
     private int interfaceId;        /* the ID of the physical interface (1-254) */
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String name;            /* human name: ie External, Internal, Wireless */
 
     @SafeCheck(SafeType.INTERFACE)
