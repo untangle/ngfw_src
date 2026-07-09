@@ -2156,4 +2156,142 @@ class UvmTests(NGFWTestCase):
             subprocess.call(f"rm -rf {work_dir}", shell=True)
 
 
+    def test_140_backup_restore_symlink_member_blocked(self):
+        """
+        UNT-19: Verify that a crafted backup containing a symlink member
+        (with a valid name under usr/share/untangle/settings/) is rejected
+        by ut-restore.sh before extraction.
+        """
+        backup_file = "/tmp/test_backup_symlink.backup"
+        work_dir = "/tmp/symlink_test_workdir"
+        symlink_target = "/tmp/unt19_symlink_target"
+        subprocess.call(f"rm -f {backup_file} {symlink_target}", shell=True)
+        subprocess.call(f"rm -rf {work_dir}", shell=True)
+
+        try:
+            # Step 1: Download a legitimate backup
+            result = subprocess.call(
+                global_functions.build_wget_command(
+                    output_file=backup_file,
+                    post_data='type=backup',
+                    uri="http://localhost/admin/download"),
+                shell=True)
+            assert result == 0, "Failed to download backup"
+
+            # Step 2: Craft a malicious backup with a symlink inside settings/
+            os.makedirs(work_dir, exist_ok=True)
+
+            # Extract the outer tar
+            subprocess.call(f"tar xzf {backup_file} -C {work_dir}", shell=True)
+
+            # Find the inner files tarball
+            inner_tarball = glob.glob(f"{work_dir}/files-*.tar.gz")[0]
+            inner_name = os.path.basename(inner_tarball)
+
+            # Extract inner tarball, inject symlink, repack
+            inner_dir = f"{work_dir}/inner"
+            os.makedirs(inner_dir, exist_ok=True)
+            subprocess.call(f"tar xzf {inner_tarball} -C {inner_dir}", shell=True)
+
+            # Add a symlink member under settings/ that points outside
+            symlink_path = f"{inner_dir}/usr/share/untangle/settings/untangle-vm/system.js"
+            if os.path.exists(symlink_path):
+                os.remove(symlink_path)
+            os.symlink(symlink_target, symlink_path)
+
+            # Repack inner tarball WITHOUT -h so the symlink is preserved as a symlink.
+            # Must use explicit path 'usr/' (not '.') to avoid './' prefix on entries,
+            # which would fail the NGFW-15703 name-prefix check before reaching the type check.
+            subprocess.call(
+                f"tar czf {work_dir}/{inner_name} -C {inner_dir} usr/",
+                shell=True)
+
+            # Repack outer backup with explicit member names (no './' prefix)
+            subprocess.call(
+                f"tar czf {backup_file} -C {work_dir} PUBVERSION {inner_name}",
+                shell=True)
+
+            # Step 3: Run ut-restore.sh in check-only mode
+            restore_result = subprocess.run(
+                ["/usr/share/untangle/bin/ut-restore.sh", "-i", backup_file, "-v", "-c"],
+                capture_output=True, text=True, timeout=30)
+
+            # Step 4: Validate restore script rejected the file
+            assert restore_result.returncode != 0, \
+                "Restore script should have rejected backup with symlink members"
+            assert "symbolic links, hard links, or special file" in restore_result.stderr, \
+                f"Expected symlink rejection message, got: {restore_result.stderr}"
+
+        finally:
+            subprocess.call(f"rm -f {backup_file} {symlink_target}", shell=True)
+            subprocess.call(f"rm -rf {work_dir}", shell=True)
+
+    def test_141_backup_restore_hardlink_member_blocked(self):
+        """
+        UNT-19: Verify that a crafted backup containing a hardlink member
+        is rejected by ut-restore.sh.
+        """
+        backup_file = "/tmp/test_backup_hardlink.backup"
+        work_dir = "/tmp/hardlink_test_workdir"
+        subprocess.call(f"rm -f {backup_file}", shell=True)
+        subprocess.call(f"rm -rf {work_dir}", shell=True)
+
+        try:
+            # Step 1: Download a legitimate backup
+            result = subprocess.call(
+                global_functions.build_wget_command(
+                    output_file=backup_file,
+                    post_data='type=backup',
+                    uri="http://localhost/admin/download"),
+                shell=True)
+            assert result == 0, "Failed to download backup"
+
+            # Step 2: Craft a malicious backup with a hardlink inside settings/
+            os.makedirs(work_dir, exist_ok=True)
+            subprocess.call(f"tar xzf {backup_file} -C {work_dir}", shell=True)
+
+            inner_tarball = glob.glob(f"{work_dir}/files-*.tar.gz")[0]
+            inner_name = os.path.basename(inner_tarball)
+
+            inner_dir = f"{work_dir}/inner"
+            os.makedirs(inner_dir, exist_ok=True)
+            subprocess.call(f"tar xzf {inner_tarball} -C {inner_dir}", shell=True)
+
+            # Find any existing settings file to use as hardlink source
+            settings_files = glob.glob(
+                f"{inner_dir}/usr/share/untangle/settings/untangle-vm/*.js")
+            assert len(settings_files) > 0, "No settings files found in backup"
+
+            source_file = settings_files[0]
+            hardlink_path = f"{inner_dir}/usr/share/untangle/settings/untangle-vm/hardlink_test.js"
+            os.link(source_file, hardlink_path)
+
+            # Repack inner tarball — tar stores files sharing an inode as hardlink entries
+            # by default. Must use explicit path 'usr/' (not '.') to match the expected
+            # entry name format without './' prefix.
+            subprocess.call(
+                f"tar czf {work_dir}/{inner_name} -C {inner_dir} usr/",
+                shell=True)
+
+            # Repack outer backup with explicit member names (no './' prefix)
+            subprocess.call(
+                f"tar czf {backup_file} -C {work_dir} PUBVERSION {inner_name}",
+                shell=True)
+
+            # Step 3: Run ut-restore.sh in check-only mode
+            restore_result = subprocess.run(
+                ["/usr/share/untangle/bin/ut-restore.sh", "-i", backup_file, "-v", "-c"],
+                capture_output=True, text=True, timeout=30)
+
+            # Step 4: Validate restore script rejected the file
+            assert restore_result.returncode != 0, \
+                "Restore script should have rejected backup with hardlink members"
+            assert "symbolic links, hard links, or special file" in restore_result.stderr, \
+                f"Expected hardlink rejection message, got: {restore_result.stderr}"
+
+        finally:
+            subprocess.call(f"rm -f {backup_file}", shell=True)
+            subprocess.call(f"rm -rf {work_dir}", shell=True)
+
+
 test_registry.register_module("uvm", UvmTests)
