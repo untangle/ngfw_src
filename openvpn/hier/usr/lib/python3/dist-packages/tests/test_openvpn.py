@@ -1650,6 +1650,7 @@ class OpenVpnTests(NGFWTestCase):
         orig_settings = copy.deepcopy(app_data)
         try:
             new_settings = copy.deepcopy(app_data)
+            new_settings["serverEnabled"] = True  # writeServerSettings early-returns if false
             new_settings["cipher"] = "AES-256-GCM:AES-128-CBC"
             new_settings["dataCiphersFallback"] = "AES-128-CBC"
             self._app.setSettings(new_settings)
@@ -1681,6 +1682,7 @@ class OpenVpnTests(NGFWTestCase):
         orig_settings = copy.deepcopy(app_data)
         try:
             new_settings = copy.deepcopy(app_data)
+            new_settings["serverEnabled"] = True  # writeServerSettings early-returns if false
             new_settings["cipher"] = "AES-256-GCM"
             new_settings["dataCiphersFallback"] = "AES-128-CBC"
             self._app.setSettings(new_settings)
@@ -1720,6 +1722,7 @@ class OpenVpnTests(NGFWTestCase):
         orig_settings = copy.deepcopy(app_data)
         try:
             new_settings = copy.deepcopy(app_data)
+            new_settings["serverEnabled"] = True  # writeServerSettings early-returns if false
             new_settings["cipher"] = "AES-128-CBC"
             # Bypasses UI validation - simulates hand-edit / older RPC caller
             new_settings["dataCiphersFallback"] = "AES-256-GCM:AES-128-CBC"
@@ -1747,6 +1750,7 @@ class OpenVpnTests(NGFWTestCase):
         orig_settings = copy.deepcopy(app_data)
         try:
             new_settings = copy.deepcopy(app_data)
+            new_settings["serverEnabled"] = True  # writeServerSettings early-returns if false
             new_settings["cipher"] = "AES-128-CBC"
             new_settings["dataCiphersFallback"] = ":AES-256-GCM"
             self._app.setSettings(new_settings)
