@@ -1,264 +1,336 @@
-@font-face {
-    font-family: 'PT Sans';
-    font-style: normal;
-    font-weight: 400;
-    src: local('PT Sans'), local('PTSans-Regular'), url(../fonts/PTSans.woff) format('woff');
+/*
+ * Block Page — user-facing page styles.
+ * Brand tokens copied from the Vue UI theme:
+ *   pkgs_vuntangle/vuntangle/src/config/theme.js
+ *   pkgs_vuntangle/vuntangle/src/scss/variables.scss
+ * Resync manually if those values change.
+ */
+
+:root {
+    --bp-arista-blue:        #16325B;
+    --bp-arista-medium-blue: #146095;
+    --bp-arista-light-blue:  #4473A9;
+    --bp-arista-orange:      #D47122;
+    --bp-arista-dark-gray:   #58585B;
+    --bp-arista-light-gray:  #BBBDC0;
+    --bp-arista-medium-gray: #969696;
+    --bp-bg:                 #F5F5F5;
+    --bp-card-bg:            #FFFFFF;
+    --bp-card-radius:        4px;
+    --bp-card-shadow:        0 2px 4px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --bp-content-margin:     20px;
+    --bp-font:               "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                             "Helvetica Neue", Arial, sans-serif;
 }
+
+* {
+    box-sizing: border-box;
+}
+
+/* ---------- Body ---------- */
 
 body.blockpage {
-    color: #FFF;
-    background-color: #C0C0C0;
+    margin: 0;
+    padding: 48px 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: var(--bp-bg);
+    color: var(--bp-arista-dark-gray);
+    font-family: var(--bp-font);
+    font-size: 14px;
+    line-height: 1.5;
     text-align: center;
-    margin: 0 10px;
-    padding: 0;
-    font-family: 'PT Sans', Tahoma, Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
+
+/* ---------- Card container ---------- */
 
 .block {
+    width: 100%;
     max-width: 500px;
-    margin: 10px auto;
-    border-radius: 10px;
-    padding: 30px 10px;
-    background-color: #505050;
+    margin: 0 auto;
+    padding: 0;
+    background: var(--bp-card-bg);
+    border-radius: var(--bp-card-radius);
+    box-shadow: var(--bp-card-shadow);
+    overflow: hidden;
+    text-align: center;
 }
+
+/* ---------- Header band (logo area) ---------- */
+
+.block > a {
+    display: block;
+    background: var(--bp-arista-blue);
+    padding: 24px 20px;
+    text-align: center;
+}
+
+.company-logo {
+    display: block;
+    margin: 0 auto;
+    max-width: 240px;
+    max-height: 48px;
+}
+
+/* ---------- Headings ---------- */
 
 .block h1 {
-    color: #67BD4A;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    padding: 16px var(--bp-content-margin);
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--bp-arista-blue);
+    letter-spacing: 0.2px;
 }
 
-.block p {
-    margin: 5px;
-}
+/* ---------- Horizontal rules ---------- */
 
 .block hr {
     border: 0;
-    margin: 20px 0;
+    margin: 16px var(--bp-content-margin);
     height: 1px;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+    background: rgba(0, 0, 0, 0.12);
 }
+
+/* ---------- Details tables ---------- */
+
+.bp-details-table {
+    width: calc(100% - var(--bp-content-margin) * 2);
+    margin: 0 var(--bp-content-margin);
+    text-align: left;
+    border-collapse: collapse;
+}
+
+.bp-details-table td {
+    vertical-align: top;
+    padding: 4px 0;
+}
+
+.bp-details-table td:first-child {
+    width: 52px;
+    padding-right: 12px;
+    vertical-align: top;
+    padding-top: 8px;
+}
+
+/* ---------- Text styles ---------- */
+
+.block p {
+    margin: 4px 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.bp-description {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--bp-arista-dark-gray);
+}
+
+.bp-contact {
+    font-size: 11px;
+    color: var(--bp-arista-medium-gray);
+}
+
+.bp-contact a {
+    color: var(--bp-arista-medium-blue);
+    text-decoration: none;
+}
+
+.bp-contact a:hover {
+    text-decoration: underline;
+}
+
+.block strong {
+    font-weight: 500;
+    color: var(--bp-arista-dark-gray);
+}
+
+/* ---------- Icons (inline SVG via background-image) ---------- */
+
+.bp-icon {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    vertical-align: middle;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.bp-icon-block {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23D47122'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9A7.902 7.902 0 0 1 4 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1A7.902 7.902 0 0 1 20 12c0 4.42-3.58 8-8 8z'/%3E%3C/svg%3E");
+}
+
+.bp-icon-link {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23969696'%3E%3Cpath d='M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z'/%3E%3C/svg%3E");
+}
+
+/* ---------- Buttons ---------- */
 
 .block button {
     display: inline-block;
-    font-size: 13px;
-    padding: 4px 12px;
-    font-weight: 400;
-    margin: 5px;
-    text-align: center;
+    margin: 8px var(--bp-content-margin) 24px;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background: var(--bp-arista-blue);
+    border: none;
+    border-radius: var(--bp-card-radius);
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    outline: none;
     white-space: nowrap;
     vertical-align: middle;
-    cursor: pointer;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    outline: none;
-    background-color: #67BD4A;
-    color: #FFF;
-    transition: all ease-in-out .15s;
 }
 
-.block button:hover {
-    background-color: rgba(103,189,74,.8);
+.block button:hover,
+.block button:focus {
+    background: var(--bp-arista-medium-blue);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
 }
+
 .block button:active {
-    -webkit-box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
-    box-shadow: inset 0 3px 5px rgba(0,0,0,.2);
+    background: var(--bp-arista-blue);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.18) inset;
 }
 
-.company-logo {
-    max-width: 150px;
-    max-height: 140px;
-}
+/* ---------- Form elements (password unblock field) ---------- */
 
-@media ( max-width : 320px) {
-    .block .company-logo {
-        height: 60px;
-    }
-}
-
-
-/* user pages content container */
-#content {
-    padding: 17px 12px 12px 12px;
-}
-/* blockpage body*/
-body.blockpage {
-    background-color: #C0C0C0;
-}
-/* blockpage content */
-body.blockpage #content {
-    width: 627px;
-    height: 505px;
-    position: relative;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-    border: 1px solid #888888;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    background: #505050;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    border-radius: 15px;
-}
-
-/* blockpage body*/
-body.blockpage {
-    font-size: 10pt;
-}
-
-/* blockpage description text*/
-body.blockpage .description {
-    margin-bottom: 30px;
-    color: #FFFFFF;
-}
-
-/* blockpage contact text*/
-body.blockpage p.contact {
-    position: absolute;
-    bottom: 15px;
-    left: 20px;
-    font-size: 8pt;
-}
-/* header container */
-#header {
-    margin-bottom: 0px;
-}
-/* block page title */
-.title-block-page {
-    padding-left: 30px;
-    vertical-align: bottom;
-    text-align: left;
-    font: bold 36px arial, tahoma, helvetica, sans-serif;
-    color: #67686B;
-}
-/* blocked page icon*/
-.icon-block {
-    background: transparent url(../images/user/icon_block.png) no-repeat center center;
-    height: 130px;
-}
-/* quarantined messages toolbar message*/
-.message,.message-2 {
-    padding: 5px 5px 5px 28px;
-    border: 1px solid #60BB3F;
-    font-size: 8pt;
-    background: #FEFEDD url(../images/user/icon_message.png) no-repeat scroll 7px center !important;
-    color: #333;
-}
-
-.message-2 {
-    display: block;
-    margin-bottom: 10px;
-}
-
-.message-container {
-    padding: 2px;
-}
-
-.white-background {
-    background-color: #FFF;
-    background-image: none;
-}
-
-.description {
-    font-size: larger;
-}
-/* block page main container */
-body.blockpage #main {
-    position: absolute;
-    left: 15px;
-    top: 130px;
-    width: 620px;
-    height: 380px;
-    text-align: center;
-    /* This is to place this above the border */
-    z-index: 100;
-}
-
-body.blockpage #extra-div-1 {
-    position: absolute;
-    left: 15px;
-    top: 130px;
-    width: 620px;
-    height: 380px;
-    background: transparent;
-}
-
-body.blockpage #extra-div-2 {
-    position: absolute;
-    left: 15px;
-    bottom: 20px;
-    width: 620px;
-    height: 12px;
-    background: transparent;
-}
-
-#header {
-    position: relative;
-}
-/* block page title */
-body.blockpage #header .title {
-    position: absolute;
-    left: 180px;
-    bottom: 8px;
-    font: bold 36px arial, tahoma, helvetica, sans-serif;
-    color: #67BD4A;
-}
-/* block page information list container*/
-.info-list {
-    margin-top: 10px;
-    margin-bottom: 20px;
-    width: 340px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-    background-color: #505050;
-    color: white;
-}
-/* block page information list element */
-.info-list div {
-    padding: 5px 5px 5px 5px;
-}
-/* block page footer */
-body.blockpage #footer {
-    font-size: small;
-    text-align: right;
-    position: absolute;
-    left: 490px;
-    top: 520px;
-    display: none;
-}
-/* block page */
 .u-form-item {
-    margin: 5px 0;
+    margin: 12px 0;
     text-align: left;
-    width: 340px;
 }
 
 .u-form-item-label {
-    float: left;
-    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--bp-arista-dark-gray);
+}
+
+.bp-input-wrapper {
+    position: relative;
+}
+
+.bp-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-color: #9098A1;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+}
+
+.bp-input-icon-lock {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239098A1'%3E%3Cpath d='M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/%3E%3C/svg%3E");
+    background-color: transparent;
+}
+
+.bp-input-wrapper:focus-within .bp-input-icon-lock {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234473A9'%3E%3Cpath d='M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/%3E%3C/svg%3E");
+}
+
+.u-form-text,
+.u-form-field {
+    display: block;
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    margin: 0;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--bp-arista-dark-gray);
+    background: #FFFFFF;
+    border: 1px solid var(--bp-arista-light-gray);
+    border-radius: var(--bp-card-radius);
+    outline: none;
     text-align: left;
-    color: white;
-    padding: 2px 5px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-#unblockNowButton {
-    margin-left: 0px;
-    font-size: 11px;
-    font-family: Tahoma, Helvetica, Arial, sans-serif;
+.u-form-text:focus,
+.u-form-field:focus {
+    border-color: var(--bp-arista-light-blue);
+    box-shadow: 0 0 0 3px rgba(68, 115, 169, 0.18);
 }
 
-#unblockGlobalButton {
-    margin-left: 5px;
-    font-size: 11px;
-    font-family: Tahoma, Helvetica, Arial, sans-serif;
+.u-form-field::placeholder {
+    color: #9098A1;
+    opacity: 1;
+}
+
+.u-form-field:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset;
+    -webkit-text-fill-color: var(--bp-arista-dark-gray);
 }
 
 #invalid-password {
-    color: coral;
-    margin-left: 60px;
+    margin-top: 8px;
+    color: var(--bp-arista-orange);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 480px) {
+    body.blockpage {
+        padding: 16px 12px;
+    }
+
+    .block > a {
+        padding: 20px 16px;
+    }
+
+    .company-logo {
+        max-height: 40px;
+        max-width: 200px;
+    }
+
+    .block h1 {
+        padding: 16px 18px 0;
+        font-size: 18px;
+    }
+
+    .block hr {
+        margin: 12px 18px;
+    }
+
+    .bp-details-table {
+        margin: 0 18px;
+    }
+
+    .bp-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .block button {
+        margin: 8px 18px 20px 4px;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
 }
