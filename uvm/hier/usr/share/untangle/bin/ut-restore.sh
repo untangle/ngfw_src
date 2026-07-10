@@ -55,9 +55,9 @@ function doRestore()
     debug "Restoring files..."
 
     if [ "true" == $VERBOSE ]; then
-      tar zxfv $WORKING_DIR/$TARBALL_FILE -C /
+      tar zxfv $WORKING_DIR/$TARBALL_FILE --no-overwrite-dir --no-same-owner -C /
     else
-      tar zxf $WORKING_DIR/$TARBALL_FILE -C /
+      tar zxf $WORKING_DIR/$TARBALL_FILE --no-overwrite-dir --no-same-owner -C /
     fi
 
     # update date on all files
@@ -167,6 +167,19 @@ function expandFile()
     if [ ! -z "$UNSAFE_ENTRIES" ]; then
         err "Backup file contains files outside /usr/share/untangle/settings/ (invalid backup):"
         err "$UNSAFE_ENTRIES"
+        err "Aborting restore."
+        return 1
+    fi
+
+    # UNT-19 Reject non-regular-file/non-directory members (symlinks, hardlinks, devices, FIFOs).
+    # A symlink member with a valid name bypasses the NGFW-15703 name check above;
+    # tar zxf -C / then creates the symlink, and subsequent root writes follow it.
+    # tar tzvf verbose output starts with the file-type character: '-'=file, 'd'=dir,
+    # 'l'=symlink, 'h'=hardlink, 'b'=block, 'c'=char, 'p'=FIFO. Whitelist only '-' and 'd'.
+    UNSAFE_TYPE_ENTRIES=$(tar tzvf $WORKING_DIR/$TARBALL_FILE | grep -vE '^[-d]')
+    if [ ! -z "$UNSAFE_TYPE_ENTRIES" ]; then
+        err "Backup file contains symbolic links, hard links, or special file members (invalid backup):"
+        err "$UNSAFE_TYPE_ENTRIES"
         err "Aborting restore."
         return 1
     fi
