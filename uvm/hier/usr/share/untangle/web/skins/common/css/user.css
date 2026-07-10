@@ -147,8 +147,12 @@ body.blockpage {
 }
 
 .block strong {
-    font-weight: 500;
+    font-weight: 700;
     color: var(--bp-arista-dark-gray);
+}
+
+.bp-details-table p {
+    font-weight: 400;
 }
 
 /* ---------- Icons (inline SVG via background-image) ---------- */
