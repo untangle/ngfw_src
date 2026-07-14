@@ -29,20 +29,31 @@ public class IpsecVpnTunnel implements JSONString, Serializable
     private String conntype;
     @SafeCheck(SafeType.SIMPLE_TEXT)
     private String description;
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String secret;
     @SafeCheck(SafeType.ALPHANUM)
     private String runmode;
+    @SafeCheck(SafeType.ALPHANUM)
     private String dpddelay = "30";
+    @SafeCheck(SafeType.ALPHANUM)
     private String dpdtimeout = "120";
     private boolean phase1Manual = false;
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1Cipher = "3des";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1Hash = "md5";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1Group = "modp2048";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1Lifetime = "28800";
     private boolean phase2Manual = false;
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2Cipher = "3des";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2Hash = "md5";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2Group = "modp2048";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2Lifetime = "3600";
     @SafeCheck({SafeType.HOSTNAME, SafeType.IP_OR_CIDR})
     private String left;

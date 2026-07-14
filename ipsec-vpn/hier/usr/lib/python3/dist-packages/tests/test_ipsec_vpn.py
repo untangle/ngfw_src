@@ -1197,7 +1197,7 @@ class IPsecTests(NGFWTestCase):
           - rightNextHop       (IP_OR_CIDR)
 
         Sink: ipsec_manager.py writes these into /etc/ipsec.conf where
-        leftupdown= references an executable script — newline + script-name
+        leftupdown= references an executable script -- newline + script-name
         injection yields root RCE.
 
         The validator is fail-fast; bad values raise an exception from
@@ -1206,11 +1206,11 @@ class IPsecTests(NGFWTestCase):
         ipsec_settings = self._app.getSettings()
         orig_tunnel_list = copy.deepcopy(ipsec_settings["tunnels"]["list"])
         try:
-            # Build a minimal positive baseline tunnel INLINE — do NOT use
+            # Build a minimal positive baseline tunnel INLINE -- do NOT use
             # build_ipsec_tunnel() because it SkipTest's when the host WAN IP
             # isn't in IPSEC_CONFIGURED_HOST_IPS. The SafeCheck validator fires
             # at the JSON-RPC boundary BEFORE any tunnel-up logic, so the tunnel
-            # never needs to actually work — it only needs to be a structurally
+            # never needs to actually work -- it only needs to be a structurally
             # valid IpsecVpnTunnel dict that setSettings will accept.
             base_tunnel = {
                 "active":         False,  # disabled so strongSwan doesn't try to bring it up
@@ -1252,7 +1252,7 @@ class IPsecTests(NGFWTestCase):
             positive_settings["tunnels"]["list"] = [base_tunnel]
             self._app.setSettings(positive_settings)
 
-            # `left` dual-type — both IP literal and DNS hostname must round-trip.
+            # `left` dual-type -- both IP literal and DNS hostname must round-trip.
             for left_value in ("203.0.113.10", "vpn.example.com"):
                 t = copy.deepcopy(base_tunnel)
                 t["left"] = left_value
@@ -1263,7 +1263,7 @@ class IPsecTests(NGFWTestCase):
 
             baseline = self._app.getSettings()
 
-            # Negative payloads — historically-confirmed RCE classes.
+            # Negative payloads -- historically-confirmed RCE classes.
             # Dead fields (leftProtoPort/rightProtoPort/leftNextHop/rightNextHop)
             # removed per audit: zero callers outside the POJO getter, no sink.
             negative_payloads = {
@@ -1330,6 +1330,220 @@ class IPsecTests(NGFWTestCase):
                 assert stored.get(field) != payload, (
                     f"NGFW-15768: allowlist-shaped negative {field}={payload!r} "
                     f"survived rejection; got {stored.get(field)!r}"
+                )
+        finally:
+            ipsec_settings["tunnels"]["list"] = orig_tunnel_list
+            self._app.setSettings(ipsec_settings)
+
+    def test_091_safecheck_settings_fields(self):
+        """Verify @SafeCheck annotations on IpsecVpnSettings top-level fields.
+
+        Covers fields added by the stripLineBreaks / @SafeCheck hardening:
+          - uniqueIds          (ALPHANUM)
+          - charonDebug        (SIMPLE_TEXT)
+          - virtualAddressPool (IP_OR_CIDR)
+          - virtualNetworkPool (IP_OR_CIDR)
+          - virtualDnsOne      (IP_OR_CIDR)
+          - virtualDnsTwo      (IP_OR_CIDR)
+          - phase1Cipher       (ALPHANUM)
+          - phase1Hash         (ALPHANUM)
+          - phase1Group        (ALPHANUM)
+          - phase1Lifetime     (ALPHANUM)
+          - phase2Cipher       (ALPHANUM)
+          - phase2Hash         (ALPHANUM)
+          - phase2Group        (ALPHANUM)
+          - phase2Lifetime     (ALPHANUM)
+          - phase1DefaultLifetime (ALPHANUM)
+          - phase2DefaultLifetime (ALPHANUM)
+
+        Sink: IpsecVpnManager writes these into /etc/ipsec.conf and
+        xl2tpd config files -- newline injection yields conf directive
+        injection or root RCE via leftupdown= scripts.
+        """
+        orig_settings = self._app.getSettings()
+        try:
+            # Positive: valid settings should round-trip cleanly.
+            pos = copy.deepcopy(orig_settings)
+            pos["uniqueIds"] = "yes"
+            pos["charonDebug"] = "ike 2, knl 2"
+            pos["virtualAddressPool"] = "198.18.0.0/16"
+            pos["virtualNetworkPool"] = "10.10.0.0/24"
+            pos["virtualDnsOne"] = "8.8.8.8"
+            pos["virtualDnsTwo"] = "8.8.4.4"
+            pos["phase1Cipher"] = "aes128"
+            pos["phase1Hash"] = "sha1"
+            pos["phase1Group"] = "modp2048"
+            pos["phase1Lifetime"] = "28800"
+            pos["phase2Cipher"] = "aes256"
+            pos["phase2Hash"] = "sha256"
+            pos["phase2Group"] = "modp2048"
+            pos["phase2Lifetime"] = "3600"
+            pos["phase1DefaultLifetime"] = "8h"
+            pos["phase2DefaultLifetime"] = "1h"
+            self._app.setSettings(pos)
+
+            baseline = self._app.getSettings()
+
+            # Negative: injection payloads must be rejected.
+            negative_payloads = {
+                "uniqueIds":          "yes\nleftupdown=/bin/sh",
+                "charonDebug":        "ike 2\nconn evil",
+                "virtualAddressPool": "198.18.0.0/16; rm -rf /",
+                "virtualNetworkPool": "10.10.0.0/24`id`",
+                "virtualDnsOne":      "8.8.8.8\necho INJECT",
+                "virtualDnsTwo":      "8.8.4.4; whoami",
+                "phase1Cipher":       "aes128\nconn pwned",
+                "phase1Hash":         "sha1; touch /tmp/x",
+                "phase1Group":        "modp2048`id`",
+                "phase1Lifetime":     "28800\necho INJECT",
+                "phase2Cipher":       "aes256; id",
+                "phase2Hash":         "sha256|whoami",
+                "phase2Group":        "modp2048\r\nconn evil",
+                "phase2Lifetime":     "3600; /bin/sh",
+                "phase1DefaultLifetime": "8h\nleftupdown=/evil",
+                "phase2DefaultLifetime": "1h`id`",
+            }
+            for field, payload in negative_payloads.items():
+                bad = copy.deepcopy(baseline)
+                bad[field] = payload
+                with pytest.raises(Exception):
+                    self._app.setSettings(bad)
+                current = self._app.getSettings()
+                assert current.get(field) != payload, (
+                    f"IpsecVpnSettings.{field} stored rejected payload: "
+                    f"{current.get(field)!r}"
+                )
+        finally:
+            self._app.setSettings(orig_settings)
+
+    def test_092_safecheck_virtual_listen_address(self):
+        """Verify @SafeCheck(IP_OR_CIDR) on VirtualListen.address.
+
+        Sink: IpsecVpnManager writes listen.getAddress() into ipsec.conf
+        left= directives for L2TP/IKEv2/xauth VPN listeners -- newline
+        injection yields conf directive injection.
+        """
+        orig_settings = self._app.getSettings()
+        try:
+            # Positive: valid IP address in virtualListenList.
+            pos = copy.deepcopy(orig_settings)
+            pos["virtualListenList"] = {"javaClass": "java.util.LinkedList", "list": [
+                {"address": "10.0.0.1", "javaClass": "com.untangle.app.ipsec_vpn.VirtualListen", "id": 0}
+            ]}
+            self._app.setSettings(pos)
+
+            baseline = self._app.getSettings()
+
+            # Negative: injection payload in listen address.
+            injection_payloads = [
+                "10.0.0.1\nleftupdown=/bin/sh",
+                "10.0.0.1; rm -rf /",
+                "10.0.0.1`id`",
+                "evil.example.com",
+            ]
+            for payload in injection_payloads:
+                bad = copy.deepcopy(baseline)
+                bad["virtualListenList"]["list"] = [
+                    {"address": payload, "javaClass": "com.untangle.app.ipsec_vpn.VirtualListen", "id": 0}
+                ]
+                with pytest.raises(Exception):
+                    self._app.setSettings(bad)
+                current = self._app.getSettings()
+                stored_list = current.get("virtualListenList", {}).get("list", [])
+                if stored_list:
+                    assert stored_list[0].get("address") != payload, (
+                        f"VirtualListen.address stored rejected payload: "
+                        f"{stored_list[0].get('address')!r}"
+                    )
+        finally:
+            self._app.setSettings(orig_settings)
+
+    def test_093_safecheck_tunnel_phase_dpd_fields(self):
+        """Verify @SafeCheck annotations on IpsecVpnTunnel phase/DPD fields.
+
+        Covers the newly annotated fields (complement to test_090):
+          - dpddelay        (ALPHANUM)
+          - dpdtimeout      (ALPHANUM)
+          - phase1Cipher    (ALPHANUM)
+          - phase1Hash      (ALPHANUM)
+          - phase1Group     (ALPHANUM)
+          - phase1Lifetime  (ALPHANUM)
+          - phase2Cipher    (ALPHANUM)
+          - phase2Hash      (ALPHANUM)
+          - phase2Group     (ALPHANUM)
+          - phase2Lifetime  (ALPHANUM)
+
+        Sink: IpsecVpnManager writes these into /etc/ipsec.conf ike=,
+        esp=, ikelifetime=, lifetime=, dpddelay=, dpdtimeout= directives.
+        """
+        ipsec_settings = self._app.getSettings()
+        orig_tunnel_list = copy.deepcopy(ipsec_settings["tunnels"]["list"])
+        try:
+            base_tunnel = {
+                "active":         False,
+                "adapter":        "- Custom -",
+                "conntype":       "tunnel",
+                "description":    "safecheck phase/dpd test",
+                "id":             1,
+                "javaClass":      "com.untangle.app.ipsec_vpn.IpsecVpnTunnel",
+                "left":           "203.0.113.10",
+                "leftId":         "left-id-1",
+                "leftSourceIp":   "10.0.0.1",
+                "leftSubnet":     "10.0.0.0/24",
+                "right":          "198.51.100.10",
+                "rightId":        "right-id-1",
+                "rightSourceIp":  "10.0.1.1",
+                "rightSubnet":    "10.0.1.0/24",
+                "runmode":        "start",
+                "secret":         "supersecret",
+                "dpddelay":       "30",
+                "dpdtimeout":     "120",
+                "phase1Manual":   True,
+                "phase1Lifetime": "28800",
+                "phase1Group":    "modp2048",
+                "phase1Hash":     "sha1",
+                "phase1Cipher":   "aes128",
+                "phase2Manual":   True,
+                "phase2Lifetime": "3600",
+                "phase2Group":    "modp2048",
+                "phase2Hash":     "sha1",
+                "phase2Cipher":   "aes256gcm128",
+                "ikeVersion":     2,
+                "pfs":            True,
+            }
+
+            # Positive: valid tunnel should be accepted.
+            positive_settings = copy.deepcopy(ipsec_settings)
+            positive_settings["tunnels"]["list"] = [base_tunnel]
+            self._app.setSettings(positive_settings)
+
+            baseline = self._app.getSettings()
+
+            # Negative: injection payloads for phase/DPD fields.
+            negative_payloads = {
+                "dpddelay":       "30\nconn evil",
+                "dpdtimeout":     "120; rm -rf /",
+                "phase1Cipher":   "aes128\nleftupdown=/bin/sh",
+                "phase1Hash":     "sha1`id`",
+                "phase1Group":    "modp2048; whoami",
+                "phase1Lifetime": "28800\r\nconn pwned",
+                "phase2Cipher":   "aes256gcm128|cat /etc/passwd",
+                "phase2Hash":     "sha1\necho INJECT",
+                "phase2Group":    "modp2048; touch /tmp/x",
+                "phase2Lifetime": "3600`id`",
+            }
+            for field, payload in negative_payloads.items():
+                bad_tunnel = copy.deepcopy(base_tunnel)
+                bad_tunnel[field] = payload
+                bad_settings = copy.deepcopy(baseline)
+                bad_settings["tunnels"]["list"] = [bad_tunnel]
+                with pytest.raises(Exception):
+                    self._app.setSettings(bad_settings)
+                current = self._app.getSettings()
+                stored = current["tunnels"]["list"][0]
+                assert stored.get(field) != payload, (
+                    f"IpsecVpnTunnel.{field} stored rejected payload: "
+                    f"{stored.get(field)!r}"
                 )
         finally:
             ipsec_settings["tunnels"]["list"] = orig_tunnel_list
