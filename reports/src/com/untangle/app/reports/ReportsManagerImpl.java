@@ -1214,15 +1214,23 @@ public class ReportsManagerImpl implements ReportsManager
                 app.getEventWriter().stop();
             }
             String pgCleanupCmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
-            String pgStopCmd = "/etc/init.d/postgresql stop >/dev/null 2>&1";
+            // NGFW-15855: dropped ">/dev/null 2>&1" suffix. The launcher already
+            // captures stdout/stderr into ExecManagerResult.output which this caller
+            // never reads (execResult only returns the exit code).
+            String pgStopCmd = "/etc/init.d/postgresql stop";
             String pgStatusCmd = "/etc/init.d/postgresql status";
-            String pgStartCmd = "/etc/init.d/postgresql start >/dev/null 2>&1";
+            String pgStartCmd = "/etc/init.d/postgresql start";
             String generateReportTablesCmd = "/usr/share/untangle/bin/reports-generate-tables.py";
             UvmContextFactory.context().execManager().execResult(pgStopCmd);
-            int pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd + " | grep Stopped");
+            // NGFW-15855: the original code assigned this to pgStatus but overwrote
+            // the value on line below before ever reading it. The exec call is
+            // preserved (roughly 100-300ms) as a coincidental timing buffer between
+            // stop and cleanup. Migrated to argv form to drop the "| grep Stopped"
+            // shell pipe; the grep filter's exit code was dead-value anyway.
+            UvmContextFactory.context().execManager().execCommand("/etc/init.d/postgresql", List.of("status"));
             UvmContextFactory.context().execManager().execOutput(pgCleanupCmd);
             UvmContextFactory.context().execManager().execResult(pgStartCmd);
-            pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd);
+            int pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd);
             logger.info("Postgress Status Response {}", pgStatus);
             if (pgStatus == 0) {
                 UvmContextFactory.context().execManager().execOutput(generateReportTablesCmd);

@@ -57,6 +57,11 @@ ALLOWED_EXECUTABLES = {
     "/usr/share/untangle/bin/wan-failover-pingable-hosts.sh",
     "/usr/share/untangle/bin/ut-wireguard-helpers.sh",
     "/usr/share/untangle/bin/fetch_ip_list.py",
+    # NGFW-15855 additions
+    "/bin/sed",
+    "/etc/init.d/postgresql",
+    "/usr/share/untangle/bin/ut-reports-clean-tables",
+    "/usr/share/untangle/bin/ut-verify-cert-chain",
 
 }
 
