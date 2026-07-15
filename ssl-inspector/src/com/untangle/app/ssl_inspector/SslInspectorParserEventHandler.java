@@ -472,7 +472,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
                 app.logEvent(logevt);
                 app.incrementMetric(SslInspectorApp.STAT_UNTRUSTED);
 
-                logger.debug("UNTRUSTED SERVER = " + logDetail);
+                logger.debug("UNTRUSTED SERVER = {}", logDetail);
 
                 // kill the session on both sides
                 shutdownOtherSide(session, true);
@@ -806,6 +806,13 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
             logDetail = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
             if (logDetail == null) logDetail = session.getServerAddr().getHostAddress();
             logevt = new SslInspectorLogEvent(session.sessionEvent(), 0, SslInspectorApp.STAT_INSPECTED, logDetail);
+        }
+
+        // append hostname verification bypass status to the detail
+        // only for bypass list / global disable - not for blind trust, broken server, or null SNI
+        String sniHost = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
+        if (sniHost != null && app.isHostnameVerificationBypassed(sniHost)) {
+            logevt.setDetail(logevt.getDetail() + " | Hostname Verification Bypassed");
         }
 
         // either no rule match or we matched an inspect rule so log an event

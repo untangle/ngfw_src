@@ -23,6 +23,7 @@ testedServerName="news.ycombinator.com"
 testedServerURLParts = testedServerName.split(".")
 testedServerDomainWildcard = "*" + testedServerURLParts[-2] + "." + testedServerURLParts[-1]
 dropboxIssuer="C = US, ST = California, L = San Francisco, O = \\\"Dropbox, Inc\\\""
+hostnameVerifyBypassDetail = "Hostname Verification Bypassed"
 
 
 def createSSLInspectRule(url=testedServerDomainWildcard):
@@ -89,6 +90,16 @@ def search_term_rules_clear():
     webSettings = appWeb.getSettings()
     webSettings["searchTerms"]["list"] = []
     appWeb.setSettings(webSettings)
+
+
+def createHostnameBypassRule(hostname, enabled=True, description="test bypass"):
+    return {
+        "javaClass": "com.untangle.uvm.app.GenericRule",
+        "string": hostname,
+        "enabled": enabled,
+        "isGlobal": False,
+        "description": description
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -288,6 +299,101 @@ class SslInspectorTests(NGFWTestCase):
                                                 "host", t["host"],
                                                 "term", t["term"])
             assert( found )
+
+    def test_100_hostnameVerificationEnabled(self):
+        """Verify hostname verification enabled by default, normal HTTPS works without bypass pipe"""
+        appData = self._app.getSettings()
+        assert appData.get('verifyServerCertHostname') == True
+        result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+        assert (result == 0)
+        events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+        event = global_functions.find_event(events.get('list'), 5,
+            "ssl_inspector_status", "INSPECTED",
+            "ssl_inspector_detail", testedServerName)
+        assert event is not None
+        assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
+
+    def test_101_hostnameVerificationBypassList(self):
+        """Verify bypass list entry adds bypass pipe to detail"""
+        appData = self._app.getSettings()
+        appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerName))
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5, "ssl_inspector_status", "INSPECTED")
+            assert event is not None
+            assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['hostnameVerificationBypassList']['list'] = []
+            self._app.setSettings(appData)
+
+    def test_102_hostnameVerificationGlobalDisable(self):
+        """Verify global disable adds bypass pipe to detail"""
+        appData = self._app.getSettings()
+        appData['verifyServerCertHostname'] = False
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5, "ssl_inspector_status", "INSPECTED")
+            assert event is not None
+            assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['verifyServerCertHostname'] = True
+            self._app.setSettings(appData)
+
+    def test_103_hostnameVerificationBlindTrust(self):
+        """Verify blind trust skips hostname verification without bypass pipe"""
+        appData = self._app.getSettings()
+        appData['serverBlindTrust'] = True
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5, "ssl_inspector_status", "INSPECTED")
+            assert event is not None
+            assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['serverBlindTrust'] = False
+            self._app.setSettings(appData)
+
+    def test_104_hostnameVerificationWildcardBypass(self):
+        """Verify wildcard bypass entry matches and adds bypass pipe"""
+        appData = self._app.getSettings()
+        appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerDomainWildcard, description="wildcard test"))
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5, "ssl_inspector_status", "INSPECTED")
+            assert event is not None
+            assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['hostnameVerificationBypassList']['list'] = []
+            self._app.setSettings(appData)
+
+    def test_105_hostnameVerificationDisabledBypassEntry(self):
+        """Verify disabled bypass entry does not add bypass pipe"""
+        appData = self._app.getSettings()
+        appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerName, enabled=False, description="disabled entry"))
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5,
+                "ssl_inspector_status", "INSPECTED",
+                "ssl_inspector_detail", testedServerName)
+            assert event is not None
+            assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['hostnameVerificationBypassList']['list'] = []
+            self._app.setSettings(appData)
 
     def test_551_https_with_sni_packet_split(self):
         """ Verify no exceptions with split Hello TLS packets"""

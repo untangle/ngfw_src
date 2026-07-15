@@ -181,6 +181,33 @@ Ext.define('Ung.apps.sslinspector.view.Configuration', {
             xtype: 'app-ssl-inspector-trusted-certs-grid',
             padding: '10 20 0 20'
         }]
+    }, {
+        xtype: 'fieldset',
+        padding: '10 0 10 0',
+        title: 'Server Certificate Hostname Verification'.t(),
+        labelWidth: 230,
+        bind: {
+            disabled: '{settings.serverBlindTrust}'
+        },
+        items: [{
+            xtype: 'checkbox',
+            fieldLabel: 'Enforce Hostname Match'.t(),
+            labelWidth: 250,
+            name: 'verifyServerCertHostname',
+            bind: '{settings.verifyServerCertHostname}'
+        },{
+            xtype: 'displayfield',
+            padding: '0 100 0 20',
+            value: 'When enabled, the SSL Inspector verifies that the upstream server certificate hostname matches the requested SNI hostname. Entries in the bypass list below will skip this verification while still performing certificate chain validation.'.t()
+        },{
+            xtype: 'app-ssl-inspector-hostname-bypass-grid',
+            padding: '10 20 0 20',
+            height: 200,
+            bind: {
+                store: '{hostnameBypassList}',
+                disabled: '{!settings.verifyServerCertHostname}'
+            }
+        }]
     }]
 
 });
@@ -226,5 +253,113 @@ Ext.define('Ung.apps.sslinspector.view.TrustedCertsGrid', {
         align: 'center',
         iconCls: 'fa fa-trash',
         handler: 'deleteTrustedCertificate'
+    }]
+});
+
+Ext.define('Ung.apps.sslinspector.view.HostnameBypassGrid', {
+    extend: 'Ung.cmp.Grid',
+    alias: 'widget.app-ssl-inspector-hostname-bypass-grid',
+    itemId: 'hostname-bypass-grid',
+    title: 'Hostname Verification Bypass List'.t(),
+    withValidation: false,
+    controller: 'app-sslinspector-hostname-bypass',
+
+    dockedItems: [{
+        xtype: 'toolbar',
+        dock: 'top',
+        items: ['@add', '->', '@import', '@export']
+    }],
+
+    recordActions: ['edit', 'copy', 'delete'],
+    copyAppendField: 'description',
+
+    emptyText: 'No Hostname Entries'.t(),
+
+    importValidationJavaClass: true,
+
+    viewConfig: {
+        deferEmptyText: false,
+        getRowClass: Ung.util.Util.getGlobalRowClass
+    },
+
+    listProperty: 'settings.hostnameVerificationBypassList.list',
+    emptyRow: {
+        string: '',
+        enabled: true,
+        isGlobal: false,
+        description: '',
+        javaClass: 'com.untangle.uvm.app.GenericRule'
+    },
+
+    columns: [{
+        header: 'Hostname'.t(),
+        width: Renderer.uriWidth,
+        flex: 1,
+        dataIndex: 'string',
+        editor: {
+            xtype: 'textfield',
+            emptyText: '[enter hostname, IP, or *.domain.com]'.t(),
+            allowBlank: false,
+            validator: function(val) {
+                if (Ext.form.field.VTypes.ipAddress(val)) return true;
+                if (/^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9\-_.]*[a-zA-Z0-9])?$/.test(val)) return true;
+                return 'Must be a valid hostname, IP address, or wildcard (*.domain.com)'.t();
+            }
+        }
+    }, {
+        xtype: 'checkcolumn',
+        width: Renderer.booleanWidth,
+        header: 'Bypass'.t(),
+        dataIndex: 'enabled',
+        resizable: false
+    }, {
+        xtype: 'checkcolumn',
+        width: Renderer.booleanWidth,
+        header: 'Global'.t(),
+        dataIndex: 'isGlobal',
+        resizable: false,
+        listeners: {
+            beforecheckchange: Ung.util.Util.canToggleGlobalCheckbox
+        }
+    }, {
+        header: 'Description'.t(),
+        width: Renderer.messageWidth,
+        flex: 2,
+        dataIndex: 'description',
+        editor: {
+            xtype: 'textfield',
+            emptyText: '[no description]'.t()
+        }
+    }],
+    editorFields: [{
+        xtype: 'textfield',
+        bind: '{record.string}',
+        fieldLabel: 'Hostname'.t(),
+        emptyText: '[enter hostname, IP, or *.domain.com]'.t(),
+        allowBlank: false,
+        width: 400,
+        validator: function(val) {
+            if (Ext.form.field.VTypes.ipAddress(val)) return true;
+            if (/^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9\-_.]*[a-zA-Z0-9])?$/.test(val)) return true;
+            return 'Must be a valid hostname, IP address, or wildcard (*.domain.com)'.t();
+        }
+    }, {
+        xtype: 'checkbox',
+        bind: '{record.enabled}',
+        fieldLabel: 'Bypass'.t()
+    }, {
+        xtype: 'checkbox',
+        bind: {
+            value: '{record.isGlobal}',
+            hidden: '{!isAddAction}'
+        },
+        fieldLabel: 'Global'.t()
+    }, {
+        xtype: 'textarea',
+        bind: '{record.description}',
+        fieldLabel: 'Description'.t(),
+        emptyText: '[no description]'.t(),
+        width: 400,
+        height: 60
     }]
 });

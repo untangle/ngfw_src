@@ -16,9 +16,12 @@ package com.untangle.app.ssl_inspector;
 import javax.net.ssl.TrustManagerFactory;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,8 +32,12 @@ import java.io.IOException;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.OAuthDomain;
+import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.app.App;
 import com.untangle.uvm.app.AppMetric;
+import com.untangle.uvm.app.GenericRule;
+import com.untangle.uvm.app.GlobMatcher;
 import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.app.AppBase;
@@ -79,6 +86,7 @@ public class SslInspectorApp extends AppBase
 
     private static final File CRON_FILE = new File("/etc/cron.daily/ssl-inspector-cleanup");
     private static String keyStorePath = "/var/cache/untangle-ssl";
+    private static final String GLOBAL_SETTINGS_FILE = System.getProperty("uvm.settings.dir") + "/ssl-inspector/globalSettings.js";
 
     private AuthenticationOautDomainChangeHookCallback authenticationOautDomainChangeHookCallback = new AuthenticationOautDomainChangeHookCallback();
 
@@ -144,7 +152,7 @@ public class SslInspectorApp extends AppBase
                 logger.warn("No settings found... initializing with defaults");
                 SslInspectorSettings makeSettings = new SslInspectorSettings();
                 makeSettings.setIgnoreRules(generateDefaultRules());
-                makeSettings.setVersion(3);
+                makeSettings.setVersion(4);
                 setSettings(makeSettings);
             }
 
@@ -177,6 +185,15 @@ public class SslInspectorApp extends AppBase
                     renumberRules = true;
                 }
 
+                // v3 to v4: add hostname verification settings
+                if (readSettings.getVersion().intValue() < 4) {
+                    logger.info("Migrating settings from v{} to v4: adding hostname verification", readSettings.getVersion());
+                    readSettings.setVerifyServerCertHostname(true);
+                    readSettings.setHostnameVerificationBypassList(new LinkedList<>());
+                    readSettings.setVersion(4);
+                    setSettings(readSettings);
+                }
+
                 if(renumberRules) {
                     int idx = 1;
                     for (SslInspectorRule rule : readSettings.getIgnoreRules()) {
@@ -185,6 +202,7 @@ public class SslInspectorApp extends AppBase
                 }
 
                 this.settings = readSettings;
+                loadAllGlobalSettings();
 
                 // appy the settings to the app
                 reconfigure();
@@ -249,6 +267,8 @@ public class SslInspectorApp extends AppBase
         String appID = this.getAppSettings().getId().toString();
         String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + appID + ".js";
 
+        setGlobalSettings(newSettings);
+
         try {
             UvmContextFactory.context().settingsManager().save(settingsFile, newSettings);
         } catch (Exception exn) {
@@ -258,6 +278,7 @@ public class SslInspectorApp extends AppBase
 
         this.settings = newSettings;
         reconfigure();
+        syncAllInstances();
     }
 
     /**
@@ -303,6 +324,152 @@ public class SslInspectorApp extends AppBase
     public TrustManagerFactory getTrustFactory()
     {
         return (trustFactory);
+    }
+
+    /**
+     * Loads global settings from the shared global settings file.
+     *
+     * @return The global settings, or a new empty settings object if none exist
+     */
+    private SslInspectorSettings getGlobalSettings()
+    {
+        SslInspectorSettings globalSettings = new SslInspectorSettings();
+        try {
+            SslInspectorSettings loaded = UvmContextFactory.context().settingsManager().load(SslInspectorSettings.class, GLOBAL_SETTINGS_FILE);
+            if (loaded != null) globalSettings = loaded;
+        } catch (SettingsManager.SettingsException e) {
+            logger.warn("Failed to load global settings:", e);
+        }
+        return globalSettings;
+    }
+
+    /**
+     * Extracts isGlobal entries from the bypass list in newSettings,
+     * saves them to the global settings file, and removes them from
+     * the instance settings so they are not duplicated.
+     *
+     * @param newSettings The settings being saved
+     */
+    private void setGlobalSettings(SslInspectorSettings newSettings)
+    {
+        SslInspectorSettings globalSettings = getGlobalSettings();
+        List<GenericRule> globalBypassList = globalSettings.getHostnameVerificationBypassList();
+        if (globalBypassList == null) globalBypassList = new LinkedList<>();
+
+        List<GenericRule> newBypassList = newSettings.getHostnameVerificationBypassList();
+        if (newBypassList == null) {
+            logger.warn("Hostname verification bypass list is null in incoming settings, skipping global settings update");
+            return;
+        }
+
+        Set<String> newGlobalHostnames = new HashSet<>();
+        Iterator<GenericRule> iterator = newBypassList.iterator();
+
+        while (iterator.hasNext()) {
+            GenericRule rule = iterator.next();
+            if (rule.getIsGlobal()) {
+                String hostname = rule.getString();
+                newGlobalHostnames.add(hostname);
+
+                Optional<GenericRule> existing = globalBypassList.stream()
+                    .filter(g -> g.getString().equals(hostname))
+                    .findFirst();
+
+                if (existing.isPresent()) {
+                    GenericRule globalRule = existing.get();
+                    boolean changed = globalRule.getEnabled() != rule.getEnabled()
+                        || !String.valueOf(globalRule.getDescription()).equals(String.valueOf(rule.getDescription()));
+                    if (changed) {
+                        globalRule.setEnabled(rule.getEnabled());
+                        globalRule.setDescription(rule.getDescription());
+                    }
+                } else {
+                    globalBypassList.add(rule);
+                }
+
+                iterator.remove();
+            }
+        }
+
+        globalBypassList.removeIf(g -> !newGlobalHostnames.contains(g.getString()));
+        globalSettings.setHostnameVerificationBypassList(new LinkedList<>(globalBypassList));
+
+        try {
+            UvmContextFactory.context().settingsManager().save(GLOBAL_SETTINGS_FILE, globalSettings);
+            logger.info("Saved global hostname bypass settings ({} entries)", globalBypassList.size());
+        } catch (SettingsManager.SettingsException e) {
+            logger.error("Failed to save global settings.", e);
+        }
+    }
+
+    /**
+     * Reloads instance settings from disk and merges in the global
+     * hostname verification bypass entries.
+     */
+    public void loadAllGlobalSettings()
+    {
+        String appID = this.getAppSettings().getId().toString();
+        String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + appID + ".js";
+
+        try {
+            SslInspectorSettings readSettings = UvmContextFactory.context().settingsManager().load(SslInspectorSettings.class, settingsFile);
+            if (readSettings == null) {
+                logger.warn("Failed to reload settings from {}", settingsFile);
+                return;
+            }
+
+            if (readSettings.getHostnameVerificationBypassList() == null) {
+                readSettings.setHostnameVerificationBypassList(new LinkedList<>());
+            }
+
+            SslInspectorSettings globalSettings = getGlobalSettings();
+            List<GenericRule> globalBypassList = globalSettings.getHostnameVerificationBypassList();
+            if (globalBypassList != null && !globalBypassList.isEmpty()) {
+                readSettings.getHostnameVerificationBypassList().addAll(0, globalBypassList);
+                logger.info("Merged {} global hostname bypass entries into instance {}", globalBypassList.size(), appID);
+            }
+
+            this.settings = readSettings;
+        } catch (Exception e) {
+            logger.error("Failed to load settings for instance " + appID, e);
+        }
+    }
+
+    /**
+     * Syncs global settings across all SSL Inspector instances.
+     */
+    private void syncAllInstances()
+    {
+        List<App> appList = UvmContextFactory.context().appManager().appInstances("ssl-inspector");
+        for (App app : appList) {
+            SslInspectorApp sslApp = (SslInspectorApp) app;
+            sslApp.loadAllGlobalSettings();
+        }
+    }
+
+    /**
+     * Checks whether hostname verification should be bypassed for the given SNI hostname.
+     * Returns true if verification is globally disabled, if sniHostname is null,
+     * or if the hostname matches an enabled entry in the bypass list.
+     *
+     * @param sniHostname The SNI hostname to check
+     * @return True if hostname verification should be skipped
+     */
+    public boolean isHostnameVerificationBypassed(String sniHostname)
+    {
+        if (!settings.getVerifyServerCertHostname()) return true;
+        if (sniHostname == null) return true;
+
+        for (GenericRule rule : settings.getHostnameVerificationBypassList()) {
+            if (rule.getEnabled()) {
+                GlobMatcher matcher = GlobMatcher.getMatcher(rule.getString());
+                if (matcher.isMatch(sniHostname)) {
+                    logger.debug("Hostname verification bypassed for {} (matched bypass entry: {})", sniHostname, rule.getString());
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

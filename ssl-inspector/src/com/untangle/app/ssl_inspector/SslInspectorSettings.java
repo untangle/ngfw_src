@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import org.json.JSONString;
 import org.json.JSONObject;
 
+import com.untangle.uvm.app.GenericRule;
+
 /**
  * This is the implementation of the ssl inspector settings.
  * 
@@ -27,6 +29,8 @@ public class SslInspectorSettings implements Serializable, JSONString
     private boolean processEncryptedWebTraffic;
     private boolean blockInvalidTraffic;
     private boolean serverBlindTrust;
+    private boolean verifyServerCertHostname;
+    private LinkedList<GenericRule> hostnameVerificationBypassList;
     private boolean javaxDebug;
     private boolean enabled;
 
@@ -51,6 +55,8 @@ public class SslInspectorSettings implements Serializable, JSONString
         processEncryptedWebTraffic = true;
         blockInvalidTraffic = false;
         serverBlindTrust = false;
+        verifyServerCertHostname = true;
+        hostnameVerificationBypassList = new LinkedList<>();
         javaxDebug = false;
         enabled = true;
 
@@ -103,6 +109,12 @@ public class SslInspectorSettings implements Serializable, JSONString
 
     public boolean getServerBlindTrust() { return (serverBlindTrust); }
     public void setServerBlindTrust(boolean flag) { this.serverBlindTrust = flag; }
+
+    public boolean getVerifyServerCertHostname() { return (verifyServerCertHostname); }
+    public void setVerifyServerCertHostname(boolean flag) { this.verifyServerCertHostname = flag; }
+
+    public LinkedList<GenericRule> getHostnameVerificationBypassList() { return (hostnameVerificationBypassList); }
+    public void setHostnameVerificationBypassList(LinkedList<GenericRule> list) { this.hostnameVerificationBypassList = list; }
 
     public boolean getJavaxDebug() { return (javaxDebug); }
     public void setJavaxDebug(boolean flag) { this.javaxDebug = flag; }
