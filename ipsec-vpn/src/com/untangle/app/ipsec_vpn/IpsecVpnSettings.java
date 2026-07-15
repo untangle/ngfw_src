@@ -34,26 +34,43 @@ public class IpsecVpnSettings implements java.io.Serializable, JSONString
     private boolean allowConcurrentLogins = true;
     private LinkedList<VirtualListen> virtualListenList = new LinkedList<>();
     private AuthenticationType authenticationType = AuthenticationType.LOCAL_DIRECTORY;
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String virtualNetworkPool = ""; // used for GRE
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String virtualAddressPool = ""; // used for L2TP
     @SafeCheck(SafeType.IP_OR_CIDR)
     private String virtualXauthPool = ""; // used for XAUTH
+    @SafeCheck(SafeType.OPAQUE_SECRET)
     private String virtualSecret = "Please_Change_Me";
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String virtualDnsOne = "";
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String virtualDnsTwo = "";
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String charonDebug = "";
+    @SafeCheck(SafeType.ALPHANUM)
     private String uniqueIds = "yes";
     private boolean phase1Manual = false;
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1Cipher = "3des";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1Hash = "md5";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1Group = "modp2048";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1Lifetime = "28800";
     private boolean phase2Manual = false;
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2Cipher = "3des";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2Hash = "md5";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2Group = "modp2048";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2Lifetime = "3600";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase1DefaultLifetime = "8h";
+    @SafeCheck(SafeType.ALPHANUM)
     private String phase2DefaultLifetime = "1h";
 
     public IpsecVpnSettings()

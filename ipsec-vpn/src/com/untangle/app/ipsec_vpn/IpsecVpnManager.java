@@ -291,10 +291,10 @@ public class IpsecVpnManager
                 // this section is required and contains general protocol
                 // config directives and items that are common to all tunnels
                 ipsec_conf.write("config setup" + RET);
-                ipsec_conf.write(TAB + "uniqueids=" + settings.getUniqueIds() + RET);
+                ipsec_conf.write(TAB + "uniqueids=" + stripLineBreaks(settings.getUniqueIds()) + RET);
 
                 if (settings.getCharonDebug().length() > 0) {
-                    ipsec_conf.write(TAB + "charondebug=" + settings.getCharonDebug() + RET);
+                    ipsec_conf.write(TAB + "charondebug=" + stripLineBreaks(settings.getCharonDebug()) + RET);
                 }
 
                 ipsec_conf.write(RET);
@@ -316,7 +316,7 @@ public class IpsecVpnManager
 
                     ipsec_conf.write("conn UT" + Integer.toString(data.getId()) + "_" + workname + RET);
                     ipsec_conf.write(TAB + "keyexchange=ikev" + Integer.toString(data.getIkeVersion()) + RET);
-                    ipsec_conf.write(TAB + "type=" + data.getConntype() + RET);
+                    ipsec_conf.write(TAB + "type=" + stripLineBreaks(data.getConntype()) + RET);
                     ipsec_conf.write(TAB + "authby=psk" + RET);
 
                     ipsec_conf.write(TAB + "rekey=yes" + RET);
@@ -327,69 +327,69 @@ public class IpsecVpnManager
                     }
 
                     if (data.getPhase1Manual() == true) {
-                        ipsec_conf.write(TAB + "ike=" + data.getPhase1Cipher() + "-" + data.getPhase1Hash() + "-" + data.getPhase1Group() + "!" + RET);
-                        ipsec_conf.write(TAB + "ikelifetime=" + data.getPhase1Lifetime() + "s" + RET);
+                        ipsec_conf.write(TAB + "ike=" + stripLineBreaks(data.getPhase1Cipher()) + "-" + stripLineBreaks(data.getPhase1Hash()) + "-" + stripLineBreaks(data.getPhase1Group()) + "!" + RET);
+                        ipsec_conf.write(TAB + "ikelifetime=" + stripLineBreaks(data.getPhase1Lifetime()) + "s" + RET);
                     } else {
                         ipsec_conf.write(TAB + "ike=" + ike_default + RET);
-                        ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                        ipsec_conf.write(TAB + "ikelifetime=" + stripLineBreaks(settings.getPhase1DefaultLifetime()) + RET);
                     }
 
                     if (data.getPhase2Manual() == true) {
                         if (data.getPhase2Group().equals("disabled") == true) {
-                            ipsec_conf.write(TAB + "esp=" + data.getPhase2Cipher() + "-" + data.getPhase2Hash() + "!" + RET);
+                            ipsec_conf.write(TAB + "esp=" + stripLineBreaks(data.getPhase2Cipher()) + "-" + stripLineBreaks(data.getPhase2Hash()) + "!" + RET);
                         } else {
-                            ipsec_conf.write(TAB + "esp=" + data.getPhase2Cipher() + "-" + data.getPhase2Hash() + "-" + data.getPhase2Group() + "!" + RET);
+                            ipsec_conf.write(TAB + "esp=" + stripLineBreaks(data.getPhase2Cipher()) + "-" + stripLineBreaks(data.getPhase2Hash()) + "-" + stripLineBreaks(data.getPhase2Group()) + "!" + RET);
                         }
-                        ipsec_conf.write(TAB + "lifetime=" + data.getPhase2Lifetime() + "s" + RET);
+                        ipsec_conf.write(TAB + "lifetime=" + stripLineBreaks(data.getPhase2Lifetime()) + "s" + RET);
                     } else {
                         ipsec_conf.write(TAB + "esp=" + esp_default + RET);
-                        ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
+                        ipsec_conf.write(TAB + "lifetime=" + stripLineBreaks(settings.getPhase2DefaultLifetime()) + RET);
                     }
 
                     if ((data.getDpddelay().equals("0") == false) && (data.getDpdtimeout().equals("0") == false)) {
-                        ipsec_conf.write(TAB + "dpddelay=" + data.getDpddelay() + RET);
-                        ipsec_conf.write(TAB + "dpdtimeout=" + data.getDpdtimeout() + RET);
+                        ipsec_conf.write(TAB + "dpddelay=" + stripLineBreaks(data.getDpddelay()) + RET);
+                        ipsec_conf.write(TAB + "dpdtimeout=" + stripLineBreaks(data.getDpdtimeout()) + RET);
                         ipsec_conf.write(TAB + "dpdaction=restart" + RET);
                     }
 
-                    ipsec_conf.write(TAB + "left=" + this.resolveLeftAddress(data.getLeft()) + RET);
+                    ipsec_conf.write(TAB + "left=" + stripLineBreaks(this.resolveLeftAddress(data.getLeft())) + RET);
 
                     if(data.getAllSubnetNegotation()){
                         ipsec_conf.write(TAB + "leftsubnet=0.0.0.0/0" + RET);
                     }else{
-                        ipsec_conf.write(TAB + "leftsubnet=" + data.getLeftSubnet() + RET);
+                        ipsec_conf.write(TAB + "leftsubnet=" + stripLineBreaks(data.getLeftSubnet()) + RET);
                     }
                     // use the configured leftid if available otherwise use left
                     if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) {
-                        ipsec_conf.write(TAB + "leftid=" + data.getLeftId() + RET);
+                        ipsec_conf.write(TAB + "leftid=" + stripLineBreaks(data.getLeftId()) + RET);
                     } else {
                         if(data.getAllSubnetNegotation() == false){
-                            ipsec_conf.write(TAB + "leftid=" + this.resolveLeftAddress(data.getLeft()) + RET);
+                            ipsec_conf.write(TAB + "leftid=" + stripLineBreaks(this.resolveLeftAddress(data.getLeft())) + RET);
                         }
                     }
                     if ((data.getLeftSourceIp() != null) && (data.getLeftSourceIp().length() > 0)) {
-                        ipsec_conf.write(TAB + "leftsourceip=" + data.getLeftSourceIp() + RET);
+                        ipsec_conf.write(TAB + "leftsourceip=" + stripLineBreaks(data.getLeftSourceIp()) + RET);
                     }
 
-                    ipsec_conf.write(TAB + "right=" + data.getRight() + RET);
+                    ipsec_conf.write(TAB + "right=" + stripLineBreaks(data.getRight()) + RET);
                     if(data.getAllSubnetNegotation()){
                         ipsec_conf.write(TAB + "rightsubnet=0.0.0.0/0" + RET);
                     }else{
-                        ipsec_conf.write(TAB + "rightsubnet=" + data.getRightSubnet() + RET);
+                        ipsec_conf.write(TAB + "rightsubnet=" + stripLineBreaks(data.getRightSubnet()) + RET);
                     }
                     // use the configured rightid if available otherwise use right
                     if ((data.getRightId() != null) && (data.getRightId().length() > 0)) {
-                        ipsec_conf.write(TAB + "rightid=" + data.getRightId() + RET);
+                        ipsec_conf.write(TAB + "rightid=" + stripLineBreaks(data.getRightId()) + RET);
                     } else {
                         if(data.getAllSubnetNegotation() == false){
-                            ipsec_conf.write(TAB + "rightid=" + data.getRight() + RET);
+                            ipsec_conf.write(TAB + "rightid=" + stripLineBreaks(data.getRight()) + RET);
                         }
                     }
                     if ((data.getRightSourceIp() != null) && (data.getRightSourceIp().length() > 0)) {
-                        ipsec_conf.write(TAB + "rightsourceip=" + data.getRightSourceIp() + RET);
+                        ipsec_conf.write(TAB + "rightsourceip=" + stripLineBreaks(data.getRightSourceIp()) + RET);
                     }
 
-                    ipsec_conf.write(TAB + "auto=" + data.getRunmode() + RET);
+                    ipsec_conf.write(TAB + "auto=" + stripLineBreaks(data.getRunmode()) + RET);
                     if(data.getAllSubnetNegotation()){
                         int interfaceId = UvmContextFactory.context().networkManager().getNextFreeInterfaceId(UvmContextFactory.context().networkManager().getNetworkSettings());
                         ipsec_conf.write(TAB + "mark=" + Integer.toString(interfaceId) + RET);
@@ -414,18 +414,18 @@ public class IpsecVpnManager
 
                     // add the tunnel PSK to the ipsec.secrets file
                     ipsec_secrets.write("# " + workname + RET);
-                    ipsec_secrets.write(data.getLeft() + " " + data.getRight().replaceAll("\\s*,\\s*", " ") + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
+                    ipsec_secrets.write(stripLineBreaks(data.getLeft()) + " " + stripLineBreaks(data.getRight()).replaceAll("\\s*,\\s*", " ") + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
 
                     // start with left but prefer leftid if not null and not empty
-                    String lid = data.getLeft();
-                    if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) lid = data.getLeftId();
+                    String lid = stripLineBreaks(data.getLeft());
+                    if ((data.getLeftId() != null) && (data.getLeftId().length() > 0)) lid = stripLineBreaks(data.getLeftId());
 
                     // start with right but prefer rightid if not null and not empty
-                    String rid = data.getRight();
-                    if ((data.getRightId() != null) && (data.getRightId().length() > 0)) rid = data.getRightId();
+                    String rid = stripLineBreaks(data.getRight());
+                    if ((data.getRightId() != null) && (data.getRightId().length() > 0)) rid = stripLineBreaks(data.getRightId());
 
                     // if lid != left or rid != right add another secret using those values
-                    if ((!data.getLeft().equals(lid)) || (!data.getRight().equals(rid))) {
+                    if ((!stripLineBreaks(data.getLeft()).equals(lid)) || (!stripLineBreaks(data.getRight()).equals(rid))) {
                         ipsec_secrets.write(lid + " " + rid + " : PSK 0x" + StringHexify(data.getSecret()) + RET);
                     }
                 }
@@ -455,29 +455,29 @@ public class IpsecVpnManager
                         ipsec_conf.write(TAB + "dpdtimeout=90" + RET);
                         ipsec_conf.write(TAB + "dpdaction=clear" + RET);
                         ipsec_conf.write(TAB + "type=transport" + RET);
-                        ipsec_conf.write(TAB + "left=" + listen.getAddress() + RET);
+                        ipsec_conf.write(TAB + "left=" + stripLineBreaks(listen.getAddress()) + RET);
                         ipsec_conf.write(TAB + "leftprotoport=17/1701" + RET);
                         ipsec_conf.write(TAB + "right=%any" + RET);
                         ipsec_conf.write(TAB + "rightprotoport=17/%any" + RET);
 
                         if (settings.getPhase1Manual() == true) {
-                            ipsec_conf.write(TAB + "ike=" + settings.getPhase1Cipher() + "-" + settings.getPhase1Hash() + "-" + settings.getPhase1Group() + "!" + RET);
-                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1Lifetime() + "s" + RET);
+                            ipsec_conf.write(TAB + "ike=" + stripLineBreaks(settings.getPhase1Cipher()) + "-" + stripLineBreaks(settings.getPhase1Hash()) + "-" + stripLineBreaks(settings.getPhase1Group()) + "!" + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + stripLineBreaks(settings.getPhase1Lifetime()) + "s" + RET);
                         } else {
                             ipsec_conf.write(TAB + "ike=" + ike_default + RET);
-                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + stripLineBreaks(settings.getPhase1DefaultLifetime()) + RET);
                         }
 
                         if (settings.getPhase2Manual() == true) {
                             if (settings.getPhase2Group().equals("disabled") == true) {
-                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "!" + RET);
+                                ipsec_conf.write(TAB + "esp=" + stripLineBreaks(settings.getPhase2Cipher()) + "-" + stripLineBreaks(settings.getPhase2Hash()) + "!" + RET);
                             } else {
-                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "-" + settings.getPhase2Group() + "!" + RET);
+                                ipsec_conf.write(TAB + "esp=" + stripLineBreaks(settings.getPhase2Cipher()) + "-" + stripLineBreaks(settings.getPhase2Hash()) + "-" + stripLineBreaks(settings.getPhase2Group()) + "!" + RET);
                             }
-                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2Lifetime() + "s" + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + stripLineBreaks(settings.getPhase2Lifetime()) + "s" + RET);
                         } else {
                             ipsec_conf.write(TAB + "esp=" + esp_default + RET);
-                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + stripLineBreaks(settings.getPhase2DefaultLifetime()) + RET);
                         }
 
                         ipsec_conf.write(RET);
@@ -509,11 +509,11 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "replay_window=0" + RET);
                         }
 
-                        ipsec_conf.write(TAB + "left=" + listen.getAddress() + RET);
+                        ipsec_conf.write(TAB + "left=" + stripLineBreaks(listen.getAddress()) + RET);
                         ipsec_conf.write(TAB + "leftsubnet=0.0.0.0/0" + RET);
                         ipsec_conf.write(TAB + "leftupdown=" + XAUTH_UPDOWN_SCRIPT + RET);
                         ipsec_conf.write(TAB + "right=%any" + RET);
-                        ipsec_conf.write(TAB + "rightsourceip=" + settings.getVirtualXauthPool() + RET);
+                        ipsec_conf.write(TAB + "rightsourceip=" + stripLineBreaks(settings.getVirtualXauthPool()) + RET);
 
                         // if no DNS servers are configured we use the server address of the L2TP interface
                         if ((settings.getVirtualDnsOne().length() == 0) && (settings.getVirtualDnsTwo().length() == 0)) {
@@ -522,37 +522,37 @@ public class IpsecVpnManager
 
                         // handle only the first custom server
                         if ((settings.getVirtualDnsOne().length() > 0) && (settings.getVirtualDnsTwo().length() == 0)) {
-                            ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsOne() + RET);
+                            ipsec_conf.write(TAB + "rightdns=" + stripLineBreaks(settings.getVirtualDnsOne()) + RET);
                         }
 
                         // handle only the second custom server
                         if ((settings.getVirtualDnsOne().length() == 0) && (settings.getVirtualDnsTwo().length() > 0)) {
-                            ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsTwo() + RET);
+                            ipsec_conf.write(TAB + "rightdns=" + stripLineBreaks(settings.getVirtualDnsTwo()) + RET);
                         }
 
                         // handle both the first and second custom server
                         if ((settings.getVirtualDnsOne().length() > 0) && (settings.getVirtualDnsTwo().length() > 0)) {
-                            ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsOne() + "," + settings.getVirtualDnsTwo() + RET);
+                            ipsec_conf.write(TAB + "rightdns=" + stripLineBreaks(settings.getVirtualDnsOne()) + "," + stripLineBreaks(settings.getVirtualDnsTwo()) + RET);
                         }
 
                         if (settings.getPhase1Manual() == true) {
-                            ipsec_conf.write(TAB + "ike=" + settings.getPhase1Cipher() + "-" + settings.getPhase1Hash() + "-" + settings.getPhase1Group() + "!" + RET);
-                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1Lifetime() + "s" + RET);
+                            ipsec_conf.write(TAB + "ike=" + stripLineBreaks(settings.getPhase1Cipher()) + "-" + stripLineBreaks(settings.getPhase1Hash()) + "-" + stripLineBreaks(settings.getPhase1Group()) + "!" + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + stripLineBreaks(settings.getPhase1Lifetime()) + "s" + RET);
                         } else {
                             ipsec_conf.write(TAB + "ike=" + ike_default + RET);
-                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + stripLineBreaks(settings.getPhase1DefaultLifetime()) + RET);
                         }
 
                         if (settings.getPhase2Manual() == true) {
                             if (settings.getPhase2Group().equals("disabled") == true) {
-                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "!" + RET);
+                                ipsec_conf.write(TAB + "esp=" + stripLineBreaks(settings.getPhase2Cipher()) + "-" + stripLineBreaks(settings.getPhase2Hash()) + "!" + RET);
                             } else {
-                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "-" + settings.getPhase2Group() + "!" + RET);
+                                ipsec_conf.write(TAB + "esp=" + stripLineBreaks(settings.getPhase2Cipher()) + "-" + stripLineBreaks(settings.getPhase2Hash()) + "-" + stripLineBreaks(settings.getPhase2Group()) + "!" + RET);
                             }
-                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2Lifetime() + "s" + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + stripLineBreaks(settings.getPhase2Lifetime()) + "s" + RET);
                         } else {
                             ipsec_conf.write(TAB + "esp=" + esp_default + RET);
-                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + stripLineBreaks(settings.getPhase2DefaultLifetime()) + RET);
                         }
 
                         ipsec_conf.write(RET);
@@ -570,14 +570,14 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "replay_window=0" + RET);
                         }
 
-                        ipsec_conf.write(TAB + "left=" + listen.getAddress() + RET);
+                        ipsec_conf.write(TAB + "left=" + stripLineBreaks(listen.getAddress()) + RET);
 
                         if ((domainName == null) || (hostName == null)) {
-                            ipsec_conf.write(TAB + "leftid=" + listen.getAddress() + RET);
+                            ipsec_conf.write(TAB + "leftid=" + stripLineBreaks(listen.getAddress()) + RET);
                         }
 
                         else {
-                            ipsec_conf.write(TAB + "leftid=" + hostName + "." + domainName + RET);
+                            ipsec_conf.write(TAB + "leftid=" + stripLineBreaks(hostName) + "." + stripLineBreaks(domainName) + RET);
                         }
 
                         ipsec_conf.write(TAB + "leftauth=pubkey" + RET);
@@ -596,7 +596,7 @@ public class IpsecVpnManager
                             ipsec_conf.write(TAB + "rightauth=eap-radius" + RET);
                         }
 
-                        ipsec_conf.write(TAB + "rightsourceip=" + settings.getVirtualXauthPool() + RET);
+                        ipsec_conf.write(TAB + "rightsourceip=" + stripLineBreaks(settings.getVirtualXauthPool()) + RET);
 
                         // if no DNS servers are configured we use the server address of the L2TP interface
                         if ((settings.getVirtualDnsOne().length() == 0) && (settings.getVirtualDnsTwo().length() == 0)) {
@@ -605,17 +605,17 @@ public class IpsecVpnManager
 
                         // handle only the first custom server
                         if ((settings.getVirtualDnsOne().length() > 0) && (settings.getVirtualDnsTwo().length() == 0)) {
-                            ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsOne() + RET);
+                            ipsec_conf.write(TAB + "rightdns=" + stripLineBreaks(settings.getVirtualDnsOne()) + RET);
                         }
 
                         // handle only the second custom server
                         if ((settings.getVirtualDnsOne().length() == 0) && (settings.getVirtualDnsTwo().length() > 0)) {
-                            ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsTwo() + RET);
+                            ipsec_conf.write(TAB + "rightdns=" + stripLineBreaks(settings.getVirtualDnsTwo()) + RET);
                         }
 
                         // handle both the first and second custom server
                         if ((settings.getVirtualDnsOne().length() > 0) && (settings.getVirtualDnsTwo().length() > 0)) {
-                            ipsec_conf.write(TAB + "rightdns=" + settings.getVirtualDnsOne() + "," + settings.getVirtualDnsTwo() + RET);
+                            ipsec_conf.write(TAB + "rightdns=" + stripLineBreaks(settings.getVirtualDnsOne()) + "," + stripLineBreaks(settings.getVirtualDnsTwo()) + RET);
                         }
 
                         ipsec_conf.write(TAB + "rightsendcert=never" + RET);
@@ -623,26 +623,26 @@ public class IpsecVpnManager
 
                         // add the L2TP PSK to the shared secrets file
                         ipsec_secrets.write("# VPN-L2TP-" + Integer.toString(x) + RET);
-                        ipsec_secrets.write(listen.getAddress() + " %any : PSK 0x" + StringHexify(settings.getVirtualSecret()) + RET);
+                        ipsec_secrets.write(stripLineBreaks(listen.getAddress()) + " %any : PSK 0x" + StringHexify(settings.getVirtualSecret()) + RET);
 
                         if (settings.getPhase1Manual() == true) {
-                            ipsec_conf.write(TAB + "ike=" + settings.getPhase1Cipher() + "-" + settings.getPhase1Hash() + "-" + settings.getPhase1Group() + "!" + RET);
-                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1Lifetime() + "s" + RET);
+                            ipsec_conf.write(TAB + "ike=" + stripLineBreaks(settings.getPhase1Cipher()) + "-" + stripLineBreaks(settings.getPhase1Hash()) + "-" + stripLineBreaks(settings.getPhase1Group()) + "!" + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + stripLineBreaks(settings.getPhase1Lifetime()) + "s" + RET);
                         } else {
                             ipsec_conf.write(TAB + "ike=" + ike_default + RET);
-                            ipsec_conf.write(TAB + "ikelifetime=" + settings.getPhase1DefaultLifetime() + RET);
+                            ipsec_conf.write(TAB + "ikelifetime=" + stripLineBreaks(settings.getPhase1DefaultLifetime()) + RET);
                         }
 
                         if (settings.getPhase2Manual() == true) {
                             if (settings.getPhase2Group().equals("disabled") == true) {
-                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "!" + RET);
+                                ipsec_conf.write(TAB + "esp=" + stripLineBreaks(settings.getPhase2Cipher()) + "-" + stripLineBreaks(settings.getPhase2Hash()) + "!" + RET);
                             } else {
-                                ipsec_conf.write(TAB + "esp=" + settings.getPhase2Cipher() + "-" + settings.getPhase2Hash() + "-" + settings.getPhase2Group() + "!" + RET);
+                                ipsec_conf.write(TAB + "esp=" + stripLineBreaks(settings.getPhase2Cipher()) + "-" + stripLineBreaks(settings.getPhase2Hash()) + "-" + stripLineBreaks(settings.getPhase2Group()) + "!" + RET);
                             }
-                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2Lifetime() + "s" + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + stripLineBreaks(settings.getPhase2Lifetime()) + "s" + RET);
                         } else {
                             ipsec_conf.write(TAB + "esp=" + esp_default + RET);
-                            ipsec_conf.write(TAB + "lifetime=" + settings.getPhase2DefaultLifetime() + RET);
+                            ipsec_conf.write(TAB + "lifetime=" + stripLineBreaks(settings.getPhase2DefaultLifetime()) + RET);
                         }
                     }
                 }
@@ -661,12 +661,12 @@ public class IpsecVpnManager
                 }
 
                 if (settings.getVirtualDnsOne().length() > 0) {
-                    options_xl2tpd.write("ms-dns " + settings.getVirtualDnsOne() + RET);
+                    options_xl2tpd.write("ms-dns " + stripLineBreaks(settings.getVirtualDnsOne()) + RET);
                     dnsWritten = true;
                 }
 
                 if (settings.getVirtualDnsTwo().length() > 0) {
-                    options_xl2tpd.write("ms-dns " + settings.getVirtualDnsTwo() + RET);
+                    options_xl2tpd.write("ms-dns " + stripLineBreaks(settings.getVirtualDnsTwo()) + RET);
                     dnsWritten = true;
                 }
 
@@ -827,15 +827,29 @@ public class IpsecVpnManager
     }
 
     /**
+     * Removes CR and LF characters from a string.
+     *
+     * @param s
+     *        The string to strip
+     *
+     * @return The string with line breaks removed
+     */
+    private static String stripLineBreaks(String s)
+    {
+        if (s == null) return "";
+        return s.replace("\r", "").replace("\n", "");
+    }
+
+    /**
      * This function takes a normal string and converts it to a string of hex
      * digit pairs representing each character in the original string. We use it
      * to obfuscate passwords in the ipsec.secrets file. Using the hex format
      * also prevents problems with embeding characters that may also be a
      * parsing token used by one of the IPsec applications or daemons.
-     * 
+     *
      * @param source
      *        The string to convert to hex format
-     * 
+     *
      * @return The hex format string
      */
     private String StringHexify(String source)
