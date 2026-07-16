@@ -558,12 +558,20 @@ public class MailSenderImpl implements MailSender
              * Substitute the port in the exim template Set it back to 25 in
              * case it was previously configured to something else in smarthost
              */
+            // NGFW-15855: migrated to argv form via execCommand. Note the "\\n"
+            // in the replacement pattern below MUST remain a 2-char literal
+            // (backslash + n) in Java source, so sed receives the 2-char sequence
+            // "\n" in argv and interprets it as a newline in the replacement.
+            // Using Java "\n" (1-char real newline) would terminate sed's `s`
+            // command mid-parse.
             // remove all "  port = xx"
-            String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
-            UvmContextFactory.context().execManager().exec(cmd1);
+            UvmContextFactory.context().execManager().execCommand("/bin/sed", List.of(
+                "-e", "/..port.=.[0-9].*$/d",
+                "-i", EXIM_TEMPLATE_FILE));
             // insert new "  port = xx"
-            String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + 25 + "|g\" -i " + EXIM_TEMPLATE_FILE;
-            UvmContextFactory.context().execManager().exec(cmd2);
+            UvmContextFactory.context().execManager().execCommand("/bin/sed", List.of(
+                "-e", "s|  driver = smtp|  driver = smtp\\n  port = " + 25 + "|g",
+                "-i", EXIM_TEMPLATE_FILE));
         } else {
             /**
              * Send mail to smarthost
@@ -624,12 +632,15 @@ public class MailSenderImpl implements MailSender
             if (settings.getSendMethod() == MailSettings.SendMethod.CUSTOM) targetPort = settings.getSmtpPort();
             if (settings.getSendMethod() == MailSettings.SendMethod.RELAY) targetPort = STUNNEL_RELAY_PORT;
 
+            // NGFW-15855: same argv migration as the direct-send block above.
             // remove all "  port = xx"
-            String cmd1 = "/bin/sed -e \"/..port.=.[0-9].*$/d\" -i " + EXIM_TEMPLATE_FILE;
-            UvmContextFactory.context().execManager().exec(cmd1);
+            UvmContextFactory.context().execManager().execCommand("/bin/sed", List.of(
+                "-e", "/..port.=.[0-9].*$/d",
+                "-i", EXIM_TEMPLATE_FILE));
             // insert new "  port = xx"
-            String cmd2 = "/bin/sed -e \"s|  driver = smtp|  driver = smtp\\n  port = " + targetPort + "|g\" -i " + EXIM_TEMPLATE_FILE;
-            UvmContextFactory.context().execManager().exec(cmd2);
+            UvmContextFactory.context().execManager().execCommand("/bin/sed", List.of(
+                "-e", "s|  driver = smtp|  driver = smtp\\n  port = " + targetPort + "|g",
+                "-i", EXIM_TEMPLATE_FILE));
         }
 
         this.writeFile(sb, EXIM_CONF_FILE);
