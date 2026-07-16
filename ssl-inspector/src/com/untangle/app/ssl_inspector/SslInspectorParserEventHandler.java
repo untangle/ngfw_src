@@ -809,7 +809,7 @@ public class SslInspectorParserEventHandler extends AbstractEventHandler
         }
 
         // append hostname verification bypass status to the detail
-        // only for bypass list / global disable - not for blind trust, broken server, or null SNI
+        // only for bypass list / global disable - not for blind trust, broken server
         String sniHost = (String) session.globalAttachment(AppTCPSession.KEY_SSL_INSPECTOR_SNI_HOSTNAME);
         if (sniHost != null && app.isHostnameVerificationBypassed(sniHost)) {
             logevt.setDetail(logevt.getDetail() + " | Hostname Verification Bypassed");

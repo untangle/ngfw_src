@@ -256,6 +256,12 @@ Ext.define('Ung.apps.sslinspector.view.TrustedCertsGrid', {
     }]
 });
 
+var hostnameOrIpValidator = function(val) {
+    if (Ext.form.field.VTypes.ipAddress(val)) return true;
+    if (/^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9\-_.]*[a-zA-Z0-9])?$/.test(val)) return true;
+    return 'Must be a valid hostname, IP address, or wildcard (*.domain.com)'.t();
+};
+
 Ext.define('Ung.apps.sslinspector.view.HostnameBypassGrid', {
     extend: 'Ung.cmp.Grid',
     alias: 'widget.app-ssl-inspector-hostname-bypass-grid',
@@ -300,11 +306,7 @@ Ext.define('Ung.apps.sslinspector.view.HostnameBypassGrid', {
             xtype: 'textfield',
             emptyText: '[enter hostname, IP, or *.domain.com]'.t(),
             allowBlank: false,
-            validator: function(val) {
-                if (Ext.form.field.VTypes.ipAddress(val)) return true;
-                if (/^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9\-_.]*[a-zA-Z0-9])?$/.test(val)) return true;
-                return 'Must be a valid hostname, IP address, or wildcard (*.domain.com)'.t();
-            }
+            validator: hostnameOrIpValidator
         }
     }, {
         xtype: 'checkcolumn',
@@ -338,11 +340,7 @@ Ext.define('Ung.apps.sslinspector.view.HostnameBypassGrid', {
         emptyText: '[enter hostname, IP, or *.domain.com]'.t(),
         allowBlank: false,
         width: 400,
-        validator: function(val) {
-            if (Ext.form.field.VTypes.ipAddress(val)) return true;
-            if (/^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9\-_.]*[a-zA-Z0-9])?$/.test(val)) return true;
-            return 'Must be a valid hostname, IP address, or wildcard (*.domain.com)'.t();
-        }
+        validator: hostnameOrIpValidator
     }, {
         xtype: 'checkbox',
         bind: '{record.enabled}',

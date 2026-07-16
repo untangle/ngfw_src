@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.io.BufferedReader;
@@ -352,46 +353,18 @@ public class SslInspectorApp extends AppBase
      */
     private void setGlobalSettings(SslInspectorSettings newSettings)
     {
-        SslInspectorSettings globalSettings = getGlobalSettings();
-        List<GenericRule> globalBypassList = globalSettings.getHostnameVerificationBypassList();
-        if (globalBypassList == null) globalBypassList = new LinkedList<>();
-
         List<GenericRule> newBypassList = newSettings.getHostnameVerificationBypassList();
         if (newBypassList == null) {
             logger.warn("Hostname verification bypass list is null in incoming settings, skipping global settings update");
             return;
         }
 
-        Set<String> newGlobalHostnames = new HashSet<>();
-        Iterator<GenericRule> iterator = newBypassList.iterator();
+        SslInspectorSettings globalSettings = getGlobalSettings();
+        List<GenericRule> globalBypassList = globalSettings.getHostnameVerificationBypassList();
+        if (globalBypassList == null) globalBypassList = new LinkedList<>();
 
-        while (iterator.hasNext()) {
-            GenericRule rule = iterator.next();
-            if (rule.getIsGlobal()) {
-                String hostname = rule.getString();
-                newGlobalHostnames.add(hostname);
+        updateGlobalList(newBypassList, globalBypassList);
 
-                Optional<GenericRule> existing = globalBypassList.stream()
-                    .filter(g -> g.getString().equals(hostname))
-                    .findFirst();
-
-                if (existing.isPresent()) {
-                    GenericRule globalRule = existing.get();
-                    boolean changed = globalRule.getEnabled() != rule.getEnabled()
-                        || !String.valueOf(globalRule.getDescription()).equals(String.valueOf(rule.getDescription()));
-                    if (changed) {
-                        globalRule.setEnabled(rule.getEnabled());
-                        globalRule.setDescription(rule.getDescription());
-                    }
-                } else {
-                    globalBypassList.add(rule);
-                }
-
-                iterator.remove();
-            }
-        }
-
-        globalBypassList.removeIf(g -> !newGlobalHostnames.contains(g.getString()));
         globalSettings.setHostnameVerificationBypassList(new LinkedList<>(globalBypassList));
 
         try {
@@ -400,6 +373,47 @@ public class SslInspectorApp extends AppBase
         } catch (SettingsManager.SettingsException e) {
             logger.error("Failed to save global settings.", e);
         }
+    }
+
+    /**
+     * Splits global entries from instance entries. Global entries (isGlobal=true) are
+     * moved to globalList and removed from newList. Existing global entries are updated
+     * if changed. Global entries no longer present are removed.
+     *
+     * @param newList    The incoming list (modified in-place: global entries removed)
+     * @param globalList The global list (modified in-place: entries added/updated/removed)
+     */
+    private void updateGlobalList(List<GenericRule> newList, List<GenericRule> globalList)
+    {
+        Set<String> newGlobalKeys = new HashSet<>();
+        Iterator<GenericRule> iterator = newList.iterator();
+
+        while (iterator.hasNext()) {
+            GenericRule rule = iterator.next();
+            if (!rule.getIsGlobal()) continue;
+
+            String key = rule.getString();
+            newGlobalKeys.add(key);
+
+            Optional<GenericRule> existing = globalList.stream()
+                .filter(g -> g.getString().equals(key))
+                .findFirst();
+
+            if (existing.isPresent()) {
+                GenericRule globalRule = existing.get();
+                if (!Objects.equals(globalRule.getEnabled(), rule.getEnabled())
+                        || !Objects.equals(globalRule.getDescription(), rule.getDescription())) {
+                    globalRule.setEnabled(rule.getEnabled());
+                    globalRule.setDescription(rule.getDescription());
+                }
+            } else {
+                globalList.add(rule);
+            }
+
+            iterator.remove();
+        }
+
+        globalList.removeIf(g -> !newGlobalKeys.contains(g.getString()));
     }
 
     /**

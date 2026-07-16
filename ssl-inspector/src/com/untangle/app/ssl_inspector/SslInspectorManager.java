@@ -299,7 +299,7 @@ class SslInspectorManager
         // No idea if this is even possible, but if so it would allow us
         // to support client to server authentication via certificate.
 
-        // if blind trust is enabled or we are doing SMTP then we simply trust everything
+        // if blind trust is enabled we simply trust everything
         if (useBlindTrust) {
             logger.debug("Using blind trust for upstream connection to {}", sniHostname);
             sslContext.init(null, new TrustManager[] { trust_all_certificates }, null);
