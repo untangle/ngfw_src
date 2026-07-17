@@ -18,6 +18,7 @@ import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
@@ -289,6 +290,8 @@ class SslInspectorManager
     {
         sslContext = SSLContext.getInstance("TLS");
 
+        boolean useBlindTrust = (app.getSettings().getServerBlindTrust() == true);
+
         // TODO - Today we pass null as the key manager but some day we may
         // want to investigate the possibility of grabbing the cert and key
         // presented for authentication on the client side and put them
@@ -296,12 +299,13 @@ class SslInspectorManager
         // No idea if this is even possible, but if so it would allow us
         // to support client to server authentication via certificate.
 
-        // if blind trust is enabled or we are doing SMTP then we simply trust everything
-        if ((app.getSettings().getServerBlindTrust() == true) || (session.getServerPort() == 25)) {
+        // if blind trust is enabled we simply trust everything
+        if (useBlindTrust) {
+            logger.debug("Using blind trust for upstream connection to {}", sniHostname);
             sslContext.init(null, new TrustManager[] { trust_all_certificates }, null);
         }
 
-        // blind trust not enabled and not SMTP so use the shared list of trusted certs
+        // blind trust not enabled so use the shared list of trusted certs
         else {
             sslContext.init(null, app.getTrustFactory().getTrustManagers(), null);
         }
@@ -319,6 +323,15 @@ class SslInspectorManager
         }
 
         sslEngine.setEnabledProtocols(generateProtocolList(ProtocolList.SERVER));
+
+        if (!useBlindTrust && sniHostname != null
+                && !app.checkBrokenServer(target)
+                && !app.isHostnameVerificationBypassed(sniHostname)) {
+            logger.debug("Enabling hostname verification for {}", sniHostname);
+            SSLParameters sslParams = sslEngine.getSSLParameters();
+            sslParams.setEndpointIdentificationAlgorithm("HTTPS");
+            sslEngine.setSSLParameters(sslParams);
+        }
 
         // on the server side we act like an SSL client
         sslEngine.setUseClientMode(true);
