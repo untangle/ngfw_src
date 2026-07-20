@@ -494,6 +494,64 @@ class AdministrationTests(NGFWTestCase):
         #  certificates list should be unchanged after test execution
         assert(len(initial_certificates_list['list']) == len(final_certificates_list['list']))
 
+    def test_026_upload_root_certificate(self):
+        """
+        NGFW-15886: verify uploadCertificate("ROOT", ...) creates the root-cert
+        directory correctly via the migrated Files.* calls (Site 7). Exercises
+        Files.createDirectories (== mkdir -p), Files.writeString (== echo >),
+        and Files.createFile-with-exists-guard (== touch).
+
+        Asserts on the four files Site 7 produces (untangle.crt, untangle.key,
+        serial.txt, index.txt), their permissions, serial.txt's byte content,
+        and index.txt's zero-byte state.
+        """
+        import subprocess
+        cert_mgr = global_functions.uvmContext.certificateManager()
+        certificates_dir = '/usr/share/untangle/settings/untangle-certificates'
+        initial_root_dirs = set(glob(join(certificates_dir, '[0-9]*/')))
+
+        try:
+            resp = cert_mgr.uploadCertificate("ROOT", certData, keyData, "")
+            assert resp is not None
+            # ROOT branch returns success msg per CertificateManagerImpl:847
+            assert "Root Certificate successfully uploaded" in resp.get("output", "")
+
+            # Find the newly-created baseName directory
+            new_root_dirs = list(set(glob(join(certificates_dir, '[0-9]*/'))) - initial_root_dirs)
+            assert len(new_root_dirs) == 1, f"expected exactly 1 new dir, got {new_root_dirs}"
+            new_root = new_root_dirs[0]
+
+            # All four expected files present with 0644 permissions
+            for fname in ('untangle.crt', 'untangle.key', 'serial.txt', 'index.txt'):
+                fpath = join(new_root, fname)
+                assert os.path.isfile(fpath), f"missing {fpath}"
+                mode = os.stat(fpath).st_mode & 0o777
+                assert mode == 0o644, f"{fpath} mode is 0o{mode:o}, expected 0o644"
+
+            # index.txt is empty (Files.createFile produces zero-byte file;
+            # matches touch's semantic on a fresh directory)
+            assert os.path.getsize(join(new_root, 'index.txt')) == 0, \
+                "index.txt should be empty"
+
+            # serial.txt content matches BigInteger.toString(16) of the CRT's serial + "\n"
+            with open(join(new_root, 'serial.txt'), 'rb') as f:
+                serial_bytes = f.read()
+            assert serial_bytes.endswith(b'\n'), \
+                "serial.txt should end with LF (explicit '\\n' preserved)"
+            # openssl pads serials to even hex chars; BigInteger.toString(16) does not.
+            # Strip leading zeros on both sides before comparing.
+            crt_serial = subprocess.check_output(
+                ["openssl", "x509", "-in", join(new_root, "untangle.crt"),
+                 "-noout", "-serial"], text=True).split("=")[1].strip().lower().lstrip("0")
+            file_serial = serial_bytes.strip().decode().lower().lstrip("0")
+            assert crt_serial == file_serial, \
+                f"serial content mismatch: crt={crt_serial} file={file_serial}"
+
+        finally:
+            # Cleanup - removeCertificate("ROOT") takes absolute path to untangle.crt
+            for d in set(glob(join(certificates_dir, '[0-9]*/'))) - initial_root_dirs:
+                cert_mgr.removeCertificate("ROOT", join(d, "untangle.crt"))
+
     def test_030_skin_upload_deprecated(self):
         """Verify skin upload to /admin/upload is rejected (handleFile deprecated)"""
         import zipfile

@@ -107,7 +107,15 @@ public class WebBrowser
 
         try{
             UvmContextFactory.context().execManager().exec("pkill -f \"" + this.xCommand+ "\"");
-            UvmContextFactory.context().execManager().execOutput("nohup " + this.xCommand + " >/dev/null 2>&1 &");
+            // NGFW-15855: replaced shell "nohup ... >/dev/null 2>&1 &" with
+            // execEvilProcessDetached. Redirect.DISCARD attaches /dev/null at
+            // the OS fd layer (equivalent to >/dev/null 2>&1), so Xvfb won't
+            // get SIGPIPE when the JVM exits. start() returns immediately
+            // (equivalent to trailing &). nohup is a no-op here because the
+            // JVM child has no controlling terminal.
+            // xCommand is built from fixed tokens (Xvfb, :N, -screen, S, WxHxD)
+            // with no embedded spaces, so split("\\s+") is safe.
+            UvmContextFactory.context().execManager().execEvilProcessDetached(this.xCommand.split("\\s+"));
 
             ChromeDriverService service = new ChromeDriverService.Builder()
                 .usingDriverExecutable(new File(chromeDriver))

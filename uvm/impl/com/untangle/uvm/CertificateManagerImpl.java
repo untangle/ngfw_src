@@ -827,19 +827,42 @@ public class CertificateManagerImpl implements CertificateManager
             var newRootKey = newRootPath + "untangle.key";
             var newRootCrt = newRootPath + "untangle.crt";
 
-            // create the root cert dir using the basename
-            UvmContextFactory.context().execManager().exec("mkdir -p " + newRootPath);
+            // NGFW-15855: replaced the mkdir/echo-redirect/touch trio with
+            // java.nio.file.Files equivalents. Files.createDirectories == mkdir -p
+            // (creates intermediates, silent on exists). Files.writeString with
+            // default options == echo > (CREATE + TRUNCATE_EXISTING). The
+            // index.txt path uses Files.exists guard + createFile to match touch
+            // semantics of "create-if-absent, don't-truncate-if-present".
+            java.nio.file.Path rootDir = Paths.get(newRootPath);
+            try {
+                Files.createDirectories(rootDir);
+            } catch (IOException e) {
+                logger.warn("Failed to create root cert dir " + newRootPath, e);
+            }
 
             storeData(keyData, newRootKey);
-            
+
             storeData(certData, newRootCrt);
 
             // we use this certInfo to get the serial and add it to serial.txt
             var certInfo = get509CertFromString(certData);
 
             // Root certs also need an index and serial
-            UvmContextFactory.context().execManager().exec("echo " + certInfo.getSerialNumber().toString(16) + ">"+newRootPath+"serial.txt");
-            UvmContextFactory.context().execManager().exec("touch " + newRootPath + "index.txt");
+            try {
+                Files.writeString(
+                    rootDir.resolve("serial.txt"),
+                    certInfo.getSerialNumber().toString(16) + "\n");
+            } catch (IOException e) {
+                logger.warn("Failed to write serial.txt for " + newRootPath, e);
+            }
+            try {
+                java.nio.file.Path indexPath = rootDir.resolve("index.txt");
+                if (!Files.exists(indexPath)) {
+                    Files.createFile(indexPath);
+                }
+            } catch (IOException e) {
+                logger.warn("Failed to create index.txt for " + newRootPath, e);
+            }
 
             // symlinks key, cert, index, serial to the untangle-certificates directory
             symlinkRootCerts(CERT_STORE_PATH, newRootPath, false);
@@ -905,8 +928,21 @@ public class CertificateManagerImpl implements CertificateManager
         // make a copy of the server key file in the certificate key file
         UvmContextFactory.context().execManager().exec("cp " + LOCAL_KEY_FILE + " " + csrBaseKey);
 
-        // next create the certificate PEM file from the certificate KEY and CRT files
-        UvmContextFactory.context().execManager().exec("cat " + csrBaseCrt + " " + csrBaseKey + " > " + csrBasePem);
+        // NGFW-15855: replaced shell "cat crt key > pem" with byte-identical
+        // Java concat. Failure path logs a warning and continues, matching the
+        // OLD silent-continue behavior when cat failed. Downstream sed on the
+        // next line independently writes the same pem, so a failure here is
+        // masked at the flow level today.
+        try {
+            byte[] crtBytes = Files.readAllBytes(Paths.get(csrBaseCrt));
+            byte[] keyBytes = Files.readAllBytes(Paths.get(csrBaseKey));
+            byte[] combined = new byte[crtBytes.length + keyBytes.length];
+            System.arraycopy(crtBytes, 0, combined, 0, crtBytes.length);
+            System.arraycopy(keyBytes, 0, combined, crtBytes.length, keyBytes.length);
+            Files.write(Paths.get(csrBasePem), combined);
+        } catch (IOException e) {
+            logger.warn("Failed to build PEM from " + csrBaseCrt + " + " + csrBaseKey, e);
+        }
 
         // use sed to combine the CRT and KEY to create the PEM
         // note that there is NO space following the w argument
@@ -1156,8 +1192,14 @@ public class CertificateManagerImpl implements CertificateManager
                 logger.warn("Certificate key validation exit code: " + exitValue);
             }
             if (extraLen > 0 & exitValue == 0) {
+                // NGFW-15855: replaced the inline openssl pipeline with a wrapper
+                // script (ut-verify-cert-chain) that runs the same pipeline. The
+                // wrapper deliberately has NO set -o pipefail, preserving the
+                // OLD last-cmd exit-code semantics (openssl pkcs7's exit code).
                 // validate intermediate chain certificates
-                exitValue = UvmContextFactory.context().execManager().execResult("openssl crl2pkcs7 -nocrl -certfile " + fileLocation + " | openssl pkcs7 -print_certs -noout");
+                exitValue = UvmContextFactory.context().execManager().execCommand(
+                    "/usr/share/untangle/bin/ut-verify-cert-chain",
+                    java.util.List.of(fileLocation)).getResult();
                 logger.warn("Intermediate chain certificates validation exit code: " + exitValue);
             }
         } catch (Exception exn) {
