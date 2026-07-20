@@ -42,6 +42,23 @@ public class ExecManagerImpl implements ExecManager
 {
     private final Logger logger = LogManager.getLogger(getClass());
 
+    /**
+     * Shell metacharacters that make exec(String) unsafe. Any command containing
+     * one of these is refused by the filter (see exec(cmd, rateLimit, safe, ...)).
+     *
+     * NGFW-15855 / UNT-50: the filter is a defense-in-depth backstop; the real
+     * defense is migrating callers to execCommand(exe, argsList) argv form per
+     * ngfw-rce-architecture.md L3. Do NOT introduce new exec(String) callers
+     * whose command string embeds user-controlled input.
+     *
+     * "||" is functionally redundant with "|" for substring matching (any
+     * string containing "||" also contains "|"), kept in the list for source
+     * clarity and to match the T-18 canonical metachar set.
+     */
+    private static final String[] SUSPICIOUS_METAS = {
+        ";", "&&", "||", "|", ">", "<", "$(", "`"
+    };
+
     private JSONSerializer serializer = null;
 
     private Process proc = null;
@@ -159,8 +176,24 @@ public class ExecManagerImpl implements ExecManager
     }
 
     /**
+     * Returns true if cmd contains any shell metacharacter that would make
+     * exec(String) unsafe. See SUSPICIOUS_METAS for the current list.
+     *
+     * @param cmd
+     *        The command string to inspect
+     * @return true if any metacharacter in SUSPICIOUS_METAS is a substring of cmd
+     */
+    private static boolean containsSuspicious(String cmd)
+    {
+        for (String meta : SUSPICIOUS_METAS) {
+            if (cmd.contains(meta)) return true;
+        }
+        return false;
+    }
+
+    /**
      * Executes a command and returns the result object
-     * 
+     *
      * @param cmd
      *        The String command to execute and optionally the rate limit flag
      * @return The execution result object
@@ -219,13 +252,19 @@ public class ExecManagerImpl implements ExecManager
         cmd = cmd.replace("\n", "");
         cmd = cmd.replace("\r", "");
 
-        if (cmd.contains(";") || cmd.contains("&&") || cmd.contains("|") || cmd.contains(">") || cmd.contains("$(")) {
-            if(safe){
-                logger.log(this.level, "Suspicious command (" + cmd + "), blocked");
-                return new ExecManagerResult();
-            }else{
-                logger.log(this.level, "Suspicious command (" + cmd + "), allowing");
+        // NGFW-15855 / UNT-50: always block on suspicious metacharacters, regardless
+        // of the `safe` flag. Previously safe=false (the default for exec/execOutput/
+        // execResult) logged and continued, providing zero protection. The `safe`
+        // flag now only controls log severity so the two paths can be triaged
+        // separately during the ongoing migration to execCommand(exe, argsList).
+        // See ngfw-rce-architecture.md L3.
+        if (containsSuspicious(cmd)) {
+            if (safe) {
+                logger.warn("Refusing suspicious command: " + cmd);
+            } else {
+                logger.error("Refusing suspicious command (caller must migrate to execCommand(exe, args) or fix template): " + cmd);
             }
+            return new ExecManagerResult(-1, "");
         }
 
         try {
@@ -502,7 +541,7 @@ public class ExecManagerImpl implements ExecManager
 
     /**
      * Execute a command in a new process and return the process
-     * 
+     *
      * @param cmd
      *        The command to execute
      * @return The process
@@ -516,6 +555,56 @@ public class ExecManagerImpl implements ExecManager
         }
 
         return execEvilProcess(cmdArray);
+    }
+
+    /**
+     * Fire-and-forget process launch with stdout/stderr redirected to /dev/null
+     * at the OS file-descriptor layer, and SIGHUP ignored by the child.
+     * Behaviorally equivalent to shell "nohup CMD &gt;/dev/null 2&gt;&amp;1 &amp;"
+     * without invoking a shell.
+     *
+     * Differs from execEvilProcess() which uses Runtime.exec() and leaves the
+     * child's stdout/stderr connected as pipes into the JVM. Those pipes break
+     * when the JVM exits, delivering SIGPIPE to the child.
+     *
+     * SIGHUP handling: this method prepends /usr/bin/nohup to the argv so the
+     * child inherits SIG_IGN for SIGHUP via exec. Required because the UVM JVM
+     * is started under start-stop-daemon --background (see
+     * /etc/init.d/untangle-vm), which makes it a session leader. When a session
+     * leader exits, the kernel delivers SIGHUP to every process in its session,
+     * including any children spawned via ProcessBuilder. Without nohup, the
+     * spawned child would die on JVM exit (observed with ut-factory-defaults,
+     * which aborted before reaching `shutdown -r now`). The nohup wrapper
+     * matches the semantics of the OLD shell form "nohup CMD &amp;".
+     *
+     * @param cmd
+     *        The argv array to execute (element 0 is the executable, rest are
+     *        its arguments). No shell involvement.
+     * @return The spawned Process (representing the nohup wrapper, which exec's
+     *         the target), or null if launch failed. Caller typically discards
+     *         the Process reference; the child continues running and reparents
+     *         to init after the JVM exits.
+     */
+    public Process execEvilProcessDetached(String[] cmd)
+    {
+        // NGFW-15855: prepend nohup so the child ignores SIGHUP and survives JVM
+        // (session-leader) exit. See method Javadoc for the full rationale.
+        String[] withNohup = new String[cmd.length + 1];
+        withNohup[0] = "/usr/bin/nohup";
+        System.arraycopy(cmd, 0, withNohup, 1, cmd.length);
+
+        if (logger.isInfoEnabled()) {
+            logger.info("ExecManager.execEvilProcessDetached( " + String.join(" ", withNohup) + " )");
+        }
+        try {
+            return new ProcessBuilder(withNohup)
+                .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                .redirectError(ProcessBuilder.Redirect.DISCARD)
+                .start();
+        } catch (IOException e) {
+            logger.warn("Detached process launch failed:", e);
+            return null;
+        }
     }
 
     /**

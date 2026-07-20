@@ -95,7 +95,29 @@ public interface ExecManager
      * Called "execEvil" because it calls fork which can cause issues
      */
     Process execEvilProcess(String cmd[]);
-    
+
+    /**
+     * Fire-and-forget process launch with stdout/stderr redirected to /dev/null
+     * and SIGHUP ignored by the child, so the spawned process survives when
+     * the JVM exits. Behaviorally equivalent to shell
+     * "nohup CMD &gt;/dev/null 2&gt;&amp;1 &amp;" without invoking a shell.
+     *
+     * Differs from execEvilProcess() which uses Runtime.exec() and leaves the
+     * child's stdout/stderr connected as pipes into the JVM.
+     *
+     * Internally prepends /usr/bin/nohup to the argv so the child inherits
+     * SIG_IGN for SIGHUP. Required because the UVM JVM is started under
+     * start-stop-daemon --background, which makes it a session leader; when
+     * the JVM exits, the kernel sends SIGHUP to every process in its session.
+     * Without nohup the spawned child would die on JVM exit, matching the
+     * OLD shell "nohup ... &amp;" semantics.
+     *
+     * @param cmd
+     *        argv array (element 0 is the executable, rest are its arguments)
+     * @return the spawned Process, or null if launch failed
+     */
+    Process execEvilProcessDetached(String cmd[]);
+
     /**
      * Close this instance of exec manager
      * This shuts down the "launcher" process
