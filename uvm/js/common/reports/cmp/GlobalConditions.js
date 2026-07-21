@@ -100,15 +100,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                     ['in', 'in'.t()],
                     ['not in', 'not in'.t()]
                 ]
-            }, {
-                xtype: 'checkbox',
-                itemId: 'add_fmt',
-                boxLabel: 'AutoFormat Value'.t(),
-                value: true,
-                disabled: true,
-                bind: {
-                    disabled: '{!rg.value}'
-                }
             }, '-', {
                 xtype: 'container',
                 layout: {
@@ -248,17 +239,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                         }
                                     }
                                 }, '-', {
-                                    xtype: 'checkbox',
-                                    boxLabel: 'AutoFormat Value'.t(),
-                                    margin: 5,
-                                    value: condition.get('autoFormatValue'),
-                                    listeners: {
-                                        change: function (el, val) {
-                                            condition.set('autoFormatValue', val);
-                                            me.redirect();
-                                        }
-                                    }
-                                }, '-', {
                                     xtype: 'container',
                                     name: 'values',
                                     layout: {
@@ -367,14 +347,12 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 conditions = vm.get('query.conditions'),
                 column = menu.down('#add_column').getValue(),
                 operator = menu.down('#add_operator').getValue(),
-                value = menu.down('#add_value_text').getValue() || menu.down('#add_value_combo').getValue() ,
-                autoFormatValue = menu.down('#add_fmt').getValue();
+                value = menu.down('#add_value_text').getValue() || menu.down('#add_value_combo').getValue();
 
             menu.down('#add_column').reset();
             menu.down('#add_operator').setValue('=');
             menu.down('#add_value_text').setValue('');
             menu.down('#add_value_combo').setValue('');
-            menu.down('#add_fmt').setValue(true);
 
             if (!column || !operator || !value) {
                 return;
@@ -384,7 +362,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                 column: column,
                 operator: operator,
                 value: value,
-                autoFormatValue: autoFormatValue,
             }));
             me.redirect();
         },
@@ -508,7 +485,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                                     column: col,
                                     value: '',
                                     operator: '=',
-                                    autoFormatValue: true,
                                     javaClass: 'com.untangle.app.reports.SqlCondition'
                                 });
                             }
@@ -561,11 +537,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                             layout: 'fit'
                         },
                         onWidgetAttach: 'onValueWidgetAttach'
-                    }, {
-                        xtype: 'checkcolumn',
-                        text: 'AutoFormat'.t(),
-                        width: 70,
-                        dataIndex: 'autoFormatValue'
                     }, {
                         xtype: 'actioncolumn',
                         width: 40,
@@ -671,7 +642,6 @@ Ext.define('Ung.reports.cmp.GlobalConditions', {
                         column: field,
                         operator: '=',
                         value: data[field],
-                        autoFormatValue: true,
                         table: table
                     }));
                     msgConditions.push(

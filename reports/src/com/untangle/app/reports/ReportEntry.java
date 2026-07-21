@@ -784,7 +784,8 @@ public class ReportEntry implements Serializable, JSONString
                 continue;
             }
 
-            str += " and " + condition.toSqlString();
+            condition.setTable( getTable() );
+            str += " and " + condition.toSqlString( getTable() );
         }
 
         return str;

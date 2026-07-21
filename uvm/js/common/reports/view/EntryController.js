@@ -242,7 +242,6 @@ Ext.define('Ung.view.reports.EntryController', {
             conds = vm.get('_sqlConditions') || [];
 
         conds.push({
-            autoFormatValue: true,
             column: me.getView().down('#sqlConditionsCombo').getValue(),
             javaClass: 'com.untangle.app.reports.SqlCondition',
             operator: '=',

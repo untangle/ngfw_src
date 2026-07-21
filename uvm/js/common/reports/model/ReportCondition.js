@@ -10,9 +10,6 @@ Ext.define ('Ung.model.ReportCondition', {
         name: 'value',
         type: 'string'
     },{
-        name: 'autoFormatValue',
-        type: 'boolean'
-    },{
         name: 'table',
         type: 'string'
     },{
@@ -28,7 +25,7 @@ Ext.define ('Ung.model.ReportCondition', {
     },
 
     getQuery: function(){
-        return encodeURIComponent(this.get('column')) + ':' + encodeURIComponent(this.get('operator')) +  ':' + (this.get('autoFormatValue') === true ? 1 : 0) + ':' + encodeURIComponent(this.get('table'))  + ':' + encodeURIComponent(this.get('value'));
+        return encodeURIComponent(this.get('column')) + ':' + encodeURIComponent(this.get('operator')) + ':' + encodeURIComponent(this.get('table'))  + ':' + encodeURIComponent(this.get('value'));
     },
 
     statics:{

@@ -68,4 +68,40 @@ public class Constants {
     //clamav daemons
     public static final String CLAMAV_DAEMON = "clamav-daemon";
     public static final String FRESHCLAM = "clamav-freshclam";
+
+    // Operators
+    public static final String IS = "is";
+    public static final String IS_NOT = "is not";
+    public static final String IN = "in";
+    public static final String NOT_IN = "not in";
+
+    // Column types
+    public static final String NUMERIC = "numeric";
+    public static final String INTEGER = "integer";
+    public static final String INT = "int";
+    public static final String INT2 = "int2";
+    public static final String INT4 = "int4";
+    public static final String INT8 = "int8";
+    public static final String TINYINT = "tinyint";
+    public static final String SMALLINT = "smallint";
+    public static final String MEDIUMINT = "mediumint";
+    public static final String BIGINT = "bigint";
+    public static final String REAL = "real";
+    public static final String FLOAT = "float";
+    public static final String FLOAT4 = "float4";
+    public static final String FLOAT8 = "float8";
+    public static final String INET = "inet";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String BOOL = "bool";
+    public static final String BOOLEAN = "boolean";
+    public static final String BPCHAR = "bpchar";
+    public static final String CHARACTER = "character";
+    public static final String VARCHAR = "varchar";
+    public static final String TEXT = "text";
+    public static final String CHAR_PREFIX = "char";
+
+    // Keywords
+    public static final String NULL = "null";
+    public static final String UNKNOWN = "unknown";
+    public static final String NOT_NULL = "not null";
 }

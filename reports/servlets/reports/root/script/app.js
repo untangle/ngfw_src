@@ -103,7 +103,7 @@ Ext.define('Ung.controller.Global', {
     onMain: function (query) {
         var reportsVm = Ung.app.getMainView().down('#reports').getViewModel(), validQuery = true,
             route = {}, conditions = [],
-            condsQuery = '', decoded, parts, key, sep, val, fmt;
+            condsQuery = '', decoded, parts, key, sep, val;
 
         if (query) {
             // need to remove the 'reports' string from query in some routing cases
@@ -115,9 +115,8 @@ Ext.define('Ung.controller.Global', {
                     parts = decoded.split(':');
                     key = parts[0];
                     sep = parts[1];
-                    fmt = parseInt(parts[2], 10);
-                    table = parts[3];
-                    val = parts[4];
+                    table = parts[2];
+                    val = parts.slice(3,parts.length).join(':');
                 } else {
                     parts = decoded.split('=');
                     key = parts[0];
@@ -134,7 +133,6 @@ Ext.define('Ung.controller.Global', {
                             column: key,
                             operator: sep,
                             value: val,
-                            autoFormatValue: fmt === 1 ? true : false,
                             table: table,
                         }));
                     }

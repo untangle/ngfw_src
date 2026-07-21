@@ -1067,11 +1067,6 @@ Ext.define('Ung.view.reports.Entry', {
                     },
                     onWidgetAttach: 'onValueWidgetAttach'
                 }, {
-                    header: 'Auto Format'.t(),
-                    xtype: 'checkcolumn',
-                    dataIndex: 'autoFormatValue',
-                    width: 80
-                }, {
                     xtype: 'actioncolumn',
                     width: 22,
                     align: 'center',

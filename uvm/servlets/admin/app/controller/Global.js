@@ -189,7 +189,7 @@ Ext.define('Ung.controller.Global', {
     onRoute: function (query) {
         var hash = window.location.hash, view, viewModel = null, validQuery = true,
             route = {}, condition, conditions = [],
-            decoded, parts, key, sep, val, fmt, table;
+            decoded, parts, key, sep, val, table;
 
         if (hash === '' || Ext.String.startsWith(hash, '#') || Ext.String.startsWith(hash, '#dashboard')) {
             view = 'dashboardMain';
@@ -210,9 +210,8 @@ Ext.define('Ung.controller.Global', {
                     parts = decoded.split(':');
                     key = parts[0];
                     sep = parts[1];
-                    fmt = parseInt(parts[2], 10);
-                    table = parts[3];
-                    val = parts.slice(4,parts.length).join(':');
+                    table = parts[2];
+                    val = parts.slice(3,parts.length).join(':');
                 } else {
                     parts = decoded.split('=');
                     key = parts[0];
@@ -228,7 +227,6 @@ Ext.define('Ung.controller.Global', {
                             column: key,
                             operator: sep,
                             value: val,
-                            autoFormatValue: fmt === 1 ? true : false,
                             table: table,
                         }));
                     }

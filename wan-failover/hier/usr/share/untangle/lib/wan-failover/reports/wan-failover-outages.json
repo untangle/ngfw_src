@@ -3,7 +3,6 @@
     "category": "WAN Failover",
     "conditions": [
         {
-	    "autoFormatValue": false,
 	    "column": "success",
 	    "javaClass": "com.untangle.app.reports.SqlCondition",
 	    "operator": "=",

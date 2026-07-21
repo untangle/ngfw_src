@@ -5,7 +5,6 @@
     "conditions": [
         {
             "javaClass": "com.untangle.app.reports.SqlCondition",
-            "autoFormatValue": "false",
             "column": "c_client_addr",
             "operator": "!=",
             "value": "s_client_addr"

@@ -5,12 +5,18 @@ package com.untangle.app.reports;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
+import com.untangle.uvm.util.Constants;
+import com.untangle.uvm.util.SqlParseException;
+import com.untangle.uvm.util.SqlUtil;
 
 /**
  * A SQL condition (clause) for limiting results of a ReportEntry
@@ -20,14 +26,19 @@ public class SqlCondition implements Serializable, JSONString
 {
     private static final Logger logger = LogManager.getLogger(SqlCondition.class);
 
+    private static final Set<String> IS_KEYWORDS = Set.of(
+        Constants.NULL, Constants.NOT_NULL,
+        Constants.TRUE.toLowerCase(), Constants.FALSE.toLowerCase(),
+        Constants.UNKNOWN
+    );
+
     private String column;
     private String value;
     private String operator;
-    private boolean autoFormatValue = true;
     private String table;
-    
+
     public SqlCondition() {}
-    
+
     public SqlCondition( String column, String operator, String value )
     {
         this.column = column;
@@ -37,7 +48,6 @@ public class SqlCondition implements Serializable, JSONString
 
     public SqlCondition( String column, String operator, String value, String table)
     {
-        this.table = table;
         this.column = column;
         this.operator = operator;
         this.value = value;
@@ -66,10 +76,10 @@ public class SqlCondition implements Serializable, JSONString
         case "between":
         case "like":
         case "not like":
-        case "is":
-        case "is not":
-        case "in":
-        case "not in":
+        case Constants.IS:
+        case Constants.IS_NOT:
+        case Constants.IN:
+        case Constants.NOT_IN:
             break;
         default:
             throw new RuntimeException("Unknown SQL condition operator: " + newValue);
@@ -78,38 +88,11 @@ public class SqlCondition implements Serializable, JSONString
     }
 
     /**
-     * If true, then the "value" will be handled in the Sql Statement with a "?"
-     * If false, the value will be hardcoded verbatim inside the sql string.
-     * This is necessary because not all values/operators are correctly supported by Statement
-     *
-     * @return 
-     * true if auto-format supported, false otherwise
+     * No-op: autoFormatValue is now computed server-side and cannot be
+     * overridden by client input. This setter exists solely so Jabsorb
+     * deserialization does not error when legacy JSON contains the field.
      */
-    public boolean getAutoFormatValue()
-    {
-        /**
-         * Some operators require special handling
-         */
-        if ("is".equalsIgnoreCase( getOperator() )) {
-            return false;
-        }
-        if ("is not".equalsIgnoreCase( getOperator() )) {
-            return false;
-        }
-        if ("in".equalsIgnoreCase( getOperator() )) {
-            return false;
-        }
-        if ("not in".equalsIgnoreCase( getOperator() )) {
-            return false;
-        }
-
-        return this.autoFormatValue;
-    }
-
-    public void setAutoFormatValue( boolean newValue )
-    {
-        this.autoFormatValue = newValue;
-    }
+    public void setAutoFormatValue( boolean newValue ) { }
 
     public String getTable() { return this.table; }
     public void setTable( String newValue ) { this.table = newValue; }
@@ -120,17 +103,51 @@ public class SqlCondition implements Serializable, JSONString
         return jO.toString();
     }
 
+    /**
+     * Build the SQL fragment for this condition, using the condition's
+     * own table field for column-reference detection.
+     */
     public String toSqlString()
     {
-        // these operators are not supported with prepareStatement
-        // as such there are hardcoded in the SQL query
-        if ( !getAutoFormatValue() ) {
-            return getColumn() + " " + getOperator() + " " + getValue() + " ";
+        return toSqlString(getTable());
+    }
+
+    /**
+     * Build the SQL fragment for this condition with safe handling per operator:
+     * - IS/IS NOT: keyword allowlist (NULL, TRUE, FALSE, NOT NULL, UNKNOWN)
+     * - IN/NOT IN: parse literal values and emit individual '?' placeholders
+     * - All others: '?' parameterization, unless value is a valid column name
+     *   (column-to-column comparison)
+     */
+    public String toSqlString( String table )
+    {
+        String op = getOperator();
+        String val = getValue();
+
+        if (Constants.IS.equals(op) || Constants.IS_NOT.equals(op)) {
+            if (val == null || !IS_KEYWORDS.contains(val.toLowerCase())) {
+                throw new SqlParseException("Invalid IS/IS NOT value: " + val);
+            }
+            return getColumn() + " " + op + " " + val + " ";
         }
-        // otherwise use the PreparedStatement '?'
-        else {
-            return getColumn() + " " + getOperator() + " ? ";
+
+        if (Constants.IN.equals(op) || Constants.NOT_IN.equals(op)) {
+            List<SqlUtil.InLiteral> literals = SqlUtil.parseInValues(val);
+            if (literals.isEmpty()) {
+                throw new SqlParseException("Empty IN value list");
+            }
+            String placeholders = String.join(",", Collections.nCopies(literals.size(), "?"));
+            return getColumn() + " " + op + " (" + placeholders + ") ";
         }
+
+        if (val != null && table != null) {
+            String colType = ReportsManagerImpl.getInstance().getColumnType(table, val);
+            if (colType != null) {
+                return getColumn() + " " + op + " " + val + " ";
+            }
+        }
+
+        return getColumn() + " " + op + " ? ";
     }
 
     public String toString()
@@ -146,102 +163,174 @@ public class SqlCondition implements Serializable, JSONString
         try {
             int i = 0;
             for ( SqlCondition condition : conditions ) {
-                    
-                // these operators are not supported with Statement
-                if ( !condition.getAutoFormatValue() ) {
+                String op = condition.getOperator();
+                String val = condition.getValue();
+
+                if (Constants.IS.equalsIgnoreCase(op) || Constants.IS_NOT.equalsIgnoreCase(op)) {
                     continue;
                 }
-                    
+
+                if (Constants.IN.equalsIgnoreCase(op) || Constants.NOT_IN.equalsIgnoreCase(op)) {
+                    List<SqlUtil.InLiteral> literals = SqlUtil.parseInValues(val);
+                    String columnType = ReportsManagerImpl.getInstance().getColumnType(table, condition.getColumn());
+                    if (columnType == null) {
+                        logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + table);
+                        continue;
+                    }
+                    for (SqlUtil.InLiteral literal : literals) {
+                        i++;
+                        bindInLiteral(statement, i, literal, columnType);
+                    }
+                    continue;
+                }
+
+                if (val != null) {
+                    String valColType = ReportsManagerImpl.getInstance().getColumnType(table, val);
+                    if (valColType != null) {
+                        continue;
+                    }
+                }
+
                 i++;
                 String columnType = ReportsManagerImpl.getInstance().getColumnType( table, condition.getColumn() );
-                String value = condition.getValue();
 
-                if ( value == null ) {
-                    logger.warn("Ignoring bad condition: Invalid value: " + value );
-                    throw new RuntimeException( "Invalid value: " + value );
+                if ( val == null ) {
+                    logger.warn("Invalid null value for column: " + condition.getColumn());
+                    throw new RuntimeException( "Invalid value: null" );
                 }
                 if ( columnType == null ) {
                     logger.warn("Ignoring unknown column " + condition.getColumn() + " in table " + table );
                     continue;
                 }
 
-                // count all "char(x)" as "char"
-                if (columnType.startsWith("char")) {
-                    columnType = "text";
-                }
-
-                switch (columnType) {
-                case "numeric":
-                case "integer":
-                case "int":
-                case "int2":
-                case "int4":
-                case "int8":
-                case "tinyint":
-                case "smallint":
-                case "mediumint":
-                case "bigint":
-                case "real":
-                case "float":
-                case "float4":
-                case "float8":
-                    if ("null".equalsIgnoreCase(value))
-                        statement.setNull(i, java.sql.Types.INTEGER);
-                    else {
-                        try {
-                            statement.setLong(i, Long.valueOf( value ));
-                        } catch (Exception e) {
-                            try {
-                                statement.setFloat(i, Float.valueOf( value ));
-                            } catch (Exception exc) {
-                                logger.warn("Failed to parse long",e);
-                                logger.warn("Failed to parse float",exc);
-                                throw new RuntimeException( "Invalid number: " + value );
-                            }
-                        }
-                    }
-                break;
-                
-                case "inet":
-                    if ("null".equalsIgnoreCase(value))
-                        statement.setNull(i, java.sql.Types.OTHER);
-                    else 
-                        statement.setObject(i, value, java.sql.Types.OTHER);
-                    break;
-
-                case "timestamp":
-                    if ("null".equalsIgnoreCase(value))
-                        statement.setNull(i, java.sql.Types.TIMESTAMP);
-                    else 
-                        statement.setObject(i, value, java.sql.Types.OTHER);
-                    break;
-                    
-                case "bool":
-                case "boolean":
-                    if ("null".equalsIgnoreCase(value))
-                        statement.setNull(i, java.sql.Types.BOOLEAN);
-                    else if ( value.toLowerCase().contains("true") || value.toLowerCase().contains("1") )
-                        statement.setBoolean(i, true);
-                    else
-                        statement.setBoolean(i, false);
-                    break;
-
-                case "bpchar":
-                case "character":
-                case "varchar":
-                case "text":
-                    if ("null".equalsIgnoreCase(value))
-                        statement.setNull(i, java.sql.Types.VARCHAR);
-                    else
-                        statement.setString(i, condition.getValue());
-                break;
-                default:
-                    logger.warn("Unknown column type: " + columnType);
-                    continue;
-                }
+                columnType = normalizeColumnType(columnType);
+                bindValue(statement, i, columnType, val);
             }
         } catch (Exception e ) {
             logger.warn( "Failed to set values in prepared statement.", e );
+            throw new RuntimeException( "Failed to set values in prepared statement.", e );
+        }
+    }
+
+    private static String normalizeColumnType( String columnType )
+    {
+        if (columnType != null && columnType.startsWith(Constants.CHAR_PREFIX)) {
+            return Constants.TEXT;
+        }
+        return columnType;
+    }
+
+    private static void bindInLiteral( PreparedStatement statement, int index, SqlUtil.InLiteral literal, String columnType ) throws Exception
+    {
+        columnType = normalizeColumnType(columnType);
+
+        switch (literal.type) {
+        case NUMBER:
+            switch (columnType) {
+            case Constants.INTEGER: case Constants.INT:
+            case Constants.INT2: case Constants.INT4:
+            case Constants.INT8: case Constants.TINYINT:
+            case Constants.SMALLINT: case Constants.MEDIUMINT:
+            case Constants.BIGINT:
+                statement.setLong(index, literal.numberValue.longValueExact());
+                break;
+            default:
+                statement.setBigDecimal(index, literal.numberValue);
+                break;
+            }
+            break;
+        case STRING:
+            statement.setString(index, literal.stringValue);
+            break;
+        }
+    }
+
+    private static void bindValue( PreparedStatement statement, int index, String columnType, String value ) throws Exception
+    {
+        if (Constants.NULL.equalsIgnoreCase(value)) {
+            bindNull(statement, index, columnType);
+            return;
+        }
+
+        switch (columnType) {
+        case Constants.NUMERIC:
+        case Constants.INTEGER: case Constants.INT:
+        case Constants.INT2: case Constants.INT4:
+        case Constants.INT8: case Constants.TINYINT:
+        case Constants.SMALLINT: case Constants.MEDIUMINT:
+        case Constants.BIGINT:
+        case Constants.REAL: case Constants.FLOAT:
+        case Constants.FLOAT4: case Constants.FLOAT8:
+            try {
+                statement.setLong(index, Long.valueOf( value ));
+            } catch (Exception e) {
+                try {
+                    statement.setFloat(index, Float.valueOf( value ));
+                } catch (Exception exc) {
+                    logger.warn("Failed to parse long", e);
+                    logger.warn("Failed to parse float", exc);
+                    throw new RuntimeException( "Invalid number: " + value );
+                }
+            }
+            break;
+
+        case Constants.INET:
+            statement.setObject(index, value, java.sql.Types.OTHER);
+            break;
+
+        case Constants.TIMESTAMP:
+            statement.setObject(index, value, java.sql.Types.OTHER);
+            break;
+
+        case Constants.BOOL:
+        case Constants.BOOLEAN:
+            if ( value.toLowerCase().contains(Constants.TRUE.toLowerCase()) || value.toLowerCase().contains("1") )
+                statement.setBoolean(index, true);
+            else
+                statement.setBoolean(index, false);
+            break;
+
+        case Constants.BPCHAR: case Constants.CHARACTER:
+        case Constants.VARCHAR: case Constants.TEXT:
+            statement.setString(index, value);
+            break;
+
+        default:
+            logger.warn("Unknown column type: " + columnType);
+            break;
+        }
+    }
+
+    private static void bindNull( PreparedStatement statement, int index, String columnType ) throws Exception
+    {
+        switch (columnType) {
+        case Constants.NUMERIC:
+        case Constants.INTEGER: case Constants.INT:
+        case Constants.INT2: case Constants.INT4:
+        case Constants.INT8: case Constants.TINYINT:
+        case Constants.SMALLINT: case Constants.MEDIUMINT:
+        case Constants.BIGINT: case Constants.REAL:
+        case Constants.FLOAT: case Constants.FLOAT4:
+        case Constants.FLOAT8:
+            statement.setNull(index, java.sql.Types.INTEGER);
+            break;
+        case Constants.INET:
+            statement.setNull(index, java.sql.Types.OTHER);
+            break;
+        case Constants.TIMESTAMP:
+            statement.setNull(index, java.sql.Types.TIMESTAMP);
+            break;
+        case Constants.BOOL:
+        case Constants.BOOLEAN:
+            statement.setNull(index, java.sql.Types.BOOLEAN);
+            break;
+        case Constants.BPCHAR: case Constants.CHARACTER:
+        case Constants.VARCHAR: case Constants.TEXT:
+            statement.setNull(index, java.sql.Types.VARCHAR);
+            break;
+        default:
+            statement.setNull(index, java.sql.Types.OTHER);
+            break;
         }
     }
 
@@ -249,9 +338,9 @@ public class SqlCondition implements Serializable, JSONString
     {
         if ( conditions == null )
             setPreparedStatementValues( statement, (SqlCondition[])null, table );
-        else 
+        else
             setPreparedStatementValues( statement, conditions.toArray( new SqlCondition[0] ), table );
         return;
     }
-    
+
 }

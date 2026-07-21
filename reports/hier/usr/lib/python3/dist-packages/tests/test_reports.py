@@ -215,7 +215,6 @@ Sql_field_condition_injects = overrides.get(
     "Sql_field_condition_injects", {
     "column": [{
         "javaClass": "com.untangle.app.reports.SqlCondition",
-        "autoFormatValue": False, 
         # "column": "bypassed is true; {inject};",
         "column": "bypassed is true {inject}",
         "operator": "is",
@@ -225,7 +224,6 @@ Sql_field_condition_injects = overrides.get(
     # The op field is handled in the SQLCondition object
     "value": [{
         "javaClass": "com.untangle.app.reports.SqlCondition",
-        "autoFormatValue": False, 
         "column": "bypassed",
         "operator": "is",
         # "value": "true group by c_client_addr; {inject}; ",
@@ -513,13 +511,12 @@ SQL_INJECT_REPORTENTRIES = overrides.get(
         "textColumns": None, 
         "category": "Network", 
         "conditions": [{
-            "autoFormatValue": False, 
-            "javaClass": "com.untangle.app.reports.SqlCondition", 
-            "column": "bypassed", 
-            "value": "true", 
-            "operator": "is", 
+            "javaClass": "com.untangle.app.reports.SqlCondition",
+            "column": "bypassed",
+            "value": "true",
+            "operator": "is",
             "table": None
-        }], 
+        }],
         "uniqueId": "network-mKTwRemgvD", 
         "textString": "", 
         "type": "EVENT_LIST", 
@@ -1711,6 +1708,123 @@ class ReportsTests(NGFWTestCase):
 
         function_name = sys._getframe().f_code.co_name
         sql_injection(test_email_address, "passwd", f"/tmp/{function_name}", "EVENT_LIST")
+        self._app.setSettings(original_settings)
+
+    def test_505_sql_injection_autoformat_bypass(self):
+        """
+        Verify that autoFormatValue:false with operator '=' does NOT allow
+        SQL injection. The value should be parameterized as a string literal,
+        not concatenated as raw SQL. (UNT-28 fix verification)
+        """
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))
+        self._app.setSettings(settings)
+
+        url = global_functions.get_http_url()
+        rpc_url = f"{url}/reports/JSON-RPC"
+
+        s = requests.Session()
+        s.post(
+            f"{url}/auth/login?url=/reports&amp;realm=Reports",
+            data=f"fragment=&username={test_email_address}&password=passwd",
+            verify=False
+        )
+
+        response = s.post(rpc_url, json={"id": 1, "nonce": "", "method": "system.getNonce", "params": []})
+        nonce = json.loads(response.text)["result"]
+
+        response = s.post(rpc_url, json={"id": 2, "nonce": nonce, "method": "ReportsContext.reportsManager", "params": []})
+        object_id = json.loads(response.text)["result"]["objectID"]
+
+        # Attempt SQL injection via autoFormatValue:false — should return 0 rows
+        sqli_entry = {
+            "javaClass": "com.untangle.app.reports.ReportEntry",
+            "uniqueId": "test-sqli-505",
+            "title": "sqli-test",
+            "category": "sqli-test",
+            "type": "EVENT_LIST",
+            "table": "sessions",
+            "defaultColumns": ["policy_id"],
+            "conditions": [{
+                "javaClass": "com.untangle.app.reports.SqlCondition",
+                "column": "policy_id",
+                "operator": "=",
+                "value": "policy_id AND 1=(SELECT 1)",
+                "autoFormatValue": False,
+            }],
+        }
+        response = s.post(rpc_url, json={
+            "id": 3, "nonce": nonce,
+            "method": f".obj#{object_id}.getDataForReportEntry",
+            "params": [sqli_entry, None, None, 1]
+        })
+        r = json.loads(response.text)
+        result = r.get("result")
+        rows = 0
+        if isinstance(result, dict) and "list" in result:
+            rows = len(result["list"])
+        elif isinstance(result, list):
+            rows = len(result)
+
+        self._app.setSettings(original_settings)
+        assert rows == 0, f"SQL injection via autoFormatValue:false succeeded — got {rows} rows (expected 0)"
+
+    def test_506_autoformat_boolean_literal_preserved(self):
+        """
+        Non-regression: verify that IS operator with boolean literal TRUE
+        still works correctly after the autoFormatValue fix. (UNT-28)
+        """
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email_address = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email_address, access=True))
+        self._app.setSettings(settings)
+
+        url = global_functions.get_http_url()
+        rpc_url = f"{url}/reports/JSON-RPC"
+
+        s = requests.Session()
+        s.post(
+            f"{url}/auth/login?url=/reports&amp;realm=Reports",
+            data=f"fragment=&username={test_email_address}&password=passwd",
+            verify=False
+        )
+
+        response = s.post(rpc_url, json={"id": 1, "nonce": "", "method": "system.getNonce", "params": []})
+        nonce = json.loads(response.text)["result"]
+
+        response = s.post(rpc_url, json={"id": 2, "nonce": nonce, "method": "ReportsContext.reportsManager", "params": []})
+        object_id = json.loads(response.text)["result"]["objectID"]
+
+        # IS TRUE condition — should work correctly and not error
+        bool_entry = {
+            "javaClass": "com.untangle.app.reports.ReportEntry",
+            "uniqueId": "test-bool-506",
+            "title": "bool-test",
+            "category": "bool-test",
+            "type": "EVENT_LIST",
+            "table": "sessions",
+            "defaultColumns": ["policy_id"],
+            "conditions": [{
+                "javaClass": "com.untangle.app.reports.SqlCondition",
+                "column": "bypassed",
+                "operator": "is",
+                "value": "TRUE",
+            }],
+        }
+        response = s.post(rpc_url, json={
+            "id": 3, "nonce": nonce,
+            "method": f".obj#{object_id}.getDataForReportEntry",
+            "params": [bool_entry, None, None, 1]
+        })
+        r = json.loads(response.text)
+        # Should not have an error — the IS TRUE condition must be accepted
+        assert "error" not in r or r["error"] is None, f"IS TRUE condition failed after fix: {r.get('error')}"
+
         self._app.setSettings(original_settings)
 
     def test_600_session_minutes_referral(self):
