@@ -43,13 +43,19 @@ public class ExecManagerImpl implements ExecManager
     private final Logger logger = LogManager.getLogger(getClass());
 
     /**
-     * Shell metacharacters that make exec(String) unsafe. Any command containing
-     * one of these is refused by the filter (see exec(cmd, rateLimit, safe, ...)).
+     * Shell metacharacters that flag a command as suspicious in exec(String).
+     * Dual-mode policy applied by exec(cmd, rateLimit, safe, ...):
+     *   - safe=true  (execSafe): hard-block. Log at WARN, return ExecManagerResult(-1, "").
+     *   - safe=false (exec / execOutput / execResult): log at ERROR, then RUN
+     *     the command anyway.
      *
      * NGFW-15855 / UNT-50: the filter is a defense-in-depth backstop; the real
      * defense is migrating callers to execCommand(exe, argsList) argv form per
-     * ngfw-rce-architecture.md L3. Do NOT introduce new exec(String) callers
-     * whose command string embeds user-controlled input.
+     * ngfw-rce-architecture.md L3. The safe=false path was previously hard-block
+     * as well, but that caused release-gate regressions (NGFW-15885 reopen) when
+     * legit callers embedded metachars inside quoted args (e.g. find with
+     * -regex '...\|...'). Migration to execCommand continues as normal-priority
+     * work, not release-gate work.
      *
      * "||" is functionally redundant with "|" for substring matching (any
      * string containing "||" also contains "|"), kept in the list for source
@@ -176,8 +182,11 @@ public class ExecManagerImpl implements ExecManager
     }
 
     /**
-     * Returns true if cmd contains any shell metacharacter that would make
-     * exec(String) unsafe. See SUSPICIOUS_METAS for the current list.
+     * Returns true if cmd contains any shell metacharacter listed in
+     * SUSPICIOUS_METAS. Flags the command for the dual-mode policy in
+     * exec(cmd, rateLimit, safe, ...): hard-block when safe=true (execSafe),
+     * log ERROR and run when safe=false. A true return does NOT by itself
+     * refuse the call.
      *
      * @param cmd
      *        The command string to inspect
@@ -252,19 +261,22 @@ public class ExecManagerImpl implements ExecManager
         cmd = cmd.replace("\n", "");
         cmd = cmd.replace("\r", "");
 
-        // NGFW-15855 / UNT-50: always block on suspicious metacharacters, regardless
-        // of the `safe` flag. Previously safe=false (the default for exec/execOutput/
-        // execResult) logged and continued, providing zero protection. The `safe`
-        // flag now only controls log severity so the two paths can be triaged
-        // separately during the ongoing migration to execCommand(exe, argsList).
-        // See ngfw-rce-architecture.md L3.
+        // NGFW-15855 / UNT-50 (revised): dual-mode filter.
+        //   - safe=true  (execSafe): hard-block, return -1. Explicit safe channel
+        //                keeps its contract; no in-tree caller trips it today.
+        //   - safe=false (exec/execOutput/execResult): log ERROR and RUN the
+        //                command anyway. Reverts the NGFW-15855 hard-block that
+        //                caused NGFW-15885 release-gate regressions when legit
+        //                callers embedded metachars inside quoted args (e.g. find
+        //                with -regex '...\|...'). See ngfw-rce-architecture.md L3
+        //                for the migration path to execCommand(exe, argsList).
         if (containsSuspicious(cmd)) {
             if (safe) {
                 logger.warn("Refusing suspicious command: " + cmd);
-            } else {
-                logger.error("Refusing suspicious command (caller must migrate to execCommand(exe, args) or fix template): " + cmd);
+                return new ExecManagerResult(-1, "");
             }
-            return new ExecManagerResult(-1, "");
+            logger.error("Suspicious metachar in command (executing anyway; caller should migrate to execCommand(exe, args)): " + cmd);
+            // fall through - execute the command
         }
 
         try {
