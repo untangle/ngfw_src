@@ -5,7 +5,6 @@ package com.untangle.app.web_filter.generic;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.List;
 
 import com.untangle.app.web_filter.WebFilterRule;
 import com.untangle.app.web_filter.WebFilterSettings;
