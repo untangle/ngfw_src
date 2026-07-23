@@ -3,8 +3,12 @@
  */
 package com.untangle.uvm.event;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.uvm.event.generic.EventRuleActionGeneric;
+import com.untangle.uvm.event.generic.EventRuleConditionGeneric;
+import com.untangle.uvm.event.generic.EventRuleGeneric;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -135,5 +139,67 @@ public class TriggerRule extends EventRule
         }
 
         return globMatcher.isMatch( t.getName() );
+    }
+
+    /**
+     * Transforms a list of TriggerRule objects into their generic EventRuleGeneric representation.
+     * Used for get api calls
+     * @param triggerRulesList LinkedList<TriggerRule>
+     * @return LinkedList<EventRuleGeneric>
+     */
+    public static LinkedList<EventRuleGeneric> transformTriggerRulesToGeneric(LinkedList<TriggerRule> triggerRulesList) {
+        LinkedList<EventRuleGeneric> triggerRulesGenList = new LinkedList<>();
+        for (TriggerRule rule : triggerRulesList) {
+            EventRuleGeneric triggerRuleGen = TriggerRule.getTriggerRuleGeneric(rule);
+            triggerRulesGenList.add(triggerRuleGen);
+        }
+        return triggerRulesGenList;
+    }
+
+    /**
+     * Transforms a TriggerRule object into its generic EventRuleGeneric representation.
+     * @param rule TriggerRule
+     * @return TriggerRule
+     */
+    private static EventRuleGeneric getTriggerRuleGeneric(TriggerRule rule) {
+        // Transform enabled and ruleId
+        boolean enabled = Boolean.TRUE.equals(rule.getEnabled());
+        String ruleId = rule.getRuleId() != null ? String.valueOf(rule.getRuleId()) : null;
+
+        // Transform Action
+        EventRuleActionGeneric ruleActionGen = new EventRuleActionGeneric();
+        ruleActionGen.setType(EventRuleActionGeneric.Type.valueOf(rule.getAction().name()));
+        ruleActionGen.setTagTarget(rule.getTagTarget());
+        ruleActionGen.setTagName(rule.getTagName());
+        ruleActionGen.setTagLifetimeSec(rule.getTagLifetimeSec());
+
+        // Transform Conditions
+        LinkedList<EventRuleConditionGeneric> ruleConditionGenList = new LinkedList<>();
+        boolean first = true;
+        String className = null;
+        for (EventRuleCondition ruleCondition : rule.getConditions()) {
+            if (first) {
+                className = ruleCondition.getFieldValue();
+                first = false;
+            } else {
+                EventRuleConditionGeneric ruleConditionGen = new EventRuleConditionGeneric(ruleCondition.getComparator(), ruleCondition.getField(), ruleCondition.getFieldValue());
+                ruleConditionGenList.add(ruleConditionGen);
+            }
+        }
+
+        // Create Generic Rule
+        EventRuleGeneric triggerRulesGen = new EventRuleGeneric(enabled, rule.getDescription(), ruleId);
+        // Set Actions
+        triggerRulesGen.setLog(rule.getLog());
+        triggerRulesGen.setAction(ruleActionGen);
+        // Set Conditions
+        triggerRulesGen.setClassName(className);
+        triggerRulesGen.setThresholdEnabled(rule.getThresholdEnabled());
+        triggerRulesGen.setThresholdGroupingField(rule.getThresholdGroupingField());
+        triggerRulesGen.setThresholdLimit(rule.getThresholdLimit());
+        triggerRulesGen.setThresholdTimeframeSec(rule.getThresholdTimeframeSec());
+        triggerRulesGen.setConditions(ruleConditionGenList);
+
+        return triggerRulesGen;
     }
 }

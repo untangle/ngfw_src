@@ -30,9 +30,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
     <meta content="IE=7.0000" http-equiv="X-UA-Compatible"/>
     <link rel="icon" type="image/png" href="/images/block-favicon.png"/>
-    <link href="/ext6.2/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <title><c:out value="${pageTitle}"/></title>
-    <uvm:skin src="user.css" name="${skinName}"/>
+    <link type="text/css" rel="stylesheet" href="/skins/common/css/user.css" />
 
     <uvm:inlineScript>
       <![CDATA[
@@ -52,22 +51,22 @@
 
   <body class="blockpage">
     <div class="block">
-      <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt="Logo" class="company-logo" style="max-width: 300px; max-height: 48px;"/></a>
+      <a href="${companyUrl}"><img src="/images/BrandingLogo.png" alt="Logo" class="company-logo"/></a>
       <hr/>
 
       <h1><c:out value="${title}" escapeXml="false"/></h1>
-      <table style="margin: 0 20px; text-align: left;">
+      <table class="bp-details-table">
         <tr>
-          <td><i class="fa fa-ban" style="font-size: 64px; color: red; vertical-align: top;"></i></td>
-          <td><p style="font-weight: bold;">${description}</p><p style="font-size: 12px; color: #CCC;">${contact}</p></td>
+          <td><span class="bp-icon bp-icon-block" aria-hidden="true"></span></td>
+          <td><p class="bp-description">${description}</p><p class="bp-contact">${contact}</p></td>
         </tr>
       </table>
 
       <hr/>
 
-      <table style="margin: 0 20px; text-align: left;">
+      <table class="bp-details-table">
         <tr>
-          <td><i class="fa fa-link" style="font-size: 64px; color: #999; vertical-align: middle;"></i></td>
+          <td><span class="bp-icon bp-icon-link" aria-hidden="true"></span></td>
           <td>
             <p><strong><uvm:i18n>Host:</uvm:i18n></strong> <c:out value=" ${bd.formattedHost}"/></p>
             <p><strong><uvm:i18n>URL:</uvm:i18n></strong> <c:out value=" ${bd.formattedUrl}"/></p>

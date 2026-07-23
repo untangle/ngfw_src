@@ -89,6 +89,22 @@ public class ApplicationControlLiteApp extends AppBase
     }
 
     /**
+     * getSettings gets the current settings in v2 (Generic) format
+     * @return ApplicationControlLiteSettings
+     */
+    public ApplicationControlLiteSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
+     * Set ApplicationControlLite Settings from generic version payload
+     * @param newSettings ApplicationControlLiteSettings
+     */
+    public void setSettingsV2(final ApplicationControlLiteSettings newSettings) {
+        this.setSettings( newSettings );
+    }
+
+    /**
      * Get the pipeline connectors for this ad blocker
      * @return the pipelineconnectors array
      */

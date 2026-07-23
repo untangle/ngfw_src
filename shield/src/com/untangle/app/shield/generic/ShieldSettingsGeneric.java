@@ -39,7 +39,7 @@ public class ShieldSettingsGeneric implements Serializable, JSONString {
      * @param shieldSettings ShieldSettings
      * @return ShieldSettings
      */
-    public ShieldSettings transformGenericToQosSettings(ShieldSettings shieldSettings) {
+    public ShieldSettings transformGenericToShieldSettings(ShieldSettings shieldSettings) {
         if (shieldSettings == null)
             shieldSettings = new ShieldSettings();
 

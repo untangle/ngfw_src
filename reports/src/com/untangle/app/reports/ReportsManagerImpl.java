@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +157,14 @@ public class ReportsManagerImpl implements ReportsManager
         Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
 
         return allReportEntries;
+    }
+
+    /** 
+     * Get all report entries in v2 format.
+     * @return List<ReportEntry> List of all ReportEntry objects.
+     */
+    public List<ReportEntry> getReportEntriesV2() {
+        return getReportEntries();
     }
 
     /** 
@@ -459,7 +468,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
         PreparedStatement statement = null;
         try{
-            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType);
+            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType, limit );
         } catch ( Exception e) {
             logger.info("getDataForReportEntry: "+ e);
             return null;
@@ -502,6 +511,418 @@ public class ReportsManagerImpl implements ReportsManager
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
     {
         return getDataForReportEntry( entry, startDate, endDate, null, null, null, limit );
+    }
+
+    /**
+     * Executes a report data query and returns a type-aware chart payload.
+     *
+     * @param entry
+     *  ReportEntry to query.
+     * @param startDate
+     *  Start date of query.
+     * @param endDate
+     *  End date of query.
+     * @param extraSelects
+     *  Additional SELECT expressions, or null.
+     * @param extraConditions
+     *  Additional SQL conditions, or null.
+     * @param fromType
+     *  Table source override; if null the entry's own table is used.
+     * @param limit
+     *  Maximum number of results; -1 for unlimited.
+     * @return
+     *  Type-aware chart payload as a JSONObject.
+     */
+    public JSONObject getDataForReportEntryV2( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit )
+    {
+        List<JSONObject> rows = getDataForReportEntry( entry, startDate, endDate, extraSelects, extraConditions, fromType, limit );
+        ReportEntry.ReportEntryType type = entry.getType();
+
+        switch ( type ) {
+            case TIME_GRAPH:
+            case TIME_GRAPH_DYNAMIC:
+            case PIE_GRAPH:
+                return buildChartData( entry, rows );
+            case TEXT:
+                if ( rows != null && !rows.isEmpty() ) {
+                    return buildTextSubstitution( entry, rows.get( 0 ) );
+                }
+                JSONObject empty = new JSONObject();
+                try { empty.put( "text", "" ); } catch ( Exception ignored ) {}
+                return empty;
+            case EVENT_LIST:
+                return buildEventListData( entry, rows );
+            default:
+                JSONObject result = new JSONObject();
+                JSONArray list = new JSONArray();
+                if ( rows != null ) for ( JSONObject r : rows ) list.put( r );
+                try { result.put( "list", list ); } catch ( Exception e ) { logger.warn( "getDataForReportEntryV2: list wrap failed", e ); }
+                return result;
+        }
+    }
+
+    /**
+     * Routes chart-type entries to the appropriate series/slice builder.
+     *
+     * @param entry
+     *  Report entry describing type and query parameters.
+     * @param rows
+     *  Raw result rows returned by the SQL query.
+     * @return
+     *  JSONObject whose shape depends on entry type.
+     */
+    private JSONObject buildChartData( ReportEntry entry, List<JSONObject> rows )
+    {
+        try {
+            switch ( entry.getType() ) {
+                case TIME_GRAPH:         return buildTimeGraphSeries( entry, rows );
+                case TIME_GRAPH_DYNAMIC: return buildTimeGraphDynamicSeries( entry, rows );
+                case PIE_GRAPH:          return buildPieGraphSlices( entry, rows );
+                default:
+                    logger.warn( "buildChartData: unexpected type " + entry.getType() );
+                    JSONObject fb = new JSONObject();
+                    fb.put( "list", new JSONArray() );
+                    return fb;
+            }
+        } catch ( Exception e ) {
+            logger.warn( "buildChartData failed for: " + entry.getTitle(), e );
+            JSONObject err = new JSONObject();
+            try { err.put( "list", new JSONArray() ); } catch ( Exception ignored ) {}
+            return err;
+        }
+    }
+
+    /**
+     * Wraps raw EVENT_LIST rows in a JSON list for the Vue path only.
+     * Converts java.sql.Timestamp values to plain long ms so jabsorb does not
+     * re-wrap them as { javaClass, time } objects on the wire.
+     *
+     * @param entry
+     *  Report entry describing the EVENT_LIST query.
+     * @param rows
+     *  Raw result rows returned by the SQL query.
+     * @return
+     *  JSONObject with a "list" array of timestamp-normalized rows.
+     */
+    private JSONObject buildEventListData( ReportEntry entry, List<JSONObject> rows )
+    {
+        JSONObject result = new JSONObject();
+        JSONArray list = new JSONArray();
+        if ( rows != null ) {
+            for ( JSONObject row : rows )
+                list.put( normalizeTimestampsInRow( row ) );
+        }
+        try { result.put( "list", list ); } catch ( Exception e ) {
+            logger.warn( "buildEventListData: list wrap failed", e );
+        }
+        return result;
+    }
+
+    /**
+     * Replaces java.sql.Timestamp and java.util.Date values in a row JSONObject
+     * with their getTime() long (epoch ms), preventing jabsorb from wrapping them
+     * as { javaClass, time } objects at serialization time.
+     *
+     * @param row
+     *  Single result row to normalize.
+     * @return
+     *  New JSONObject with timestamp fields replaced by epoch millisecond longs.
+     */
+    private JSONObject normalizeTimestampsInRow( JSONObject row )
+    {
+        if ( row == null ) return new JSONObject();
+        String[] names = JSONObject.getNames( row );
+        if ( names == null ) return row;
+        JSONObject out = new JSONObject();
+        for ( String key : names ) {
+            Object val = row.opt( key );
+            try {
+                if ( val instanceof java.sql.Timestamp )
+                    out.put( key, ( (java.sql.Timestamp) val ).getTime() );
+                else if ( val instanceof java.util.Date )
+                    out.put( key, ( (java.util.Date) val ).getTime() );
+                else
+                    out.put( key, val );
+            } catch ( Exception ignored ) {}
+        }
+        return out;
+    }
+
+    /**
+     * Builds pre-pivoted time-series data for TIME_GRAPH entries.
+     * The alias is the last whitespace-separated token of each timeDataColumns SQL expression
+     * (e.g. "count(*) as total" -> "total") and is used as both the series key and label.
+     *
+     * @param entry
+     *  Report entry providing timeDataColumns configuration.
+     * @param rows
+     *  Raw result rows containing time_trunc and value columns.
+     * @return
+     *  JSONObject with a "series" array keyed by column alias.
+     * @throws Exception
+     *  If JSON construction fails.
+     */
+    private JSONObject buildTimeGraphSeries( ReportEntry entry, List<JSONObject> rows ) throws Exception
+    {
+        String[] timeDataColumns = entry.getTimeDataColumns();
+
+        String[] aliases = new String[ timeDataColumns.length ];
+        for ( int i = 0; i < timeDataColumns.length; i++ ) {
+            String[] parts = timeDataColumns[ i ].trim().split( "\\s+" );
+            aliases[ i ] = parts[ parts.length - 1 ];
+        }
+
+        Map<String, JSONObject> seriesMap = new LinkedHashMap<>();
+        for ( String alias : aliases ) {
+            JSONObject s = new JSONObject();
+            s.put( "key",   alias );
+            s.put( "label", alias );
+            s.put( "data",  new JSONArray() );
+            seriesMap.put( alias, s );
+        }
+
+        if ( rows != null ) {
+            for ( JSONObject row : rows ) {
+                long ms = extractTimeTruncMs( row );
+                for ( String alias : aliases ) {
+                    JSONObject s = seriesMap.get( alias );
+                    if ( s == null ) continue;
+                    Object val = row.opt( alias );
+                    double dval = ( val instanceof Number ) ? ((Number) val).doubleValue() : 0.0;
+                    JSONArray point = new JSONArray();
+                    point.put( ms );
+                    point.put( dval );
+                    s.getJSONArray( "data" ).put( point );
+                }
+            }
+        }
+
+        JSONArray seriesArray = new JSONArray();
+        for ( JSONObject s : seriesMap.values() ) seriesArray.put( s );
+
+        JSONObject result = new JSONObject();
+        result.put( "series", seriesArray );
+        return result;
+    }
+
+    /**
+     * Builds time-series data for TIME_GRAPH_DYNAMIC entries.
+     * Column keys are discovered from the result rows (every key except time_trunc)
+     * and resolved to display names via buildColumnNameMap.
+     *
+     * @param entry
+     *  Report entry providing column resolution hints.
+     * @param rows
+     *  Raw result rows containing time_trunc and dynamic value columns.
+     * @return
+     *  JSONObject with a "series" array keyed by resolved display name.
+     * @throws Exception
+     *  If JSON construction fails.
+     */
+    private JSONObject buildTimeGraphDynamicSeries( ReportEntry entry, List<JSONObject> rows ) throws Exception
+    {
+        Map<String, String> nameMap = buildColumnNameMap( entry );
+        Map<String, JSONObject> seriesMap = new LinkedHashMap<>();
+
+        if ( rows != null ) {
+            for ( JSONObject row : rows ) {
+                long ms = extractTimeTruncMs( row );
+                Iterator<String> keys = row.keys();
+                while ( keys.hasNext() ) {
+                    String key = keys.next();
+                    if ( "time_trunc".equals( key ) ) continue;
+
+                    if ( !seriesMap.containsKey( key ) ) {
+                        String label = nameMap.getOrDefault( key, key );
+                        JSONObject s = new JSONObject();
+                        s.put( "key",   key );
+                        s.put( "label", label );
+                        s.put( "data",  new JSONArray() );
+                        seriesMap.put( key, s );
+                    }
+
+                    Object val = row.opt( key );
+                    double dval = ( val instanceof Number ) ? ((Number) val).doubleValue() : 0.0;
+                    JSONArray point = new JSONArray();
+                    point.put( ms );
+                    point.put( dval );
+                    seriesMap.get( key ).getJSONArray( "data" ).put( point );
+                }
+            }
+        }
+
+        JSONArray seriesArray = new JSONArray();
+        for ( JSONObject s : seriesMap.values() ) seriesArray.put( s );
+
+        JSONObject result = new JSONObject();
+        result.put( "series", seriesArray );
+        return result;
+    }
+
+    /**
+     * Builds slice data for PIE_GRAPH entries.
+     * Rows beyond pieNumSlices are aggregated into a single "Others" slice.
+     * Rows must be ordered by value descending (the SQL query guarantees this).
+     *
+     * @param entry
+     *  Report entry providing pieGroupColumn and pieNumSlices.
+     * @param rows
+     *  Result rows ordered by value descending.
+     * @return
+     *  JSONObject with a "slices" array of {name, value} objects.
+     * @throws Exception
+     *  If JSON construction fails.
+     */
+    private JSONObject buildPieGraphSlices( ReportEntry entry, List<JSONObject> rows ) throws Exception
+    {
+        Map<String, String> nameMap = buildColumnNameMap( entry );
+        int numSlices    = entry.getPieNumSlices() != null ? entry.getPieNumSlices() : 10;
+        String groupCol  = entry.getPieGroupColumn();
+
+        JSONArray slicesArray = new JSONArray();
+        double othersTotal    = 0.0;
+        boolean hasOthers     = false;
+
+        if ( rows != null ) {
+            for ( int i = 0; i < rows.size(); i++ ) {
+                JSONObject row   = rows.get( i );
+                String rawKey    = row.optString( groupCol, "unknown" );
+                double value     = row.optDouble( "value", 0.0 );
+
+                if ( i < numSlices ) {
+                    String displayName = nameMap.getOrDefault( rawKey, rawKey );
+                    JSONObject slice   = new JSONObject();
+                    slice.put( "name",  displayName );
+                    slice.put( "value", value );
+                    slicesArray.put( slice );
+                } else {
+                    othersTotal += value;
+                    hasOthers    = true;
+                }
+            }
+        }
+
+        if ( hasOthers ) {
+            JSONObject others = new JSONObject();
+            others.put( "name",     "Others" );
+            others.put( "value",    othersTotal );
+            others.put( "isOthers", true );
+            slicesArray.put( others );
+        }
+
+        JSONObject result = new JSONObject();
+        result.put( "slices", slicesArray );
+        return result;
+    }
+
+    /**
+     * Builds a raw-key -> display-name map for well-known group columns.
+     * Handles interface_id (resolves to "eth0  [1]") and policy_id (resolves to "Default  [1]").
+     * Returns an empty map for any other column so callers fall back to the raw value.
+     *
+     * @param entry
+     *  Report entry whose group column determines the lookup type.
+     * @return
+     *  Map from raw key value to human-readable display name, or an empty map.
+     */
+    private Map<String, String> buildColumnNameMap( ReportEntry entry )
+    {
+        Map<String, String> nameMap = new HashMap<>();
+
+        String groupColumn = null;
+        switch ( entry.getType() ) {
+            case PIE_GRAPH:          groupColumn = entry.getPieGroupColumn();       break;
+            case TIME_GRAPH_DYNAMIC: groupColumn = entry.getTimeDataDynamicColumn(); break;
+            default: break;
+        }
+
+        if ( "interface_id".equals( groupColumn ) ) {
+            List<JSONObject> interfaces = getInterfacesInfo();
+            for ( JSONObject intf : interfaces ) {
+                try {
+                    String id   = String.valueOf( intf.getInt( "interfaceId" ) );
+                    String name = intf.getString( "name" ) + "  [" + id + "]";
+                    nameMap.put( id, name );
+                } catch ( Exception e ) {
+                    logger.warn( "buildColumnNameMap: interface entry error", e );
+                }
+            }
+        } else if ( "policy_id".equals( groupColumn ) ) {
+            ArrayList<JSONObject> policies = getPoliciesInfo();
+            if ( policies != null ) {
+                for ( JSONObject policy : policies ) {
+                    try {
+                        String id   = String.valueOf( policy.getInt( "policyId" ) );
+                        String name = policy.getString( "name" ) + "  [" + id + "]";
+                        nameMap.put( id, name );
+                    } catch ( Exception e ) {
+                        logger.warn( "buildColumnNameMap: policy entry error", e );
+                    }
+                }
+            }
+        }
+
+        return nameMap;
+    }
+
+    /**
+     * Substitutes {0}, {1}, ... placeholders in entry.textString with values from the first
+     * result row. Each alias is the last whitespace-separated token of the textColumns SQL
+     * expression (e.g. "count(*) as sessions" -> alias "sessions" fills placeholder {i}).
+     *
+     * @param entry
+     *  TEXT report entry providing textString and textColumns.
+     * @param row
+     *  First (and typically only) result row.
+     * @return
+     *  JSONObject with a single "text" key containing the substituted string.
+     */
+    private JSONObject buildTextSubstitution( ReportEntry entry, JSONObject row )
+    {
+        String text = entry.getTextString() != null ? entry.getTextString() : "";
+        String[] textColumns = entry.getTextColumns();
+
+        if ( textColumns != null ) {
+            for ( int i = 0; i < textColumns.length; i++ ) {
+                String[] parts = textColumns[i].trim().split( "\\s+" );
+                String alias = parts[ parts.length - 1 ];
+                Object val = row.opt( alias );
+                String replacement;
+                if ( val instanceof Number ) {
+                    double d = ((Number) val).doubleValue();
+                    replacement = ( d == Math.floor( d ) && !Double.isInfinite( d ) )
+                        ? String.valueOf( (long) d )
+                        : val.toString();
+                } else {
+                    replacement = ( val != null ) ? val.toString() : "0";
+                }
+                text = text.replace( "{" + i + "}", replacement );
+            }
+        }
+
+        JSONObject result = new JSONObject();
+        try { result.put( "text", text ); } catch ( Exception e ) {
+            logger.warn( "buildTextSubstitution: failed to build result", e );
+        }
+        return result;
+    }
+
+    /**
+     * Extracts time_trunc as epoch milliseconds. JDBC / jabsorb can produce a Timestamp,
+     * Long, or Integer depending on the driver and serialisation path.
+     *
+     * @param row
+     *  Single result row containing a "time_trunc" field.
+     * @return
+     *  time_trunc value as epoch milliseconds, or 0 if absent or unknown type.
+     */
+    private long extractTimeTruncMs( JSONObject row )
+    {
+        Object t = row.opt( "time_trunc" );
+        if ( t instanceof java.sql.Timestamp ) return ((java.sql.Timestamp) t).getTime();
+        if ( t instanceof Long )               return (Long) t;
+        if ( t instanceof Integer )            return ((Integer) t).longValue();
+        return 0L;
     }
 
     /**
