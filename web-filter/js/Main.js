@@ -1,42 +1,35 @@
 Ext.define('Ung.apps.webfilter.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-web-filter',
-    controller: 'app-web-filter',
 
     viewModel: {
-        stores: {
-            categories: {
-                data: '{settings.categories.list}',
-                groupField: 'category'
-            },
-            categoriesNames: {
-                data: '{settings.categories.list}',
-                sorters: [{
-                    property: 'name',
-                    direction: 'ASC'
-                }],
-            },
-            searchTerms:   { data: '{settings.searchTerms.list}' },
-            blockedUrls:   { data: '{settings.blockedUrls.list}' },
-            passedUrls:    { data: '{settings.passedUrls.list}' },
-            passedClients: { data: '{settings.passedClients.list}' },
-            filterRules:   { data: '{settings.filterRules.list}' }
-        },
         data: {
-            isAddAction: false 
+            title: 'Web Filter'.t(),
+            iconName: 'web-filter',
+            vueMigrated: true
+        },
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var vm = panel.getViewModel();
+            var policyId = vm.get('policyId');
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/apps/' + policyId + '/web-filter', false);
+
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'web-filter',
+                enableRemoveHandler: true
+            });
+        },
+
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
         }
     },
 
     items: [
-        { xtype: 'app-web-filter-status' },
-        { xtype: 'app-web-filter-categories' },
-        { xtype: 'app-web-filter-searchterms' },
-        { xtype: 'app-web-filter-sitelookup' },
-        { xtype: 'app-web-filter-blocksites' },
-        { xtype: 'app-web-filter-passsites' },
-        { xtype: 'app-web-filter-passclients' },
-        { xtype: 'app-web-filter-rules' },
-        { xtype: 'app-web-filter-advanced' }
+        Field.iframeHolder
     ]
 
 });
