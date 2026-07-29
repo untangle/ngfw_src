@@ -82,6 +82,17 @@ public interface ReportsManager
     void saveReportEntry( ReportEntry entry );
 
     /**
+     * Import report entries into the system.
+     * Supports both replacing all existing entries and appending to them.
+     *
+     * @param entries
+     *  Array of ReportEntry objects to import.
+     * @param replaceAll
+     *  If true, replaces all existing entries. If false, appends to existing entries.
+     */
+    void importReportEntriesV2( ReportEntry[] entries, boolean replaceAll );
+
+    /**
      * Removes a report entry
      * Only if report entry is custom (not ReadOnly).
      *

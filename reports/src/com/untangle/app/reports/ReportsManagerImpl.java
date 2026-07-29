@@ -397,7 +397,49 @@ public class ReportsManagerImpl implements ReportsManager
         return;
     }
 
-    /** 
+    /**
+     * Import report entries - replaces all or appends to existing entries.
+     *
+     * For replaceAll, directly sets the entries on the settings object
+     * (matching ExtJS behavior - does not re-add system entries from disk).
+     * For append, delegates to setReportEntries which merges system entries.
+     *
+     * @param entries
+     *  Array of ReportEntry objects to import.
+     * @param replaceAll
+     *  If true, replaces all entries with only the imported ones.
+     *  If false, appends to existing entries.
+     */
+    public void importReportEntriesV2( ReportEntry[] entries, boolean replaceAll )
+    {
+        if ( app == null ) {
+            throw new RuntimeException("Reports app not found");
+        }
+
+        if ( entries == null || entries.length == 0 ) {
+            throw new RuntimeException("No report entries to import");
+        }
+
+        for ( ReportEntry entry : entries ) {
+            if ( entry.getUniqueId() == null || entry.getUniqueId().isEmpty() ) {
+                throw new RuntimeException("Invalid Entry: missing uniqueId for entry titled '" + entry.getTitle() + "'");
+            }
+        }
+
+        LinkedList<ReportEntry> entryList = new LinkedList<>( Arrays.asList( entries ) );
+
+        if ( replaceAll ) {
+            ReportsSettings settings = app.getSettings();
+            settings.setReportEntries( entryList );
+            app.setSettings( settings, true );
+        } else {
+            List<ReportEntry> existingEntries = getReportEntries();
+            existingEntries.addAll( entryList );
+            setReportEntries( existingEntries );
+        }
+    }
+
+    /**
      * Remove the specific report entry from the entries set.
      * 
      * @param entry
