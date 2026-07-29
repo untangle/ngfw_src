@@ -38,36 +38,49 @@ public class ReportEntry implements Serializable, JSONString
     static {
         Injections = new ArrayList<Pattern>();
         // Semi-colon
-        Injections.add(Pattern.compile(".*;.*"));
+        Injections.add(Pattern.compile(".*;.*", Pattern.DOTALL));
         // Comment (dash)
-        Injections.add(Pattern.compile(".*--.*"));
+        Injections.add(Pattern.compile(".*--.*", Pattern.DOTALL));
         // Comment (slash)
-        Injections.add(Pattern.compile(".*\\/\\*.*"));
+        Injections.add(Pattern.compile(".*\\/\\*.*", Pattern.DOTALL));
         // Unmatched quotes
-        Injections.add(Pattern.compile("^([^\']*?)(\')([^\']*?)$"));
+        Injections.add(Pattern.compile("^([^\']*?)(\')([^\']*?)$", Pattern.DOTALL));
         // UNION
-        Injections.add(Pattern.compile("(?i).*UNION.*"));
-        // Character casting
-        Injections.add(Pattern.compile("(?i).*chr(\\(|%28).*"));
+        Injections.add(Pattern.compile(".*UNION.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        // Character casting (word-boundary to block double-quoted bypass like "chr"(...))
+        Injections.add(Pattern.compile(".*\\bchr\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
         // System catalog access
-        Injections.add(Pattern.compile("(?i).*from\\s+pg_.*"));
+        Injections.add(Pattern.compile(".*from\\s+pg_.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
         // Always true
-        Injections.add(Pattern.compile("(?i).*OR\\s+(['\\w]+)=\\1.*"));
-        // patterns for classical SQL injection 1=1 , 2=2 with ON, OR, AND 
-        Injections.add(Pattern.compile(".*\\bOR\\b.*\\b\\d+=\\d+\\b.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*'\\s*OR\\s*'\\d+'=\\d+\\s*--.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*\\bON\\b\\s*\\d+\\s*=\\s*\\d+.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*\\bAND\\b.*\\b\\d+=\\d+\\b.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*UNION.*SELECT.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*EXEC\\s+.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*INSERT\\s+INTO.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*DROP\\s+TABLE.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*\\bUPDATE\\b.*\\bSET\\b.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*\\bDELETE\\b.*\\bFROM\\b.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*\\bCREATE\\b.*\\bTABLE\\b.*", Pattern.CASE_INSENSITIVE));
-        Injections.add(Pattern.compile(".*\\bALTER\\b.*\\bTABLE\\b.*", Pattern.CASE_INSENSITIVE));
+        Injections.add(Pattern.compile(".*OR\\s+(['\\w]+)=\\1.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        // patterns for classical SQL injection 1=1 , 2=2 with ON, OR, AND
+        Injections.add(Pattern.compile(".*\\bOR\\b.*\\b\\d+=\\d+\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*'\\s*OR\\s*'\\d+'=\\d+\\s*--.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*\\bON\\b\\s*\\d+\\s*=\\s*\\d+.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*\\bAND\\b.*\\b\\d+=\\d+\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*UNION.*SELECT.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*EXEC\\s+.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*INSERT\\s+INTO.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*DROP\\s+TABLE.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*\\bUPDATE\\b.*\\bSET\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*\\bDELETE\\b.*\\bFROM\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*\\bCREATE\\b.*\\bTABLE\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*\\bALTER\\b.*\\bTABLE\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
         // pattern for lo_prefix function tables
-        Injections.add(Pattern.compile(".*\\blo_\\w+\\b.*", Pattern.CASE_INSENSITIVE)); 
+        Injections.add(Pattern.compile(".*\\blo_\\w+\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        // Block pg_* functions (word-boundary to block double-quoted bypass like "pg_read_file"(...))
+        Injections.add(Pattern.compile(".*\\bpg_\\w+\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        // Block subqueries
+        Injections.add(Pattern.compile(".*\\(\\s*SELECT\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        // Block dblink remote connection functions (word-boundary to block double-quoted bypass)
+        Injections.add(Pattern.compile(".*\\bdblink\\w*\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        // Block current_setting config reads (word-boundary to block double-quoted bypass)
+        Injections.add(Pattern.compile(".*\\bcurrent_setting\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        // Block set_config config writes (word-boundary to block double-quoted bypass)
+        Injections.add(Pattern.compile(".*\\bset_config\\b.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
+        // Block dollar-quoting (PostgreSQL alternative string quoting that bypasses single-quote checks)
+        Injections.add(Pattern.compile(".*\\$\\$.*", Pattern.DOTALL));
+        Injections.add(Pattern.compile(".*\\$[a-zA-Z_]\\w*\\$.*", Pattern.DOTALL));
     };
 
 

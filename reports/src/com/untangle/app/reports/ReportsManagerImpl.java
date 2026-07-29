@@ -16,8 +16,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.untangle.uvm.AdminUserSettings;
+import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.OperationsEvent;
 import com.untangle.uvm.UvmContextFactory;
@@ -66,7 +69,33 @@ public class ReportsManagerImpl implements ReportsManager
      */
     private List<AppProperties> appPropertiesList = null;
 
-    /** 
+    private static final Set<String> VALID_AGG_FUNCTIONS = new HashSet<>(
+        java.util.Arrays.asList("avg", "count", "sum", "min", "max")
+    );
+    private static final Set<String> IS_KEYWORDS = new HashSet<>(
+        java.util.Arrays.asList("null", "not null", "true", "false", "unknown")
+    );
+    private static final Pattern SAFE_IN_LIST = Pattern.compile(
+        "^\\(\\s*" +
+        "(?:" +
+            "(?:'(?:[^']|'')*'|-?\\d+(?:\\.\\d+)?|(?:null|true|false))" +
+            "(?:\\s*,\\s*(?:'(?:[^']|'')*'|-?\\d+(?:\\.\\d+)?|(?:null|true|false)))*" +
+        ")?" +
+        "\\s*\\)$",
+        Pattern.CASE_INSENSITIVE
+    );
+    private static final Pattern SAFE_BETWEEN_VALUE = Pattern.compile(
+        "^\\s*(-?\\d+(\\.\\d+)?|'(?:[^']|'')*')\\s+[Aa][Nn][Dd]\\s+(-?\\d+(\\.\\d+)?|'(?:[^']|'')*')\\s*$"
+    );
+    private static final Pattern IDENTIFIER = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
+    private static final Pattern NUMERIC_LITERAL = Pattern.compile("-?\\d+(\\.\\d+)?");
+    private static final Pattern QUOTED_STRING = Pattern.compile("'(?:[^']|'')*'(?:::[a-zA-Z_][a-zA-Z0-9_]*)?");
+    private static final Pattern DOTTED_VALUE = Pattern.compile("[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+");
+    private static final Set<String> BLOCKED_IDENTIFIERS = new HashSet<>(
+        java.util.Arrays.asList("dblink", "current_setting", "set_config", "chr")
+    );
+
+    /**
      * Initialize reports manager
      */
     protected ReportsManagerImpl()
@@ -453,6 +482,11 @@ public class ReportsManagerImpl implements ReportsManager
      */
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit )
     {
+        validateReportEntry(entry);
+        extraConditions = validateConditions(extraConditions, entry.getTable());
+        if (!ReportEntry.isValidStringArrayField(extraSelects, true)) {
+            throw new RuntimeException("invalid extraSelects: " + (extraSelects != null ? String.join(",", extraSelects) : ""));
+        }
         Connection conn = app.getDbConnection();
         if(conn == null){
             return null;
@@ -663,6 +697,8 @@ public class ReportsManagerImpl implements ReportsManager
         }
         if ( entry.getType() != ReportEntry.ReportEntryType.EVENT_LIST )
             throw new RuntimeException("Can only retrieve events for an EVENT_LIST type report entry");
+        validateReportEntry(entry);
+        SqlCondition[] validatedConditions = validateConditions(extraConditions, entry.getTable());
         if ( app == null ) {
             return results;
         }
@@ -677,7 +713,7 @@ public class ReportsManagerImpl implements ReportsManager
         if(conn == null){
             return null;
         }
-        PreparedStatement statement = entry.toSql( conn, null, null, null, extraConditions, null, limit );
+        PreparedStatement statement = entry.toSql( conn, null, null, null, validatedConditions, null, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
         logger.info("Statement          : " + statement);
@@ -766,6 +802,8 @@ public class ReportsManagerImpl implements ReportsManager
         }
         if ( entry.getType() != ReportEntry.ReportEntryType.EVENT_LIST )
             throw new RuntimeException("Can only retrieve events for an EVENT_LIST type report entry");
+        validateReportEntry(entry);
+        SqlCondition[] validatedConditions = validateConditions(extraConditions, entry.getTable());
         if ( app == null ) {
             return result;
         }
@@ -786,7 +824,7 @@ public class ReportsManagerImpl implements ReportsManager
         if(conn == null){
             return null;
         }
-        PreparedStatement statement = entry.toSql( conn, startDate, endDate, null, extraConditions, null, limit );
+        PreparedStatement statement = entry.toSql( conn, startDate, endDate, null, validatedConditions, null, limit );
 
         logger.info("Getting Events for : (" + entry.getCategory() + ") " + entry.getTitle());
         logger.info("Statement          : " + statement);
@@ -1154,6 +1192,287 @@ public class ReportsManagerImpl implements ReportsManager
     }
 
     /**
+     * Remove cached column metadata for the given table.
+     *
+     * @param tableName the database table whose column cache should be cleared.
+     */
+    protected void invalidateColumnCache(String tableName)
+    {
+        cacheColumnsResults.remove(tableName);
+    }
+
+    /**
+     * Build a lowercase column-name set for the given table, retrying once
+     * after a cache invalidation if the initial set is empty.
+     *
+     * @param table the bare table name.
+     * @return set of lowercase column names.
+     */
+    private Set<String> getColumnSetOrRefresh(String table)
+    {
+        Set<String> columnSet = new HashSet<>();
+        String[] cols = getColumnsForTable(table);
+        if (cols != null) {
+            for (String c : cols) columnSet.add(c.toLowerCase());
+        }
+        if (columnSet.isEmpty()) {
+            invalidateColumnCache(table);
+            cols = getColumnsForTable(table);
+            if (cols != null) {
+                for (String c : cols) columnSet.add(c.toLowerCase());
+            }
+        }
+        return columnSet;
+    }
+
+    /**
+     * Check whether a column exists for the given table, refreshing the
+     * column cache once on a miss before giving up.
+     *
+     * @param column the column name to look for (case-insensitive).
+     * @param table  the bare table name.
+     * @return true if the column exists in the table schema.
+     */
+    private boolean columnExistsOrRefresh(String column, String table)
+    {
+        if (column == null) return false;
+        String[] cols = getColumnsForTable(table);
+        if (cols != null) {
+            for (String c : cols) {
+                if (c.equalsIgnoreCase(column)) return true;
+            }
+        }
+        invalidateColumnCache(table);
+        cols = getColumnsForTable(table);
+        if (cols != null) {
+            for (String c : cols) {
+                if (c.equalsIgnoreCase(column)) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Verify that the given table name exists in the database schema.
+     *
+     * @param table the table name to validate.
+     */
+    private void validateTable(String table)
+    {
+        if (table == null || table.isEmpty()) {
+            throw new RuntimeException("table is required");
+        }
+        String[] validTables = getTables();
+        if (validTables != null) {
+            boolean found = false;
+            for (String t : validTables) {
+                if (t.equalsIgnoreCase(table)) { found = true; break; }
+            }
+            if (!found) {
+                cacheTablesResults = null;
+                validTables = getTables();
+                if (validTables != null) {
+                    for (String t : validTables) {
+                        if (t.equalsIgnoreCase(table)) { found = true; break; }
+                    }
+                }
+                if (!found) {
+                    throw new RuntimeException("invalid table: " + table);
+                }
+            }
+        }
+    }
+
+    /**
+     * Validate the aggregation function for dynamic time-graph entries.
+     *
+     * @param entry the report entry to check.
+     */
+    private void validateAggFunction(ReportEntry entry)
+    {
+        if (entry.getType() == ReportEntry.ReportEntryType.TIME_GRAPH_DYNAMIC) {
+            String fn = entry.getTimeDataDynamicAggregationFunction();
+            if (fn != null && !VALID_AGG_FUNCTIONS.contains(fn.toLowerCase())) {
+                throw new RuntimeException("invalid aggregation function: " + fn);
+            }
+        }
+    }
+
+    /**
+     * Validate the dynamic column for dynamic time-graph entries.
+     *
+     * @param entry the report entry to check.
+     */
+    private void validateDynamicColumn(ReportEntry entry)
+    {
+        if (entry.getType() == ReportEntry.ReportEntryType.TIME_GRAPH_DYNAMIC) {
+            String col = entry.getTimeDataDynamicColumn();
+            if (col != null && !col.isEmpty() && !columnExistsOrRefresh(col, entry.getTable())) {
+                throw new RuntimeException("invalid dynamic column: " + col);
+            }
+        }
+    }
+
+    /**
+     * Validate column-based fields for pie-graph report entries.
+     *
+     * @param entry the report entry to check.
+     */
+    private void validateEntryFields(ReportEntry entry)
+    {
+        if (entry.getType() == ReportEntry.ReportEntryType.PIE_GRAPH) {
+            String bareTable = entry.getTable();
+            String pieGroup = entry.getPieGroupColumn();
+            if (pieGroup != null && !pieGroup.trim().isEmpty() && !columnExistsOrRefresh(pieGroup.trim(), bareTable)) {
+                throw new RuntimeException("invalid pieGroupColumn: " + pieGroup);
+            }
+            String orderBy = entry.getOrderByColumn();
+            if (orderBy != null && !"value".equalsIgnoreCase(orderBy.trim())
+                    && !columnExistsOrRefresh(orderBy.trim(), bareTable)) {
+                throw new RuntimeException("invalid orderByColumn: " + orderBy);
+            }
+        }
+    }
+
+    /**
+     * Validate all user-controlled fields of a report entry.
+     *
+     * @param entry the report entry to validate.
+     */
+    private void validateReportEntry(ReportEntry entry)
+    {
+        validateTable(entry.getTable());
+        validateAggFunction(entry);
+        validateDynamicColumn(entry);
+        validateEntryFields(entry);
+        validateEntryStringFields(entry);
+        if (entry.getConditions() != null) {
+            validateConditions(entry.getConditions(), entry.getTable());
+        }
+    }
+
+    /**
+     * Validate entry string fields against the injection denylist.
+     * These checks run before SQL execution so exceptions propagate
+     * to the caller as clear error responses.
+     *
+     * @param entry the report entry to validate.
+     */
+    private void validateEntryStringFields(ReportEntry entry)
+    {
+        if (!ReportEntry.isValidStringArrayField(entry.getTextColumns(), true)) {
+            throw new RuntimeException("invalid textColumns");
+        }
+        String pieSumCol = entry.getPieSumColumn();
+        if (pieSumCol != null && !pieSumCol.trim().isEmpty()) {
+            if (!ReportEntry.isValidStringField(pieSumCol, true)) {
+                throw new RuntimeException("invalid pieSumColumn: " + pieSumCol);
+            }
+        }
+        if (!ReportEntry.isValidStringArrayField(entry.getTimeDataColumns(), true)) {
+            throw new RuntimeException("invalid timeDataColumns");
+        }
+        String dynVal = entry.getTimeDataDynamicValue();
+        if (dynVal != null && !dynVal.trim().isEmpty()) {
+            if (!ReportEntry.isValidStringField(dynVal, true)) {
+                throw new RuntimeException("invalid timeDataDynamicValue: " + dynVal);
+            }
+        }
+    }
+
+    /**
+     * Validate SQL conditions ensuring columns exist and values are safe.
+     *
+     * @param conditions the conditions to validate.
+     * @param table the table name used to resolve valid columns.
+     * @return the validated conditions array.
+     */
+    protected SqlCondition[] validateConditions(SqlCondition[] conditions, String table)
+    {
+        if (conditions == null) return null;
+        Set<String> columnSet = getColumnSetOrRefresh(table);
+        for (SqlCondition c : conditions) {
+            if (c.getColumn() == null || !columnSet.contains(c.getColumn().toLowerCase())) {
+                throw new RuntimeException("invalid condition column: " + c.getColumn());
+            }
+            String op = c.getOperator() != null ? c.getOperator().toLowerCase() : "";
+            if ("is".equals(op) || "is not".equals(op)) {
+                String val = c.getValue() != null ? c.getValue().trim().toLowerCase() : "";
+                if (!IS_KEYWORDS.contains(val)) {
+                    throw new RuntimeException("invalid value for IS operator: " + c.getValue());
+                }
+            } else if ("in".equals(op) || "not in".equals(op)) {
+                if (!isValidInList(c.getValue())) {
+                    throw new RuntimeException("invalid value for IN operator: " + c.getValue());
+                }
+            } else if ("between".equals(op)) {
+                if (!isValidBetweenValue(c.getValue())) {
+                    throw new RuntimeException("invalid value for BETWEEN operator: " + c.getValue());
+                }
+            } else if (!c.isAutoFormatValueRaw()) {
+                if (!isAllowedExpression(c.getValue())) {
+                    throw new RuntimeException("invalid expression in condition value: " + c.getValue());
+                }
+            }
+        }
+        return conditions;
+    }
+
+    /**
+     * Check whether a value is a safe comma-separated list for IN clauses.
+     *
+     * @param value the value string to check.
+     * @return true if the value matches the safe IN-list pattern.
+     */
+    private boolean isValidInList(String value)
+    {
+        if (value == null || value.trim().isEmpty()) return false;
+        return SAFE_IN_LIST.matcher(value.trim()).matches();
+    }
+
+    /**
+     * Check whether a BETWEEN value is safe (literal AND literal).
+     *
+     * @param value the value string to check.
+     * @return true if the value matches the safe BETWEEN pattern.
+     */
+    private boolean isValidBetweenValue(String value)
+    {
+        if (value == null || value.trim().isEmpty()) return false;
+        return SAFE_BETWEEN_VALUE.matcher(value.trim()).matches();
+    }
+
+    /**
+     * Check whether a condition value is an allowed literal expression.
+     *
+     * @param value the expression to check.
+     * @return true if the value is a safe numeric, string, boolean, or identifier literal.
+     */
+    private static boolean isAllowedExpression(String value)
+    {
+        if (value == null || value.trim().isEmpty()) return false;
+        String trimmed = value.trim();
+        if (NUMERIC_LITERAL.matcher(trimmed).matches()) return true;
+        if (QUOTED_STRING.matcher(trimmed).matches()) return true;
+        if ("true".equalsIgnoreCase(trimmed) || "false".equalsIgnoreCase(trimmed)) return true;
+        if ("null".equalsIgnoreCase(trimmed)) return true;
+        if (IDENTIFIER.matcher(trimmed).matches()) {
+            String lower = trimmed.toLowerCase();
+            if (lower.startsWith("pg_") || lower.startsWith("lo_")) return false;
+            if (BLOCKED_IDENTIFIERS.contains(lower)) return false;
+            return true;
+        }
+        if (DOTTED_VALUE.matcher(trimmed).matches()) {
+            for (String part : trimmed.toLowerCase().split("\\.")) {
+                if (part.startsWith("pg_") || part.startsWith("lo_")) return false;
+                if (BLOCKED_IDENTIFIERS.contains(part)) return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Report Entry order display.
      */
     private class ReportEntryDisplayOrderComparator implements Comparator<ReportEntry>
@@ -1214,18 +1533,28 @@ public class ReportsManagerImpl implements ReportsManager
                 app.getEventWriter().stop();
             }
             String pgCleanupCmd = "/usr/share/untangle/bin/reports-reinitialize-database.sh";
-            String pgStopCmd = "/etc/init.d/postgresql stop >/dev/null 2>&1";
+            // NGFW-15855: dropped ">/dev/null 2>&1" suffix. The launcher already
+            // captures stdout/stderr into ExecManagerResult.output which this caller
+            // never reads (execResult only returns the exit code).
+            String pgStopCmd = "/etc/init.d/postgresql stop";
             String pgStatusCmd = "/etc/init.d/postgresql status";
-            String pgStartCmd = "/etc/init.d/postgresql start >/dev/null 2>&1";
+            String pgStartCmd = "/etc/init.d/postgresql start";
             String generateReportTablesCmd = "/usr/share/untangle/bin/reports-generate-tables.py";
             UvmContextFactory.context().execManager().execResult(pgStopCmd);
-            int pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd + " | grep Stopped");
+            // NGFW-15855: the original code assigned this to pgStatus but overwrote
+            // the value on line below before ever reading it. The exec call is
+            // preserved (roughly 100-300ms) as a coincidental timing buffer between
+            // stop and cleanup. Migrated to argv form to drop the "| grep Stopped"
+            // shell pipe; the grep filter's exit code was dead-value anyway.
+            UvmContextFactory.context().execManager().execCommand("/etc/init.d/postgresql", List.of("status"));
             UvmContextFactory.context().execManager().execOutput(pgCleanupCmd);
             UvmContextFactory.context().execManager().execResult(pgStartCmd);
-            pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd);
+            int pgStatus = UvmContextFactory.context().execManager().execResult(pgStatusCmd);
             logger.info("Postgress Status Response {}", pgStatus);
             if (pgStatus == 0) {
                 UvmContextFactory.context().execManager().execOutput(generateReportTablesCmd);
+                cacheColumnsResults.clear();
+                cacheTablesResults = null;
                 String username = null;
                 String hostname = null;
                 String userHostNameInfo = UvmContextFactory.context().settingsManager().getUserAndHostNameInfo("reports");

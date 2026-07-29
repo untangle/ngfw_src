@@ -6,7 +6,7 @@ import os
 import re
 
 Debug = False
-DEVICE_PATTERN = re.compile(r"^(V|VP)\d{4}$")
+DEVICE_PATTERN = re.compile(r"^(V|VP)\d{4}[a-z]?$")
 
 def get_virtual_type():
     # Unknown.  Let the UI interpret this as "custom"

@@ -326,6 +326,11 @@ public class SettingsManagerImpl implements SettingsManager
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
+        if (!_checkLegalName(inputFilename)) {
+            throw new IllegalArgumentException("Invalid input file name: '" + inputFilename + "'");
+        }
+        _checkSettingsPath(fileName);
+        _checkSettingsPath(inputFilename);
 
         _saveImpl( fileName, inputFilename, saveVersion, true );
     }
@@ -656,17 +661,64 @@ public class SettingsManagerImpl implements SettingsManager
         return lock;
     }
 
+    private static final String[] ALLOWED_BASE_DIRS;
+    static {
+        String settingsDir = System.getProperty("uvm.settings.dir");
+        if (settingsDir == null) settingsDir = "/usr/share/untangle/settings";
+        String confDir = System.getProperty("uvm.conf.dir");
+        if (confDir == null) confDir = "/usr/share/untangle/conf";
+        String libDir = System.getProperty("uvm.lib.dir");
+        if (libDir == null) libDir = "/usr/share/untangle/lib";
+        String skinsDir = System.getProperty("uvm.skins.dir");
+        if (skinsDir == null) skinsDir = "/usr/share/untangle/web/skins"; 
+
+        ALLOWED_BASE_DIRS = new String[] {
+            settingsDir,
+            confDir,
+            libDir,
+            skinsDir,
+            "/var/lib/interface-status",
+            "/etc/untangle",
+            "/tmp"
+        };
+    }
+
     /**
      * Check if a filename is "legal"
-     * Must have valid characterns and an extension
+     * Must resolve within an allowed base directory, contain valid characters, and have an extension.
      * @param name
      * @return true if legal, false otherwise
      * @throws IllegalArgumentException
      */
     private boolean _checkLegalName(String name) throws IllegalArgumentException
     {
-        if (!VALID_CHARACTERS.matcher( name.replace("/","") ).matches()) {
-            logger.error("Illegal name (Invalid characters): " + name);
+        if (name == null || name.isEmpty()) {
+            logger.error("Illegal name: null or empty");
+            return false;
+        }
+
+        try {
+            String canonical = new File(name).getCanonicalPath();
+            boolean allowed = false;
+            for (String baseDir : ALLOWED_BASE_DIRS) {
+                String prefix = new File(baseDir).getCanonicalPath() + File.separator;
+                if (canonical.startsWith(prefix) || canonical.equals(new File(baseDir).getCanonicalPath())) {
+                    allowed = true;
+                    break;
+                }
+            }
+            if (!allowed) {
+                logger.error("Illegal name (path outside allowed directories): " + name);
+                return false;
+            }
+        } catch (IOException e) {
+            logger.error("Illegal name (cannot resolve path): " + name, e);
+            return false;
+        }
+
+        String basename = new File(name).getName();
+        if (!VALID_CHARACTERS.matcher(basename).matches()) {
+            logger.error("Illegal name (Invalid characters in basename): " + name);
             return false;
         }
 
@@ -680,8 +732,35 @@ public class SettingsManagerImpl implements SettingsManager
             logger.error("Illegal name (contains ../): " + name);
             return false;
         }
-            
+
         return true;
+    }
+
+    /**
+     * Strict path check for the RPC-exposed save(String, String, boolean) overload.
+     * Only allows paths under the settings and conf directories - NOT /tmp, /var/lib, etc.
+     *
+     * @param name the file path to validate
+     * @throws SettingsException if the path is outside allowed directories or cannot be resolved
+     */
+    private void _checkSettingsPath(String name) throws SettingsException
+    {
+        try {
+            String canonical = new File(name).getCanonicalPath();
+            String settingsDir = System.getProperty("uvm.settings.dir");
+            if (settingsDir == null) settingsDir = "/usr/share/untangle/settings";
+            String confDir = System.getProperty("uvm.conf.dir");
+            if (confDir == null) confDir = "/usr/share/untangle/conf";
+
+            String settingsPrefix = new File(settingsDir).getCanonicalPath() + File.separator;
+            String confPrefix = new File(confDir).getCanonicalPath() + File.separator;
+
+            if (!canonical.startsWith(settingsPrefix) && !canonical.startsWith(confPrefix)) {
+                throw new SettingsException("Path outside settings directory: " + name);
+            }
+        } catch (IOException e) {
+            throw new SettingsException("Cannot resolve path: " + name, e);
+        }
     }
 
     /**

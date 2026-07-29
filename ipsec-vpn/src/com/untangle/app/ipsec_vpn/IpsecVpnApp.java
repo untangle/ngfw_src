@@ -447,9 +447,23 @@ public class IpsecVpnApp extends AppBase
     private void waitForCharonStart() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Runnable task = () -> {
-            String processes = IpsecVpnApp.execManager().execOutput("ps aux | grep charon");
-            logger.debug("ps aux | grep charon : {}", processes);
-            if (processes.contains(CHARON_DAEMON_PATH)) {
+            // NGFW-15855: argv form via pgrep -f avoids the shell pipe from
+            // "ps aux | grep charon". Semantically equivalent: pgrep -f matches
+            // any process whose full command line contains CHARON_DAEMON_PATH,
+            // which is exactly what the OLD contains(CHARON_DAEMON_PATH) test
+            // did on ps-aux output.
+            //
+            // NOTE: pgrep -f treats PATTERN as a POSIX extended regex, NOT a
+            // literal string. CHARON_DAEMON_PATH has no regex metacharacters
+            // today (. [ ] ( ) + ? * | ^ $ \), so regex-matching behaves
+            // identically to literal substring matching. If the constant is
+            // ever changed to include a regex metacharacter, revisit this call
+            // to preserve the OLD literal-substring semantics.
+            int rc = IpsecVpnApp.execManager()
+                .execCommand("/usr/bin/pgrep", List.of("-f", CHARON_DAEMON_PATH))
+                .getResult();
+            logger.debug("pgrep -f {} : exit={}", CHARON_DAEMON_PATH, rc);
+            if (rc == 0) {
                 scheduler.shutdown();
             }
         };

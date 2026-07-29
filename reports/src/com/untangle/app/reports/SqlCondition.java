@@ -102,6 +102,27 @@ public class SqlCondition implements Serializable, JSONString
         if ("not in".equalsIgnoreCase( getOperator() )) {
             return false;
         }
+        if ("between".equalsIgnoreCase( getOperator() )) {
+            return false;
+        }
+        if (!this.autoFormatValue) {
+            String val = getValue() != null ? getValue().trim() : "";
+            if (val.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+                String lower = val.toLowerCase();
+                if (lower.startsWith("pg_") || lower.startsWith("lo_")) {
+                    return true;
+                }
+                return false;
+            }
+            if ("true".equalsIgnoreCase(val) || "false".equalsIgnoreCase(val)) {
+                return false;
+            }
+            if ("null".equalsIgnoreCase(val)) {
+                return false;
+            }
+            logger.warn("Forcing autoFormatValue=true for non-safe expression: " + val);
+            return true;
+        }
 
         return this.autoFormatValue;
     }
@@ -109,6 +130,11 @@ public class SqlCondition implements Serializable, JSONString
     public void setAutoFormatValue( boolean newValue )
     {
         this.autoFormatValue = newValue;
+    }
+
+    public boolean isAutoFormatValueRaw()
+    {
+        return this.autoFormatValue;
     }
 
     public String getTable() { return this.table; }

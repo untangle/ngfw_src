@@ -1635,6 +1635,143 @@ class ReportsTests(NGFWTestCase):
         assert "ReportsContextImpl" not in java_class, \
             f"Admin should receive unrestricted base singleton, not proxy: {java_class}"
 
+    def test_200_regression_shipped_reports_all_types(self):
+        """
+        UNT-05 regression: verify that shipped (server-side) reports of every type
+        can still be queried after the SQL-injection hardening changes.
+        Iterates TEXT, PIE_GRAPH, TIME_GRAPH, TIME_GRAPH_DYNAMIC, EVENT_LIST.
+        """
+        reports_manager = global_functions.uvmContext.appManager().app("reports").getReportsManager()
+        all_entries = reports_manager.getReportEntries()
+        entries = all_entries.get("list", []) if isinstance(all_entries, dict) else all_entries
+
+        by_type = {}
+        for e in entries:
+            if isinstance(e, dict):
+                t = e.get("type", "UNKNOWN")
+                by_type.setdefault(t, []).append(e)
+
+        tested = []
+        for typ in ["TEXT", "PIE_GRAPH", "TIME_GRAPH", "TIME_GRAPH_DYNAMIC", "EVENT_LIST"]:
+            assert typ in by_type, f"No shipped report of type {typ} found"
+            entry = by_type[typ][0]
+            if typ == "EVENT_LIST":
+                result = reports_manager.getEventsResultSet(entry, [], 5)
+            else:
+                result = reports_manager.getDataForReportEntry(entry, None, None, None, [], None, 5)
+            assert result is not None, f"Query returned None for shipped {typ} report: {entry.get('title', '?')}"
+            tested.append(typ)
+        assert len(tested) == 5, f"Expected 5 report types tested, got {len(tested)}"
+
+    def test_201_regression_conditions_filter_types(self):
+        """
+        UNT-05 regression: verify common condition operators (=, IS NULL, IN, BETWEEN, LIKE)
+        work correctly after the new validateConditions() checks.
+        """
+        reports_manager = global_functions.uvmContext.appManager().app("reports").getReportsManager()
+        all_entries = reports_manager.getReportEntries()
+        entries = all_entries.get("list", []) if isinstance(all_entries, dict) else all_entries
+        text_entry = None
+        for e in entries:
+            if isinstance(e, dict) and e.get("type") == "TEXT" and e.get("uniqueId"):
+                text_entry = e
+                break
+        assert text_entry is not None, "No TEXT report found for condition tests"
+
+        condition_sets = {
+            "equality": [{"javaClass": "com.untangle.app.reports.SqlCondition",
+                          "column": "hostname", "operator": "=", "value": "test.example.com"}],
+            "is_null":  [{"javaClass": "com.untangle.app.reports.SqlCondition",
+                          "column": "hostname", "operator": "is", "value": "null"}],
+            "in_list":  [{"javaClass": "com.untangle.app.reports.SqlCondition",
+                          "column": "hostname", "operator": "in", "value": "('host1','host2')"}],
+            "between":  [{"javaClass": "com.untangle.app.reports.SqlCondition",
+                          "column": "c2p_bytes", "operator": "between", "value": "100 and 5000"}],
+            "like":     [{"javaClass": "com.untangle.app.reports.SqlCondition",
+                          "column": "hostname", "operator": "like", "value": "%example%"}],
+        }
+        for label, conds in condition_sets.items():
+            result = reports_manager.getDataForReportEntry(text_entry, None, None, None, conds, None, 1)
+            assert result is not None, f"Condition filter '{label}' returned None"
+
+    def test_210_unt05_sqli_pg_read_file_blocked(self):
+        """
+        UNT-05 security: pg_read_file() injection via textColumns must be blocked
+        by the denylist (Layer 1) for both admin and reports-only paths.
+        """
+        reports_manager = global_functions.uvmContext.appManager().app("reports").getReportsManager()
+        malicious_entry = {
+            "javaClass": "com.untangle.app.reports.ReportEntry",
+            "type": "TEXT", "table": "sessions",
+            "textColumns": ["pg_read_file('/etc/passwd') as a"],
+        }
+        exception_caught = False
+        try:
+            reports_manager.getDataForReportEntry(malicious_entry, None, None, None, [], None, 1)
+        except Exception:
+            exception_caught = True
+        assert exception_caught, "pg_read_file() in textColumns was NOT blocked"
+
+    def test_211_unt05_sqli_reports_realm_resolveEntry(self):
+        """
+        UNT-05 security: reports-only realm must resolve entries server-side,
+        rejecting fabricated uniqueIds with malicious textColumns.
+        """
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
+        settings["reportsUsers"]["list"] = settings["reportsUsers"]["list"][:1]
+        test_email = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email, access=True))
+        self._app.setSettings(settings)
+
+        s, rpc_url, nonce, oid, java_class = reports_realm_rpc_login(test_email, "passwd")
+
+        malicious_params = [
+            {
+                "javaClass": "com.untangle.app.reports.ReportEntry",
+                "uniqueId": "fabricated-nonexistent-id",
+                "type": "TEXT", "table": "sessions",
+                "textColumns": ["pg_read_file('/etc/passwd') as a"],
+            },
+            None, None, None, [], None, 1,
+        ]
+        r = s.post(rpc_url, json={
+            "id": 99, "nonce": nonce,
+            "method": f".obj#{oid}.getDataForReportEntry",
+            "params": malicious_params,
+        }, verify=False)
+        resp = json.loads(r.text)
+        self._app.setSettings(original_settings)
+
+        has_error = "error" in resp and resp["error"]
+        result = resp.get("result")
+        is_exception = isinstance(result, dict) and "Exception" in result.get("javaClass", "")
+        assert has_error or is_exception, \
+            f"Fabricated uniqueId with pg_read_file() was NOT blocked: {str(resp)[:300]}"
+
+    def test_212_unt28_dollar_quoting_blocked(self):
+        """
+        UNT-28 security: PostgreSQL dollar-quoting ($$ and $tag$) bypass must be
+        blocked by the denylist patterns added to ReportEntry.Injections.
+        """
+        reports_manager = global_functions.uvmContext.appManager().app("reports").getReportsManager()
+        payloads = [
+            ["pg_read_file($$/etc/passwd$$) as a"],
+            ["pg_read_file($tag$/etc/passwd$tag$) as a"],
+        ]
+        for payload in payloads:
+            entry = {
+                "javaClass": "com.untangle.app.reports.ReportEntry",
+                "type": "TEXT", "table": "sessions",
+                "textColumns": payload,
+            }
+            exception_caught = False
+            try:
+                reports_manager.getDataForReportEntry(entry, None, None, None, [], None, 1)
+            except Exception:
+                exception_caught = True
+            assert exception_caught, f"Dollar-quoting bypass was NOT blocked for: {payload[0]}"
+
     # tests for each report type:
     #    case EVENT_LIST:
 

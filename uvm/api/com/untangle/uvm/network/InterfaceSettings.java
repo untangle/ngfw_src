@@ -39,6 +39,7 @@ public class InterfaceSettings implements Serializable, JSONString
     private static InetAddress V4_PREFIX_NETMASKS[];
 
     private int     interfaceId; /* the ID of the physical interface (1-254) */
+    @SafeCheck(SafeType.SIMPLE_TEXT)
     private String  name; /* human name: ie External, Internal, Wireless */
 
     @SafeCheck(SafeType.INTERFACE)

@@ -1,0 +1,10 @@
+#!/bin/bash
+# NGFW-15855 UNT-50: replaces the inline shell string
+#   REPORTS_CLEAN_TABLES_SCRIPT ... | logger -t uvmreports
+# from ReportsApp.checkDbRetentionChange() so the Java caller can use
+# execCommand() argv form. Preserves the syslog tag "uvmreports" behavior
+# and last-cmd exit-code semantics (NO pipefail).
+#
+# Do NOT add `set -o pipefail` without also updating the caller: today, if
+# the cleanup script fails but logger succeeds, this exits 0 (matches OLD).
+/usr/share/untangle/bin/reports-clean-tables.py "$@" | /usr/bin/logger -t uvmreports
