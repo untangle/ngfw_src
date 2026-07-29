@@ -5,7 +5,9 @@ package com.untangle.uvm.reports.jabsorb;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +15,14 @@ import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.json.JSONObject;
 
 import com.untangle.app.reports.ReportEntry;
 import com.untangle.app.reports.ReportsApp;
 import com.untangle.app.reports.ReportsManager;
+import com.untangle.app.reports.ResultSetReader;
+import com.untangle.app.reports.SqlCondition;
+import com.untangle.app.reports.SqlFrom;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocaleInfo;
@@ -236,17 +242,142 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     /**
      * This class is used extend ReportsManagerImpl and overwrite some methods that changes settings so reports servlet does not have access to them.
+     * Query methods resolve client-provided entries against server-side definitions to prevent
+     * injection of malicious entry fields (pieGroupColumn, conditions, etc.)
      */
     public class ReportsManagerImpl extends com.untangle.app.reports.ReportsManagerImpl
     {
         /**
-         * Set report entries.
+         * Resolve a client-provided report entry against server-side definitions.
          *
-         * @param newEntries
-         *  New report entries.
+         * @param clientEntry the entry provided by the client.
+         * @return the server-side entry if found, otherwise the original client entry.
+         */
+        private ReportEntry resolveEntry(ReportEntry clientEntry)
+        {
+            if (clientEntry == null) return null;
+            String uniqueId = clientEntry.getUniqueId();
+            if (uniqueId != null && !uniqueId.isEmpty()) {
+                ReportEntry serverEntry = super.getReportEntry(uniqueId);
+                if (serverEntry != null) return serverEntry;
+            }
+            throw new RuntimeException("No server-side report entry found for uniqueId: " + uniqueId);
+        }
+
+        /**
+         * Get report data for the given entry and date range with extra options.
+         *
+         * @param entry the report entry.
+         * @param startDate the start date.
+         * @param endDate the end date.
+         * @param extraSelects additional select columns.
+         * @param extraConditions additional SQL conditions.
+         * @param fromType the SQL from type.
+         * @param limit maximum number of results.
+         * @return list of JSON result objects.
+         */
+        @Override
+        public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit )
+        {
+            return super.getDataForReportEntry(resolveEntry(entry), startDate, endDate, null, extraConditions, fromType, limit);
+        }
+
+        /**
+         * Get report data for the given entry and date range.
+         *
+         * @param entry the report entry.
+         * @param startDate the start date.
+         * @param endDate the end date.
+         * @param limit maximum number of results.
+         * @return list of JSON result objects.
+         */
+        @Override
+        public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
+        {
+            return super.getDataForReportEntry(resolveEntry(entry), startDate, endDate, limit);
+        }
+
+        /**
+         * Get report data for the given entry and timeframe.
+         *
+         * @param entry the report entry.
+         * @param timeframeSec the timeframe in seconds.
+         * @param limit maximum number of results.
+         * @return list of JSON result objects.
+         */
+        @Override
+        public List<JSONObject> getDataForReportEntry( ReportEntry entry, final int timeframeSec, final int limit )
+        {
+            return super.getDataForReportEntry(resolveEntry(entry), timeframeSec, limit);
+        }
+
+        /**
+         * Get events for the given report entry.
+         *
+         * @param entry the report entry.
+         * @param extraConditions additional SQL conditions.
+         * @param limit maximum number of results.
+         * @return list of JSON event objects.
+         */
+        @Override
+        public ArrayList<JSONObject> getEvents( final ReportEntry entry, final SqlCondition[] extraConditions, final int limit )
+        {
+            return super.getEvents(resolveEntry(entry), extraConditions, limit);
+        }
+
+        /**
+         * Get an events result set for the given report entry.
+         *
+         * @param entry the report entry.
+         * @param extraConditions additional SQL conditions.
+         * @param limit maximum number of results.
+         * @return the result set reader.
+         */
+        @Override
+        public ResultSetReader getEventsResultSet( final ReportEntry entry, final SqlCondition[] extraConditions, final int limit )
+        {
+            return super.getEventsResultSet(resolveEntry(entry), extraConditions, limit);
+        }
+
+        /**
+         * Get an events result set for the given report entry and timeframe.
+         *
+         * @param entry the report entry.
+         * @param extraConditions additional SQL conditions.
+         * @param timeframeSec the timeframe in seconds.
+         * @param limit maximum number of results.
+         * @return the result set reader.
+         */
+        @Override
+        public ResultSetReader getEventsForTimeframeResultSet( final ReportEntry entry, final SqlCondition[] extraConditions, final int timeframeSec, final int limit )
+        {
+            return super.getEventsForTimeframeResultSet(resolveEntry(entry), extraConditions, timeframeSec, limit);
+        }
+
+        /**
+         * Get an events result set for the given report entry and date range.
+         *
+         * @param entry the report entry.
+         * @param extraConditions additional SQL conditions.
+         * @param limit maximum number of results.
+         * @param startDate the start date.
+         * @param endDate the end date.
+         * @return the result set reader.
+         */
+        @Override
+        public ResultSetReader getEventsForDateRangeResultSet( final ReportEntry entry, final SqlCondition[] extraConditions, final int limit, final Date startDate, final Date endDate )
+        {
+            return super.getEventsForDateRangeResultSet(resolveEntry(entry), extraConditions, limit, startDate, endDate);
+        }
+
+        /**
+         * Set report entries. Not supported in this context.
+         *
+         * @param newEntries the report entries to set.
          */
         @Override
         public void setReportEntries( List<ReportEntry> newEntries ) { throw new RuntimeException("Unable to set the report entries."); }
+
         /**
          * Save report entry.
          *
