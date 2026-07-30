@@ -240,6 +240,7 @@ public class SslInspectorApp extends AppBase
     @Override
     protected void uninstall()
     {
+        UvmContextFactory.context().hookManager().unregisterCallback(com.untangle.uvm.HookManager.AUTHENTICATION_OAUTHDOMAIN_CHANGE, authenticationOautDomainChangeHookCallback);
         removeCertCache();
     }
 
