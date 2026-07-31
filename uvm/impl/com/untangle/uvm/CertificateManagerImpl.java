@@ -1371,32 +1371,46 @@ public class CertificateManagerImpl implements CertificateManager
             // create a sourcedir if we need to
             UvmContextFactory.context().execManager().execCommand(MKDIR_BIN, List.of("-p", sourceDir));
 
-            // move cert, key, index, serial from old to new if move is specified
+            // move cert and key from old to new
             UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "untangle.crt", sourceDir));
             UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(targetDir + "untangle.key", sourceDir));
 
-            // execCommand uses shell=False so glob patterns are not expanded by the shell.
-            // Use Java's file listing to enumerate index* and serial* files individually.
-            File targetDirFile = new File(targetDir);
-            File[] indexFiles = targetDirFile.listFiles((dir, name) -> name.startsWith("index"));
-            if (indexFiles != null) {
-                for (File f : indexFiles) {
-                    UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(f.getAbsolutePath(), sourceDir));
-                }
-            }
-            File[] serialFiles = targetDirFile.listFiles((dir, name) -> name.startsWith("serial"));
-            if (serialFiles != null) {
-                for (File f : serialFiles) {
-                    UvmContextFactory.context().execManager().execCommand(MV_BIN, List.of(f.getAbsolutePath(), sourceDir));
-                }
-            }
+            // index.txt and serial.txt are NOT moved. They are OpenSSL CA
+            // database files actively written by openssl-ca on every MITM cert
+            // generation (ut-certgen). They must always remain as real files at
+            // the top-level cert store path. Moving them to a timestamped
+            // subdirectory and symlinking is fragile: when removeCertificate()
+            // deletes the subdirectory, the symlinks break and ut-certgen fails
+            // with exit 12, silently disabling SSL Inspector MITM inspection.
         }
 
-        // symlink cert, key, index, serial from new location to old
+        // symlink cert and key from new location to old
         UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "untangle.crt", targetDir + "untangle.crt"));
         UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "untangle.key", targetDir + "untangle.key"));
-        UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "index.txt", targetDir + "index.txt"));
-        UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "serial.txt", targetDir + "serial.txt"));
+
+        // ensure index.txt and serial.txt exist as real files at the top level.
+        // Delete any broken symlinks first — a broken symlink is a filesystem
+        // entry that blocks createNewFile() but File.exists() returns false
+        // (target missing), so without this cleanup the file is never created.
+        try {
+            java.nio.file.Path indexPath = new File(targetDir + "index.txt").toPath();
+            if (java.nio.file.Files.isSymbolicLink(indexPath)) {
+                java.nio.file.Files.delete(indexPath);
+            }
+            if (!new File(targetDir + "index.txt").exists()) {
+                new File(targetDir + "index.txt").createNewFile();
+            }
+            java.nio.file.Path serialPath = new File(targetDir + "serial.txt").toPath();
+            if (java.nio.file.Files.isSymbolicLink(serialPath)) {
+                java.nio.file.Files.delete(serialPath);
+            }
+            if (!new File(targetDir + "serial.txt").exists()) {
+                long serial = System.currentTimeMillis() / 1000;
+                java.nio.file.Files.writeString(new File(targetDir + "serial.txt").toPath(), serial + "000000\n");
+            }
+        } catch (IOException e) {
+            logger.warn("Failed to create CA database files", e);
+        }
 
         // Cleanup the untangle-ssl directory also
         UvmContextFactory.context().execManager().exec("rm -f " + SSL_INSPECTOR_LOCATION + "*");
