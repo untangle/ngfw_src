@@ -36,6 +36,7 @@ public class RuleConditionGeneric implements JSONString, Serializable {
     public void setType(RuleCondition.ConditionType type) { this.type = type; }
     public String getValue() { return value; }
     public void setValue(String value) { this.value = value; }
+
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);
         return jO.toString();

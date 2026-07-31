@@ -27,8 +27,6 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
 
     private Integer version;
 
-    // TRANSFORMED: rules -> ip_rules (type changes from List<IntrusionPreventionRule> to LinkedList<EventRuleGeneric>)
-    // snake_case follows the V2 convention for transformed rule lists
     private LinkedList<EventRuleGeneric> ip_rules = new LinkedList<>();
 
     // Pass-through fields
