@@ -1362,10 +1362,21 @@ public class CertificateManagerImpl implements CertificateManager
         UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "untangle.crt", targetDir + "untangle.crt"));
         UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "untangle.key", targetDir + "untangle.key"));
 
-        // ensure index.txt and serial.txt exist as real files at the top level
+        // ensure index.txt and serial.txt exist as real files at the top level.
+        // Delete any broken symlinks first — a broken symlink is a filesystem
+        // entry that blocks createNewFile() but File.exists() returns false
+        // (target missing), so without this cleanup the file is never created.
         try {
+            java.nio.file.Path indexPath = new File(targetDir + "index.txt").toPath();
+            if (java.nio.file.Files.isSymbolicLink(indexPath)) {
+                java.nio.file.Files.delete(indexPath);
+            }
             if (!new File(targetDir + "index.txt").exists()) {
                 new File(targetDir + "index.txt").createNewFile();
+            }
+            java.nio.file.Path serialPath = new File(targetDir + "serial.txt").toPath();
+            if (java.nio.file.Files.isSymbolicLink(serialPath)) {
+                java.nio.file.Files.delete(serialPath);
             }
             if (!new File(targetDir + "serial.txt").exists()) {
                 long serial = System.currentTimeMillis() / 1000;
