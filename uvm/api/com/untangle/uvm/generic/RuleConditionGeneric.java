@@ -29,7 +29,6 @@ public class RuleConditionGeneric implements JSONString, Serializable {
     private RuleCondition.ConditionType type;
     private String value;
 
-
     public String getOp() { return op; }
     public void setOp(String op) { this.op = op; }
     public RuleCondition.ConditionType getType() { return type; }
