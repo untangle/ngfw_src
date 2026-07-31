@@ -12,7 +12,7 @@ Ext.define('Ung.apps.intrusionprevention.Main', {
     listeners: {
         activate: function (panel) {
             var target = panel.down('#iframeHolder');
-            Util.attachIframeToTarget(target, '/console/apps/intrusion-prevention', false);
+            Util.attachIframeToTarget(target, '/console/settings/services/intrusion-prevention', false);
             Util.setupVueMessageHandlers(panel, {
                 appName: 'intrusion-prevention',
                 enableRemoveHandler: true
