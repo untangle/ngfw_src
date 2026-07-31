@@ -1366,11 +1366,36 @@ public class CertificateManagerImpl implements CertificateManager
             }
         }
 
-        // symlink cert, key, index, serial from new location to old
+        // symlink cert, key from new location to old
         UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "untangle.crt", targetDir + "untangle.crt"));
         UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "untangle.key", targetDir + "untangle.key"));
-        UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "index.txt", targetDir + "index.txt"));
-        UvmContextFactory.context().execManager().execCommand(LN_BIN, List.of("-sf", sourceDir + "serial.txt", targetDir + "serial.txt"));
+
+        // index.txt and serial.txt are OpenSSL CA database files needed by
+        // ut-certgen at the top-level cert store path. Unlike the CA cert/key
+        // (which are read-only and safe to symlink), these files are actively
+        // written by openssl-ca on every MITM cert generation. Symlinking them
+        // to sourceDir is fragile: sourceDir may be a timestamped directory
+        // that gets deleted on the next root CA rotation, leaving broken
+        // symlinks and silently breaking SSL Inspector MITM cert generation
+        // (ut-certgen exit 12). Copy instead of symlink so they always exist
+        // as real files at the top level regardless of directory lifecycle.
+        File indexSrc = new File(sourceDir + "index.txt");
+        File serialSrc = new File(sourceDir + "serial.txt");
+        try {
+            if (indexSrc.exists()) {
+                java.nio.file.Files.copy(indexSrc.toPath(), new File(targetDir + "index.txt").toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            } else if (!new File(targetDir + "index.txt").exists()) {
+                new File(targetDir + "index.txt").createNewFile();
+            }
+            if (serialSrc.exists()) {
+                java.nio.file.Files.copy(serialSrc.toPath(), new File(targetDir + "serial.txt").toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            } else if (!new File(targetDir + "serial.txt").exists()) {
+                long serial = System.currentTimeMillis() / 1000;
+                java.nio.file.Files.writeString(new File(targetDir + "serial.txt").toPath(), serial + "000000\n");
+            }
+        } catch (IOException e) {
+            logger.warn("Failed to copy CA database files", e);
+        }
 
         // Cleanup the untangle-ssl directory also
         UvmContextFactory.context().execManager().exec("rm -f " + SSL_INSPECTOR_LOCATION + "*");
