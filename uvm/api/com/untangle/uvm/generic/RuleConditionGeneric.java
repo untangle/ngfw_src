@@ -29,12 +29,17 @@ public class RuleConditionGeneric implements JSONString, Serializable {
     private RuleCondition.ConditionType type;
     private String value;
 
+    // Used for apps with string-based condition types not in ConditionType enum (e.g. IPS: "CLASSTYPE")
+    private String typeString;
+
     public String getOp() { return op; }
     public void setOp(String op) { this.op = op; }
     public RuleCondition.ConditionType getType() { return type; }
     public void setType(RuleCondition.ConditionType type) { this.type = type; }
     public String getValue() { return value; }
     public void setValue(String value) { this.value = value; }
+    public String getTypeString() { return typeString; }
+    public void setTypeString(String typeString) { this.typeString = typeString; }
 
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);

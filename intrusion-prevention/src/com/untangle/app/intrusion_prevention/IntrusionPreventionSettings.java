@@ -5,6 +5,8 @@ package com.untangle.app.intrusion_prevention;
 
 import com.untangle.uvm.network.BypassRule;
 
+import com.untangle.app.intrusion_prevention.generic.IntrusionPreventionSettingsGeneric;
+
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -114,6 +116,35 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
 
     public IntrusionPreventionDaySchedule getUpdateSignatureWeekly() { return this.updateSignatureWeekly; }
     public void setUpdateSignatureWeekly(IntrusionPreventionDaySchedule updateSignatureWeekly) { this.updateSignatureWeekly = updateSignatureWeekly; }
+
+    /**
+     * Transforms this V1 settings object into its generic V2 representation
+     * for the Vue UI. Only ip_rules is transformed into the shared RuleGeneric form.
+     *
+     * @return IntrusionPreventionSettingsGeneric
+     */
+    public IntrusionPreventionSettingsGeneric transformIntrusionPreventionSettingsToGeneric()
+    {
+        IntrusionPreventionSettingsGeneric g = new IntrusionPreventionSettingsGeneric();
+
+        g.setVersion(this.version);
+        g.setSignatures(this.signatures);
+        g.setVariables(this.variables);
+        g.setBypassRules(this.bypassRules);
+        g.setIptablesNfqNumber(this.iptablesNfqNumber);
+        g.setIptablesMaxScanSize(this.iptablesMaxScanSize);
+        g.setIptablesProcessing(this.iptablesProcessing);
+        g.setBlockAction(this.blockAction);
+        g.setSuricataSettings(this.suricataSettings);
+        g.setUpdateSignatureFrequency(this.updateSignatureFrequency);
+        g.setUpdateSignatureSchedule(this.updateSignatureSchedule);
+        g.setUpdateSignatureWeekly(this.updateSignatureWeekly);
+
+        if (this.rules != null)
+            g.setIp_rules(IntrusionPreventionRule.transformIpRulesToGeneric(this.rules));
+
+        return g;
+    }
 
     /**
      * Returns settings as a JSON string.

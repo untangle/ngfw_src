@@ -71,6 +71,15 @@ public class RuleGeneric implements JSONString, Serializable {
     public boolean isIpv6Enabled() { return ipv6Enabled; }
     public void setIpv6Enabled(boolean ipv6Enabled) { this.ipv6Enabled = ipv6Enabled; }
 
+    // Required for Intrusion Prevention Rules
+    private String sourceNetworks;
+    private String destinationNetworks;
+
+    public String getSourceNetworks() { return sourceNetworks; }
+    public void setSourceNetworks(String sourceNetworks) { this.sourceNetworks = sourceNetworks; }
+    public String getDestinationNetworks() { return destinationNetworks; }
+    public void setDestinationNetworks(String destinationNetworks) { this.destinationNetworks = destinationNetworks; }
+
     public String toJSONString() {
         JSONObject jO = new JSONObject(this);
         return jO.toString();

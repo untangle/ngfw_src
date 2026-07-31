@@ -39,6 +39,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.codec.binary.Hex;
 
+import com.untangle.app.intrusion_prevention.generic.IntrusionPreventionSettingsGeneric;
+
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
@@ -219,6 +221,18 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
+     * Get intrusion prevention settings in v2 format.
+     *
+     * @return IntrusionPreventionSettingsGeneric
+     */
+    public IntrusionPreventionSettingsGeneric getSettingsV2()
+    {
+        if (this.settings != null)
+            return this.settings.transformIntrusionPreventionSettingsToGeneric();
+        return new IntrusionPreventionSettingsGeneric();
+    }
+
+    /**
      * Set intrusion prevention settings.
      *
      * @param newSettings
@@ -227,6 +241,18 @@ public class IntrusionPreventionApp extends AppBase
     public void setSettings(final IntrusionPreventionSettings newSettings)
     {
         setSettings(newSettings, false, true);
+    }
+
+    /**
+     * Set intrusion prevention settings from v2 format payload.
+     *
+     * @param newSettings
+     *      New settings to configure.
+     */
+    public synchronized void setSettingsV2(final IntrusionPreventionSettingsGeneric newSettings)
+    {
+        IntrusionPreventionSettings v1 = this.settings != null ? this.settings : new IntrusionPreventionSettings();
+        this.setSettings(newSettings.transformGenericToIntrusionPreventionSettings(v1));
     }
 
     /**

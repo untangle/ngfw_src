@@ -27,7 +27,7 @@ public class RuleActionGeneric implements JSONString, Serializable {
      * CAPTURE - Required for Captive Portal Rules (paired with PASS for non-capture)
      * DESTINATION_WAN - Required for Wan Balancer
      */
-    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, SET_PRIORITY, SCAN, PASS, TARGET_POLICY, CAPTURE, DESTINATION_WAN }
+    public enum Type { DNAT, SNAT, MASQUERADE, BYPASS, PROCESS, ACCEPT, REJECT, SET_PRIORITY, SCAN, PASS, TARGET_POLICY, CAPTURE, DESTINATION_WAN, IPS_DEFAULT, IPS_LOG, IPS_BLOCKLOG, IPS_BLOCK, IPS_DISABLE, IPS_WHITELIST }
     // Common To All Rules
     private Type type;
 
