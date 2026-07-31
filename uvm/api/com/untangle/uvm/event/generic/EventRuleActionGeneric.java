@@ -18,7 +18,7 @@ public class EventRuleActionGeneric implements JSONString, Serializable {
     /**
      * EMAIL, EMAIL_OFF - Required for Alert Rules
      */
-    public enum Type { SYSLOG, EMAIL, EMAIL_OFF, TAG_HOST, TAG_DEVICE, TAG_USER, UNTAG_HOST, UNTAG_DEVICE, UNTAG_USER }
+    public enum Type { SYSLOG, EMAIL, EMAIL_OFF, TAG_HOST, TAG_DEVICE, TAG_USER, UNTAG_HOST, UNTAG_DEVICE, UNTAG_USER, IPS_DEFAULT, IPS_LOG, IPS_BLOCKLOG, IPS_BLOCK, IPS_DISABLE, IPS_WHITELIST }
 
     private EventRuleActionGeneric.Type type;
 
@@ -38,6 +38,15 @@ public class EventRuleActionGeneric implements JSONString, Serializable {
     private String tagTarget;       /* names the JSON entity for the target of the tag */
     private String tagName;
     private Long tagLifetimeSec;
+
+    // Required for Intrusion Prevention Rules
+    private String sourceNetworks;
+    private String destinationNetworks;
+
+    public String getSourceNetworks() { return sourceNetworks; }
+    public void setSourceNetworks(String sourceNetworks) { this.sourceNetworks = sourceNetworks; }
+    public String getDestinationNetworks() { return destinationNetworks; }
+    public void setDestinationNetworks(String destinationNetworks) { this.destinationNetworks = destinationNetworks; }
 
     public String getTagTarget() { return tagTarget; }
     public void setTagTarget(String tagTarget) { this.tagTarget = tagTarget; }

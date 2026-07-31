@@ -12,7 +12,7 @@ import com.untangle.app.intrusion_prevention.IntrusionPreventionRule;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSettings;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSignature;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionVariable;
-import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.event.generic.EventRuleGeneric;
 import com.untangle.uvm.network.BypassRule;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -27,9 +27,9 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
 
     private Integer version;
 
-    // TRANSFORMED: rules -> ip_rules (type changes from List<IntrusionPreventionRule> to LinkedList<RuleGeneric>)
+    // TRANSFORMED: rules -> ip_rules (type changes from List<IntrusionPreventionRule> to LinkedList<EventRuleGeneric>)
     // snake_case follows the V2 convention for transformed rule lists
-    private LinkedList<RuleGeneric> ip_rules = new LinkedList<>();
+    private LinkedList<EventRuleGeneric> ip_rules = new LinkedList<>();
 
     // Pass-through fields
     private List<IntrusionPreventionSignature> signatures;
@@ -47,8 +47,8 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
 
-    public LinkedList<RuleGeneric> getIp_rules() { return ip_rules; }
-    public void setIp_rules(LinkedList<RuleGeneric> ip_rules) { this.ip_rules = ip_rules; }
+    public LinkedList<EventRuleGeneric> getIp_rules() { return ip_rules; }
+    public void setIp_rules(LinkedList<EventRuleGeneric> ip_rules) { this.ip_rules = ip_rules; }
 
     public List<IntrusionPreventionSignature> getSignatures() { return signatures; }
     public void setSignatures(List<IntrusionPreventionSignature> signatures) { this.signatures = signatures; }

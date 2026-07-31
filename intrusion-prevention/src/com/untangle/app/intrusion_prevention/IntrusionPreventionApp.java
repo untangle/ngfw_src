@@ -39,6 +39,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.codec.binary.Hex;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.untangle.app.intrusion_prevention.generic.IntrusionPreventionSettingsGeneric;
 
 import com.untangle.uvm.UvmContext;
@@ -227,8 +229,8 @@ public class IntrusionPreventionApp extends AppBase
      */
     public IntrusionPreventionSettingsGeneric getSettingsV2()
     {
-        if (this.settings != null)
-            return this.settings.transformIntrusionPreventionSettingsToGeneric();
+        if (this.getSettings() != null)
+            return this.getSettings().transformIntrusionPreventionSettingsToGeneric();
         return new IntrusionPreventionSettingsGeneric();
     }
 
@@ -251,8 +253,22 @@ public class IntrusionPreventionApp extends AppBase
      */
     public synchronized void setSettingsV2(final IntrusionPreventionSettingsGeneric newSettings)
     {
-        IntrusionPreventionSettings v1 = this.settings != null ? this.settings : new IntrusionPreventionSettings();
-        this.setSettings(newSettings.transformGenericToIntrusionPreventionSettings(v1));
+        if (this.getSettings() != null) {
+            JSONObject suricata = this.getSettings().getSuricataSettings();
+            this.getSettings().setSuricataSettings(null);          // hide it from serializer
+            IntrusionPreventionSettings cloned = SerializationUtils.clone(this.getSettings());
+            this.getSettings().setSuricataSettings(suricata);      // restore original
+            JSONObject suricataCopy;
+            try {
+                suricataCopy = suricata != null ? new JSONObject(suricata.toString()) : new JSONObject();
+            } catch (JSONException e) {
+                logger.warn("setSettingsV2: failed to copy suricataSettings", e);
+                suricataCopy = new JSONObject();
+            }
+            cloned.setSuricataSettings(suricataCopy);
+            newSettings.transformGenericToIntrusionPreventionSettings(cloned);
+            this.setSettings(cloned);
+        }
     }
 
     /**
