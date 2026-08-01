@@ -534,11 +534,17 @@ class CaptivePortalTests(NGFWTestCase):
         appData['userTimeout'] = 3600  # default
         self._app.setSettings(appData)
 
+        # Enable blind trust so SSL Inspector accepts test servers with
+        # expired certificates (test.untangle.com cert expired 2020)
+        appSSLData['serverBlindTrust'] = True
+        appSSL.setSettings(appSSLData)
         appSSL.stop()
         appSSL.start()
         time.sleep(5)
         result = remote_control.run_command(global_functions.build_curl_command(output_file="/tmp/capture_test_028.out"))
         appSSL.stop()
+        appSSLData['serverBlindTrust'] = False
+        appSSL.setSettings(appSSLData)
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Captive Portal' /tmp/capture_test_028.out")
         assert (search == 0)
