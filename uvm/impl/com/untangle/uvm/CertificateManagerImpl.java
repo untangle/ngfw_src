@@ -151,15 +151,21 @@ public class CertificateManagerImpl implements CertificateManager
 
         // Self-heal broken index.txt/serial.txt symlinks left by prior runs.
         // These files must be real files at the top level for ut-certgen to work.
+        // Only fix broken symlinks (target missing) or missing files — do not
+        // touch working symlinks or real files to avoid losing CA signing history.
         try {
             java.nio.file.Path indexPath = new File(CERT_STORE_PATH + "index.txt").toPath();
-            if (Files.isSymbolicLink(indexPath) || !new File(CERT_STORE_PATH + "index.txt").exists()) {
+            boolean indexBrokenSymlink = Files.isSymbolicLink(indexPath) && !Files.exists(indexPath);
+            boolean indexMissing = !Files.isSymbolicLink(indexPath) && !new File(CERT_STORE_PATH + "index.txt").exists();
+            if (indexBrokenSymlink || indexMissing) {
                 Files.deleteIfExists(indexPath);
                 new File(CERT_STORE_PATH + "index.txt").createNewFile();
                 logger.info("Self-healed missing/broken index.txt");
             }
             java.nio.file.Path serialPath = new File(CERT_STORE_PATH + "serial.txt").toPath();
-            if (Files.isSymbolicLink(serialPath) || !new File(CERT_STORE_PATH + "serial.txt").exists()) {
+            boolean serialBrokenSymlink = Files.isSymbolicLink(serialPath) && !Files.exists(serialPath);
+            boolean serialMissing = !Files.isSymbolicLink(serialPath) && !new File(CERT_STORE_PATH + "serial.txt").exists();
+            if (serialBrokenSymlink || serialMissing) {
                 Files.deleteIfExists(serialPath);
                 long serial = System.currentTimeMillis() / 1000;
                 java.nio.file.Files.writeString(new File(CERT_STORE_PATH + "serial.txt").toPath(), serial + "000000\n");
