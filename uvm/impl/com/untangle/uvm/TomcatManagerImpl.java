@@ -115,7 +115,7 @@ public class TomcatManagerImpl implements TomcatManager
 
         ctx = loadServlet("/gdrive", "gdrive");
 
-        ctx = loadServlet("/support", "support");
+        ctx = loadServlet("/support", "support", true);
     }
 
     /**

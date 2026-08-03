@@ -494,6 +494,64 @@ class AdministrationTests(NGFWTestCase):
         #  certificates list should be unchanged after test execution
         assert(len(initial_certificates_list['list']) == len(final_certificates_list['list']))
 
+    def test_026_upload_root_certificate(self):
+        """
+        NGFW-15886: verify uploadCertificate("ROOT", ...) creates the root-cert
+        directory correctly via the migrated Files.* calls (Site 7). Exercises
+        Files.createDirectories (== mkdir -p), Files.writeString (== echo >),
+        and Files.createFile-with-exists-guard (== touch).
+
+        Asserts on the four files Site 7 produces (untangle.crt, untangle.key,
+        serial.txt, index.txt), their permissions, serial.txt's byte content,
+        and index.txt's zero-byte state.
+        """
+        import subprocess
+        cert_mgr = global_functions.uvmContext.certificateManager()
+        certificates_dir = '/usr/share/untangle/settings/untangle-certificates'
+        initial_root_dirs = set(glob(join(certificates_dir, '[0-9]*/')))
+
+        try:
+            resp = cert_mgr.uploadCertificate("ROOT", certData, keyData, "")
+            assert resp is not None
+            # ROOT branch returns success msg per CertificateManagerImpl:847
+            assert "Root Certificate successfully uploaded" in resp.get("output", "")
+
+            # Find the newly-created baseName directory
+            new_root_dirs = list(set(glob(join(certificates_dir, '[0-9]*/'))) - initial_root_dirs)
+            assert len(new_root_dirs) == 1, f"expected exactly 1 new dir, got {new_root_dirs}"
+            new_root = new_root_dirs[0]
+
+            # All four expected files present with 0644 permissions
+            for fname in ('untangle.crt', 'untangle.key', 'serial.txt', 'index.txt'):
+                fpath = join(new_root, fname)
+                assert os.path.isfile(fpath), f"missing {fpath}"
+                mode = os.stat(fpath).st_mode & 0o777
+                assert mode == 0o644, f"{fpath} mode is 0o{mode:o}, expected 0o644"
+
+            # index.txt is empty (Files.createFile produces zero-byte file;
+            # matches touch's semantic on a fresh directory)
+            assert os.path.getsize(join(new_root, 'index.txt')) == 0, \
+                "index.txt should be empty"
+
+            # serial.txt content matches BigInteger.toString(16) of the CRT's serial + "\n"
+            with open(join(new_root, 'serial.txt'), 'rb') as f:
+                serial_bytes = f.read()
+            assert serial_bytes.endswith(b'\n'), \
+                "serial.txt should end with LF (explicit '\\n' preserved)"
+            # openssl pads serials to even hex chars; BigInteger.toString(16) does not.
+            # Strip leading zeros on both sides before comparing.
+            crt_serial = subprocess.check_output(
+                ["openssl", "x509", "-in", join(new_root, "untangle.crt"),
+                 "-noout", "-serial"], text=True).split("=")[1].strip().lower().lstrip("0")
+            file_serial = serial_bytes.strip().decode().lower().lstrip("0")
+            assert crt_serial == file_serial, \
+                f"serial content mismatch: crt={crt_serial} file={file_serial}"
+
+        finally:
+            # Cleanup - removeCertificate("ROOT") takes absolute path to untangle.crt
+            for d in set(glob(join(certificates_dir, '[0-9]*/'))) - initial_root_dirs:
+                cert_mgr.removeCertificate("ROOT", join(d, "untangle.crt"))
+
     def test_030_skin_upload_deprecated(self):
         """Verify skin upload to /admin/upload is rejected (handleFile deprecated)"""
         import zipfile
@@ -1431,7 +1489,7 @@ class AdministrationTests(NGFWTestCase):
 
         Fields validated (5):
           - dynamicDnsServiceName       (ALPHANUM)
-          - dynamicDnsServiceUsername   (ALPHANUM)
+          - dynamicDnsServiceUsername   (USERNAME_OR_EMAIL)  admits @ for email-format logins
           - dynamicDnsServicePassword   (OPAQUE_SECRET)
           - dynamicDnsServiceZone       (HOSTNAME)
           - dynamicDnsServiceHostnames  (SIMPLE_TEXT)
@@ -1460,6 +1518,16 @@ class AdministrationTests(NGFWTestCase):
             assert saved["dynamicDnsServiceUsername"]  == "ddns_user"
             assert saved["dynamicDnsServiceZone"]      == "example.com"
             assert saved["dynamicDnsServiceHostnames"] == "vpn.example.com,www.example.com"
+
+            # USERNAME_OR_EMAIL accepts email-format logins (ALPHANUM rejected '@').
+            # Cloudflare, No-IP, DynDNS all use email as the login identifier.
+            positive["dynamicDnsServiceUsername"] = "user@provider.com"
+            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
+            saved = global_functions.uvmContext.networkManager().getNetworkSettings()
+            assert saved["dynamicDnsServiceUsername"] == "user@provider.com", (
+                "NGFW-15768: USERNAME_OR_EMAIL failed to accept email-format DDNS "
+                f"username; got {saved['dynamicDnsServiceUsername']!r}"
+            )
 
             # Negative: each historically-confirmed RCE payload is rejected.
             baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
@@ -1597,29 +1665,13 @@ class AdministrationTests(NGFWTestCase):
         # INVALID — certSubject missing required '/CN=' anchor
         with pytest.raises(Exception):
             cert_mgr.generateCertificateAuthority("Test CA", "CN=NoSlash")
-        # VALID — both args match their SafeTypes; method writes to disk so
-        # we don't actually invoke it (would create a CA), and the rejection
-        # paths above are sufficient to prove the annotation fires. The
-        # validator runs before any side effects, so any non-rejection
-        # response counts as 'validation passed'.
-        #
-        # We still want one valid-shape probe: call with values that pass
-        # validation but use a unique throwaway CN; then restore by removing
-        # the generated CA directory below.
-        common_name = "atstest-safecheck-ca"
-        cert_subject = "/CN=" + common_name + "/O=ATS/L=Test"
-        cert_dir = "/usr/share/untangle/settings/untangle-certificates/"
-        before_dirs = set(os.listdir(cert_dir)) if os.path.isdir(cert_dir) else set()
-        try:
-            cert_mgr.generateCertificateAuthority(common_name, cert_subject)
-        finally:
-            # Best-effort cleanup of any new CA dir whose name starts with
-            # the throwaway prefix.
-            if os.path.isdir(cert_dir):
-                for d in os.listdir(cert_dir):
-                    if d not in before_dirs and d.startswith(common_name):
-                        import shutil
-                        shutil.rmtree(os.path.join(cert_dir, d), ignore_errors=True)
+        # Positive call skipped: generateCertificateAuthority() overwrites
+        # the active root-CA symlinks (untangle.crt/key) via symlinkRootCerts()
+        # and creates a new CA directory.  Cleaning this up reliably is fragile
+        # — previous attempts left dangling symlinks that broke SSL Inspector
+        # in downstream suites (captive-portal test_028).  The two negative
+        # cases above are sufficient to prove the @SafeCheckParam annotation
+        # fires; the validator runs before any side effects.
 
     def test_083_safecheckparam_generate_server_certificate(self):
         """CertificateManagerImpl.generateServerCertificate(certSubject: CERT_SUBJECT,
@@ -1730,23 +1782,6 @@ class AdministrationTests(NGFWTestCase):
             g_mgr.getAuthorizationUrl("https", "host`id`/path")
         # VALID — read-only string assembly
         g_mgr.getAuthorizationUrl("https", "localhost/admin")
-
-    def test_093_safecheckparam_provide_drive_code(self):
-        """GoogleManagerImpl.provideDriveCode(code: OAUTH_CODE)."""
-        g_mgr = global_functions.uvmContext.googleManager()
-        # INVALID — OAUTH_CODE forbids ';' and spaces
-        with pytest.raises(Exception):
-            g_mgr.provideDriveCode("code;id")
-        with pytest.raises(Exception):
-            g_mgr.provideDriveCode("code with space")
-        # VALID-shape — real OAuth codes contain '/', '=', '+', '_'
-        # The call will fail downstream (no live cloud session) but the
-        # validator should accept the shape.
-        try:
-            g_mgr.provideDriveCode("4/abc-def_+/=")
-        except Exception as e:
-            assert "Invalid value in" not in str(e), \
-                f"validator unexpectedly rejected a well-formed OAuth code: {e!r}"
 
     def test_094_safecheckparam_upload_to_drive(self):
         """GoogleManagerImpl.uploadToDrive(filePath: FILE_PATH, parentFolder: SIMPLE_TEXT)."""

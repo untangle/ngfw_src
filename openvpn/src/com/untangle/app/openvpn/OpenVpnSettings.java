@@ -33,10 +33,12 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
     private static final int DEFAULT_PING_TIMEOUT = 10;
     private static final int DEFAULT_VERBOSITY    = 1;
     static final int MANAGEMENT_PORT              = 1195;
+    static final String DEFAULT_CIPHER            = "AES-128-CBC";
 
     private String protocol = "udp"; /* "tcp" or "udp" */
     private int port = 1194;
-    private String cipher = "AES-128-CBC";
+    private String cipher = DEFAULT_CIPHER;
+    private String dataCiphersFallback = DEFAULT_CIPHER;
     private boolean clientToClient = true;
     
     @SafeCheck(SafeType.ALPHANUM)
@@ -180,6 +182,9 @@ public class OpenVpnSettings implements java.io.Serializable, JSONString
 
     public String getCipher() { return this.cipher; }
     public void setCipher( String newValue ) { this.cipher = newValue; }
+
+    public String getDataCiphersFallback() { return this.dataCiphersFallback; }
+    public void setDataCiphersFallback( String newValue ) { this.dataCiphersFallback = newValue; }
 
     public boolean getClientToClient() { return this.clientToClient; }
     public void setClientToClient( boolean newValue ) { this.clientToClient = newValue; }

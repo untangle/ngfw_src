@@ -6,19 +6,23 @@ def debug(str):
     if False:
         print(str)
 
-def run( cmd, ignore_errors=False, print_cmd=False ):
-    if print_cmd:
-        print(cmd)
-    ret = os.system( cmd )
-    if ret != 0 and not ignore_errors:
-        print("ERROR: Command failed: %i \"%s\"" % (ret, cmd))
+def get_tc_output(dev):
+    """Run tc in argv form (no shell) and return stdout lines."""
+    result = subprocess.run(
+        ["/sbin/tc", "-s", "class", "ls", "dev", dev],
+        capture_output=True, text=True, check=False
+    )
+    return result.stdout.splitlines(keepends=True)
 
-def runSubprocess(cmd):
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, text=True)
-    result=[]
-    for line in proc.stdout:
-        result.append(line)
-    return result
+def format_tc_output(lines, wan_name, direction):
+    """Replace leading 'class' with 'interface: <name> <direction> class' in Python."""
+    out = []
+    for line in lines:
+        if line.startswith("class"):
+            out.append("interface: %s %s class%s" % (wan_name, direction, line[5:]))
+        else:
+            out.append(line)
+    return out
 
 def statusToJSON(input):
     #Parse patterns for qos-service.py status output
@@ -73,8 +77,8 @@ def status( qos_interfaces, wan_intfs ):
         wan_dev = wan_intf.get('systemDev')
         imq_dev = wan_intf.get('imqDev')
         wan_name = wan_intf.get('name')
-        result= runSubprocess( "tc -s class ls dev %s | sed \"s/^class/interface: %s Outbound class/\"" % (wan_dev, wan_name) )
-        result.extend( runSubprocess( "tc -s class ls dev %s | sed \"s/^class/interface: %s Inbound class/\"" % (imq_dev, wan_name)))
+        result = format_tc_output(get_tc_output(wan_dev), wan_name, "Outbound")
+        result.extend(format_tc_output(get_tc_output(imq_dev), wan_name, "Inbound"))
         json_objs.extend( statusToJSON(result) )
 
         #run("echo ------ Qdisc  ------")

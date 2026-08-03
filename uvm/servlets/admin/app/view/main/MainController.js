@@ -59,7 +59,13 @@ Ext.define('Ung.view.main.MainController', {
                 btn.show();
                 notificationArr += '<h3>' + 'Notifications:'.t() + '</h3><ul>';
                 for (i = 0; i < result.list.length; i += 1) {
-                    notificationArr += '<li>' + result.list[i] + '</li>';
+                    var safe = Ext.String.htmlEncode(result.list[i]);
+                    safe = safe.replace(/&lt;br\/&gt;/g, '<br/>');
+                    safe = safe.replace(/&lt;strong&gt;/g, '<strong>');
+                    safe = safe.replace(/&lt;\/strong&gt;/g, '</strong>');
+                    safe = safe.replace(/&lt;a href=&quot;((?:\/[^&]*|https:\/\/[a-zA-Z0-9.-]+\.arista\.com\/[^&]*)?)&quot;(?:\s*target=&quot;_blank&quot;)?&gt;(.*?)&lt;\/a&gt;/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>');
+                    safe = safe.replace(/&lt;a href=&#39;((?:\/[^&]*|https:\/\/[a-zA-Z0-9.-]+\.arista\.com\/[^&]*)?)&#39;(?:\s*target=&#39;_blank&#39;)?&gt;(.*?)&lt;\/a&gt;/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$2</a>');
+                    notificationArr += '<li>' + safe + '</li>';
                 }
                 notificationArr += '</ul>';
                 btn.setText(result.list.length);

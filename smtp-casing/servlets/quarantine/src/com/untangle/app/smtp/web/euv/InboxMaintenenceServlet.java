@@ -78,25 +78,18 @@ public class InboxMaintenenceServlet extends HttpServlet
 
         String account = null;
         try {
-            if("test".equals(authToken)) { //Just for ui testing
-                account="test@untangle.com";
-                req.setAttribute( "forwardAddress", "remapped@untangle.com");
-                req.setAttribute( "safelistData", buildJsonList(new String[] {"safeOne@test.com", "safeTwo@test.com"}));
-                req.setAttribute( "remapsData", "[]");
-            } else {
-                account = quarantine.getAccountFromToken(authToken);
+            account = quarantine.getAccountFromToken(authToken);
 
-                String remappedTo = quarantine.getMappedTo(account);
-                if(remappedTo != null) {
-                    req.setAttribute( "forwardAddress", remappedTo);
-                }
-
-                String[] inboundRemappings = quarantine.getMappedFrom(account);
-                req.setAttribute( "remapsData", buildJsonList(inboundRemappings));
-
-                String[] safelistData = safelistManipulation.getSafelistContents(account);
-                req.setAttribute( "safelistData", buildJsonList(safelistData));
+            String remappedTo = quarantine.getMappedTo(account);
+            if(remappedTo != null) {
+                req.setAttribute( "forwardAddress", remappedTo);
             }
+
+            String[] inboundRemappings = quarantine.getMappedFrom(account);
+            req.setAttribute( "remapsData", buildJsonList(inboundRemappings));
+
+            String[] safelistData = safelistManipulation.getSafelistContents(account);
+            req.setAttribute( "safelistData", buildJsonList(safelistData));
         }
         catch(BadTokenException ex) {
             req.getRequestDispatcher(REQUEST_FWD).forward(req, resp);

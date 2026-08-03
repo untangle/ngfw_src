@@ -273,6 +273,12 @@ final class MasterTable
     private static void visit(File f, StoreSummary storeMeta)
     {
         String emailAddress = f.getName();
+        if (!QuarantineAddressValidator.isValidAddress(emailAddress)) {
+            LogManager.getLogger(MasterTable.class).warn(
+                "Skipping inbox directory with invalid name: "
+                + QuarantineAddressValidator.getViolation(emailAddress));
+            return;
+        }
         InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(emailAddress, f.getAbsolutePath());
         if (inboxIndex != null) {
             long totalSz = 0;

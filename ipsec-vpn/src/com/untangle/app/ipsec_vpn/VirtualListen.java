@@ -8,6 +8,9 @@ import java.io.Serializable;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * This class is used to represent an IP address on which the IPsec daemon will
  * be configured to listen for and accept inbound VPN connections.
@@ -20,6 +23,7 @@ import org.json.JSONString;
 public class VirtualListen implements JSONString, Serializable
 {
     private int id;
+    @SafeCheck(SafeType.IP_OR_CIDR)
     private String address;
 
     public VirtualListen()

@@ -189,6 +189,10 @@ public class QuarantineStore
         logger.debug("Call to quarantine mail from file \"" + file + "\" into inbox \"" + inboxAddr + "\"");
 
         File dir = getInboxDir(inboxAddr, true);
+        if (dir == null) {
+            logger.warn("Unable to get or create inbox directory for \"" + inboxAddr + "\"");
+            return new Pair<>(AdditionStatus.FAILURE);
+        }
 
         // We need to hold the account lock for the whole
         // operation of addition and index update. This
@@ -300,7 +304,12 @@ public class QuarantineStore
                 // goofed).
             }
             // Read the index (it may not exist)
-            InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(account, getInboxPath(account));
+            String inboxPath = getInboxPath(account);
+            if (inboxPath == null) {
+                addressLock.unlock(account);
+                continue;
+            }
+            InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(account, inboxPath);
 
             boolean shouldDelete = false;
 
@@ -309,7 +318,7 @@ public class QuarantineStore
             }
 
             if (shouldDelete) {
-                IOUtil.rmDir(new File(getInboxPath(account)));
+                IOUtil.rmDir(new File(inboxPath));
                 // Note that this call implicitly causes any mails accounted for
                 // to be removed
                 masterTable.removeInbox(account);
@@ -331,13 +340,16 @@ public class QuarantineStore
         String account = address.toLowerCase();
         addressLock.lock(account);
 
-        GenericStatus ret = null;
+        String inboxPath = getInboxPath(account);
+        if (inboxPath == null) {
+            addressLock.unlock(account);
+            return GenericStatus.ERROR;
+        }
 
-        IOUtil.rmDir(new File(getInboxPath(account)));
+        IOUtil.rmDir(new File(inboxPath));
         masterTable.removeInbox(account);
-        ret = GenericStatus.SUCCESS;
         addressLock.unlock(account);
-        return ret;
+        return GenericStatus.SUCCESS;
     }
 
     /**
@@ -364,7 +376,12 @@ public class QuarantineStore
         // Read the index file.
         // Remove any mails from the in-memory index which are in our list and
         // add them to a new list
-        InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(address, getInboxPath(address));
+        String inboxPath = getInboxPath(address);
+        if (inboxPath == null) {
+            addressLock.unlock(address);
+            return new Pair<>(GenericStatus.ERROR);
+        }
+        InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(address, inboxPath);
         addressLock.unlock(address);
         if (inboxIndex == null) {
             logger.warn("Unable to read index for " + address);
@@ -480,7 +497,12 @@ public class QuarantineStore
 
         // Read the index file. Remove any mails from the in-memory
         // index which are in our list and add them to a new list
-        InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(address, getInboxPath(address));
+        String inboxPath = getInboxPath(address);
+        if (inboxPath == null) {
+            addressLock.unlock(address);
+            return new Pair<>(GenericStatus.ERROR);
+        }
+        InboxIndex inboxIndex = QuarantineStorageManager.readQuarantine(address, inboxPath);
 
         if (inboxIndex == null) {
             logger.warn("Unable to purge mails for " + address);
@@ -498,7 +520,7 @@ public class QuarantineStore
 
         // Update the index. We'll defer actual ejection until after we release
         // the lock
-        if (!QuarantineStorageManager.writeQuarantineIndex(address, inboxIndex, getInboxPath(address))) {
+        if (!QuarantineStorageManager.writeQuarantineIndex(address, inboxIndex, inboxPath)) {
             logger.warn("Unable to replace index for address \"" + address + "\".  Abort purge");
             addressLock.unlock(address);
             return new Pair<>(GenericStatus.ERROR);
@@ -545,9 +567,13 @@ public class QuarantineStore
             MailSummary summary)
     {
         // Update (append) to the index
+        String inboxPath = getInboxPath(inboxAddr);
+        if (inboxPath == null) {
+            return false;
+        }
         return QuarantineStorageManager.writeQuarantineRecord(inboxAddr,
                 new InboxRecord(fileNameInInbox, System.currentTimeMillis(), summary, recipients),
-                getInboxPath(inboxAddr));
+                inboxPath);
 
     }
 
@@ -619,13 +645,28 @@ public class QuarantineStore
     }
 
     /**
-     * Return inbox path.
+     * Return inbox path. Returns null if the resolved path escapes the
+     * quarantine inboxes directory (defense-in-depth against path traversal).
      * @param  address String of address.
-     * @return         Path for inbox.
+     * @return         Path for inbox, or null if containment check fails.
      */
     private String getInboxPath(String address)
     {
-        return rootDir.getAbsolutePath() + "/inboxes/" + address;
+        String candidate = rootDir.getAbsolutePath() + "/inboxes/" + address;
+        try {
+            String canonicalCandidate = new File(candidate).getCanonicalPath();
+            String canonicalInboxes = new File(rootDir, "inboxes").getCanonicalPath()
+                + File.separator;
+            if (!canonicalCandidate.startsWith(canonicalInboxes)) {
+                logger.warn("Path traversal blocked: inbox path for address escapes "
+                    + "quarantine directory");
+                return null;
+            }
+            return candidate;
+        } catch (IOException e) {
+            logger.warn("Unable to resolve canonical path for inbox", e);
+            return null;
+        }
     }
 
     /**
@@ -641,7 +682,11 @@ public class QuarantineStore
     {
 
         // RelativeFileName subDirName = m_masterTable.getInboxDir(lcAddress);
-        File baseDir = new File(getInboxPath(lcAddress));
+        String inboxPath = getInboxPath(lcAddress);
+        if (inboxPath == null) {
+            return null;
+        }
+        File baseDir = new File(inboxPath);
         if (!baseDir.exists()) {
             if (!autoCreate) {
                 logger.debug("No inbox for \"" + lcAddress + "\"");
@@ -663,7 +708,11 @@ public class QuarantineStore
     private File getOrCreateInboxDirWL(String lcAddress)
     {
 
-        File baseDir = new File(getInboxPath(lcAddress));
+        String inboxPath = getInboxPath(lcAddress);
+        if (inboxPath == null) {
+            return null;
+        }
+        File baseDir = new File(inboxPath);
 
         try {
             if (!baseDir.exists()) {
@@ -673,7 +722,7 @@ public class QuarantineStore
                 }
                 InboxIndex inboxIndex = new InboxIndex();
                 inboxIndex.setOwnerAddress(lcAddress);
-                QuarantineStorageManager.writeQuarantineIndex(lcAddress, inboxIndex, getInboxPath(lcAddress));
+                QuarantineStorageManager.writeQuarantineIndex(lcAddress, inboxIndex, inboxPath);
                 masterTable.addInbox(lcAddress);
             } else {
                 logger.debug("Inbox for \"" + lcAddress + "\" created by concurrent thread");

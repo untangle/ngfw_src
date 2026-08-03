@@ -1052,7 +1052,6 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     private void checkDbRetentionChange( ReportsSettings newSettings )
     {
-        String execStr;
         int currHourly, currDaily, newHourly, newDaily;
 
         if (this.settings == null) {
@@ -1066,12 +1065,20 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
 
         if(newDaily != currDaily ||
            newHourly != currHourly) {
+            // NGFW-15855: migrated from shell pipeline
+            //   REPORTS_CLEAN_TABLES_SCRIPT ... | logger -t uvmreports
+            // to argv form via a wrapper script (ut-reports-clean-tables) that
+            // preserves the "| logger -t uvmreports" syslog tag pipeline internally.
+            // Exit-code semantics preserved: wrapper has no set -o pipefail, so
+            // its exit code is logger's (typically 0) just like the original.
+            List<String> argsList;
             if(newHourly > 0) {
-                execStr = REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " -h " + newHourly + " 0 | logger -t uvmreports";
+                argsList = List.of("-d", ReportsApp.dbDriver, "-h", String.valueOf(newHourly), "0");
             } else {
-                execStr = REPORTS_CLEAN_TABLES_SCRIPT + " -d " + ReportsApp.dbDriver + " " + newDaily + " | logger -t uvmreports";
+                argsList = List.of("-d", ReportsApp.dbDriver, String.valueOf(newDaily));
             }
-            UvmContextFactory.context().execManager().execResult( execStr );
+            UvmContextFactory.context().execManager().execCommand(
+                "/usr/share/untangle/bin/ut-reports-clean-tables", argsList);
         }
     }
 
@@ -1104,12 +1111,10 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     private int restoreData( FileItem item )
     {
+        if (!item.getName().endsWith(".gz")) {
+            throw new RuntimeException("Invalid file extension. Allowed: .gz");
+        }
         try {
-            //validate zip
-            if (!item.getName().endsWith(".gz")) {
-                throw new RuntimeException("Invalid file extension. Allowed: .gz");
-            }
-
             String filename = "/tmp/reports_restore_data.sql.gz";
             File file = new File(filename);
             if (file.exists())
@@ -1553,18 +1558,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         @Override
         public String handleFile(FileItem fileItem, String argument) throws Exception
         {
-            try {
-                int ret = restoreData(fileItem);
-
-                if ( ret == 0 ) {
-                    return I18nUtil.marktr("Successfully restored data");
-                } else {
-                    return I18nUtil.marktr("Error restoring data:") + " " + ret;
-                }
-                    
-            } catch ( Exception e ) {
-                return I18nUtil.marktr("Error restoring data:") + " " + e.toString();
+            int ret = restoreData(fileItem);
+            if ( ret == 0 ) {
+                return I18nUtil.marktr("Successfully restored data");
             }
+            throw new RuntimeException(I18nUtil.marktr("Error restoring data:") + " exit code " + ret);
          }
     }
     

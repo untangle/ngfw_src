@@ -307,7 +307,13 @@ public class ConfigManagerImpl implements ConfigManager
             @Override
             public void run()
             {
-                context.execManager().exec("nohup " + FACTORY_RESET_SCRIPT + " force-reboot >/dev/null 2>&1 &");
+                // NGFW-15855: replaced shell "nohup ... >/dev/null 2>&1 &" with
+                // execEvilProcessDetached. Redirect.DISCARD attaches /dev/null at
+                // the OS fd layer so the script's later echoes (running AFTER
+                // systemctl stop untangle-vm kills the JVM) do not hit a broken
+                // pipe. start() returns immediately (equivalent to trailing &);
+                // no controlling terminal on a Timer thread so nohup is a no-op.
+                context.execManager().execEvilProcessDetached(new String[]{FACTORY_RESET_SCRIPT, "force-reboot"});
             }
         }, 1000);
 

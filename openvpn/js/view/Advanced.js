@@ -66,6 +66,22 @@ Ext.define('Ung.apps.openvpn.view.Advanced', {
         xtype: 'container',
         layout: 'column',
         items: [{
+            xtype: 'textfield',
+            fieldLabel: 'Fallback Cipher'.t(),
+            labelWidth: 180,
+            bind: '{settings.dataCiphersFallback}',
+            maskRe: /[A-Za-z0-9\-]/,
+            regex: /^[A-Za-z0-9\-]+$/,
+            regexText: 'Fallback Cipher accepts a single cipher only - no colons allowed.'.t()
+        }, {
+            xtype: 'displayfield',
+            margin: '0 0 0 10',
+            value: '(default = AES-128-CBC)'.t()
+        }]
+    },{
+        xtype: 'container',
+        layout: 'column',
+        items: [{
             xtype: 'checkbox',
             fieldLabel: 'Client To Client Allowed'.t(),
             labelWidth: 180,

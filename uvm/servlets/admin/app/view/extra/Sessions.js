@@ -338,12 +338,14 @@ Ext.define('Ung.view.extra.Sessions', {
             header: 'Hostname'.t(),
             dataIndex: 'hostname',
             width: Renderer.hostnameWidth,
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            renderer: Ext.util.Format.htmlEncode
         }, {
             header: 'Username'.t(),
             dataIndex: 'username',
             width: Renderer.usernameWidth,
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            renderer: Ext.util.Format.htmlEncode
         }, {
             header: 'NATd'.t(),
             dataIndex: 'natted',
@@ -516,19 +518,22 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Protocol'.t(),
                 dataIndex: "application-control-lite-protocol",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Category'.t(),
                 dataIndex: "application-control-lite-category",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Description'.t(),
                 dataIndex: "application-control-lite-description",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Matched?'.t(),
@@ -542,24 +547,28 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Protochain'.t(),
                 dataIndex: "application-control-protochain",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 header: 'Application'.t(),
                 dataIndex: "application-control-application",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Category'.t(),
                 dataIndex: "application-control-category",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Detail'.t(),
                 dataIndex: "application-control-detail",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Confidence'.t(),
@@ -571,13 +580,15 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Productivity'.t(),
                 dataIndex: "application-control-productivity",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Risk'.t(),
                 dataIndex: "application-control-risk",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             }]
         }, {
             header: 'Web Filter',
@@ -587,13 +598,15 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Category Name'.t(),
                 dataIndex: "web-filter-best-category-name",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Category Description'.t(),
                 dataIndex: "web-filter-best-category-description",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Category Flagged'.t(),
@@ -621,25 +634,29 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Hostname'.t(),
                 dataIndex: "http-hostname",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'URL'.t(),
                 dataIndex: "http-url",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'User Agent'.t(),
                 dataIndex: "http-user-agent",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'URI'.t(),
                 dataIndex: "http-uri",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Request Method'.t(),
@@ -651,43 +668,50 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Request File Name'.t(),
                 dataIndex: "http-request-file-name",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Request File Extension'.t(),
                 dataIndex: "http-request-file-extension",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Request File Path'.t(),
                 dataIndex: "http-request-file-path",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Response File Name'.t(),
                 dataIndex: "http-response-file-name",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Response File Extension'.t(),
                 dataIndex: "http-response-file-extension",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Content Type'.t(),
                 dataIndex: "http-content-type",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Referrer'.t(),
                 dataIndex: "http-referer",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Content Length'.t(),
@@ -703,13 +727,15 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Subject DN'.t(),
                 dataIndex: "ssl-subject-dn",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Issuer DN'.t(),
                 dataIndex: "ssl-issuer-dn",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Inspected'.t(),
@@ -721,7 +747,8 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'SNI Hostname'.t(),
                 dataIndex: "ssl-sni-host",
                 width: Renderer.hostnameWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             }]
         }, {
             header: 'FTP',
@@ -731,7 +758,8 @@ Ext.define('Ung.view.extra.Sessions', {
                 header: 'Filename'.t(),
                 dataIndex: "ftp-file-name",
                 width: Renderer.messageWidth,
-                filter: Renderer.stringFilter
+                filter: Renderer.stringFilter,
+                renderer: Ext.util.Format.htmlEncode
             },{
                 hidden: true,
                 header: 'Data Session'.t(),

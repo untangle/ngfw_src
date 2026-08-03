@@ -5,12 +5,16 @@ package com.untangle.app.smtp;
 
 import java.io.Serializable;
 
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+
 /**
  * Class used to hold an email address
  */
 @SuppressWarnings("serial")
 public class EmailAddressRule implements Serializable
 {
+    @SafeCheck(SafeType.EMAIL_WILDCARD)
     private String addr;
 
     /**

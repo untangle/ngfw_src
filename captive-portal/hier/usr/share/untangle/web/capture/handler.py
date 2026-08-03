@@ -1,6 +1,7 @@
 from mod_python import apache
 from mod_python import util
 from mod_python import Cookie
+import html
 import sys
 
 if "@PREFIX@" != '':
@@ -491,15 +492,17 @@ def _generate_page(req,captureSettings,args,extra='',page=None,template_name=Non
         page = _replace_marker(page,'$.AuthRelayUri.$', uvmContext.uriManager().getUri("https://auth-relay.edge.arista.com/callback.php"))
 
     # plug the values into the hidden form fields of the authentication page
-    # page by doing  search and replace for each of the placeholder text tags
-    page = _replace_marker(page,'$.method.$', args['METHOD'])
-    page = _replace_marker(page,'$.nonce.$', args['NONCE'])
-    page = _replace_marker(page,'$.appid.$', args['APPID'])
-    page = _replace_marker(page,'$.host.$', args['HOST'])
-    page = _replace_marker(page,'$.uri.$', args['URI'])
+    # page by doing  search and replace for each of the placeholder text tags.
+    # These values originate from end-user form/query input and are HTML-escaped
+    # to prevent reflected XSS into attribute contexts (UNT-02).
+    page = _replace_marker(page,'$.method.$', _html_escape(args['METHOD']))
+    page = _replace_marker(page,'$.nonce.$', _html_escape(args['NONCE']))
+    page = _replace_marker(page,'$.appid.$', _html_escape(args['APPID']))
+    page = _replace_marker(page,'$.host.$', _html_escape(args['HOST']))
+    page = _replace_marker(page,'$.uri.$', _html_escape(args['URI']))
 
     # replace the text in the problem section with the agumented value
-    page = _replace_marker(page,'$.ProblemText.$',extra)
+    page = _replace_marker(page,'$.ProblemText.$', _html_escape(extra))
 
     # debug = create_debug(args,captureSettings)
     debug = ""
@@ -633,6 +636,19 @@ def _replace_marker(page,marker,output):
     page = page.replace(marker,output)
 
     return(page)
+
+#-----------------------------------------------------------------------------
+# HTML-escapes a value for safe substitution into HTML attribute / text contexts.
+# Tolerates bytes input - the i18n _() helper uses lgettext() which returns
+# bytes on Python < 3.11, matching the existing _replace_marker contract.
+
+def _html_escape(value):
+
+    if value is None:
+        return ''
+    if type(value) == bytes:
+        value = value.decode("utf-8")
+    return html.escape(value, quote=True)
 
 #-----------------------------------------------------------------------------
 # handler for custom.py integration which dynamically loads the custom.py

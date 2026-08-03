@@ -20,7 +20,7 @@ import org.json.JSONObject;
 @SuppressWarnings("serial")
 public class UriManagerSettings implements Serializable, JSONString
 {
-    private Integer version = 6;
+    private Integer version = 7;
     private List<UriTranslation> uriTranslations = new LinkedList<>();
 
     @SafeCheck(SafeType.HOSTNAME)

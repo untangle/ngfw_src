@@ -63,7 +63,8 @@ public class SystemSettingsGeneric implements Serializable, JSONString {
     // Sinks into ddclient.conf where `cmd='...'` directive triggers shell exec.
     @SafeCheck(SafeType.ALPHANUM)
     private String  dynamicDnsServiceName = null;
-    @SafeCheck(SafeType.ALPHANUM)
+    // Must match main POJO: USERNAME_OR_EMAIL (DDNS providers accept email-format login IDs).
+    @SafeCheck(SafeType.USERNAME_OR_EMAIL)
     private String  dynamicDnsServiceUsername = null;
     @SafeCheck(SafeType.OPAQUE_SECRET)
     private String  dynamicDnsServicePassword = null;

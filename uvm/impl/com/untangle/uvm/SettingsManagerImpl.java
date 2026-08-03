@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,6 +81,17 @@ public class SettingsManagerImpl implements SettingsManager
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd-HHmmss.SSS");
 
     public static final int MAX_DIFF_SIZE = 5242880;
+
+    /**
+     * Maximum number of versioned settings files to retain for devices.js.
+     * Older versions beyond this limit are automatically pruned on each save.
+     */
+    public static final int MAX_VERSION_FILES = 20;
+
+    /**
+     * Settings file subject to version pruning due to high save frequency.
+     */
+    private static final String DEVICES_FILE_NAME = "devices.js";
 
     /**
      * This is the actual JSON serializer
@@ -314,6 +326,11 @@ public class SettingsManagerImpl implements SettingsManager
         if (!_checkLegalName(fileName)) {
             throw new IllegalArgumentException("Invalid file name: '" + fileName + "'");
         }
+        if (!_checkLegalName(inputFilename)) {
+            throw new IllegalArgumentException("Invalid input file name: '" + inputFilename + "'");
+        }
+        _checkSettingsPath(fileName);
+        _checkSettingsPath(inputFilename);
 
         _saveImpl( fileName, inputFilename, saveVersion, true );
     }
@@ -616,8 +633,12 @@ public class SettingsManagerImpl implements SettingsManager
             //old way
             //String linkCmd = "ln -sf ./"+filename + " " + link.toString();
             //UvmContextImpl.context().execManager().exec(linkCmd);
+
+            if ( fileName.endsWith( DEVICES_FILE_NAME ) ) {
+                _pruneOldVersions( fileName );
+            }
         }
-        
+
     }
 
     /**
@@ -640,17 +661,64 @@ public class SettingsManagerImpl implements SettingsManager
         return lock;
     }
 
+    private static final String[] ALLOWED_BASE_DIRS;
+    static {
+        String settingsDir = System.getProperty("uvm.settings.dir");
+        if (settingsDir == null) settingsDir = "/usr/share/untangle/settings";
+        String confDir = System.getProperty("uvm.conf.dir");
+        if (confDir == null) confDir = "/usr/share/untangle/conf";
+        String libDir = System.getProperty("uvm.lib.dir");
+        if (libDir == null) libDir = "/usr/share/untangle/lib";
+        String skinsDir = System.getProperty("uvm.skins.dir");
+        if (skinsDir == null) skinsDir = "/usr/share/untangle/web/skins"; 
+
+        ALLOWED_BASE_DIRS = new String[] {
+            settingsDir,
+            confDir,
+            libDir,
+            skinsDir,
+            "/var/lib/interface-status",
+            "/etc/untangle",
+            "/tmp"
+        };
+    }
+
     /**
      * Check if a filename is "legal"
-     * Must have valid characterns and an extension
+     * Must resolve within an allowed base directory, contain valid characters, and have an extension.
      * @param name
      * @return true if legal, false otherwise
      * @throws IllegalArgumentException
      */
     private boolean _checkLegalName(String name) throws IllegalArgumentException
     {
-        if (!VALID_CHARACTERS.matcher( name.replace("/","") ).matches()) {
-            logger.error("Illegal name (Invalid characters): " + name);
+        if (name == null || name.isEmpty()) {
+            logger.error("Illegal name: null or empty");
+            return false;
+        }
+
+        try {
+            String canonical = new File(name).getCanonicalPath();
+            boolean allowed = false;
+            for (String baseDir : ALLOWED_BASE_DIRS) {
+                String prefix = new File(baseDir).getCanonicalPath() + File.separator;
+                if (canonical.startsWith(prefix) || canonical.equals(new File(baseDir).getCanonicalPath())) {
+                    allowed = true;
+                    break;
+                }
+            }
+            if (!allowed) {
+                logger.error("Illegal name (path outside allowed directories): " + name);
+                return false;
+            }
+        } catch (IOException e) {
+            logger.error("Illegal name (cannot resolve path): " + name, e);
+            return false;
+        }
+
+        String basename = new File(name).getName();
+        if (!VALID_CHARACTERS.matcher(basename).matches()) {
+            logger.error("Illegal name (Invalid characters in basename): " + name);
             return false;
         }
 
@@ -664,8 +732,35 @@ public class SettingsManagerImpl implements SettingsManager
             logger.error("Illegal name (contains ../): " + name);
             return false;
         }
-            
+
         return true;
+    }
+
+    /**
+     * Strict path check for the RPC-exposed save(String, String, boolean) overload.
+     * Only allows paths under the settings and conf directories - NOT /tmp, /var/lib, etc.
+     *
+     * @param name the file path to validate
+     * @throws SettingsException if the path is outside allowed directories or cannot be resolved
+     */
+    private void _checkSettingsPath(String name) throws SettingsException
+    {
+        try {
+            String canonical = new File(name).getCanonicalPath();
+            String settingsDir = System.getProperty("uvm.settings.dir");
+            if (settingsDir == null) settingsDir = "/usr/share/untangle/settings";
+            String confDir = System.getProperty("uvm.conf.dir");
+            if (confDir == null) confDir = "/usr/share/untangle/conf";
+
+            String settingsPrefix = new File(settingsDir).getCanonicalPath() + File.separator;
+            String confPrefix = new File(confDir).getCanonicalPath() + File.separator;
+
+            if (!canonical.startsWith(settingsPrefix) && !canonical.startsWith(confPrefix)) {
+                throw new SettingsException("Path outside settings directory: " + name);
+            }
+        } catch (IOException e) {
+            throw new SettingsException("Cannot resolve path: " + name, e);
+        }
     }
 
     /**
@@ -682,6 +777,45 @@ public class SettingsManagerImpl implements SettingsManager
         }
 
         return null;
+    }
+
+    /**
+     * Prune old versioned settings files, keeping only the most recent MAX_VERSION_FILES.
+     * Versioned files use the naming pattern: {baseName}-version-{timestamp}{extension}
+     * where the timestamp format (yyyy-MM-dd-HHmmss.SSS) sorts chronologically.
+     *
+     * @param fileName
+     *          The base settings file path (e.g., /usr/share/.../devices.js)
+     */
+    private void _pruneOldVersions( String fileName )
+    {
+        try {
+            File baseFile = new File( fileName );
+            File parentDir = baseFile.getParentFile();
+            if ( parentDir == null || !parentDir.isDirectory() ) {
+                return;
+            }
+
+            String baseName = baseFile.getName();
+            String prefix = baseName + "-version-";
+
+            File[] versionFiles = parentDir.listFiles( (dir, name) -> name.startsWith( prefix ) );
+            if ( versionFiles == null || versionFiles.length <= MAX_VERSION_FILES ) {
+                return;
+            }
+
+            Arrays.sort( versionFiles, (a, b) -> a.getName().compareTo( b.getName() ) );
+
+            int deleteCount = versionFiles.length - MAX_VERSION_FILES;
+            for ( int i = 0; i < deleteCount; i++ ) {
+                if ( !versionFiles[i].delete() ) {
+                    logger.warn( "Failed to prune old version file: " + versionFiles[i].getAbsolutePath() );
+                }
+            }
+            logger.info( "Pruned " + deleteCount + " old version(s) of " + baseName + ", kept " + MAX_VERSION_FILES );
+        } catch ( Exception e ) {
+            logger.warn( "Failed to prune old version files for: " + fileName, e );
+        }
     }
 
     /**

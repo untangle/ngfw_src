@@ -174,6 +174,28 @@ def check_disk_health():
     except Exception as e:
         log(f"Disk health check encountered an error {e}, proceeding with upgrade.")
 
+# ---- Shared upgrade helpers ---- #
+
+SETTINGS_DIR = "/usr/share/untangle/settings/untangle-vm"
+SETTINGS_BACKUP = "/tmp/.ut-upgrade-settings-backup"
+
+def backup_uvm_settings():
+    if os.path.isdir(SETTINGS_DIR):
+        log("Pre-upgrade: backing up UVM settings directory")
+        cmd_to_log("rm -rf %s" % SETTINGS_BACKUP)
+        cmd_to_log("cp -a %s %s" % (SETTINGS_DIR, SETTINGS_BACKUP))
+    else:
+        log("Pre-upgrade: no UVM settings directory to back up")
+
+def restore_uvm_settings():
+    if os.path.isdir(SETTINGS_BACKUP):
+        log("Post-upgrade: restoring UVM settings from pre-upgrade backup")
+        os.makedirs(SETTINGS_DIR, exist_ok=True)
+        cmd_to_log("cp -an %s/* %s/ 2>/dev/null || true" % (SETTINGS_BACKUP, SETTINGS_DIR))
+        cmd_to_log("rm -rf %s" % SETTINGS_BACKUP)
+    else:
+        log("Post-upgrade: no settings backup to restore")
+
 # ---- Bookworm upgrade helpers ---- #
 
 def is_bookworm_upgrade():
@@ -268,6 +290,8 @@ def pre_upgrade_cleanup():
         except:
             log("Pre-upgrade: WARNING - could not create wizard-complete flag")
 
+    backup_uvm_settings()
+
 def post_upgrade_fixups():
     """
     After dist-upgrade to Bookworm, set up components that the upgrade
@@ -281,6 +305,8 @@ def post_upgrade_fixups():
     # Configure any half-installed packages left over from upgrade
     log("Post-upgrade: configuring pending packages")
     cmd_to_log("dpkg --configure -a")
+
+    restore_uvm_settings()
 
     # IFB device: kernel 6.1 modprobe ifb doesn't auto-create devices.
     # Also ensure the module loads on boot so IFB survives reboot.
@@ -354,39 +380,56 @@ def post_upgrade_fixups():
 
 def is_trixie_upgrade():
     """
-    Detect if apt sources point to trixie while the system is still on
-    bookworm kernel (6.1.x) — or just rebooted into trixie kernel (6.12.x)
-    with post-upgrade fixups not yet completed.
+    Detect if the apt repository serves trixie packages while the system
+    is still on a pre-trixie kernel — or just rebooted into trixie kernel
+    (6.12.x) with post-upgrade fixups not yet completed.
+    Detection checks both apt Release metadata (supports server-side Apache
+    rewrites) and apt sources content (supports direct source changes).
     Returns True only when the upgrade target is trixie and fixups are needed.
     """
-    sources_have_trixie = False
-    sources_dirs = ["/etc/apt/sources.list.d/"]
-    sources_files = ["/etc/apt/sources.list"]
-    for d in sources_dirs:
-        if os.path.isdir(d):
-            for f in os.listdir(d):
-                fp = os.path.join(d, f)
-                if os.path.isfile(fp):
-                    sources_files.append(fp)
-    for sf in sources_files:
+    import glob
+    repo_has_trixie = False
+
+    for release_file in glob.glob("/var/lib/apt/lists/*Release"):
         try:
-            with open(sf) as fh:
+            with open(release_file) as fh:
                 for line in fh:
-                    if 'trixie' in line and not line.strip().startswith('#'):
-                        sources_have_trixie = True
+                    if line.strip().startswith("Codename:") and "trixie" in line:
+                        repo_has_trixie = True
                         break
         except:
             pass
-        if sources_have_trixie:
+        if repo_has_trixie:
             break
 
-    if not sources_have_trixie:
+    if not repo_has_trixie:
+        sources_dirs = ["/etc/apt/sources.list.d/"]
+        sources_files = ["/etc/apt/sources.list"]
+        for d in sources_dirs:
+            if os.path.isdir(d):
+                for f in os.listdir(d):
+                    fp = os.path.join(d, f)
+                    if os.path.isfile(fp):
+                        sources_files.append(fp)
+        for sf in sources_files:
+            try:
+                with open(sf) as fh:
+                    for line in fh:
+                        if 'trixie' in line and not line.strip().startswith('#'):
+                            repo_has_trixie = True
+                            break
+            except:
+                pass
+            if repo_has_trixie:
+                break
+
+    if not repo_has_trixie:
         return False
 
-    # Pre-reboot: bookworm 6.1.x kernel still running, dist-upgrade needed
+    # Pre-reboot: pre-trixie kernel still running, dist-upgrade needed
     running_kernel = platform.release()
     if running_kernel.startswith("6.1.") or running_kernel.startswith("5.") or running_kernel.startswith("4."):
-        log("Trixie upgrade detected: sources point to trixie, running kernel %s" % running_kernel)
+        log("Trixie upgrade detected: repo serves trixie, running kernel %s" % running_kernel)
         return True
 
     # Post-reboot: trixie 6.12.x kernel active, check whether fixups already ran
@@ -475,6 +518,8 @@ def pre_upgrade_cleanup_trixie():
         except:
             log("Pre-upgrade: WARNING - could not create wizard-complete flag")
 
+    backup_uvm_settings()
+
 def post_upgrade_fixups_trixie():
     """
     Post-upgrade fixups for bookworm->trixie:
@@ -548,6 +593,8 @@ def post_upgrade_fixups_trixie():
 
     log("Post-upgrade: waiting 30s for systemd postinst cascade to settle")
     time.sleep(30)
+
+    restore_uvm_settings()
 
     log("Post-upgrade: clean restart of untangle-vm to clear JDK21/jabsorb parallel-load race")
     cmd_to_log("systemctl stop untangle-vm")

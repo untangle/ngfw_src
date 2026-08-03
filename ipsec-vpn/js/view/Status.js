@@ -174,6 +174,7 @@ Ext.define('Ung.apps.ipsecvpn.view.Status', {
                     sortable: true,
                     width: Renderer.usernameWidth,
                     flex: 1,
+                    renderer: Ext.util.Format.htmlEncode,
                     filter: Renderer.stringFilter
                 }, {
                     header: 'Interface'.t(),

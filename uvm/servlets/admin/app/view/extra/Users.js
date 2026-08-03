@@ -97,7 +97,8 @@ Ext.define('Ung.view.extra.Users', {
             header: 'Username'.t(),
             dataIndex: 'username',
             width: Renderer.usernameWidth,
-            filter: Renderer.stringFilter
+            filter: Renderer.stringFilter,
+            renderer: Ext.util.Format.htmlEncode
         }, {
             header: 'Creation Time'.t(),
             dataIndex: 'creationTime',

@@ -62,6 +62,17 @@ public class NonceFactory<T>
     }
 
     /**
+     * Get the number of currently outstanding (unconsumed, un-TTL-purged) nonces.
+     * @return the current size of the nonce map
+     */
+    public int size()
+    {
+        synchronized (this) {
+            return nonces.size();
+        }
+    }
+
+    /**
      * Remove a nonce
      * @param nonce The nonce to remove
      * @return The nonce data
