@@ -74,41 +74,57 @@ public class GoogleManagerImpl implements GoogleManager
      */
     protected GoogleManagerImpl()
     {
-        GoogleSettings readSettings = null;
+        // Defense in depth: any unexpected failure while loading settings or refreshing tokens must
+        // NOT prevent UVM from starting. Callers of googleManager() will see a partially-initialized
+        // manager (typically settings=null) and degrade gracefully via their existing null checks.
         try {
-            readSettings = settingsManager.load( GoogleSettings.class, SETTINGS_FILE_NAME);
-        } catch (SettingsManager.SettingsException e) {
-            logger.warn("Failed to load settings:",e);
-        }
-
-        // initialize token refresh job with default interval, but don't start it right away, will start when we actually retrieve an access token
-        tokenRefreshJob = new Pulse(TOKEN_REFRESHER_JOB_NAME, new RefreshAccessTokenJob(this), getTokenRefreshJobInterval(DEFAULT_ACCESS_TOKEN_EXPIRES_IN_SEC));
-
-        // initialize drive connector oauth2 app credentials
-        initializeGoogleCloudAppInstance();
-
-        /**
-         * If there are still no settings, just initialize
-         */
-        if (readSettings == null) {
-            logger.warn("No settings found - Initializing new settings.");
-            GoogleSettings defaultSettings = getDefaultGoogleSettings();
-            this.setSettings(defaultSettings);
-        }
-        else {
-            logger.debug("Loading Settings...");
-
-            // NGFW-15108 Migrating from drive cli to programmatic drive implementation using REST
-            if (readSettings.getVersion() == null) {
-                // Transform older settings to v1 version
-                transformToV1SettingsVersion(readSettings);
+            GoogleSettings readSettings = null;
+            try {
+                readSettings = settingsManager.load( GoogleSettings.class, SETTINGS_FILE_NAME);
+            } catch (SettingsManager.SettingsException e) {
+                logger.warn("Failed to load settings:",e);
             }
-            // gracefully refresh the token after every restart so that the token validity and the refresh job interval never goes out of sync
-            handleTokenRefresh(readSettings);
-            //  no need to explicitly call setSettings again since it is done in previous steps
 
-            if (logger.isDebugEnabled() && getSettings() != null)
-                logger.debug("Settings: {}", getSettings().toJSONString());
+            // initialize token refresh job with default interval, but don't start it right away, will start when we actually retrieve an access token
+            tokenRefreshJob = new Pulse(TOKEN_REFRESHER_JOB_NAME, new RefreshAccessTokenJob(this), getTokenRefreshJobInterval(DEFAULT_ACCESS_TOKEN_EXPIRES_IN_SEC));
+
+            // initialize drive connector oauth2 app credentials
+            initializeGoogleCloudAppInstance();
+
+            /**
+             * If there are still no settings, just initialize
+             */
+            if (readSettings == null) {
+                logger.warn("No settings found - Initializing new settings.");
+                GoogleSettings defaultSettings = getDefaultGoogleSettings();
+                this.setSettings(defaultSettings);
+            }
+            else {
+                logger.debug("Loading Settings...");
+
+                // NGFW-15108 Migrating from drive cli to programmatic drive implementation using REST
+                boolean migrated = readSettings.getVersion() == null;
+                if (migrated) {
+                    // Transform older settings to v1 version
+                    transformToV1SettingsVersion(readSettings);
+                }
+                if (migrated) {
+                    // Persist the migration so the plaintext refresh token is cleared from disk even if
+                    // the subsequent refresh fails.
+                    setSettings(readSettings);
+                } else {
+                    // No migration to persist; just cache in memory so downstream reads of non-token
+                    // fields (root directory, version) work regardless of refresh outcome.
+                    this.settings = readSettings;
+                }
+                // gracefully refresh the token after every restart so that the token validity and the refresh job interval never goes out of sync
+                handleTokenRefresh(readSettings);
+
+                if (logger.isDebugEnabled() && getSettings() != null)
+                    logger.debug("Settings: {}", getSettings().toJSONString());
+            }
+        } catch (Exception e) {
+            logger.error("GoogleManager initialization failed; drive features will be unavailable until reconfigured.", e);
         }
 
         logger.info("Initialized GoogleManager");
@@ -144,7 +160,9 @@ public class GoogleManagerImpl implements GoogleManager
 
     /**
      * Executes refresh access token flow, retrieves new access token by using available refresh token.
-     * Saves the settings object by calling setSettings
+     * On success, updates the input settings object with the new tokens and persists via setSettings.
+     * On failure, leaves the input settings and on-disk settings untouched so the existing refresh token
+     * is preserved for the next retry.
      * @param setObj
      */
     @Override
@@ -158,21 +176,28 @@ public class GoogleManagerImpl implements GoogleManager
         GoogleSettings newTokenObj = getAccessTokenByRefreshToken(PasswordUtil.getDecryptPassword(setObj.getEncryptedDriveRefreshToken()));
         if (newTokenObj != null) {
             copyTokenAttributes(newTokenObj, setObj);
-        } else {
-            logger.warn("Unable to get access token from the refresh token. Drive reconfiguration would be required");
+            setSettings(setObj);
+            return;
         }
-        setSettings(setObj);
+        logger.warn("Unable to get access token from the refresh token. Drive reconfiguration would be required");
     }
 
     /**
-     * Retrieve new access token using the input refresh token
+     * Retrieve new access token using the input refresh token.
+     * Returns null if the OAuth2 app instance is not initialized so that upstream callers
+     * (including the constructor-driven refresh) fail gracefully instead of NPEing.
      * @param refreshToken
      * @return
      */
     private GoogleSettings getAccessTokenByRefreshToken(String refreshToken) {
+        GoogleCloudApp app = getGoogleCloudApp();
+        if (app == null) {
+            logger.warn("OAuth2 app not initialized; cannot refresh access token.");
+            return null;
+        }
         // construct request body required to get access token by using refresh token
-        final String body = "client_id=" + this.cloudOAuth2App.getClientId() +
-                "&client_secret=" + this.cloudOAuth2App.getClientSecret() +
+        final String body = "client_id=" + app.getClientId() +
+                "&client_secret=" + app.getClientSecret() +
                 "&refresh_token=" + refreshToken +
                 "&grant_type=refresh_token";
 
@@ -403,11 +428,17 @@ public class GoogleManagerImpl implements GoogleManager
     {
         logger.info("Providing code [{}] to exchange for the access token", code);
 
+        GoogleCloudApp app = getGoogleCloudApp();
+        if (app == null) {
+            logger.warn("OAuth2 app not initialized; cannot exchange authorization code.");
+            return "OAuth2 app not initialized";
+        }
+
         // construct request body required to retrieve new access and refresh tokens
         String body = "code=" + code +
-                "&client_id=" + this.cloudOAuth2App.getClientId() +
-                "&client_secret=" + this.cloudOAuth2App.getClientSecret() +
-                "&redirect_uri=" + this.cloudOAuth2App.getRedirectUrl() +
+                "&client_id=" + app.getClientId() +
+                "&client_secret=" + app.getClientSecret() +
+                "&redirect_uri=" + app.getRedirectUrl() +
                 "&grant_type=authorization_code";
 
         GoogleSettings newTokenObj = getTokensFromGoogle(body);
@@ -451,14 +482,21 @@ public class GoogleManagerImpl implements GoogleManager
     }
 
     /**
-     * Starts token refresh job
-     * @param expiresIn
+     * Starts token refresh job.
+     * A null expiresIn means no valid access token is available (refresh failed or was never performed),
+     * so the pulse is stopped and no new job is scheduled; drive reconfiguration is required.
+     * @param expiresIn token validity in seconds, or null if unknown
      */
-    private void startTokenRefreshJob(long expiresIn) {
+    private void startTokenRefreshJob(Integer expiresIn) {
         tokenRefreshJob.stopIfRunning();
+        if (expiresIn == null) {
+            logger.warn("Token expiry unknown; skipping token refresh job.");
+            return;
+        }
+        int expiresInSec = expiresIn;
         // Reinitialize pulse instance if token expiry is different from the default expiry time
-        if (expiresIn != DEFAULT_ACCESS_TOKEN_EXPIRES_IN_SEC)
-            tokenRefreshJob = new Pulse(TOKEN_REFRESHER_JOB_NAME, new RefreshAccessTokenJob(this), getTokenRefreshJobInterval(expiresIn));
+        if (expiresInSec != DEFAULT_ACCESS_TOKEN_EXPIRES_IN_SEC)
+            tokenRefreshJob = new Pulse(TOKEN_REFRESHER_JOB_NAME, new RefreshAccessTokenJob(this), getTokenRefreshJobInterval(expiresInSec));
         tokenRefreshJob.start();
         logger.debug("Token refresh job started");
     }
@@ -479,7 +517,8 @@ public class GoogleManagerImpl implements GoogleManager
             JSONObject json = new JSONObject(responseBody);
             if (!json.has("access_token")) {
                 // access token is missing, request must have failed
-                logger.warn("Failed to get access token, response:{}", responseBody);
+                // Strip newlines so multi-line Google error bodies aren't truncated.
+                logger.warn("Failed to get access token, response:{}", responseBody == null ? "" : responseBody.replaceAll("\\R", " "));
                 return null;
             }
 
@@ -787,7 +826,7 @@ public class GoogleManagerImpl implements GoogleManager
          */
         public void run() {
             GoogleSettings currentSettings = manager.getSettings();
-                if (settings != null) {
+                if (currentSettings != null) {
                     manager.refreshToken(currentSettings);
                 }
             }
