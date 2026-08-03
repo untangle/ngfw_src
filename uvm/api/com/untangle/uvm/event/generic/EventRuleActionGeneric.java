@@ -39,15 +39,6 @@ public class EventRuleActionGeneric implements JSONString, Serializable {
     private String tagName;
     private Long tagLifetimeSec;
 
-    // Required for Intrusion Prevention Rules
-    private String sourceNetworks;
-    private String destinationNetworks;
-
-    public String getSourceNetworks() { return sourceNetworks; }
-    public void setSourceNetworks(String sourceNetworks) { this.sourceNetworks = sourceNetworks; }
-    public String getDestinationNetworks() { return destinationNetworks; }
-    public void setDestinationNetworks(String destinationNetworks) { this.destinationNetworks = destinationNetworks; }
-
     public String getTagTarget() { return tagTarget; }
     public void setTagTarget(String tagTarget) { this.tagTarget = tagTarget; }
     public String getTagName() { return tagName; }

@@ -5,6 +5,7 @@ package com.untangle.app.intrusion_prevention;
 
 import com.untangle.uvm.network.BypassRule;
 
+import com.untangle.app.intrusion_prevention.generic.IntrusionPreventionRuleGeneric;
 import com.untangle.app.intrusion_prevention.generic.IntrusionPreventionSettingsGeneric;
 
 import org.json.JSONObject;
@@ -142,7 +143,7 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
         g.setUpdateSignatureWeekly(this.updateSignatureWeekly);
 
         if (this.rules != null)
-            g.setIp_rules(IntrusionPreventionRule.transformIpRulesToGeneric(this.rules));
+            g.setIp_rules(IntrusionPreventionRuleGeneric.transformIpRulesToGeneric(this.rules));
 
         return g;
     }

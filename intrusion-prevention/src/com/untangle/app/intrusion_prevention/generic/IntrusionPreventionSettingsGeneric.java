@@ -12,7 +12,6 @@ import com.untangle.app.intrusion_prevention.IntrusionPreventionRule;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSettings;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSignature;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionVariable;
-import com.untangle.uvm.event.generic.EventRuleGeneric;
 import com.untangle.uvm.network.BypassRule;
 import org.json.JSONObject;
 import org.json.JSONString;
@@ -27,7 +26,7 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
 
     private Integer version;
 
-    private LinkedList<EventRuleGeneric> ip_rules = new LinkedList<>();
+    private LinkedList<IntrusionPreventionRuleGeneric> ip_rules = new LinkedList<>();
 
     // Pass-through fields
     private List<IntrusionPreventionSignature> signatures;
@@ -45,8 +44,8 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
 
-    public LinkedList<EventRuleGeneric> getIp_rules() { return ip_rules; }
-    public void setIp_rules(LinkedList<EventRuleGeneric> ip_rules) { this.ip_rules = ip_rules; }
+    public LinkedList<IntrusionPreventionRuleGeneric> getIp_rules() { return ip_rules; }
+    public void setIp_rules(LinkedList<IntrusionPreventionRuleGeneric> ip_rules) { this.ip_rules = ip_rules; }
 
     public List<IntrusionPreventionSignature> getSignatures() { return signatures; }
     public void setSignatures(List<IntrusionPreventionSignature> signatures) { this.signatures = signatures; }
@@ -110,7 +109,7 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
         if (this.updateSignatureWeekly != null) v1.setUpdateSignatureWeekly(this.updateSignatureWeekly);
 
         if (this.ip_rules != null)
-            v1.setRules(IntrusionPreventionRule.transformGenericToIpRules(this.ip_rules, v1.getRules()));
+            v1.setRules(IntrusionPreventionRuleGeneric.transformGenericToIpRules(this.ip_rules, v1.getRules()));
 
         return v1;
     }

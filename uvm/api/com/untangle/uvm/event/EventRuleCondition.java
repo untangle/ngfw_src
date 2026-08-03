@@ -199,12 +199,6 @@ public class EventRuleCondition implements Serializable {
         /**
          * If its not a number treat it as a string
          */
-        if ( "substr".equals(comparator) ) {
-            return valueObj.toString().toLowerCase().contains(fieldValue.toLowerCase());
-        } else if ( "!substr".equals(comparator) ) {
-            return !valueObj.toString().toLowerCase().contains(fieldValue.toLowerCase());
-        }
-
         if ( ! ( "=".equals( comparator ) || "!=".equals( comparator ) ) ) // String only supports "=" or "!=" operator
             return false;
         String valueStr = valueObj.toString().toLowerCase();
