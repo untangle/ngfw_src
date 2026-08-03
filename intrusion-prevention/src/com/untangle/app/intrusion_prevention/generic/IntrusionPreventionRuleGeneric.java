@@ -92,14 +92,14 @@ public class IntrusionPreventionRuleGeneric implements JSONString, Serializable 
     }
 
     private static IntrusionPreventionActionGeneric.Type ipsActionStringToType(String action) {
-        if (action == null) return IntrusionPreventionActionGeneric.Type.DEFAULT;
+        if (action == null) return IntrusionPreventionActionGeneric.Type.IPS_DEFAULT;
         switch (action) {
-            case "log":       return IntrusionPreventionActionGeneric.Type.LOG;
-            case "blocklog":  return IntrusionPreventionActionGeneric.Type.BLOCKLOG;
-            case "block":     return IntrusionPreventionActionGeneric.Type.BLOCK;
-            case "disable":   return IntrusionPreventionActionGeneric.Type.DISABLE;
-            case "whitelist": return IntrusionPreventionActionGeneric.Type.WHITELIST;
-            default:          return IntrusionPreventionActionGeneric.Type.DEFAULT;
+            case "log":       return IntrusionPreventionActionGeneric.Type.IPS_LOG;
+            case "blocklog":  return IntrusionPreventionActionGeneric.Type.IPS_BLOCKLOG;
+            case "block":     return IntrusionPreventionActionGeneric.Type.IPS_BLOCK;
+            case "disable":   return IntrusionPreventionActionGeneric.Type.IPS_DISABLE;
+            case "whitelist": return IntrusionPreventionActionGeneric.Type.IPS_WHITELISTT;
+            default:          return IntrusionPreventionActionGeneric.Type.IPS_DEFAULT;
         }
     }
 
@@ -160,12 +160,12 @@ public class IntrusionPreventionRuleGeneric implements JSONString, Serializable 
     private static String ipsTypeToActionString(IntrusionPreventionActionGeneric.Type type) {
         if (type == null) return "default";
         switch (type) {
-            case LOG:       return "log";
-            case BLOCKLOG:  return "blocklog";
-            case BLOCK:     return "block";
-            case DISABLE:   return "disable";
-            case WHITELIST: return "whitelist";
-            default:        return "default";
+            case IPS_LOG:       return "log";
+            case IPS_BLOCKLOG:  return "blocklog";
+            case IPS_BLOCK:     return "block";
+            case IPS_DISABLE:   return "disable";
+            case IPS_WHITELISTT: return "whitelist";
+            default:            return "default";
         }
     }
 
