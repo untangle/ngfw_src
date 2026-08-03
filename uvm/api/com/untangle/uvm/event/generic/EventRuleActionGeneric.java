@@ -18,7 +18,7 @@ public class EventRuleActionGeneric implements JSONString, Serializable {
     /**
      * EMAIL, EMAIL_OFF - Required for Alert Rules
      */
-    public enum Type { SYSLOG, EMAIL, EMAIL_OFF, TAG_HOST, TAG_DEVICE, TAG_USER, UNTAG_HOST, UNTAG_DEVICE, UNTAG_USER, IPS_DEFAULT, IPS_LOG, IPS_BLOCKLOG, IPS_BLOCK, IPS_DISABLE, IPS_WHITELIST }
+    public enum Type { SYSLOG, EMAIL, EMAIL_OFF, TAG_HOST, TAG_DEVICE, TAG_USER, UNTAG_HOST, UNTAG_DEVICE, UNTAG_USER }
 
     private EventRuleActionGeneric.Type type;
 
