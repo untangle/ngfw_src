@@ -151,7 +151,7 @@ public class CertificateManagerImpl implements CertificateManager
 
         // Self-heal broken index.txt/serial.txt symlinks left by prior runs.
         // These files must be real files at the top level for ut-certgen to work.
-        // Only fix broken symlinks (target missing) or missing files — do not
+        // Only fix broken symlinks (target missing) or missing files -- do not
         // touch working symlinks or real files to avoid losing CA signing history.
         try {
             java.nio.file.Path indexPath = new File(CERT_STORE_PATH + "index.txt").toPath();
