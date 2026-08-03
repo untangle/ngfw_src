@@ -248,16 +248,18 @@ public class IntrusionPreventionApp extends AppBase
     /**
      * Set intrusion prevention settings from v2 format payload.
      *
+     * Clones the current settings via Java serialization, then deep-copies
+     * suricataSettings separately (it is transient and excluded from the clone)
+     * before applying the v2 transformation.
+     *
      * @param newSettings
      *      New settings to configure.
      */
     public synchronized void setSettingsV2(final IntrusionPreventionSettingsGeneric newSettings)
     {
         if (this.getSettings() != null) {
-            JSONObject suricata = this.getSettings().getSuricataSettings();
-            this.getSettings().setSuricataSettings(null);          // hide it from serializer
             IntrusionPreventionSettings cloned = SerializationUtils.clone(this.getSettings());
-            this.getSettings().setSuricataSettings(suricata);      // restore original
+            JSONObject suricata = this.getSettings().getSuricataSettings();
             JSONObject suricataCopy;
             try {
                 suricataCopy = suricata != null ? new JSONObject(suricata.toString()) : new JSONObject();

@@ -36,7 +36,8 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
     private Integer iptablesMaxScanSize = 1024;
     private String iptablesProcessing = "pre";
     private String blockAction = "reject";
-    private JSONObject suricataSettings = new JSONObject();
+    // transient: JSONObject is not Serializable; deep-copied manually after SerializationUtils.clone
+    private transient JSONObject suricataSettings = new JSONObject();
     private String updateSignatureFrequency = "Daily";
     private List<IntrusionPreventionDaySchedule> updateSignatureSchedule = new LinkedList<>();
     private IntrusionPreventionDaySchedule updateSignatureWeekly = new IntrusionPreventionDaySchedule();
