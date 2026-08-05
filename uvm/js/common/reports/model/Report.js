@@ -5,7 +5,7 @@ Ext.define ('Ung.model.Report', {
         { name: 'category', type: 'string', defaultValue: '' },
         { name: 'colors', type: 'auto', defaultValue: null },
         { name: 'conditions', type: 'auto', defaultValue: null },
-        { name: 'defaultColumns' }, //???
+        { name: 'defaultColumns', type: 'auto', defaultValue: [] },
         { name: 'description', type: 'string', defaultValue: '' },
         { name: 'displayOrder', type: 'int' },
         { name: 'enabled', type: 'boolean', defaultValue: true },
