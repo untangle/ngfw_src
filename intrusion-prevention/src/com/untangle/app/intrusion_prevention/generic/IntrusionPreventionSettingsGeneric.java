@@ -28,17 +28,17 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
     private LinkedList<IntrusionPreventionRuleGeneric> ip_rules = new LinkedList<>();
 
     // Pass-through fields
-    private List<IntrusionPreventionSignature> signatures;
-    private List<IntrusionPreventionVariable> variables;
-    private LinkedList<RuleGeneric> bypassRules;
-    private Integer iptablesNfqNumber;
-    private Integer iptablesMaxScanSize;
-    private String iptablesProcessing;
-    private String blockAction;
-    private JSONObject suricataSettings;
-    private String updateSignatureFrequency;
-    private List<IntrusionPreventionDaySchedule> updateSignatureSchedule;
-    private IntrusionPreventionDaySchedule updateSignatureWeekly;
+    private List<IntrusionPreventionSignature> signatures = new LinkedList<>();
+    private List<IntrusionPreventionVariable> variables = new LinkedList<>();
+    private LinkedList<RuleGeneric> bypassRules = new LinkedList<>();
+    private Integer iptablesNfqNumber = 2930;
+    private Integer iptablesMaxScanSize = 1024;
+    private String iptablesProcessing = "pre";
+    private String blockAction = "reject";
+    private JSONObject suricataSettings = new JSONObject();
+    private String updateSignatureFrequency = "Daily";
+    private List<IntrusionPreventionDaySchedule> updateSignatureSchedule = new LinkedList<>();
+    private IntrusionPreventionDaySchedule updateSignatureWeekly = new IntrusionPreventionDaySchedule();
 
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
