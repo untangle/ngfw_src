@@ -395,16 +395,22 @@ class DirectoryConnectorTests(NGFWTestCase):
 
     def test_033_checkUserNotificationLoginScriptDownload(self):
         """
-        Check download of user notification script
+        Check download of user notification script (requires apiSecretKey)
         """
         # remove leading and trailing spaces.
         http_admin = global_functions.get_http_url()
         assert(http_admin)
-        
-        script_uri = "userapi/registration?download=download"
+
+        appSettings = self._app.getSettings()
+        secret_key = appSettings.get("apiSecretKey", "")
+        if not secret_key:
+            secret_key = "test_secret_key_033"
+            appSettings["apiSecretKey"] = secret_key
+            self._app.setSettings(appSettings)
+
+        script_uri = "userapi/registration?download=download&secretKey=" + secret_key
         script_url = http_admin + script_uri
         response = requests.get(script_url)
-        # print(user_script)
 
         assert ("serverLocation" in response.text)
         assert ("secret" in response.text)

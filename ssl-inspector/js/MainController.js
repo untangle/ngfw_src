@@ -203,6 +203,22 @@ Ext.define('Ung.apps.sslinspector.MainController', {
 
 });
 
+Ext.define('Ung.apps.sslinspector.HostnameBypassGridController', {
+    extend: 'Ung.cmp.GridController',
+    alias: 'controller.app-sslinspector-hostname-bypass',
+
+    addRecord: function () {
+        var vm = this.getViewModel();
+        if (vm) vm.set('isAddAction', true);
+        this.callParent(arguments);
+    },
+    editRecord: function () {
+        var vm = this.getViewModel();
+        if (vm) vm.set('isAddAction', false);
+        this.callParent(arguments);
+    }
+});
+
 Ext.define('Ung.apps.sslinspector.SpecialGridController', {
     extend: 'Ung.cmp.GridController',
     alias: 'controller.app-sslinspector-special',

@@ -9,8 +9,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.io.File;
 import java.io.FileReader;
@@ -34,7 +32,6 @@ import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.network.InterfaceSettings;
-import com.untangle.uvm.network.InterfaceStatus;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.app.AppSettings;
 import com.untangle.uvm.app.AppMetric;
@@ -44,7 +41,6 @@ import com.untangle.uvm.vnet.Affinity;
 import com.untangle.uvm.vnet.Fitting;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.PipelineConnector;
-import com.untangle.uvm.util.Constants;
 
 /**
  * The OpenVPN application
@@ -55,7 +51,7 @@ import com.untangle.uvm.util.Constants;
 public class OpenVpnAppImpl extends AppBase
 {
 
-    private static final Integer SETTINGS_CURRENT_VERSION = 2;
+    private static final Integer SETTINGS_CURRENT_VERSION = 3;
 
     private final Logger logger = LogManager.getLogger(getClass());
 
@@ -78,7 +74,7 @@ public class OpenVpnAppImpl extends AppBase
     private final OpenVpnPreHookCallback openVpnPreHookCallback;
 
     private List<OpenVpnExport> localExports = null;
-    private String localHostName = "";
+    private String localHostName = StringUtils.EMPTY;
 
     private OpenVpnSettings settings;
 
@@ -109,7 +105,7 @@ public class OpenVpnAppImpl extends AppBase
         this.addMetric(new AppMetric(STAT_PASS, I18nUtil.marktr("Sessions passed")));
         this.addMetric(new AppMetric(STAT_CONNECT, I18nUtil.marktr("Clients Connected")));
 
-        this.connector = UvmContextFactory.context().pipelineFoundry().create("openvpn", this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 10, false);
+        this.connector = UvmContextFactory.context().pipelineFoundry().create(NETSPACE_OWNER, this, null, handler, Fitting.OCTET_STREAM, Fitting.OCTET_STREAM, Affinity.CLIENT, 10, false);
         this.connectors = new PipelineConnector[] { connector };
     }
 
@@ -152,7 +148,9 @@ public class OpenVpnAppImpl extends AppBase
             logger.info("Loading Settings...");
             this.settings = readSettings;
             updateNetworkReservations(readSettings.getAddressSpace(), readSettings.getRemoteClients());
-            logger.debug("Settings: {}", this.settings.toJSONString());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Settings: {}", this.settings.toJSONString());
+            }
         }
 
         /**
@@ -328,7 +326,9 @@ public class OpenVpnAppImpl extends AppBase
         }
         updateNetworkReservations(newSettings.getAddressSpace(), newSettings.getRemoteClients());
         try {
-            logger.debug("New Settings: \n {} ", new org.json.JSONObject(this.settings).toString(2));
+            if (logger.isDebugEnabled()) {
+                logger.debug("New Settings: \n {} ", new org.json.JSONObject(this.settings).toString(2));
+            }
         } catch (Exception e) {
         }
 
@@ -460,14 +460,17 @@ public class OpenVpnAppImpl extends AppBase
         // Cipher changes
         if (!oldSettings.getCipher().equals(newSettings.getCipher())) { logger.debug("Server Cipher has changed."); return true;}
 
+        // Fallback cipher changes
+        if (!Objects.equals(oldSettings.getDataCiphersFallback(), newSettings.getDataCiphersFallback())) { logger.debug("Server Fallback Cipher has changed."); return true;}
+
         // Client to client enabled/disabled
         if (oldSettings.getClientToClient() != newSettings.getClientToClient()) { logger.debug("Server Client to Client has changed."); return true;}
 
         // Server config settings (Use data stream to compare a json string of the entire list)
-        if(oldSettings.getServerConfiguration().stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(newSettings.getServerConfiguration().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""))) != 0) { logger.debug("Custom Server Configuration Items have changed."); return true; }
+        if(oldSettings.getServerConfiguration().stream().map(u -> u.toJSONString()).collect(Collectors.joining(StringUtils.EMPTY)).compareTo(newSettings.getServerConfiguration().stream().map(u -> u.toJSONString()).collect(Collectors.joining(StringUtils.EMPTY))) != 0) { logger.debug("Custom Server Configuration Items have changed."); return true; }
 
         // Exported networks (Use data stream to compare a json string of the entire list)
-        if(oldSettings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(newSettings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""))) != 0) {logger.debug("Exported network items have changed."); return true;}
+        if(oldSettings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining(StringUtils.EMPTY)).compareTo(newSettings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining(StringUtils.EMPTY))) != 0) {logger.debug("Exported network items have changed."); return true;}
 
         return false;
     }
@@ -479,13 +482,14 @@ public class OpenVpnAppImpl extends AppBase
      * @return          Nothing
      */
     private void updateSettings(OpenVpnSettings settings){
-        if(settings.getVersion() < SETTINGS_CURRENT_VERSION){
-            logger.info("OpenVPN Settings require an update...");
+        if(settings.getVersion() >= SETTINGS_CURRENT_VERSION) return;
 
+        logger.info("OpenVPN Settings require an update...");
+
+        if (settings.getVersion() < 2) {
             /**
              * Fix up the "compress lz4" compression settings for the server
              */
-
             for (OpenVpnConfigItem serverConfig : settings.getServerConfiguration()) {
                 if ( serverConfig.getOptionName() != null && Objects.equals(serverConfig.getOptionName(), "compress lz4")) {
                     serverConfig.setOptionName("compress");
@@ -502,10 +506,31 @@ public class OpenVpnAppImpl extends AppBase
                     clientConfig.setOptionValue("lz4");
                 }
             }
-
-            settings.setVersion(SETTINGS_CURRENT_VERSION);
-            this.setSettings( settings );
         }
+
+        if (settings.getVersion() < 3) {
+            /**
+             * Populate dataCiphersFallback from the existing cipher value.
+             * data-ciphers-fallback accepts only a single cipher name (see OpenVPN manpage
+             * and crypto.c:init_key_type which M_FATALs on invalid names). For pre-v3 installs
+             * whose cipher field held a colon-separated list, that would produce an invalid
+             * fallback line and abort the daemon; fall back to the static default in that case.
+             * For single-cipher installs, copy verbatim so server.conf output is byte-identical
+             * to pre-migration.
+             */
+            String cipher = settings.getCipher();
+            String trimmedCipher = StringUtils.trimToEmpty(cipher);
+            String fallback;
+            if (StringUtils.isBlank(cipher) || trimmedCipher.contains(":")) {
+                fallback = OpenVpnSettings.DEFAULT_CIPHER;
+            } else {
+                fallback = trimmedCipher;
+            }
+            settings.setDataCiphersFallback(fallback);
+        }
+
+        settings.setVersion(SETTINGS_CURRENT_VERSION);
+        this.setSettings( settings );
     }
 
     /**
@@ -565,8 +590,8 @@ public class OpenVpnAppImpl extends AppBase
                 // well try both for authentication. See bug #7951
                 String originalUsername = username;
                 String strippedUsername = username;
-                strippedUsername = strippedUsername.replaceAll(".*\\\\", "");
-                strippedUsername = strippedUsername.replaceAll("@.*", "");
+                strippedUsername = strippedUsername.replaceAll(".*\\\\", StringUtils.EMPTY);
+                strippedUsername = strippedUsername.replaceAll("@.*", StringUtils.EMPTY);
 
                 DirectoryConnector directoryConnector = (DirectoryConnector) UvmContextFactory.context().appManager().app("directory-connector");
                 if (directoryConnector == null) break;
@@ -1116,7 +1141,7 @@ public class OpenVpnAppImpl extends AppBase
     private synchronized void deployWebApp()
     {
         if (!isWebAppDeployed) {
-            if (null != UvmContextFactory.context().tomcatManager().loadServlet("/openvpn", "openvpn", true)) {
+            if (null != UvmContextFactory.context().tomcatManager().loadServlet("/openvpn", NETSPACE_OWNER, true)) {
                 logger.debug("Deployed openvpn web app");
             } else logger.warn("Unable to deploy openvpn web app");
         }
@@ -1147,7 +1172,7 @@ public class OpenVpnAppImpl extends AppBase
     {
         boolean setNewSettings = false;
         String currentSiteName = this.settings.getSiteName();
-        String currentExportsString = this.settings.getExports().stream().map(u -> u.toJSONString()).collect(Collectors.joining(""));
+        String currentExportsString = this.settings.getExports().stream().map(OpenVpnExport::toJSONString).collect(Collectors.joining(StringUtils.EMPTY));
 
         // refresh iptables rules in case WAN config has changed
         logger.info("Network Settings have changed. Syncing new settings...");
@@ -1157,10 +1182,10 @@ public class OpenVpnAppImpl extends AppBase
          * but doesn't match the new local network list, then update the
          * openvpn exported networks list to match the new network settings
          */
-        if(this.localExports.stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(currentExportsString) == 0) {
+        if(this.localExports.stream().map(OpenVpnExport::toJSONString).collect(Collectors.joining(StringUtils.EMPTY)).compareTo(currentExportsString) == 0) {
             List<OpenVpnExport> newExports = getCurrentExportList();
 
-            if(newExports.stream().map(u -> u.toJSONString()).collect(Collectors.joining("")).compareTo(currentExportsString) != 0) {
+            if(newExports.stream().map(OpenVpnExport::toJSONString).collect(Collectors.joining(StringUtils.EMPTY)).compareTo(currentExportsString) != 0) {
                 this.settings.setExports(newExports);
                 setNewSettings = true;
             }

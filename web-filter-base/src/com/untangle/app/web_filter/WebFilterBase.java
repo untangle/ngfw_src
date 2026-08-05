@@ -1237,13 +1237,11 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
      */
     protected void _setSettings(WebFilterSettings newSettings)
     {
-        //Move and save all the global settings to globalSettings file
-        if(this.isWebFilterApp){
-            setGlobalSettings(newSettings);
-        }  
         /**
          * Prepare settings for saving This makes sure certain things are always
-         * true, such as flagged == true if blocked == true
+         * true, such as flagged == true if blocked == true.
+         * Must run before setGlobalSettings so global rules are normalized
+         * before they are split out into globalSettings.js.
          */
         if (newSettings.getCategories() != null) {
             for (GenericRule rule : newSettings.getCategories()) {
@@ -1261,6 +1259,11 @@ public abstract class WebFilterBase extends AppBase implements WebFilter
                 rule.setRuleId(++index);
                 if (rule.getBlocked()) rule.setFlagged(Boolean.TRUE);
             }
+        }
+
+        //Move and save all the global settings to globalSettings file
+        if(this.isWebFilterApp){
+            setGlobalSettings(newSettings);
         }
 
         /**

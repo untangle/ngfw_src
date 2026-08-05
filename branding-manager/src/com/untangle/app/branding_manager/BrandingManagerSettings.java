@@ -6,6 +6,9 @@ package com.untangle.app.branding_manager;
 import java.io.Serializable;
 
 import com.untangle.uvm.util.I18nUtil;
+import com.untangle.uvm.util.SafeCheck;
+import com.untangle.uvm.util.SafeType;
+import com.untangle.uvm.StringEscaperUtil;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -21,7 +24,9 @@ public class BrandingManagerSettings implements Serializable, JSONString
     private byte[] logo = null;
     private String companyName = DEFAULT_COMPANY_NAME;
     private String companyUrl = DEFAULT_COMPANY_URL;
+    @SafeCheck(SafeType.NATURAL_NAME)
     private String contactName = I18nUtil.marktr(DEFAULT_CONTACT_NAME);
+    @SafeCheck(SafeType.EMAIL)
     private String contactEmail = "";
     private boolean defaultLogo = true;
     private String bannerMessage = "";
@@ -122,9 +127,11 @@ public class BrandingManagerSettings implements Serializable, JSONString
     public String grabContactHtml()
     {
         if (null != contactEmail && !contactEmail.trim().equals("")) {
-            return "<a href='mailto:" + contactEmail + "'>" + contactName + "</a>";
+            String safeEmail = StringEscaperUtil.escapeHtml4(contactEmail);
+            String safeName  = StringEscaperUtil.escapeHtml4(contactName != null ? contactName : "");
+            return "<a href=\"mailto:" + safeEmail + "\">" + safeName + "</a>";
         } else {
-            return contactName;
+            return StringEscaperUtil.escapeHtml4(contactName != null ? contactName : "");
         }
     }
 

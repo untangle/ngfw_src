@@ -1,0 +1,9 @@
+#!/bin/bash
+# NGFW-15855 UNT-50: replaces the inline openssl pipeline in
+# CertificateManagerImpl.validateUploadedCertificate() to avoid shell-string
+# exec. Exit code intentionally matches last-cmd semantics (NO pipefail) to
+# preserve the exact behavior of the original shell pipeline. Do NOT add
+# `set -o pipefail` without also updating CertificateManagerImpl's exit-code
+# expectations: the current caller tolerates crl2pkcs7 silent failure iff
+# pkcs7 exits 0 on empty stdin.
+openssl crl2pkcs7 -nocrl -certfile "$1" | openssl pkcs7 -print_certs -noout

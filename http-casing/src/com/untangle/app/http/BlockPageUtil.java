@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.BrandingManager;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.StringEscaperUtil;
 import com.untangle.uvm.util.I18nUtil;
 
 /**
@@ -68,6 +69,14 @@ public class BlockPageUtil
         RedirectDetails bd = params.getBlockDetails();
         request.setAttribute( "bd", bd );
 
+        String nonce = request.getParameter("nonce");
+        String appid = request.getParameter("appid");
+        String tid = request.getParameter("tid");
+        request.setAttribute("safeNonceJs", escapeJsString(nonce));
+        request.setAttribute("safeAppidJs", escapeJsString(appid));
+        request.setAttribute("safeTidJs", escapeJsString(tid));
+        request.setAttribute("safeBdUrlJs", escapeJsString(bd != null ? bd.getUrl() : ""));
+
         String contactHtml = I18nUtil.marktr("your network administrator");
         if (bm.getContactEmail() != null) {
             String emailSubject = "";
@@ -78,7 +87,9 @@ public class BlockPageUtil
             } catch (java.io.UnsupportedEncodingException exc) {
                 logger.warn("unsupported encoding", exc);
             }
-            contactHtml = "<a href='mailto:" + bm.getContactEmail() + "?subject=" + emailSubject + "&body=" + emailBody + "'>" + bm.getContactName() + "</a>";
+            String safeEmail = StringEscaperUtil.escapeHtml4(bm.getContactEmail());
+            String safeName  = StringEscaperUtil.escapeHtml4(bm.getContactName() != null ? bm.getContactName() : "");
+            contactHtml = "<a href=\"mailto:" + safeEmail + "?subject=" + emailSubject + "&body=" + emailBody + "\">" + safeName + "</a>";
         }
 
         request.setAttribute( "contact", I18nUtil.tr("If you have any questions, Please contact {0}.", contactHtml, i18n_map));
@@ -175,5 +186,25 @@ public class BlockPageUtil
     public static BlockPageUtil getInstance()
     {
         return INSTANCE;
+    }
+
+    private static String escapeJsString(String s)
+    {
+        if (s == null) return "";
+        StringBuilder sb = new StringBuilder(s.length() + 16);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\\': sb.append("\\\\"); break;
+                case '\'': sb.append("\\'"); break;
+                case '"':  sb.append("\\\""); break;
+                case '\n': sb.append("\\n"); break;
+                case '\r': sb.append("\\r"); break;
+                case '\0': sb.append("\\0"); break;
+                case '<':  sb.append("\\x3c"); break;
+                default:   sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 }

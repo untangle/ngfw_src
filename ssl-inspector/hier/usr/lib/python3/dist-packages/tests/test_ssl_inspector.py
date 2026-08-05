@@ -1,10 +1,13 @@
 """ssl_inspector tests"""
+import base64
 import datetime
 import os
 import pytest
 import runtests
+import shlex
 import subprocess
 import sys
+import time
 import unittest
 
 from tests.common import NGFWTestCase
@@ -15,11 +18,15 @@ import tests.global_functions as global_functions
 default_policy_id = 1
 app = None
 appWeb = None
+ssl_app_2 = None
+policy_app = None
+secondRackId = None
 pornServerName="www.pornhub.com"
 testedServerName="news.ycombinator.com"
 testedServerURLParts = testedServerName.split(".")
 testedServerDomainWildcard = "*" + testedServerURLParts[-2] + "." + testedServerURLParts[-1]
 dropboxIssuer="C = US, ST = California, L = San Francisco, O = \\\"Dropbox, Inc\\\""
+hostnameVerifyBypassDetail = "Hostname Verification Bypassed"
 
 
 def createSSLInspectRule(url=testedServerDomainWildcard):
@@ -88,6 +95,111 @@ def search_term_rules_clear():
     appWeb.setSettings(webSettings)
 
 
+def createHostnameBypassRule(hostname, enabled=True, description="test bypass"):
+    return {
+        "javaClass": "com.untangle.uvm.app.GenericRule",
+        "string": hostname,
+        "enabled": enabled,
+        "isGlobal": False,
+        "description": description
+    }
+
+
+def addHostnameBypassEntry(app, hostname, enabled=True, isGlobal=False, description="test"):
+    appData = app.getSettings()
+    rule = createHostnameBypassRule(hostname, enabled=enabled, description=description)
+    rule['isGlobal'] = isGlobal
+    appData['hostnameVerificationBypassList']['list'].append(rule)
+    app.setSettings(appData)
+
+
+def clearHostnameBypassList(app):
+    appData = app.getSettings()
+    appData['hostnameVerificationBypassList']['list'] = []
+    app.setSettings(appData)
+
+
+def getHostnameBypassList(app):
+    return app.getSettings()['hostnameVerificationBypassList']['list']
+
+
+# ---------------------------------------------------------------------------
+# SNI SSRF (NGFW-15841) — raw TLS ClientHello sender used by the SNI-SSRF tests.
+#
+# Python's ssl module IDNA-encodes server_hostname before sending, which
+# either errors out or silently strips the SNI extension for payloads that
+# contain ':', '/', CR/LF, leading '-', or exceed the 255-byte cap.  None of
+# those reach the firewall via ssl.wrap_socket, so they can't drive the patched
+# code path.  This minimal builder constructs a TLS 1.2 ClientHello byte-for-
+# byte and writes any SNI bytes the test wants, bypassing client-side cleaning.
+# The SNI argument is passed base64-encoded so any byte value survives shell
+# escaping.
+# ---------------------------------------------------------------------------
+_RAW_SNI_CLIENT_SCRIPT = r'''
+import base64, os, socket, struct, sys
+def build(sni):
+    sn = b"\x00" + struct.pack("!H", len(sni)) + sni
+    snl = struct.pack("!H", len(sn)) + sn
+    sni_ext = struct.pack("!HH", 0x0000, len(snl)) + snl
+    extensions = sni_ext
+    ext_block = struct.pack("!H", len(extensions)) + extensions
+    cipher_suites = struct.pack("!H", 2) + b"\x00\x3c"
+    body = (b"\x03\x03" + os.urandom(32) + b"\x00"
+            + cipher_suites + b"\x01\x00" + ext_block)
+    hs = b"\x01" + struct.pack("!I", len(body))[1:] + body
+    return b"\x16\x03\x01" + struct.pack("!H", len(hs)) + hs
+host, port, sni_b64 = sys.argv[1], int(sys.argv[2]), sys.argv[3]
+sni = base64.b64decode(sni_b64)
+ch = build(sni)
+s = socket.create_connection((host, port), timeout=5)
+s.sendall(ch)
+s.settimeout(2)
+try: s.recv(4096)
+except socket.timeout: pass
+finally: s.close()
+'''
+
+
+def _send_raw_sni_from_client(host, port, sni_bytes):
+    """Send a raw TLS ClientHello with arbitrary SNI bytes from the LAN client.
+
+    sni_bytes is a Python bytes object — may contain any value (CR/LF/NUL/etc.).
+    The whole helper script is base64-encoded into a single shell command so
+    runtests.remote_control.run_command doesn't have to handle multi-line
+    quoting.  Returns the run_command exit code.
+    """
+    script_b64 = base64.b64encode(_RAW_SNI_CLIENT_SCRIPT.encode()).decode()
+    sni_b64 = base64.b64encode(sni_bytes).decode()
+    cmd = (f"echo {script_b64} | base64 -d | "
+           f"python3 - {shlex.quote(host)} {port} {shlex.quote(sni_b64)}")
+    return remote_control.run_command(cmd)
+
+
+def _inspector_log_path(app_obj):
+    """Return /var/log/uvm/app-<N>.log for the running ssl-inspector instance.
+
+    Takes the test class's self._app rather than reading the module-level `app`
+    global, which is only populated when SslInspectorTests.module_name() runs
+    during full-class setup.  When ATS invokes individual test methods, that
+    global may still be None.
+    """
+    return f"/var/log/uvm/app-{app_obj.getAppSettings()['id']}.log"
+
+
+def _log_line_count(path):
+    return int(subprocess.check_output(
+        f"wc -l {shlex.quote(path)} | cut -d' ' -f1",
+        shell=True).decode().strip())
+
+
+def _log_lines_since(path, start_line, pattern):
+    """awk-grep new log lines >= start_line whose body matches pattern."""
+    out = subprocess.check_output(
+        f"awk 'NR >= {start_line} && /{pattern}/' {shlex.quote(path)} || true",
+        shell=True).decode()
+    return [ln for ln in out.split('\n') if ln.strip()]
+
+
 @pytest.mark.ssl_inspector
 class SslInspectorTests(NGFWTestCase):
 
@@ -106,7 +218,7 @@ class SslInspectorTests(NGFWTestCase):
 
     @classmethod
     def initial_extra_setup(cls):
-        global appData, appWeb, appWebData
+        global appData, appWeb, appWebData, ssl_app_2, policy_app, secondRackId
 
         global_functions.get_latest_client_test_pkg("web")
 
@@ -118,6 +230,12 @@ class SslInspectorTests(NGFWTestCase):
 
         appData['ignoreRules']['list'].insert(0,createSSLInspectRule(testedServerDomainWildcard))
         cls._app.setSettings(appData)
+
+        if (global_functions.uvmContext.appManager().isInstantiated("policy-manager")):
+            raise Exception('app policy-manager already instantiated')
+        policy_app = global_functions.uvmContext.appManager().instantiate("policy-manager")
+        secondRackId = global_functions.addRack(policy_app, name="Second Rack")
+        ssl_app_2 = global_functions.uvmContext.appManager().instantiate("ssl-inspector", secondRackId)
         
     def test_010_clientIsOnline(self):
         result = remote_control.is_online()
@@ -208,6 +326,101 @@ class SslInspectorTests(NGFWTestCase):
                                                 "host", t["host"],
                                                 "term", t["term"])
             assert( found )
+
+    def test_100_hostnameVerificationEnabled(self):
+        """Verify hostname verification enabled by default, normal HTTPS works without bypass pipe"""
+        appData = self._app.getSettings()
+        assert appData.get('verifyServerCertHostname') == True
+        result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+        assert (result == 0)
+        events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+        event = global_functions.find_event(events.get('list'), 5,
+            "ssl_inspector_status", "INSPECTED",
+            "ssl_inspector_detail", testedServerName)
+        assert event is not None
+        assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
+
+    def test_101_hostnameVerificationBypassList(self):
+        """Verify bypass list entry adds bypass pipe to detail"""
+        appData = self._app.getSettings()
+        appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerName))
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5, "ssl_inspector_status", "INSPECTED")
+            assert event is not None
+            assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['hostnameVerificationBypassList']['list'] = []
+            self._app.setSettings(appData)
+
+    def test_102_hostnameVerificationGlobalDisable(self):
+        """Verify global disable adds bypass pipe to detail"""
+        appData = self._app.getSettings()
+        appData['verifyServerCertHostname'] = False
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5, "ssl_inspector_status", "INSPECTED")
+            assert event is not None
+            assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['verifyServerCertHostname'] = True
+            self._app.setSettings(appData)
+
+    def test_103_hostnameVerificationBlindTrust(self):
+        """Verify blind trust skips hostname verification without bypass pipe"""
+        appData = self._app.getSettings()
+        appData['serverBlindTrust'] = True
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5, "ssl_inspector_status", "INSPECTED")
+            assert event is not None
+            assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['serverBlindTrust'] = False
+            self._app.setSettings(appData)
+
+    def test_104_hostnameVerificationWildcardBypass(self):
+        """Verify wildcard bypass entry matches and adds bypass pipe"""
+        appData = self._app.getSettings()
+        appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerDomainWildcard, description="wildcard test"))
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5, "ssl_inspector_status", "INSPECTED")
+            assert event is not None
+            assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['hostnameVerificationBypassList']['list'] = []
+            self._app.setSettings(appData)
+
+    def test_105_hostnameVerificationDisabledBypassEntry(self):
+        """Verify disabled bypass entry does not add bypass pipe"""
+        appData = self._app.getSettings()
+        appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerName, enabled=False, description="disabled entry"))
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5,
+                "ssl_inspector_status", "INSPECTED",
+                "ssl_inspector_detail", testedServerName)
+            assert event is not None
+            assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['hostnameVerificationBypassList']['list'] = []
+            self._app.setSettings(appData)
 
     def test_551_https_with_sni_packet_split(self):
         """ Verify no exceptions with split Hello TLS packets"""
@@ -330,10 +543,198 @@ class SslInspectorTests(NGFWTestCase):
         result = remote_control.run_command(global_functions.build_wget_command(output_file="-", uri=f"https://www.youtube.com/watch?v=esXGGdVL7ug") +  " 2>&1 | grep -q \'Loading icon\">'" )
         assert( result != 0 )
 
+    # -----------------------------------------------------------------------
+    # SNI SSRF (NGFW-15841) — SNI-driven SSRF in SSL Inspector CertCacheManager.
+    #
+    # Pre-fix: SNI bytes from the TLS ClientHello flowed straight into
+    #   new URL("https://" + sni).openConnection().connect()
+    # in CertCacheManagerImpl.fetchServerCertificate, letting an attacker steer
+    # the firewall's outbound TCP to an arbitrary IP:port (and inject CR/LF
+    # bytes into the cert-cache exception WARN line).
+    #
+    # Fix: validate the SNI at the inspector call site against SafeType.HOSTNAME
+    # (LDH regex + length cap, explicit null/empty reject) before passing it to
+    # the cache.  Malformed values fall back to session.getServerAddr() — the
+    # same primitive the SNI-absent branch already uses.  The cache method
+    # itself runs the same check at entry as defense-in-depth.  Log lines that
+    # interpolate the cache key are routed through a safeForLog() wrapper that
+    # strips CR/LF/TAB and truncates to 80 chars.
+    #
+    # These tests verify the security-relevant behavior end-to-end on a live
+    # appliance: a malformed SNI must not produce an outbound prefetch keyed by
+    # the attacker bytes; the SNI SSRF WARN must fire single-line, CR/LF-stripped.
+    # -----------------------------------------------------------------------
+    def test_720_sni_ssrf_legit_sni_no_warn(self):
+        """V1 — A legitimate LDH hostname in SNI must not trigger the SNI SSRF
+        WARN.  Negative regression check on the validator."""
+        log_file = _inspector_log_path(self._app)
+        start = _log_line_count(log_file) + 1
+
+        remote_control.run_command(
+            f"echo | openssl s_client -connect {testedServerName}:443 "
+            f"-servername {testedServerName} -quiet 2>/dev/null >/dev/null"
+        )
+        time.sleep(2)
+
+        warns = _log_lines_since(log_file, start, "SNI SSRF")
+        assert warns == [], (
+            f"Legitimate SNI {testedServerName!r} unexpectedly triggered "
+            f"SNI SSRF WARN(s): {warns}"
+        )
+
+    def test_721_sni_ssrf_malformed_sni_with_port_path_rejected(self):
+        """V2 — The audit payload (SNI with port + path + query) must be
+        rejected by the SafeType.HOSTNAME check; SNI SSRF WARN must fire and
+        name the IP-fallback target."""
+        log_file = _inspector_log_path(self._app)
+        uvm_log = "/var/log/uvm/uvm.log"
+        # Snapshot both log line counts BEFORE the trigger so the post-trigger
+        # grep is bounded to lines this test produced.  Without the uvm.log
+        # snapshot, a prior unpatched-build run (or any future test that uses
+        # the same payload) would leave a "CertCache Search 192.168.1.1:8443"
+        # line lying around forever and fail this test on every later run.
+        inspector_start = _log_line_count(log_file) + 1
+        uvm_start = _log_line_count(uvm_log) + 1
+
+        malicious_sni = b"192.168.1.1:8443/api/restart?x=1"
+        _send_raw_sni_from_client(testedServerName, 443, malicious_sni)
+        time.sleep(2)
+
+        warns = _log_lines_since(
+            log_file, inspector_start,
+            "SNI SSRF: rejected malformed SNI for cert prefetch")
+        assert warns, (
+            "Expected SNI SSRF WARN for malformed SNI "
+            f"{malicious_sni!r}; got none in new log lines.")
+        assert any(b"192.168.1.1:8443" in w.encode() for w in warns), (
+            f"SNI SSRF WARN should echo the rejected SNI bytes; got: {warns}")
+
+        # The cert cache must not have been searched with the attacker payload —
+        # if it had, we'd see a CertCache Search line keyed by the malicious SNI
+        # in uvm.log.  Bounded to new lines so prior runs don't poison this.
+        bad_searches = _log_lines_since(
+            uvm_log, uvm_start,
+            "CertCache Search 192.168.1.1:8443")
+        assert not bad_searches, (
+            f"Cert cache was searched with the attacker payload; the "
+            f"validator must reject before the cache key is used: "
+            f"{bad_searches}")
+
+    def test_722_sni_ssrf_crlf_sni_no_log_injection(self):
+        """V3 — SNI bytes containing CR/LF must be stripped to spaces by
+        safeForLog so the WARN line cannot inject a synthetic log entry."""
+        log_file = _inspector_log_path(self._app)
+        start = _log_line_count(log_file) + 1
+
+        injection_marker = "sni-ssrf-log-injected-v3"
+        sni_bytes = f"evil.example.com\r\n{injection_marker}".encode()
+        _send_raw_sni_from_client(testedServerName, 443, sni_bytes)
+        time.sleep(2)
+
+        warn_lines = _log_lines_since(
+            log_file, start,
+            "SslInspectorParserEventHandler.*SNI SSRF")
+        assert len(warn_lines) == 1, (
+            f"Expected exactly one SNI SSRF WARN line; got {len(warn_lines)}: "
+            f"{warn_lines}")
+        single = warn_lines[0]
+
+        # safeForLog replaces \r and \n with spaces — the raw bytes must not
+        # survive into the WARN line on the inspector's own log path.
+        assert "\r" not in single, (
+            f"safeForLog failed to strip CR from inspector WARN: {single!r}")
+        # Embedded \n would have split the message across two awk records, so
+        # the fact we got exactly one line is itself the no-CR/LF-survival
+        # assertion; double-check the marker is present in the surviving line
+        # rather than on a synthetic following line.
+        assert injection_marker in single, (
+            f"SNI SSRF WARN should still echo the (stripped) bad SNI bytes "
+            f"including the marker '{injection_marker}': {single!r}")
+
+    def test_723_sni_ssrf_leading_dash_sni_rejected(self):
+        """V4 — SNI starting with '-' must be rejected (argv-option-injection
+        defence — SafeType regex requires position 0 to be [A-Za-z0-9])."""
+        log_file = _inspector_log_path(self._app)
+        start = _log_line_count(log_file) + 1
+
+        malicious_sni = b"-rfevil.example.com"
+        _send_raw_sni_from_client(testedServerName, 443, malicious_sni)
+        time.sleep(2)
+
+        warns = _log_lines_since(
+            log_file, start,
+            "SNI SSRF: rejected malformed SNI for cert prefetch")
+        assert warns, (
+            f"Expected SNI SSRF WARN for leading-dash SNI {malicious_sni!r}; "
+            f"got none.")
+        assert any(b"-rfevil.example.com" in w.encode() for w in warns), (
+            f"SNI SSRF WARN should echo the rejected SNI: {warns}")
+
+    def test_724_sni_ssrf_oversize_sni_rejected(self):
+        """V10 — SNI exceeding the SafeType.HOSTNAME 253-char cap must be
+        rejected, and the WARN must show safeForLog's 80-char truncation
+        (trailing '...')."""
+        log_file = _inspector_log_path(self._app)
+        start = _log_line_count(log_file) + 1
+
+        long_sni = (b"a" * 254) + b".example.com"
+        _send_raw_sni_from_client(testedServerName, 443, long_sni)
+        time.sleep(2)
+
+        warns = _log_lines_since(
+            log_file, start,
+            "SNI SSRF: rejected malformed SNI for cert prefetch")
+        assert warns, (
+            f"Expected SNI SSRF WARN for oversize SNI ({len(long_sni)} bytes); "
+            "got none.")
+        assert any("..." in w for w in warns), (
+            f"Expected safeForLog truncation marker ('...') in WARN; "
+            f"got: {warns}")
+
+    def test_106_hostnameVerificationGlobalBypassPropagation(self):
+        """Verify global bypass entries propagate across SSL Inspector instances"""
+        # verify both start with empty bypass lists
+        list1 = getHostnameBypassList(self._app)
+        list2 = getHostnameBypassList(ssl_app_2)
+        assert len(list1) == 0, "Instance 1 bypass list should be empty initially"
+        assert len(list2) == 0, "Instance 2 bypass list should be empty initially"
+
+        try:
+            # add a global entry and a non-global entry on instance 1
+            addHostnameBypassEntry(self._app, "global.example.com", isGlobal=True, description="global entry")
+            addHostnameBypassEntry(self._app, "local.example.com", isGlobal=False, description="local entry")
+
+            # verify instance 1 has both entries
+            list1 = getHostnameBypassList(self._app)
+            assert len(list1) == 2, "Instance 1 should have 2 entries, got %d" % len(list1)
+
+            # verify instance 2 has only the global entry
+            list2 = getHostnameBypassList(ssl_app_2)
+            assert len(list2) == 1, "Instance 2 should have 1 global entry, got %d" % len(list2)
+            assert list2[0]['string'] == "global.example.com"
+
+            # clear all entries on instance 1 (this removes the global entry too)
+            clearHostnameBypassList(self._app)
+
+            # verify instance 2 no longer has the global entry
+            list2 = getHostnameBypassList(ssl_app_2)
+            assert len(list2) == 0, "Instance 2 should have 0 entries after clearing, got %d" % len(list2)
+
+        finally:
+            clearHostnameBypassList(self._app)
+
     @classmethod
     def final_extra_tear_down(cls):
-        global appWeb
+        global appWeb, ssl_app_2, policy_app, secondRackId
 
+        if ssl_app_2 != None:
+            global_functions.uvmContext.appManager().destroy(ssl_app_2.getAppSettings()["id"])
+            ssl_app_2 = None
+        if policy_app != None:
+            global_functions.nukeRules(policy_app)
+            global_functions.removeRack(policy_app, secondRackId)
+            global_functions.uvmContext.appManager().destroy(policy_app.getAppSettings()["id"])
+            policy_app = None
         if appWeb != None:
             global_functions.uvmContext.appManager().destroy( appWeb.getAppSettings()["id"])
             appWeb = None

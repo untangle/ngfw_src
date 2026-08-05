@@ -24,7 +24,7 @@ wanIP = None
 
 WG_LOCAL_CONFIG = overrides.get("WG_LOCAL_CONFIG", default=
                         [
-                        ('10.112.13.179','192.168.10.0/24',"qP9f5uaOS/0tLJ2SW5AeAJoueaAIJOod8v14x/WD4mY=","10.133.201.1/24"), # ATS Dynamics
+                        ('10.112.13.168','192.168.10.0/24',"0NSthc3aJ0Rsh+h6GQwX+5lA449vIhX9lk4XNy4K6kk=","10.133.201.1/24"), # ATS Dynamics
                         ('10.112.56.89','172.16.54.0/24',"sGy3LyIUAKMxjJYQNyppBuJw9ibqCcvdOoOrUT0BQGE=","10.133.202.1/24"),  # QA 3 Bridged
                         ('10.112.56.57','192.168.10.0/24',"sBgaDBcvqmxAdJJrVJB1FoK8VyxpAF5KyRrBdox0yGo=","10.133.203.1/24"),  # QA box .57
                         ('10.112.56.58','192.168.10.0/24',"OFuDMenzEmR87trbLa+nF0akxPBfeXBbEohKX94dlHg=","10.133.204.1/24"),  # QA box .58
@@ -810,7 +810,7 @@ class WireGuardVpnTests(NGFWTestCase):
         Settings fields (3):
           - publicKey         (BASE64_KEY)
           - privateKey        (BASE64_KEY)
-          - dnsSearchDomain   (HOSTNAME)
+          - dnsSearchDomain   (HOSTNAME_LIST)  comma-separated; LF/CR rejected
 
         Sink: wireguard_manager.py writes these into /etc/wireguard/wg0.conf,
         where PostUp= / PostDown= reference executable scripts — newline +
@@ -835,6 +835,14 @@ class WireGuardVpnTests(NGFWTestCase):
             positive_appData["privateKey"]      = ""
             positive_appData["dnsSearchDomain"] = "internal.example.com"
             self._app.setSettings(positive_appData)
+            # HOSTNAME_LIST accepts comma-separated domains (HOSTNAME alone would reject this).
+            positive_appData["dnsSearchDomain"] = "internal.example.com, search.local"
+            self._app.setSettings(positive_appData)
+            saved = self._app.getSettings()
+            assert saved["dnsSearchDomain"] == "internal.example.com, search.local", (
+                "NGFW-15768: HOSTNAME_LIST dnsSearchDomain failed to round-trip "
+                f"comma-separated value; got {saved['dnsSearchDomain']!r}"
+            )
             baseline = self._app.getSettings()
 
             # --- Tunnel negatives. ---

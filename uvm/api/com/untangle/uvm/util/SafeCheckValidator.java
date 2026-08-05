@@ -4,6 +4,7 @@
 
 package com.untangle.uvm.util;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -59,6 +60,20 @@ import org.apache.logging.log4j.Logger;
  * one-time warning is logged naming the field. This is a transitional
  * compatibility shim; every shipped annotation should declare a type
  * explicitly.
+ *
+ * <h3>Support-flow bypass flag</h3>
+ * If a regex regression in production blocks a customer's
+ * {@code setSettings} call, support can instruct the customer to
+ * {@code touch /usr/share/untangle/conf/safecheck-disabled-flag}.
+ * While the flag exists, every value-rejection becomes a one-time
+ * WARN log line of the form
+ * {@code SafeCheck BYPASS active for <field> - value '<value>' would have been rejected. ...}
+ * and validation returns silently, letting the customer save their
+ * settings. After the save succeeds the flag should be removed and
+ * the WARN lines forwarded so the underlying regex can be fixed.
+ * The flag is checked on every would-be rejection - no UVM restart
+ * is required to enable or disable it. Resource-limit guards
+ * (depth, collection/map/array size) are deliberately NOT bypassed.
  */
 public class SafeCheckValidator
 {
@@ -99,6 +114,28 @@ public class SafeCheckValidator
      * Prevents log spam.
      */
     private static final Set<String> WARNED_EMPTY_VALUE = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Support-flow bypass flag. When this file exists, every
+     * {@code @SafeCheck} value rejection becomes a one-time WARN log
+     * line and validation returns silently. Resource-limit guards
+     * (depth, collection/map/array size) are unaffected.
+     *
+     * <p>Use case: a regex regression in production blocks a
+     * customer's {@code setSettings} call. Support instructs the
+     * customer to {@code touch} this file, retry the save, then
+     * {@code rm} it and forward the WARN lines so the regex can be
+     * fixed in the next patch. No UVM restart required - the flag
+     * is checked on every would-be rejection.</p>
+     */
+    private static final String BYPASS_FLAG_FILE =
+        System.getProperty("uvm.conf.dir") + "/safecheck-disabled-flag";
+
+    /**
+     * Throttles bypass-WARN logs to once per field/contextLabel per
+     * JVM lifetime. Independent of {@link #WARNED_EMPTY_VALUE}.
+     */
+    private static final Set<String> WARNED_BYPASS = ConcurrentHashMap.newKeySet();
 
     /**
      * Cached reflection info for a class.
@@ -316,6 +353,35 @@ public class SafeCheckValidator
     }
 
     /**
+     * Returns {@code true} if the operator has enabled the SafeCheck
+     * bypass by touching {@link #BYPASS_FLAG_FILE}. When {@code true},
+     * also emits a one-time WARN naming the field/contextLabel and the
+     * bypassed value so support can diagnose the offending regex. The
+     * caller must then return without throwing.
+     *
+     * <p>The filesystem stat runs only on the failure path (after every
+     * declared {@link SafeType} has rejected the value), so successful
+     * saves pay no cost.</p>
+     *
+     * @param contextKey unique key for log throttling (fieldName or contextLabel).
+     * @param value      the value that failed validation; logged verbatim for
+     *                   diagnostics (deliberate exception to the "never echo
+     *                   values" rule - support needs to see what the regex
+     *                   rejected to fix it).
+     * @return {@code true} if validation should be silently skipped.
+     */
+    private static boolean bypassActive(String contextKey, String value)
+    {
+        if (!new File(BYPASS_FLAG_FILE).exists()) return false;
+        if (WARNED_BYPASS.add(contextKey)) {
+            logger.warn("SafeCheck BYPASS active for {} - value '{}' would have been rejected. "
+                + "Remove {} once the underlying regex is fixed.",
+                contextKey, value, BYPASS_FLAG_FILE);
+        }
+        return true;
+    }
+
+    /**
      * Validate a single String value against an explicit SafeType list.
      * Returns silently on success; throws
      * {@link SafeCheckValidationException} on failure.
@@ -355,19 +421,9 @@ public class SafeCheckValidator
             if (type.validate(value)) return;
         }
 
-        String message;
-        if (overrideMessage != null && !overrideMessage.isEmpty()) {
-            message = overrideMessage;
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < types.length; i++) {
-                if (i > 0) sb.append(" OR ");
-                sb.append(types[i].defaultMessage());
-            }
-            message = sb.toString();
-        }
+        if (bypassActive(contextLabel, value)) return;
         throw new SafeCheckValidationException(
-            "Invalid value in " + contextLabel + ": " + message);
+            buildErrorMessage("Invalid value in " + contextLabel, value, types, overrideMessage));
     }
 
     /**
@@ -452,22 +508,79 @@ public class SafeCheckValidator
             if (type.validate(value)) return;
         }
 
-        // No type accepted. Build the message - the offending value is
-        // never included (avoids credential leakage and pivot through
-        // error-channel echo).
-        String message;
+        if (bypassActive(fieldName, value)) return;
+        throw new SafeCheckValidationException(
+            buildErrorMessage("Invalid value in field " + fieldName, value, types, overrideMessage));
+    }
+
+    /**
+     * Builds a user-facing error message of the form:
+     *
+     * <pre>
+     *   {prefix} - {why}; expected: {what}
+     * </pre>
+     *
+     * Where {why} comes from {@code types[0].describeRejection(value)}
+     * and {what} comes from {@code overrideMessage} (if non-empty) or
+     * the {@code OR}-joined {@code defaultMessage()} of every type.
+     *
+     * <p>For non-credential fields the rejected value is included verbatim
+     * after the prefix (e.g. {@code "Invalid value in field Foo.bar ('bad value')"})
+     * so admins can immediately see what they sent. For {@link SafeType#OPAQUE_SECRET}
+     * fields the value is suppressed to prevent password leakage through
+     * the JSON-RPC error channel. The {why} clause from
+     * {@link SafeType#describeRejection(String)} never echoes the value
+     * regardless. The {what} clause is static per-type text.</p>
+     *
+     * @param prefix          leading clause naming the field/param
+     *                        (e.g. {@code "Invalid value in field Foo.bar"})
+     * @param value           the rejected value - used only to compute the
+     *                        {why} reason; never embedded in the output
+     * @param types           the SafeTypes the value was checked against
+     * @param overrideMessage the annotation's {@code errorMessage()} override,
+     *                        or {@code null}/empty to use per-type defaults
+     * @return formatted error message string; never null
+     */
+    private static String buildErrorMessage(String prefix, String value, SafeType[] types, String overrideMessage)
+    {
+        // {why} from the first listed type - shortest message; matches
+        // how multi-type validators usually frame the error.
+        String why = types[0].describeRejection(value);
+
+        // {what} from override (if any), else OR-joined per-type defaults.
+        String what;
         if (overrideMessage != null && !overrideMessage.isEmpty()) {
-            message = overrideMessage;
+            what = overrideMessage;
         } else {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < types.length; i++) {
                 if (i > 0) sb.append(" OR ");
                 sb.append(types[i].defaultMessage());
             }
-            message = sb.toString();
+            what = sb.toString();
         }
-        throw new SafeCheckValidationException(
-            "Invalid value in field " + fieldName + ": " + message);
+
+        // Include the rejected value verbatim for non-credential fields so
+        // admins can see exactly what they sent. Suppressed for OPAQUE_SECRET
+        // fields (passwords, passphrases) to avoid leaking secrets through
+        // the JSON-RPC error channel.
+        boolean sensitive = false;
+        for (SafeType type : types) {
+            if (type == SafeType.OPAQUE_SECRET) {
+                sensitive = true;
+                break;
+            }
+        }
+
+        StringBuilder out = new StringBuilder(prefix);
+        if (!sensitive && value != null && !value.isEmpty()) {
+            out.append(" ('").append(value).append("')");
+        }
+        if (!why.isEmpty()) {
+            out.append(" - ").append(why);
+        }
+        out.append("; expected: ").append(what);
+        return out.toString();
     }
 
     /**

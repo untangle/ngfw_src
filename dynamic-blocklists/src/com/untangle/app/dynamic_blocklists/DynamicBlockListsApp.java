@@ -44,7 +44,6 @@ public class DynamicBlockListsApp extends AppBase
     private final Logger logger = LogManager.getLogger(getClass());
     private final String SettingsDirectory = "/dynamic-blocklists/";
 
-    private static final String CRON_FILE = "/etc/cron.d/dbl-crons";
     private static final String BLOCK_LISTS_DIR = "/etc/config/blocklists";
     private final PipelineConnector[] connectors = new PipelineConnector[] {};
 
@@ -219,93 +218,48 @@ public class DynamicBlockListsApp extends AppBase
     public Object runJobsByConfigIdsV2(LinkedList<String> configIds) throws Exception {
         List<String> successfulIds = new ArrayList<>();
 
-        // Validate all configIds as UUIDs before doing any file I/O
-        for (String configId : configIds) {
-            try {
-                UUID.fromString(configId);
-            } catch (IllegalArgumentException e) {
-                logger.error("Invalid configId format (must be UUID): {}", configId);
-                Map<String, Object> messageMap = new HashMap<>();
-                messageMap.put("message", "invalid_config_id_format");
-                messageMap.put("vars", null);
-                return Map.of(
-                    "type", "Error",
-                    "success", false,
-                    "messages", List.of(messageMap)
-                );
-            }
-        }
+        String scriptPath = "/usr/share/untangle/bin/fetch_ip_list.py";
 
-        List<String> cronLines;
-        try {
-            cronLines = Files.readAllLines(Paths.get(CRON_FILE));
-        } catch (java.nio.file.NoSuchFileException e) {
-            logger.warn("Cron file not found: {}", CRON_FILE);
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("message", "download_blocklist_to_appliance_failure");
-            messageMap.put("vars", null);
-            return Map.of(
-                "type", "Error",
-                "success", false,
-                "messages", List.of(messageMap)
+        for (String configId : configIds) {
+            // Validate by existence in current settings instead of UUID format check,
+            // since stored IDs are 28-char generated strings (not UUID format).
+            DynamicBlockList config = this.settings.getConfigurations().stream()
+                .filter(c -> configId.equals(c.getId()) && c.isEnabled())
+                .findFirst().orElse(null);
+
+            if (config == null) {
+                logger.error("No enabled config found for configId: {}", configId);
+                continue;
+            }
+
+            String filePath = BLOCK_LISTS_DIR + "/dynamic_ip_addresses_list_" + configId + ".txt";
+            List<String> args = Arrays.asList(
+                configId,
+                config.getSource(),
+                filePath,
+                String.valueOf(config.getSkipCertCheck()),
+                config.getParsingMethod(),
+                this.getSettingsFilename(),
+                "True"
             );
-        }
 
-        for (String configId : configIds) {
-            boolean found = false;
-            boolean success = false;
-
-            for (String line : cronLines) {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) {
-                    continue;
+            try {
+                ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(scriptPath, args);
+                String resultOutput = result.getOutput();
+                if (resultOutput != null && (resultOutput.contains("[ERROR]") || resultOutput.contains("[WARNING]"))) {
+                    logger.error("Command failed for configId {}: {}", configId, resultOutput);
+                } else {
+                    successfulIds.add(configId);
                 }
-                if (line.contains(configId)) {
-                    found = true;
-                    String[] parts = line.split("\\s+", 7);
-                    if (parts.length < 7) {
-                        logger.error("Invalid cron line format: {}", line);
-                        continue;
-                    }
-                    String command = parts[6];
-
-                    if (StringUtils.isNotBlank(command)) {
-                        command = command.replace("2>&1 | logger -t dynamic_list_manager", "").trim();
-                    }
-                    try {
-                        String[] cmdParts = command.split("\\s+");
-                        String script = cmdParts[0];
-                        List<String> args = Arrays.asList(Arrays.copyOfRange(cmdParts, 1, cmdParts.length));
-                        ExecManagerResult result = UvmContextFactory.context().execManager().execCommand(script, args);
-                        String resultOutput = result.getOutput();
-                        // Mark as failed if output contains [ERROR]/[WARNING]
-                        if ( (resultOutput != null && (resultOutput.contains("[ERROR]") || resultOutput.contains("[WARNING]")))) {
-                            logger.error("Command failed for configId {}: Error :{}", configId, resultOutput);
-                            success = false;
-                        } else {
-                            successfulIds.add(configId);
-                            success = true;
-                        }
-
-                    } catch (Exception e) {
-                        logger.warn("Exception running command for configId {}: {}", configId, e.getMessage());
-                        success = false;
-                    }
-
-                    break;
-                }
-            }
-            if (!found) {
-                logger.info("No cron job found for config ID {}", configId);
-                success = false;
+            } catch (Exception e) {
+                logger.warn("Exception running command for configId {}: {}", configId, e.getMessage());
             }
         }
-        //if none of sourcelist is run sucessfully without error send the error response
-        if (successfulIds.size() == 0) {
+
+        if (successfulIds.isEmpty()) {
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("message", "download_blocklist_to_appliance_failure");
             messageMap.put("vars", null);
-
             return Map.of(
                 "type", "Error",
                 "success", false,
@@ -358,6 +312,21 @@ public class DynamicBlockListsApp extends AppBase
         if (readSettings == null) {
             logger.warn("No settings found - Initializing new settings.");
             this.initializeSettings();
+        }
+    }
+
+    /**
+     * Called after the application transitions to RUNNING state.
+     * Ensures parent ipset and iptables chain exist (idempotent) and
+     * triggers sync-settings to recreate child ipsets -critical after
+     * a system reboot when in-kernel ipsets are lost.
+     * @param isPermanentTransition
+     */
+    @Override
+    protected void postStart(boolean isPermanentTransition) {
+        dynamicBlockListsManager.ensureSetup();
+        if (this.settings != null && this.settings.getEnabled()) {
+            dynamicBlockListsManager.configure();
         }
     }
 

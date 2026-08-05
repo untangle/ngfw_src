@@ -37,8 +37,15 @@ public class DynamicBlockListsManager {
      */
     protected void start() {
         this.app.start();
-        logger.info("Staring the Dynamic Blocklist Setup Process");
-        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_SETUP_SCRIPT); 
+    }
+
+    /**
+     * Ensure parent ipset and iptables chain exist (idempotent).
+     * Safe to call multiple times -dbl-setup.sh uses -exist flags.
+     */
+    protected void ensureSetup() {
+        logger.info("Starting the Dynamic Blocklist Setup Process");
+        ExecManagerResult result = UvmContextFactory.context().execManager().exec(DBL_SETUP_SCRIPT);
         logger.info("DBL setup script result: {}", result.getOutput());
     }
 

@@ -7,12 +7,14 @@ Ext.define('Ung.apps.sslinspector.Main', {
 
         data: {
             autoRefresh: false,
-            trustedCertData: []
+            trustedCertData: [],
+            isAddAction: false
         },
 
         stores: {
             ignoreRules: { data: '{settings.ignoreRules.list}' },
-            trustedCertList: { data: '{trustedCertData}' }
+            trustedCertList: { data: '{trustedCertData}' },
+            hostnameBypassList: { data: '{settings.hostnameVerificationBypassList.list}' }
         }
     },
 

@@ -54,22 +54,43 @@ public class Registration extends HttpServlet
     {
         DirectoryConnectorApp directoryConnector = (DirectoryConnectorApp)UvmContextFactory.context().appManager().app("directory-connector");
 
-        String download = request.getParameter( "download" );
-        if ( download != null && download.equals( "download" ) ) {
-            generateInstaller( request, response );
-            return;
-        }
-
         if ( ! directoryConnector.getSettings().getApiEnabled() ) {
             logger.warn("API not enabled.");
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             return;
         }
 
+        String requiredSecretKey = directoryConnector.getSettings().getApiSecretKey();
+
+        // NGFW-15837 / UNT-01: download path requires a configured and matching secret key.
+        // Previously this branch ran before any auth check, leaking the secret to unauthenticated callers.
+        String download = request.getParameter( "download" );
+        if ( download != null && download.equals( "download" ) ) {
+            String dlSecretKey = request.getParameter( "secretKey" );
+            if ( dlSecretKey == null ) {
+                dlSecretKey = request.getParameter( "secretkey" );
+            }
+            if (requiredSecretKey == null || "".equals(requiredSecretKey)) {
+                logger.warn("Download rejected: API secret key is not configured.");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "A Secret Key must be configured before downloading the login script. " +
+                    "The script uses this key to authenticate user registration requests. " +
+                    "Set one in Apps > Directory Connector > User Notification API > Secret Key.");
+                return;
+            }
+            if (!requiredSecretKey.equals(dlSecretKey)) {
+                logger.warn("Download rejected: secret key does not match.");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "The provided secret key does not match. " +
+                    "Verify the key in Apps > Directory Connector > User Notification API > Secret Key.");
+                return;
+            }
+            generateInstaller( request, response );
+            return;
+        }
+
         response.setContentType( "text/html" );
         response.setHeader( "Content-Disposition", "text/html");
-
-        String requiredSecretKey = directoryConnector.getSettings().getApiSecretKey();
 
         String username = null;
         String hostname = null;

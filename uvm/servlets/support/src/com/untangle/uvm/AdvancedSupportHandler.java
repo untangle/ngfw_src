@@ -81,6 +81,7 @@ public class AdvancedSupportHandler extends HttpServlet
         // first make sure the advanced support handler script exists
         if (!script.exists() || !script.canExecute()) {
             response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
+            return;
         }
 
         // put all of the request parameter names and values into a JSON object
