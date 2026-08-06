@@ -130,7 +130,7 @@ Ext.define('Ung.view.reports.EventReport', {
 
             if (!entry) { return; }
 
-            defaultColumns = entry.get('defaultColumns');
+            defaultColumns = entry.get('defaultColumns') || [];
 
             // keep this for backward compatibility
             if (me.getView().up('reportwidget')) {

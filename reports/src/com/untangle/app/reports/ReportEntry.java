@@ -163,7 +163,7 @@ public class ReportEntry implements Serializable, JSONString
     private String orderByColumn = null; /* The column to order by */
     private Boolean orderDesc = null; /* The direction to order, True is DESC, False is regular, null is neither */
 
-    private String[] defaultColumns; /* The default columns for an event list report entry */
+    private String[] defaultColumns = new String[0]; /* The default columns for an event list report entry */
 
     /* http://api.highcharts.com/highstock/plotOptions.area.dataGrouping */
     private String approximation; /* The data-approximation technique: average, open, high, low, close, sum */
