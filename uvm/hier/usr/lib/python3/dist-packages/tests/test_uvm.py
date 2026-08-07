@@ -1831,6 +1831,87 @@ class UvmTests(NGFWTestCase):
             assert os.lstat(lic_file).st_mtime > five_days_ago
 
 
+    def test_303_license_default_exists(self):
+        """
+        Verify license_default.js exists and contains free license entries
+        after a successful sync.
+        """
+        license_dir = "/usr/share/untangle/conf/licenses/"
+        default_file = os.path.join(license_dir, "license_default.js")
+
+        # Trigger a sync to ensure license_default.js is populated
+        global_functions.uvmContext.licenseManager().reloadLicenses(True)
+        time.sleep(5)
+
+        assert os.path.exists(default_file), "license_default.js does not exist"
+
+        with open(default_file, 'r') as f:
+            data = json.load(f)
+
+        licenses = data.get("licenses", {})
+        lic_list = licenses.get("list", []) if isinstance(licenses, dict) else []
+        assert len(lic_list) > 0, "license_default.js has no license entries"
+
+        for lic in lic_list:
+            assert lic.get("type") == "Free", \
+                "license_default.js contains non-Free entry: " + lic.get("name", "unknown")
+
+    def test_303b_license_default_survives_cleanup(self):
+        """
+        Verify license_default.js is not deleted by the 5-day file cleanup.
+        """
+        license_dir = "/usr/share/untangle/conf/licenses/"
+        default_file = os.path.join(license_dir, "license_default.js")
+        now = time.time()
+
+        assert os.path.exists(default_file), "license_default.js does not exist before test"
+
+        # Create old dummy file that should be cleaned up
+        old_file = os.path.join(license_dir, "test_cleanup_old.js")
+        open(old_file, 'w').close()
+        os.utime(old_file, (now - (10 * 24 * 60 * 60), now - (10 * 24 * 60 * 60)))
+
+        # Trigger sync which runs _cleanLicenseFiles
+        global_functions.uvmContext.licenseManager().reloadLicenses(True)
+        time.sleep(5)
+
+        assert os.path.exists(default_file), \
+            "license_default.js was deleted by cleanup"
+        assert not os.path.exists(old_file), \
+            "Old test file was not cleaned up"
+
+    def test_303c_license_default_recreated_on_sync(self):
+        """
+        Verify license_default.js is recreated with free entries
+        when deleted and a successful sync occurs.
+        """
+        license_dir = "/usr/share/untangle/conf/licenses/"
+        default_file = os.path.join(license_dir, "license_default.js")
+
+        # Delete license_default.js
+        if os.path.exists(default_file):
+            os.remove(default_file)
+        assert not os.path.exists(default_file), "Failed to delete license_default.js"
+
+        # Trigger sync — should recreate license_default.js
+        global_functions.uvmContext.licenseManager().reloadLicenses(True)
+        time.sleep(5)
+
+        assert os.path.exists(default_file), \
+            "license_default.js was not recreated after sync"
+
+        with open(default_file, 'r') as f:
+            data = json.load(f)
+
+        licenses = data.get("licenses", {})
+        lic_list = licenses.get("list", []) if isinstance(licenses, dict) else []
+        assert len(lic_list) > 0, \
+            "license_default.js recreated but has no entries"
+
+        free_count = sum(1 for lic in lic_list if lic.get("type") == "Free")
+        assert free_count == len(lic_list), \
+            "license_default.js contains non-Free entries after recreation"
+
     @pytest.mark.slow
     def test_304_email_cleaner(self):
         """
