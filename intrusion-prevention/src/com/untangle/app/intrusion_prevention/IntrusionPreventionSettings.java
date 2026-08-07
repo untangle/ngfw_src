@@ -132,7 +132,8 @@ public class IntrusionPreventionSettings implements Serializable, JSONString
         g.setVersion(this.version);
         g.setSignatures(this.signatures);
         g.setVariables(this.variables);
-        g.setBypassRules(this.bypassRules);
+        if (this.bypassRules != null)
+            g.setBypassRules(BypassRule.transformBypassRulesToGeneric(this.bypassRules));
         g.setIptablesNfqNumber(this.iptablesNfqNumber);
         g.setIptablesMaxScanSize(this.iptablesMaxScanSize);
         g.setIptablesProcessing(this.iptablesProcessing);
