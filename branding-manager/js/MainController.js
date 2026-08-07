@@ -5,11 +5,11 @@ Ext.define('Ung.apps.brandingmanager.MainController', {
     needRackReload: false,
     originalDefaultLogo: true,
 
-    control: {
-        '#': {
-            afterrender: 'getSettings',
-        }
-    },
+    // control: {
+    //     '#': {
+    //         afterrender: 'getSettings',
+    //     }
+    // },
 
     getSettings: function () {
         var me = this, v = this.getView(), vm = this.getViewModel();

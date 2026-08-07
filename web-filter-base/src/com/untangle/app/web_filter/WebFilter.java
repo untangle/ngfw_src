@@ -5,6 +5,7 @@ package com.untangle.app.web_filter;
 
 import java.util.List;
 
+import com.untangle.app.web_filter.generic.WebFilterSettingsGeneric;
 import com.untangle.uvm.app.GenericRule;
 import com.untangle.uvm.app.App;
 
@@ -35,6 +36,20 @@ public interface WebFilter extends App
      *        The new settings
      */
     void setSettings(WebFilterSettings settings);
+
+    /**
+     * Get the settings in V2 (generic) format for the Vue UI.
+     *
+     * @return WebFilterSettingsGeneric
+     */
+    WebFilterSettingsGeneric getSettingsV2();
+
+    /**
+     * Set the settings from a V2 (generic) format payload coming from the Vue UI.
+     *
+     * @param newSettings WebFilterSettingsGeneric
+     */
+    void setSettingsV2(WebFilterSettingsGeneric newSettings);
 
     /**
      * Load the global settings

@@ -4,7 +4,11 @@
 
 package com.untangle.app.captive_portal;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.net.InetAddress;
 
@@ -13,6 +17,11 @@ import org.json.JSONString;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.uvm.generic.RuleActionGeneric;
+import com.untangle.uvm.generic.RuleConditionGeneric;
+import com.untangle.uvm.generic.RuleGeneric;
+import com.untangle.uvm.util.Constants;
+import com.untangle.uvm.util.StringUtil;
 import com.untangle.uvm.vnet.AppSession;
 import com.untangle.uvm.vnet.SessionAttachments;
 
@@ -158,5 +167,117 @@ public class CaptureRule implements JSONString, Serializable
          * Otherwise all match - so the rule matches
          */
         return true;
+    }
+
+    /**
+     * Transforms a list of CaptureRule into the generic RuleGeneric form for
+     * the V2 API. Used by getSettingsV2().
+     *
+     * @param v1Rules list of V1 CaptureRule objects
+     * @return LinkedList of RuleGeneric
+     */
+    public static LinkedList<RuleGeneric> transformCaptureRulesToGeneric(List<CaptureRule> v1Rules)
+    {
+        LinkedList<RuleGeneric> out = new LinkedList<>();
+        if (v1Rules == null) return out;
+        for (CaptureRule rule : v1Rules) {
+            out.add(toGeneric(rule));
+        }
+        return out;
+    }
+
+    /**
+     * Transforms a single CaptureRule into its RuleGeneric representation.
+     */
+    private static RuleGeneric toGeneric(CaptureRule v1)
+    {
+        boolean enabled = Boolean.TRUE.equals(v1.getEnabled());
+        String ruleId = v1.getRuleId() != null ? String.valueOf(v1.getRuleId()) : null;
+
+        RuleActionGeneric action = new RuleActionGeneric();
+        action.setType(Boolean.TRUE.equals(v1.getCapture())
+                ? RuleActionGeneric.Type.CAPTURE
+                : RuleActionGeneric.Type.PASS);
+
+        LinkedList<RuleConditionGeneric> conds = new LinkedList<>();
+        if (v1.getConditions() != null) {
+            for (CaptureRuleCondition c : v1.getConditions()) {
+                String op = Boolean.TRUE.equals(c.getInvert())
+                        ? Constants.IS_NOT_EQUALS_TO
+                        : Constants.IS_EQUALS_TO;
+                conds.add(new RuleConditionGeneric(op, c.getConditionType(), c.getValue()));
+            }
+        }
+
+        RuleGeneric g = new RuleGeneric(enabled, v1.getDescription(), ruleId);
+        g.setAction(action);
+        g.setConditions(conds);
+        return g;
+    }
+
+    /**
+     * Transforms a list of generic RuleGeneric into V1 CaptureRule, preserving
+     * existing V1 rule objects (matched by ruleId) and removing orphaned rules.
+     * Used by setSettingsV2().
+     *
+     * @param genRules    list of V2 RuleGeneric objects from the UI
+     * @param legacyRules current V1 CaptureRule list (to preserve internal state
+     *                    on update and detect deletions)
+     * @return LinkedList of updated/preserved V1 CaptureRule objects
+     */
+    public static LinkedList<CaptureRule> transformGenericToCaptureRules(
+            LinkedList<RuleGeneric> genRules, List<CaptureRule> legacyRules)
+    {
+        if (legacyRules == null) legacyRules = new LinkedList<>();
+
+        // Remove rules deleted in UI from the legacy list
+        RuleGeneric.deleteOrphanRules(
+                genRules, legacyRules,
+                RuleGeneric::getRuleId,
+                r -> String.valueOf(r.getRuleId()));
+
+        // Map for O(1) lookup of existing rules by ruleId
+        Map<Integer, CaptureRule> rulesMap = legacyRules.stream()
+                .collect(Collectors.toMap(CaptureRule::getRuleId, Function.identity()));
+
+        LinkedList<CaptureRule> out = new LinkedList<>();
+        if (genRules != null) {
+            for (RuleGeneric g : genRules) {
+                CaptureRule existing = rulesMap.get(StringUtil.getInstance().parseInt(g.getRuleId(), 0));
+                out.add(toLegacy(g, existing));
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Transforms a single RuleGeneric back into a V1 CaptureRule, mutating the
+     * passed-in existing rule (or creating a new one if null).
+     */
+    private static CaptureRule toLegacy(RuleGeneric g, CaptureRule existing)
+    {
+        if (existing == null) existing = new CaptureRule();
+        existing.setEnabled(g.isEnabled());
+        existing.setDescription(g.getDescription());
+        // For new rules from UI, ruleId is a UUID string -> parseInt returns -1;
+        // CaptivePortalApp.saveAppSettings() will assign a real integer ID on save.
+        existing.setRuleId(StringUtil.getInstance().parseInt(g.getRuleId(), -1));
+
+        if (g.getAction() != null) {
+            existing.setCapture(g.getAction().getType() == RuleActionGeneric.Type.CAPTURE);
+        }
+
+        List<CaptureRuleCondition> conds = new LinkedList<>();
+        if (g.getConditions() != null) {
+            for (RuleConditionGeneric gc : g.getConditions()) {
+                CaptureRuleCondition c = new CaptureRuleCondition();
+                c.setInvert(Constants.IS_NOT_EQUALS_TO.equals(gc.getOp()));
+                c.setConditionType(gc.getType());
+                c.setValue(gc.getValue());
+                conds.add(c);
+            }
+        }
+        existing.setConditions(conds);
+        return existing;
     }
 }

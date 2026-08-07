@@ -60,5 +60,5 @@ public class IntrusionPreventionRule implements Serializable, JSONString
         JSONObject jO = new JSONObject(this);
         return jO.toString();
     }
-}
 
+}
