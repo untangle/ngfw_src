@@ -62,6 +62,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     private static final String LIENENCY_GIFT_FILE = System.getProperty("uvm.conf.dir") + "/gift"; /* the file that defines the gift value */
     private static final int    LIENENCY_GIFT = getLienencyGift(); /* and extra lienency constant */
     private static final long LICENSE_DAYS_COUNT = 5 * 24 * 60 * 60 * 1000; /* last no of days License files to keep */
+    private static final String DEFAULT_LICENSE_FILE = System.getProperty("uvm.conf.dir") + "/licenses/license_default.js";
 
     public static final String DIRECTORY_CONNECTOR_OLDNAME = "adconnector";
     public static final String BANDWIDTH_CONTROL_OLDNAME = "bandwidth";
@@ -599,10 +600,18 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             logger.error("Unable to read license file: ", e );
         }
 
-        // Initialize if we for some reason failed to get licenses.js
-        if (this.settings == null) 
+        if (this.settings == null) {
+            logger.warn("Primary license file unavailable, trying default licenses");
+            try {
+                this.settings = settingsManager.load( LicenseSettings.class, DEFAULT_LICENSE_FILE );
+            } catch (SettingsManager.SettingsException e) {
+                logger.error("Unable to read default license file: ", e );
+            }
+        }
+
+        if (this.settings == null)
             _initializeSettings();
-        
+
         _mapLicenses();
     }
 
@@ -635,6 +644,13 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
             // The list on the json object contains the licenses
             boolean hasList = parse.has("list");
             if(hasList) {
+                JSONArray licList = parse.getJSONArray("list");
+                int oldSize = this.settings.getLicenses() != null ? this.settings.getLicenses().size() : 0;
+                if (licList.length() == 0 && oldSize > 0) {
+                    logger.warn("License server returned empty list but " + oldSize
+                        + " licenses were previously loaded; treating as failed download");
+                    return false;
+                }
                 // Clear out our existing list.
                 if (this.settings.getLicenses() != null) {
                     this.settings.getLicenses().clear();
@@ -644,8 +660,6 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     boolean restrict = parse.getBoolean("restricted");
                     restricted = restrict;
                 }
-                
-                JSONArray licList = parse.getJSONArray("list");
                 List<License> licenses = this.settings.getLicenses();
                 for (int i = 0; i < licList.length(); i++) {
                     JSONObject lic = licList.getJSONObject(i);
@@ -894,7 +908,31 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
         UvmContextFactory.context().hookManager().callCallbacks( HookManager.LICENSE_CHANGE, 1 );
 
     }
-    
+
+    /**
+     * Save only the free (type="Free") licenses to license_default.js.
+     * Called on every successful sync so the default file stays current
+     * with whatever the server considers free.
+     */
+    private void _saveDefaultLicenses()
+    {
+        try {
+            List<License> freeLicenses = new LinkedList<>();
+            if (this.settings.getLicenses() != null) {
+                for (License lic : this.settings.getLicenses()) {
+                    if ("Free".equals(lic.getType())) {
+                        freeLicenses.add(new License(lic));
+                    }
+                }
+            }
+            LicenseSettings defaultSettings = new LicenseSettings(freeLicenses);
+            SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
+            settingsManager.save(DEFAULT_LICENSE_FILE, defaultSettings, false);
+        } catch (Exception e) {
+            logger.warn("Failed to save default licenses", e);
+        }
+    }
+
     /**
      * Returns an estimate of # devices on the network
      * This is not meant to be very accurate - it is just an estimate
@@ -991,6 +1029,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
                 _mapLicenses();
                 _saveSettings(this.settings);   // always save on successful sync, bounds disk file age to last successful contact
+                _saveDefaultLicenses();
             }
             _cleanLicenseFiles();
             _runAppManagerSync();
@@ -1011,6 +1050,7 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                 if (files != null) {
                     long fiveDaysAgo = System.currentTimeMillis() - LICENSE_DAYS_COUNT;
                     Arrays.stream(files)
+                          .filter(f -> !"license_default.js".equals(f.getName()))
                           .filter(f -> f.lastModified() < fiveDaysAgo)
                           .forEach(File::delete);
                 }
