@@ -12,6 +12,7 @@ import java.net.InetAddress;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -46,6 +47,7 @@ import com.untangle.uvm.vnet.PipelineConnector;
 import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.app.http.HeaderToken;
+import com.untangle.app.threat_prevention.generic.ThreatPreventionSettingsGeneric;
 import com.untangle.uvm.app.IntMatcher;
 import com.untangle.uvm.app.License;
 
@@ -257,6 +259,28 @@ public class ThreatPreventionApp extends AppBase
         try {logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));} catch (Exception e) {}
 
         this.reconfigure();
+    }
+
+    /**
+     * Get the current settings in V2 generic format
+     * @return ThreatPreventionSettingsGeneric
+     */
+    public ThreatPreventionSettingsGeneric getSettingsV2() {
+        if (this.getSettings() != null)
+            return this.getSettings().transformThreatPreventionSettingsToGeneric();
+        return new ThreatPreventionSettingsGeneric();
+    }
+
+    /**
+     * Set the settings from a V2 (generic) format payload coming from the Vue UI.
+     * @param newSettings - the new settings in V2 format
+     */
+    public void setSettingsV2(final ThreatPreventionSettingsGeneric newSettings) {
+        if (this.getSettings() != null) {
+            ThreatPreventionSettings cloned = SerializationUtils.clone(this.getSettings());
+            newSettings.transformGenericToThreatPreventionSettings(cloned);
+            this.setSettings(cloned);
+        }
     }
 
     /**

@@ -20,7 +20,7 @@ public class RuleActionGeneric implements JSONString, Serializable {
      * DNAT - Required for Port Forward Rules
      * SNAT, MASQUERADE - Required for NAT Rules
      * BYPASS, PROCESS - Required for Bypass Rules
-     * ACCEPT, REJECT - Required for Filter, Access, UPnP and Web Filter Rules
+     * ACCEPT, REJECT - Required for Filter, Access, UPnP, Web Filter, Firewall and Threat Prevention Rules
      * PRIORITY - Required for QoS Rules
      * SCAN, PASS - Required for Shield Rules
      * TARGET_POLICY - Required for Policy Manager
@@ -34,7 +34,7 @@ public class RuleActionGeneric implements JSONString, Serializable {
     public Type getType() { return type; }
     public void setType(Type type) { this.type = type; }
 
-    // Required for Web Filter Rules indicates the rule should flag matching traffic
+    // Required for Web Filter, Firewall and Threat Prevention Rules indicates the rule should flag matching traffic
     private Boolean flagged;
 
     public Boolean getFlagged() { return flagged; }
