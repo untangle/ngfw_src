@@ -5,7 +5,6 @@ package com.untangle.app.intrusion_prevention.generic;
 
 import com.untangle.app.intrusion_prevention.IntrusionPreventionRule;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionRuleCondition;
-import com.untangle.uvm.event.generic.EventRuleConditionGeneric;
 
 import org.json.JSONObject;
 import org.json.JSONString;

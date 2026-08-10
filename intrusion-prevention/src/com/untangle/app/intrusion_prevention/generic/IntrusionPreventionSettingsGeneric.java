@@ -8,11 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.app.intrusion_prevention.IntrusionPreventionDaySchedule;
-import com.untangle.app.intrusion_prevention.IntrusionPreventionRule;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSettings;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionSignature;
 import com.untangle.app.intrusion_prevention.IntrusionPreventionVariable;
-import com.untangle.uvm.network.BypassRule;
+import com.untangle.uvm.generic.RuleGeneric;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -29,17 +28,17 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
     private LinkedList<IntrusionPreventionRuleGeneric> ip_rules = new LinkedList<>();
 
     // Pass-through fields
-    private List<IntrusionPreventionSignature> signatures;
-    private List<IntrusionPreventionVariable> variables;
-    private List<BypassRule> bypassRules;
-    private Integer iptablesNfqNumber;
-    private Integer iptablesMaxScanSize;
-    private String iptablesProcessing;
-    private String blockAction;
-    private JSONObject suricataSettings;
-    private String updateSignatureFrequency;
-    private List<IntrusionPreventionDaySchedule> updateSignatureSchedule;
-    private IntrusionPreventionDaySchedule updateSignatureWeekly;
+    private List<IntrusionPreventionSignature> signatures = new LinkedList<>();
+    private List<IntrusionPreventionVariable> variables = new LinkedList<>();
+    private LinkedList<RuleGeneric> bypassRules = new LinkedList<>();
+    private Integer iptablesNfqNumber = 2930;
+    private Integer iptablesMaxScanSize = 1024;
+    private String iptablesProcessing = "pre";
+    private String blockAction = "reject";
+    private JSONObject suricataSettings = new JSONObject();
+    private String updateSignatureFrequency = "Daily";
+    private List<IntrusionPreventionDaySchedule> updateSignatureSchedule = new LinkedList<>();
+    private IntrusionPreventionDaySchedule updateSignatureWeekly = new IntrusionPreventionDaySchedule();
 
     public Integer getVersion() { return version; }
     public void setVersion(Integer version) { this.version = version; }
@@ -53,8 +52,8 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
     public List<IntrusionPreventionVariable> getVariables() { return variables; }
     public void setVariables(List<IntrusionPreventionVariable> variables) { this.variables = variables; }
 
-    public List<BypassRule> getBypassRules() { return bypassRules; }
-    public void setBypassRules(List<BypassRule> bypassRules) { this.bypassRules = bypassRules; }
+    public LinkedList<RuleGeneric> getBypassRules() { return bypassRules; }
+    public void setBypassRules(LinkedList<RuleGeneric> bypassRules) { this.bypassRules = bypassRules; }
 
     public Integer getIptablesNfqNumber() { return iptablesNfqNumber; }
     public void setIptablesNfqNumber(Integer iptablesNfqNumber) { this.iptablesNfqNumber = iptablesNfqNumber; }
@@ -98,7 +97,8 @@ public class IntrusionPreventionSettingsGeneric implements Serializable, JSONStr
         if (this.version != null) v1.setVersion(this.version);
         if (this.signatures != null) v1.setSignatures(this.signatures);
         if (this.variables != null) v1.setVariables(this.variables);
-        if (this.bypassRules != null) v1.setBypassRules(this.bypassRules);
+        if (this.bypassRules != null)
+            v1.setBypassRules(RuleGeneric.transformGenericToLegacyBypassRules(this.bypassRules, v1.getBypassRules()));
         if (this.iptablesNfqNumber != null) v1.setIptablesNfqNumber(this.iptablesNfqNumber);
         if (this.iptablesMaxScanSize != null) v1.setIptablesMaxScanSize(this.iptablesMaxScanSize);
         if (this.iptablesProcessing != null) v1.setIptablesProcessing(this.iptablesProcessing);
