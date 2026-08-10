@@ -1853,7 +1853,7 @@ class UvmTests(NGFWTestCase):
         assert len(lic_list) > 0, "license_default.js has no license entries"
 
         for lic in lic_list:
-            assert lic.get("type") == "Free", \
+            assert lic.get("type", "").lower() == "free", \
                 "license_default.js contains non-Free entry: " + lic.get("name", "unknown")
 
     def test_303b_license_default_survives_cleanup(self):
@@ -1908,7 +1908,7 @@ class UvmTests(NGFWTestCase):
         assert len(lic_list) > 0, \
             "license_default.js recreated but has no entries"
 
-        free_count = sum(1 for lic in lic_list if lic.get("type") == "Free")
+        free_count = sum(1 for lic in lic_list if lic.get("type", "").lower() == "free")
         assert free_count == len(lic_list), \
             "license_default.js contains non-Free entries after recreation"
 

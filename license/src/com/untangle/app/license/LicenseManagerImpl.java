@@ -602,8 +602,28 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         if (this.settings == null) {
             logger.warn("Primary license file unavailable, trying default licenses");
+            File defaultFile = new File(DEFAULT_LICENSE_FILE);
+            if (!defaultFile.exists()) {
+                logger.info("Creating empty default license file");
+                try {
+                    LicenseSettings emptyDefaults = new LicenseSettings(new LinkedList<>());
+                    settingsManager.save(DEFAULT_LICENSE_FILE, emptyDefaults, false);
+                } catch (SettingsManager.SettingsException e) {
+                    logger.warn("Failed to create default license file: ", e);
+                }
+            }
             try {
                 this.settings = settingsManager.load( LicenseSettings.class, DEFAULT_LICENSE_FILE );
+                if (this.settings != null && this.settings.getLicenses() != null) {
+                    Iterator<License> iter = this.settings.getLicenses().iterator();
+                    while (iter.hasNext()) {
+                        License lic = iter.next();
+                        if (!"Free".equalsIgnoreCase(lic.getType())) {
+                            logger.warn("Rejecting non-Free entry from default license file: " + lic.getCurrentName());
+                            iter.remove();
+                        }
+                    }
+                }
             } catch (SettingsManager.SettingsException e) {
                 logger.error("Unable to read default license file: ", e );
             }
@@ -740,9 +760,19 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
      */
     private synchronized void _mapLicenses()
     {
+        _mapLicenses(false);
+    }
+
+    /**
+     * 
+     * @param  saveDefaults  check if licenses need to be saved.
+     */
+    private synchronized void _mapLicenses(boolean saveDefaults)
+    {
         /* Create a new map of all of the valid licenses */
         ConcurrentHashMap<String, License> newMap = new ConcurrentHashMap<>();
         LinkedList<License> newList = new LinkedList<>();
+        List<License> freeLicenses = saveDefaults ? new LinkedList<>() : null;
         License license = null;
 
         if (this.settings.getLicenses() != null) {
@@ -760,12 +790,16 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                         continue;
                     }
                     License mappedLicense = new License(license);
-                    
+
                     logger.info("Adding License: " + mappedLicense.getCurrentName() + " to Map. (valid: " + mappedLicense.getValid() + ")");
-            
+
                     String identifier = mappedLicense.getCurrentName();
                     newMap.put(identifier, mappedLicense);
                     newList.add(mappedLicense);
+
+                    if (freeLicenses != null && "Free".equalsIgnoreCase(license.getType())) {
+                        freeLicenses.add(mappedLicense);
+                    }
                 } catch (Exception e) {
                     logger.warn("Failed to load license: " + license, e);
                 }
@@ -774,6 +808,10 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         this.licenseMap = newMap;
         this.licenseList = newList;
+
+        if (freeLicenses != null) {
+            _saveDefaultLicenses(freeLicenses);
+        }
     }
 
     /**
@@ -910,21 +948,15 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
     }
 
     /**
-     * Save only the free (type="Free") licenses to license_default.js.
-     * Called on every successful sync so the default file stays current
-     * with whatever the server considers free.
+     * Save the provided free licenses to license_default.js.
+     * Called from _mapLicenses(true) on the success path so the
+     * default file stays current with whatever the server considers free.
+     * 
+     * @param  freeLicenses List of free licenses to save.
      */
-    private void _saveDefaultLicenses()
+    private void _saveDefaultLicenses(List<License> freeLicenses)
     {
         try {
-            List<License> freeLicenses = new LinkedList<>();
-            if (this.settings.getLicenses() != null) {
-                for (License lic : this.settings.getLicenses()) {
-                    if ("Free".equals(lic.getType())) {
-                        freeLicenses.add(new License(lic));
-                    }
-                }
-            }
             LicenseSettings defaultSettings = new LicenseSettings(freeLicenses);
             SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
             settingsManager.save(DEFAULT_LICENSE_FILE, defaultSettings, false);
@@ -1027,9 +1059,8 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
                     }
                 }
 
-                _mapLicenses();
+                _mapLicenses(true);
                 _saveSettings(this.settings);   // always save on successful sync, bounds disk file age to last successful contact
-                _saveDefaultLicenses();
             }
             _cleanLicenseFiles();
             _runAppManagerSync();
