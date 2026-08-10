@@ -447,6 +447,7 @@ class AdministrationTests(NGFWTestCase):
         cert_mgr = global_functions.uvmContext.certificateManager()
         certificates_dir = '/usr/share/untangle/settings/untangle-certificates'
         initial_root_dirs = set(glob(join(certificates_dir, '[0-9]*/')))
+        original_active_ca = os.path.realpath(join(certificates_dir, 'untangle.crt'))
 
         try:
             resp = cert_mgr.uploadCertificate("ROOT", certData, keyData, "")
@@ -486,7 +487,13 @@ class AdministrationTests(NGFWTestCase):
                 f"serial content mismatch: crt={crt_serial} file={file_serial}"
 
         finally:
-            # Cleanup - removeCertificate("ROOT") takes absolute path to untangle.crt
+            # Restore the original active root CA before deleting the test cert.
+            # uploadCertificate("ROOT") re-points the active CA symlinks to the
+            # new directory; without restoring, removeCertificate("ROOT") deletes
+            # the active CA directory, breaking SSL Inspector MITM cert generation.
+            original_ca_dir = os.path.dirname(original_active_ca)
+            if original_ca_dir and os.path.isdir(original_ca_dir):
+                cert_mgr.setActiveRootCertificate(join(original_ca_dir, "untangle.crt"))
             for d in set(glob(join(certificates_dir, '[0-9]*/'))) - initial_root_dirs:
                 cert_mgr.removeCertificate("ROOT", join(d, "untangle.crt"))
 
