@@ -185,6 +185,8 @@ public abstract class VirusBlockerBaseApp extends AppBase
      */
     public void setSettings(VirusSettings newSettings)
     {
+        // NGFW-15881: ScoutIQ cloud scan is deprecated; force-disable regardless of caller input.
+        newSettings.setEnableCloudScan(false);
         _setSettings(newSettings);
     }
 
@@ -404,6 +406,7 @@ public abstract class VirusBlockerBaseApp extends AppBase
         initMimeTypes(vs);
         initPassSites(vs);
         initFileExtensions(vs);
+        vs.setVersion(VirusSettings.LATEST_VERSION);
 
         setSettings(vs);
     }
@@ -544,8 +547,25 @@ public abstract class VirusBlockerBaseApp extends AppBase
                 initPassSites(readSettings);
             }
 
-            this.settings = readSettings;
-            logger.debug("Settings: " + this.settings.toJSONString());
+            boolean writeFlag = false;
+
+            // NGFW-15881: v1 introduces settings versioning and disables the deprecated ScoutIQ cloud scan.
+            if (readSettings.getVersion() == null || readSettings.getVersion() < 1) {
+                logger.info("NGFW-15881: migrating unversioned settings; disabling deprecated enableCloudScan");
+                if (readSettings.getEnableCloudScan()) {
+                    readSettings.setEnableCloudScan(false);
+                }
+                readSettings.setVersion(1);
+                writeFlag = true;
+            }
+
+            if (writeFlag) {
+                this.setSettings(readSettings);
+            } else {
+                this.settings = readSettings;
+            }
+            if (logger.isDebugEnabled())
+                logger.debug("Settings: " + this.settings.toJSONString());
         }
     }
 

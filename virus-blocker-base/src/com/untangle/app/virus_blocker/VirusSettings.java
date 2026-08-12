@@ -17,6 +17,10 @@ import com.untangle.uvm.app.GenericRule;
 @SuppressWarnings("serial")
 public class VirusSettings implements Serializable, JSONString
 {
+    public static final Integer LATEST_VERSION = 1;
+
+    private Integer version;
+
     private boolean allowFtpResume = true;
     private boolean allowHttpResume = true;
 
@@ -24,7 +28,7 @@ public class VirusSettings implements Serializable, JSONString
     private boolean scanFtp = true;
     private boolean scanSmtp = true;
 
-    private boolean enableCloudScan = true;
+    private boolean enableCloudScan = false;
     private boolean enableLocalScan = true;
 
     private String  smtpAction= "remove" ; /* "pass" "remove" or "block" */
@@ -45,6 +49,9 @@ public class VirusSettings implements Serializable, JSONString
     private boolean forceMemoryMode = false;
 
     public VirusSettings() { }
+
+    public Integer getVersion() { return version; }
+    public void setVersion(Integer version) { this.version = version; }
 
     public boolean getScanHttp() { return scanHttp; }
     public void setScanHttp(boolean scanHttp) { this.scanHttp = scanHttp; }
