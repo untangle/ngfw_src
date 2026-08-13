@@ -5,20 +5,6 @@ Ext.define('Ung.apps.virusblockerlite.view.Advanced', {
     title: 'Advanced'.t(),
     scrollable: true,
     withValidation: false,
-    dockedItems: [{
-        xtype: 'toolbar',
-        dock: 'top',
-        padding: 5,
-        layout: {
-            type: 'vbox',
-            align: 'stretch'
-        },
-        items: [{
-            xtype: 'checkbox',
-            boxLabel: 'Enable ScoutIQ&trade; Cloud Scan'.t(),
-            bind: '{settings.enableCloudScan}'
-        }]
-    }],
 
     defaults: {
         xtype: 'ungrid',
