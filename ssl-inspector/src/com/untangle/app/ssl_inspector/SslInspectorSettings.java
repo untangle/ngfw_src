@@ -55,7 +55,7 @@ public class SslInspectorSettings implements Serializable, JSONString
         processEncryptedWebTraffic = true;
         blockInvalidTraffic = false;
         serverBlindTrust = false;
-        verifyServerCertHostname = true;
+        verifyServerCertHostname = false;
         hostnameVerificationBypassList = new LinkedList<>();
         javaxDebug = false;
         enabled = true;
