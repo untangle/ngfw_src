@@ -115,7 +115,15 @@ class NGFWTestCase(TestCase):
             if not cls.no_settings:
                 cls._appSettings = cls._app.getSettings()
 
-        cls.initial_extra_setup()
+        try:
+            cls.initial_extra_setup()
+        except Exception as e:
+            print("initial_extra_setup failed: %s -- cleaning up" % e)
+            try:
+                cls.final_extra_tear_down()
+            except Exception:
+                pass
+            raise
 
     @classmethod
     def final_extra_tear_down(cls):
