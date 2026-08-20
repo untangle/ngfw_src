@@ -78,7 +78,7 @@ public class IntrusionPreventionRuleGeneric implements JSONString, Serializable 
         LinkedList<IntrusionPreventionConditionGeneric> condList = new LinkedList<>();
         if (rule.getConditions() != null) {
             for (IntrusionPreventionRuleCondition c : rule.getConditions()) {
-                IntrusionPreventionConditionGeneric ruleConditionGen = new IntrusionPreventionConditionGeneric(c.getComparator(), c.getType(), c.getValue());
+                IntrusionPreventionConditionGeneric ruleConditionGen = new IntrusionPreventionConditionGeneric("=".equals(c.getComparator()) ? "==" : c.getComparator(), c.getType(), c.getValue());
                 condList.add(ruleConditionGen);
             }
         }
@@ -97,7 +97,7 @@ public class IntrusionPreventionRuleGeneric implements JSONString, Serializable 
             case "blocklog":  return IntrusionPreventionActionGeneric.Type.IPS_BLOCKLOG;
             case "block":     return IntrusionPreventionActionGeneric.Type.IPS_BLOCK;
             case "disable":   return IntrusionPreventionActionGeneric.Type.IPS_DISABLE;
-            case "whitelist": return IntrusionPreventionActionGeneric.Type.IPS_WHITELISTT;
+            case "whitelist": return IntrusionPreventionActionGeneric.Type.IPS_WHITELIST;
             default:          return IntrusionPreventionActionGeneric.Type.IPS_DEFAULT;
         }
     }
@@ -147,7 +147,7 @@ public class IntrusionPreventionRuleGeneric implements JSONString, Serializable 
             for (IntrusionPreventionConditionGeneric gc : g.getConditions()) {
                 IntrusionPreventionRuleCondition c = new IntrusionPreventionRuleCondition();
                 c.setType(gc.getType());
-                c.setComparator(gc.getOp() != null ? gc.getOp() : "=");
+                c.setComparator("==".equals(gc.getOp()) ? "=" : (gc.getOp() != null ? gc.getOp() : "="));
                 c.setValue(gc.getValue());
                 conds.add(c);
             }
@@ -163,7 +163,7 @@ public class IntrusionPreventionRuleGeneric implements JSONString, Serializable 
             case IPS_BLOCKLOG:  return "blocklog";
             case IPS_BLOCK:     return "block";
             case IPS_DISABLE:   return "disable";
-            case IPS_WHITELISTT: return "whitelist";
+            case IPS_WHITELIST: return "whitelist";
             default:            return "default";
         }
     }
