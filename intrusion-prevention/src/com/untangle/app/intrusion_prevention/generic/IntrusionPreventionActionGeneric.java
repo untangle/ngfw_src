@@ -14,7 +14,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class IntrusionPreventionActionGeneric implements JSONString, Serializable {
 
-    public enum Type { IPS_DEFAULT, IPS_LOG, IPS_BLOCKLOG, IPS_BLOCK, IPS_DISABLE, IPS_WHITELISTT }
+    public enum Type { IPS_DEFAULT, IPS_LOG, IPS_BLOCKLOG, IPS_BLOCK, IPS_DISABLE, IPS_WHITELIST }
 
     private IntrusionPreventionActionGeneric.Type type;
     private String sourceNetworks;
