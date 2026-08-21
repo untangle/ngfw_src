@@ -704,7 +704,7 @@ class CaptivePortalTests(NGFWTestCase):
         # check if AD login and password
         appid = str(self._app.getAppSettings()["id"])
         # print('appid is %s' % appid  # debug line)
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035a.out",uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035a.out",uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=Arista1234&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035a.out")
         assert (search == 0)
@@ -718,7 +718,7 @@ class CaptivePortalTests(NGFWTestCase):
         assert (search == 0)
 
         # try second time to login,
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035c.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=passwd&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035c.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=" + adUserName + "&password=Arista1234&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035c.out")
         assert (search == 0)
@@ -732,7 +732,7 @@ class CaptivePortalTests(NGFWTestCase):
         assert(not foundUsername)
 
         # check extend ascii in login and password bug 10860
-        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035e.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=britishguy&password=passwd%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
+        result = remote_control.run_command(global_functions.build_wget_command(tries=None, timeout=None, output_file="/tmp/capture_test_035e.out", uri=global_functions.get_http_url() + "/capture/handler.py/authpost?username=britishguy&password=Arista1234%C2%A3&nonce=9abd7f2eb5ecd82b&method=GET&appid=" + appid + "&host=test.untangle.com&uri=/"))
         assert (result == 0)
         search = remote_control.run_command("grep -q 'Hi!' /tmp/capture_test_035e.out")
         assert (search == 0)
