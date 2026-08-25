@@ -268,7 +268,7 @@ public class WanBalancerApp extends AppBase
              */
             if (!UvmContextFactory.context().isDevel()) {
                 File settingsFile = new File(settingsFilename);
-                File outputFile = new File("/etc/untangle/iptables-rules.d/330-wan-balancer-rules");
+                File outputFile = new File("/etc/untangle/iptables-rules.d/330-wan-balancer");
                 if (settingsFile.lastModified() > outputFile.lastModified()) {
                     logger.warn("Settings file newer than interfaces files, Syncing...");
                     this.setSettings(readSettings);
