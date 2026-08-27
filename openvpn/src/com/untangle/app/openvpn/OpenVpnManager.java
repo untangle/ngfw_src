@@ -618,17 +618,22 @@ public class OpenVpnManager
     private void buildCommonConfiguration(OpenVpnSettings settings, StringBuilder sb) {
         sb.append("proto" + SPACE).append(settings.getProtocol()).append(LINE_BREAK);
         sb.append("port" + SPACE).append(settings.getPort()).append(LINE_BREAK);
+        sb.append("data-ciphers" + SPACE).append(settings.getCipher()).append(LINE_BREAK);
 
-        // Negotiate modern AEAD ciphers when peer supports them, fall back to the
-        // configured legacy cipher for old clients (OpenVPN 2.6 ignores --cipher
-        // unless the same cipher is also in --data-ciphers).
-        String cipher = settings.getCipher();
-        String dataCiphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
-        if (cipher != null && !cipher.isEmpty() && !dataCiphers.contains(cipher)) {
-            dataCiphers = dataCiphers + ":" + cipher;
+        String fallbackRaw = settings.getDataCiphersFallback();
+        String fallback;
+        if (StringUtils.isBlank(fallbackRaw)) {
+            fallback = OpenVpnSettings.DEFAULT_CIPHER;
+        } else {
+            fallback = fallbackRaw.split(":", 2)[0].trim();
+            if (fallback.isEmpty()) {
+                logger.warn("data-ciphers-fallback started with a colon ('{}') - falling back to default '{}'", fallbackRaw, OpenVpnSettings.DEFAULT_CIPHER);
+                fallback = OpenVpnSettings.DEFAULT_CIPHER;
+            } else if (fallbackRaw.contains(":")) {
+                logger.warn("data-ciphers-fallback contained a colon ('{}') - normalized to '{}' (fallback accepts one cipher only)", fallbackRaw, fallback);
+            }
         }
-        sb.append("data-ciphers" + SPACE).append(dataCiphers).append(LINE_BREAK);
-        sb.append("data-ciphers-fallback" + SPACE).append(cipher).append(LINE_BREAK);
+        sb.append("data-ciphers-fallback" + SPACE).append(fallback).append(LINE_BREAK);
     }
 
     /**
