@@ -80,8 +80,8 @@ def status( qos_interfaces, wan_intfs ):
         ifb_dev = imq_dev.replace('imq', 'ifb') if imq_dev else None
         wan_name = wan_intf.get('name')
 
-        result= runSubprocess( "tc -s class ls dev %s | sed \"s/^class/interface: %s Outbound class/\"" % (wan_dev, wan_name) )
-        result.extend( runSubprocess( "tc -s class ls dev %s | sed \"s/^class/interface: %s Inbound class/\"" % (ifb_dev, wan_name)))
+        result = format_tc_output(get_tc_output(wan_dev), wan_name, "Outbound")
+        result.extend(format_tc_output(get_tc_output(ifb_dev), wan_name, "Inbound"))
         json_objs.extend( statusToJSON(result) )
 
         #run("echo ------ Qdisc  ------")
