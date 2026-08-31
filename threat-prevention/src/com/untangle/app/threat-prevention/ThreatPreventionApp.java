@@ -321,8 +321,7 @@ public class ThreatPreventionApp extends AppBase
         if(reputation == 0){
             this.incrementMetric(STAT_THREAT_NO_REPUTATION);
         }else{
-            reputation = reputation - (reputation % 20) + 20;
-            switch(reputation){
+            switch(getReputationBand(reputation)){
                 case 100:
                     this.incrementMetric(STAT_THREAT_TRUSTWORTHY);
                     break;
@@ -340,6 +339,19 @@ public class ThreatPreventionApp extends AppBase
                     break;
             }
         }
+    }
+
+    /**
+     * Get the upper bound of the BrightCloud reputation band for a score.
+     * Scores at a band boundary belong to that band, rather than the next
+     * band. For example, both 20 and values 1 through 20 map to 20.
+     *
+     * @param reputation integer reputation score
+     * @return upper bound of the reputation band
+     */
+    private int getReputationBand(int reputation)
+    {
+        return reputation > 0 ? ((reputation - 1) / 20 + 1) * 20 : 0;
     }
 
     /**
@@ -465,7 +477,7 @@ public class ThreatPreventionApp extends AppBase
      */
     String getThreatFromReputation(Integer reputation)
     {
-        return ReputationThreatMap.get(reputation > 0 ? ( reputation - (reputation % 20) + 20 ) : 0);
+        return ReputationThreatMap.get(reputation == null ? 0 : getReputationBand(reputation));
     }
 
     /**
