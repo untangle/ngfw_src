@@ -383,24 +383,24 @@ def is_trixie_upgrade():
     Detect if the apt repository serves trixie packages while the system
     is still on a pre-trixie kernel — or just rebooted into trixie kernel
     (6.12.x) with post-upgrade fixups not yet completed.
-    Detection checks both apt Release metadata (supports server-side Apache
-    rewrites) and apt sources content (supports direct source changes).
+    Detection uses two methods (in order):
+    1. apt-cache policy: check if available untangle-vm candidate version
+       contains 'trixie' in the version string (e.g. -1trixie). This is
+       baked at build time and works with server-side Apache rewrites
+       where the sources still say bullseye.
+    2. apt sources content: check for 'trixie' in sources files (fallback
+       for direct source changes on dev/test boxes).
     Returns True only when the upgrade target is trixie and fixups are needed.
     """
-    import glob
     repo_has_trixie = False
 
-    for release_file in glob.glob("/var/lib/apt/lists/*Release"):
-        try:
-            with open(release_file) as fh:
-                for line in fh:
-                    if line.strip().startswith("Codename:") and "trixie" in line:
-                        repo_has_trixie = True
-                        break
-        except:
-            pass
-        if repo_has_trixie:
-            break
+    try:
+        result = subprocess.run(["apt-cache", "policy", "untangle-vm"],
+                                capture_output=True, text=True, timeout=10)
+        if "trixie" in result.stdout:
+            repo_has_trixie = True
+    except:
+        pass
 
     if not repo_has_trixie:
         sources_dirs = ["/etc/apt/sources.list.d/"]
