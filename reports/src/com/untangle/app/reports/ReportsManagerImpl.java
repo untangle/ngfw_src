@@ -6,6 +6,7 @@ package com.untangle.app.reports;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
@@ -95,6 +97,38 @@ public class ReportsManagerImpl implements ReportsManager
     private static final Set<String> BLOCKED_IDENTIFIERS = new HashSet<>(
         java.util.Arrays.asList("dblink", "current_setting", "set_config", "chr")
     );
+
+    /** Operators used by save-time condition validation. */
+    private enum ConditionOperator {
+        EQUALS("="), NOT_EQUALS("!="), LESS_THAN("<"), GREATER_THAN(">"),
+        LESS_THAN_OR_EQUALS("<="), GREATER_THAN_OR_EQUALS(">="),
+        BETWEEN("between"), LIKE("like"), NOT_LIKE("not like"),
+        IS("is"), IS_NOT("is not"), IN("in"), NOT_IN("not in");
+
+        private final String value;
+
+        /**
+         * Create a condition operator with its wire-format value.
+         *
+         * @param value operator string as received from JSON.
+         */
+        ConditionOperator(String value) { this.value = value; }
+
+        /**
+         * Convert the wire-format operator to its internal representation.
+         *
+         * @param value operator received from the report definition.
+         * @return matching operator, or null for an unrecognized value.
+         */
+        static ConditionOperator from(String value)
+        {
+            if (value == null) return null;
+            for (ConditionOperator operator : values()) {
+                if (operator.value.equalsIgnoreCase(value)) return operator;
+            }
+            return null;
+        }
+    }
 
     /**
      * Initialize reports manager
@@ -409,6 +443,8 @@ public class ReportsManagerImpl implements ReportsManager
         if ( uniqueId == null ) {
             throw new RuntimeException("Invalid Entry unique ID: " + uniqueId );
         }
+
+        validateReportEntryForSave( entry );
 
         for ( ReportEntry e : reportEntries ) {
             if ( uniqueId.equals( e.getUniqueId() ) ) {
@@ -1770,6 +1806,296 @@ public class ReportsManagerImpl implements ReportsManager
         if (entry.getConditions() != null) {
             validateConditions(entry.getConditions(), entry.getTable());
         }
+    }
+
+    /**
+     * Validate a report before saving it.
+     *
+     * @param entry report entry to validate.
+     */
+    private void validateReportEntryForSave(ReportEntry entry)
+    {
+        if (entry == null) {
+            throw new RuntimeException("Report entry is required");
+        }
+        if (StringUtils.isBlank(entry.getTable())) {
+            throw new RuntimeException("table is required");
+        }
+        if (entry.getType() == null) {
+            throw new RuntimeException("report type is required");
+        }
+
+        validateEntryStringFields(entry);
+        validateAggFunction(entry);
+
+        Connection conn = app == null ? null : app.getDbConnection();
+        if (conn == null) {
+            logger.warn("Save-time database validation skipped: database unavailable");
+            return;
+        }
+
+        try {
+            validateTable(entry.getTable());
+            validateDynamicColumn(entry);
+            validateEntryFields(entry);
+            if (entry.getConditions() != null) {
+                validateConditions(entry.getConditions(), entry.getTable());
+            }
+            validateConditionTypes(entry, conn);
+            compileCheckExpressions(entry, conn);
+        } catch (DatabaseValidationUnavailableException e) {
+            logger.warn("Save-time database validation skipped: " + e.getMessage());
+        } finally {
+            try { conn.close(); }
+            catch (Exception e) { logger.warn("Close exception", e); }
+        }
+    }
+
+    /** Signals that validation could not be completed because DB metadata was unavailable. */
+    private static class DatabaseValidationUnavailableException extends RuntimeException
+    {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Create an unavailable-validation exception.
+         *
+         * @param message reason validation was unavailable.
+         */
+        DatabaseValidationUnavailableException(String message) { super(message); }
+
+        /**
+         * Create an unavailable-validation exception with its cause.
+         *
+         * @param message reason validation was unavailable.
+         * @param cause underlying database failure.
+         */
+        DatabaseValidationUnavailableException(String message, Throwable cause) { super(message, cause); }
+    }
+
+    /**
+     * Validate typed condition values using the active PostgreSQL server.
+     * SQLite uses dynamic typing and therefore skips this PostgreSQL-specific
+     * check while retaining structural and security validation.
+     *
+     * @param entry report entry whose conditions are validated.
+     * @param conn shared database connection from the caller.
+     */
+    private void validateConditionTypes(ReportEntry entry, Connection conn)
+    {
+        if ("sqlite".equals(ReportsApp.dbDriver) || entry.getConditions() == null) return;
+
+        HashMap<String,String> metadata = getColumnMetaData(entry.getTable());
+        if (metadata == null) {
+            throw new DatabaseValidationUnavailableException("column metadata unavailable");
+        }
+
+        for (SqlCondition condition : entry.getConditions()) {
+            if (!condition.isAutoFormatValueRaw()) continue;
+            ConditionOperator operator = ConditionOperator.from(condition.getOperator());
+            if (operator == ConditionOperator.IS || operator == ConditionOperator.IS_NOT
+                    || operator == ConditionOperator.LIKE || operator == ConditionOperator.NOT_LIKE) continue;
+
+            String column = condition.getColumn();
+            String type = getColumnTypeIgnoreCase(metadata, column);
+            String postgresType = getPostgresValidationType(type);
+            if (postgresType == null) {
+                logger.warn("Unknown column type for " + column + ", skipping type validation");
+                continue;
+            }
+
+            String value = condition.getValue();
+            if (value == null || "null".equalsIgnoreCase(value.trim())) continue;
+            if (operator == ConditionOperator.IN || operator == ConditionOperator.NOT_IN) {
+                String inner = value.trim().substring(1, value.trim().length() - 1).trim();
+                if (!inner.isEmpty()) {
+                    for (String item : inner.split("\\s*,\\s*")) {
+                        validatePostgresConditionValue(conn, column, unquoteConditionLiteral(item), postgresType);
+                    }
+                }
+            } else if (operator == ConditionOperator.BETWEEN) {
+                java.util.regex.Matcher matcher = SAFE_BETWEEN_VALUE.matcher(value);
+                if (matcher.matches()) {
+                    validatePostgresConditionValue(conn, column, unquoteConditionLiteral(matcher.group(1)), postgresType);
+                    validatePostgresConditionValue(conn, column, unquoteConditionLiteral(matcher.group(3)), postgresType);
+                }
+            } else {
+                validatePostgresConditionValue(conn, column, value, postgresType);
+            }
+        }
+    }
+
+    /**
+     * Find a column type using case-insensitive metadata lookup.
+     *
+     * @param metadata column metadata map.
+     * @param column column name to find.
+     * @return matching column type, or null when not found.
+     */
+    private String getColumnTypeIgnoreCase(HashMap<String,String> metadata, String column)
+    {
+        if (metadata == null || column == null) return null;
+        String exact = metadata.get(column);
+        if (exact != null) return exact;
+        for (Map.Entry<String,String> item : metadata.entrySet()) {
+            if (item.getKey().equalsIgnoreCase(column)) return item.getValue();
+        }
+        return null;
+    }
+
+    /**
+     * Map a metadata type to a fixed PostgreSQL cast type.
+     *
+     * @param columnType metadata type.
+     * @return trusted PostgreSQL type name, or null when unsupported.
+     */
+    private String getPostgresValidationType(String columnType)
+    {
+        if (columnType == null) return null;
+        switch (columnType.trim().toLowerCase()) {
+        case "int2": case "smallint": return "int2";
+        case "int4": case "integer": case "int": return "int4";
+        case "int8": case "bigint": return "int8";
+        case "numeric": return "numeric";
+        case "real": case "float4": return "real";
+        case "float": case "float8": return "double precision";
+        case "inet": return "inet";
+        case "timestamp": case "timestamp without time zone": return "timestamp";
+        case "timestamptz": case "timestamp with time zone": return "timestamptz";
+        case "date": return "date";
+        case "time": case "time without time zone": return "time";
+        case "timetz": case "time with time zone": return "timetz";
+        case "bool": case "boolean": return "boolean";
+        default: return null;
+        }
+    }
+
+    /**
+     * Ask PostgreSQL to cast one parameter to a trusted column type.
+     *
+     * @param conn active database connection.
+     * @param column column name used in the error message.
+     * @param value condition value.
+     * @param postgresType trusted PostgreSQL type name.
+     */
+    private void validatePostgresConditionValue(Connection conn, String column, String value, String postgresType)
+    {
+        if ("null".equalsIgnoreCase(value.trim())) return;
+        String sql = "SELECT CAST(? AS " + postgresType + ")";
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, value.trim());
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) { /* consume the single cast result */ }
+            }
+        } catch (SQLException e) {
+            if (isConnectionFailure(e)) {
+                throw new DatabaseValidationUnavailableException("database connection failed", e);
+            }
+            logger.warn("PostgreSQL type validation failed for column=" + column, e);
+            throw new RuntimeException("The report was not saved. Please enter a valid value for '" + column + "'.");
+        }
+    }
+
+    /**
+     * Remove SQL string-literal quoting from a condition value.
+     *
+     * @param value literal value.
+     * @return unquoted literal value.
+     */
+    private String unquoteConditionLiteral(String value)
+    {
+        String trimmed = value.trim();
+        if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+            return trimmed.substring(1, trimmed.length() - 1).replace("''", "'");
+        }
+        return trimmed;
+    }
+
+    /**
+     * Compile-check expressions used by the selected report type.
+     * PostgreSQL EXPLAIN is executed to force server-side parse/planning, but
+     * the underlying SELECT is not executed and no report rows are fetched.
+     *
+     * @param entry report entry whose expressions are checked.
+     * @param conn shared database connection from the caller.
+     */
+    private void compileCheckExpressions(ReportEntry entry, Connection conn)
+    {
+        if ("sqlite".equals(ReportsApp.dbDriver)) return;
+
+        List<String> expressions = new ArrayList<>();
+        switch (entry.getType()) {
+        case PIE_GRAPH:
+            addExpression(expressions, entry.getPieSumColumn()); break;
+        case TEXT:
+            addExpressions(expressions, entry.getTextColumns()); break;
+        case TIME_GRAPH:
+            addExpressions(expressions, entry.getTimeDataColumns()); break;
+        case TIME_GRAPH_DYNAMIC:
+            addExpression(expressions, entry.getTimeDataDynamicValue()); break;
+        default:
+            break;
+        }
+        if (expressions.isEmpty()) return;
+
+        try {
+            conn.setReadOnly(true);
+            String table = LogEvent.schemaPrefix() + entry.getTable();
+            for (String expression : expressions) {
+                String sql = "EXPLAIN (VERBOSE, COSTS OFF) SELECT " + expression
+                    + " FROM " + table + " LIMIT 0";
+                try (PreparedStatement statement = conn.prepareStatement(sql);
+                     ResultSet plan = statement.executeQuery()) {
+                    while (plan.next()) { }
+                } catch (SQLException e) {
+                    if (isConnectionFailure(e)) {
+                        throw new DatabaseValidationUnavailableException("database connection failed", e);
+                    }
+                    logger.warn("Expression compile-check failed for table=" + entry.getTable(), e);
+                    throw new RuntimeException("The report was not saved. Invalid expression - please check column names and syntax.");
+                }
+            }
+        } catch (DatabaseValidationUnavailableException e) {
+            throw e;
+        } catch (SQLException e) {
+            if (isConnectionFailure(e)) {
+                throw new DatabaseValidationUnavailableException("database connection failed", e);
+            }
+            throw new RuntimeException("The report was not saved. Expression validation failed.", e);
+        }
+    }
+
+    /**
+     * Add one non-empty expression to a validation list.
+     *
+     * @param expressions destination expression list.
+     * @param expression expression to add.
+     */
+    private void addExpression(List<String> expressions, String expression)
+    {
+        if (StringUtils.isNotBlank(expression)) expressions.add(expression);
+    }
+
+    /**
+     * Add non-empty expressions from an array to a validation list.
+     *
+     * @param expressions destination expression list.
+     * @param values expressions to add.
+     */
+    private void addExpressions(List<String> expressions, String[] values)
+    {
+        if (values != null) for (String value : values) addExpression(expressions, value);
+    }
+
+    /**
+     * Determine whether a SQL exception represents a connection failure.
+     *
+     * @param e SQL exception to inspect.
+     * @return true when the SQL state belongs to the connection-failure class.
+     */
+    private boolean isConnectionFailure(SQLException e)
+    {
+        String state = e.getSQLState();
+        return state != null && state.startsWith("08");
     }
 
     /**
