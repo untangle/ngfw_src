@@ -3,6 +3,7 @@
  */
 package com.untangle.app.smtp.safelist;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,5 +64,14 @@ public interface SafelistAdminView extends SafelistManipulation
      * @throws SafelistActionFailedException if action fails.
      */
     public List<SafelistCount> getUserSafelistCounts() throws NoSuchSafelistException, SafelistActionFailedException;
+
+    /**
+     * Gets safelist counts for all available safelists.
+     *
+     * @return {@link ArrayList} of {@link SafelistCount}
+     * @throws NoSuchSafelistException if no safelist exists
+     * @throws SafelistActionFailedException if the safelist action fails
+     */
+    public ArrayList<SafelistCount> getUserSafelistCountsV2() throws NoSuchSafelistException, SafelistActionFailedException; 
 
 }

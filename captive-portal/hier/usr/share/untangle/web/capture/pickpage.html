@@ -5,11 +5,7 @@
 <link href="/images/favicon-captive-portal.png" type="image/png" rel="icon">
 
 <title>$.CompanyName.$ | $.PageTitle.$</title>
-<style type="text/css">
-/* <![CDATA[ */
-@import url(/images/base.css);
-/* ]]> */
-</style>
+<link rel="stylesheet" href="/capture/captive.css">
 
 <script type="text/javascript" src="/capture/secure.js"></script>
 
@@ -20,33 +16,27 @@
 </head>
 <body>
 
-<header>
-    <img src="/images/BrandingLogo.png" style="max-width: 300px; max-height: 48px;"><br/>
-    <h1 style="letter-spacing: normal; color: #CCC; font-weight: bold;">$.PageTitle.$</h1>
-</header>
-
-<div class="form-login" style="padding: 15px;">
-    <form autocomplete="off" method="post" action="/capture/handler.py/authpost">
-        <table><tr>
-            <td>
-                <a href=https://accounts.google.com/o/oauth2/v2/auth?client_id=365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.GoogleState.$>
-                <img src="/capture/google.png" height=64 width=64></a>
-            </td>
-            <td>
-                <a href=https://accounts.google.com/o/oauth2/v2/auth?client_id=365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.GoogleState.$>Login with Google account</a>
-            </td>
-        </tr><tr>
-            <td>
-                <a href=https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f8285e96-b240-4036-8ea5-f37cf6b981bb&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=openid%20User.Read&state=$.MicrosoftState.$>
-                <img src="/capture/microsoft.png" height=64 width=64></a>
-            </td>
-            <td>
-                <a href=https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f8285e96-b240-4036-8ea5-f37cf6b981bb&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=openid%20User.Read&state=$.MicrosoftState.$>Login with Microsoft account</a>
-            </td>
-        </tr></table>
-    </form>
-    <p style="text-align: center; font-size: 11px; line-height: normal;">$.FooterText.$</p>
-    <p id="submit" name="submit"></p>
+<div class="form-login">
+    <header>
+        <img src="/images/BrandingLogo.png" alt="">
+        <h1>$.PageTitle.$</h1>
+    </header>
+    <div class="cp-content">
+        <form autocomplete="off" method="post" action="/capture/handler.py/authpost">
+            <div class="cp-provider-list">
+                <a class="cp-provider-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=365238258169-6k7k0ett96gv2c8392b9e1gd602i88sr.apps.googleusercontent.com&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=email&state=$.GoogleState.$">
+                    <img src="/capture/google.png" alt="">
+                    <span>Login with Google account</span>
+                </a>
+                <a class="cp-provider-btn" href="https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=f8285e96-b240-4036-8ea5-f37cf6b981bb&redirect_uri=$.AuthRelayUri.$&response_type=code&scope=openid%20User.Read&state=$.MicrosoftState.$">
+                    <img src="/capture/microsoft.png" alt="">
+                    <span>Login with Microsoft account</span>
+                </a>
+            </div>
+        </form>
+        <p>$.FooterText.$</p>
+        <p id="submit" name="submit"></p>
+    </div>
 </div>
 <!--DEBUG-->
 </body>

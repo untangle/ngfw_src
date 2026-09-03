@@ -1,17 +1,29 @@
 Ext.define('Ung.apps.directoryconnector.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-directory-connector',
-    controller: 'app-directory-connector',
 
     viewModel: {
-        type: 'app-directory-connector',
+        data: {
+            vueMigrated: true
+        }
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/directory-connector', false);
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'directory-connector',
+                enableRemoveHandler: true
+            });
+        },
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
+        }
     },
 
     items: [
-        { xtype: 'app-directory-connector-status' },
-        { xtype: 'app-directory-connector-usernotificationapi' },
-        { xtype: 'app-directory-connector-activedirectory' },
-        { xtype: 'app-directory-connector-radius' }
+        Field.iframeHolder
     ]
 
 });

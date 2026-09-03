@@ -158,4 +158,10 @@ public interface JsonInterface
      * @return Integer value of the offset in miniseconds.
      */
     public Integer getTimeZoneOffset();
+
+    /**
+     * Get getCompanyName to show in title for quarantine request page .
+     * @return String containing the company name.
+     */
+    public String getCompanyName();
 }

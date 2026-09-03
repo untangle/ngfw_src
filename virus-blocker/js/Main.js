@@ -1,33 +1,35 @@
 Ext.define('Ung.apps.virusblocker.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-virus-blocker',
-    controller: 'app-virus-blocker',
 
     viewModel: {
+        data: {
+            title: 'Virus Blocker'.t(),
+            iconName: 'virus-blocker',
+            vueMigrated: true
+        },
+    },
 
-        stores: {
-            passSites: { data: '{settings.passSites.list}' },
-            fileExtensions: { data: '{settings.httpFileExtensions.list}', sorters: 'string' },
-            mimeTypes: { data: '{settings.httpMimeTypes.list}', sorters: 'string' }
+    listeners: {
+        activate: function (panel) {
+            var vm = panel.getViewModel();
+            var policyId = vm.get('policyId');
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/apps/' + policyId + '/virus-blocker', false);
+
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'virus-blocker',
+                enableRemoveHandler: true
+            });
         },
 
-        formulas: {
-            getSignatureTimestamp: {
-                get: function(get) {
-                    var stamp = Rpc.directData(this.getView().appManager, 'getLastSignatureUpdate');
-                    if ((stamp == null) || (stamp === 0)) return('unknown');
-                    return(Util.timestampFormat(stamp));
-                }
-            }
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
         }
-
     },
 
     items: [
-        { xtype: 'app-virus-blocker-status' },
-        { xtype: 'app-virus-blocker-scanoptions' },
-        { xtype: 'app-virus-blocker-passsites' },
-        { xtype: 'app-virus-blocker-advanced' }
+        Field.iframeHolder
     ]
 
 });

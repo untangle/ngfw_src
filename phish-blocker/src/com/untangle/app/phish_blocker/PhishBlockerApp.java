@@ -86,6 +86,14 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
     }
 
     /**
+     * Get the PhishBlockerSettings in v2 format
+     * @return PhishBlockerSettings
+     */
+    public PhishBlockerSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
      * Set the application settings
      * 
      * @param newSettings
@@ -107,6 +115,14 @@ public class PhishBlockerApp extends SpamBlockerBaseApp
         }
 
         super.setSettings(newSettings);
+    }
+
+    /**
+     * Set the PhishBlockerSettings from v2 format payload
+     * @param newSettings PhishBlockerSettings in v2 format
+     */
+    public void setSettingsV2(PhishBlockerSettings newSettings) {
+        this.setSettings(newSettings);
     }
 
     /**

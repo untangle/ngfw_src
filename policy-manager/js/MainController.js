@@ -2,20 +2,20 @@ Ext.define('Ung.apps.policymanager.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-policy-manager',
 
-    control: {
-        '#': {
-            afterrender: 'getSettings',
-            deactivate: 'onDeactivate'
-        }
-    },
+    // control: {
+    //     '#': {
+    //         afterrender: 'getSettings',
+    //         deactivate: 'onDeactivate'
+    //     }
+    // },
 
-    listen: {
-        store: {
-            '#policiestree': {
-                rootchange: 'onRootChange'
-            }
-        }
-    },
+    // listen: {
+    //     store: {
+    //         '#policiestree': {
+    //             rootchange: 'onRootChange'
+    //         }
+    //     }
+    // },
 
     settings: null,
     tree: [],
