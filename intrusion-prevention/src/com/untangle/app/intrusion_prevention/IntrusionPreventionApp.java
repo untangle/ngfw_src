@@ -503,8 +503,20 @@ public class IntrusionPreventionApp extends AppBase
         }
 
         List<IntrusionPreventionVariable> variables = this.settings.getVariables();
+        variables.removeIf(v -> !v.getName().trim().matches("[A-Z][A-Z0-9_]+"));
         for ( String line : result.getOutput().split("\\r?\\n") ){
             String variableLine[] = line.split("=");
+            // NGFW-15749: guard against empty/malformed lines. On first install
+            // (and on first UVM restart post-upgrade) sync-settings may be
+            // mid-rewrite of /etc/suricata/suricata.yaml when get-config runs,
+            // producing empty output. Without this guard variableLine[1] throws
+            // IndexOutOfBoundsException and settings never persist.
+            if (variableLine.length < 2) continue;
+            String varName = variableLine[0].trim();
+            if (!varName.matches("[A-Z][A-Z0-9_]+")) {
+                logger.warn("synchronizeSettingsWithVariables: skipping invalid variable name: " + varName);
+                continue;
+            }
 
             Boolean found = false;
             for( IntrusionPreventionVariable variable : variables){

@@ -1,6 +1,9 @@
 from uvm import login_tools
 import pytest
-import crypt
+try:
+    import crypt
+except ImportError:
+    import legacycrypt as crypt
 import hashlib
 import base64
 

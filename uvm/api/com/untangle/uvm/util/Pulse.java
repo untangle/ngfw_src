@@ -194,8 +194,12 @@ public class Pulse implements Runnable
      */
     public synchronized void start()
     {
-        /* Can't start unless it is in the unborn state */
-        if (PulseState.UNBORN != this.state && PulseState.KILLED != this.state) {
+        /* Allow restart from UNBORN, KILLED, or DEAD states.
+         * DEAD occurs when the Pulse thread exits its run loop after stop().
+         * Static singletons like WebrootDaemon reuse the same Pulse instance
+         * across app enable/disable cycles — without allowing DEAD restart,
+         * re-enabling web-filter after disabling it can permanently fail. */
+        if (PulseState.UNBORN != this.state && PulseState.KILLED != this.state && PulseState.DEAD != this.state) {
             throw new IllegalStateException("Unable to start a pulse. Unexpected state: " + this.state);
         }
 
