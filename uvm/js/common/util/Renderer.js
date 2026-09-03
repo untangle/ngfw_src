@@ -574,6 +574,7 @@ Ext.define('Ung.util.Renderer', {
         B: 'in Temporary Unblocked list'.t(),
         F: 'in Rules list'.t(),
         K: 'Kid-friendly redirect'.t(),
+        X: 'ECH blocked'.t(),
         default: 'no rule applied'.t()
     },
     httpReason: function( value, metaData ) {
