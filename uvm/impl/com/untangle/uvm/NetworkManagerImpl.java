@@ -124,7 +124,7 @@ public class NetworkManagerImpl implements NetworkManager
      * The current network settings
      */
     private NetworkSettings networkSettings;
-    private Integer currentVersion = 12;
+    private Integer currentVersion = 13;
 
     /**
      * This array holds the current interface Settings indexed by the interface ID.
@@ -3458,23 +3458,9 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void convertSettings()
     {
-        // For 17.5 Vue Migration Changes
-        boolean globalQosEnabled = this.networkSettings.getQosSettings() != null && this.networkSettings.getQosSettings().getQosEnabled();
-        for(InterfaceSettings intfSettings: this.networkSettings.getInterfaces()) {
-            // Set generic config type for Vue response config type.
-            InterfaceSettingsGeneric.ConfigType configTypeGeneric =
-                    (intfSettings.getConfigType() != ConfigType.DISABLED)
-                            ? InterfaceSettingsGeneric.ConfigType.valueOf(intfSettings.getConfigType().name())
-                            : InterfaceSettingsGeneric.ConfigType.ADDRESSED;
-            intfSettings.setConfigTypeGeneric(configTypeGeneric);
+        // For 18.0 initialize the optional VRRP UVM health check as disabled
+        this.networkSettings.setVrrpHealthCheckEnabled(false);
 
-            // If global QOS is enabled and interface have non zero band width set qosEnabled true for that interface
-            if(intfSettings.getIsWan() && globalQosEnabled) {
-                boolean qosEnabled = intfSettings.getDownloadBandwidthKbps() != null && intfSettings.getDownloadBandwidthKbps() != 0
-                        && intfSettings.getUploadBandwidthKbps() != null && intfSettings.getUploadBandwidthKbps() != 0;
-                intfSettings.setQosEnabled(qosEnabled);
-            }
-        }
         // Set new version
         this.networkSettings.setVersion( currentVersion );
         this.setNetworkSettings( this.networkSettings, false );

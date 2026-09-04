@@ -382,6 +382,7 @@ Architecture: all
 Conflicts: untangle-libnetfilter-queue-dev, untangle-libnetfilter-queue0
 Depends: ${misc:Depends},
 	 ipset,
+	 curl,
 	 python3,
          python3-pem,
          python3-pyotp,
