@@ -48,6 +48,7 @@ import com.untangle.uvm.util.ObjectMatcher;
 import com.untangle.uvm.util.StringUtil;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jabsorb.serializer.UnmarshallException;
@@ -690,11 +691,6 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void populateTransferStats(InterfaceStatusGeneric status, InterfaceSettings intf) {
         try {
-            if (!isValidRuntimeInterface(intf.getSymbolicDev())) {
-                logger.warn("Skipping transfer statistics for invalid interface {}", intf.getSymbolicDev());
-                return;
-            }
-
             String intfTransfer = getStatus(StatusCommands.INTERFACE_TRANSFER, intf.getSymbolicDev());
             if (intfTransfer == null || intfTransfer.trim().isEmpty()) return;
             String[] stats = intfTransfer.trim().split("\\s+");
@@ -749,11 +745,6 @@ public class NetworkManagerImpl implements NetworkManager
      */
     private void populateIpAddresses(InterfaceStatusGeneric status, InterfaceSettings intf) {
         try {
-            if (!isValidRuntimeInterface(intf.getSymbolicDev())) {
-                logger.warn("Skipping IP addresses for invalid interface {}", intf.getSymbolicDev());
-                return;
-            }
-
             String ipStatus = getStatus(StatusCommands.INTERFACE_IP_ADDRESSES, intf.getSymbolicDev());
             if (ipStatus == null || ipStatus.trim().isEmpty()) return;
             String[] tokens = ipStatus.trim().split("\\s+");
@@ -871,31 +862,15 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
-    /** 
-     * Safely parses integer, returns 0 if invalid. 
-     * @param str String
-     * @return int 
+    /**
+     * Converts a string to a long, returning zero when the input is null,
+     * malformed, or outside the valid long range.
+     *
+     * @param str the string to convert
+     * @return the converted long value, or {@code 0L} when conversion fails
      */
     private long parseLongSafe(String str) {
-        if (str == null || !str.matches("-?\\d+")) return 0;
-        try {
-            return Long.parseLong(str);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    /**
-     * Checks whether a configured device is currently safe to pass to the
-     * interface status script. The check is repeated by getStatus(), since a
-     * device can disappear between this check and command execution.
-     * 
-     * @param device the configured device name (e.g., eth0, eth1.12, wlan0)
-     * @return true if the device is valid, false otherwise
-     */
-    private boolean isValidRuntimeInterface(String device) {
-        if (device == null || !device.matches(INTERFACE_NAME_PATTERN)) return false;
-        return device.startsWith("ppp") || Files.exists(Paths.get("/sys/class/net", device));
+        return NumberUtils.toLong(str, 0L);
     }
 
     /**
