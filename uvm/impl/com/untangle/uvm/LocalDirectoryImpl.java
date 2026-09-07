@@ -151,7 +151,7 @@ public class LocalDirectoryImpl implements LocalDirectory
         // by the "net ads" call we made above.
         if (result.getResult() != null && result.getResult() == 0) {
             UvmContextFactory.context().execManager().execCommand(
-                "/usr/bin/systemctl", List.of("restart", "winbind.service"));
+                "/bin/systemctl", List.of("restart", "winbind.service"));
         }
 
         return result;
