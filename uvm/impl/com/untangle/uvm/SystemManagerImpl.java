@@ -1625,7 +1625,7 @@ can look deeper. - mahotz
             List.of("a+r", certBase + ".crt"));
         UvmContextFactory.context().execManager().execCommand("/bin/chmod",
             List.of("a+r", certBase + ".key"));
-        UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl",
+        UvmContextFactory.context().execManager().execCommand("/bin/systemctl",
             List.of("restart", "freeradius.service"));
     }
 

@@ -1090,13 +1090,13 @@ public class OpenVpnAppImpl extends AppBase
             if (found == true) {
                 if (enabled == false) {
                     logger.info("Stopping client OpenVPN process for disabled openvpn@{}.service", serverName);
-                    UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("stop", "openvpn@" + serverName + ".service"));
+                    UvmContextFactory.context().execManager().execCommand("/bin/systemctl", List.of("stop", "openvpn@" + serverName + ".service"));
                 }
                 continue;
             }
 
             logger.info("Stopping client OpenVPN process for removed openvpn@{}.service", serverName);
-            UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("stop", "openvpn@" + serverName + ".service"));
+            UvmContextFactory.context().execManager().execCommand("/bin/systemctl", List.of("stop", "openvpn@" + serverName + ".service"));
 
             // no matching server so get rid of the config file and keys
             logger.info("Cleanup removing: {}", target);
