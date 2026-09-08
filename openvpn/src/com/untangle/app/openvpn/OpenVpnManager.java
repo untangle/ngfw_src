@@ -111,7 +111,7 @@ public class OpenVpnManager
         for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
             if (!server.getEnabled()) continue;
             logger.debug("Starting client OpenVPN process for openvpn@{}.service", server.getName());
-            UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("start", "openvpn@" + server.getName() + ".service"));
+            UvmContextFactory.context().execManager().execCommand("/bin/systemctl", List.of("start", "openvpn@" + server.getName() + ".service"));
         }
 
         insertIptablesRules();
@@ -130,7 +130,7 @@ public class OpenVpnManager
 
         for (OpenVpnRemoteServer server : app.getSettings().getRemoteServers()) {
             logger.debug("Stopping client OpenVPN process for openvpn@{}.service", server.getName());
-            UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("stop", "openvpn@" + server.getName() + ".service"));
+            UvmContextFactory.context().execManager().execCommand("/bin/systemctl", List.of("stop", "openvpn@" + server.getName() + ".service"));
         }
 
         insertIptablesRules(); // remove since openvpn is not running
