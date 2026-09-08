@@ -44,7 +44,10 @@ generateServerKey()
     export KEY_DN_QUALIFIER="server"
     
     ## Generate the server private key and the certificate signing request
-    openssl req -days ${CERT_DURATION} -nodes -new -keyout ${SERVER_KEY} -out ${serverCsrTmp} -extensions server -config ${OPENSSL_CFG_FILE} -batch
+    # NGFW-15749: drop -extensions on req (CSR creation). OpenSSL 3.5 (trixie) rejects
+    # authorityKeyIdentifier=keyid,issuer:always at CSR time (no issuer cert exists yet);
+    # extensions are still applied at signing time by the openssl ca call below.
+    openssl req -days ${CERT_DURATION} -nodes -new -keyout ${SERVER_KEY} -out ${serverCsrTmp} -config ${OPENSSL_CFG_FILE} -batch
 
     # create the "database" file for openssl.cnf
     rm -f @PREFIX@/usr/share/untangle/settings/openvpn/index.txt*

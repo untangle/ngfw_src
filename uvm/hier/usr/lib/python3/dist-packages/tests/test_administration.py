@@ -2,6 +2,7 @@ import pytest
 import unittest
 import json
 import os
+import time
 from glob import glob
 from os.path import join, getctime
 from tests.common import NGFWTestCase
@@ -175,6 +176,42 @@ chained_certificate_payload = {"certData": certData, "keyData": keyData, "extraD
 invalid_certificate_payload={"certData": "-----BEGIN CERTIFICATE----\n-----END CERTIFICATE-----\n", "keyData": "-----BEGIN PRIVATE KEY-----\n-----END PRIVATE KEY-----\n"}
 username = overrides.get("Login_username", default="admin")
 password = overrides.get("Login_password", default="passwd")
+
+def _login_and_upload_cert(cert_path, retries=20, retry_sleep=3):
+    """
+    Authenticate to /auth/login then POST cert_path as multipart to /admin/upload.
+    Returns the parsed JSON response.
+    """
+    url = global_functions.get_http_url().rstrip('/')
+    headers = {'accept': 'application/json'}
+    last_status = None
+    for attempt in range(retries):
+        with open(cert_path, 'rb') as fh:
+            files = {
+                'type': (None, 'certificate_upload'),
+                'argument': (None, 'upload_server'),
+                'filename': ('uploadcert.pem', fh, 'application/x-x509-ca-cert'),
+            }
+            s = requests.Session()
+            s.post(
+                f"{url}/auth/login?url=/admin&realm=Administrator",
+                data=f"fragment=&username={username}&password={password}",
+                verify=False,
+            )
+            response = s.post(f"{url}/admin/upload", headers=headers, files=files)
+        last_status = response.status_code
+        if response.text:
+            try:
+                return json.loads(response.text)
+            except json.JSONDecodeError:
+                pass
+        time.sleep(retry_sleep)
+    raise AssertionError(
+        f"/admin/upload returned non-JSON body after {retries} attempts "
+        f"(last HTTP={last_status}); Apache mod_python session store likely "
+        f"not warm after untangle-vm restart"
+    )
+
 @pytest.mark.administration_tests
 class AdministrationTests(NGFWTestCase):
     not_an_app = True
@@ -222,8 +259,6 @@ class AdministrationTests(NGFWTestCase):
         isFile = os.path.exists(f"{certificates_dir}/apache.pem")
         if not isDir and not isFile:
             pytest.skip('%s certificate directory or certificate not present' % self.appName())
-        url = global_functions.get_http_url()
-        headers = {'accept': 'application/json',}
         output_file_path = '/tmp/uploadcertificate.pem'
 
         with open(f"{certificates_dir}/apache.pem", 'r') as input_file:
@@ -235,29 +270,9 @@ class AdministrationTests(NGFWTestCase):
         with open(output_file_path, 'w') as output_file:
             output_file.writelines(lines_with_spaces)
 
-        files = {
-            'type': (None, 'certificate_upload'),
-            'argument': (None, 'upload_server'),
-            'filename': ('uploadcert.pem', open(f"{output_file_path}", 'rb') , 'application/x-x509-ca-cert')
-        }
-        rpc_url = f"{url}/admin/upload"
-        s = requests.Session()
-        # Log in
-        response = s.post(
-            f"{url}/auth/login?url=/admin&realm=Administrator",
-            data=f"fragment=&username={username}&password={password}",
-            verify=False
-        )
-        # Upload pem file containing cert and key files
-        response = s.post(
-            f"{rpc_url}",
-            headers=headers,
-            files=files
-
-        )
+        certificate_upload_response = _login_and_upload_cert(output_file_path)
         files_list = []
         try:
-            certificate_upload_response = json.loads(response.text)
             cert_upload_json = json.loads(certificate_upload_response.get('msg', None))
         except (json.JSONDecodeError, ValueError, TypeError):
             cert_upload_json = {}
@@ -290,8 +305,6 @@ class AdministrationTests(NGFWTestCase):
         isFile = os.path.exists(f"{certificates_dir}/apache.pem")
         if not isDir and not isFile:
             pytest.skip('%s certificate directory or certificate not present' % self.appName())
-        url = global_functions.get_http_url()
-        headers = {'accept': 'application/json',}
         output_file_path = '/tmp/uploadcertificate.pem'
 
         with open(f"{certificates_dir}/apache.pem", 'r') as input_file:
@@ -303,30 +316,9 @@ class AdministrationTests(NGFWTestCase):
         with open(f"{output_file_path}", 'w') as output_file:
             output_file.write(modified_content)
 
-        files = {
-            'type': (None, 'certificate_upload'),
-            'argument': (None, 'upload_server'),
-            'filename': ('uploadcert.pem', open(f"{output_file_path}", 'rb') , 'application/x-x509-ca-cert')
-        }
-        rpc_url = f"{url}/admin/upload"
-        s = requests.Session()
-        # Log in
-        response = s.post(
-            f"{url}/auth/login?url=/admin&realm=Administrator",
-            data=f"fragment=&username={username}&password={password}",
-            verify=False
-        )
-        # Upload pem file containing cert and key files
-        response = s.post(
-            f"{rpc_url}",
-            headers=headers,
-            files=files
-
-        )
-
+        certificate_upload_response = _login_and_upload_cert(output_file_path)
         files_list = []
         try:
-            certificate_upload_response = json.loads(response.text)
             cert_upload_json = json.loads(certificate_upload_response.get('msg', None))
         except (json.JSONDecodeError, ValueError, TypeError):
             cert_upload_json = {}
@@ -359,8 +351,6 @@ class AdministrationTests(NGFWTestCase):
         isFile = os.path.exists(f"{certificates_dir}/apache.pem")
         if not isDir and not isFile:
             pytest.skip('%s certificate directory or certificate not present' % self.appNameWF())
-        url = global_functions.get_http_url()
-        headers = {'accept': 'application/json',}
         output_file_path = '/tmp/uploadcertificate.pem'
 
         with open(f"{certificates_dir}/apache.pem", 'r') as input_file:
@@ -371,30 +361,9 @@ class AdministrationTests(NGFWTestCase):
         with open(f"{output_file_path}", 'w') as output_file:
             output_file.write(modified_content)
 
-        files = {
-            'type': (None, 'certificate_upload'),
-            'argument': (None, 'upload_server'),
-            'filename': ('uploadcert.pem', open(f"{output_file_path}", 'rb') , 'application/x-x509-ca-cert')
-        }
-        rpc_url = f"{url}/admin/upload"
-        s = requests.Session()
-        # Log in
-        response = s.post(
-            f"{url}/auth/login?url=/admin&realm=Administrator",
-            data=f"fragment=&username={username}&password={password}",
-            verify=False
-        )
-        # Upload pem file containing cert and key files
-        response = s.post(
-            f"{rpc_url}",
-            headers=headers,
-            files=files
-
-        )
-
+        certificate_upload_response = _login_and_upload_cert(output_file_path)
         files_list = []
         try:
-            certificate_upload_response = json.loads(response.text)
             cert_upload_json = json.loads(certificate_upload_response.get('msg', None))
         except (json.JSONDecodeError, ValueError, TypeError):
             cert_upload_json = {}
@@ -440,40 +409,9 @@ class AdministrationTests(NGFWTestCase):
         isFile = os.path.exists(f"{certificates_dir}/apache.pfx")
         if not isDir and not isFile:
             pytest.skip('%s certificate directory or certificate not present' % self.appNameWF())
-        url = global_functions.get_http_url()
-        headers = {'accept': 'application/json',}
-        files = {
-            'type': (None, 'certificate_upload'),
-            'argument': (None, 'upload_server'),
-            'filename': ('uploadcert.pem', open(f"{certificates_dir}/apache.pfx", 'rb') , 'application/x-x509-ca-cert')
-        }
-        rpc_url = f"{url}/admin/upload"
-        s = requests.Session()
-        # Log in
-        response = s.post(
-            f"{url}/auth/login?url=/admin&realm=Administrator",
-            data=f"fragment=&username={username}&password={password}",
-            verify=False
-        )
-        # Upload pem file containing cert and key files
-        response = s.post(
-            f"{rpc_url}",
-            headers=headers,
-            files=files
-
-        )
-        # The PFX payload must be rejected. Two acceptable outcomes:
-        #   (a) legacy: upload servlet returns JSON with the "no valid certs/keys" msg
-        #   (b) hardened: upload servlet rejects the payload before producing JSON
-        # In both cases the request must NOT result in a successfully uploaded cert.
-        try:
-            certificate_upload_response = json.loads(response.text)
-            msg = certificate_upload_response.get('msg', '') or ''
-            assert "The file does not contain any valid certificates or keys" in msg, \
-                f"unexpected upload response: {msg}"
-        except (json.JSONDecodeError, ValueError):
-            # Hardened servlet rejected the upload before emitting JSON — acceptable.
-            pass
+        certificate_upload_response = _login_and_upload_cert(f"{certificates_dir}/apache.pfx")
+        #for invalid certificated files should get following error
+        assert "The file does not contain any valid certificates or keys" in certificate_upload_response.get('msg', None)
 
     #Test to validate chained certificate json upload uploadCerificate API
     def test_025_validate_upload_certificate_api(self):

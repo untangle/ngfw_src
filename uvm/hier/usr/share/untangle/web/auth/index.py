@@ -6,7 +6,10 @@ import sys
 import re
 import pycurl
 import json
-import crypt
+try:
+    import crypt
+except ImportError:
+    import legacycrypt as crypt
 import urllib.parse
 import time
 from io import StringIO

@@ -504,7 +504,14 @@ class DirectoryConnectorTests(NGFWTestCase):
 
     def test_060_user_authentication_adlm(self):
         """
-        Authenticate against an active directory server with Active Directory Login monitor installed
+        Authenticate against an active directory server with Active Directory Login monitor installed.
+
+        Note: this test does NOT require kinit to succeed. AD audits attempted
+        Kerberos authentications (including those with expired passwords) and
+        ADLM forwards those audit events; the test asserts the event appears.
+        If both this test AND its preceding kinit fail with "Password incorrect"
+        (rather than "Password expired"), the AD test account credentials have
+        likely been reset/locked -- not an NGFW regression.
         """
         if global_functions.verify_kerberos() is False:
             raise unittest.SkipTest("kerberos not installed")
