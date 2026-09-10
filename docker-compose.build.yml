@@ -17,10 +17,10 @@ services:
         git checkout $${PKGTOOLS_COMMIT} || true"
 
     build:
-      image: untangleinc/ngfw:${REPOSITORY:-bullseye}-build-multiarch
+      image: untangleinc/ngfw:${REPOSITORY:-trixie}-build-multiarch
       environment:
         BUILD_TYPE: ${BUILD_TYPE:-rake}
-        REPOSITORY: ${REPOSITORY:-bullseye}
+        REPOSITORY: ${REPOSITORY:-trixie}
         DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"
@@ -49,10 +49,10 @@ services:
         - /etc/apt/apt.conf.d/01proxy:/etc/apt/apt.conf.d/01proxy
 
     dev-build:
-      image: untangleinc/ngfw:${REPOSITORY:-bullseye}-build-multiarch
+      image: untangleinc/ngfw:${REPOSITORY:-trixie}-build-multiarch
       environment:
         BUILD_TYPE: ${BUILD_TYPE:-rake}
-        REPOSITORY: ${REPOSITORY:-bullseye}
+        REPOSITORY: ${REPOSITORY:-trixie}
         DISTRIBUTION: ${DISTRIBUTION} # defaults to empty: let pkgtools do the right thing
         ARCHITECTURE: ${ARCHITECTURE} # defaults to empty: build.sh will use host arch
         VERBOSE: ${VERBOSE} # defaults to empty: "not verbose"

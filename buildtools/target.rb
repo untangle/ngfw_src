@@ -256,7 +256,7 @@ class CopyFiles < Target
         
         if File.symlink?(src)
           ## Handling symbolic links that don't resolve until in place.
-          file dest => src if File.exists?( src )
+          file dest => src if File.exist?( src )
 
           file dest do
             ensureDirectory(File.dirname(dest)) if !File.exist?(dest)

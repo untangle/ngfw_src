@@ -1,0 +1,64 @@
+# Local development build for Bookworm
+# Usage: docker-compose -f docker-compose-dev.yml run build
+# Usage: docker-compose -f docker-compose-dev.yml run dev-build
+version: '3'
+
+services:
+    build:
+      image: untangleinc/ngfw:${REPOSITORY:-bookworm}-build-multiarch
+      environment:
+        BUILD_TYPE: ${BUILD_TYPE:-rake}
+        REPOSITORY: ${REPOSITORY:-bookworm}
+        GIT_CONFIG_GLOBAL: /tmp/gitconfig
+        DISTRIBUTION: ${DISTRIBUTION}
+        ARCHITECTURE: ${ARCHITECTURE}
+        VERBOSE: ${VERBOSE}
+        PACKAGE: ${PACKAGE}
+        DEBUG: ${DEBUG}
+        SSH_KEY: ${SSH_KEY}
+        NO_CLEAN: ${NO_CLEAN}
+        UPLOAD: ${UPLOAD}
+        FORCE: ${FORCE}
+        TRAVIS_BRANCH: ${TRAVIS_BRANCH:-ngfw-bookworm}
+        TRAVIS_PULL_REQUEST_BRANCH:
+        TRAVIS_REPO_SLUG:
+      privileged: ${PRIVILEGED:-false}
+      network_mode: host
+      volumes:
+        - .:/opt/untangle/build
+        - /home/rohit/Arista-Workspace/Bookworm-Assemble/ngfw_pkgtools:/opt/untangle/ngfw_pkgtools:ro
+        - /tmp/travis-buildbot.rsa:/tmp/travis-buildbot.rsa
+        - /etc/apt/apt.conf.d/01proxy:/etc/apt/apt.conf.d/01proxy
+        - /tmp/docker-gitconfig:/tmp/gitconfig:ro
+        - /tmp/local-debs:/opt/local-debs:ro
+        - /tmp/local-debs.list:/etc/apt/sources.list.d/local-debs.list:ro
+
+    dev-build:
+      image: untangleinc/ngfw:${REPOSITORY:-bookworm}-build-multiarch
+      environment:
+        BUILD_TYPE: ${BUILD_TYPE:-rake}
+        REPOSITORY: ${REPOSITORY:-bookworm}
+        GIT_CONFIG_GLOBAL: /tmp/gitconfig
+        DISTRIBUTION: ${DISTRIBUTION}
+        ARCHITECTURE: ${ARCHITECTURE}
+        VERBOSE: ${VERBOSE}
+        PACKAGE: ${PACKAGE}
+        DEBUG: ${DEBUG}
+        SSH_KEY: ${SSH_KEY}
+        NO_CLEAN: ${NO_CLEAN}
+        UPLOAD: ${UPLOAD}
+        FORCE: ${FORCE}
+        TRAVIS_BRANCH: ${TRAVIS_BRANCH:-ngfw-bookworm}
+        TRAVIS_PULL_REQUEST_BRANCH:
+        TRAVIS_REPO_SLUG:
+        RAKE_LOG: ${RAKE_LOG}
+        DEV_ENVIRONMENT: ${DEV_ENVIRONMENT:-remote}
+      privileged: ${PRIVILEGED:-false}
+      network_mode: host
+      volumes:
+        - .:/opt/untangle/build
+        - /home/rohit/Arista-Workspace/Bookworm-Assemble/ngfw_pkgtools:/opt/untangle/ngfw_pkgtools:ro
+        - /tmp/travis-buildbot.rsa:/tmp/travis-buildbot.rsa
+        - /etc/apt/apt.conf.d/01proxy:/etc/apt/apt.conf.d/01proxy
+        - /tmp/docker-gitconfig:/tmp/gitconfig:ro
+      entrypoint: ./buildtools/remote-dev-build.sh
