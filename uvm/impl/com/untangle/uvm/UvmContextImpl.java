@@ -89,7 +89,7 @@ public class UvmContextImpl extends UvmContextBase implements UvmContext
     private static String applianceModel = null;
     private static int threadNumber = 1;
 
-    private UvmState state;
+    private volatile UvmState state;
     private AdminManagerImpl adminManager;
     private LoggingManagerImpl loggingManager;
     private MailSenderImpl mailSender;

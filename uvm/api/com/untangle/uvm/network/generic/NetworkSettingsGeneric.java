@@ -60,6 +60,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     private boolean logLocalOutboundSessions = true;
     private boolean logLocalInboundSessions = false;
     private boolean logBlockedSessions = false;
+    private boolean vrrpHealthCheckEnabled = false;
 
     public NetworkSettingsGeneric() {
         super();
@@ -131,6 +132,8 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
     public void setLogLocalInboundSessions(boolean logLocalInboundSessions) { this.logLocalInboundSessions = logLocalInboundSessions; }
     public boolean getLogBlockedSessions() { return logBlockedSessions; }
     public void setLogBlockedSessions(boolean logBlockedSessions) { this.logBlockedSessions = logBlockedSessions; }
+    public boolean getVrrpHealthCheckEnabled() { return vrrpHealthCheckEnabled; }
+    public void setVrrpHealthCheckEnabled(boolean vrrpHealthCheckEnabled) { this.vrrpHealthCheckEnabled = vrrpHealthCheckEnabled; }
 
     /**
      * Populates the provided {@link NetworkSettings} instance with data from this
@@ -264,6 +267,7 @@ public class NetworkSettingsGeneric implements Serializable, JSONString {
         networkSettings.setLogLocalOutboundSessions(this.getLogLocalOutboundSessions());
         networkSettings.setLogLocalInboundSessions(this.getLogLocalInboundSessions());
         networkSettings.setLogBlockedSessions(this.getLogBlockedSessions());
+        networkSettings.setVrrpHealthCheckEnabled(this.getVrrpHealthCheckEnabled());
         // Custom dnsmasq options for Advanced --> DNS & DHCP Tab
         networkSettings.setDnsmasqOptions(this.getDnsmasqOptions());
     }
