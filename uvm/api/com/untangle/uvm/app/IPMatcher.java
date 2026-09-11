@@ -16,8 +16,9 @@ import org.apache.logging.log4j.LogManager;
 /**
  * An interface to test for an address.
  */
-public class IPMatcher
+public class IPMatcher implements java.io.Serializable
 {
+    private static final long serialVersionUID = 1L;
     private static final String MARKER_ANY = "any";
     private static final String MARKER_ALL = "all";
     private static final String MARKER_NONE = "none";

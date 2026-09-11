@@ -24,6 +24,7 @@ import com.untangle.uvm.app.IPMatcher;
 import com.untangle.uvm.app.IntMatcher;
 import com.untangle.uvm.app.IntfMatcher;
 import com.untangle.uvm.app.UserMatcher;
+import com.untangle.uvm.util.Constants;
 import com.untangle.uvm.app.GroupMatcher;
 import com.untangle.uvm.app.DomainMatcher;
 import com.untangle.uvm.app.ProtocolMatcher;
@@ -151,19 +152,19 @@ public class RuleCondition implements JSONString, Serializable
      * They are stored here so that repetative evaluation is quick
      * They are prepared by calling computeMatchers()
      */
-    private boolean initialized = false; /* marked as true once computeMatchers is called */
-    private IPMatcher           ipMatcher        = null;
-    private IntMatcher          intMatcher       = null;
-    private IntfMatcher         intfMatcher      = null;
-    private UserMatcher         userMatcher      = null;
-    private GroupMatcher        groupMatcher     = null;
-    private DomainMatcher       domainMatcher    = null;
-    private GlobMatcher         globMatcher      = null;
-    private ProtocolMatcher     protocolMatcher  = null;
-    private BitmaskMatcher      bitmaskMatcher   = null;
-    private TimeOfDayMatcher    timeOfDayMatcher = null;
-    private DayOfWeekMatcher    dayOfWeekMatcher = null;
-    private UrlMatcher          urlMatcher       = null;
+    private transient boolean initialized = false; /* marked as true once computeMatchers is called */
+    private transient IPMatcher           ipMatcher        = null;
+    private transient IntMatcher          intMatcher       = null;
+    private transient IntfMatcher         intfMatcher      = null;
+    private transient UserMatcher         userMatcher      = null;
+    private transient GroupMatcher        groupMatcher     = null;
+    private transient DomainMatcher       domainMatcher    = null;
+    private transient GlobMatcher         globMatcher      = null;
+    private transient ProtocolMatcher     protocolMatcher  = null;
+    private transient BitmaskMatcher      bitmaskMatcher   = null;
+    private transient TimeOfDayMatcher    timeOfDayMatcher = null;
+    private transient DayOfWeekMatcher    dayOfWeekMatcher = null;
+    private transient UrlMatcher          urlMatcher       = null;
 
     private static DirectoryConnector directoryConnector = null;
     
@@ -230,6 +231,9 @@ public class RuleCondition implements JSONString, Serializable
     
     /**
      * Returns true if this matcher matches the specified session
+     * TODO: After full Vue migration, boolean conditions (quota, entitled, flagged)
+     * use value="false" for negation instead of invert. The invert path for these
+     * condition types can be removed once ExtJS is fully retired.
      */
     public boolean matches( AppSession sess )
     {
@@ -251,6 +255,9 @@ public class RuleCondition implements JSONString, Serializable
      * This provides limited matching
      * This is useful for sessions that do not yet exists
      * Many matches will never match in this case because the session does not exist
+     * TODO: After full Vue migration, boolean conditions (quota, entitled, flagged)
+     * use value="false" for negation instead of invert. The invert path for these
+     * condition types can be removed once ExtJS is fully retired.
      */
     public boolean matches( short protocol,
                             int srcIntf, int dstIntf,
@@ -276,6 +283,9 @@ public class RuleCondition implements JSONString, Serializable
      * This provides limited matching
      * This is useful for sessions that do not yet exists
      * Many matches will never match in this case because the session does not exist
+     * TODO: After full Vue migration, boolean conditions (quota, entitled, flagged)
+     * use value="false" for negation instead of invert. The invert path for these
+     * condition types can be removed once ExtJS is fully retired.
      */
     public boolean matches( short protocol,
                             int srcIntf, int dstIntf,
@@ -539,42 +549,42 @@ public class RuleCondition implements JSONString, Serializable
         case HOST_HAS_NO_QUOTA:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.sessionEvent().getLocalAddr() );
             if (hostEntry == null)
-                return true;
-            return ( hostEntry.getQuotaSize() == 0 );
+                return matchBooleanValue(true);
+            return matchBooleanValue( hostEntry.getQuotaSize() == 0 );
 
         case CLIENT_HAS_NO_QUOTA:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (hostEntry == null)
-                return true;
-            return ( hostEntry.getQuotaSize() == 0 );
+                return matchBooleanValue(true);
+            return matchBooleanValue( hostEntry.getQuotaSize() == 0 );
 
         case SERVER_HAS_NO_QUOTA:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getServerAddr() );
             if (hostEntry == null)
-                return true;
-            return ( hostEntry.getQuotaSize() == 0 );
+                return matchBooleanValue(true);
+            return matchBooleanValue( hostEntry.getQuotaSize() == 0 );
 
         case USER_HAS_NO_QUOTA:
             if ( sess.user() == null )
                 return false; //no user
             userEntry = UvmContextFactory.context().userTable().getUserTableEntry( sess.user() );
             if (userEntry == null)
-                return true;
-            return ( userEntry.getQuotaSize() == 0 );
-            
+                return matchBooleanValue(true);
+            return matchBooleanValue( userEntry.getQuotaSize() == 0 );
+
         case HOST_QUOTA_EXCEEDED:
-            return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.sessionEvent().getLocalAddr() );
+            return matchBooleanValue(UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.sessionEvent().getLocalAddr() ));
 
         case CLIENT_QUOTA_EXCEEDED:
-            return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getClientAddr() );
+            return matchBooleanValue(UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getClientAddr() ));
 
         case SERVER_QUOTA_EXCEEDED:
-            return UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getServerAddr() );
+            return matchBooleanValue(UvmContextFactory.context().hostTable().hostQuotaExceeded( sess.getServerAddr() ));
 
         case USER_QUOTA_EXCEEDED:
             if ( sess.user() == null )
                 return false; //no user
-            return UvmContextFactory.context().userTable().userQuotaExceeded( sess.user() );
+            return matchBooleanValue(UvmContextFactory.context().userTable().userQuotaExceeded( sess.user() ));
             
         case HOST_QUOTA_ATTAINMENT:
             if ( this.intMatcher == null ) {
@@ -796,7 +806,7 @@ public class RuleCondition implements JSONString, Serializable
             Boolean flagged = (Boolean) sess.globalAttachment(SessionAttachments.KEY_WEB_FILTER_FLAGGED);
             if (flagged == null)
                 return false;
-            return flagged.booleanValue();
+            return matchBooleanValue(flagged.booleanValue());
 
         case TAGGED:
             for( Tag t : sess.getTags() ) {
@@ -838,9 +848,9 @@ public class RuleCondition implements JSONString, Serializable
         case HOST_ENTITLED:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( sess.getClientAddr() );
             if (hostEntry == null)
-                return true;
-            return hostEntry.getEntitled();
-            
+                return matchBooleanValue(true);
+            return matchBooleanValue(hostEntry.getEntitled());
+
         case USERNAME:
             tmpStr = sess.user();
             if (this.userMatcher.isMatch(tmpStr))
@@ -1150,8 +1160,8 @@ public class RuleCondition implements JSONString, Serializable
         case HOST_ENTITLED:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (hostEntry == null)
-                return true;
-            return hostEntry.getEntitled();
+                return matchBooleanValue(true);
+            return matchBooleanValue(hostEntry.getEntitled());
 
         case USERNAME:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
@@ -1239,20 +1249,20 @@ public class RuleCondition implements JSONString, Serializable
                 return false;
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( tmpAddress );
             if (hostEntry == null)
-                return true;
-            return ( hostEntry.getQuotaSize() == 0 );
+                return matchBooleanValue(true);
+            return matchBooleanValue( hostEntry.getQuotaSize() == 0 );
 
         case CLIENT_HAS_NO_QUOTA:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
             if (hostEntry == null)
-                return true;
-            return ( hostEntry.getQuotaSize() == 0 );
+                return matchBooleanValue(true);
+            return matchBooleanValue( hostEntry.getQuotaSize() == 0 );
 
         case SERVER_HAS_NO_QUOTA:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( dstAddress );
             if (hostEntry == null)
-                return true;
-            return ( hostEntry.getQuotaSize() == 0 );
+                return matchBooleanValue(true);
+            return matchBooleanValue( hostEntry.getQuotaSize() == 0 );
 
         case USER_HAS_NO_QUOTA:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
@@ -1263,21 +1273,21 @@ public class RuleCondition implements JSONString, Serializable
                 return false; //no user
             userEntry = UvmContextFactory.context().userTable().getUserTableEntry( tmpStr );
             if (userEntry == null)
-                return true;
-            return ( userEntry.getQuotaSize() == 0 );
-            
+                return matchBooleanValue(true);
+            return matchBooleanValue( userEntry.getQuotaSize() == 0 );
+
         case HOST_QUOTA_EXCEEDED:
             tmpAddress = getLocalAddress( srcAddress, srcIntf, dstAddress, dstIntf );
             if ( tmpAddress == null )
                 return false;
             else
-                return UvmContextFactory.context().hostTable().hostQuotaExceeded( tmpAddress );
+                return matchBooleanValue(UvmContextFactory.context().hostTable().hostQuotaExceeded( tmpAddress ));
 
         case CLIENT_QUOTA_EXCEEDED:
-            return UvmContextFactory.context().hostTable().hostQuotaExceeded( srcAddress );
+            return matchBooleanValue(UvmContextFactory.context().hostTable().hostQuotaExceeded( srcAddress ));
 
         case SERVER_QUOTA_EXCEEDED:
-            return UvmContextFactory.context().hostTable().hostQuotaExceeded( dstAddress );
+            return matchBooleanValue(UvmContextFactory.context().hostTable().hostQuotaExceeded( dstAddress ));
 
         case USER_QUOTA_EXCEEDED:
             hostEntry = UvmContextFactory.context().hostTable().getHostTableEntry( srcAddress );
@@ -1286,7 +1296,7 @@ public class RuleCondition implements JSONString, Serializable
             tmpStr = hostEntry.getUsername();
             if ( tmpStr == null )
                 return false; //no user
-            return UvmContextFactory.context().userTable().userQuotaExceeded( tmpStr );
+            return matchBooleanValue(UvmContextFactory.context().userTable().userQuotaExceeded( tmpStr ));
             
         case HOST_QUOTA_ATTAINMENT:
             if ( this.intMatcher == null ) {
@@ -1514,6 +1524,21 @@ public class RuleCondition implements JSONString, Serializable
         return false;
     }
         
+    /**
+     * Matches the boolean value of a condition against the result of a check.
+     * TODO: Once all UIs are Vue-migrated, invert will always be false for boolean conditions.
+     * At that point, this method fully handles negation via value and the invert logic
+     * in the outer matches() methods can be removed for these condition types.
+     * @param result The result of the check to match against the condition's value.
+     * @return True if the result matches the condition's value, false otherwise.
+     */
+    private boolean matchBooleanValue(boolean result)
+    {
+        if (Constants.FALSE.toLowerCase().equals(this.value))
+            return !result;
+        return result;
+    }
+
     /**
      * Returns the country code for address
      * If intf is a non-WAN - returns "XL" (local)

@@ -6,13 +6,15 @@ package com.untangle.uvm.util;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import java.io.Serializable;
+
 /**
  *
  * Load represents a "load" like a CPU load.
  *
  */
-public class Load
-{
+@SuppressWarnings("serial")
+public class Load implements Serializable {
     private final Logger logger = LogManager.getLogger(Load.class);
 
     /**

@@ -2,14 +2,14 @@ Ext.define('Ung.apps.wan-failover.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-wan-failover',
 
-    control: {
-        '#': {
-            beforerender: 'getSettings'
-        },
-        '#status': {
-            activate: 'getWanStatus'
-        },
-    },
+    // control: {
+    //     '#': {
+    //         beforerender: 'getSettings'
+    //     },
+    //     '#status': {
+    //         activate: 'getWanStatus'
+    //     },
+    // },
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();

@@ -146,7 +146,7 @@ public class WebFilterBlockPageServlet extends com.untangle.app.web_filter.Block
             }
 
             String errorText = I18nUtil.tr("The password you entered is incorrect.", i18n_map);
-            returnFields += "<div class=\"u-form-item\"><label class=\"u-form-item-label\">Password:</label><input class=\"u-form-text u-form-field\" type=\"password\" id=\"unblockPassword\"/></div><div id=\"invalid-password\" style=\"display: none\">" + errorText + "</div>";
+            returnFields += "<div class=\"u-form-item\"><div class=\"bp-input-wrapper\"><span class=\"bp-input-icon bp-input-icon-lock\" aria-hidden=\"true\"></span><input class=\"u-form-text u-form-field\" type=\"password\" id=\"unblockPassword\" placeholder=\"" + I18nUtil.tr("Enter password", i18n_map) + "\"/></div></div><div id=\"invalid-password\" style=\"display: none\">" + errorText + "</div>";
 
             return returnFields;
         }

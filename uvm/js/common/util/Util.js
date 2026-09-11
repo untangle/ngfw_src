@@ -1547,5 +1547,103 @@ Ext.define('Ung.util.Util', {
             target.add(iframePanel);
             iframePanel.updateIframe(url, hidden);
         }
+    },
+
+    /**
+     * Sets up Vue iframe message handlers for an app panel.
+     * This is used by Vue-migrated apps that need to communicate with the ExtJS layer.
+     *
+     * @param {Ext.panel.Panel} panel - The app panel
+     * @param {Object} config - Configuration object
+     * @param {String} config.appName - The app name to filter messages
+     * @param {Boolean} [config.enableRemoveHandler=false] - Whether to enable app remove handler
+     * @param {Function} [config.onStatusRefresh] - Optional callback after status refresh
+     * @param {Function} [config.onAppRemove] - Optional callback after app remove
+     */
+    setupVueMessageHandlers: function(panel, config) {
+        if (panel.messageListenerAttached) {
+            return;
+        }
+
+        panel.messageListenerAttached = true;
+        var appName = config.appName;
+
+        // Status refresh handler
+        panel.statusHandler = function (event) {
+            var data = event.data;
+            if (!data.action) return;
+
+            var vm = panel.getViewModel();
+            if (!vm) return;
+
+            if (data.action.appName === appName && data.action.type === 'REFRESH_APP_STATUS') {
+                vm.set('instance.targetState', data.action.targetState);
+
+                var appState = vm.get('state');
+                if (appState && typeof appState.detect === 'function') {
+                    appState.detect();
+                    rpc.appsViews = rpc.appManager.getAppsViews();
+                    Ext.getStore('policies').loadData(rpc.appsViews);
+                    Ung.app.getGlobalController().getAppsView().getController().getApps();
+                }
+
+                // Custom callback
+                if (config.onStatusRefresh) {
+                    config.onStatusRefresh(vm, data.action);
+                }
+            }
+        };
+        window.addEventListener('message', panel.statusHandler);
+
+        // App remove handler (optional)
+        if (config.enableRemoveHandler) {
+            panel.appRemoveHandler = function (event) {
+                var data = event.data;
+                if (!data.action) return;
+
+                var vm = panel.getViewModel();
+                if (!vm) return;
+
+                if (data.action.appName === appName && data.action.type === 'REMOVE_APP') {
+                    Ext.fireEvent('appremove', vm.get('props.displayName'));
+
+                    vm.set('instance.targetState', null);
+                    vm.set('instance.runState', null);
+
+                    Ung.app.redirectTo('#apps/' + vm.get('policyId'));
+
+                    // remove card
+                    if (Ung.app.getMainView().down('#appCard')) {
+                        Ung.app.getMainView().remove('appCard');
+                    }
+
+                    // Custom callback
+                    if (config.onAppRemove) {
+                        config.onAppRemove(vm, data.action);
+                    }
+                }
+            };
+            window.addEventListener('message', panel.appRemoveHandler);
+        }
+    },
+
+    /**
+     * Cleans up Vue iframe message handlers for an app panel.
+     * This should be called in the destroy listener of Vue-migrated apps.
+     *
+     * @param {Ext.panel.Panel} panel - The app panel
+     */
+    cleanupVueMessageHandlers: function(panel) {
+        if (panel.statusHandler) {
+            window.removeEventListener('message', panel.statusHandler);
+            panel.statusHandler = null;
+        }
+
+        if (panel.appRemoveHandler) {
+            window.removeEventListener('message', panel.appRemoveHandler);
+            panel.appRemoveHandler = null;
+        }
+
+        panel.messageListenerAttached = false;
     }
 });

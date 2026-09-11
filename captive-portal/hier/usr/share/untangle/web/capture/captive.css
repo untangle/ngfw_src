@@ -1,0 +1,469 @@
+/*
+ * Captive Portal — user-facing page styles.
+ * Brand tokens copied from the Vue UI theme:
+ *   pkgs_vuntangle/vuntangle/src/config/theme.js
+ *   pkgs_vuntangle/vuntangle/src/scss/variables.scss
+ * Resync manually if those values change.
+ */
+
+:root {
+    --cp-arista-blue:        #16325B;
+    --cp-arista-medium-blue: #146095;
+    --cp-arista-light-blue:  #4473A9;
+    --cp-arista-orange:      #D47122;
+    --cp-arista-dark-gray:   #58585B;
+    --cp-arista-light-gray:  #BBBDC0;
+    --cp-bg:                 #F5F5F5;
+    --cp-card-bg:            #FFFFFF;
+    --cp-card-radius:        4px;
+    --cp-input-radius:       4px;
+    --cp-card-shadow:        0 2px 4px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --cp-font:               "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--cp-bg);
+    color: var(--cp-arista-dark-gray);
+    font-family: var(--cp-font);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 48px 16px;
+    text-align: center;
+}
+
+/* ---------- Card layout ---------- */
+
+.form-login {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 !important;            /* override legacy inline padding:15px */
+    background: var(--cp-card-bg);
+    border-radius: var(--cp-card-radius);
+    box-shadow: var(--cp-card-shadow);
+    overflow: hidden;                 /* clip header band to card corners */
+    text-align: center;
+}
+
+/* ---------- Header banner inside card ---------- */
+
+.form-login > header {
+    display: block;
+    background: var(--cp-arista-blue);
+    color: #FFFFFF;
+    padding: 24px 20px;
+    text-align: center;
+}
+
+.form-login > header img {
+    display: block;
+    margin: 0 auto 12px;
+    max-height: 48px;
+    max-width: 240px;
+}
+
+.form-login > header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #FFFFFF;
+    letter-spacing: 0.2px;
+}
+
+/* ---------- Content area inside card ---------- */
+
+.cp-content {
+    padding: 28px 28px 24px;
+    text-align: center;
+}
+
+.form-login h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--cp-arista-blue);
+    text-align: center;
+}
+
+.cp-message {
+    margin: 0 0 20px;
+    color: var(--cp-arista-dark-gray);
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: center !important;      /* override legacy inline text-align */
+    font-weight: 400 !important;        /* override legacy inline bold */
+}
+
+.form-login form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+}
+
+/* ---------- Inputs ---------- */
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-color: #9098A1;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    pointer-events: none;
+}
+
+.input-icon-user {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+}
+
+.input-icon-lock {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z'/%3E%3C/svg%3E");
+}
+
+.form-login input[type="text"],
+.form-login input[type="password"] {
+    display: block;
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    margin: 0;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--cp-arista-dark-gray);
+    background: #FFFFFF;
+    border: 1px solid var(--cp-arista-light-gray);
+    border-radius: var(--cp-input-radius);
+    outline: none;
+    text-align: left;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-login input[type="text"]:focus,
+.form-login input[type="password"]:focus {
+    border-color: var(--cp-arista-light-blue);
+    box-shadow: 0 0 0 3px rgba(68, 115, 169, 0.18);
+}
+
+.input-wrapper:focus-within .input-icon {
+    background-color: var(--cp-arista-light-blue);
+}
+
+.form-login input::placeholder {
+    color: #9098A1;
+    opacity: 1;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset;
+    -webkit-text-fill-color: var(--cp-arista-dark-gray);
+}
+
+/* ---------- Agree checkbox row (infopage) ---------- */
+
+.form-login label {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 auto !important;
+    color: var(--cp-arista-dark-gray);
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    text-align: left;
+}
+
+.form-login label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 3px 0 0 !important;
+    padding: 0 !important;
+    accent-color: var(--cp-arista-blue);
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+/* ---------- Error / problem text ---------- */
+
+.form-login p[style*="color: red"],
+.cp-error {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: var(--cp-arista-orange) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+    min-height: 1em;
+}
+
+.form-login p[style*="color: red"]:empty,
+.cp-error:empty {
+    display: none;
+}
+
+/* ---------- Primary button ---------- */
+
+.form-login button[type="submit"] {
+    display: inline-block;
+    width: 100%;
+    margin: 8px 0 0;
+    padding: 12px 16px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background: var(--cp-arista-blue);
+    border: none;
+    border-radius: var(--cp-input-radius);
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.form-login button[type="submit"]:hover,
+.form-login button[type="submit"]:focus {
+    background: var(--cp-arista-medium-blue);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+    outline: none;
+}
+
+.form-login button[type="submit"]:active {
+    background: var(--cp-arista-blue);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.18) inset;
+}
+
+/* ---------- Footer text ---------- */
+
+.cp-content > p:last-of-type {
+    margin: 24px 0 0 !important;
+    padding-top: 16px;
+    border-top: 1px solid var(--cp-arista-light-gray);
+    color: #7C8186;
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+    text-align: center !important;
+}
+
+/* ---------- OAuth provider picker (pickpage.html) ---------- */
+
+.cp-provider-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+}
+
+.cp-provider-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    color: var(--cp-arista-dark-gray);
+    background: #FFFFFF;
+    border: 1px solid var(--cp-arista-light-gray);
+    border-radius: var(--cp-input-radius);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cp-provider-btn:hover,
+.cp-provider-btn:focus {
+    border-color: var(--cp-arista-light-blue);
+    background: #FAFBFC;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    outline: none;
+}
+
+.cp-provider-btn img {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+}
+
+/* ---------- Exit page (logout) ---------- */
+/* Class names styleNormal / styleProblem are written by logout.py — keep them. */
+
+.styleTitle {
+    font-size: 20px !important;
+    font-weight: 500 !important;
+}
+
+.styleNormal {
+    color: var(--cp-arista-blue) !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+}
+
+.styleProblem {
+    color: var(--cp-arista-orange) !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+}
+
+/* ---------- secure.js injected DOM ---------- */
+
+.cp-secure-notice,
+.cp-secure-error {
+    margin: 16px 0 0;
+    padding: 12px 14px;
+    border-radius: var(--cp-input-radius);
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+.cp-secure-notice {
+    color: #8A4B00;
+    background: #FFF4E5;
+    border: 1px solid rgba(212, 113, 34, 0.35);
+}
+
+.cp-secure-error {
+    color: #FFFFFF;
+    background: var(--cp-arista-orange);
+    border: 1px solid var(--cp-arista-orange);
+}
+
+.cp-cert-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: inherit;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.cp-secure-error .cp-cert-link {
+    color: #FFFFFF;
+}
+
+/* iOS captive-browser instruction card */
+.cp-ios-card {
+    margin: 20px 0;
+    padding: 20px;
+    background: #FFFFFF;
+    border: 1px solid var(--cp-arista-light-gray);
+    border-radius: var(--cp-card-radius);
+    box-shadow: var(--cp-card-shadow);
+    text-align: left;
+}
+
+.cp-ios-card h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--cp-arista-blue);
+}
+
+.cp-ios-card p {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--cp-arista-dark-gray);
+    line-height: 1.5;
+}
+
+.cp-ios-card ul {
+    margin: 0 0 16px;
+    padding-left: 20px;
+    color: var(--cp-arista-dark-gray);
+}
+
+.cp-ios-card li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.cp-ios-card input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 0 0 12px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--cp-arista-dark-gray);
+    background: #F5F5F5;
+    border: 1px solid var(--cp-arista-light-gray);
+    border-radius: var(--cp-input-radius);
+    outline: none;
+}
+
+.cp-ios-card button {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background: var(--cp-arista-blue);
+    border: none;
+    border-radius: var(--cp-input-radius);
+    cursor: pointer;
+}
+
+.cp-ios-card button:hover,
+.cp-ios-card button:focus {
+    background: var(--cp-arista-medium-blue);
+    outline: none;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 480px) {
+    body {
+        padding: 16px 12px;
+    }
+
+    .cp-content {
+        padding: 22px 18px 20px;
+    }
+
+    .form-login > header {
+        padding: 20px 16px;
+    }
+
+    .form-login > header h1 {
+        font-size: 16px;
+    }
+
+    .form-login > header img {
+        max-height: 40px;
+        max-width: 200px;
+    }
+}

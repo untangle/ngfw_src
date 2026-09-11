@@ -39,6 +39,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.codec.binary.Hex;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import com.untangle.app.intrusion_prevention.generic.IntrusionPreventionSettingsGeneric;
+
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
@@ -219,6 +223,18 @@ public class IntrusionPreventionApp extends AppBase
     }
 
     /**
+     * Get intrusion prevention settings in v2 format.
+     *
+     * @return IntrusionPreventionSettingsGeneric
+     */
+    public IntrusionPreventionSettingsGeneric getSettingsV2()
+    {
+        if (this.getSettings() != null)
+            return this.getSettings().transformIntrusionPreventionSettingsToGeneric();
+        return new IntrusionPreventionSettingsGeneric();
+    }
+
+    /**
      * Set intrusion prevention settings.
      *
      * @param newSettings
@@ -227,6 +243,34 @@ public class IntrusionPreventionApp extends AppBase
     public void setSettings(final IntrusionPreventionSettings newSettings)
     {
         setSettings(newSettings, false, true);
+    }
+
+    /**
+     * Set intrusion prevention settings from v2 format payload.
+     *
+     * Clones the current settings via Java serialization, then deep-copies
+     * suricataSettings separately (it is transient and excluded from the clone)
+     * before applying the v2 transformation.
+     *
+     * @param newSettings
+     *      New settings to configure.
+     */
+    public synchronized void setSettingsV2(final IntrusionPreventionSettingsGeneric newSettings)
+    {
+        if (this.getSettings() != null) {
+            IntrusionPreventionSettings cloned = SerializationUtils.clone(this.getSettings());
+            JSONObject suricata = this.getSettings().getSuricataSettings();
+            JSONObject suricataCopy;
+            try {
+                suricataCopy = suricata != null ? new JSONObject(suricata.toString()) : new JSONObject();
+            } catch (JSONException e) {
+                logger.warn("setSettingsV2: failed to copy suricataSettings", e);
+                suricataCopy = new JSONObject();
+            }
+            cloned.setSuricataSettings(suricataCopy);
+            newSettings.transformGenericToIntrusionPreventionSettings(cloned);
+            this.setSettings(cloned);
+        }
     }
 
     /**

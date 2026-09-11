@@ -58,6 +58,14 @@ public class SpamBlockerApp extends SpamBlockerBaseApp
     }
 
     /**
+     * Set the Spam Blocker Settings from v2 format payload
+     * @param newSettings SpamSettings in v2 format
+     */
+    public void setSettingsV2(SpamSettings newSettings) {
+        this.setSettings(newSettings);
+    }
+
+    /**
      * Called before the application is initialized
      */
     @Override

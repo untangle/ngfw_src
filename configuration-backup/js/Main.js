@@ -1,20 +1,29 @@
 Ext.define('Ung.apps.configurationbackup.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-configuration-backup',
-    controller: 'app-configuration-backup',
 
     viewModel: {
-        formulas: {
-            driveConfiguredText: function (get) {
-                return get('googleDriveIsConfigured') ? 'The Google Connector is configured'.t() : 'The Google Connector is unconfigured.'.t();
-            }
+        data: {
+            vueMigrated: true
+        }
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/configuration-backup', false);
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'configuration-backup',
+                enableRemoveHandler: true
+            });
+        },
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
         }
     },
 
     items: [
-        { xtype: 'app-configuration-backup-status' },
-        { xtype: 'app-configuration-backup-cloud' },
-        { xtype: 'app-configuration-backup-googleconnector' }
+        Field.iframeHolder
     ]
 
 });
