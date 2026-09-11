@@ -249,7 +249,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /**
      * Get the v2 network settings
-     * @return NetworkSettingsV2
+     * @return NetworkSettingsGeneric network settings in v2 format
      */
     public NetworkSettingsGeneric getNetworkSettingsV2() {
         return this.networkSettings.transformNetworkSettingsToGeneric();
