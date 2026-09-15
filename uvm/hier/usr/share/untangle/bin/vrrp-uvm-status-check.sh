@@ -5,8 +5,8 @@
 # consecutive-failure/recovery thresholds; this script performs one bounded
 # request and does not add its own retry delay.
 
-HTTP_CODE=$(/usr/bin/curl --silent --show-error \
-    --connect-timeout 2 \
+HTTP_CODE=$(/bin/curl --silent --show-error \
+    --connect-timeout 1 \
     --max-time 2 \
     --output /dev/null \
     --write-out '%{http_code}' \
