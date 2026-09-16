@@ -505,6 +505,67 @@ def append_aliases():
     print(("Alias IP: " + ip_found))
     return ip_found
 
+def setup_vrrp_test_interface(settings):
+    """Find a suitable interface and configure VRRP on it for testing.
+    Mutates the interface entry in settings directly.
+    Returns (interface_dict, vrrp_ip_str) or (None, None) if no suitable
+    interface is found.
+    """
+    for interface in settings['interfaces']['list']:
+        if interface.get('v4ConfigType') != "STATIC":
+            continue
+        if interface.get('disabled'):
+            continue
+        if not interface.get('v4StaticAddress'):
+            continue
+
+        try:
+            result = subprocess.check_output(
+                "ethtool " + interface.get('symbolicDev') +
+                " 2>/dev/null | grep 'Link detected:'",
+                shell=True, text=True)
+            if "yes" not in result:
+                continue
+        except Exception:
+            continue
+
+        interface_ip = interface['v4StaticAddress']
+        interface_prefix = interface['v4StaticPrefix']
+        interface_net = interface_ip + "/" + str(interface_prefix)
+
+        vrrp_ip = None
+        ip = ipaddr.IPAddress(interface_ip)
+        ip_step = 1
+        loop_counter = 10
+        while vrrp_ip is None and loop_counter > 0:
+            loop_counter -= 1
+            candidate = ip + ip_step
+            if candidate in ipaddr.IPv4Network(interface_net):
+                if remote_control.run_command("ping -c 1 %s" % str(candidate)) != 0:
+                    vrrp_ip = str(candidate)
+                    break
+            else:
+                ip_step = -1
+            ip = candidate
+
+        if vrrp_ip is None:
+            continue
+
+        interface['vrrpAliases'] = {
+            "javaClass": "java.util.LinkedList",
+            "list": [{
+                "javaClass": "com.untangle.uvm.network.InterfaceSettings$InterfaceAlias",
+                "staticAddress": vrrp_ip,
+                "staticPrefix": 24
+            }]
+        }
+        interface['vrrpEnabled'] = True
+        interface['vrrpId'] = 2
+        interface['vrrpPriority'] = 1
+        return (interface, vrrp_ip)
+
+    return (None, None)
+
 def nuke_first_level_rule(ruleGroup):
     netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
     netsettings[ruleGroup]['list'][:] = []
@@ -1387,6 +1448,123 @@ server=dynupdate.no-ip.com
         assert (isMaster)
         assert (pingResult == 0)
         assert (onlineResults == 0)
+
+    @pytest.mark.slow
+    def test_111_vrrp_health_setting_compatibility(self):
+        """Verify the VRRP UVM health setting survives the settings APIs."""
+        if runtests.quick_tests_only:
+            raise unittest.SkipTest('Skipping a time consuming test')
+
+        network_manager = global_functions.uvmContext.networkManager()
+        config_path = "/etc/keepalived/keepalived.conf"
+        test_settings = copy.deepcopy(orig_netsettings)
+
+        vrrp_interface, vrrp_ip = setup_vrrp_test_interface(test_settings)
+        if vrrp_interface is None:
+            raise unittest.SkipTest("No suitable interface found for VRRP test")
+
+        try:
+            # Fresh and upgraded appliances always expose the new property.
+            assert "vrrpHealthCheckEnabled" in orig_netsettings
+            assert isinstance(orig_netsettings["vrrpHealthCheckEnabled"], bool)
+            assert orig_netsettings["vrrpHealthCheckEnabled"] is False
+
+            for enabled in (False, True):
+                settings = copy.deepcopy(test_settings)
+                settings["vrrpHealthCheckEnabled"] = enabled
+                network_manager.setNetworkSettings(settings)
+
+                current_settings = network_manager.getNetworkSettings()
+                assert "vrrpHealthCheckEnabled" in current_settings
+                assert current_settings["vrrpHealthCheckEnabled"] is enabled
+
+                if os.path.isfile(config_path):
+                    with open(config_path, "r") as config_file:
+                        generated_config = config_file.read()
+
+                    if enabled:
+                        assert generated_config.count("vrrp_script chk_uvm") == 1
+                        assert generated_config.count("track_script {") >= 1
+                        assert "enable_script_security" in generated_config
+                        assert 'script "/usr/share/untangle/bin/vrrp-uvm-status-check.sh"' in generated_config
+                        assert "user root" in generated_config
+                        assert "interval 5" in generated_config
+                        assert "timeout 3" in generated_config
+                        assert "fall 3" in generated_config
+                        assert "rise 5" in generated_config
+                        assert "init_fail" in generated_config
+                        assert "weight 0" in generated_config
+                        assert "state MASTER" in generated_config
+                    else:
+                        assert "vrrp_script chk_uvm" not in generated_config
+                        assert "track_script" not in generated_config
+
+            # Verify the generic settings conversion exposes the same value.
+            generic_settings = network_manager.getNetworkSettingsV2()
+            if isinstance(generic_settings, dict):
+                assert "vrrpHealthCheckEnabled" in generic_settings
+                assert generic_settings["vrrpHealthCheckEnabled"] is True
+            else:
+                assert generic_settings.getVrrpHealthCheckEnabled() is True
+
+            # Restore original settings and verify cleanup within the try
+            # block so assertion failures are reported normally.
+            network_manager.setNetworkSettings(orig_netsettings)
+            if os.path.isfile(config_path):
+                with open(config_path, "r") as config_file:
+                    restored_config = config_file.read()
+                assert "vrrp_script chk_uvm" not in restored_config, \
+                    "Health check directives still present after restoring original settings"
+                assert "track_script" not in restored_config, \
+                    "track_script still present after restoring original settings"
+        finally:
+            network_manager.setNetworkSettings(orig_netsettings)
+
+    def test_112_vrrp_health_endpoint(self):
+        """Verify the local UVM health endpoint and keepalived helper."""
+        health_url = "http://127.0.0.1/uvm/status"
+        helper_path = "/usr/share/untangle/bin/vrrp-uvm-status-check.sh"
+
+        # Endpoint must return HTTP 200 from localhost when UVM is running.
+        endpoint_result = subprocess.run(
+            ["/bin/curl", "--silent", "--show-error",
+             "--connect-timeout", "2", "--max-time", "5",
+             "--output", "/dev/null",
+             "--write-out", "%{http_code}", health_url],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False
+        )
+        assert endpoint_result.returncode == 0, \
+            "curl to health endpoint failed: %s" % endpoint_result.stderr
+        assert endpoint_result.stdout.strip() == "200", \
+            "Expected HTTP 200, got %s" % endpoint_result.stdout.strip()
+
+        # Helper script must exist.
+        assert os.path.isfile(helper_path), \
+            "Health check helper not found at %s" % helper_path
+
+        # Helper must exit 0 when UVM is healthy.
+        helper_result = subprocess.run(
+            [helper_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False
+        )
+        assert helper_result.returncode == 0, \
+            "Helper exited %d: %s" % (helper_result.returncode, helper_result.stderr)
+
+        # Remote access must be rejected by Apache (Require local).
+        lan_ip = global_functions.get_lan_ip()
+        remote_http_code = remote_control.run_command(
+            "curl --silent --output /dev/null --write-out '%%{http_code}' "
+            "--connect-timeout 5 --max-time 10 "
+            "http://%s/uvm/status" % lan_ip,
+            stdout=True)
+        assert remote_http_code.strip() != "200", \
+            "Remote access to /uvm/status should be blocked, got HTTP 200"
 
     def test_120_mtu(self):
         # Test MTU settings
