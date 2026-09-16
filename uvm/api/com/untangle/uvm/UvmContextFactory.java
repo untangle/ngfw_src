@@ -10,8 +10,8 @@ import java.lang.reflect.Method;
  */
 public class UvmContextFactory
 {
-    private static UvmContext UVM_CONTEXT = null;
-    private static SafeUvmContext SAFE_UVM_CONTEXT = null;
+    private static volatile UvmContext UVM_CONTEXT = null;
+    private static volatile SafeUvmContext SAFE_UVM_CONTEXT = null;
 
     /**
      * Gets the current state of the UVM.  This provides a way to get
