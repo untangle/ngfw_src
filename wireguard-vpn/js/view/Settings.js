@@ -126,7 +126,8 @@ Ext.define('Ung.apps.wireguard-vpn.view.Settings', {
                     bind: '{networkProfiles}',
                     restrictedRecords: {
                         keyMatch: 'profileName',
-                        valueMatch: 'Full Tunnel'
+                        valueMatch: 'Full Tunnel',
+                        editableFields: []
                     },
                     emptyRow: {
                         javaClass: 'com.untangle.app.wireguard_vpn.WireGuardVpnNetworkProfile',
