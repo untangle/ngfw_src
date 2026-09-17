@@ -328,21 +328,28 @@ class SslInspectorTests(NGFWTestCase):
             assert( found )
 
     def test_100_hostnameVerificationEnabled(self):
-        """Verify hostname verification enabled by default, normal HTTPS works without bypass pipe"""
+        """Verify hostname verification disabled by default, enable and verify normal HTTPS works without bypass pipe"""
         appData = self._app.getSettings()
-        assert appData.get('verifyServerCertHostname') == True
-        result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
-        assert (result == 0)
-        events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
-        event = global_functions.find_event(events.get('list'), 5,
-            "ssl_inspector_status", "INSPECTED",
-            "ssl_inspector_detail", testedServerName)
-        assert event is not None
-        assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
+        assert appData.get('verifyServerCertHostname') == False
+        appData['verifyServerCertHostname'] = True
+        self._app.setSettings(appData)
+        try:
+            result = remote_control.run_command(global_functions.build_curl_command(uri="https://" + testedServerName + "/"))
+            assert (result == 0)
+            events = global_functions.get_events('SSL Inspector', 'All Sessions', None, 5)
+            event = global_functions.find_event(events.get('list'), 5,
+                "ssl_inspector_status", "INSPECTED",
+                "ssl_inspector_detail", testedServerName)
+            assert event is not None
+            assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
+        finally:
+            appData['verifyServerCertHostname'] = False
+            self._app.setSettings(appData)
 
     def test_101_hostnameVerificationBypassList(self):
         """Verify bypass list entry adds bypass pipe to detail"""
         appData = self._app.getSettings()
+        appData['verifyServerCertHostname'] = True
         appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerName))
         self._app.setSettings(appData)
         try:
@@ -353,11 +360,15 @@ class SslInspectorTests(NGFWTestCase):
             assert event is not None
             assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
         finally:
+            appData['verifyServerCertHostname'] = False
             appData['hostnameVerificationBypassList']['list'] = []
             self._app.setSettings(appData)
 
     def test_102_hostnameVerificationGlobalDisable(self):
         """Verify global disable adds bypass pipe to detail"""
+        appData = self._app.getSettings()
+        appData['verifyServerCertHostname'] = True
+        self._app.setSettings(appData)
         appData = self._app.getSettings()
         appData['verifyServerCertHostname'] = False
         self._app.setSettings(appData)
@@ -369,12 +380,13 @@ class SslInspectorTests(NGFWTestCase):
             assert event is not None
             assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
         finally:
-            appData['verifyServerCertHostname'] = True
+            appData['verifyServerCertHostname'] = False
             self._app.setSettings(appData)
 
     def test_103_hostnameVerificationBlindTrust(self):
         """Verify blind trust skips hostname verification without bypass pipe"""
         appData = self._app.getSettings()
+        appData['verifyServerCertHostname'] = True
         appData['serverBlindTrust'] = True
         self._app.setSettings(appData)
         try:
@@ -385,12 +397,14 @@ class SslInspectorTests(NGFWTestCase):
             assert event is not None
             assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
         finally:
+            appData['verifyServerCertHostname'] = False
             appData['serverBlindTrust'] = False
             self._app.setSettings(appData)
 
     def test_104_hostnameVerificationWildcardBypass(self):
         """Verify wildcard bypass entry matches and adds bypass pipe"""
         appData = self._app.getSettings()
+        appData['verifyServerCertHostname'] = True
         appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerDomainWildcard, description="wildcard test"))
         self._app.setSettings(appData)
         try:
@@ -401,12 +415,14 @@ class SslInspectorTests(NGFWTestCase):
             assert event is not None
             assert hostnameVerifyBypassDetail in event.get("ssl_inspector_detail", "")
         finally:
+            appData['verifyServerCertHostname'] = False
             appData['hostnameVerificationBypassList']['list'] = []
             self._app.setSettings(appData)
 
     def test_105_hostnameVerificationDisabledBypassEntry(self):
         """Verify disabled bypass entry does not add bypass pipe"""
         appData = self._app.getSettings()
+        appData['verifyServerCertHostname'] = True
         appData['hostnameVerificationBypassList']['list'].append(createHostnameBypassRule(testedServerName, enabled=False, description="disabled entry"))
         self._app.setSettings(appData)
         try:
@@ -419,8 +435,41 @@ class SslInspectorTests(NGFWTestCase):
             assert event is not None
             assert hostnameVerifyBypassDetail not in event.get("ssl_inspector_detail", "")
         finally:
+            appData['verifyServerCertHostname'] = False
             appData['hostnameVerificationBypassList']['list'] = []
             self._app.setSettings(appData)
+
+    def test_106_hostnameVerificationGlobalBypassPropagation(self):
+        """Verify global bypass entries propagate across SSL Inspector instances"""
+        # verify both start with empty bypass lists
+        list1 = getHostnameBypassList(self._app)
+        list2 = getHostnameBypassList(ssl_app_2)
+        assert len(list1) == 0, "Instance 1 bypass list should be empty initially"
+        assert len(list2) == 0, "Instance 2 bypass list should be empty initially"
+
+        try:
+            # add a global entry and a non-global entry on instance 1
+            addHostnameBypassEntry(self._app, "global.example.com", isGlobal=True, description="global entry")
+            addHostnameBypassEntry(self._app, "local.example.com", isGlobal=False, description="local entry")
+
+            # verify instance 1 has both entries
+            list1 = getHostnameBypassList(self._app)
+            assert len(list1) == 2, "Instance 1 should have 2 entries, got %d" % len(list1)
+
+            # verify instance 2 has only the global entry
+            list2 = getHostnameBypassList(ssl_app_2)
+            assert len(list2) == 1, "Instance 2 should have 1 global entry, got %d" % len(list2)
+            assert list2[0]['string'] == "global.example.com"
+
+            # clear all entries on instance 1 (this removes the global entry too)
+            clearHostnameBypassList(self._app)
+
+            # verify instance 2 no longer has the global entry
+            list2 = getHostnameBypassList(ssl_app_2)
+            assert len(list2) == 0, "Instance 2 should have 0 entries after clearing, got %d" % len(list2)
+
+        finally:
+            clearHostnameBypassList(self._app)
 
     def test_551_https_with_sni_packet_split(self):
         """ Verify no exceptions with split Hello TLS packets"""
@@ -690,38 +739,6 @@ class SslInspectorTests(NGFWTestCase):
         assert any("..." in w for w in warns), (
             f"Expected safeForLog truncation marker ('...') in WARN; "
             f"got: {warns}")
-
-    def test_106_hostnameVerificationGlobalBypassPropagation(self):
-        """Verify global bypass entries propagate across SSL Inspector instances"""
-        # verify both start with empty bypass lists
-        list1 = getHostnameBypassList(self._app)
-        list2 = getHostnameBypassList(ssl_app_2)
-        assert len(list1) == 0, "Instance 1 bypass list should be empty initially"
-        assert len(list2) == 0, "Instance 2 bypass list should be empty initially"
-
-        try:
-            # add a global entry and a non-global entry on instance 1
-            addHostnameBypassEntry(self._app, "global.example.com", isGlobal=True, description="global entry")
-            addHostnameBypassEntry(self._app, "local.example.com", isGlobal=False, description="local entry")
-
-            # verify instance 1 has both entries
-            list1 = getHostnameBypassList(self._app)
-            assert len(list1) == 2, "Instance 1 should have 2 entries, got %d" % len(list1)
-
-            # verify instance 2 has only the global entry
-            list2 = getHostnameBypassList(ssl_app_2)
-            assert len(list2) == 1, "Instance 2 should have 1 global entry, got %d" % len(list2)
-            assert list2[0]['string'] == "global.example.com"
-
-            # clear all entries on instance 1 (this removes the global entry too)
-            clearHostnameBypassList(self._app)
-
-            # verify instance 2 no longer has the global entry
-            list2 = getHostnameBypassList(ssl_app_2)
-            assert len(list2) == 0, "Instance 2 should have 0 entries after clearing, got %d" % len(list2)
-
-        finally:
-            clearHostnameBypassList(self._app)
 
     @classmethod
     def final_extra_tear_down(cls):

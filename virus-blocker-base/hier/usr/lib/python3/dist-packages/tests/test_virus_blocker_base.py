@@ -420,8 +420,11 @@ class VirusBlockerBaseTests(NGFWTestCase):
         assert (result == 0)
         result = remote_control.run_command("chmod 775 /tmp/email_script.py")
         assert (result == 0)
-        # Turn on SSL Inspector
+        # Turn on SSL Inspector with blind trust for test SMTP server
+        # (test.untangle.com cert expired 2020; without blind trust,
+        # SSL Inspector rejects the server cert and drops the connection)
         appSSLData['processEncryptedMailTraffic'] = True
+        appSSLData['serverBlindTrust'] = True
         appSSLData['ignoreRules']['list'].insert(0,createSSLInspectRule("25"))
         appSSL.setSettings(appSSLData)
         appSSL.start()

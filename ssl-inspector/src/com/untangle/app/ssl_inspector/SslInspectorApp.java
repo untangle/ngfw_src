@@ -180,19 +180,30 @@ public class SslInspectorApp extends AppBase
                 if (readSettings.getVersion().intValue() < 3) {
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect Duck Duck Go", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*Duck Duck Go*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
                     readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Inspect KidzSearch", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*kidzsearch*", null, null, null, null, SslInspectorRuleAction.ActionType.INSPECT, true));
-                    
+
                     readSettings.setVersion(3);
                     setSettings(readSettings);
                     renumberRules = true;
                 }
 
-                // v3 to v4: add hostname verification settings
+                // v3 to v4: add hostname verification, port 25 IGNORE rule,
+                // and force-disable TLSv1/TLSv1.1 for JDK21 compatibility
                 if (readSettings.getVersion().intValue() < 4) {
                     logger.info("Migrating settings from v{} to v4: adding hostname verification", readSettings.getVersion());
-                    readSettings.setVerifyServerCertHostname(true);
+                    readSettings.setVerifyServerCertHostname(false);
                     readSettings.setHostnameVerificationBypassList(new LinkedList<>());
+                    readSettings.getIgnoreRules().addFirst(createDefaultRule(0, "Ignore SMTP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
+
+                    boolean changed = false;
+                    if (readSettings.getClient_TLSv10()) { readSettings.setClient_TLSv10(false); changed = true; }
+                    if (readSettings.getClient_TLSv11()) { readSettings.setClient_TLSv11(false); changed = true; }
+                    if (readSettings.getServer_TLSv10()) { readSettings.setServer_TLSv10(false); changed = true; }
+                    if (readSettings.getServer_TLSv11()) { readSettings.setServer_TLSv11(false); changed = true; }
+                    if (changed) logger.warn("NGFW-15749: forced TLSv1/TLSv1.1 off on upgrade to v4 (JDK21 compatibility)");
+
                     readSettings.setVersion(4);
                     setSettings(readSettings);
+                    renumberRules = true;
                 }
 
                 if(renumberRules) {
@@ -418,35 +429,35 @@ public class SslInspectorApp extends AppBase
     }
 
     /**
-     * Reloads instance settings from disk and merges in the global
-     * hostname verification bypass entries.
+     * Merges global hostname verification bypass entries into the
+     * in-memory settings without reloading the full settings from disk.
      */
     public void loadAllGlobalSettings()
     {
-        String appID = this.getAppSettings().getId().toString();
-        String settingsFile = System.getProperty("uvm.settings.dir") + "/ssl-inspector/settings_" + appID + ".js";
-
         try {
-            SslInspectorSettings readSettings = UvmContextFactory.context().settingsManager().load(SslInspectorSettings.class, settingsFile);
-            if (readSettings == null) {
-                logger.warn("Failed to reload settings from {}", settingsFile);
+            if (this.settings == null) {
+                logger.warn("Settings not initialized, skipping global settings merge");
                 return;
-            }
-
-            if (readSettings.getHostnameVerificationBypassList() == null) {
-                readSettings.setHostnameVerificationBypassList(new LinkedList<>());
             }
 
             SslInspectorSettings globalSettings = getGlobalSettings();
             List<GenericRule> globalBypassList = globalSettings.getHostnameVerificationBypassList();
-            if (globalBypassList != null && !globalBypassList.isEmpty()) {
-                readSettings.getHostnameVerificationBypassList().addAll(0, globalBypassList);
-                logger.info("Merged {} global hostname bypass entries into instance {}", globalBypassList.size(), appID);
+
+            LinkedList<GenericRule> currentBypassList = this.settings.getHostnameVerificationBypassList();
+            if (currentBypassList == null) {
+                currentBypassList = new LinkedList<>();
+                this.settings.setHostnameVerificationBypassList(currentBypassList);
             }
 
-            this.settings = readSettings;
+            currentBypassList.removeIf(rule -> rule != null && Boolean.TRUE.equals(rule.getIsGlobal()));
+
+            if (globalBypassList != null && !globalBypassList.isEmpty()) {
+                currentBypassList.addAll(0, globalBypassList);
+                logger.info("Merged {} global hostname bypass entries into instance {}",
+                    globalBypassList.size(), this.getAppSettings().getId());
+            }
         } catch (Exception e) {
-            logger.error("Failed to load settings for instance " + appID, e);
+            logger.error("Failed to merge global hostname bypass settings for instance " + this.getAppSettings().getId(), e);
         }
     }
 
@@ -537,6 +548,7 @@ public class SslInspectorApp extends AppBase
         LinkedList<SslInspectorRule> defaultRules = new LinkedList<>();
         int ruleNumber = 1;
 
+        defaultRules.add(createDefaultRule(ruleNumber++, "Ignore SMTP", SslInspectorRuleCondition.ConditionType.DST_PORT, "25", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Microsoft Update", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*update.microsoft*", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore GotoMeeting", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*citrix*", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));
         defaultRules.add(createDefaultRule(ruleNumber++, "Ignore Dropbox", SslInspectorRuleCondition.ConditionType.SSL_INSPECTOR_SUBJECT_DN, "*dropbox*", null, null, null, null, SslInspectorRuleAction.ActionType.IGNORE, true));

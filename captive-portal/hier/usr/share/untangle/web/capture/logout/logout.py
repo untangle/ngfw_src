@@ -11,7 +11,8 @@ import uvm.i18n_helper
 
 from uvm import settings_reader
 
-_ = uvm.i18n_helper.get_translation('untangle').lgettext
+_trans = uvm.i18n_helper.get_translation('untangle')
+_ = getattr(_trans, 'lgettext', _trans.gettext)
 
 #-----------------------------------------------------------------------------
 # This is the default function that gets called for a client logout request

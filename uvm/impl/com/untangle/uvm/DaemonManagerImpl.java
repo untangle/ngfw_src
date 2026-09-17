@@ -387,7 +387,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
                 reader = UvmContextFactory.context().execManager().execEvil(command);
             } else {
                 reader = UvmContextFactory.context().execManager().execEvil(
-                    new String[] { "/usr/bin/systemctl", command, daemonName });
+                    new String[] { "/bin/systemctl", command, daemonName });
             }
             reader.waitFor();
         } catch (Exception exn) {
@@ -437,7 +437,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         } else {
             cmdLabel = "systemctl " + command + " " + daemonName;
             output = UvmContextFactory.context().execManager().execCommand(
-                "/usr/bin/systemctl", List.of(command, daemonName)
+                "/bin/systemctl", List.of(command, daemonName)
             ).getOutput();
         }
         if (log) {

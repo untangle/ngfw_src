@@ -294,8 +294,11 @@ class SpamBlockerBaseTests(NGFWTestCase):
         appData['smtpConfig']['allowTls'] = False
         appData['smtpConfig']['strength'] = 30
         self._app.setSettings(appData)
-        # Turn on SSL Inspector
+        # Turn on SSL Inspector with blind trust for test SMTP server
+        # (test.untangle.com cert expired 2020; without blind trust,
+        # SSL Inspector rejects the server cert and drops the connection)
         appSSLData['processEncryptedMailTraffic'] = True
+        appSSLData['serverBlindTrust'] = True
         appSSLData['ignoreRules']['list'].insert(0,createSSLInspectRule("25"))
         appSSL.setSettings(appSSLData)
         appSSL.start()

@@ -79,6 +79,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with http using our special small test virus
     def test_230_httpCloudSmallBlocked(self):
+        raise unittest.SkipTest("Cloud scan disabled per NGFW-15881")
         md5TestNum = ""
         counter = 5
         # loop since the connection can fail to return a result.
@@ -93,6 +94,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with http using our special large test virus
     def test_240_httpCloudLargeBlocked(self):
+        raise unittest.SkipTest("Cloud scan disabled per NGFW-15881")
         md5TestNum = ""
         counter = 5
         # loop since the connection can fail to return a result.
@@ -107,6 +109,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with ftp using our special small test virus
     def test_250_ftpCloudSmallBlocked(self):
+        raise unittest.SkipTest("Cloud scan disabled per NGFW-15881")
         ftp_result = subprocess.call(
             ["nc", "-z", global_functions.ftp_server, "21"],
             stdout=subprocess.PIPE,
@@ -128,6 +131,7 @@ class VirusBlockTests(VirusBlockerBaseTests):
 
     # test the cloud scanner with ftp using our special large test virus
     def test_260_ftpCloudLargeBlocked(self):
+        raise unittest.SkipTest("Cloud scan disabled per NGFW-15881")
         ftp_result = subprocess.call(
             ["nc", "-z", global_functions.ftp_server, "21"],
             stdout=subprocess.PIPE,

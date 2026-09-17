@@ -378,29 +378,33 @@ def post_upgrade_fixups():
 
 # ---- Trixie upgrade helpers ---- #
 
+def is_trixie_system():
+    """Return True if running on a trixie kernel (6.12.x+), regardless of upgrade state."""
+    return platform.release().startswith("6.12.")
+
 def is_trixie_upgrade():
     """
     Detect if the apt repository serves trixie packages while the system
     is still on a pre-trixie kernel — or just rebooted into trixie kernel
     (6.12.x) with post-upgrade fixups not yet completed.
-    Detection checks both apt Release metadata (supports server-side Apache
-    rewrites) and apt sources content (supports direct source changes).
+    Detection uses two methods (in order):
+    1. apt-cache policy: check if available untangle-vm candidate version
+       contains 'trixie' in the version string (e.g. -1trixie). This is
+       baked at build time and works with server-side Apache rewrites
+       where the sources still say bullseye.
+    2. apt sources content: check for 'trixie' in sources files (fallback
+       for direct source changes on dev/test boxes).
     Returns True only when the upgrade target is trixie and fixups are needed.
     """
-    import glob
     repo_has_trixie = False
 
-    for release_file in glob.glob("/var/lib/apt/lists/*Release"):
-        try:
-            with open(release_file) as fh:
-                for line in fh:
-                    if line.strip().startswith("Codename:") and "trixie" in line:
-                        repo_has_trixie = True
-                        break
-        except:
-            pass
-        if repo_has_trixie:
-            break
+    try:
+        result = subprocess.run(["apt-cache", "policy", "untangle-vm"],
+                                capture_output=True, text=True, timeout=10)
+        if "trixie" in result.stdout:
+            repo_has_trixie = True
+    except:
+        pass
 
     if not repo_has_trixie:
         sources_dirs = ["/etc/apt/sources.list.d/"]
@@ -746,11 +750,12 @@ if r > 1:
     log("apt-get -s dist-upgrade returned an error (%i). Abort." % r)
     sys.exit(1)
 if r == 1:
-    # Packages kept back. Tolerate for trixie major-version upgrade where
-    # a transitional library (e.g. libmanette-0.2-0) commonly can't be
-    # reconciled by apt's resolver mid-hop; abort otherwise.
-    if trixie_upgrade:
-        log("Packages kept back during trixie upgrade -- proceeding anyway (may need manual install post-upgrade)")
+    # Packages kept back. Tolerate on trixie systems (both mid-upgrade and
+    # steady-state) — dist-upgrade with changed dependencies is normal for
+    # regular updates. Only abort on bullseye/bookworm where kept-back
+    # packages signal a resolver conflict that needs manual intervention.
+    if trixie_upgrade or is_trixie_system():
+        log("Packages kept back on trixie -- proceeding (dist-upgrade will resolve)")
     else:
         log("Packages have been kept back. Abort.")
         sys.exit(1)

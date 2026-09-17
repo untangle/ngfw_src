@@ -874,9 +874,32 @@ def restart_uvm():
     """
     Restart uvm.
     IMPORTANT: This changes uvmContext!
+
+    Uses explicit stop → wait-for-java-dead → start instead of init.d restart.
+    On trixie (JDK21) the java process takes longer to release NFQUEUE sockets
+    than on bullseye (JDK11). If a new UVM starts before the old java process
+    fully exits, netcap initialization fails ("Unable to initialize netcap")
+    because NFQUEUE 1981/1982 are still held by the dying process.
     """
     global uvmContext, uvmContextLongTimeout
-    subprocess.call(["/etc/init.d/untangle-vm","restart"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+
+    subprocess.call(["/etc/init.d/untangle-vm", "stop"],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    for i in range(60):
+        result = subprocess.run(
+            "ps awwx | grep 'java.*com.untangle.uvm.Main' | grep -v grep",
+            shell=True, capture_output=True)
+        if result.returncode != 0:
+            break
+        time.sleep(1)
+    else:
+        subprocess.call("kill -9 $(ps awwx | awk '/[j]ava.*com.untangle.uvm.Main/{print $1}') 2>/dev/null",
+                        shell=True)
+        time.sleep(2)
+
+    subprocess.call(["/etc/init.d/untangle-vm", "start"],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     uvmContext = None
     max_tries = 60

@@ -26,11 +26,11 @@ if [ "$PPP_IPPARAM" != "L2TP" ]; then
     exit
 fi
 
-/bin/echo -e "[INFO: `date`] Removing iptables rules for ${PPP_IFACE}"
+/bin/echo -e "[INFO: `date`] Removing mark rules for ${PPP_IFACE}"
 
 # remove the mark rules for the interface that is going away
-iptables -t mangle -D mark-src-intf -i ${PPP_IFACE} -j MARK --set-mark 0xfb/0xff -m comment --comment "Set src interface mark for l2tp"
-iptables -t mangle -D mark-dst-intf -o ${PPP_IFACE} -j MARK --set-mark 0xfb00/0xff00 -m comment --comment "Set dst interface mark for l2tp"
+iptables -t mangle -D mark-src-intf -i ${PPP_IFACE} -j MARK --set-mark 0xfb/0xff -m comment --comment "Set src interface mark for l2tp" 2>/dev/null || true
+iptables -t mangle -D mark-dst-intf -o ${PPP_IFACE} -j MARK --set-mark 0xfb00/0xff00 -m comment --comment "Set dst interface mark for l2tp" 2>/dev/null || true
 
 # call the goodbye function in the app
 /usr/share/untangle/bin/ipsec-virtual-user-event GOODBYE L2TP $IPREMOTE $PEERNAME $BYTES_SENT $BYTES_RCVD

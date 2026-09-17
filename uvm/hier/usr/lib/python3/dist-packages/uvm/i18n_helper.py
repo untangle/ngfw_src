@@ -33,7 +33,10 @@ except ImportError:
 def get_translation(domain):
 #    return gettext.translation(domain, fallback=True)
     lang = get_uvm_language()
-    return gettext.translation(domain, fallback=True, codeset='utf-8',languages=[lang])
+    try:
+        return gettext.translation(domain, fallback=True, codeset='utf-8', languages=[lang])
+    except TypeError:
+        return gettext.translation(domain, fallback=True, languages=[lang])
         
 def get_uvm_language():
     lang = 'us'

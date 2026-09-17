@@ -222,6 +222,9 @@ class IntrusionPreventionTests(NGFWTestCase):
         if runtests.quick_tests_only:
             raise unittest.SkipTest('Skipping a time consuming test')
 
+        if len(appSettings['rules']['list']) == 0:
+            appSettings['rules']['list'].insert(0, create_rule(action="block", rule_type="CATEGORY", type_value="compromised"))
+            app.setSettings(appSettings, True, True)
         appSettings['rules']['list'][0]['action'] = "log"
         app.setSettings(appSettings, True, True)
 
@@ -646,8 +649,11 @@ class IntrusionPreventionTests(NGFWTestCase):
         global app, appSettings
         flow_established_enabled_flag_filename = "/usr/share/untangle/conf/intrusion-prevention-signatures-flow-established"
         rules_filename = "/etc/suricata/ngfw.rules"
+        # Match `established` only inside the flow: option's value (up to the next `;`).
+        # The previous `flow:.*established` was greedy and matched any rule whose msg/content
+        # mentioned "established" after a flow: clause. \bestablished\b excludes not_established.
         # Add "|| true" because if grep doesn't find anything, it will exit with an error code causing an exception
-        command = f"grep -v 'not_established' {rules_filename} | grep -c 'flow:.*established' || true"
+        command = f"grep -cE 'flow:[^;]*\\bestablished\\b' {rules_filename} || true"
 
         # Flag enabled
         Path(flow_established_enabled_flag_filename).touch()

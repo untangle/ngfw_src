@@ -161,7 +161,9 @@ def main(argv):
     ## for settings_variable in settings.get_variables():
     ##
     for settings_variable in settings["variables"]["list"]:
-        name = settings_variable["name"]
+        name = settings_variable["name"].strip()
+        if not re.match(r'^[A-Z][A-Z0-9_]+$', name):
+            continue
         value = settings_variable["value"]
         if settings_variable["name"] == "HOME_NET":
             value = re.sub(r"\b\bdefault\b\b", default_home_net, value)

@@ -103,7 +103,10 @@ case $1 in
     # Here we generate a new CSR for this server to be signed by a third party
     # using the existing private key file that was previously created
     # when the original Apache server certificate was generated
-        $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -extensions v3_cert -new -key $UT_ROOT_PATH/apache.key -out $UT_ROOT_PATH/request.csr -subj "$2"
+        # NGFW-15749: drop -extensions on req. OpenSSL 3.5 (trixie) rejects
+        # authorityKeyIdentifier=keyid,issuer:always at CSR time. Third-party
+        # signers apply their own extension policy at issuance.
+        $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -new -key $UT_ROOT_PATH/apache.key -out $UT_ROOT_PATH/request.csr -subj "$2"
         if [ $? != 0 ]; then
             echo "REQUEST: Error generating certificate signing request"
             exit 4
@@ -116,7 +119,10 @@ case $1 in
     # generate a CSR for this server, and we also combine them to make
     # the PEM file that we copy into the Apache directory.  Finally we create
     # the PFX file that can be loaded by apps using the SSLEngine stuff.
-        $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -extensions v3_host -newkey rsa:2048 -keyout $UT_ROOT_PATH/apache.key -out $UT_ROOT_PATH/apache.csr -subj "$2"
+        # NGFW-15749: drop -extensions on req (CSR creation). OpenSSL 3.5 (trixie)
+        # rejects AKI in extension section at CSR time. Extensions still applied
+        # at signing time by the openssl ca call below.
+        $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -newkey rsa:2048 -keyout $UT_ROOT_PATH/apache.key -out $UT_ROOT_PATH/apache.csr -subj "$2"
         if [ $? != 0 ]; then
             echo "APACHE: Error generating certificate signing request"
             exit 5
@@ -137,7 +143,9 @@ case $1 in
     SERVER)
     # Server certificates are handled just like the default APACHE cert but we
     # put everything into files using the base filename passed to the script
-        $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -extensions v3_host -newkey rsa:2048 -keyout $UT_ROOT_PATH/$4.key -out $UT_ROOT_PATH/$4.csr -subj "$2"
+        # NGFW-15749: drop -extensions on req (CSR creation). OpenSSL 3.5 (trixie)
+        # rejects AKI at CSR time; extensions applied at signing time below.
+        $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -newkey rsa:2048 -keyout $UT_ROOT_PATH/$4.key -out $UT_ROOT_PATH/$4.csr -subj "$2"
         if [ $? != 0 ]; then
             echo "SERVER: Error generating certificate signing request"
             exit 8
@@ -159,7 +167,10 @@ case $1 in
     # In all other cases we are making a fake MITM certificate so we generate
     # a new CSR and sign it with our CA and put the server key and signed
     # cert into a PKCS12 file that can be loaded by the Java code
-        $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -extensions v3_fake -newkey rsa:2048 -keyout $TEMP/server.key -out $TEMP/server.csr -subj "$2"
+        # NGFW-15749: drop -extensions on req (CSR creation). OpenSSL 3.5 (trixie)
+        # rejects AKI at CSR time. SSL Inspector hot path — every TLS leaf cert
+        # forge runs this. Extensions still applied at signing time below.
+        $OPENSSL_TOOL req -batch -nodes -config $OPENSSL_CONF -newkey rsa:2048 -keyout $TEMP/server.key -out $TEMP/server.csr -subj "$2"
         if [ $? != 0 ]; then
             echo "MITM: Error generating certificate signing request"
             exit 11

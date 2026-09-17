@@ -138,7 +138,14 @@ public class WebrootQuery
     private static long BctidSocketPoolMaxWaitSeconds = 5L;
 
     private static int BctidClientConnectTimeout = 250;
-    private static int BctidClientReadTimeout = 5000;
+    // NGFW-15749: raised from 5000 to 30000 to absorb first-install DNS stalls when
+    // the upstream resolver silently drops AAAA queries (common on VBox-NAT virtual
+    // DNS and some consumer routers). glibc parallel A+AAAA can block ~15s before
+    // returning to bctid; the prior 5s timeout fired first, declared Pulse dead,
+    // and triggered systemctl restart untangle-bctid in a loop that wiped bctid's
+    // resolved-IP cache on every cycle. 30s lets the first lookup complete; once
+    // bctid caches the IP, all subsequent queries are sub-millisecond.
+    private static int BctidClientReadTimeout = 30000;
 
     private int failures = 0;
 

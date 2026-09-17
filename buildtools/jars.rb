@@ -36,12 +36,12 @@ class Jars
     const_set(:Log4j, [ Jars.downloadTarget('apache-log4j-2.23.1/log4j-api-2.23.1.jar'),
                         Jars.downloadTarget('apache-log4j-2.23.1/log4j-core-2.23.1.jar') ])
     const_set(:JavaMailApi, [ Jars.downloadTarget('javamail-1.3.3_01/lib/mailapi.jar') ])
-    const_set(:Jabsorb, [ Jars.downloadTarget('jabsorb-1.2.5/jabsorb-1.2.5/jabsorb-1.2.5.jar')])
-    const_set(:Json, [ Jars.downloadTarget('jabsorb-1.2.5/jabsorb-1.2.5/json.jar')])
+    const_set(:Jabsorb, [ Jars.downloadTarget('jabsorb-1.2.6/jabsorb-1.2.6/jabsorb-1.2.6.jar')])
+    const_set(:Json, [ Jars.downloadTarget('jabsorb-1.2.6/jabsorb-1.2.6/json.jar')])
     const_set(:GetText, [ Jars.downloadTarget('gettext-commons-0.9.1/gettext-commons-0.9.1.jar') ])
     const_set(:JakartaActivation, [ Jars.downloadTarget('jakarta.activation-1.2.1/jakarta.activation-1.2.1.jar') ])
     const_set(:JavaTransaction, [ Jars.downloadTarget('jta-1.1/jta-1.1.jar') ])
-    const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-2.0.9/slf4j-reload4j-2.0.9.jar'), 
+    const_set(:Slf4j, [ Jars.downloadTarget( 'slf4j-2.0.9/slf4j-nop-2.0.9.jar'),
                         Jars.downloadTarget( 'slf4j-2.0.9/slf4j-api-2.0.9.jar' ) ])
 
     const_set(:TomcatCommon, [ 'tomcat-embed-jasper.jar',

@@ -550,7 +550,7 @@ class OpenVpnMonitor implements Runnable
 
             } catch (Exception exn) {
                 logger.warn("OpenVPN process for {} not found. {}. Restarting...", server.getName(), exn.getMessage());
-                UvmContextFactory.context().execManager().execCommand("/usr/bin/systemctl", List.of("restart", "openvpn@" + server.getName() + ".service"));
+                UvmContextFactory.context().execManager().execCommand("/bin/systemctl", List.of("restart", "openvpn@" + server.getName() + ".service"));
             }
             if (reader == null) {
                 continue;

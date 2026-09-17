@@ -35,16 +35,6 @@ Ext.define('Ung.apps.virusblocker.view.Advanced', {
             }
         }]
     }, {
-        xtype: 'fieldset',
-        title: 'Scan Engines'.t(),
-        margin: '10 10 20 10',
-        padding: '5 10',
-        items: [{
-            xtype: 'checkbox',
-            boxLabel: 'Enable ScoutIQ&trade; Cloud Scan'.t(),
-            bind: '{settings.enableCloudScan}'
-        }]
-    }, {
         xtype: 'tabpanel',
         flex: 1,
         defaults: {

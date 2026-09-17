@@ -80,6 +80,7 @@ public class NetworkSettings implements Serializable, JSONString
     private boolean logBlockedSessions = false;
     private boolean vlansEnabled = true;
     private int     lxcInterfaceId = 0;
+    private boolean vrrpHealthCheckEnabled = false;
 
     private int httpPort  = 80;
     private int httpsPort = 443;
@@ -240,6 +241,9 @@ public class NetworkSettings implements Serializable, JSONString
     public int getLxcInterfaceId() { return this.lxcInterfaceId; }
     public void setLxcInterfaceId( int newValue ) { this.lxcInterfaceId = newValue; }
 
+    public boolean getVrrpHealthCheckEnabled() { return this.vrrpHealthCheckEnabled; }
+    public void setVrrpHealthCheckEnabled( boolean newValue ) { this.vrrpHealthCheckEnabled = newValue; }
+
     /**
      * This determines the method used to calculate the publicy available URL used to reach Untangle resources
      */
@@ -366,6 +370,7 @@ public class NetworkSettings implements Serializable, JSONString
         netSettingsGen.setLogLocalOutboundSessions(this.getLogLocalOutboundSessions());
         netSettingsGen.setLogLocalInboundSessions(this.getLogLocalInboundSessions());
         netSettingsGen.setLogBlockedSessions(this.getLogBlockedSessions());
+        netSettingsGen.setVrrpHealthCheckEnabled(this.getVrrpHealthCheckEnabled());
         // Custom dnsmasq options for Advanced --> DNS & DHCP Tab
         netSettingsGen.setDnsmasqOptions(this.getDnsmasqOptions());
     }

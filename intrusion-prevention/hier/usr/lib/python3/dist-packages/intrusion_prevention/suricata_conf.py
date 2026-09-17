@@ -4,7 +4,11 @@ Suricata configuration file management
 import os
 import re
 import ruamel.yaml
-from ruamel.yaml.compat import text_type
+try:
+    from ruamel.yaml.compat import text_type
+except ImportError:
+    # ruamel.yaml 0.17+ removed text_type from compat
+    text_type = str
 
 from ruamel.yaml import YAML
 
@@ -54,8 +58,10 @@ class SuricataConf:
         """
         with open(SuricataConf.file_name, 'r') as stream:
             try:
-                # self.conf = yaml.load(stream)
-                self.conf = ruamel.yaml.load(stream, ruamel.yaml.RoundTripLoader, preserve_quotes=True)
+                # NGFW-15749: ruamel.yaml 0.18+ removed module-level load(); use YAML() instance.
+                _yaml = ruamel.yaml.YAML(typ='rt')
+                _yaml.preserve_quotes = True
+                self.conf = _yaml.load(stream)
             except ruamel.yaml.YAMLError as yaml_error:
                 print(yaml_error)
 
@@ -63,12 +69,19 @@ class SuricataConf:
         """
         Save suricata configuration
         """
+        for group in list(self.conf.get("vars", {})):
+            bad_keys = [k for k in self.conf["vars"][group] if not re.match(r'^[A-Z][A-Z0-9_]+$', k.strip())]
+            for k in bad_keys:
+                del self.conf["vars"][group][k]
         temp_file_name = SuricataConf.file_name + ".tmp"
         with open(temp_file_name, 'w') as stream:
             try:
-                #yaml.dump(self.conf, stream, default_flow_style=False)
-                ruamel.yaml.dump(self.conf, stream=stream, Dumper=ruamel.yaml.RoundTripDumper, version=(1, 1), explicit_start=True)
-                #, Dumper=ruamel.yaml.RoundTripDumper)
+                # NGFW-15749: ruamel.yaml 0.18+ removed module-level dump(); use YAML() instance.
+                _yaml = ruamel.yaml.YAML(typ='rt')
+                _yaml.version = (1, 1)
+                _yaml.explicit_start = True
+                _yaml.preserve_quotes = True
+                _yaml.dump(self.conf, stream)
             except ruamel.yaml.YAMLError as yaml_error:
                 print(yaml_error)
 
