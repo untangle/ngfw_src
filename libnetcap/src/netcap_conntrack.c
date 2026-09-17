@@ -89,20 +89,53 @@ int  netcap_conntrack_cleanup( void )
     return 0;
 }
 
+static int _netcap_conntrack_reopen( void )
+{
+    if ( cth != NULL ) {
+        nfct_close(cth);
+        cth = NULL;
+    }
+
+    cth = nfct_open(CONNTRACK, NF_NETLINK_CONNTRACK_NEW|NF_NETLINK_CONNTRACK_DESTROY);
+    if ( !cth ) return -1;
+
+    nfnl_rcvbufsiz(nfct_nfnlh(cth), BUFFER_SIZE);
+    nfct_callback_register(cth, NFCT_T_NEW | NFCT_T_DESTROY, _netcap_conntrack_callback, NULL);
+
+    return 0;
+}
+
 void* netcap_conntrack_listen ( void* arg )
 {
     int res = 0;
+    int backoff_ms = 1000;
+    int max_backoff_ms = 60000;
+
     debug( 1, "ConntrackD listening for conntrack updates...\n" );
 
     while (1) {
         if ( cth == NULL ) return NULL;
 
-        res = nfct_catch(cth);  
+        res = nfct_catch(cth);
         if (res == -1) {
+            int saved_errno = errno;
             if ( cth == NULL )
                 return NULL;
-            else
-                return errlog_null( ERR_WARNING,"nfct_catch() returned! %s\n", strerror(errno) );
+
+            errlog( ERR_WARNING, "nfct_catch() failed: %s (errno=%d). Recovering in %d ms...\n",
+                    strerror(saved_errno), saved_errno, backoff_ms );
+
+            usleep( backoff_ms * 1000 );
+
+            if ( _netcap_conntrack_reopen() < 0 ) {
+                errlog( ERR_WARNING, "nfct_catch() recovery failed, retrying in %d ms...\n", backoff_ms );
+                if ( backoff_ms < max_backoff_ms )
+                    backoff_ms *= 2;
+                continue;
+            }
+
+            debug( 1, "ConntrackD listener recovered successfully.\n" );
+            backoff_ms = 1000;
         }
     }
 

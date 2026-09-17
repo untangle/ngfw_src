@@ -112,13 +112,13 @@ public class NetcapConntrackHook implements NetcapCallback
             // must check clientIntf first, because outbound traffic is 0->0
             if ( clientIntf == 0 ) {
                 if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalOutboundSessions() ) {
-                    return;
+                    logEvent = false;
                 }
             }
             // serverIntf == 0 means its to the local server
             else if ( serverIntf == 0 ) {
                 if ( ! UvmContextFactory.context().networkManager().getNetworkSettings().getLogLocalInboundSessions() ) {
-                    return;
+                    logEvent = false;
                 }
             }
         

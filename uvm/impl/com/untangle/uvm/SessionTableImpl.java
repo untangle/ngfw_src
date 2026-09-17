@@ -144,27 +144,26 @@ public class SessionTableImpl
         boolean removed = (sessionTableById.remove(sessionId) != null);
 
         if (removed) {
-
-// THIS IS FOR ECLIPSE - @formatter:off            
-            SessionTuple tupleKey = new SessionTuple( session.getProtocol(),
-                                                      session.netcapSession().clientSide().client().host(),
-                                                      session.netcapSession().clientSide().server().host(),
-                                                      session.netcapSession().clientSide().client().port(),
-                                                      session.netcapSession().clientSide().server().port(),
-                                                      session.netcapSession().clientSide().interfaceId()
-                                                      );
-// THIS IS FOR ECLIPSE - @formatter:on
-
-            if (sessionTableByTuple.remove(tupleKey) == null) {
-                logger.warn("Missing value in tuple map: " + tupleKey);
+            SessionTuple tupleKey = session.getClientSideTuple();
+            if (tupleKey != null) {
+                SessionGlobalState tupleSession = sessionTableByTuple.get(tupleKey);
+                if (tupleSession != null && tupleSession.id() == sessionId) {
+                    sessionTableByTuple.remove(tupleKey);
+                } else if (tupleSession == null) {
+                    logger.warn("Missing value in tuple map: " + tupleKey);
+                }
             }
 
             if (session.getProtocol() == PROTO_TCP) {
-                int port = session.netcapSession().serverSide().client().port();
-                InetAddress addr = session.netcapSession().serverSide().client().host();
-                NatPortAvailabilityKey key = new NatPortAvailabilityKey(addr, port);
-                if (tcpPortAvailabilityMap.remove(key) == null) {
-                    logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port);
+                try {
+                    int port = session.netcapSession().serverSide().client().port();
+                    InetAddress addr = session.netcapSession().serverSide().client().host();
+                    NatPortAvailabilityKey key = new NatPortAvailabilityKey(addr, port);
+                    if (tcpPortAvailabilityMap.remove(key) == null) {
+                        logger.warn("Missing value in port availability map: " + addr.getHostAddress() + ":" + port);
+                    }
+                } catch (Exception e) {
+                    logger.warn("Unable to remove NAT port availability entry for session " + sessionId, e);
                 }
             }
         }
