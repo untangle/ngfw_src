@@ -11,14 +11,15 @@ import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.app.RuleCondition;
 import com.untangle.uvm.app.GlobMatcher;
 
+import java.io.Serializable;
+
 /**
  * This is a matching criteria for a Event Control Rule
  *
  * A EventRule has a set of these to determine what traffic to match
  */
 @SuppressWarnings("serial")
-public class EventRuleCondition
-{
+public class EventRuleCondition implements Serializable {
     private static final Logger logger = LogManager.getLogger( EventRuleCondition.class );
 
     private String field;

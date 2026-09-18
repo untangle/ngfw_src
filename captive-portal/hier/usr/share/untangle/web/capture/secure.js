@@ -27,8 +27,8 @@ function imgLoadFailure(isRequired) {
     var pushlist = document.getElementsByName('submit');
     var push = pushlist[0];
 
-    var newParagraph = document.createElement('H4');
-    newParagraph.setAttribute('style', 'color: red');
+    var notice = document.createElement('div');
+    notice.className = (isRequired == true) ? 'cp-secure-error' : 'cp-secure-notice';
 
     var text;
     if (isRequired == true) {
@@ -46,19 +46,18 @@ function imgLoadFailure(isRequired) {
         push.style.display = 'none';
     }
 
-    newParagraph.appendChild(text);
-    newParagraph.appendChild(document.createElement('br'));
-    newParagraph.appendChild(document.createElement('br'));
-
-    newParagraph.appendChild(document.createElement('br'));
+    notice.appendChild(text);
+    notice.appendChild(document.createElement('br'));
+    notice.appendChild(document.createElement('br'));
 
     var newLink = document.createElement('a');
     var linkText = document.createTextNode("Click this link to download the root certificate (manual install).");
     newLink.appendChild(linkText);
     newLink.href = '/cert';
-    newLink.title ="Download server root CA certificate";
-    newParagraph.appendChild(newLink);
-    form.parentElement.appendChild(newParagraph);
+    newLink.title = "Download server root CA certificate";
+    newLink.className = 'cp-cert-link';
+    notice.appendChild(newLink);
+    form.parentElement.appendChild(notice);
 }
 
 function onCheckFailure() {
@@ -97,7 +96,7 @@ function addBrowserInstructions() {
         // Hide Continue button and checkbox
         var continueButton = document.querySelector("button[name='submit']");
         var checkbox = document.querySelector("input[name='agree']");
-        var connectMessage = document.querySelector("p[style*='text-align: center'][style*='font-weight: bold']");
+        var connectMessage = document.getElementById("connect-message");
         if (connectMessage) connectMessage.style.display = "none";
 
         // Hide the "Clicking here means you agree to the terms above." checkbox label
@@ -109,34 +108,17 @@ function addBrowserInstructions() {
 
         var container = document.createElement("div");
         container.id = "browser-instructions";
-        container.style.textAlign = "center";
-        container.style.padding = "15px";
-        container.style.margin = "20px auto";
-        container.style.width = "90%";
-        container.style.maxWidth = "400px";
-        container.style.borderRadius = "10px";
-        container.style.backgroundColor = "#E0E0E0"; /* Soft grey background to match parent */
-        container.style.boxShadow = "0px 4px 6px rgba(0, 0, 0, 0.1)";
+        container.className = "cp-ios-card";
         container.innerHTML = `
-            <h3 style="font-size: 14px; font-weight: bold; color: #666; text-align: left; margin-bottom: 12px;">
-                Your browser is not supported.
-            </h3>
-            <p style="font-size: 14px; color: #666; text-align: left; margin-bottom: 15px; line-height: 1.5;">
-                To proceed with <b>Google Account</b> via Single Sign-On,
-            </p>
-            <ul style="text-align: left; font-size: 14px; color: #555; padding-left: 20px; margin-bottom: 15px;">
-                <li style="margin-bottom: 10px;">Click <b>Cancel</b></li>
-                <li style="margin-bottom: 10px;">Select <b>Use Without Internet</b></li>
-                <li style="margin-bottom: 10px;">Open <b>Safari</b> or <b>Chrome</b> copy and paste the link below</li>
+            <h3>Your browser is not supported.</h3>
+            <p>To proceed with <b>Google Account</b> via Single Sign-On,</p>
+            <ul>
+                <li>Click <b>Cancel</b></li>
+                <li>Select <b>Use Without Internet</b></li>
+                <li>Open <b>Safari</b> or <b>Chrome</b> copy and paste the link below</li>
             </ul>
-            <input type="text" id="portalLink" value="${window.location.href}" readonly
-                style="width: 95%; padding: 10px; font-size: 14px; text-align: center; border: 1px solid #ccc;
-                border-radius: 5px; background-color: #fff; margin-bottom: 15px; display: block;">
-            <button id="copyLink" style="padding: 12px 16px; background-color: #007AFF;
-                color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;
-                width: 100%; max-width: 200px; display: block; margin: 0 auto;">
-                Copy Link
-            </button>
+            <input type="text" id="portalLink" value="${window.location.href}" readonly>
+            <button id="copyLink">Copy Link</button>
         `;
 
         var form = document.querySelector("form");

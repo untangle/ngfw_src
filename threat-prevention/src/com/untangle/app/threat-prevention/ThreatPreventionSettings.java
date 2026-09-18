@@ -6,6 +6,7 @@ package com.untangle.app.threat_prevention;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.app.threat_prevention.generic.ThreatPreventionSettingsGeneric;
 import com.untangle.uvm.app.GenericRule;
 
 import java.io.Serializable;
@@ -78,6 +79,23 @@ public class ThreatPreventionSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms this V1 settings into a V2 generic settings object.
+     * Used by getSettingsV2().
+     *
+     * @return a new ThreatPreventionSettingsGeneric object populated from this V1 object
+     */
+    public ThreatPreventionSettingsGeneric transformThreatPreventionSettingsToGeneric() {
+        ThreatPreventionSettingsGeneric g = new ThreatPreventionSettingsGeneric();
+        g.setReputationThreshold(this.reputationThreshold);
+        g.setThreat_prevention_rules(ThreatPreventionRule.transformThreatPreventionRulesToGeneric(this.rules));
+        g.setPassSites(this.passSites != null ? new LinkedList<>(this.passSites) : new LinkedList<>());
+        g.setCustomBlockPageEnabled(this.customBlockPageEnabled);
+        g.setCustomBlockPageUrl(this.customBlockPageUrl);
+        g.setCloseHttpsBlockEnabled(this.closeHttpsBlockEnabled);
+        return g;
     }
 
 }

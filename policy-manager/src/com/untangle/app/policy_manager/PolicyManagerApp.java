@@ -9,9 +9,12 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
+
+import com.untangle.app.policy_manager.generic.PolicyManagerSettingsGeneric;
 import com.untangle.uvm.SessionMatcher;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
@@ -103,6 +106,25 @@ public class PolicyManagerApp extends AppBase implements com.untangle.uvm.app.Po
          * Clear the cache in the pipeline foundry in case of changes to policy rules
          */
         UvmContextFactory.context().pipelineFoundry().clearCache();
+    }
+
+    /**
+     * getSettings gets the current settings in v2 (Generic) format
+     * @return PolicyManagerSettingsGeneric
+     */
+    public PolicyManagerSettingsGeneric getSettingsV2() {
+        return this.settings.transformLegacyToGenericSettings();
+    }
+
+    /**
+     * Set Policy Manager Settings from generic version payload
+     * @param newSettings PolicyManagerSettingsGeneric
+     */
+    public void setSettingsV2( PolicyManagerSettingsGeneric newSettings ) {
+        // Deep clone current PolicyManager Settings
+        PolicyManagerSettings clonedPolicyManagerSettings = SerializationUtils.clone(this.settings);
+        newSettings.transformGenericToLegacySettings(clonedPolicyManagerSettings);
+        this.setSettings(clonedPolicyManagerSettings);
     }
 
     /**

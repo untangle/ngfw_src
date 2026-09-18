@@ -4,6 +4,7 @@
 
 package com.untangle.uvm.app;
 
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -17,8 +18,8 @@ import com.untangle.uvm.util.GlobUtil;
 /**
  * Glob matcher
  */
-public class GlobMatcher
-{
+@SuppressWarnings("serial")
+public class GlobMatcher implements Serializable {
     private static final String MARKER_SEPERATOR = ",";
 
     private final Logger logger = LogManager.getLogger(getClass());

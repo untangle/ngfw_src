@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.untangle.app.captive_portal.generic.CaptivePortalSettingsGeneric;
+
 /**
  * This is the implementation of the captive portal settings.
  * 
@@ -212,5 +214,55 @@ public class CaptivePortalSettings implements Serializable, org.json.JSONString
     {
         org.json.JSONObject jO = new org.json.JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms this V1 settings object into its generic V2 representation
+     * for the Vue UI. Keeps V1 field shapes; only captureRules is transformed
+     * into the shared RuleGeneric form.
+     *
+     * @return CaptivePortalSettingsGeneric
+     */
+    public CaptivePortalSettingsGeneric transformCaptivePortalSettingsToGeneric()
+    {
+        CaptivePortalSettingsGeneric g = new CaptivePortalSettingsGeneric();
+
+        g.setAuthenticationType(this.authenticationType);
+        g.setConcurrentLoginsEnabled(this.areConcurrentLoginsEnabled);
+        g.setUseMacAddress(this.useMacAddress);
+        g.setSessionCookiesEnabled(this.sessionCookiesEnabled);
+        g.setIdleTimeout(this.idleTimeout);
+        g.setUserTimeout(this.userTimeout);
+        g.setSessionCookiesTimeout(this.sessionCookiesTimeout);
+        g.setPageType(this.pageType);
+        g.setCertificateDetection(this.certificateDetection);
+        g.setRedirectUrl(this.redirectUrl);
+        g.setAlwaysUseSecureCapture(this.alwaysUseSecureCapture);
+        g.setRedirectUsingHostname(this.redirectUsingHostname);
+        g.setDisableSecureRedirect(this.disableSecureRedirect);
+
+        g.setBasicMessagePageTitle(this.basicMessagePageTitle);
+        g.setBasicMessagePageWelcome(this.basicMessagePageWelcome);
+        g.setBasicMessageMessageText(this.basicMessageMessageText);
+        g.setBasicMessageAgreeBox(this.basicMessageAgreeBox);
+        g.setBasicMessageAgreeText(this.basicMessageAgreeText);
+        g.setBasicMessageFooter(this.basicMessageFooter);
+
+        g.setBasicLoginPageTitle(this.basicLoginPageTitle);
+        g.setBasicLoginPageWelcome(this.basicLoginPageWelcome);
+        g.setBasicLoginUsername(this.basicLoginUsername);
+        g.setBasicLoginPassword(this.basicLoginPassword);
+        g.setBasicLoginMessageText(this.basicLoginMessageText);
+        g.setBasicLoginFooter(this.basicLoginFooter);
+
+        if (this.passedClients != null)
+            g.setPassedClients(new LinkedList<>(this.passedClients));
+        if (this.passedServers != null)
+            g.setPassedServers(new LinkedList<>(this.passedServers));
+
+        if (this.captureRules != null)
+            g.setCapture_rules(CaptureRule.transformCaptureRulesToGeneric(this.captureRules));
+
+        return g;
     }
 }

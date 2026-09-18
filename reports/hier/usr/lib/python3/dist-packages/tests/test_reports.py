@@ -1696,6 +1696,84 @@ class ReportsTests(NGFWTestCase):
             result = reports_manager.getDataForReportEntry(text_entry, None, None, None, conds, None, 1)
             assert result is not None, f"Condition filter '{label}' returned None"
 
+    def test_202_save_validation_rejects_invalid_type_and_expression(self):
+        """
+        Verify save-time validation rejects an invalid PostgreSQL condition type
+        and an invalid report expression with useful errors, without persisting
+        either report entry.
+        """
+        reports_manager = global_functions.uvmContext.appManager().app("reports").getReportsManager()
+
+        invalid_entries = [
+            (
+                "invalid-type",
+                {
+                    "javaClass": "com.untangle.app.reports.ReportEntry",
+                    "uniqueId": f"unt05-validation-type-{int(time.time())}",
+                    "title": "UNT-05 invalid type",
+                    "category": "QA",
+                    "type": "TEXT",
+                    "table": "sessions",
+                    "textColumns": ["count(*)"],
+                    "conditions": [{
+                        "javaClass": "com.untangle.app.reports.SqlCondition",
+                        "column": "c2p_bytes",
+                        "operator": "=",
+                        "value": "not-a-number",
+                        "autoFormatValue": True,
+                    }],
+                    "enabled": True,
+                    "readOnly": False,
+                    "displayOrder": 99999,
+                },
+                "valid value",
+            ),
+            (
+                "invalid-expression",
+                {
+                    "javaClass": "com.untangle.app.reports.ReportEntry",
+                    "uniqueId": f"unt05-validation-expression-{int(time.time())}",
+                    "title": "UNT-05 invalid expression",
+                    "category": "QA",
+                    "type": "TEXT",
+                    "table": "sessions",
+                    "textColumns": ["bogus_func(nonexistent_col)"],
+                    "conditions": [],
+                    "enabled": True,
+                    "readOnly": False,
+                    "displayOrder": 99999,
+                },
+                "invalid expression",
+            ),
+        ]
+
+        for label, entry, expected_message in invalid_entries:
+            persisted_before = reports_manager.getReportEntry(entry["uniqueId"])
+            assert persisted_before is None, f"Test entry already exists: {entry['uniqueId']}"
+
+            exception = None
+            try:
+                reports_manager.saveReportEntry(entry)
+            except Exception as caught:
+                exception = caught
+
+            try:
+                assert exception is not None, f"Invalid {label} was saved unexpectedly"
+                rpc_error = getattr(exception, "error", None)
+                if isinstance(rpc_error, dict):
+                    error_message = rpc_error.get("msg", "")
+                else:
+                    error_message = str(exception)
+                assert expected_message in error_message.lower(), \
+                    f"Unexpected {label} error: {rpc_error or exception}"
+                persisted_after = reports_manager.getReportEntry(entry["uniqueId"])
+                assert persisted_after is None, f"Invalid {label} was persisted"
+            finally:
+                # Defensive cleanup if a failed assertion or an unexpected save
+                # leaves the test entry behind.
+                if reports_manager.getReportEntry(entry["uniqueId"]) is not None:
+                    reports_manager.removeReportEntry(entry)
+
     def test_210_unt05_sqli_pg_read_file_blocked(self):
         """
         UNT-05 security: pg_read_file() injection via textColumns must be blocked

@@ -112,6 +112,14 @@ public class MetricManagerImpl implements MetricManager
     }
 
     /**
+     * Get metrics and stats in V2 format
+     * @return Metrics and stats
+     */
+    public org.json.JSONObject getMetricsAndStatsV2() {
+        return this.getMetricsAndStats();
+    }
+
+    /**
      * Get stats
      * 
      * @return Stats

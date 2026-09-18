@@ -2,15 +2,15 @@ Ext.define('Ung.apps.virusblocker.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-virus-blocker',
 
-    control: {
-        '#': {
-            afterrender: 'getSettings',
-        },
-        '#advanced': {
-            activate: Ung.controller.Global.onSubtabActivate,
-            beforetabchange: Ung.controller.Global.onBeforeSubtabChange
-        }
-    },
+    // control: {
+    //     '#': {
+    //         afterrender: 'getSettings',
+    //     },
+    //     '#advanced': {
+    //         activate: Ung.controller.Global.onSubtabActivate,
+    //         beforetabchange: Ung.controller.Global.onBeforeSubtabChange
+    //     }
+    // },
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();

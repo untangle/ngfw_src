@@ -62,6 +62,17 @@ public class RadiusManagerImpl
     }
     
     /**
+     * Test Radius settings against server (V2 API).
+     * @param newSettings  Directory connector settings.
+     * @param username  Username to try
+     * @param password  Password to try.
+     * @return Result of connection attempt.
+     */
+    public String getRadiusStatusForSettingsV2( DirectoryConnectorSettings newSettings, String username, String password ) {
+        return this.getRadiusStatusForSettings(newSettings, username, password);
+    }
+
+    /**
      * Test Radius settings against server
      *
      * @param newSettings  Directory connector settings.

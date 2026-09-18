@@ -5,14 +5,7 @@
 <link href="/images/favicon-captive-portal.png" type="image/png" rel="icon">
 
 <title>$.CompanyName.$ | $.PageTitle.$</title>
-<style type="text/css">
-/* <![CDATA[ */
-@import url(/images/base.css);
-/* ]]> */
-input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0px 1000px white inset;
-}
-</style>
+<link rel="stylesheet" href="/capture/captive.css">
 
 <script language="javascript">
    var authConfig = { isEnabled : $.GOOGLEAUTH.$ } ;
@@ -28,30 +21,36 @@ input:-webkit-autofill {
 </head>
 <body>
 
-<header>
-    <img src="/images/BrandingLogo.png" style="max-width: 300px; max-height: 48px;"><br/>
-    <h1 style="letter-spacing: normal; color: #CCC; font-weight: bold;">$.PageTitle.$</h1>
-</header>
+<div class="form-login">
+    <header>
+        <img src="/images/BrandingLogo.png" alt="">
+        <h1>$.PageTitle.$</h1>
+    </header>
+    <div class="cp-content">
+        <h2>$.WelcomeText.$</h2>
+        <p id="connect-message" class="cp-message">$.MessageText.$</p>
+        <form autocomplete="off" method="post" action="/capture/handler.py/authpost">
+            <input name="method" id="method" type="hidden" value="$.method.$" />
+            <input name="nonce" id="nonce" type="hidden" value="$.nonce.$" />
+            <input name="appid" id="appid" type="hidden" value="$.appid.$" />
+            <input name="host" id="host" type="hidden" value="$.host.$" />
+            <input name="uri" id="uri" type="hidden" value="$.uri.$" />
 
-<div class="form-login" style="padding: 15px;">
-    <h2>$.WelcomeText.$</h2>
-    <p style="id="connect-message" ; text-align: center; font-weight: bold; margin: 20px 0;">$.MessageText.$</p>
-    <form autocomplete="off" method="post" action="/capture/handler.py/authpost">
-        <input name="method" id="method" type="hidden" value="$.method.$" />
-        <input name="nonce" id="nonce" type="hidden" value="$.nonce.$" />
-        <input name="appid" id="appid" type="hidden" value="$.appid.$" />
-        <input name="host" id="host" type="hidden" value="$.host.$" />
-        <input name="uri" id="uri" type="hidden" value="$.uri.$" />
+            <p class="cp-error" style="color: red">$.ProblemText.$</p>
 
-        <p style="text-align: center; color: red; font-size: 11px; margin: 0; line-height: 30px;">$.ProblemText.$</p>
+            <div class="input-wrapper">
+                <i class="input-icon input-icon-user" aria-hidden="true"></i>
+                <input id="username" type="text" name="username" autocapitalize="off" placeholder="$.UserLabel.$"/>
+            </div>
+            <div class="input-wrapper">
+                <i class="input-icon input-icon-lock" aria-hidden="true"></i>
+                <input id="password" type="password" name="password" autocomplete="off" placeholder="$.PassLabel.$"/>
+            </div>
 
-        <input id="username" type="text" name="username" autocapitalize="off" placeholder="$.UserLabel.$"/>
-        <input id="password" type="password" name="password" autocomplete="off" placeholder="$.PassLabel.$"/>
-
-        <button id="submit" type="submit" name="submit" title="Login">Log In</button>
-        <br/><br/>
-    </form>
-    <p style="text-align: center; font-size: 11px; line-height: normal;">$.FooterText.$</p>
+            <button id="submit" type="submit" name="submit" title="Login">Log In</button>
+        </form>
+        <p>$.FooterText.$</p>
+    </div>
 </div>
 <!--DEBUG-->
 </body>
