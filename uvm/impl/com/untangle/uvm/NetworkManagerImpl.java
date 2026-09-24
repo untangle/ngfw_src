@@ -45,7 +45,6 @@ import com.untangle.uvm.network.generic.InterfaceStatusGeneric;
 import com.untangle.uvm.network.generic.NetworkSettingsGeneric;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.util.ObjectMatcher;
-import com.untangle.uvm.util.StringUtil;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -675,7 +674,6 @@ public class NetworkManagerImpl implements NetworkManager
         status.setWan(intf.getIsWan());
         status.setInterfaceId(intf.getInterfaceId());
         populateTransferStats(status, intf);
-        populateMacVendor(status, intf);
         populateIpAddresses(status, intf);
         populateConnectionStatus(status, intf, deviceStatusList);
         populateGatewayAndDns(status, intf);
@@ -712,32 +710,6 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /** 
-     * Adds vendor name based on MAC address to the InterfaceStatusGeneric object. 
-     * @param status InterfaceStatusGeneric
-     * @param intf InterfaceSettings
-     */
-    private void populateMacVendor(InterfaceStatusGeneric status, InterfaceSettings intf) {
-        try {
-            String vendor = null;
-            if(status.getMacAddress() != null) {
-                if (cachedMacAddrVendorList.containsKey(status.getMacAddress())) {
-                    vendor = cachedMacAddrVendorList.get(status.getMacAddress());
-                } else {
-                    vendor = UvmContextFactory.context()
-                                .deviceTable()
-                                .getMacVendorFromMacAddress(status.getMacAddress());
-                    if (!StringUtil.isEmpty(vendor)) {
-                        cachedMacAddrVendorList.put(status.getMacAddress(), vendor);
-                    }
-                }
-            }
-            status.setMacVendor(vendor);
-        } catch (Exception e) {
-            logger.warn("Unable to populate MAC vendor for interface {}", intf.getInterfaceId(), e);
-        }
-    }
-
-    /** 
      * Populates IPv4 and IPv6 addresses for the interface 
      * in InterfaceStatusGeneric using Status - INTERFACE_IP_ADDRESSES. 
      * @param status InterfaceStatusGeneric
@@ -770,7 +742,7 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /** 
-     * Populates connection state (connected/offline), duplex, and speed. 
+     * Populates connection state (connected/offline), duplex, speed, and hardware vendor.
      * @param status InterfaceStatusGeneric
      * @param intf InterfaceSettings
      * @param deviceStatusList List<DeviceStatus>
@@ -786,6 +758,8 @@ public class NetworkManagerImpl implements NetworkManager
                     status.setConnected(isConnected);
                     status.setOffline(!isConnected);
                     status.setEthSpeed(ds.getMbit());
+                    // The API field name is retained, but interface vendor is the local PCI/USB hardware vendor.
+                    status.setMacVendor(ds.getVendor());
 
                     if (duplex == DuplexStatus.FULL_DUPLEX) status.setEthDuplex("full");
                     else if(duplex == DuplexStatus.HALF_DUPLEX) status.setEthDuplex("half");
