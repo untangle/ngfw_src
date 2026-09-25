@@ -365,6 +365,12 @@ public class ConntrackMonitorImpl
                             else logger.debug("Failed to remove session from deadTcpSessions: " + state.tuple);
                         }
                     }
+                    if (state.tuple != null && state.tuple.getProtocol() == 17) {
+                        SessionGlobalState session = SessionTableImpl.getInstance().remove(state.sessionId);
+                        if (session != null && logger.isDebugEnabled()) {
+                            logger.debug("Removed stale UDP session from session table: " + state.sessionId);
+                        }
+                    }
                 }
 
                 /**
