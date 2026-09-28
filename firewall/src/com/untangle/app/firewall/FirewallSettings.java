@@ -10,6 +10,8 @@ import java.util.List;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.untangle.app.firewall.generic.FirewallSettingsGeneric;
+
 /**
  * Settings for the Firewall app.
  */
@@ -39,5 +41,18 @@ public class FirewallSettings implements Serializable, JSONString
     {
         JSONObject jO = new JSONObject(this);
         return jO.toString();
+    }
+
+    /**
+     * Transforms this V1 FirewallSettings into the generic V2 representation
+     * for the Vue UI. Used by getSettingsV2().
+     *
+     * @return FirewallSettingsGeneric populated from this V1 object
+     */
+    public FirewallSettingsGeneric transformFirewallSettingsToGeneric()
+    {
+        FirewallSettingsGeneric g = new FirewallSettingsGeneric();
+        g.setFirewall_rules(FirewallRule.transformFirewallRulesToGeneric(this.rules));
+        return g;
     }
 }

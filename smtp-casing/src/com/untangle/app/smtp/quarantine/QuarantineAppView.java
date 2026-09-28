@@ -3,7 +3,10 @@
  */
 package com.untangle.app.smtp.quarantine;
 
+import org.json.JSONObject;
+
 import java.io.File;
+import java.util.List;
 
 import javax.mail.internet.InternetAddress;
 
@@ -29,6 +32,20 @@ public interface QuarantineAppView
      * @return true if the mail was quarantined.
      */
     public boolean quarantineMail(File file, MailSummary summary, InternetAddress... recipients);
+
+    // --QuarantineManipulation--
+
+    JSONObject listInboxesV2() throws QuarantineUserActionFailedException;
+
+    // --QuarantineManipulation--
+    InboxIndex purgeV2(String account, String... doomedMails) throws NoSuchInboxException,
+            QuarantineUserActionFailedException;
+
+    InboxIndex rescueV2(String account, String... rescuedMails) throws NoSuchInboxException,
+            QuarantineUserActionFailedException;
+
+    List<InboxRecord> getInboxRecordsV2(String account) throws NoSuchInboxException,
+            QuarantineUserActionFailedException;
 
     /**
      * Generate token.

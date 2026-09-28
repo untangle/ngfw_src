@@ -22,9 +22,11 @@ import java.io.FileOutputStream;
 import java.io.BufferedReader;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.app.captive_portal.generic.CaptivePortalSettingsGeneric;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.HookCallback;
 import com.untangle.uvm.OAuthDomain;
@@ -176,11 +178,47 @@ public class CaptivePortalApp extends AppBase
     }
 
     /**
+     * Get the settings in V2 (generic) format for the Vue UI.
+     *
+     * @return CaptivePortalSettingsGeneric
+     */
+    public CaptivePortalSettingsGeneric getSettingsV2()
+    {
+        if (this.captureSettings != null)
+            return this.captureSettings.transformCaptivePortalSettingsToGeneric();
+        return new CaptivePortalSettingsGeneric();
+    }
+
+    /**
+     * Set the settings from a V2 (generic) format payload coming from the Vue UI.
+     * Deep-clones the current V1 settings so V1-only fields (secretKey, binaryKey,
+     * customFileName, deprecated checkServerCertificate handling, etc.) are preserved.
+     *
+     * @param newSettings CaptivePortalSettingsGeneric
+     */
+    public void setSettingsV2(CaptivePortalSettingsGeneric newSettings)
+    {
+        if (this.captureSettings != null) {
+            CaptivePortalSettings cloned = SerializationUtils.clone(this.captureSettings);
+            newSettings.transformGenericToCaptivePortalSettings(cloned);
+            setSettings(cloned);  // existing V1 setter handles save, validation, and session cleanup
+        }
+    }
+
+    /**
      * @return A list of active captive portal users
      */
     public ArrayList<CaptivePortalUserEntry> getActiveUsers()
     {
         return (captureUserTable.buildUserList());
+    }
+
+    /**
+     * Get a list of active captive portal users V2 format for Vue UI
+     * @return A list of active captive portal users
+     */
+    public ArrayList<CaptivePortalUserEntry> getActiveUsersV2() {
+        return this.getActiveUsers();
     }
 
     /**

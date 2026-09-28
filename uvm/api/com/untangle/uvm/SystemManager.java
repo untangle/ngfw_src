@@ -33,6 +33,8 @@ public interface SystemManager
 
     void setSystemSettingsV2(SystemSettingsGeneric systemSettingsGeneric);
 
+    void setSystemSettingsV2(SystemSettingsGeneric settings, boolean dirtyRadiusFields);
+
     /**
      * Returns the time zone that the UVM is currently set to
      */
