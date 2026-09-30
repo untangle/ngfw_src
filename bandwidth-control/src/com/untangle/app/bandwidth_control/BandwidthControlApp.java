@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.net.InetAddress;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import com.untangle.app.bandwidth_control.generic.BandwidthControlSettingsGeneric;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.HookCallback;
@@ -194,6 +196,34 @@ public class BandwidthControlApp extends AppBase
     public void setSettings( BandwidthControlSettings newSettings )
     {
         this._setSettings(newSettings, true);
+    }
+
+    /**
+     * Get the settings in V2 (generic) format for the Vue UI.
+     *
+     * @return BandwidthControlSettingsGeneric
+     */
+    public BandwidthControlSettingsGeneric getSettingsV2()
+    {
+        if (this.settings != null)
+            return this.settings.transformBandwidthControlSettingsToGeneric();
+        return new BandwidthControlSettingsGeneric();
+    }
+
+    /**
+     * Set the settings from a V2 (generic) format payload coming from the Vue UI.
+     * Deep-clones the current V1 settings so V1-only fields such as
+     * settingsVersion are preserved.
+     *
+     * @param newSettings BandwidthControlSettingsGeneric
+     */
+    public void setSettingsV2(BandwidthControlSettingsGeneric newSettings)
+    {
+        if (this.settings != null) {
+            BandwidthControlSettings cloned = SerializationUtils.clone(this.settings);
+            newSettings.transformGenericToBandwidthControlSettings(cloned);
+            this.setSettings(cloned);
+        }
     }
 
     /**
