@@ -27,7 +27,7 @@ WG_LOCAL_CONFIG = overrides.get("WG_LOCAL_CONFIG", default=
                         ('10.112.13.168','192.168.10.0/24',"0NSthc3aJ0Rsh+h6GQwX+5lA449vIhX9lk4XNy4K6kk=","10.133.201.1/24"), # ATS Dynamics
                         ('10.112.56.89','172.16.54.0/24',"sGy3LyIUAKMxjJYQNyppBuJw9ibqCcvdOoOrUT0BQGE=","10.133.202.1/24"),  # QA 3 Bridged
                         ('10.112.56.57','192.168.10.0/24',"sBgaDBcvqmxAdJJrVJB1FoK8VyxpAF5KyRrBdox0yGo=","10.133.203.1/24"),  # QA box .57
-                        ('10.112.56.180','192.168.10.0/24',"cNTKmsfqmQOj/Czwx2LgrToNkv00Y3zbf5G02dl7U1k=","10.133.207.1/24"),  # QA box .180
+                        ('10.112.56.180','192.168.10.0/24',"cNTKmsfqmQOj/Czwx2LgrToNkv00Y3zbf5G02dl7U1k=","10.133.207.1/24"),  # QA box .180
                         ('10.112.56.58','192.168.10.0/24',"OFuDMenzEmR87trbLa+nF0akxPBfeXBbEohKX94dlHg=","10.133.204.1/24"),  # QA box .58
                         ('10.112.56.59','192.168.10.0/24',"AB7CXs0VSiu4FhJZuW8f18oIKQ5T583/W66aHruwyWY=","10.133.205.1/24"), # QA box .59
                         ('172.17.18.3','192.168.10.0/24 ',"kEEvdr5X3oePByJuuDSWFpKtu/sXzAdHUl5oDVAaxW4=","10.133.206.1/24") #PPPOE server
