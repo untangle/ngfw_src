@@ -21,7 +21,7 @@ from datetime import datetime
 # IPSec Configuration
 L2TP_SERVER_HOSTS = overrides.get("L2TP_SERVER_HOSTS", default=
     ["10.112.56.61","10.112.56.49","10.112.56.89","10.112.11.53","10.112.0.134",
-    "10.112.56.91","10.112.56.94","10.112.56.57","10.112.56.58","10.112.56.59"]
+    "10.112.56.91","10.112.56.94","10.112.56.57","10.112.56.58","10.112.56.59","10.112.56.180"]
 )
 L2TP_CLIENT_HOST = overrides.get("L2TP_CLIENT_HOST", default="10.112.12.155")  # Windows 10 using builtin OpenSSH
 L2TP_ALIAS_IP = overrides.get("L2TP_ALIAS_IP", default="10.112.56.200")
