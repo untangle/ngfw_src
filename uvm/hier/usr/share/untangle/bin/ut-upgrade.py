@@ -248,9 +248,16 @@ def is_bookworm_upgrade():
     try:
         result = subprocess.run(["/usr/sbin/nft", "list", "tables"],
                                 capture_output=True, text=True, timeout=5)
-        if "inet tune" not in result.stdout or "bridge broute" not in result.stdout:
+        if "inet tune" not in result.stdout:
             log("Bookworm post-upgrade fixups needed: nft tables incomplete on kernel %s" % running_kernel)
             return True
+        # bridge broute may be nft or ebtables-legacy (trixie uses legacy for redirect support)
+        if "bridge broute" not in result.stdout:
+            ebt_result = subprocess.run(["/sbin/ebtables-legacy", "-t", "broute", "-L"],
+                                        capture_output=True, text=True, timeout=5)
+            if "redirect" not in ebt_result.stdout:
+                log("Bookworm post-upgrade fixups needed: broute missing on kernel %s" % running_kernel)
+                return True
     except:
         pass
 
@@ -333,6 +340,11 @@ def post_upgrade_fixups():
     cmd_to_log("ip link add ifb0 type ifb 2>/dev/null || true")
     cmd_to_log("ip link set ifb0 up 2>/dev/null || true")
 
+    # Undo NGFW-12900 iptables-legacy override before regenerating rules
+    log("Post-upgrade: ensuring iptables-nft is the active alternative")
+    cmd_to_log("update-alternatives --auto iptables 2>/dev/null || true")
+    cmd_to_log("update-alternatives --auto ip6tables 2>/dev/null || true")
+
     # Regenerate all network rules (iptables, nftables bridge/broute/tune)
     log("Post-upgrade: running sync-settings to regenerate rules")
     cmd_to_log("sync-settings || true")
@@ -344,11 +356,20 @@ def post_upgrade_fixups():
     # Check for required nft tables
     result = subprocess.run("nft list tables 2>/dev/null || true",
                             shell=True, capture_output=True, text=True)
-    for table in ["bridge broute", "bridge mangle", "inet tune"]:
+    for table in ["bridge mangle", "inet tune"]:
         if table in result.stdout:
             log("Post-upgrade: OK - %s present" % table)
         else:
             log("Post-upgrade: WARNING - %s missing" % table)
+    if "bridge broute" in result.stdout:
+        log("Post-upgrade: OK - bridge broute present (nft)")
+    else:
+        ebt_result = subprocess.run("/sbin/ebtables-legacy -t broute -L 2>/dev/null || true",
+                                    shell=True, capture_output=True, text=True)
+        if "redirect" in ebt_result.stdout:
+            log("Post-upgrade: OK - bridge broute present (ebtables-legacy)")
+        else:
+            log("Post-upgrade: WARNING - bridge broute missing")
 
     # Flag that reboot is needed if still on old kernel
     running_kernel = platform.release()
@@ -449,9 +470,20 @@ def is_trixie_upgrade():
     try:
         result = subprocess.run(["/usr/sbin/nft", "list", "tables"],
                                 capture_output=True, text=True, timeout=5)
-        if "inet tune" not in result.stdout or "bridge broute" not in result.stdout:
+        if "inet tune" not in result.stdout:
             log("Trixie post-upgrade fixups needed: nft tables incomplete despite flag on kernel %s" % running_kernel)
             return True
+        # bridge broute may be nft or ebtables-legacy (trixie uses legacy for redirect support)
+        if "bridge broute" not in result.stdout:
+            try:
+                ebt_result = subprocess.run(["/sbin/ebtables-legacy", "-t", "broute", "-L"],
+                                            capture_output=True, text=True, timeout=5)
+                if "redirect" not in ebt_result.stdout:
+                    log("Trixie post-upgrade fixups needed: broute missing despite flag on kernel %s" % running_kernel)
+                    return True
+            except:
+                log("Trixie post-upgrade fixups needed: broute missing despite flag on kernel %s" % running_kernel)
+                return True
     except:
         pass
 
@@ -543,6 +575,10 @@ def post_upgrade_fixups_trixie():
     cmd_to_log("ip link add ifb0 type ifb 2>/dev/null || true")
     cmd_to_log("ip link set ifb0 up 2>/dev/null || true")
 
+    log("Post-upgrade: ensuring iptables-nft is the active alternative")
+    cmd_to_log("update-alternatives --auto iptables 2>/dev/null || true")
+    cmd_to_log("update-alternatives --auto ip6tables 2>/dev/null || true")
+
     log("Post-upgrade: regenerating runtime configs via sync-settings")
     cmd_to_log("sync-settings || true")
 
@@ -555,11 +591,21 @@ def post_upgrade_fixups_trixie():
     # bullseye->trixie nftables-not-installed regression (2026-05-26).
     result = subprocess.run("nft list tables 2>/dev/null || true",
                             shell=True, capture_output=True, text=True)
-    for table in ["bridge broute", "bridge mangle", "inet tune"]:
+    for table in ["bridge mangle", "inet tune"]:
         if table in result.stdout:
             log("Post-upgrade: OK - %s present" % table)
         else:
             log("Post-upgrade: WARNING - %s missing" % table)
+    # bridge broute may be nft or ebtables-legacy (redirect target not in nf_tables)
+    if "bridge broute" in result.stdout:
+        log("Post-upgrade: OK - bridge broute present (nft)")
+    else:
+        ebt_result = subprocess.run("/sbin/ebtables-legacy -t broute -L 2>/dev/null || true",
+                                    shell=True, capture_output=True, text=True)
+        if "redirect" in ebt_result.stdout:
+            log("Post-upgrade: OK - bridge broute present (ebtables-legacy)")
+        else:
+            log("Post-upgrade: WARNING - bridge broute missing")
 
     log("Post-upgrade: refreshing PG collation metadata (glibc 2.36 -> 2.41 on trixie changes collation version)")
     # Ensure PostgreSQL is up before REFRESH. dpkg --configure / sync-settings can transition
