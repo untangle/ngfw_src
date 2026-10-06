@@ -77,8 +77,8 @@ public class BandwidthControlRuleGeneric implements JSONString, Serializable {
             actionGen.setType(BandwidthControlActionGeneric.fromActionType(v1Action.getActionType()));
             actionGen.setPriority(v1Action.getPriority());
             actionGen.setTagName(v1Action.getTagName());
-            actionGen.setTagTimeSec(v1Action.getTagTime());
-            actionGen.setQuotaTimeSec(v1Action.getQuotaTime());
+            actionGen.setTagTime(v1Action.getTagTime());
+            actionGen.setQuotaTime(v1Action.getQuotaTime());
             actionGen.setQuotaBytes(v1Action.getQuotaBytes());
             g.setAction(actionGen);
         }
@@ -137,8 +137,8 @@ public class BandwidthControlRuleGeneric implements JSONString, Serializable {
             if (actionType != null) action.setActionType(actionType);
             if (g.getAction().getPriority() != null) action.setPriority(g.getAction().getPriority());
             if (g.getAction().getTagName() != null) action.setTagName(g.getAction().getTagName());
-            if (g.getAction().getTagTimeSec() != null) action.setTagTime(g.getAction().getTagTimeSec());
-            if (g.getAction().getQuotaTimeSec() != null) action.setQuotaTime(g.getAction().getQuotaTimeSec());
+            if (g.getAction().getTagTime() != null) action.setTagTime(g.getAction().getTagTime());
+            if (g.getAction().getQuotaTime() != null) action.setQuotaTime(g.getAction().getQuotaTime());
             if (g.getAction().getQuotaBytes() != null) action.setQuotaBytes(g.getAction().getQuotaBytes());
             existing.setAction(action);
         }

@@ -21,8 +21,8 @@ public class BandwidthControlActionGeneric implements JSONString, Serializable {
     private Type type;
     private Integer priority;
     private String tagName;
-    private Integer tagTimeSec;
-    private Integer quotaTimeSec;
+    private Integer tagTime;
+    private Integer quotaTime;
     private Long quotaBytes;
 
     public Type getType() { return type; }
@@ -34,11 +34,11 @@ public class BandwidthControlActionGeneric implements JSONString, Serializable {
     public String getTagName() { return tagName; }
     public void setTagName(String tagName) { this.tagName = tagName; }
 
-    public Integer getTagTimeSec() { return tagTimeSec; }
-    public void setTagTimeSec(Integer tagTimeSec) { this.tagTimeSec = tagTimeSec; }
+    public Integer getTagTime() { return tagTime; }
+    public void setTagTime(Integer tagTime) { this.tagTime = tagTime; }
 
-    public Integer getQuotaTimeSec() { return quotaTimeSec; }
-    public void setQuotaTimeSec(Integer quotaTimeSec) { this.quotaTimeSec = quotaTimeSec; }
+    public Integer getQuotaTime() { return quotaTime; }
+    public void setQuotaTime(Integer quotaTime) { this.quotaTime = quotaTime; }
 
     public Long getQuotaBytes() { return quotaBytes; }
     public void setQuotaBytes(Long quotaBytes) { this.quotaBytes = quotaBytes; }
