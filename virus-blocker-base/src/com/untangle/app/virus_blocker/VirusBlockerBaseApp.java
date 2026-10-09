@@ -178,6 +178,15 @@ public abstract class VirusBlockerBaseApp extends AppBase
     }
 
     /**
+     * Get the application settings in v2 format
+     *
+     * @return The application settings
+     */
+    public VirusSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
      * Set the application settings
      *
      * @param newSettings
@@ -187,6 +196,16 @@ public abstract class VirusBlockerBaseApp extends AppBase
     {
         // NGFW-15881: ScoutIQ cloud scan is deprecated; force-disable regardless of caller input.
         newSettings.setEnableCloudScan(false);
+        _setSettings(newSettings);
+    }
+
+    /**
+     * Set the application settings from v2 format
+     *
+     * @param newSettings
+     *        The new settings
+     */
+    public void setSettingsV2(VirusSettings newSettings) {
         _setSettings(newSettings);
     }
 

@@ -1,22 +1,35 @@
 Ext.define('Ung.apps.captive-portal.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-captive-portal',
-    controller: 'app-captive-portal',
 
     viewModel: {
-        stores: {
-            captureRules: { data: '{settings.captureRules.list}' },
-            passedClients: { data: '{settings.passedClients.list}' },
-            passedServers: { data: '{settings.passedServers.list}' }
+        data: {
+            title: 'Captive Portal'.t(),
+            iconName: 'captive-portal',
+            vueMigrated: true
+        },
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var vm = panel.getViewModel();
+            var policyId = vm.get('policyId');
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/apps/' + policyId + '/captive-portal', false);
+
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'captive-portal',
+                enableRemoveHandler: true
+            });
+        },
+
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
         }
     },
 
     items: [
-        { xtype: 'app-captive-portal-status' },
-        { xtype: 'app-captive-portal-capturerules' },
-        { xtype: 'app-captive-portal-passedhosts' },
-        { xtype: 'app-captive-portal-captivepage' },
-        { xtype: 'app-captive-portal-userauthentication' }
+        Field.iframeHolder
     ]
 
 });

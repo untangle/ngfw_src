@@ -415,6 +415,18 @@ public class SafelistManager implements SafelistAdminView, SafelistAppView
     }
 
     /**
+     * Gets safelist counts for all available safelists.
+     *
+     * @return {@link ArrayList} of {@link SafelistCount}
+     * @throws NoSuchSafelistException if no safelist exists
+     * @throws SafelistActionFailedException if the safelist action fails
+     */
+    @Override
+    public ArrayList<SafelistCount> getUserSafelistCountsV2() throws NoSuchSafelistException, SafelistActionFailedException 
+    {
+        return new ArrayList<SafelistCount>(this.getUserSafelistCounts());
+    }
+    /**
      * Get safelist counts for all avalable safelists.
      *
      * @return List of SafeListAccount for all availabel safelists.

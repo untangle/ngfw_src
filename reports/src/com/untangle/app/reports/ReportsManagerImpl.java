@@ -6,6 +6,7 @@ package com.untangle.app.reports;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
@@ -94,6 +97,38 @@ public class ReportsManagerImpl implements ReportsManager
     private static final Set<String> BLOCKED_IDENTIFIERS = new HashSet<>(
         java.util.Arrays.asList("dblink", "current_setting", "set_config", "chr")
     );
+
+    /** Operators used by save-time condition validation. */
+    private enum ConditionOperator {
+        EQUALS("="), NOT_EQUALS("!="), LESS_THAN("<"), GREATER_THAN(">"),
+        LESS_THAN_OR_EQUALS("<="), GREATER_THAN_OR_EQUALS(">="),
+        BETWEEN("between"), LIKE("like"), NOT_LIKE("not like"),
+        IS("is"), IS_NOT("is not"), IN("in"), NOT_IN("not in");
+
+        private final String value;
+
+        /**
+         * Create a condition operator with its wire-format value.
+         *
+         * @param value operator string as received from JSON.
+         */
+        ConditionOperator(String value) { this.value = value; }
+
+        /**
+         * Convert the wire-format operator to its internal representation.
+         *
+         * @param value operator received from the report definition.
+         * @return matching operator, or null for an unrecognized value.
+         */
+        static ConditionOperator from(String value)
+        {
+            if (value == null) return null;
+            for (ConditionOperator operator : values()) {
+                if (operator.value.equalsIgnoreCase(value)) return operator;
+            }
+            return null;
+        }
+    }
 
     /**
      * Initialize reports manager
@@ -185,6 +220,14 @@ public class ReportsManagerImpl implements ReportsManager
         Collections.sort( allReportEntries, new ReportEntryDisplayOrderComparator() );
 
         return allReportEntries;
+    }
+
+    /** 
+     * Get all report entries in v2 format.
+     * @return List<ReportEntry> List of all ReportEntry objects.
+     */
+    public List<ReportEntry> getReportEntriesV2() {
+        return getReportEntries();
     }
 
     /** 
@@ -401,6 +444,8 @@ public class ReportsManagerImpl implements ReportsManager
             throw new RuntimeException("Invalid Entry unique ID: " + uniqueId );
         }
 
+        validateReportEntryForSave( entry );
+
         for ( ReportEntry e : reportEntries ) {
             if ( uniqueId.equals( e.getUniqueId() ) ) {
                 found = true;
@@ -493,7 +538,7 @@ public class ReportsManagerImpl implements ReportsManager
         }
         PreparedStatement statement = null;
         try{
-            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType);
+            statement = entry.toSql( conn, startDate, endDate, extraSelects, extraConditions, fromType, limit );
         } catch ( Exception e) {
             logger.info("getDataForReportEntry: "+ e);
             return null;
@@ -536,6 +581,418 @@ public class ReportsManagerImpl implements ReportsManager
     public List<JSONObject> getDataForReportEntry( ReportEntry entry, final Date startDate, final Date endDate, final int limit )
     {
         return getDataForReportEntry( entry, startDate, endDate, null, null, null, limit );
+    }
+
+    /**
+     * Executes a report data query and returns a type-aware chart payload.
+     *
+     * @param entry
+     *  ReportEntry to query.
+     * @param startDate
+     *  Start date of query.
+     * @param endDate
+     *  End date of query.
+     * @param extraSelects
+     *  Additional SELECT expressions, or null.
+     * @param extraConditions
+     *  Additional SQL conditions, or null.
+     * @param fromType
+     *  Table source override; if null the entry's own table is used.
+     * @param limit
+     *  Maximum number of results; -1 for unlimited.
+     * @return
+     *  Type-aware chart payload as a JSONObject.
+     */
+    public JSONObject getDataForReportEntryV2( ReportEntry entry, final Date startDate, final Date endDate, String[] extraSelects, SqlCondition[] extraConditions, SqlFrom fromType, final int limit )
+    {
+        List<JSONObject> rows = getDataForReportEntry( entry, startDate, endDate, extraSelects, extraConditions, fromType, limit );
+        ReportEntry.ReportEntryType type = entry.getType();
+
+        switch ( type ) {
+            case TIME_GRAPH:
+            case TIME_GRAPH_DYNAMIC:
+            case PIE_GRAPH:
+                return buildChartData( entry, rows );
+            case TEXT:
+                if ( rows != null && !rows.isEmpty() ) {
+                    return buildTextSubstitution( entry, rows.get( 0 ) );
+                }
+                JSONObject empty = new JSONObject();
+                try { empty.put( "text", "" ); } catch ( Exception ignored ) {}
+                return empty;
+            case EVENT_LIST:
+                return buildEventListData( entry, rows );
+            default:
+                JSONObject result = new JSONObject();
+                JSONArray list = new JSONArray();
+                if ( rows != null ) for ( JSONObject r : rows ) list.put( r );
+                try { result.put( "list", list ); } catch ( Exception e ) { logger.warn( "getDataForReportEntryV2: list wrap failed", e ); }
+                return result;
+        }
+    }
+
+    /**
+     * Routes chart-type entries to the appropriate series/slice builder.
+     *
+     * @param entry
+     *  Report entry describing type and query parameters.
+     * @param rows
+     *  Raw result rows returned by the SQL query.
+     * @return
+     *  JSONObject whose shape depends on entry type.
+     */
+    private JSONObject buildChartData( ReportEntry entry, List<JSONObject> rows )
+    {
+        try {
+            switch ( entry.getType() ) {
+                case TIME_GRAPH:         return buildTimeGraphSeries( entry, rows );
+                case TIME_GRAPH_DYNAMIC: return buildTimeGraphDynamicSeries( entry, rows );
+                case PIE_GRAPH:          return buildPieGraphSlices( entry, rows );
+                default:
+                    logger.warn( "buildChartData: unexpected type " + entry.getType() );
+                    JSONObject fb = new JSONObject();
+                    fb.put( "list", new JSONArray() );
+                    return fb;
+            }
+        } catch ( Exception e ) {
+            logger.warn( "buildChartData failed for: " + entry.getTitle(), e );
+            JSONObject err = new JSONObject();
+            try { err.put( "list", new JSONArray() ); } catch ( Exception ignored ) {}
+            return err;
+        }
+    }
+
+    /**
+     * Wraps raw EVENT_LIST rows in a JSON list for the Vue path only.
+     * Converts java.sql.Timestamp values to plain long ms so jabsorb does not
+     * re-wrap them as { javaClass, time } objects on the wire.
+     *
+     * @param entry
+     *  Report entry describing the EVENT_LIST query.
+     * @param rows
+     *  Raw result rows returned by the SQL query.
+     * @return
+     *  JSONObject with a "list" array of timestamp-normalized rows.
+     */
+    private JSONObject buildEventListData( ReportEntry entry, List<JSONObject> rows )
+    {
+        JSONObject result = new JSONObject();
+        JSONArray list = new JSONArray();
+        if ( rows != null ) {
+            for ( JSONObject row : rows )
+                list.put( normalizeTimestampsInRow( row ) );
+        }
+        try { result.put( "list", list ); } catch ( Exception e ) {
+            logger.warn( "buildEventListData: list wrap failed", e );
+        }
+        return result;
+    }
+
+    /**
+     * Replaces java.sql.Timestamp and java.util.Date values in a row JSONObject
+     * with their getTime() long (epoch ms), preventing jabsorb from wrapping them
+     * as { javaClass, time } objects at serialization time.
+     *
+     * @param row
+     *  Single result row to normalize.
+     * @return
+     *  New JSONObject with timestamp fields replaced by epoch millisecond longs.
+     */
+    private JSONObject normalizeTimestampsInRow( JSONObject row )
+    {
+        if ( row == null ) return new JSONObject();
+        String[] names = JSONObject.getNames( row );
+        if ( names == null ) return row;
+        JSONObject out = new JSONObject();
+        for ( String key : names ) {
+            Object val = row.opt( key );
+            try {
+                if ( val instanceof java.sql.Timestamp )
+                    out.put( key, ( (java.sql.Timestamp) val ).getTime() );
+                else if ( val instanceof java.util.Date )
+                    out.put( key, ( (java.util.Date) val ).getTime() );
+                else
+                    out.put( key, val );
+            } catch ( Exception ignored ) {}
+        }
+        return out;
+    }
+
+    /**
+     * Builds pre-pivoted time-series data for TIME_GRAPH entries.
+     * The alias is the last whitespace-separated token of each timeDataColumns SQL expression
+     * (e.g. "count(*) as total" -> "total") and is used as both the series key and label.
+     *
+     * @param entry
+     *  Report entry providing timeDataColumns configuration.
+     * @param rows
+     *  Raw result rows containing time_trunc and value columns.
+     * @return
+     *  JSONObject with a "series" array keyed by column alias.
+     * @throws Exception
+     *  If JSON construction fails.
+     */
+    private JSONObject buildTimeGraphSeries( ReportEntry entry, List<JSONObject> rows ) throws Exception
+    {
+        String[] timeDataColumns = entry.getTimeDataColumns();
+
+        String[] aliases = new String[ timeDataColumns.length ];
+        for ( int i = 0; i < timeDataColumns.length; i++ ) {
+            String[] parts = timeDataColumns[ i ].trim().split( "\\s+" );
+            aliases[ i ] = parts[ parts.length - 1 ];
+        }
+
+        Map<String, JSONObject> seriesMap = new LinkedHashMap<>();
+        for ( String alias : aliases ) {
+            JSONObject s = new JSONObject();
+            s.put( "key",   alias );
+            s.put( "label", alias );
+            s.put( "data",  new JSONArray() );
+            seriesMap.put( alias, s );
+        }
+
+        if ( rows != null ) {
+            for ( JSONObject row : rows ) {
+                long ms = extractTimeTruncMs( row );
+                for ( String alias : aliases ) {
+                    JSONObject s = seriesMap.get( alias );
+                    if ( s == null ) continue;
+                    Object val = row.opt( alias );
+                    double dval = ( val instanceof Number ) ? ((Number) val).doubleValue() : 0.0;
+                    JSONArray point = new JSONArray();
+                    point.put( ms );
+                    point.put( dval );
+                    s.getJSONArray( "data" ).put( point );
+                }
+            }
+        }
+
+        JSONArray seriesArray = new JSONArray();
+        for ( JSONObject s : seriesMap.values() ) seriesArray.put( s );
+
+        JSONObject result = new JSONObject();
+        result.put( "series", seriesArray );
+        return result;
+    }
+
+    /**
+     * Builds time-series data for TIME_GRAPH_DYNAMIC entries.
+     * Column keys are discovered from the result rows (every key except time_trunc)
+     * and resolved to display names via buildColumnNameMap.
+     *
+     * @param entry
+     *  Report entry providing column resolution hints.
+     * @param rows
+     *  Raw result rows containing time_trunc and dynamic value columns.
+     * @return
+     *  JSONObject with a "series" array keyed by resolved display name.
+     * @throws Exception
+     *  If JSON construction fails.
+     */
+    private JSONObject buildTimeGraphDynamicSeries( ReportEntry entry, List<JSONObject> rows ) throws Exception
+    {
+        Map<String, String> nameMap = buildColumnNameMap( entry );
+        Map<String, JSONObject> seriesMap = new LinkedHashMap<>();
+
+        if ( rows != null ) {
+            for ( JSONObject row : rows ) {
+                long ms = extractTimeTruncMs( row );
+                Iterator<String> keys = row.keys();
+                while ( keys.hasNext() ) {
+                    String key = keys.next();
+                    if ( "time_trunc".equals( key ) ) continue;
+
+                    if ( !seriesMap.containsKey( key ) ) {
+                        String label = nameMap.getOrDefault( key, key );
+                        JSONObject s = new JSONObject();
+                        s.put( "key",   key );
+                        s.put( "label", label );
+                        s.put( "data",  new JSONArray() );
+                        seriesMap.put( key, s );
+                    }
+
+                    Object val = row.opt( key );
+                    double dval = ( val instanceof Number ) ? ((Number) val).doubleValue() : 0.0;
+                    JSONArray point = new JSONArray();
+                    point.put( ms );
+                    point.put( dval );
+                    seriesMap.get( key ).getJSONArray( "data" ).put( point );
+                }
+            }
+        }
+
+        JSONArray seriesArray = new JSONArray();
+        for ( JSONObject s : seriesMap.values() ) seriesArray.put( s );
+
+        JSONObject result = new JSONObject();
+        result.put( "series", seriesArray );
+        return result;
+    }
+
+    /**
+     * Builds slice data for PIE_GRAPH entries.
+     * Rows beyond pieNumSlices are aggregated into a single "Others" slice.
+     * Rows must be ordered by value descending (the SQL query guarantees this).
+     *
+     * @param entry
+     *  Report entry providing pieGroupColumn and pieNumSlices.
+     * @param rows
+     *  Result rows ordered by value descending.
+     * @return
+     *  JSONObject with a "slices" array of {name, value} objects.
+     * @throws Exception
+     *  If JSON construction fails.
+     */
+    private JSONObject buildPieGraphSlices( ReportEntry entry, List<JSONObject> rows ) throws Exception
+    {
+        Map<String, String> nameMap = buildColumnNameMap( entry );
+        int numSlices    = entry.getPieNumSlices() != null ? entry.getPieNumSlices() : 10;
+        String groupCol  = entry.getPieGroupColumn();
+
+        JSONArray slicesArray = new JSONArray();
+        double othersTotal    = 0.0;
+        boolean hasOthers     = false;
+
+        if ( rows != null ) {
+            for ( int i = 0; i < rows.size(); i++ ) {
+                JSONObject row   = rows.get( i );
+                String rawKey    = row.optString( groupCol, "unknown" );
+                double value     = row.optDouble( "value", 0.0 );
+
+                if ( i < numSlices ) {
+                    String displayName = nameMap.getOrDefault( rawKey, rawKey );
+                    JSONObject slice   = new JSONObject();
+                    slice.put( "name",  displayName );
+                    slice.put( "value", value );
+                    slicesArray.put( slice );
+                } else {
+                    othersTotal += value;
+                    hasOthers    = true;
+                }
+            }
+        }
+
+        if ( hasOthers ) {
+            JSONObject others = new JSONObject();
+            others.put( "name",     "Others" );
+            others.put( "value",    othersTotal );
+            others.put( "isOthers", true );
+            slicesArray.put( others );
+        }
+
+        JSONObject result = new JSONObject();
+        result.put( "slices", slicesArray );
+        return result;
+    }
+
+    /**
+     * Builds a raw-key -> display-name map for well-known group columns.
+     * Handles interface_id (resolves to "eth0  [1]") and policy_id (resolves to "Default  [1]").
+     * Returns an empty map for any other column so callers fall back to the raw value.
+     *
+     * @param entry
+     *  Report entry whose group column determines the lookup type.
+     * @return
+     *  Map from raw key value to human-readable display name, or an empty map.
+     */
+    private Map<String, String> buildColumnNameMap( ReportEntry entry )
+    {
+        Map<String, String> nameMap = new HashMap<>();
+
+        String groupColumn = null;
+        switch ( entry.getType() ) {
+            case PIE_GRAPH:          groupColumn = entry.getPieGroupColumn();       break;
+            case TIME_GRAPH_DYNAMIC: groupColumn = entry.getTimeDataDynamicColumn(); break;
+            default: break;
+        }
+
+        if ( "interface_id".equals( groupColumn ) ) {
+            List<JSONObject> interfaces = getInterfacesInfo();
+            for ( JSONObject intf : interfaces ) {
+                try {
+                    String id   = String.valueOf( intf.getInt( "interfaceId" ) );
+                    String name = intf.getString( "name" ) + "  [" + id + "]";
+                    nameMap.put( id, name );
+                } catch ( Exception e ) {
+                    logger.warn( "buildColumnNameMap: interface entry error", e );
+                }
+            }
+        } else if ( "policy_id".equals( groupColumn ) ) {
+            ArrayList<JSONObject> policies = getPoliciesInfo();
+            if ( policies != null ) {
+                for ( JSONObject policy : policies ) {
+                    try {
+                        String id   = String.valueOf( policy.getInt( "policyId" ) );
+                        String name = policy.getString( "name" ) + "  [" + id + "]";
+                        nameMap.put( id, name );
+                    } catch ( Exception e ) {
+                        logger.warn( "buildColumnNameMap: policy entry error", e );
+                    }
+                }
+            }
+        }
+
+        return nameMap;
+    }
+
+    /**
+     * Substitutes {0}, {1}, ... placeholders in entry.textString with values from the first
+     * result row. Each alias is the last whitespace-separated token of the textColumns SQL
+     * expression (e.g. "count(*) as sessions" -> alias "sessions" fills placeholder {i}).
+     *
+     * @param entry
+     *  TEXT report entry providing textString and textColumns.
+     * @param row
+     *  First (and typically only) result row.
+     * @return
+     *  JSONObject with a single "text" key containing the substituted string.
+     */
+    private JSONObject buildTextSubstitution( ReportEntry entry, JSONObject row )
+    {
+        String text = entry.getTextString() != null ? entry.getTextString() : "";
+        String[] textColumns = entry.getTextColumns();
+
+        if ( textColumns != null ) {
+            for ( int i = 0; i < textColumns.length; i++ ) {
+                String[] parts = textColumns[i].trim().split( "\\s+" );
+                String alias = parts[ parts.length - 1 ];
+                Object val = row.opt( alias );
+                String replacement;
+                if ( val instanceof Number ) {
+                    double d = ((Number) val).doubleValue();
+                    replacement = ( d == Math.floor( d ) && !Double.isInfinite( d ) )
+                        ? String.valueOf( (long) d )
+                        : val.toString();
+                } else {
+                    replacement = ( val != null ) ? val.toString() : "0";
+                }
+                text = text.replace( "{" + i + "}", replacement );
+            }
+        }
+
+        JSONObject result = new JSONObject();
+        try { result.put( "text", text ); } catch ( Exception e ) {
+            logger.warn( "buildTextSubstitution: failed to build result", e );
+        }
+        return result;
+    }
+
+    /**
+     * Extracts time_trunc as epoch milliseconds. JDBC / jabsorb can produce a Timestamp,
+     * Long, or Integer depending on the driver and serialisation path.
+     *
+     * @param row
+     *  Single result row containing a "time_trunc" field.
+     * @return
+     *  time_trunc value as epoch milliseconds, or 0 if absent or unknown type.
+     */
+    private long extractTimeTruncMs( JSONObject row )
+    {
+        Object t = row.opt( "time_trunc" );
+        if ( t instanceof java.sql.Timestamp ) return ((java.sql.Timestamp) t).getTime();
+        if ( t instanceof Long )               return (Long) t;
+        if ( t instanceof Integer )            return ((Integer) t).longValue();
+        return 0L;
     }
 
     /**
@@ -1349,6 +1806,296 @@ public class ReportsManagerImpl implements ReportsManager
         if (entry.getConditions() != null) {
             validateConditions(entry.getConditions(), entry.getTable());
         }
+    }
+
+    /**
+     * Validate a report before saving it.
+     *
+     * @param entry report entry to validate.
+     */
+    private void validateReportEntryForSave(ReportEntry entry)
+    {
+        if (entry == null) {
+            throw new RuntimeException("Report entry is required");
+        }
+        if (StringUtils.isBlank(entry.getTable())) {
+            throw new RuntimeException("table is required");
+        }
+        if (entry.getType() == null) {
+            throw new RuntimeException("report type is required");
+        }
+
+        validateEntryStringFields(entry);
+        validateAggFunction(entry);
+
+        Connection conn = app == null ? null : app.getDbConnection();
+        if (conn == null) {
+            logger.warn("Save-time database validation skipped: database unavailable");
+            return;
+        }
+
+        try {
+            validateTable(entry.getTable());
+            validateDynamicColumn(entry);
+            validateEntryFields(entry);
+            if (entry.getConditions() != null) {
+                validateConditions(entry.getConditions(), entry.getTable());
+            }
+            validateConditionTypes(entry, conn);
+            compileCheckExpressions(entry, conn);
+        } catch (DatabaseValidationUnavailableException e) {
+            logger.warn("Save-time database validation skipped: " + e.getMessage());
+        } finally {
+            try { conn.close(); }
+            catch (Exception e) { logger.warn("Close exception", e); }
+        }
+    }
+
+    /** Signals that validation could not be completed because DB metadata was unavailable. */
+    private static class DatabaseValidationUnavailableException extends RuntimeException
+    {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Create an unavailable-validation exception.
+         *
+         * @param message reason validation was unavailable.
+         */
+        DatabaseValidationUnavailableException(String message) { super(message); }
+
+        /**
+         * Create an unavailable-validation exception with its cause.
+         *
+         * @param message reason validation was unavailable.
+         * @param cause underlying database failure.
+         */
+        DatabaseValidationUnavailableException(String message, Throwable cause) { super(message, cause); }
+    }
+
+    /**
+     * Validate typed condition values using the active PostgreSQL server.
+     * SQLite uses dynamic typing and therefore skips this PostgreSQL-specific
+     * check while retaining structural and security validation.
+     *
+     * @param entry report entry whose conditions are validated.
+     * @param conn shared database connection from the caller.
+     */
+    private void validateConditionTypes(ReportEntry entry, Connection conn)
+    {
+        if ("sqlite".equals(ReportsApp.dbDriver) || entry.getConditions() == null) return;
+
+        HashMap<String,String> metadata = getColumnMetaData(entry.getTable());
+        if (metadata == null) {
+            throw new DatabaseValidationUnavailableException("column metadata unavailable");
+        }
+
+        for (SqlCondition condition : entry.getConditions()) {
+            if (!condition.isAutoFormatValueRaw()) continue;
+            ConditionOperator operator = ConditionOperator.from(condition.getOperator());
+            if (operator == ConditionOperator.IS || operator == ConditionOperator.IS_NOT
+                    || operator == ConditionOperator.LIKE || operator == ConditionOperator.NOT_LIKE) continue;
+
+            String column = condition.getColumn();
+            String type = getColumnTypeIgnoreCase(metadata, column);
+            String postgresType = getPostgresValidationType(type);
+            if (postgresType == null) {
+                logger.warn("Unknown column type for " + column + ", skipping type validation");
+                continue;
+            }
+
+            String value = condition.getValue();
+            if (value == null || "null".equalsIgnoreCase(value.trim())) continue;
+            if (operator == ConditionOperator.IN || operator == ConditionOperator.NOT_IN) {
+                String inner = value.trim().substring(1, value.trim().length() - 1).trim();
+                if (!inner.isEmpty()) {
+                    for (String item : inner.split("\\s*,\\s*")) {
+                        validatePostgresConditionValue(conn, column, unquoteConditionLiteral(item), postgresType);
+                    }
+                }
+            } else if (operator == ConditionOperator.BETWEEN) {
+                java.util.regex.Matcher matcher = SAFE_BETWEEN_VALUE.matcher(value);
+                if (matcher.matches()) {
+                    validatePostgresConditionValue(conn, column, unquoteConditionLiteral(matcher.group(1)), postgresType);
+                    validatePostgresConditionValue(conn, column, unquoteConditionLiteral(matcher.group(3)), postgresType);
+                }
+            } else {
+                validatePostgresConditionValue(conn, column, value, postgresType);
+            }
+        }
+    }
+
+    /**
+     * Find a column type using case-insensitive metadata lookup.
+     *
+     * @param metadata column metadata map.
+     * @param column column name to find.
+     * @return matching column type, or null when not found.
+     */
+    private String getColumnTypeIgnoreCase(HashMap<String,String> metadata, String column)
+    {
+        if (metadata == null || column == null) return null;
+        String exact = metadata.get(column);
+        if (exact != null) return exact;
+        for (Map.Entry<String,String> item : metadata.entrySet()) {
+            if (item.getKey().equalsIgnoreCase(column)) return item.getValue();
+        }
+        return null;
+    }
+
+    /**
+     * Map a metadata type to a fixed PostgreSQL cast type.
+     *
+     * @param columnType metadata type.
+     * @return trusted PostgreSQL type name, or null when unsupported.
+     */
+    private String getPostgresValidationType(String columnType)
+    {
+        if (columnType == null) return null;
+        switch (columnType.trim().toLowerCase()) {
+        case "int2": case "smallint": return "int2";
+        case "int4": case "integer": case "int": return "int4";
+        case "int8": case "bigint": return "int8";
+        case "numeric": return "numeric";
+        case "real": case "float4": return "real";
+        case "float": case "float8": return "double precision";
+        case "inet": return "inet";
+        case "timestamp": case "timestamp without time zone": return "timestamp";
+        case "timestamptz": case "timestamp with time zone": return "timestamptz";
+        case "date": return "date";
+        case "time": case "time without time zone": return "time";
+        case "timetz": case "time with time zone": return "timetz";
+        case "bool": case "boolean": return "boolean";
+        default: return null;
+        }
+    }
+
+    /**
+     * Ask PostgreSQL to cast one parameter to a trusted column type.
+     *
+     * @param conn active database connection.
+     * @param column column name used in the error message.
+     * @param value condition value.
+     * @param postgresType trusted PostgreSQL type name.
+     */
+    private void validatePostgresConditionValue(Connection conn, String column, String value, String postgresType)
+    {
+        if ("null".equalsIgnoreCase(value.trim())) return;
+        String sql = "SELECT CAST(? AS " + postgresType + ")";
+        try (PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, value.trim());
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) { /* consume the single cast result */ }
+            }
+        } catch (SQLException e) {
+            if (isConnectionFailure(e)) {
+                throw new DatabaseValidationUnavailableException("database connection failed", e);
+            }
+            logger.warn("PostgreSQL type validation failed for column=" + column, e);
+            throw new RuntimeException("The report was not saved. Please enter a valid value for '" + column + "'.");
+        }
+    }
+
+    /**
+     * Remove SQL string-literal quoting from a condition value.
+     *
+     * @param value literal value.
+     * @return unquoted literal value.
+     */
+    private String unquoteConditionLiteral(String value)
+    {
+        String trimmed = value.trim();
+        if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+            return trimmed.substring(1, trimmed.length() - 1).replace("''", "'");
+        }
+        return trimmed;
+    }
+
+    /**
+     * Compile-check expressions used by the selected report type.
+     * PostgreSQL EXPLAIN is executed to force server-side parse/planning, but
+     * the underlying SELECT is not executed and no report rows are fetched.
+     *
+     * @param entry report entry whose expressions are checked.
+     * @param conn shared database connection from the caller.
+     */
+    private void compileCheckExpressions(ReportEntry entry, Connection conn)
+    {
+        if ("sqlite".equals(ReportsApp.dbDriver)) return;
+
+        List<String> expressions = new ArrayList<>();
+        switch (entry.getType()) {
+        case PIE_GRAPH:
+            addExpression(expressions, entry.getPieSumColumn()); break;
+        case TEXT:
+            addExpressions(expressions, entry.getTextColumns()); break;
+        case TIME_GRAPH:
+            addExpressions(expressions, entry.getTimeDataColumns()); break;
+        case TIME_GRAPH_DYNAMIC:
+            addExpression(expressions, entry.getTimeDataDynamicValue()); break;
+        default:
+            break;
+        }
+        if (expressions.isEmpty()) return;
+
+        try {
+            conn.setReadOnly(true);
+            String table = LogEvent.schemaPrefix() + entry.getTable();
+            for (String expression : expressions) {
+                String sql = "EXPLAIN (VERBOSE, COSTS OFF) SELECT " + expression
+                    + " FROM " + table + " LIMIT 0";
+                try (PreparedStatement statement = conn.prepareStatement(sql);
+                     ResultSet plan = statement.executeQuery()) {
+                    while (plan.next()) { }
+                } catch (SQLException e) {
+                    if (isConnectionFailure(e)) {
+                        throw new DatabaseValidationUnavailableException("database connection failed", e);
+                    }
+                    logger.warn("Expression compile-check failed for table=" + entry.getTable(), e);
+                    throw new RuntimeException("The report was not saved. Invalid expression - please check column names and syntax.");
+                }
+            }
+        } catch (DatabaseValidationUnavailableException e) {
+            throw e;
+        } catch (SQLException e) {
+            if (isConnectionFailure(e)) {
+                throw new DatabaseValidationUnavailableException("database connection failed", e);
+            }
+            throw new RuntimeException("The report was not saved. Expression validation failed.", e);
+        }
+    }
+
+    /**
+     * Add one non-empty expression to a validation list.
+     *
+     * @param expressions destination expression list.
+     * @param expression expression to add.
+     */
+    private void addExpression(List<String> expressions, String expression)
+    {
+        if (StringUtils.isNotBlank(expression)) expressions.add(expression);
+    }
+
+    /**
+     * Add non-empty expressions from an array to a validation list.
+     *
+     * @param expressions destination expression list.
+     * @param values expressions to add.
+     */
+    private void addExpressions(List<String> expressions, String[] values)
+    {
+        if (values != null) for (String value : values) addExpression(expressions, value);
+    }
+
+    /**
+     * Determine whether a SQL exception represents a connection failure.
+     *
+     * @param e SQL exception to inspect.
+     * @return true when the SQL state belongs to the connection-failure class.
+     */
+    private boolean isConnectionFailure(SQLException e)
+    {
+        String state = e.getSQLState();
+        return state != null && state.startsWith("08");
     }
 
     /**
