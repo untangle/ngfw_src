@@ -102,11 +102,11 @@ public interface SafeUvmContext
     NetspaceManager netspaceManager();
 
     /**
-     * Get the DaemonManager singleton for this instance
+     * Get the daemon status facade for this instance
      *
      * @return the singleton
      */
-    DaemonManager daemonManager();
+    SafeDaemonManager daemonManager();
 
     /**
      * The LocalDirectory for managing/authenticating users

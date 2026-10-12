@@ -28,6 +28,8 @@ public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
 
     private static int threadNumber = 1;
 
+    private SafeDaemonManager safeDaemonManager;
+
     /**
      * getInstance gets the singleton SafeUvmContextImpl reference
      * @return SafeUvmContextImpl
@@ -147,13 +149,16 @@ public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
     }
 
     /**
-     * Get DaemonManager
-     * @return DaemonManager
+     * Get the daemon status facade
+     * @return SafeDaemonManager
      */
     @Override
-    public DaemonManager daemonManager()
+    public synchronized SafeDaemonManager daemonManager()
     {
-        return UvmContextFactory.context().daemonManager();
+        if (safeDaemonManager == null) {
+            safeDaemonManager = new SafeDaemonManagerImpl(UvmContextFactory.context().daemonManager());
+        }
+        return safeDaemonManager;
     }
 
     /**
