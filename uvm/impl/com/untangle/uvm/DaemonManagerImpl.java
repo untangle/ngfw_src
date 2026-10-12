@@ -15,8 +15,6 @@ import java.io.DataInputStream;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import com.untangle.uvm.UvmContextFactory;
-import com.untangle.uvm.DaemonManager;
 import com.untangle.uvm.util.SafeCheckParam;
 import com.untangle.uvm.util.SafeType;
 
@@ -58,8 +56,6 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         MonitorType monitorType = MonitorType.DISABLED;
         String transmitString = null;
         String searchString = null;
-        String extraRestartCommand = null;
-        long extraRestartDelay = 0;
         long monitorInterval = 0;
         long lastCheck = 0;
         String hostString = null;
@@ -167,7 +163,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             daemonObject.usageCount = newUsageCount;
 
             if (newUsageCount < 0) {
-                logger.warn("Invalid daemon usageCount for " + daemonName + ": " + newUsageCount);
+                logger.warn("Invalid daemon usageCount for {}: {}", daemonName , newUsageCount);
             }
 
             if (newUsageCount < 1) {
@@ -203,27 +199,6 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
         DaemonObject daemonObject = getDaemonObject(daemonName);
         synchronized (daemonObject) {
             execDaemonControlEvil(daemonName, "restart");
-        }
-    }
-
-    /**
-     * Used to set an optional additional command that should be executed after
-     * the normal restart command is executed.
-     * 
-     * @param daemonName
-     *        The daemon command
-     * @param extraRestartCommand
-     *        The command to be executed
-     * @param extraRestartDelay
-     *        The amount of time to wait after executing the standard restart
-     *        before executing the extra command
-     */
-    public void setExtraRestartCommand(String daemonName, String extraRestartCommand, long extraRestartDelay)
-    {
-        DaemonObject daemonObject = getDaemonObject(daemonName);
-        synchronized (daemonObject) {
-            daemonObject.extraRestartCommand = extraRestartCommand;
-            daemonObject.extraRestartDelay = extraRestartDelay;
         }
     }
 
@@ -368,83 +343,64 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     }
 
     /**
-     * Executes a daemon control command using execEvil. If the daemon name is
-     * provided, we exec systemctl passing the command and the daemonName. If
-     * daemonName is null, we simply exec the command as provided.
+     * Executes a daemon control command using execEvil with explicit systemctl
+     * arguments.
      * 
      * @param daemonName
      *        The daemon name
      * @param command
      *        The systemctl command to execute, such as start, stop, restart,
-     *        etc. or the raw command to execute if daemonName is null
+     *        etc.
      */
     private void execDaemonControlEvil(String daemonName, String command)
     {
         try {
-            ExecManagerResultReader reader;
-            if (daemonName == null) {
-                // raw extraRestartCommand path - preserved by API contract
-                reader = UvmContextFactory.context().execManager().execEvil(command);
-            } else {
-                reader = UvmContextFactory.context().execManager().execEvil(
-                    new String[] { "/bin/systemctl", command, daemonName });
-            }
+            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(
+                new String[] { "/bin/systemctl", command, daemonName });
             reader.waitFor();
         } catch (Exception exn) {
-            logger.warn("Failed to run command: " + command, exn);
+            logger.warn("Failed to run command: {}", command, exn);
         }
     }
 
     /**
-     * Executes daemon control command using execOutput() which is safer but the
-     * execManager can only run one at at time. If the daemon name is provided,
-     * we exec systemctl passing the command and the daemonName. If daemonName
-     * is null, we simply exec the command as provided.
+     * Executes a daemon control command using execCommand with explicit
+     * systemctl arguments. The execManager serializes these commands.
      *
      * @param daemonName
      *        The daemon name
      * @param command
      *        The systemctl command to execute, such as start, stop, restart,
-     *        etc. or the raw command to execute if daemonName is null
+     *        etc.
      */
     private void execDaemonControlSafe(String daemonName, String command){
         execDaemonControlSafe(daemonName, command, true);
     }
 
     /**
-     * Executes daemon control command using execOutput() which is safer but the
-     * execManager can only run one at at time. If the daemon name is provided,
-     * we exec systemctl passing the command and the daemonName. If daemonName
-     * is null, we simply exec the command as provided.
+     * Executes a daemon control command using execCommand with explicit
+     * systemctl arguments. The execManager serializes these commands.
      *
      * @param daemonName
      *        The daemon name
      * @param command
      *        The systemctl command to execute, such as start, stop, restart,
-     *        etc. or the raw command to execute if daemonName is null
+     *        etc.
      * @param log
      *        If true, log output.
      * @return String of command output.
      */
     private String execDaemonControlSafe(String daemonName, String command, boolean log)
     {
-        String output;
-        String cmdLabel;
-        if (daemonName == null) {
-            // raw extraRestartCommand path - preserved by API contract
-            cmdLabel = command;
-            output = UvmContextFactory.context().execManager().execOutput(command);
-        } else {
-            cmdLabel = "systemctl " + command + " " + daemonName;
-            output = UvmContextFactory.context().execManager().execCommand(
-                "/bin/systemctl", List.of(command, daemonName)
-            ).getOutput();
-        }
+        String cmdLabel = "systemctl " + command + " " + daemonName;
+        String output = UvmContextFactory.context().execManager().execCommand(
+            "/bin/systemctl", List.of(command, daemonName)
+        ).getOutput();
         if (log) {
             try {
-                String lines[] = output.split("\\r?\\n");
+                String[] lines = output.split("\\r?\\n");
                 for (String line : lines)
-                    logger.info(cmdLabel + ": " + line);
+                    logger.info("{}: {}", cmdLabel , line);
             } catch (Exception exn) {
             }
         }
@@ -461,33 +417,23 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
     private void handleDaemonCheck(DaemonObject object)
     {
         synchronized (object) {
-            // run a spiffy command to count the number of process instances.
-            // Argv-form prevents shell metachar escape via searchString; the
-            // split-length semantics (empty output = length 1) are preserved
-            // verbatim from the prior shell-form implementation.
+            // Count process instances using explicit arguments, treating empty
+            // output as no matching processes.
             String pgrepOutput = UvmContextFactory.context().execManager().execCommand(
                 "/usr/bin/pgrep", List.of(object.searchString)
             ).getOutput();
             if (pgrepOutput == null) pgrepOutput = "";
-            int count = pgrepOutput.split("\r\n|\r|\n").length;
+            int count = pgrepOutput.isEmpty() ? 0 : pgrepOutput.split("\r\n|\r|\n").length;
 
-            logger.debug("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
+            logger.debug("Found {} instances of daemon/search:  + object.searchString + {}", count , "");
 
             // if we find the process running just return
             if (count > 0) return;
 
             // process does not seem to be running so log and restart
-            logger.warn("Found " + count + " instances of daemon/search: \"" + object.searchString + "\"");
-            logger.warn("Restarting failed daemon: " + object.daemonName);
+            logger.warn("Found {} instances of daemon/search:  + object.searchString + {}", count , "");
+            logger.warn("Restarting failed daemon: {}", object.daemonName);
             execDaemonControlSafe(object.daemonName, "restart");
-
-            if (object.extraRestartCommand != null) {
-                try {
-                    object.wait(object.extraRestartDelay);
-                } catch (Exception exn) {
-                }
-                execDaemonControlSafe(null, object.extraRestartCommand);
-            }
         }
     }
 
@@ -530,7 +476,7 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
                 if (reason == null && exn.getClass() != null) reason = exn.getClass().toString();
                 if (reason == null) reason = "unknown";
 
-                logger.warn("Exception (" + reason + ") while checking " + object.hostString + ":" + object.hostPort);
+                logger.warn("Exception ({}) while checking {}:{}", reason , object.hostString , object.hostPort);
                 restart = true;
             } finally {
                 // make sure the streams and socket all get closed ignoring exceptions
@@ -566,16 +512,8 @@ public class DaemonManagerImpl extends TimerTask implements DaemonManager
             // if restart is we can just return
             if (restart == false) return;
 
-            logger.warn("Restarting failed daemon: " + object.daemonName);
+            logger.warn("Restarting failed daemon: {}", object.daemonName);
             execDaemonControlSafe(object.daemonName, "restart");
-
-            if (object.extraRestartCommand != null) {
-                try {
-                    object.wait(object.extraRestartDelay);
-                } catch (Exception exn) {
-                }
-                execDaemonControlSafe(null, object.extraRestartCommand);
-            }
         }
     }
 }
