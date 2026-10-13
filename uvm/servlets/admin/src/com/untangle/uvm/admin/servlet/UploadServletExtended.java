@@ -5,6 +5,7 @@ package com.untangle.uvm.admin.servlet;
 
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.servlet.UploadUnavailableException;
 import com.untangle.uvm.util.SafeCheckValidationException;
 import com.untangle.uvm.util.SafeCheckValidator;
 import com.untangle.uvm.util.SafeType;
@@ -126,6 +127,9 @@ public class UploadServletExtended extends UploadServlet {
             }
         } catch (Exception exn) {
             logger.warn("could not upload", exn);
+            if (exn instanceof UploadUnavailableException) {
+                resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            }
             createResponse(resp, false, exn.getMessage());
             return;
         }
