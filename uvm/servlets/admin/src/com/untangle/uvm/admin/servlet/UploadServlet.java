@@ -24,6 +24,7 @@ import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.ExecManagerResult;
 import com.untangle.uvm.servlet.SafeFileItem;
 import com.untangle.uvm.servlet.UploadHandler;
+import com.untangle.uvm.servlet.UploadUnavailableException;
 import com.untangle.uvm.util.SafeUpload;
 
 /**
@@ -78,6 +79,9 @@ public class UploadServlet extends HttpServlet
             }
         } catch (Exception exn) {
             logger.warn("could not upload", exn);
+            if (exn instanceof UploadUnavailableException) {
+                resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            }
             createResponse(resp, false, exn.getMessage());
             return;
         }
