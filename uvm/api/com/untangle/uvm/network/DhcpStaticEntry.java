@@ -24,7 +24,7 @@ public class DhcpStaticEntry implements Serializable, JSONString
     @SafeCheck(SafeType.MAC_ADDRESS)
     private String macAddress;
     private InetAddress address;
-    @SafeCheck(SafeType.SIMPLE_TEXT)
+    @SafeCheck(value = SafeType.SIMPLE_TEXT, allow = {"[no description]", "*"})
     private String description;
     
     public DhcpStaticEntry( String macAddress, InetAddress address)
