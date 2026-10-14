@@ -26,7 +26,7 @@ public class DhcpRelay implements Serializable, JSONString
     // Flows into dnsmasq.conf as `# {description}` comment AND as the
     // dhcp-range tag (whitespace-normalized). dnsmasq supports
     // `dhcp-script=` exec directive, so newline injection is RCE.
-    @SafeCheck(SafeType.SIMPLE_TEXT)
+    @SafeCheck(value = SafeType.SIMPLE_TEXT, allow = {"[no description]", "*"})
     private String description;
     private InetAddress rangeStart;
     private InetAddress rangeEnd;
