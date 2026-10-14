@@ -1617,6 +1617,92 @@ class ReportsTests(NGFWTestCase):
 
         self._app.setSettings(original_settings)
 
+    def test_121_reports_rpc_jdbc_access_control(self):
+        """
+        NGFW-16062: block JDBC access and the singleton bypass for Reports users,
+        while retaining event readers, chunk loading, and connection cleanup.
+        """
+        original_settings = self._app.getSettings()
+        settings = copy.deepcopy(original_settings)
+        test_email = global_functions.random_email()
+        settings["reportsUsers"]["list"].append(create_reports_user(profile_email=test_email, access=True))
+        session = None
+
+        try:
+            self._app.setSettings(settings)
+            session, rpc_url, nonce, manager_id, java_class = reports_realm_rpc_login(test_email, "passwd")
+            assert manager_id and "ReportsContextImpl" in java_class, \
+                f"Expected restricted Reports manager, got: {java_class}"
+
+            def rpc(object_id, method, params):
+                response = session.post(
+                    rpc_url,
+                    json={"id": 3, "nonce": nonce, "method": f".obj#{object_id}.{method}", "params": params},
+                    verify=False, timeout=30
+                )
+                response.raise_for_status()
+                body = response.json()
+                # Jabsorb omits shared values (including enum fields) and sends
+                # fixups separately. Decode them as the standard RPC client does.
+                if "error" not in body:
+                    result = body.get("result")
+                    for destination, source in body.get("fixups", []):
+                        original = result
+                        for key in source:
+                            original = original[key]
+                        parent = result
+                        for key in destination[:-1]:
+                            parent = parent[key]
+                        parent[destination[-1]] = original
+                return body
+
+            # Probe only the getter; never call mutating methods on an escaped singleton.
+            response = rpc(manager_id, "getInstance", [])
+            error = response.get("error", {})
+            assert response.get("result") is None and (
+                error.get("code") == 591 or error.get("msg") in (
+                    "Method is not available", "Method is not available through Reports RPC"
+                )
+            ), f"getInstance() was not denied by the restricted Reports proxy: {response}"
+
+            response = rpc(manager_id, "getReportEntries", [])
+            assert "error" not in response, f"Cannot retrieve report entries: {response}"
+            entries = response["result"]["list"]
+            entry = next((item for item in entries
+                          if isinstance(item, dict) and item.get("type") == "EVENT_LIST"), None)
+            assert entry is not None, "No EVENT_LIST entry available to test event readers"
+
+            reader_methods = [
+                ("getEventsResultSet", [entry, [], 1]),
+                ("getEventsForTimeframeResultSet", [entry, [], 3600, 1]),
+                ("getEventsForDateRangeResultSet", [entry, [], 1, None, None]),
+            ]
+            for method, params in reader_methods:
+                with self.subTest(method=method):
+                    response = rpc(manager_id, method, params)
+                    assert "error" not in response and response.get("result"), \
+                        f"{method}() failed to return an event reader: {response}"
+                    reader_id = response["result"]["objectID"]
+                    try:
+                        for getter in ["getConnection", "getResultSet"]:
+                            response = rpc(reader_id, getter, [])
+                            assert response.get("error", {}).get("code") == 591, \
+                                f"{method}().{getter}() must be unavailable over RPC: {response}"
+
+                        response = rpc(reader_id, "isClosed", [])
+                        assert "error" not in response and isinstance(response.get("result"), bool), \
+                            f"isClosed() is unavailable: {response}"
+                        response = rpc(reader_id, "getNextChunk", [1000])
+                        assert "error" not in response and isinstance(response.get("result", {}).get("list"), list), \
+                            f"Chunk loading failed: {response}"
+                    finally:
+                        response = rpc(reader_id, "closeConnection", [])
+                        assert "error" not in response, f"Event reader cleanup failed: {response}"
+        finally:
+            if session is not None:
+                session.close()
+            self._app.setSettings(original_settings)
+
     def test_129_admin_realm_write_methods_allowed(self):
         """
         UNT-06 non-regression: verify that admin can still call saveReportEntry
