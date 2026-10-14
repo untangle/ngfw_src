@@ -107,16 +107,6 @@ Ext.define('Ung.apps.captive-portal.MainController', {
             return;
         }
 
-        // Below custom page condition can be removed when all users have upgraded to v17.2 and no user is having page type - custom
-        var custfile = this.getViewModel().get('settings.customFilename');
-        var pagetype = vm.get('settings.pageType');
-
-        if ( (pagetype == 'CUSTOM') && ((custfile == null) || (custfile.length === 0)) ) {
-            Ext.MessageBox.alert('Missing Custom Captive Page'.t(),
-                'Custom captive portal has been deprecated. Switch to Basic Message or Basic Logic Configuration.'.t());
-            return;
-        }
-
         window.open('/capture/handler.py/index?appid=' + vm.get('instance.id') , '_blank');
     },
 
