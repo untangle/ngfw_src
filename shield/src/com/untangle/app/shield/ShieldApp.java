@@ -98,7 +98,7 @@ public class ShieldApp extends AppBase
         if (this.getSettings() != null) {
             // Deep clone current Shield Settings to transform in New Shield Settings
             ShieldSettings clonedShieldSettings = SerializationUtils.clone(this.settings);
-            newSettings.transformGenericToQosSettings(clonedShieldSettings);
+            newSettings.transformGenericToShieldSettings(clonedShieldSettings);
             setSettings(clonedShieldSettings);
         }
     }

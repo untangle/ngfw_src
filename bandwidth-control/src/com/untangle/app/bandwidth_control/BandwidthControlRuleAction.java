@@ -65,7 +65,7 @@ public class BandwidthControlRuleAction implements JSONString, Serializable
     /**
      * This reference is held to that advanced actions can be applied
      */
-    private BandwidthControlApp app;
+    private transient BandwidthControlApp app;
     
     public BandwidthControlRuleAction()
     {

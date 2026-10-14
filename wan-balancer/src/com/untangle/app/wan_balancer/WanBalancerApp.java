@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import com.untangle.uvm.HookManager;
 
+import com.untangle.app.wan_balancer.generic.WanBalancerSettingsGeneric;
 import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.SettingsManager;
 import com.untangle.uvm.HookCallback;
@@ -99,6 +100,30 @@ public class WanBalancerApp extends AppBase
     {
         return settings;
     }
+
+    /**
+     * Get application settings in V2 (generic) format for the Vue UI.
+     *
+     * @return WanBalancerSettingsGeneric
+     */
+    public WanBalancerSettingsGeneric getSettingsV2()
+    {
+        if (this.settings != null)
+            return this.settings.transformWanBalancerSettingsToGeneric();
+        return new WanBalancerSettingsGeneric();
+    }
+
+    /**
+     * Set application settings from a V2 (generic) format payload coming from the Vue UI.
+     *
+     * @param newSettings WanBalancerSettingsGeneric
+     */
+    public synchronized void setSettingsV2(final WanBalancerSettingsGeneric newSettings)
+    {
+        WanBalancerSettings v1 = this.settings != null ? this.settings : new WanBalancerSettings();
+        this.setSettings(newSettings.transformGenericToWanBalancerSettings(v1));
+    }
+
 
     /**
      * Set the application settings

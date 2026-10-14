@@ -86,6 +86,18 @@ public class WebFilterApp extends WebFilterBase
     }
 
     /**
+     * Called to lookup a specific site. This is v2 API of {@link #lookupSite(String)} used by the Vue UI.
+     * 
+     * @param url
+     *        The site to lookup
+     * 
+     * @return The list of categories
+     */
+    public List<Integer> lookupSiteV2(String url) {
+        return this.lookupSite(url);
+    }
+
+    /**
      * Called to submit request to recategorize site
      * 
      * @param url

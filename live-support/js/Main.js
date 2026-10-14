@@ -1,18 +1,32 @@
 Ext.define('Ung.apps.livesupport.Main', {
     extend: 'Ung.cmp.AppPanel',
     alias: 'widget.app-live-support',
-    controller: 'app-live-support',
 
     viewModel: {
         data: {
-            companyName: '',
-            companyURL: '',
-            serverUID: '',
-            fullVersionAndRevision: ''
+            title: 'Live Support'.t(),
+            iconName: 'live-support',
+            vueMigrated: true
+        },
+    },
+
+    listeners: {
+        activate: function (panel) {
+            var target = panel.down('#iframeHolder');
+            Util.attachIframeToTarget(target, '/console/settings/services/live-support', false);
+
+            Util.setupVueMessageHandlers(panel, {
+                appName: 'live-support',
+                enableRemoveHandler: true
+            });
+        },
+
+        destroy: function (panel) {
+            Util.cleanupVueMessageHandlers(panel);
         }
     },
 
-    items: [{
-        xtype: 'app-live-support-status'
-    }]
+    items: [
+        Field.iframeHolder
+    ]
 });

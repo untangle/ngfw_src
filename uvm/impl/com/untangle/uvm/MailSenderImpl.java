@@ -45,11 +45,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.sun.mail.smtp.SMTPTransport;
-import com.untangle.uvm.MailSender;
-import com.untangle.uvm.MailSettings;
-import com.untangle.uvm.SettingsManager;
-import com.untangle.uvm.UvmContext;
-import com.untangle.uvm.UvmContextFactory;
 import com.untangle.uvm.MailSettings.SendMethod;
 import com.untangle.uvm.network.NetworkSettings;
 import com.untangle.uvm.util.I18nUtil;
@@ -162,10 +157,10 @@ public class MailSenderImpl implements MailSender
             if (readSettings.getSendMethod() == MailSettings.SendMethod.RELAY) {
                 readSettings.setSendMethod(SendMethod.DIRECT);
                 this.setSettings(readSettings);
-                logger.info("Changing mail settings to Direct Settings: " + this.settings.toJSONString());
+                logger.info("Changing mail settings to Direct Settings: {}", this.settings.toJSONString());
             }
             this.settings = readSettings;
-            logger.debug("Loading Settings: " + this.settings.toJSONString());
+            logger.debug("Loading Settings: {}", this.settings.toJSONString());
         }
 
         /**
@@ -187,6 +182,17 @@ public class MailSenderImpl implements MailSender
     }
 
     /**
+     * Get the settings V2 API
+     *
+     * @return The settings
+     */
+    @Override
+    public MailSettings getSettingsV2()
+    {
+        return getSettings();
+    }
+
+    /**
      * Get the settings
      * 
      * @return The settings
@@ -194,6 +200,18 @@ public class MailSenderImpl implements MailSender
     public MailSettings getSettings()
     {
         return settings;
+    }
+
+    /**
+     * Set the settings V2 API
+     *
+     * @param newSettings
+     *        The new settings
+     */
+    @Override
+    public void setSettingsV2(final MailSettings newSettings)
+    {
+        setSettings(newSettings);
     }
 
     /**
@@ -220,7 +238,7 @@ public class MailSenderImpl implements MailSender
          */
         this.settings = newSettings;
         try {
-            logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
+            logger.debug("New Settings: \n{}", new org.json.JSONObject(this.settings).toString(2));
         } catch (Exception e) {
         }
 
@@ -414,6 +432,18 @@ public class MailSenderImpl implements MailSender
     {
         sendMultiPart(mailSession, recipients, subject, parts);
 
+    }
+
+    /**
+     * Send a test message V2 API
+     *
+     * @param recipient
+     *        The recipient
+     * @return The send result
+     */
+    @Override
+    public String sendTestMessageV2(String recipient) {
+        return sendTestMessage(recipient);
     }
 
     /**
@@ -669,7 +699,7 @@ public class MailSenderImpl implements MailSender
         try{
             UvmContextFactory.context().execManager().execEvil(EXIM_CMD_RESTART_EXIM + " &");
         }catch( Exception e){
-            logger.warn("error calling " + EXIM_CMD_RESTART_EXIM, e);
+            logger.warn("error calling {}", EXIM_CMD_RESTART_EXIM, e);
         }
 
     }
@@ -747,7 +777,7 @@ public class MailSenderImpl implements MailSender
                     }
                 }
             } catch (Exception ex) {
-                logger.warn("Unable to parse \"" + s + "\" into email address");
+                logger.warn("Unable to parse  + s + {}", " into email address");
             }
         }
         return ret.toArray(new Address[ret.size()]);
@@ -774,7 +804,7 @@ public class MailSenderImpl implements MailSender
             try {
                 addrs[i] = InternetAddress.parse(to[i], false);
             } catch (AddressException x) {
-                logger.error("Failed to parse receipient address " + to[i] + ", ignoring");
+                logger.error("Failed to parse receipient address {}, ignoring", to[i] );
                 addrs[i] = null;
             }
         }
@@ -834,7 +864,7 @@ public class MailSenderImpl implements MailSender
                 }
                 sb.append(")");
             }
-            logger.info(sb.toString());
+            logger.info("{}", sb);
         }
     }
 
@@ -1076,7 +1106,7 @@ public class MailSenderImpl implements MailSender
                         try {
                             contentType = Files.probeContentType(Paths.get(filename));
                         } catch (Exception e) {
-                            logger.warn("paths exception " + e);
+                            logger.warn("paths exception", e);
                             contentType = dh.getContentType();
                         }
                         mimeBodyPart.setHeader("Content-Type", contentType + "; name=\"" + attachmentFile.getName() + "\"");
@@ -1401,7 +1431,7 @@ public class MailSenderImpl implements MailSender
                 }
             }
         }
-        logger.info("Test email msg:" + msg);
+        logger.info("Test email msg:{}", msg);
         return msg;
     }
 
@@ -1428,7 +1458,7 @@ public class MailSenderImpl implements MailSender
              * XXX May need to catch this exception, restore defaults then try
              * again
              */
-            logger.error("Error writing file " + fileName + ":", ex);
+            logger.error("Error writing file {}:", fileName , ex);
         }
 
         try {

@@ -2,11 +2,11 @@ Ext.define('Ung.apps.applicationcontrollite.MainController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.app-application-control-lite',
 
-    control: {
-        '#': {
-            afterrender: 'getSettings'
-        }
-    },
+    // control: {
+    //     '#': {
+    //         afterrender: 'getSettings'
+    //     }
+    // },
 
     getSettings: function () {
         var v = this.getView(), vm = this.getViewModel();

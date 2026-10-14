@@ -119,6 +119,15 @@ public class WireGuardVpnApp extends AppBase
     }
 
     /**
+     * Get the application settings in the V2 format used by the Vue UI.
+     *
+     * @return WireGuardVpnSettingsGeneric
+     */
+    public WireGuardVpnSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
      * Get the wireguard Vpn manager
      * 
      * @return wireguard manager
@@ -250,6 +259,18 @@ public class WireGuardVpnApp extends AppBase
     public void setSettings(final WireGuardVpnSettings newSettings)
     {
         setSettings(newSettings, true);
+    }
+
+    /**
+     * Set application settings received from the Vue UI in V2 format.
+     *
+     * @param newSettings WireGuardVpnSettings
+     * @param restart boolean
+     */
+    public void setSettingsV2(final WireGuardVpnSettings newSettings, boolean restart) {
+        if (newSettings == null)
+            throw new IllegalArgumentException("WireGuard settings cannot be null");
+        setSettings(newSettings, restart);
     }
 
     /**

@@ -215,6 +215,14 @@ public abstract class SpamBlockerBaseApp extends AppBase
     }
 
     /**
+     * Get the settings in v2 format
+     * @return SpamSettings in v2 format 
+     */
+    public SpamSettings getSettingsV2() {
+        return this.getSettings();
+    }
+
+    /**
      * Set the settings
      * 
      * @param newSpamSettings

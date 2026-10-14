@@ -189,6 +189,21 @@ public interface AppManager
     AppsView[] getAppsViews();
 
     /**
+     * Get the view of the apps (v2 format) when the specified policy/rack is displayed
+     *
+     * @param policyId policy.
+     * @return visible apps for this policy.
+     */
+    AppsView getAppsViewV2( Integer policyId );
+
+    /**
+     * Get the appsview for all policies in v2 format
+     *
+     * @return visible apps for every policy.
+     */
+    AppsView[] getAppsViewsV2();
+
+    /**
      * Shutdown any running apps that have an invalid license
      */
     void shutdownAppsWithInvalidLicense();

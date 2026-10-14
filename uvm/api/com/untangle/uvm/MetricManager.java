@@ -9,5 +9,7 @@ public interface MetricManager
 
     org.json.JSONObject getMetricsAndStats();
 
+    org.json.JSONObject getMetricsAndStatsV2();
+
     Long getMemTotal();
 }
