@@ -44,7 +44,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
 
     private final SkinManager skinManager = new SkinManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
-    private final ReportsManager reportsManager = this.new ReportsManagerImpl();
+    private final ReportsManager reportsManager = new ReportsManagerImpl();
 
     /**
      * Initialize reportscontext with UVM context.
@@ -241,12 +241,25 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     }
 
     /**
-     * This class is used extend ReportsManagerImpl and overwrite some methods that changes settings so reports servlet does not have access to them.
+     * This proxy restricts configuration writes and access to the unrestricted
+     * Reports manager singleton from the reports servlet.
      * Query methods resolve client-provided entries against server-side definitions to prevent
      * injection of malicious entry fields (pieGroupColumn, conditions, etc.)
      */
-    public class ReportsManagerImpl extends com.untangle.app.reports.ReportsManagerImpl
+    public static class ReportsManagerImpl extends com.untangle.app.reports.ReportsManagerImpl
     {
+        /**
+         * Prevent access to the unrestricted Reports manager singleton.
+         * This static method hides the inherited getter exposed by JSON-RPC.
+         *
+         * @return
+         *  Never returns a manager because access is restricted.
+         */
+        public static com.untangle.app.reports.ReportsManagerImpl getInstance()
+        {
+            throw new SecurityException("Method is not available");
+        }
+
         /**
          * Resolve a client-provided report entry against server-side definitions.
          *

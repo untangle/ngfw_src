@@ -73,25 +73,15 @@ public class ResultSetReader implements Runnable
     }
 
     /**
-     * Return the result set.
+     * Return the result set for internal CSV export only.
+     * Package-private access prevents JSON-RPC from exposing JDBC objects.
      *
      * @return
      *  ResultSet object.
      */
-    public ResultSet getResultSet()
+    ResultSet getResultSet()
     {
         return this.resultSet;
-    }
-
-    /**
-     * Return the connection
-     *
-     * @return
-     *  Connection object.
-     */
-    public Connection getConnection()
-    {
-        return this.connection;
     }
 
     /**
