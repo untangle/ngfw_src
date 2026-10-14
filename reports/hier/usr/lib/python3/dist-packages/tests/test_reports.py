@@ -1643,17 +1643,35 @@ class ReportsTests(NGFWTestCase):
                     verify=False, timeout=30
                 )
                 response.raise_for_status()
-                return response.json()
+                body = response.json()
+                # Jabsorb omits shared values (including enum fields) and sends
+                # fixups separately. Decode them as the standard RPC client does.
+                if "error" not in body:
+                    result = body.get("result")
+                    for destination, source in body.get("fixups", []):
+                        original = result
+                        for key in source:
+                            original = original[key]
+                        parent = result
+                        for key in destination[:-1]:
+                            parent = parent[key]
+                        parent[destination[-1]] = original
+                return body
 
             # Probe only the getter; never call mutating methods on an escaped singleton.
             response = rpc(manager_id, "getInstance", [])
-            assert response.get("error", {}).get("msg") == "Method is not available through Reports RPC", \
-                f"getInstance() did not hit the restricted Reports proxy: {response}"
+            error = response.get("error", {})
+            assert response.get("result") is None and (
+                error.get("code") == 591 or error.get("msg") in (
+                    "Method is not available", "Method is not available through Reports RPC"
+                )
+            ), f"getInstance() was not denied by the restricted Reports proxy: {response}"
 
             response = rpc(manager_id, "getReportEntries", [])
             assert "error" not in response, f"Cannot retrieve report entries: {response}"
             entries = response["result"]["list"]
-            entry = next((item for item in entries if item["type"] == "EVENT_LIST"), None)
+            entry = next((item for item in entries
+                          if isinstance(item, dict) and item.get("type") == "EVENT_LIST"), None)
             assert entry is not None, "No EVENT_LIST entry available to test event readers"
 
             reader_methods = [
