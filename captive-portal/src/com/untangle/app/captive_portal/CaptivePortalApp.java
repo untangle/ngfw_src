@@ -11,17 +11,10 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileOutputStream;
-import java.io.BufferedReader;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -51,7 +44,6 @@ import com.untangle.uvm.vnet.SessionAttachments;
 import com.untangle.uvm.app.AppBase;
 import com.untangle.uvm.vnet.Token;
 import com.untangle.uvm.util.I18nUtil;
-import com.untangle.uvm.servlet.UploadHandler;
 
 /**
  * Implementation of the captive portal application.
@@ -70,9 +62,7 @@ public class CaptivePortalApp extends AppBase
     private final Logger logger = LogManager.getLogger(getClass());
     private final Integer policyId = getAppSettings().getPolicyId();
 
-    private final String CAPTURE_CUSTOM_CREATE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-create";
     private final String CAPTURE_CUSTOM_REMOVE_SCRIPT = System.getProperty("uvm.home") + "/bin/captive-portal-custom-remove";
-    private final String CAPTURE_TEMPORARY_UPLOAD = System.getProperty("java.io.tmpdir") + "/capture_upload.zip";
 
     private static final int CLEANUP_INTERVAL = 60000;
 
@@ -160,6 +150,10 @@ public class CaptivePortalApp extends AppBase
      */
     public void setSettings(CaptivePortalSettings newSettings)
     {
+        // normalize the page type to a built-in page if it is set to CUSTOM.
+        // Can be removed in v18.0.0 or future
+        normalizeLegacyPageType(newSettings);
+
         // this is an old settings that is no longer used so always
         // set to null so it will be removed from the config file
         newSettings.setCheckServerCertificate(null);
@@ -311,6 +305,24 @@ public class CaptivePortalApp extends AppBase
     }
 
     /**
+     * Convert deprecated custom-page settings to a built-in page while keeping
+     * the CUSTOM enum value available for loading existing settings files.
+     * Can be removed in v18.0.0 or future
+     *
+     * @param settings The settings to normalize
+     * @return True if the settings were changed
+     */
+    private boolean normalizeLegacyPageType(CaptivePortalSettings settings)
+    {
+        if (settings.getPageType() == CaptivePortalSettings.PageType.CUSTOM) {
+            logger.warn("Custom Captive Portal pages are no longer supported; using BASIC_MESSAGE");
+            settings.setPageType(CaptivePortalSettings.PageType.BASIC_MESSAGE);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Save the application settings
      * 
      * @param argSettings
@@ -444,16 +456,10 @@ public class CaptivePortalApp extends AppBase
     @Override
     protected void preStart(boolean isPermanentTransition)
     {
-        // create the custom path for this application instance
-        String customPath = (System.getProperty("uvm.web.dir") + "/capture/custom_" + getAppSettings().getId().toString());
-
         // load user state from file (if exists)
         loadUserState();
 
         oauthConfigList = UvmContextFactory.context().authenticationManager().getOAuthConfig();
-
-        // run a script to create the directory for the custom captive page
-        UvmContextFactory.context().execManager().exec(CAPTURE_CUSTOM_CREATE_SCRIPT + " " + customPath);
     }
 
     /**
@@ -528,13 +534,18 @@ public class CaptivePortalApp extends AppBase
             // creating, writing, and applying a new settings object
             initializeSettings();
         } else {
+            // Normalize the page type to a built-in page if it is set to CUSTOM.
+            // Can be removed in v18.0.0 or future
+            boolean settingsChanged = normalizeLegacyPageType(readSettings);
             // we got something back from the load so pass it
             // to the common apply function
             if (readSettings.getSecretKey() == null) {
                 initializeCookieKey(readSettings);
             }
             //Save Settings
-            if (readSettings.getSecretKey() == null || AuthenticationType.FACEBOOK.equals(readSettings.getAuthenticationType())) {
+            if (settingsChanged ||
+                readSettings.getSecretKey() == null ||
+                AuthenticationType.FACEBOOK.equals(readSettings.getAuthenticationType())) {
                 saveAppSettings(readSettings);
             }
             applyAppSettings(readSettings);
