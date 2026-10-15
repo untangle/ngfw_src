@@ -10,9 +10,7 @@ if "@PREFIX@" != '':
 from uvm import Uvm
 import urllib.request, urllib.parse, urllib.error
 import pprint
-import imp
 import time
-import os
 import uvm.i18n_helper
 
 from urllib.parse import urlparse
@@ -210,34 +208,9 @@ def index(req):
                 util.redirect(req, target)
                 return
 
-    # if not using a custom capture page we generate and return a standard page
-    if (captureSettings.get('pageType') != 'CUSTOM'):
-        page = _generate_page(req,captureSettings,args)
-        return(page)
-
-    # if we make it here they are using a custom page so we have to
-    # look to see if they are also using a custom.py script
-    rawpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/"
-    webpath = "/capture/custom_" + str(args['APPID']) + "/"
-
-    # found a custom.py file so load it up, grab the index function reference
-    # and call the index function to generate the capture page
-    if (os.path.exists(rawpath + "custom.py")):
-        cust = _import_file(rawpath + "custom.py")
-        if not cust:
-            raise Exception("Unable to locate or import custom.py")
-        func = getattr(cust,"index")
-        if not func:
-            raise Exception("Unable to locate index function in custom.py")
-        if not hasattr(func,'__call__'):
-            raise Exception("The index in custom.py is not a callable function")
-        page = func(req,rawpath,webpath,str(args['APPID']),str(args['HOST']),str(args['URI']))
-    # no custom.py file so we generate the capture page ourselves
-    else:
-        page = _generate_page(req,captureSettings,args)
-
-    # return the capture page we just created
-    return(page)
+    # Custom pages are no longer supported. Legacy CUSTOM settings are
+    # normalized when settings are loaded; all requests use a built-in page.
+    return(_generate_page(req,captureSettings,args))
 
 #-----------------------------------------------------------------------------
 # Called as a POST method by authpage.html when the Login button is clicked.
@@ -408,9 +381,6 @@ def _generate_page(req,captureSettings,args,extra='',page=None,template_name=Non
             elif (captureSettings.get('pageType') == 'BASIC_MESSAGE'):
                 # name = req.filename[:req.filename.rindex('/')] + "/infopage.html"
                 template_name = "infopage.html"
-            elif (captureSettings.get('pageType') == 'CUSTOM'):
-                # name = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/custom.html"
-                template_name = f"custom_{args['APPID']}/custom.html"
             else:
                 page = "<html><head><title>Captive Portal Error</title></head><body><h2>Invalid Captive Portal configuration</h2></body></html>"
                 return(page)
@@ -459,10 +429,6 @@ def _generate_page(req,captureSettings,args,extra='',page=None,template_name=Non
         else:
             page = _replace_marker(page,'$.AgreeText.$', '')
             page = _replace_marker(page,'$.AgreeBox.$','hidden')
-
-    if (captureSettings.get('pageType') == 'CUSTOM'):
-        path = "/capture/custom_" + str(args['APPID'])
-        page = _replace_marker(page,'$.CustomPath.$',path)
 
     if captureSettings.get("authenticationType") in list(OAUTH_PROVIDERS.keys()):
         uvmContext = Uvm().getUvmContext()
@@ -586,6 +552,13 @@ def _load_capture_settings(req,appid=None):
         req.log_error("handler.py: Missing required setting: pageType")
         return None
 
+    # Old installations can still have a saved CUSTOM page type. Treat it as
+    # the built-in message page so no legacy custom content is loaded.
+    # Remove this if block in 18.0 or future releases.
+    if (captureSettings.get('pageType') == 'CUSTOM'):
+        req.log_error("handler.py: Legacy CUSTOM page type; using BASIC_MESSAGE")
+        captureSettings['pageType'] = 'BASIC_MESSAGE'
+
     # add the company name to the app settings dictionary
     captureSettings['companyName'] = companyName
 
@@ -649,44 +622,3 @@ def _html_escape(value):
     if type(value) == bytes:
         value = value.decode("utf-8")
     return html.escape(value, quote=True)
-
-#-----------------------------------------------------------------------------
-# handler for custom.py integration which dynamically loads the custom.py
-# script and calls the handler function passing the apache request object,
-# full path to the custom files, and the appid.
-
-def custom_handler(req):
-
-    # first we need to extract the args so we can find the appid
-    args = _split_args(req.args);
-
-    # make sure we have a valid appid
-    if (not 'APPID' in args):
-        raise Exception("The appid argument was not passed to custom_hander")
-
-    # construct the absolute and relative paths to the custom files
-    rawpath = req.filename[:req.filename.rindex('/')] + "/custom_" + str(args['APPID']) + "/"
-    webpath = "/capture/custom_" + str(args['APPID']) + "/"
-
-    # import the custom.py
-    cust = _import_file(rawpath + "custom")
-    if not cust:
-        raise Exception("Unable to locate or import custom.py")
-
-    # get a reference to the handler function
-    func = getattr(cust,"handler")
-    if not func:
-        raise Exception("Unable to locate handler function in custom.py")
-    if not hasattr(func,'__call__'):
-        raise Exception("The handler in custom.py is not a callable function")
-
-    # call the handler and return anything we get back
-    page = func(req,rawpath,webpath,str(args['APPID']))
-    return(page)
-
-#-----------------------------------------------------------------------------
-def _import_file(filename):
-    (path, name) = os.path.split(filename)
-    (name, ext) = os.path.splitext(name)
-    (file, filename, data) = imp.find_module(name, [path])
-    return imp.load_module(name, file, filename, data)
