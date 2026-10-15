@@ -28,18 +28,6 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
         type: 'vbox'
     },
 
-    // tbar can be removed when all users have upgraded to v17.2 and no user is having page type - custom
-    tbar: [{
-        xtype: 'tbtext',
-        padding: '8 5',
-        style: { fontSize: '12px' },
-        hidden: true,
-        bind: {
-            hidden: '{settings.pageType !== "CUSTOM"}',
-        },
-        html: '<i class="fa fa-exclamation-triangle" style="color: red;"></i> ' + 'Custom captive portal has been deprecated. Switch to Basic Message or Basic Logic Configuration.'.t()
-    }],
-
     items: [{
         xtype: 'radiogroup',
         margin: '0 0 20 0',
@@ -137,10 +125,6 @@ Ext.define('Ung.apps.captive-portal.view.CaptivePage', {
         width: '100%',
         title: 'HTTPS/SSL Root Certificate Detection'.t(),
         padding: 10,
-        hidden: true,
-        bind: {
-            hidden: '{settings.pageType === "CUSTOM"}'
-        },
         items: [{
             xtype: 'radiogroup',
             bind: '{settings.certificateDetection}',
