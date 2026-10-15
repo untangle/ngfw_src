@@ -3655,8 +3655,8 @@ server=dynupdate.no-ip.com
         Fields covered (TIER B - dnsmasq config-file injection RCE):
           - DnsLocalServer.domain         (HOSTNAME)
           - DhcpStaticEntry.macAddress    (MAC_ADDRESS)
-          - DhcpStaticEntry.description   (SIMPLE_TEXT)
-          - DhcpRelay.description         (SIMPLE_TEXT)
+          - DhcpStaticEntry.description   (SIMPLE_TEXT + exact literal allowlist)
+          - DhcpRelay.description         (SIMPLE_TEXT + exact literal allowlist)
 
         All sinks land in /etc/dnsmasq.conf or /etc/dnsmasq.d/* where dnsmasq's
         dhcp-script= / dhcp-luascript= / lease-change-script= directives trigger
@@ -3695,6 +3695,20 @@ server=dynupdate.no-ip.com
             global_functions.uvmContext.networkManager().setNetworkSettings(positive)
             baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
 
+            # Only the exact compatibility literals bypass SIMPLE_TEXT.
+            description_collections = ("staticDhcpEntries", "dhcpRelays")
+            for collection in description_collections:
+                for description in ("[no description]", "*"):
+                    allowed = copy.deepcopy(baseline)
+                    allowed[collection]["list"][0]["description"] = description
+                    global_functions.uvmContext.networkManager().setNetworkSettings(allowed)
+                    saved = global_functions.uvmContext.networkManager().getNetworkSettings()
+                    assert saved[collection]["list"][0]["description"] == description, (
+                        f"{collection}.description failed to round-trip exact "
+                        f"allowlist value {description!r}"
+                    )
+                    baseline = saved
+
             # Negative: newline-injected dhcp-script= payload is rejected for each field.
             INJECT = "\ndhcp-script=/tmp/evil"
             negative_cases = [
@@ -3703,6 +3717,12 @@ server=dynupdate.no-ip.com
                 ("staticDhcpEntries.0.description",         "evil" + INJECT),
                 ("dhcpRelays.0.description",                "evil" + INJECT),
             ]
+            # The allowlist does not accept patterns or literals with appended text.
+            negative_cases.extend(
+                (f"{collection}.0.description", description)
+                for collection in description_collections
+                for description in ("**", "[no description] extra")
+            )
             for path, payload in negative_cases:
                 bad = copy.deepcopy(baseline)
                 # Navigate the dotted path and set the leaf.
