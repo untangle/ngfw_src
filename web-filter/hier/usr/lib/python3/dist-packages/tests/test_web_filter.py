@@ -216,6 +216,7 @@ class WebFilterTests(WebFilterBaseTests):
         settings = self._app.getSettings()
         settings["blockQuic"]=False
         self._app.setSettings(settings)
+        time.sleep(10)
 
         serverHost = global_functions.LIST_SYSLOG_SERVER
         
@@ -223,7 +224,8 @@ class WebFilterTests(WebFilterBaseTests):
         remote_control.run_command("sudo pkill nc",host=serverHost) # kill previous running nc
         remote_control.run_command("sudo rm -f /tmp/nc_quic_false.txt",host=serverHost)
         remote_control.run_command("sudo nc -l -u -w 2 -p 443 >/tmp/nc_quic_false.txt",host=serverHost,stdout=False,nowait=True)
-        remote_control.run_command("echo TEST | nc -q 1 -u -w 1 %s 443 | sleep 2" % serverHost)
+        # Use the primary IP: the secondary IP is assigned to a different policy/app.
+        remote_control.run_command("echo TEST | nc -s %s -q 1 -u -w 1 %s 443 | sleep 2" % (primary_ip, serverHost))
         first_result =remote_control.run_command("grep TEST /tmp/nc_quic_false.txt",host=serverHost)
         assert(first_result == 0)
 
@@ -234,7 +236,7 @@ class WebFilterTests(WebFilterBaseTests):
         #retry netcat connection, verify it fails correctly
         remote_control.run_command("sudo rm -f /tmp/nc_quic_true.txt",host=serverHost)
         remote_control.run_command("sudo nc -l -u -w 2 -p 443 >/tmp/nc_quic_true.txt", host=serverHost,stdout=False,nowait=True)
-        remote_control.run_command("echo TEST | sudo nc -q 1 -u -w 1 %s 443 | sleep 2" % serverHost)
+        remote_control.run_command("echo TEST | sudo nc -s %s -q 1 -u -w 1 %s 443 | sleep 2" % (primary_ip, serverHost))
         second_result =remote_control.run_command("grep TEST /tmp/nc_quic_true.txt",host=serverHost)
         assert(second_result != 0)
         remote_control.run_command("sudo pkill nc",host=serverHost) # kill running nc

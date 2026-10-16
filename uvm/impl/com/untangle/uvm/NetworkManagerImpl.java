@@ -3771,10 +3771,34 @@ public class NetworkManagerImpl implements NetworkManager
         private void validateInterface(String value, List<String> suspiciousEntries) {
             boolean found = false;
 
-            for (InterfaceSettings ni : networkSettings.getInterfaces()) {
-                if (ni.getSystemDev().equals(value)) {
-                    found = true;
-                    break;
+            if (value == null) {
+                suspiciousEntries.add("Invalid interface: null");
+                return;
+            }
+
+            List<InterfaceSettings> interfaces =
+                    networkSettings == null ? null : networkSettings.getInterfaces();
+            if (interfaces != null) {
+                for (InterfaceSettings ni : interfaces) {
+                    if (ni == null) continue;
+
+                    if (Objects.equals(ni.getSystemDev(), value)) {
+                        found = true;
+                        break;
+                    }
+
+                    // Bridge interfaces are exposed to troubleshooting by their symbolic
+                    // device name (for example, br.eth0). Accept only configured symbolic
+                    // names that are present as Linux bridge devices.
+                    if (Objects.equals(ni.getSymbolicDev(), value)
+                            && value.matches(INTERFACE_NAME_PATTERN)) {
+                        Path interfacePath = Paths.get("/sys/class/net", value);
+                        if (Files.isDirectory(interfacePath)
+                                && Files.isDirectory(interfacePath.resolve("bridge"))) {
+                            found = true;
+                            break;
+                        }
+                    }
                 }
             }
 

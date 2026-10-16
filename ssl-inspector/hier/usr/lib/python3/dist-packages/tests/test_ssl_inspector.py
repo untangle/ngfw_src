@@ -269,10 +269,20 @@ class SslInspectorTests(NGFWTestCase):
         remote_control.run_command(global_functions.build_curl_command(trace_ascii_file="/tmp/ssl_test_030.trace", output_file="/tmp/ssl_test_030.output", uri=f"https://{testedServerName}"))
         events = global_functions.get_events('SSL Inspector','All Sessions',None,5)
         assert(events != None)
-        found = global_functions.check_events( events.get('list'), 5,
-                                            "ssl_inspector_status","INSPECTED",
-                                            "ssl_inspector_detail",testedServerName)
-        assert( found )
+        # Hostname verification is disabled by default for backward
+        # compatibility, which adds this annotation to the event detail.
+        # When verification is enabled, the detail is just the hostname.
+        expected_details = (
+            testedServerName,
+            f"{testedServerName} | {hostnameVerifyBypassDetail}"
+        )
+        found = any(
+            global_functions.check_events(
+                events.get('list'), 5,
+                "ssl_inspector_status", "INSPECTED",
+                "ssl_inspector_detail", expected_detail)
+            for expected_detail in expected_details)
+        assert found
 
     def test_040_checkWebFilterEventLog(self):
         addBlockedUrl(testedServerName)
