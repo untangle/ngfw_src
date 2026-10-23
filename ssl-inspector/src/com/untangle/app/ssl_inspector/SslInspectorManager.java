@@ -296,14 +296,16 @@ class SslInspectorManager
         // No idea if this is even possible, but if so it would allow us
         // to support client to server authentication via certificate.
 
-        // if blind trust is enabled or we are doing SMTP then we simply trust everything
+        // SMTP and Blind Trust bypass normal CA validation, but still reject
+        // the known-compromised intermediates.
         if ((app.getSettings().getServerBlindTrust() == true) || (session.getServerPort() == 25)) {
-            sslContext.init(null, new TrustManager[] { trust_all_certificates }, null);
+            TrustManager blocklistedTrustManager = TrustCatalog.wrapWithBlocklist(trust_all_certificates);
+            sslContext.init(null, new TrustManager[] { blocklistedTrustManager }, null);
         }
 
-        // blind trust not enabled and not SMTP so use the shared list of trusted certs
+        // Otherwise use the shared list of trusted certificates and the blocklist.
         else {
-            sslContext.init(null, app.getTrustFactory().getTrustManagers(), null);
+            sslContext.init(null, app.getTrustManagers(), null);
         }
 
         String target = (session.getServerAddr().getHostAddress().toString() + " | " + sniHostname);

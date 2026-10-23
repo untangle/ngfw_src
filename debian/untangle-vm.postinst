@@ -79,6 +79,31 @@ rm -rf /var/lib/postgresql/9.1
 rm -rf /etc/postgresql/9.4
 rm -rf /var/lib/postgresql/9.4
 
+# Disable compromised eMudhra/emSign and Comodo AAA root certificates
+# from the system CA store (Oct 2026 eMudhra intermediate key compromise).
+# Runs here in postinst so the fix applies on the same upgrade that
+# delivers this script, not deferred to the next ut-upgrade.py run.
+CA_CONF="/etc/ca-certificates.conf"
+if [ -f "$CA_CONF" ]; then
+    for root in \
+        "mozilla/emSign_ECC_Root_CA_-_C3.crt" \
+        "mozilla/emSign_ECC_Root_CA_-_G3.crt" \
+        "mozilla/emSign_Root_CA_-_C1.crt" \
+        "mozilla/emSign_Root_CA_-_G1.crt" \
+        "mozilla/Comodo_AAA_Services_root.crt"; do
+        if grep -q "^${root}$" "$CA_CONF" 2>/dev/null; then
+            sed -i "s|^${root}$|!${root}|" "$CA_CONF"
+        fi
+    done
+    update-ca-certificates >> /var/log/uvm/upgrade.log 2>&1 \
+        || logger -t untangle-vm-postinst "WARNING: update-ca-certificates failed — system CA bundle may be stale"
+    if [ -x /usr/sbin/dpkg-reconfigure ]; then
+        touch /var/lib/ca-certificates-java/fresh 2>/dev/null || true
+        dpkg-reconfigure ca-certificates-java >> /var/log/uvm/upgrade.log 2>&1 \
+            || logger -t untangle-vm-postinst "WARNING: dpkg-reconfigure ca-certificates-java failed — Java truststore may be stale"
+    fi
+fi
+
 # see corresponding comment in preinst: we need to unmask those
 # services that were masked just so the dist-upgrade could succeed
 systemctl unmask freeradius-dhcp # NGFW-12934, NGFW-13249
