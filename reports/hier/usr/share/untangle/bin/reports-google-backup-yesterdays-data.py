@@ -39,14 +39,16 @@ def main():
 
     if args.filename:
         filename = args.filename
+        if not filename.lower().endswith(".pgdump"):
+            raise ValueError("The custom-format backup filename must end with .pgdump")
     else:
         hostname = sanitize_hostname()
-        filename = f"{hostname}-reports_data-{yesterday}.sql.gz"
+        filename = f"{hostname}-reports_data-{yesterday}.pgdump"
 
     filepath = f"/tmp/{filename}"
 
     print(f"Creating backup: {filepath}")
-    cmd = ["/usr/share/untangle/bin/reports-create-backup.sh", "-r", f"*{yesterday}*", "-f", filepath]
+    cmd = ["/usr/share/untangle/bin/reports-create-backup-pgdump.sh", "-r", f"*{yesterday}*", "-f", filepath]
     print("Running:", " ".join(cmd))
     subprocess.run(cmd, check=True)
 

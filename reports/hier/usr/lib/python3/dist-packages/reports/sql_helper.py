@@ -1,11 +1,13 @@
 import datetime
 import inspect
 import psycopg2
+from psycopg2 import sql as pg_sql
 import re
 import string
 import time
 import sqlite3
 import os
+import traceback
 
 
 REQUIRED_TIME_POINTS = [float(s) for s in range(0, 24 * 60 * 60, 30 * 60)]
@@ -19,6 +21,7 @@ DBDRIVER = 'postgresql'
 UNLOGGED_ENABLED = os.path.isfile("@PREFIX@/usr/share/untangle/conf/unsafe-postgres-flag")
 EXTRA_INDEXES_ENABLED = True
 CONNECTION_STRING = "dbname=uvm user=postgres"
+SESSION_ROLE = None
 PRINT_TIMINGS = False
 
 
@@ -69,12 +72,61 @@ def print_timing(func):
 __conn = None
 
 
+def _new_postgresql_connection():
+    """Open a PostgreSQL connection and apply the configured session role.
+
+    Applying SESSION_ROLE here ensures that reconnects keep running Reports
+    DDL with the same effective role. The connection is closed if role setup
+    fails so callers never receive a partially configured session.
+    """
+    connection = psycopg2.connect(CONNECTION_STRING, connection_factory=Connection)
+    try:
+        if SESSION_ROLE:
+            with connection.cursor() as cursor:
+                cursor.execute(pg_sql.SQL("SET ROLE {}").format(pg_sql.Identifier(SESSION_ROLE)))
+            connection.commit()
+        return connection
+    except Exception:
+        connection.close()
+        raise
+
+
+def set_session_role(role):
+    """Set the effective role for the cached session and future connections.
+
+    The role is applied immediately when a PostgreSQL connection is open and
+    retained for any later reconnect. SQLite connections and not-yet-opened
+    connections need no immediate SQL action.
+    """
+    global SESSION_ROLE
+    global __conn
+
+    old_role = SESSION_ROLE
+    SESSION_ROLE = role
+    if DBDRIVER != "postgresql" or __conn is None:
+        return
+
+    try:
+        with __conn.cursor() as cursor:
+            cursor.execute(pg_sql.SQL("SET ROLE {}").format(pg_sql.Identifier(role)))
+        __conn.commit()
+    except Exception:
+        SESSION_ROLE = old_role
+        __conn.rollback()
+        raise
+
+
 def get_connection():
+    """Return a usable cached connection, reconnecting when its session fails.
+
+    New PostgreSQL connections pass through _new_postgresql_connection(),
+    which reapplies SESSION_ROLE before returning the connection.
+    """
     global __conn
     global DBDRIVER
 
     if not __conn and ( DBDRIVER == None or DBDRIVER == "postgresql" ):
-        __conn = psycopg2.connect(CONNECTION_STRING, connection_factory=Connection)
+        __conn = _new_postgresql_connection()
     if not __conn and ( DBDRIVER == "sqlite" ):
         __conn = sqlite3.connect('/var/lib/sqlite/reports.db')
 
@@ -90,7 +142,7 @@ def get_connection():
             __conn.close()
         except:
             pass
-        __conn = psycopg2.connect(CONNECTION_STRING, connection_factory=Connection)
+        __conn = _new_postgresql_connection()
 
     return __conn
 

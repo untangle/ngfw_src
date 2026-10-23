@@ -73,7 +73,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private static final String REPORTS_GOOGLE_CSV_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-csv.py";
     private static final String REPORTS_LOG_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-log-data.py";
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
-    private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup.sh";
+    private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-data-restore-pgdump.sh";
     private static final String REPORTS_DB_DRIVER_FILE = System.getProperty("uvm.conf.dir") + "/database-driver";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
@@ -1094,11 +1094,11 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     private int restoreData( FileItem item )
     {
-        if (!item.getName().endsWith(".gz")) {
-            throw new RuntimeException("Invalid file extension. Allowed: .gz");
+        if (!item.getName().endsWith(".pgdump")) {
+            throw new RuntimeException("Invalid file extension. Allowed: .pgdump");
         }
         try {
-            String filename = "/tmp/reports_restore_data.sql.gz";
+            String filename = "/tmp/reports_restore_data.pgdump";
             File file = new File(filename);
             if (file.exists())
                 file.delete();
@@ -1523,7 +1523,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         @Override
         public Set<String> getAllowedExtensions()
         {
-            return Set.of("gz");
+            return Set.of("pgdump");
         }
 
         /**
