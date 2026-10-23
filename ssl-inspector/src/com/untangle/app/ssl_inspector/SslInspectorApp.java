@@ -13,7 +13,7 @@
 
 package com.untangle.app.ssl_inspector;
 
-import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.TrustManager;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -82,7 +82,7 @@ public class SslInspectorApp extends AppBase
     protected static final String STAT_ABANDONED = "ABANDONED";
 
     protected List<OAuthDomain> oauthConfigList = new ArrayList<>();
-    private TrustManagerFactory trustFactory;
+    private TrustManager[] trustManagers;
     private SslInspectorSettings settings;
 
     private static final File CRON_FILE = new File("/etc/cron.daily/ssl-inspector-cleanup");
@@ -329,14 +329,15 @@ public class SslInspectorApp extends AppBase
     }
 
     /**
-     * Returns our trust manager factory which is loaded with the standard and
-     * user added certificates and authorities we trust.
-     * 
-     * @return Our trust manager factory
+     * Returns our trust managers which are loaded with the standard and
+     * user added certificates and authorities we trust, wrapped with a
+     * blocklist for known-compromised intermediates.
+     *
+     * @return Our trust managers
      */
-    public TrustManagerFactory getTrustFactory()
+    public TrustManager[] getTrustManagers()
     {
-        return (trustFactory);
+        return (trustManagers);
     }
 
     /**
@@ -527,7 +528,7 @@ public class SslInspectorApp extends AppBase
 
         if (settings.getServerBlindTrust() == false) {
             try {
-                trustFactory = TrustCatalog.createTrustFactory();
+                trustManagers = TrustCatalog.createTrustManagers();
             }
 
             catch (Exception exn) {

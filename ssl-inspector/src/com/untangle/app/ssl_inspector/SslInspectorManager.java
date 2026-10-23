@@ -307,7 +307,7 @@ class SslInspectorManager
 
         // blind trust not enabled so use the shared list of trusted certs
         else {
-            sslContext.init(null, app.getTrustFactory().getTrustManagers(), null);
+            sslContext.init(null, app.getTrustManagers(), null);
         }
 
         String target = (session.getServerAddr().getHostAddress().toString() + " | " + sniHostname);
