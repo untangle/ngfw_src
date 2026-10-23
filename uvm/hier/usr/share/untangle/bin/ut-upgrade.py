@@ -683,6 +683,68 @@ def post_upgrade_fixups_trixie():
 
     log("Post-upgrade: Trixie fixups complete")
 
+def disable_compromised_ca_certificates():
+    """
+    Disable eMudhra/emSign and Comodo AAA root certificates from the system
+    CA store. These roots were involved in the Oct 2026 eMudhra intermediate
+    CA compromise where 8 intermediate certificates had trivially weak
+    private keys, plus 8 Sectigo cross-signs via the AAA root.
+
+    This is idempotent — already-disabled entries (prefixed with !) are
+    skipped. Runs on every upgrade until a patched ca-certificates package
+    ships with the blacklist built in.
+    """
+    conf = "/etc/ca-certificates.conf"
+    if not os.path.exists(conf):
+        log("CA-cert fixup: %s not found, skipping" % conf)
+        return
+
+    compromised_roots = [
+        "mozilla/emSign_ECC_Root_CA_-_C3.crt",
+        "mozilla/emSign_ECC_Root_CA_-_G3.crt",
+        "mozilla/emSign_Root_CA_-_C1.crt",
+        "mozilla/emSign_Root_CA_-_G1.crt",
+        "mozilla/Comodo_AAA_Services_root.crt",
+    ]
+
+    try:
+        with open(conf, "r") as f:
+            lines = f.readlines()
+    except Exception as e:
+        log("CA-cert fixup: failed to read %s: %s" % (conf, e))
+        return
+
+    changed = False
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped in compromised_roots:
+            lines[i] = "!" + line
+            log("CA-cert fixup: disabled %s" % stripped)
+            changed = True
+
+    if not changed:
+        log("CA-cert fixup: no config changes needed (roots already disabled or absent)")
+    else:
+        try:
+            with open(conf, "w") as f:
+                f.writelines(lines)
+        except Exception as e:
+            log("CA-cert fixup: ERROR - failed to write %s: %s" % (conf, e))
+            return
+
+    log("CA-cert fixup: regenerating system CA bundle")
+    r = cmd_to_log("update-ca-certificates")
+    if r != 0:
+        log("CA-cert fixup: ERROR - update-ca-certificates returned %d" % r)
+
+    log("CA-cert fixup: syncing Java truststore")
+    cmd_to_log("touch /var/lib/ca-certificates-java/fresh 2>/dev/null || true")
+    r = cmd_to_log("dpkg-reconfigure ca-certificates-java 2>/dev/null")
+    if r != 0:
+        log("CA-cert fixup: WARNING - dpkg-reconfigure ca-certificates-java returned %d" % r)
+
+    log("CA-cert fixup: done")
+
 def protect_untangle_packages_from_autoremove():
     """
     Mark untangle-* and related runtime-required packages as manually installed
@@ -828,6 +890,9 @@ if bookworm_upgrade:
 elif trixie_upgrade:
     post_upgrade_fixups_trixie()
     log("")
+
+disable_compromised_ca_certificates()
+log("")
 
 clean()
 
