@@ -38,6 +38,11 @@ public interface SettingsManager
      * See SettingsManagerImpl
      */
     public <T> T loadUrl(Class<T> clz, String urlStr) throws SettingsException;
+
+    /**
+     * See SettingsManagerImpl
+     */
+    public <T> T loadUrl(Class<T> clz, String urlStr, boolean checkStatus) throws SettingsException;
     
     /**
      * See SettingsManagerImpl
