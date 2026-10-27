@@ -649,15 +649,12 @@ public class LicenseManagerImpl extends AppBase implements LicenseManager
 
         logger.info("REFRESH: Downloading new Licenses...");
 
-        
+
         try {
             String urlStr = _getLicenseUrl() + "?" + "action=getLicenses" + "&" + getServerParams();
             logger.info("Downloading: \"" + urlStr + "\"");
 
-            //
-            // We need to extract the restricted flag from the json object, so pass the class as JSONObject class
-            //
-            Object o = settingsManager.loadUrl(JSONObject.class, urlStr);
+            Object o = settingsManager.loadUrl(JSONObject.class, urlStr, true);
 
             JSONObject parse = (JSONObject)o;
 

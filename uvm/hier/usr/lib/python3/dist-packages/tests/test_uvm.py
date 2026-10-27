@@ -18,6 +18,10 @@ import urllib
 import urllib3
 import fnmatch
 import base64
+import hashlib
+import tempfile
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from urllib.parse import urlparse, parse_qs
 from jsonrpc import JSONRPCException
@@ -119,6 +123,61 @@ def find_files(dir_path, search_string):
         for filename in fnmatch.filter(files, search_string):
             license_files.append(os.path.join(root, filename))
     return license_files
+
+
+class FakeLicenseStatusHandler(BaseHTTPRequestHandler):
+    """Serve a parseable license response with a configurable HTTP status."""
+
+    status_code = 406
+    payload = b"{}"
+    request_count = 0
+
+    def do_GET(self):
+        self.__class__.request_count += 1
+        self.send_response(self.__class__.status_code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(self.__class__.payload)))
+        self.end_headers()
+        self.wfile.write(self.__class__.payload)
+
+    def log_message(self, format, *args):
+        pass
+
+
+def license_file_sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as license_file:
+        for chunk in iter(lambda: license_file.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def snapshot_license_directory(license_dir):
+    """Save license files and symlinks so a failed regression test can recover."""
+    backup_dir = tempfile.mkdtemp(prefix="license-status-test-")
+    for path in glob.glob(os.path.join(license_dir, "*")):
+        destination = os.path.join(backup_dir, os.path.basename(path))
+        if os.path.islink(path):
+            os.symlink(os.readlink(path), destination)
+        elif os.path.isfile(path):
+            shutil.copy2(path, destination)
+    return backup_dir
+
+
+def restore_license_directory(license_dir, backup_dir):
+    """Restore the license directory snapshot and remove the temporary copy."""
+    try:
+        for path in glob.glob(os.path.join(license_dir, "*")):
+            if os.path.islink(path) or os.path.isfile(path):
+                os.remove(path)
+        for path in glob.glob(os.path.join(backup_dir, "*")):
+            destination = os.path.join(license_dir, os.path.basename(path))
+            if os.path.islink(path):
+                os.symlink(os.readlink(path), destination)
+            else:
+                shutil.copy2(path, destination)
+    finally:
+        shutil.rmtree(backup_dir, ignore_errors=True)
 
 def buildDevicesSettings(devicesList=[]):
     return {
@@ -1957,6 +2016,120 @@ class UvmTests(NGFWTestCase):
         free_count = sum(1 for lic in lic_list if lic.get("type", "").lower() == "free")
         assert free_count == len(lic_list), \
             "license_default.js contains non-Free entries after recreation"
+
+    @pytest.mark.parametrize("status_code", [406, 503])
+    def test_303d_non_200_license_response_preserves_cached_licenses(self, status_code):
+        """
+        A non-200 license-server response with parseable, non-empty Free-only
+        JSON must not replace the primary cache or invalidate cached paid apps.
+        """
+        license_dir = "/usr/share/untangle/conf/licenses"
+        primary_file = os.path.join(license_dir, "licenses.js")
+        default_file = os.path.join(license_dir, "license_default.js")
+        if not os.path.isfile(primary_file) or not os.path.isfile(default_file):
+            pytest.skip("License cache files are unavailable")
+
+        with open(primary_file, "r") as license_file:
+            primary_data = json.load(license_file)
+        primary_licenses = primary_data.get("licenses", {})
+        primary_entries = primary_licenses.get("list", []) if isinstance(primary_licenses, dict) else []
+
+        with open(default_file, "r") as license_file:
+            default_data = json.load(license_file)
+        default_licenses = default_data.get("licenses", {})
+        free_entries = [entry for entry in default_licenses.get("list", [])
+                        if entry.get("type", "").lower() == "free"] \
+            if isinstance(default_licenses, dict) else []
+        if not free_entries:
+            pytest.skip("No Free-license fallback entries are available")
+
+        license_manager = global_functions.uvmContext.licenseManager()
+        protected_app = None
+        protected_type = None
+        for entry in primary_entries:
+            if entry.get("type", "").lower() not in ("subscription", "trial"):
+                continue
+            app_name = entry.get("currentName") or entry.get("name", "")
+            for prefix in ("untangle-node-", "untangle-casing-", "untangle-libitem-"):
+                app_name = app_name.replace(prefix, "")
+            try:
+                if app_name and license_manager.isLicenseValid(app_name):
+                    protected_app = app_name
+                    protected_type = entry.get("type")
+                    break
+            except Exception:
+                continue
+        if not protected_app:
+            pytest.skip("No currently valid Subscription or Trial license is available")
+
+        payload = json.dumps({
+            "list": free_entries,
+            "restricted": False,
+            "userMessages": []
+        }).encode("utf-8")
+        primary_hash_before = license_file_sha256(primary_file)
+        default_hash_before = license_file_sha256(default_file)
+        backup_dir = snapshot_license_directory(license_dir)
+
+        uri_manager = global_functions.uvmContext.uriManager()
+        original_uri_settings = copy.deepcopy(uri_manager.getSettings())
+        test_uri_settings = copy.deepcopy(original_uri_settings)
+        handler_class = type("TestLicenseStatusHandler", (FakeLicenseStatusHandler,), {
+            "status_code": status_code,
+            "payload": payload,
+            "request_count": 0,
+        })
+        server = None
+        server_thread = None
+        needs_recovery = False
+
+        try:
+            server = HTTPServer(("127.0.0.1", 0), handler_class)
+            server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+            server_thread.start()
+            fake_port = server.server_address[1]
+            translated_uris = test_uri_settings.get("uriTranslations", {}).get("list", [])
+            matched_translation = False
+            for translation in translated_uris:
+                if "license.edge.arista.com" in translation.get("uri", ""):
+                    translation["scheme"] = "http"
+                    translation["host"] = "127.0.0.1"
+                    translation["port"] = fake_port
+                    matched_translation = True
+            assert matched_translation, "License-server URI translation was not found"
+            uri_manager.setSettings(test_uri_settings)
+
+            license_manager.reloadLicenses(True)
+            time.sleep(2)
+
+            primary_hash_after = license_file_sha256(primary_file) if os.path.isfile(primary_file) else None
+            default_hash_after = license_file_sha256(default_file) if os.path.isfile(default_file) else None
+            protected_license_valid = license_manager.isLicenseValid(protected_app)
+            needs_recovery = (primary_hash_after != primary_hash_before
+                              or default_hash_after != default_hash_before
+                              or not protected_license_valid)
+
+            assert handler_class.request_count > 0, "Fake license server did not receive a request"
+            assert primary_hash_after == primary_hash_before, \
+                f"HTTP {status_code} response changed licenses.js"
+            assert default_hash_after == default_hash_before, \
+                f"HTTP {status_code} response changed license_default.js"
+            assert protected_license_valid, \
+                f"HTTP {status_code} response invalidated cached {protected_type} license for {protected_app}"
+        finally:
+            try:
+                uri_manager.setSettings(original_uri_settings)
+            finally:
+                if server_thread and server_thread.is_alive():
+                    server.shutdown()
+                if server:
+                    server.server_close()
+                if server_thread:
+                    server_thread.join(timeout=2)
+                restore_license_directory(license_dir, backup_dir)
+                # Restore in-memory state only if the regression changed it.
+                if needs_recovery:
+                    license_manager.reloadLicenses(True)
 
     @pytest.mark.slow
     def test_304_email_cleaner(self):

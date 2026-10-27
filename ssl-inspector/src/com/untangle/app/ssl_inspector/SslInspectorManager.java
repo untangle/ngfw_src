@@ -275,12 +275,10 @@ class SslInspectorManager
      * Called to initialize the server side engine. Since we're doing
      * man-in-the-middle, our server side acts like an SSL client. We only need
      * to init the trustStore which configures the certs we will trust as a
-     * client. If blind trust is enabled, we use our own empty trust manager
-     * which will simply trust every server certificate we receive. When not
-     * enabled, we start with a standard list of well know CA's which is then
-     * supplemented with additional certs to trust installed by the customer.
-     * This will make it easy for us to update the standard CA list without
-     * losing any custom certs added by customers.
+     * client. If blind trust is enabled, we bypass PKIX validation but still
+     * reject server chains containing known-compromised intermediates. When
+     * not enabled, we use the standard CA list supplemented with additional
+     * certificates installed by the customer.
      * 
      * @param sniHostname
      *        The SNI hostname from the ClientHello
@@ -299,15 +297,17 @@ class SslInspectorManager
         // No idea if this is even possible, but if so it would allow us
         // to support client to server authentication via certificate.
 
-        // if blind trust is enabled we simply trust everything
+        // Blind trust bypasses PKIX validation, while the blocklist still
+        // rejects known-compromised intermediate certificates.
         if (useBlindTrust) {
-            logger.debug("Using blind trust for upstream connection to {}", sniHostname);
-            sslContext.init(null, new TrustManager[] { trust_all_certificates }, null);
+            logger.debug("Using blind trust with compromised-certificate blocklist for upstream connection to {}", sniHostname);
+            TrustManager blocklistedTrustManager = TrustCatalog.wrapWithBlocklist(trust_all_certificates);
+            sslContext.init(null, new TrustManager[] { blocklistedTrustManager }, null);
         }
 
         // blind trust not enabled so use the shared list of trusted certs
         else {
-            sslContext.init(null, app.getTrustFactory().getTrustManagers(), null);
+            sslContext.init(null, app.getTrustManagers(), null);
         }
 
         String target = (session.getServerAddr().getHostAddress().toString() + " | " + sniHostname);
@@ -724,8 +724,9 @@ for more data when a full packet has not yet been received.
     }
 
     /**
-     * This is a dumb trust manager that will blindly trust all server
-     * certficiates., even though it's a REALLY bad idea.
+     * This delegate accepts all server certificates. The upstream SSL context
+     * wraps it with the compromised-intermediate blocklist when blind trust is
+     * enabled.
      */
     private TrustManager trust_all_certificates = new X509TrustManager()
     {

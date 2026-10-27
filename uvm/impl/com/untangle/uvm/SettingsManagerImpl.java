@@ -142,6 +142,26 @@ public class SettingsManagerImpl implements SettingsManager
     @SuppressWarnings("deprecation")
     public <T> T loadUrl( Class<T> clz, String urlStr ) throws SettingsException
     {
+        return loadUrl(clz, urlStr, false);
+    }
+
+    /**
+     * Load the settings from the store using a unique identifier.
+     * When checkStatus is true, non-200 HTTP responses are rejected
+     * as failed downloads and throw SettingsException.
+     *
+     * @param clz
+     *            Type of class to load.
+     * @param urlStr
+     *            The URL to load the settings for
+     * @param checkStatus
+     *            If true, reject non-200 HTTP responses with SettingsException
+     * @return The object that was loaded or null if an object was not loaded.
+     * @throws SettingsException
+     */
+    @SuppressWarnings("deprecation")
+    public <T> T loadUrl( Class<T> clz, String urlStr, boolean checkStatus ) throws SettingsException
+    {
         InputStream is = null;
         CloseableHttpResponse response = null;
         RequestConfig requestConfig = RequestConfig.custom()
@@ -157,14 +177,17 @@ public class SettingsManagerImpl implements SettingsManager
                 .setDefaultRequestConfig(requestConfig)
                 .setConnectionManager(poolingConnManager)
                 .build();
-        
+
         try {
             URL url = new URL(urlStr);
-            logger.debug("Fetching Settings from URL: " + url); 
+            logger.debug("Fetching Settings from URL: " + url);
 
             HttpGet get = new HttpGet(url.toString());
             get.addHeader("Accept-Encoding", "gzip");
             response = httpClient.execute(get);
+            if ( checkStatus && response.getCode() != 200 ) {
+                throw new SettingsException("HTTP " + response.getCode() + " from URL: '" + urlStr + "'");
+            }
             HttpEntity entity = response.getEntity();
             if ( entity == null ) {
                 throw new IllegalArgumentException("Invalid Response: " + entity);
