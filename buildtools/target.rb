@@ -238,7 +238,8 @@ task '' # XXX hack attack
 class CopyFiles < Target
   include Rake::DSL if defined?(Rake::DSL)
   
-  @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar|sys|bmp|dll|woff|woff2|eot|svg|ttf)$/
+  # Binary archive fixtures must bypass UTF-8 template filtering during hierarchy copies.
+  @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar|sys|bmp|dll|woff|woff2|eot|svg|ttf|pgdump)$/
 
   def initialize(package, moveSpecs, taskName, filterset = nil, destBase = nil)
     @package = package

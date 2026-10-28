@@ -18,13 +18,18 @@ import unittest
 import pytest
 import datetime
 import urllib.parse
+import urllib.error
+import urllib.request
 import json
 
 from io import BytesIO as BytesIO
+from pathlib import Path
 from datetime import datetime
 from datetime import date
 from datetime import timedelta
 from html.parser import HTMLParser
+import tempfile
+import uuid
 
 from tests.common import NGFWTestCase
 import runtests.overrides as overrides
@@ -48,6 +53,8 @@ orig_mailsettings = None
 syslog_server_host = ""
 test_email_address = ""
 reports_clean_tables_script = "/usr/share/untangle/bin/reports-clean-tables.py"
+reports_restore_log = Path("/var/log/uvm/restore-reports.log")
+reports_restore_fixture_dir = Path(__file__).resolve().parent / "fixtures" / "reports"
 # pdb.set_trace()
 
 
@@ -208,6 +215,79 @@ def create_previous_day_table(table_name="sessions", days=1):
         subprocess.check_output(global_functions.build_postgres_command(query=f"create table reports.{new_table} (check (time_stamp >= '{new_start_time}' and time_stamp < '{new_end_time}')) inherits (reports.{table_name})"), shell=True)
         earliest_date = new_date
         days = days - 1
+
+
+def reports_restore_log_offset():
+    """Return the current log size to isolate the next restore attempt."""
+    try:
+        return reports_restore_log.stat().st_size
+    except FileNotFoundError:
+        return 0
+
+
+def reports_restore_log_since(offset):
+    """Read only the Reports restore log content appended after offset."""
+    if not reports_restore_log.exists():
+        return ""
+    content = reports_restore_log.read_bytes()
+    # Handle log rotation or truncation between the snapshot and the read.
+    if len(content) < offset:
+        offset = 0
+    return content[offset:].decode("utf-8", errors="replace")
+
+
+def reports_restore_exit_code(log_text):
+    """Return the restore exit code recorded in this attempt's log output."""
+    matches = re.findall(
+        r"Reports data restore finished with exit code (\d+)", log_text)
+    return int(matches[-1]) if matches else None
+
+
+def assert_reports_restore_started(log_text, upload_response):
+    """Explain an upload failure when it never starts the restore script."""
+    assert "Starting Reports data restore" in log_text, (
+        "Restore script did not start. "
+        f"Upload response: {upload_response!r}; appended restore log: {log_text!r}")
+
+
+def upload_reports_archive(archive_path):
+    """Submit a .pgdump archive through the Reports UI upload endpoint."""
+    archive_path = Path(archive_path)
+    archive_bytes = archive_path.read_bytes()
+    assert archive_bytes, f"Reports restore test archive is empty: {archive_path}"
+    boundary, body = global_functions.build_upload_multipart_body(
+        "reportsDataRestore", "", archive_bytes, filename=archive_path.name)
+
+    request = urllib.request.Request(
+        "http://localhost/admin/upload",
+        data=body,
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
+    opener = global_functions.build_admin_http_opener()
+    try:
+        response = opener.open(request, timeout=300)
+        response_text = response.read().decode("utf-8")
+    except urllib.error.HTTPError as error:
+        response_text = error.read().decode("utf-8")
+    return json.loads(response_text)
+
+
+def reports_sql(query):
+    """Run a query against the test appliance's uvm database as postgres."""
+    command = global_functions.build_postgres_command(query=query)
+    return subprocess.check_output(
+        command, shell=True, text=True, stderr=subprocess.STDOUT).strip()
+
+
+def cleanup_copy_program_fixture():
+    """Remove tables, domains, and functions left by the COPY-program fixture."""
+    reports_sql(
+        "DROP TABLE IF EXISTS reports.restore_attack_copy_from_probe, "
+        "reports.restore_attack_copy_to_probe, "
+        "reports.restore_attack_program_output CASCADE; "
+        "DROP DOMAIN IF EXISTS reports.restore_attack_copy_from_guard CASCADE; "
+        "DROP DOMAIN IF EXISTS reports.restore_attack_copy_to_guard CASCADE; "
+        "DROP FUNCTION IF EXISTS reports.restore_attack_copy_from_program() CASCADE; "
+        "DROP FUNCTION IF EXISTS reports.restore_attack_copy_to_program() CASCADE")
 
 Sql_inject_getDataForReportEntry_parameters = ["ReportEntry", "startDate", "endDate", "extraSelects", "extraConditions", "fromtype", "limit"]
 
@@ -889,6 +969,139 @@ class ReportsTests(NGFWTestCase):
         found = global_functions.check_events( events.get('list'), 5,
                                               "operation", "delete all reports data" )
         assert(found)
+
+    def test_030_restore_rejects_plain_text_psql_meta_commands(self):
+        """Verify plain-text psql commands are rejected before role provisioning."""
+        archive = reports_restore_fixture_dir / "malicious-psql-metacommands.pgdump"
+        markers = [
+            Path("/tmp/reports_restore_psql_shell_executed"),
+            Path("/tmp/reports_restore_psql_copy_program_executed"),
+        ]
+        for marker in markers:
+            marker.unlink(missing_ok=True)
+
+        offset = reports_restore_log_offset()
+        try:
+            upload_response = upload_reports_archive(archive)
+            log_text = reports_restore_log_since(offset)
+
+            assert_reports_restore_started(log_text, upload_response)
+            assert "pg_restore: error:" in log_text
+            assert "Invalid Reports backup archive." in log_text
+            assert "Provisioning Reports restore roles" not in log_text
+            assert reports_restore_exit_code(log_text) is None
+            assert all(not marker.exists() for marker in markers)
+        finally:
+            for marker in markers:
+                marker.unlink(missing_ok=True)
+
+    def test_031_restore_blocks_copy_program(self):
+        """Verify the restricted restore role cannot execute server-side COPY PROGRAM."""
+        archive = reports_restore_fixture_dir / "malicious-copy-programs.pgdump"
+        marker = Path("/tmp/reports_restore_copy_to_program_executed")
+        cleanup_copy_program_fixture()
+        marker.unlink(missing_ok=True)
+
+        offset = reports_restore_log_offset()
+        try:
+            upload_response = upload_reports_archive(archive)
+            log_text = reports_restore_log_since(offset)
+            assert_reports_restore_started(log_text, upload_response)
+
+            exit_code = reports_restore_exit_code(log_text)
+            assert exit_code is not None and exit_code != 0, (
+                f"Expected nonzero restore exit code; upload response={upload_response!r}; "
+                f"archive size={archive.stat().st_size}; "
+                f"appended restore log={log_text!r}")
+            assert re.search(
+                r"permission denied to COPY .*external program",
+                log_text, re.IGNORECASE)
+            assert log_text.count("pg_execute_server_program") >= 2
+            assert "PL/pgSQL function reports.restore_attack_copy_from_program()" in log_text
+            assert "PL/pgSQL function reports.restore_attack_copy_to_program()" in log_text
+            assert not marker.exists()
+
+            output_table_exists = reports_sql(
+                "SELECT to_regclass('reports.restore_attack_program_output') "
+                "IS NOT NULL") == "t"
+            if output_table_exists:
+                payload_count = reports_sql(
+                    "SELECT count(*) FROM reports.restore_attack_program_output "
+                    "WHERE value = 'copy_from_program_payload'")
+                assert payload_count == "0"
+        finally:
+            marker.unlink(missing_ok=True)
+            cleanup_copy_program_fixture()
+
+    def test_032_restore_ignores_psql_meta_commands_in_custom_archive(self):
+        """Verify psql-like commands in a custom archive are restored as plain data."""
+        archive = reports_restore_fixture_dir / "malicious-psql-metacommands-binary.pgdump"
+        probe = "reports.restore_attack_psql_meta_probe"
+        marker = Path("/tmp/reports_meta_command_executed")
+        marker.unlink(missing_ok=True)
+        reports_sql(f"DROP TABLE IF EXISTS {probe} CASCADE")
+        offset = reports_restore_log_offset()
+
+        try:
+            upload_response = upload_reports_archive(archive)
+            log_text = reports_restore_log_since(offset)
+            assert_reports_restore_started(log_text, upload_response)
+
+            assert reports_restore_exit_code(log_text) == 0, (
+                f"Expected restore exit code 0; upload response={upload_response!r}; "
+                f"archive size={archive.stat().st_size}; "
+                f"appended restore log={log_text!r}")
+            assert "restore_attack_psql_meta_probe" in log_text
+            assert reports_sql(f"SELECT count(*) FROM {probe}") == "4"
+            command_values = reports_sql(f"SELECT command FROM {probe}").splitlines()
+            assert any(value.startswith("\\connect") for value in command_values)
+            assert any(value.startswith("\\c ") for value in command_values)
+            assert any(value.startswith("\\!") for value in command_values)
+            assert any(value.startswith("\\copy") for value in command_values)
+            assert not marker.exists()
+        finally:
+            marker.unlink(missing_ok=True)
+            reports_sql(f"DROP TABLE IF EXISTS {probe} CASCADE")
+
+    def test_033_restore_generated_ngfw_backup(self):
+        """Verify a backup made by the NGFW script restores its table and sentinel row."""
+        table = "restore_test_" + uuid.uuid4().hex
+        sentinel = "reports_restore_sentinel_" + uuid.uuid4().hex
+        backup_script = (global_functions.get_prefix() +
+                         "/usr/share/untangle/bin/reports-create-backup-pgdump.sh")
+
+        with tempfile.TemporaryDirectory(prefix="reports-restore-test-") as temp_dir:
+            archive = Path(temp_dir) / f"{table}.pgdump"
+            try:
+                reports_sql(
+                    f"CREATE TABLE reports.{table} "
+                    "(id integer PRIMARY KEY, payload text); "
+                    f"INSERT INTO reports.{table} VALUES (1, '{sentinel}')")
+                subprocess.run(
+                    [backup_script, "-r", table, "-f", str(archive)],
+                    check=True, timeout=120)
+                assert archive.is_file() and archive.stat().st_size > 0
+
+                # The restore script does not use --clean, so remove this
+                # test-only table before asking pg_restore to recreate it.
+                reports_sql(f"DROP TABLE reports.{table}")
+                offset = reports_restore_log_offset()
+                upload_response = upload_reports_archive(archive)
+                log_text = reports_restore_log_since(offset)
+                assert_reports_restore_started(log_text, upload_response)
+
+                assert reports_restore_exit_code(log_text) == 0, (
+                    f"Expected restore exit code 0; upload response={upload_response!r}; "
+                    f"appended restore log={log_text!r}")
+                assert table in log_text
+                assert reports_sql(
+                    f"SELECT id || ':' || payload FROM reports.{table}") == f"1:{sentinel}"
+                owner = reports_sql(
+                    f"SELECT pg_get_userbyid(relowner) FROM pg_class "
+                    f"WHERE oid = 'reports.{table}'::regclass")
+                assert owner == "ngfw_reports"
+            finally:
+                reports_sql(f"DROP TABLE IF EXISTS reports.{table}")
 
     def test_040_remote_syslog(self):
         if (not can_syslog):

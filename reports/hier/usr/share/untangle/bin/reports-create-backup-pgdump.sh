@@ -29,25 +29,11 @@ if [[ -z "$FILE" || -z "$REGEX" ]]; then
     exit 2
 fi
 
-PG_VERSION=$(pg_lsclusters -h | awk '$2 == "main" && $3 == "5432" { print $1; exit }')
-case "$PG_VERSION" in
-    ''|*[!0-9]*)
-        echo "ERROR: No valid PostgreSQL cluster is serving port 5432." >&2
-        exit 1
-        ;;
-esac
-
-PG_DUMP="/usr/lib/postgresql/${PG_VERSION}/bin/pg_dump"
-if [[ ! -x "$PG_DUMP" ]]; then
-    echo "ERROR: PostgreSQL ${PG_VERSION} pg_dump is unavailable." >&2
-    exit 1
-fi
-
 umask 077
 TEMP_FILE=$(mktemp -- "${FILE}.tmp.XXXXXX")
 trap 'rm -f -- "$TEMP_FILE"' EXIT
 
-"$PG_DUMP" \
+pg_dump \
     --username=postgres \
     --format=custom \
     --schema=reports \

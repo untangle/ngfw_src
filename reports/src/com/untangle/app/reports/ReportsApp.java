@@ -50,7 +50,6 @@ import com.untangle.uvm.app.Reporting;
 import com.untangle.uvm.app.HostnameLookup;
 import com.untangle.uvm.servlet.DownloadHandler;
 import com.untangle.uvm.servlet.UploadHandler;
-import com.untangle.uvm.servlet.UploadUnavailableException;
 import com.untangle.uvm.util.I18nUtil;
 import com.untangle.uvm.util.ObjectMatcher;
 import com.untangle.uvm.app.AppBase;
@@ -73,7 +72,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
     private static final String REPORTS_GOOGLE_CSV_BACKUP_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-google-backup-yesterdays-csv.py";
     private static final String REPORTS_LOG_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-log-data.py";
     private static final String REPORTS_GENERATE_FIXED_REPORTS_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-generate-fixed-reports.py";
-    private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-data-restore-pgdump.sh";
+    private static final String REPORTS_RESTORE_DATA_SCRIPT = System.getProperty("uvm.bin.dir") + "/reports-restore-backup-pgdump.sh";
     private static final String REPORTS_DB_DRIVER_FILE = System.getProperty("uvm.conf.dir") + "/database-driver";
 
     private static final File CRON_FILE = new File("/etc/cron.daily/reports-cron");
@@ -1541,10 +1540,19 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         @Override
         public String handleFile(FileItem fileItem, String argument) throws Exception
         {
-            throw new UploadUnavailableException(
-                I18nUtil.marktr("Reports data restore is temporarily unavailable. Contact Support to restore your data."));
-        }
+            try {
+                int ret = restoreData(fileItem);
 
+                if ( ret == 0 ) {
+                    return I18nUtil.marktr("Successfully restored data");
+                } else {
+                    return I18nUtil.marktr("Error restoring data:") + " " + ret;
+                }
+                    
+            } catch ( Exception e ) {
+                return I18nUtil.marktr("Error restoring data:") + " " + e.toString();
+            }
+         }
     }
     
 }

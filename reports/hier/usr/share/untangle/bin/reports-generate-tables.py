@@ -57,85 +57,9 @@ if '@PREFIX@' != '':
 
 import reports.sql_helper as sql_helper
 
-
-def transfer_reports_object_ownership(cursor):
-     """Transfer existing Reports objects to the restricted owner role.
-
-     The migration is limited to objects in the reports schema. Tables are
-     handled before sequences so owned sequences can follow their table's
-     owner; routines and user-defined types are transferred afterward. The
-     caller must have administrative authority and ngfw_reports must exist.
-     """
-     relation_commands = {
-          "r": "TABLE",
-          "p": "TABLE",
-          "v": "VIEW",
-          "m": "MATERIALIZED VIEW",
-          "S": "SEQUENCE",
-          "f": "FOREIGN TABLE",
-     }
-
-     cursor.execute("""
-          SELECT relation.relkind, namespace.nspname, relation.relname
-          FROM pg_class AS relation
-          JOIN pg_namespace AS namespace ON namespace.oid = relation.relnamespace
-          WHERE namespace.nspname = 'reports'
-            AND relation.relkind IN ('r', 'p', 'v', 'm', 'S', 'f')
-            AND relation.relowner <> (SELECT oid FROM pg_roles WHERE rolname = 'ngfw_reports')
-          -- Move table ownership before sequence ownership because an
-          -- OWNED BY sequence must have the same owner as its table.
-          ORDER BY CASE WHEN relation.relkind = 'S' THEN 1 ELSE 0 END,
-                   relation.relname
-     """)
-     for relkind, schema_name, object_name in cursor.fetchall():
-          cursor.execute(
-               pg_sql.SQL("ALTER {} {}.{} OWNER TO ngfw_reports").format(
-                    pg_sql.SQL(relation_commands[relkind]),
-                    pg_sql.Identifier(schema_name),
-                    pg_sql.Identifier(object_name)))
-
-     cursor.execute("""
-          SELECT procedure.prokind, namespace.nspname, procedure.proname,
-                 pg_get_function_identity_arguments(procedure.oid)
-          FROM pg_proc AS procedure
-          JOIN pg_namespace AS namespace ON namespace.oid = procedure.pronamespace
-          WHERE namespace.nspname = 'reports'
-            AND procedure.prokind IN ('f', 'p', 'a', 'w')
-            AND procedure.proowner <> (SELECT oid FROM pg_roles WHERE rolname = 'ngfw_reports')
-          ORDER BY procedure.proname
-     """)
-     for prokind, schema_name, object_name, identity_arguments in cursor.fetchall():
-          command = "AGGREGATE" if prokind == "a" else (
-               "PROCEDURE" if prokind == "p" else "FUNCTION")
-          cursor.execute(
-               pg_sql.SQL("ALTER {} {}.{}({}) OWNER TO ngfw_reports").format(
-                    pg_sql.SQL(command),
-                    pg_sql.Identifier(schema_name),
-                    pg_sql.Identifier(object_name),
-                    pg_sql.SQL(identity_arguments)))
-
-     cursor.execute("""
-          SELECT type.typtype, namespace.nspname, type.typname
-          FROM pg_type AS type
-          JOIN pg_namespace AS namespace ON namespace.oid = type.typnamespace
-          WHERE namespace.nspname = 'reports'
-            AND type.typtype IN ('d', 'e', 'r', 'm')
-            AND type.typelem = 0
-            AND type.typowner <> (SELECT oid FROM pg_roles WHERE rolname = 'ngfw_reports')
-          ORDER BY type.typname
-     """)
-     for type_kind, schema_name, object_name in cursor.fetchall():
-          command = "DOMAIN" if type_kind == "d" else "TYPE"
-          cursor.execute(
-               pg_sql.SQL("ALTER {} {}.{} OWNER TO ngfw_reports").format(
-                    pg_sql.SQL(command),
-                    pg_sql.Identifier(schema_name),
-                    pg_sql.Identifier(object_name)))
-
-
 def revoke_role_memberships(cursor, member_name):
-     """Revoke every direct role membership held by member_name.
-
+     """
+     Revoke every direct role membership held by member_name.
      This removes both inherited privileges and any ability to SET ROLE into
      another role. The caller is responsible for granting back only the
      specific membership required by the Reports restore design.
@@ -155,15 +79,13 @@ def revoke_role_memberships(cursor, member_name):
 
 
 def restrict_reports_role_memberships(cursor):
-     """Constrain role membership to the Reports restore capability path.
-
+     """
+     Constrain role membership to the Reports restore capability path.
      ngfw_reports cannot switch into other roles, reports_restore cannot
      inherit or switch into other roles, and no other role can assume
      ngfw_reports. configure_reports_roles() grants the single allowed
      reports_restore-to-ngfw_reports membership afterward.
      """
-     # The owner role must not itself be able to switch into another role, and
-     # only the dedicated restore login may switch into the owner role.
      revoke_role_memberships(cursor, "ngfw_reports")
      revoke_role_memberships(cursor, "reports_restore")
      cursor.execute("""
@@ -180,9 +102,42 @@ def restrict_reports_role_memberships(cursor):
                     pg_sql.Identifier(member_name)))
 
 
-def configure_reports_roles():
-     """Provision Reports roles and migrate reports-schema object ownership.
+def transfer_reports_object_ownership(cursor):
+     """
+     Transfer existing Reports objects to the restricted owner role.
+     Tables are handled before sequences so owned sequences follow their
+     table's owner. Indexes and triggers follow their table's ownership
+     and need no separate transfer. The caller must have administrative
+     authority and ngfw_reports must exist.
+     """
+     relation_commands = {
+          "r": "TABLE",
+          "S": "SEQUENCE",
+     }
 
+     cursor.execute("""
+          SELECT relation.relkind, namespace.nspname, relation.relname
+          FROM pg_class AS relation
+          JOIN pg_namespace AS namespace ON namespace.oid = relation.relnamespace
+          WHERE namespace.nspname = 'reports'
+            AND relation.relkind IN ('r', 'S')
+            AND relation.relowner <> (SELECT oid FROM pg_roles WHERE rolname = 'ngfw_reports')
+          -- Move table ownership before sequence ownership because an
+          -- OWNED BY sequence must have the same owner as its table.
+          ORDER BY CASE WHEN relation.relkind = 'S' THEN 1 ELSE 0 END,
+                   relation.relname
+     """)
+     for relkind, schema_name, object_name in cursor.fetchall():
+          cursor.execute(
+               pg_sql.SQL("ALTER {} {}.{} OWNER TO ngfw_reports").format(
+                    pg_sql.SQL(relation_commands[relkind]),
+                    pg_sql.Identifier(schema_name),
+                    pg_sql.Identifier(object_name)))
+
+
+def configure_reports_roles():
+     """
+     Provision Reports roles and migrate reports-schema object ownership.
      This idempotent setup expects the reports schema to exist and the
      connection to have trusted administrative privileges. It makes
      ngfw_reports a non-login owner, limits reports_restore to connecting and
@@ -192,38 +147,44 @@ def configure_reports_roles():
      connection = sql_helper.get_connection()
      try:
           with connection.cursor() as cursor:
+               # Check whether the restricted Reports owner role already exists.
                cursor.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", ("ngfw_reports",))
                if cursor.fetchone() is None:
+                    # Create a non-login role with no elevated PostgreSQL capabilities.
                     cursor.execute("""
                          CREATE ROLE ngfw_reports
                              NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
                              NOINHERIT NOREPLICATION NOBYPASSRLS
                     """)
 
+               # Normalize the owner role attributes on both new and existing installations.
                cursor.execute("""
                     ALTER ROLE ngfw_reports
                         NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
                         NOINHERIT NOREPLICATION NOBYPASSRLS
                """)
+               # Check whether the dedicated Reports restore login already exists.
                cursor.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", ("reports_restore",))
                if cursor.fetchone() is None:
+                    # Create the restore login without elevated PostgreSQL capabilities.
                     cursor.execute("""
                          CREATE ROLE reports_restore
                              LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
                              NOINHERIT NOREPLICATION NOBYPASSRLS
                     """)
+               # Normalize the restore login attributes on both new and existing installations.
                cursor.execute("""
                     ALTER ROLE reports_restore
                         LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
                         NOINHERIT NOREPLICATION NOBYPASSRLS
                """)
+
                restrict_reports_role_memberships(cursor)
+
                cursor.execute("GRANT CONNECT ON DATABASE uvm TO reports_restore")
                cursor.execute("GRANT USAGE, CREATE ON SCHEMA reports TO ngfw_reports")
-               # Keep this GRANT compatible with PostgreSQL 13 (Bullseye).
-               # reports_restore is NOINHERIT, so it must explicitly SET ROLE
-               # to use ngfw_reports privileges; membership option syntax was
-               # added in PostgreSQL 16.
+
+               # reports_restore is NOINHERIT, so it must explicitly SET ROLE to use ngfw_reports privileges.
                cursor.execute("GRANT ngfw_reports TO reports_restore")
 
                # Remove the direct object/schema grants from the previous
@@ -232,26 +193,34 @@ def configure_reports_roles():
                cursor.execute("REVOKE CREATE, USAGE ON SCHEMA reports FROM reports_restore")
                cursor.execute("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA reports FROM reports_restore")
                cursor.execute("REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA reports FROM reports_restore")
+
+               # Prevent postgres-created tables from granting direct access to the restore login.
                cursor.execute("""
                     ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA reports
                         REVOKE ALL ON TABLES FROM reports_restore
                """)
+               # Prevent postgres-created sequences from granting direct access to the restore login.
                cursor.execute("""
                     ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA reports
                         REVOKE ALL ON SEQUENCES FROM reports_restore
                """)
+
+               # Prevent ngfw_reports-created tables from granting direct access to the restore login.
                cursor.execute("""
                     ALTER DEFAULT PRIVILEGES FOR ROLE ngfw_reports IN SCHEMA reports
                         REVOKE ALL ON TABLES FROM reports_restore
                """)
+               # Prevent ngfw_reports-created sequences from granting direct access to the restore login.
                cursor.execute("""
                     ALTER DEFAULT PRIVILEGES FOR ROLE ngfw_reports IN SCHEMA reports
                         REVOKE ALL ON SEQUENCES FROM reports_restore
                """)
 
                transfer_reports_object_ownership(cursor)
+          # Commit role configuration and ownership migration as one transaction.
           connection.commit()
      except Exception:
+          # Undo any partial role or ownership changes if configuration fails.
           connection.rollback()
           raise
 
@@ -299,4 +268,4 @@ for f in os.listdir(REPORTS_PYTHON_DIR):
           except:
                print("%s.generate_tables() Exception:" % name)
                traceback.print_exc()
-
+               

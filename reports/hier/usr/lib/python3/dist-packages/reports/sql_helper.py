@@ -83,6 +83,7 @@ def _new_postgresql_connection():
     try:
         if SESSION_ROLE:
             with connection.cursor() as cursor:
+                # Apply the configured role to each newly opened PostgreSQL session.
                 cursor.execute(pg_sql.SQL("SET ROLE {}").format(pg_sql.Identifier(SESSION_ROLE)))
             connection.commit()
         return connection
@@ -108,6 +109,7 @@ def set_session_role(role):
 
     try:
         with __conn.cursor() as cursor:
+            # Apply the requested role immediately to the currently cached PostgreSQL session.
             cursor.execute(pg_sql.SQL("SET ROLE {}").format(pg_sql.Identifier(role)))
         __conn.commit()
     except Exception:

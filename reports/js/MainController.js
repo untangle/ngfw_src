@@ -207,6 +207,24 @@ Ext.define('Ung.apps.reports.MainController', {
         });
     },
 
+    onUpload: function (btn) {
+        var formPanel = btn.up('form');
+        formPanel.submit({
+            waitMsg: 'Please wait while data is imported...'.t(),
+            success: function () {
+                if(!Util.isDestroyed(formPanel)){
+                    formPanel.down('filefield').reset();
+                }
+                // Ext.MessageBox.alert('Succeeded'.t(), 'Upload Data Succeeded'.t());
+                Util.successToast('Upload Data Succeeded'.t());
+            },
+            failure: function (form, action) {
+                var msg = (action.result && action.result.msg) ? action.result.msg : 'Upload Data Failed'.t();
+                Util.handleException(msg);
+            }
+        });
+    },
+
 });
 
 Ext.define('Ung.apps.reports.cmp.EmailTemplatesGridController', {
