@@ -2017,8 +2017,13 @@ class UvmTests(NGFWTestCase):
         assert free_count == len(lic_list), \
             "license_default.js contains non-Free entries after recreation"
 
-    @pytest.mark.parametrize("status_code", [406, 503])
-    def test_303d_non_200_license_response_preserves_cached_licenses(self, status_code):
+    def test_303d_http_406_license_response_preserves_cached_licenses(self):
+        self._assert_non_200_license_response_preserves_cached_licenses(406)
+
+    def test_303e_http_503_license_response_preserves_cached_licenses(self):
+        self._assert_non_200_license_response_preserves_cached_licenses(503)
+
+    def _assert_non_200_license_response_preserves_cached_licenses(self, status_code):
         """
         A non-200 license-server response with parseable, non-empty Free-only
         JSON must not replace the primary cache or invalidate cached paid apps.
@@ -2027,7 +2032,7 @@ class UvmTests(NGFWTestCase):
         primary_file = os.path.join(license_dir, "licenses.js")
         default_file = os.path.join(license_dir, "license_default.js")
         if not os.path.isfile(primary_file) or not os.path.isfile(default_file):
-            pytest.skip("License cache files are unavailable")
+            self.skipTest("License cache files are unavailable")
 
         with open(primary_file, "r") as license_file:
             primary_data = json.load(license_file)
@@ -2041,7 +2046,7 @@ class UvmTests(NGFWTestCase):
                         if entry.get("type", "").lower() == "free"] \
             if isinstance(default_licenses, dict) else []
         if not free_entries:
-            pytest.skip("No Free-license fallback entries are available")
+            self.skipTest("No Free-license fallback entries are available")
 
         license_manager = global_functions.uvmContext.licenseManager()
         protected_app = None
@@ -2060,7 +2065,7 @@ class UvmTests(NGFWTestCase):
             except Exception:
                 continue
         if not protected_app:
-            pytest.skip("No currently valid Subscription or Trial license is available")
+            self.skipTest("No currently valid Subscription or Trial license is available")
 
         payload = json.dumps({
             "list": free_entries,
