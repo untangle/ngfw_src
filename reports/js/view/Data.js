@@ -149,10 +149,28 @@ Ext.define('Ung.apps.reports.view.Data', {
     ]
     }, {
         title: 'Import / Restore Data Backup Files'.t(),
+        labelWidth: 150,
         items: [{
-            xtype: 'component',
-            margin: '10 10 10 0',
-            html: 'Reports data restore is temporarily unavailable. Contact Support to restore your data.'.t()
+            xtype: 'form',
+            url: 'upload',
+            border: false,
+            items: [{
+                xtype: 'filefield',
+                fieldLabel: 'File'.t(),
+                name: 'uploadDataFile',
+                width: 500,
+                labelWidth: 50,
+                validateOnBlur: false
+            }, {
+                xtype: 'button',
+                text: 'Upload'.t(),
+                formBind: true,
+                handler: 'onUpload'
+            }, {
+                xtype: 'hidden',
+                name: 'type',
+                value: 'reportsDataRestore'
+            }]
         }]
     }, {
         // fix isExpertMode

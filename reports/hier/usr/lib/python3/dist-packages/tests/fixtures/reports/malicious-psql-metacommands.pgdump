@@ -1,0 +1,7 @@
+-- TEST FIXTURE ONLY: intentionally plain text, NOT a PostgreSQL custom archive.
+-- The restore wrapper must reject this at pg_restore --list.
+SELECT 1;
+\connect uvm postgres
+\c uvm postgres
+\! touch /tmp/reports_restore_psql_shell_executed
+\copy (SELECT 'psql-copy-program') TO PROGRAM 'touch /tmp/reports_restore_psql_copy_program_executed'
