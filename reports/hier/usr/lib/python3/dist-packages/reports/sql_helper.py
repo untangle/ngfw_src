@@ -527,7 +527,9 @@ def __sub_tablename(sql,new_name):
 
 
 def __make_trigger( tablename, timestamp_column, all_dates ):
-    trigger_function_name = '%s_insert_trigger()' % tablename
+    # Keep Reports trigger functions in the Reports schema. The generator
+    # provisions ownership and CREATE privileges there for ngfw_reports.
+    trigger_function_name = '%s.%s_insert_trigger()' % (schema(), tablename)
 
     trigger_function = """\
 CREATE OR REPLACE FUNCTION %s

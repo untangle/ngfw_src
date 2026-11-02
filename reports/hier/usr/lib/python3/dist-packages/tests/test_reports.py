@@ -1015,20 +1015,23 @@ class ReportsTests(NGFWTestCase):
                 f"appended restore log={log_text!r}")
             assert re.search(
                 r"permission denied to COPY .*external program",
-                log_text, re.IGNORECASE)
+                log_text, re.IGNORECASE) is not None
             assert log_text.count("pg_execute_server_program") >= 2
             assert "PL/pgSQL function reports.restore_attack_copy_from_program()" in log_text
             assert "PL/pgSQL function reports.restore_attack_copy_to_program()" in log_text
             assert not marker.exists()
 
-            output_table_exists = reports_sql(
+            # pg_restore always creates restore_attack_program_output before the COPY errors
+            # fire (confirmed by log: "creating TABLE" precedes "COPY failed"), so the
+            # table must exist and must contain no payload rows.
+            assert reports_sql(
                 "SELECT to_regclass('reports.restore_attack_program_output') "
-                "IS NOT NULL") == "t"
-            if output_table_exists:
-                payload_count = reports_sql(
-                    "SELECT count(*) FROM reports.restore_attack_program_output "
-                    "WHERE value = 'copy_from_program_payload'")
-                assert payload_count == "0"
+                "IS NOT NULL") == "t", (
+                "restore_attack_program_output table was not created by pg_restore")
+            payload_count = reports_sql(
+                "SELECT count(*) FROM reports.restore_attack_program_output "
+                "WHERE value = 'copy_from_program_payload'")
+            assert payload_count == "0"
         finally:
             marker.unlink(missing_ok=True)
             cleanup_copy_program_fixture()

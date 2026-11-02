@@ -107,12 +107,18 @@ def transfer_reports_object_ownership(cursor):
      Transfer existing Reports objects to the restricted owner role.
      Tables are handled before sequences so owned sequences follow their
      table's owner. Indexes and triggers follow their table's ownership
-     and need no separate transfer. The caller must have administrative
-     authority and ngfw_reports must exist.
+     and need no separate transfer. Routines and standalone user-defined
+     types are also transferred because Reports table generation replaces
+     trigger functions while running as ngfw_reports. The caller must have
+     administrative authority and ngfw_reports must exist.
      """
      relation_commands = {
           "r": "TABLE",
+          "p": "TABLE",
+          "v": "VIEW",
+          "m": "MATERIALIZED VIEW",
           "S": "SEQUENCE",
+          "f": "FOREIGN TABLE",
      }
 
      cursor.execute("""
@@ -120,7 +126,7 @@ def transfer_reports_object_ownership(cursor):
           FROM pg_class AS relation
           JOIN pg_namespace AS namespace ON namespace.oid = relation.relnamespace
           WHERE namespace.nspname = 'reports'
-            AND relation.relkind IN ('r', 'S')
+            AND relation.relkind IN ('r', 'p', 'v', 'm', 'S', 'f')
             AND relation.relowner <> (SELECT oid FROM pg_roles WHERE rolname = 'ngfw_reports')
           -- Move table ownership before sequence ownership because an
           -- OWNED BY sequence must have the same owner as its table.
@@ -131,6 +137,76 @@ def transfer_reports_object_ownership(cursor):
           cursor.execute(
                pg_sql.SQL("ALTER {} {}.{} OWNER TO ngfw_reports").format(
                     pg_sql.SQL(relation_commands[relkind]),
+                    pg_sql.Identifier(schema_name),
+                    pg_sql.Identifier(object_name)))
+
+     cursor.execute("""
+          WITH reports_trigger_functions AS (
+               SELECT DISTINCT report_trigger.tgfoid AS function_oid
+               FROM pg_trigger AS report_trigger
+               JOIN pg_class AS relation ON relation.oid = report_trigger.tgrelid
+               JOIN pg_namespace AS relation_namespace
+                    ON relation_namespace.oid = relation.relnamespace
+               JOIN pg_proc AS report_function
+                    ON report_function.oid = report_trigger.tgfoid
+               WHERE relation_namespace.nspname = 'reports'
+                 AND NOT report_trigger.tgisinternal
+                 AND report_function.proname::text = relation.relname::text || '_insert_trigger'
+          )
+          SELECT procedure.prokind, namespace.nspname, procedure.proname,
+                 pg_get_function_identity_arguments(procedure.oid),
+                 reports_trigger_functions.function_oid IS NOT NULL
+                    AS is_reports_trigger_function
+          FROM pg_proc AS procedure
+          JOIN pg_namespace AS namespace ON namespace.oid = procedure.pronamespace
+          LEFT JOIN reports_trigger_functions
+               ON reports_trigger_functions.function_oid = procedure.oid
+          WHERE (
+                namespace.nspname = 'reports'
+                OR reports_trigger_functions.function_oid IS NOT NULL
+          )
+            AND procedure.prokind IN ('f', 'p', 'a', 'w')
+            AND (
+                procedure.proowner <> (SELECT oid FROM pg_roles WHERE rolname = 'ngfw_reports')
+                OR (
+                    namespace.nspname <> 'reports'
+                    AND reports_trigger_functions.function_oid IS NOT NULL
+                )
+            )
+          ORDER BY procedure.proname
+     """)
+     for prokind, schema_name, object_name, identity_arguments, is_reports_trigger_function in cursor.fetchall():
+          command = "AGGREGATE" if prokind == "a" else (
+               "PROCEDURE" if prokind == "p" else "FUNCTION")
+          if is_reports_trigger_function and schema_name != "reports":
+               cursor.execute(
+                    pg_sql.SQL("ALTER FUNCTION {}.{}({}) SET SCHEMA reports").format(
+                         pg_sql.Identifier(schema_name),
+                         pg_sql.Identifier(object_name),
+                         pg_sql.SQL(identity_arguments)))
+               schema_name = "reports"
+          cursor.execute(
+               pg_sql.SQL("ALTER {} {}.{}({}) OWNER TO ngfw_reports").format(
+                    pg_sql.SQL(command),
+                    pg_sql.Identifier(schema_name),
+                    pg_sql.Identifier(object_name),
+                    pg_sql.SQL(identity_arguments)))
+
+     cursor.execute("""
+          SELECT type.typtype, namespace.nspname, type.typname
+          FROM pg_type AS type
+          JOIN pg_namespace AS namespace ON namespace.oid = type.typnamespace
+          WHERE namespace.nspname = 'reports'
+            AND type.typtype IN ('d', 'e', 'r', 'm')
+            AND type.typelem = 0
+            AND type.typowner <> (SELECT oid FROM pg_roles WHERE rolname = 'ngfw_reports')
+          ORDER BY type.typname
+     """)
+     for type_kind, schema_name, object_name in cursor.fetchall():
+          command = "DOMAIN" if type_kind == "d" else "TYPE"
+          cursor.execute(
+               pg_sql.SQL("ALTER {} {}.{} OWNER TO ngfw_reports").format(
+                    pg_sql.SQL(command),
                     pg_sql.Identifier(schema_name),
                     pg_sql.Identifier(object_name)))
 
