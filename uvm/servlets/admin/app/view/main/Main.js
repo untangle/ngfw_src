@@ -38,7 +38,7 @@ Ext.define('Ung.view.main.Main', {
     }, {
         xtype: 'ung.config'
     }, {
-        xtype: 'ung.reports'
+        xtype: 'ung.reports-vue'
     }, {
         xtype: 'invalidroute',
     }]
