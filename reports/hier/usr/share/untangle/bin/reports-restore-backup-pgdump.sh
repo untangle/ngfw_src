@@ -5,7 +5,7 @@ set -euo pipefail
 function doHelp() {
     echo "$0 [options]"
     echo "required options:"
-    echo " -f input_file    (custom-format Reports backup to restore)"
+    echo " -f input_file    (authenticated .rbackup Reports backup to restore)"
     echo "optional options:"
     echo " -h               (help)"
     echo
@@ -27,10 +27,30 @@ if [[ -z "$FILE" || ! -f "$FILE" || ! -r "$FILE" ]]; then
     exit 2
 fi
 
+umask 077
+RESTORE_DIR=$(mktemp -d /tmp/reports-restore.XXXXXX)
+chmod 700 "$RESTORE_DIR"
+trap 'rm -rf -- "$RESTORE_DIR"' EXIT
+VERIFIED_ARCHIVE="$RESTORE_DIR/reports.pgdump"
+
 mkdir -p "$(dirname "$RESTORE_LOG")"
 printf '\n[%s] Starting Reports data restore from %s\n' "$(date --iso-8601=seconds)" "$FILE" | tee -a "$RESTORE_LOG"
 
-if ! pg_restore --list "$FILE" >/dev/null 2>>"$RESTORE_LOG"; then
+BACKUP_INTEGRITY_HELPER="/usr/share/untangle/bin/reports-backup-integrity.py"
+if [[ ! -x "$BACKUP_INTEGRITY_HELPER" ]]; then
+    echo "ERROR: Reports backup integrity verifier is unavailable." >&2
+    printf '[%s] Reports backup integrity verifier is unavailable.\n' "$(date --iso-8601=seconds)" | tee -a "$RESTORE_LOG"
+    exit 1
+fi
+
+if ! "$BACKUP_INTEGRITY_HELPER" verify --package "$FILE" --output "$VERIFIED_ARCHIVE" 2>>"$RESTORE_LOG"; then
+    echo "ERROR: Reports backup authentication or integrity check failed." >&2
+    printf '[%s] Reports backup authentication or integrity check failed.\n' "$(date --iso-8601=seconds)" | tee -a "$RESTORE_LOG"
+    exit 2
+fi
+
+# Only the authenticated, digest-checked archive reaches PostgreSQL tools.
+if ! pg_restore --list "$VERIFIED_ARCHIVE" >/dev/null 2>>"$RESTORE_LOG"; then
     echo "ERROR: Invalid Reports backup archive." >&2
     printf '[%s] Invalid Reports backup archive.\n' "$(date --iso-8601=seconds)" | tee -a "$RESTORE_LOG"
     exit 2
@@ -62,7 +82,7 @@ pg_restore \
     --no-owner \
     --no-privileges \
     --schema=reports \
-    "$FILE" 2>&1 | tee -a "$RESTORE_LOG"
+    "$VERIFIED_ARCHIVE" 2>&1 | tee -a "$RESTORE_LOG"
 RESTORE_STATUS=${PIPESTATUS[0]}
 
 printf '[%s] Reports data restore finished with exit code %s\n' "$(date --iso-8601=seconds)" "$RESTORE_STATUS" | tee -a "$RESTORE_LOG"

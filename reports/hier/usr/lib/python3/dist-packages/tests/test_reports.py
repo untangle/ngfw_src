@@ -251,24 +251,33 @@ def assert_reports_restore_started(log_text, upload_response):
 
 
 def upload_reports_archive(archive_path):
-    """Submit a .pgdump archive through the Reports UI upload endpoint."""
+    """Authenticate a custom-format archive and submit its .rbackup package."""
     archive_path = Path(archive_path)
     archive_bytes = archive_path.read_bytes()
     assert archive_bytes, f"Reports restore test archive is empty: {archive_path}"
-    boundary, body = global_functions.build_upload_multipart_body(
-        "reportsDataRestore", "", archive_bytes, filename=archive_path.name)
+    integrity_helper = (global_functions.get_prefix() +
+                        "/usr/share/untangle/bin/reports-backup-integrity.py")
+    with tempfile.TemporaryDirectory(prefix="reports-restore-package-") as temp_dir:
+        package_path = Path(temp_dir) / "test-reports.rbackup"
+        subprocess.run([
+            integrity_helper, "create", "--archive", str(archive_path),
+            "--output", str(package_path),
+        ], check=True, timeout=120)
+        package_bytes = package_path.read_bytes()
+        boundary, body = global_functions.build_upload_multipart_body(
+            "reportsDataRestore", "", package_bytes, filename=package_path.name)
 
-    request = urllib.request.Request(
-        "http://localhost/admin/upload",
-        data=body,
-        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
-    opener = global_functions.build_admin_http_opener()
-    try:
-        response = opener.open(request, timeout=300)
-        response_text = response.read().decode("utf-8")
-    except urllib.error.HTTPError as error:
-        response_text = error.read().decode("utf-8")
-    return json.loads(response_text)
+        request = urllib.request.Request(
+            "http://localhost/admin/upload",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
+        opener = global_functions.build_admin_http_opener()
+        try:
+            response = opener.open(request, timeout=300)
+            response_text = response.read().decode("utf-8")
+        except urllib.error.HTTPError as error:
+            response_text = error.read().decode("utf-8")
+        return json.loads(response_text)
 
 
 def reports_sql(query):

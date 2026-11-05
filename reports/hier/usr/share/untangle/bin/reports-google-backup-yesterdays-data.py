@@ -7,6 +7,7 @@ import datetime
 import re
 import socket
 import sys
+import tempfile
 import uvm
 
 uvm = uvm.Uvm().getUvmContext()
@@ -23,14 +24,13 @@ def sanitize_hostname():
     if not hostname:
         hostname = socket.gethostname()
 
-    hostname = re.sub(r'\s+', '_', hostname)
-    hostname = hostname.replace('.', '_')
+    hostname = re.sub(r'[^A-Za-z0-9_-]+', '_', hostname)
     return hostname
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Upload data backup to Google Drive.")
     parser.add_argument('-d', '--dir', required=True, help='Remote Google Drive directory')
-    parser.add_argument('-f', '--filename', help='Optional backup filename')
+    parser.add_argument('-f', '--filename', help='Optional .rbackup filename')
     return parser.parse_args()
 
 def main():
@@ -39,26 +39,33 @@ def main():
 
     if args.filename:
         filename = args.filename
-        if not filename.lower().endswith(".pgdump"):
-            raise ValueError("The custom-format backup filename must end with .pgdump")
+        if (os.path.basename(filename) != filename or
+                not re.fullmatch(r"[A-Za-z0-9._-]+\.rbackup", filename, re.IGNORECASE)):
+            raise ValueError("The backup filename must be a basename ending with .rbackup")
     else:
         hostname = sanitize_hostname()
-        filename = f"{hostname}-reports_data-{yesterday}.pgdump"
+        filename = f"{hostname}-reports_data-{yesterday}.rbackup"
 
-    filepath = f"/tmp/{filename}"
+    integrity_helper = "/usr/share/untangle/bin/reports-backup-integrity.py"
+    backup_script = "/usr/share/untangle/bin/reports-create-backup-pgdump.sh"
 
-    print(f"Creating backup: {filepath}")
-    cmd = ["/usr/share/untangle/bin/reports-create-backup-pgdump.sh", "-r", f"*{yesterday}*", "-f", filepath]
-    print("Running:", " ".join(cmd))
-    subprocess.run(cmd, check=True)
+    # TemporaryDirectory creates a private, unique directory. The raw archive
+    # never leaves it; only the authenticated package is sent to Google Drive.
+    with tempfile.TemporaryDirectory(prefix="reports-backup-") as temp_dir:
+        raw_archive = os.path.join(temp_dir, "reports.pgdump")
+        package = os.path.join(temp_dir, filename)
 
-    # Upload to Google Drive using the CLI
-    code = uvm.googleManager().uploadToDrive(filepath, args.dir)
+        print(f"Creating authenticated backup: {package}")
+        subprocess.run([
+            backup_script, "-r", f"*{yesterday}*", "-f", raw_archive,
+        ], check=True)
+        subprocess.run([
+            integrity_helper, "create", "--archive", raw_archive,
+            "--output", package,
+        ], check=True)
 
-    # Cleanup
-    if os.path.exists(filepath):
-        os.remove(filepath)
-        print(f"Deleted: {filepath}")
+        # Preserve the existing Google Drive result code for the caller.
+        code = uvm.googleManager().uploadToDrive(package, args.dir)
 
     sys.exit(code)
 

@@ -10,6 +10,10 @@ import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,6 +26,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -1093,21 +1098,51 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      */
     private int restoreData( FileItem item )
     {
-        if (!item.getName().endsWith(".pgdump")) {
-            throw new RuntimeException("Invalid file extension. Allowed: .pgdump");
+        if (item.getName() == null || !item.getName().toLowerCase(Locale.ROOT).endsWith(".rbackup")) {
+            throw new RuntimeException("Invalid file extension. Allowed: .rbackup");
         }
+        Path restoreDirectory = null;
+        Path packageFile = null;
         try {
-            String filename = "/tmp/reports_restore_data.pgdump";
-            File file = new File(filename);
-            if (file.exists())
-                file.delete();
-            item.write( file );
+            restoreDirectory = Files.createTempDirectory(
+                Paths.get("/tmp"), "reports-restore-",
+                PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------")));
+            packageFile = Files.createTempFile(
+                restoreDirectory, "upload-", ".rbackup",
+                PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")));
+            item.write(packageFile.toFile());
 
-            String cmd = REPORTS_RESTORE_DATA_SCRIPT + " -f " + filename;
-            return UvmContextFactory.context().execManager().execResult(cmd);
+            ExecManagerResultReader reader = UvmContextFactory.context().execManager().execEvil(
+                new String[] { REPORTS_RESTORE_DATA_SCRIPT, "-f", packageFile.toString() });
+            if (reader == null) {
+                throw new IOException("Could not start Reports restore process");
+            }
+            // Drain both process streams while it runs so verbose pg_restore
+            // output cannot fill a pipe and stall the restore.
+            while (reader.getResult() == -1) {
+                reader.readFromOutput();
+                try {
+                    Thread.sleep(25);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    reader.destroy();
+                    throw new IOException("Interrupted while restoring Reports data", e);
+                }
+            }
+            reader.readFromOutput();
+            return reader.waitFor();
         } catch (Exception e) {
             logger.error(e);
             throw new RuntimeException("Restore Data Failed");
+        } finally {
+            try {
+                if (packageFile != null)
+                    Files.deleteIfExists(packageFile);
+                if (restoreDirectory != null)
+                    Files.deleteIfExists(restoreDirectory);
+            } catch (IOException e) {
+                logger.warn("Could not remove temporary Reports restore upload", e);
+            }
         }
     }
 
@@ -1522,7 +1557,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
         @Override
         public Set<String> getAllowedExtensions()
         {
-            return Set.of("pgdump");
+            return Set.of("rbackup");
         }
 
         /**
