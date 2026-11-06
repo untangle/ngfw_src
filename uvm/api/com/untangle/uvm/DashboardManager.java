@@ -12,5 +12,9 @@ public interface DashboardManager
 
     void setSettings(DashboardSettings settings);
 
+    DashboardSettings getSettingsV2();
+
+    void setSettingsV2(DashboardSettings settings);
+
     void resetSettingsToDefault();
 }
