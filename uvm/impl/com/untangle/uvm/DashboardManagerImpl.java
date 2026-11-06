@@ -79,6 +79,16 @@ public class DashboardManagerImpl implements DashboardManager
     }
 
     /**
+     * Get dashboard settings through the v2 (Generic) format.
+     *
+     * @return The dashboard settings
+     */
+    public DashboardSettings getSettingsV2()
+    {
+        return getSettings();
+    }
+
+    /**
      * Set the dashboard settings
      * 
      * @param newSettings
@@ -105,6 +115,16 @@ public class DashboardManagerImpl implements DashboardManager
             logger.debug("New Settings: \n" + new org.json.JSONObject(this.settings).toString(2));
         } catch (Exception e) {
         }
+    }
+
+    /**
+     * Set dashboard settings from generic version payload.
+     *
+     * @param newSettings The dashboard settings
+     */
+    public void setSettingsV2(final DashboardSettings newSettings)
+    {
+        setSettings(newSettings);
     }
 
     /**
