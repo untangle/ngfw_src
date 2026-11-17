@@ -838,7 +838,7 @@ public class IpsecVpnApp extends AppBase
      * Get the VPN manager.
      * @return IpsecVpnManager object.
      */
-    public IpsecVpnManager getManager()
+    IpsecVpnManager getManager()
     {
         return this.manager;
     }

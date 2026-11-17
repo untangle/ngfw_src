@@ -239,7 +239,7 @@ public class ReportsApp extends AppBase implements Reporting, HostnameLookup
      * get GoogleManager
      * @return GoogleManager
      */
-    public GoogleManager getGoogleManager() {
+    GoogleManager getGoogleManager() {
         return UvmContextFactory.context().googleManager();
     }
 
