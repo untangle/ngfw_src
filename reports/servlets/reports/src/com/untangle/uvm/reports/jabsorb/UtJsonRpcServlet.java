@@ -15,7 +15,6 @@ import org.jabsorb.JSONRPCBridge;
 import org.jabsorb.JSONRPCServlet;
 
 import com.untangle.uvm.LanguageManager;
-import com.untangle.uvm.SkinManager;
 import com.untangle.app.reports.ReportsManager;
 
 import com.untangle.uvm.servlet.ServletUtils;
@@ -127,14 +126,6 @@ public class UtJsonRpcServlet extends JSONRPCServlet
          *  Report manager.
          */
         public ReportsManager reportsManager();
-
-        /**
-         * Get skin manager.
-         *
-         * @return
-         *  Skin manager.
-         */
-        public SkinManager skinManager();
 
         /**
          * Get language manager.

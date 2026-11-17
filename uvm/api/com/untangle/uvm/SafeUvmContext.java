@@ -1,462 +1,430 @@
 /**
- * $Id$
+ * Restricted JSON-RPC contracts for this subsystem.
  */
 package com.untangle.uvm;
 
-import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.LicenseManager;
-import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.LoggingManager;
-import com.untangle.uvm.vnet.PipelineFoundry;
 import org.json.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
+import com.untangle.uvm.logging.LogEvent;
 
 /**
- * The top-level untangle-vm API
+ * Reviewed callable operations for SafeUvmContext.
  */
 public interface SafeUvmContext
 {
     /**
-     * Get the <code>AppManager</code> singleton.
-     *
-     * @return the AppManager.
+     * adminManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    AppManager appManager();
+    SafeAdminManager adminManager();
 
     /**
-     * Get the <code>LoggingManager</code> singleton.
-     *
-     * @return the LoggingManager.
+     * appManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    LoggingManager loggingManager();
+    SafeAppManager appManager();
 
     /**
-     * Get the <code>AdminManager</code> singleton.
-     *
-     * @return the AdminManager.
-     */
-    AdminManager adminManager();
-
-    /**
-     * Get the <code>SystemManager</code> singleton.
-     *
-     * @return the SystemManager.
-     */
-    SystemManager systemManager();
-    
-    /**
-     * Get the <code>NetworkManager</code> singleton.
-     *
-     * @return the NetworkManager.
-     */
-    NetworkManager networkManager();
-
-    /**
-     * Get the <code>ConnectivityTester</code> singleton.
-     *
-     * @return the ConnectivityTester
-     */
-    ConnectivityTester getConnectivityTester();
-
-    /**
-     * get the <code>MailSender</code> - Used for sending mail
-     *
-     * @return the MailSender
-     */
-    MailSender mailSender();
-
-    /**
-     * Get the CertificateManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    CertificateManager certificateManager();
-
-    /**
-     * Get the ConfigManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    ConfigManager configManager();
-
-    /**
-     * Get the GoogleManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    GoogleManager googleManager();
-
-    /**
-     * Get the GeographyManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    GeographyManager geographyManager();
-
-    /**
-     * Get the NetspaceManager singleton for this instance
-     *
-     * @return the singleton
-     */
-    NetspaceManager netspaceManager();
-
-    /**
-     * Get the daemon status facade for this instance
-     *
-     * @return the singleton
-     */
-    SafeDaemonManager daemonManager();
-
-    /**
-     * The LocalDirectory for managing/authenticating users
-     *
-     * @return the local directory
-     */
-    LocalDirectory localDirectory();
-    
-    /**
-     * The BrandingManager allows for customization of logo and
-     * branding information.
-     *
-     * @return the BrandingManager.
+     * All branding getters are intentionally available over JSON-RPC, so this
+     * manager returns its full interface without a separate Safe facade.
+     * @return The full branding manager
      */
     BrandingManager brandingManager();
 
     /**
-     * Get the <code>SkinManager</code> singleton.
-     *
-     * @return the SkinManager.
+     * certificateManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    SkinManager skinManager();
+    SafeCertificateManager certificateManager();
 
     /**
-     * Get the <code>MessageManager</code> singleton.
-     *
-     * @return the MessageManager
+     * cloudManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    MetricManager metricManager();
+    SafeCloudManager cloudManager();
 
     /**
-     * Get the <code>LanguageManager</code> singleton.
-     *
-     * @return the LanguageManager.
+     * configManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    LanguageManager languageManager();
+    SafeConfigManager configManager();
 
     /**
-     * The license manager.
-     *
-     * @return the LicenseManager
+     * daemonManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    LicenseManager licenseManager();
+    SafeDaemonManager daemonManager();
 
     /**
-     * The settings manager.
-     * 
-     * @return the SettingsManager
+     * dashboardManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    SettingsManager settingsManager();
+    SafeDashboardManager dashboardManager();
 
     /**
-     * Get the DashboardManager
-     *
-     * @return the DashboardManager
+     * deviceTable through the reviewed RPC contract.
+     * @return The delegated result
      */
-    DashboardManager dashboardManager();
+    SafeDeviceTable deviceTable();
 
     /**
-     * The session monitor
-     * This can be used for getting information about current sessions
-     *
-     * @return the SessionMonitor
+     * eventManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    SessionMonitor sessionMonitor();
+    SafeEventManager eventManager();
 
     /**
-     * Get the <code>OemManager</code> singleton.
-     *
-     * @return the OemManager.
-     */
-    OemManager oemManager();
-
-    /**
-     * Get the <code>NotificationManager</code> singleton.
-     *
-     * @return the NotificationManager.
-     */
-    NotificationManager notificationManager();
-
-    /**
-     * Get the <code>CloudManager</code> singleton.
-     *
-     * @return the CloudManager.
-     */
-    CloudManager cloudManager();
-
-    /**
-     * Get the <code>PluginManager</code> singleton.
-     *
-     * @return the PluginManager.
-     */
-    PluginManager pluginManager();
-
-    /**
-     * Get the NetcapManager
-     *
-     * @return the NetcapManager
-     */
-    NetcapManager netcapManager();
-
-    /**
-     * Get the EventManager
-     *
-     * @return the EventManager
-     */
-    EventManager eventManager();
-
-    /**
-     * Get the Uri translation manager
-     */
-    UriManager uriManager();
-
-    /**
-     * Get the HTTP Servelet thread request
-     */
-    InheritableThreadLocal<HttpServletRequest> threadRequest = null;
-
-    /**
-     * The host table
-     *
-     * @return the global host table.
-     */
-    HostTable hostTable();
-
-    /**
-     * The device table
-     *
-     * @return the global device table.
-     */
-    DeviceTable deviceTable();
-
-    /**
-     * The user table
-     *
-     * @return the global user table.
-     */
-    UserTable userTable();
-
-    /**
-     * Shut down the untangle-vm
-     *
-     */
-    void shutdown();
-
-    /**
-     * Reboots the Untangle Server. Note that this currently will not reboot a
-     * dev box.
-     */
-    void rebootBox();
-
-    /**
-     * Shutdown the Untangle Server
-     */
-    void shutdownBox();
-
-    /**
-     * Forces NTP to synchronize the time immediately
-     * @returns exit code from NTP (0 means success)
+     * forceTimeSync through the reviewed RPC contract.
+     * @return The delegated result
      */
     int forceTimeSync();
-    
-    /**
-     * Return the Version
-     */
-    String version();
 
     /**
-     * Return the Full Version
-     */
-    String getFullVersion();
-
-    /**
-     * Return true if running in a development environment.
-     */
-    boolean isDevel();
-
-    /**
-     * Return true if running in an automated test environment.
-     */
-    boolean isAts();
-
-    /**
-     * Returns true if this is a netbooted install on Untangle internal network
-     */
-    boolean isNetBoot();
-    
-    /**
-     * Returns the UID of the server
-     * Example: aaaa-bbbb-cccc-dddd
-     */
-    String getServerUID();
-
-    String getRegionName();
-
-    /**
-     * Returns the serial number of the server
-     * Example: MMYYTWRSSSSSSS
-     */
-    String getServerSerialNumber();
-    
-    /**
-     * mark the wizard as complete
-     * Called by the setup wizard
-     */
-    void wizardComplete();
-    
-    /**
-     * Gets the current state of the UVM
-     *
-     * @return a <code>UvmState</code> enumerated value
-     */
-    UvmState state();
-
-    /**
-     * Run a full System.gc()
+     * gc through the reviewed RPC contract.
      */
     void gc();
-    
-    /**
-     * Thread utilities
-     */
-    Thread newThread( Runnable runnable );
-    Thread newThread( Runnable runnable, int priority );
-    Thread newThread( Runnable runnable, String name );
-    Thread newThread( Runnable runnable, String name, int priority );
 
     /**
-     * The pipeline compiler.
-     * Used by the apps.
-     *
-     * @return a <code>PipelineFoundry</code> value
+     * geographyManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    PipelineFoundry pipelineFoundry();
+    SafeGeographyManager geographyManager();
 
     /**
-     * Returns true if the setup wizard has been completed
-     *
-     * @return a <code>boolean</code> valuett
-     */
-    boolean isWizardComplete();
-
-    /**
-     * Returns true if the system is in "expert mode"
-     */
-    boolean isExpertMode();
-    
-    /**
-     * Returns the current wizard settings
-     * This initializes settings if none exist
-     *
-     * @return a <code>WizardSettings</code> value
-     */
-    WizardSettings getWizardSettings();
-
-    /**
-     * Sets the wizard settings
-     */
-    void setWizardSettings( WizardSettings wizardSettings );
-
-    /**
-     * Returns true if this server is registered with store account
-     *
-     * @return a <code>boolean</code> value
-     */
-    boolean isRegistered();
-    void    setRegistered();
-
-    /**
-     * Returns true if using remote setup wizard.
-     */
-    boolean isRemoteSetup();
-    /**
-     * Set remote setup wizard enabled or disabled.
-     * @param enabled   If true, remove the flag.  If false, create it.
-     */
-    void    setRemoteSetup(boolean enabled);
-
-    /**
-     * True if the system is running without media
-     * that can withstand heavy writes
-     * SSD -> true
-     * HD -> true
-     * flash -> false
-     * USB -> false
-     */
-    boolean isDiskless();
-
-    /**
-    * Returns true if we should move frequently written files to tempfs
-    * to reduce wear on storage media with limited write cycles.
-    */
-    boolean useTempFileSystem();
-
-    /**
-     * Returns the interval at which we should backup the tempfs database
-     * to physical storage or zero if the feature is not enabled.
-     */
-    long getTempBackupTimer();
-
-    /**
-     * Returns true if this server is installed on an official Untangle appliance
-     *
-     * @return a <code>boolean</code> value
-     */
-    boolean isAppliance();
-    
-    /**
-     * Returns the appliance model "u50" (if it exists) 
+     * getApplianceModel through the reviewed RPC contract.
+     * @return The delegated result
      */
     String getApplianceModel();
 
     /**
-     * Indicator used to hide if CC options should be hidden from the UI
+     * getCmdUrl through the reviewed RPC contract.
+     * @return The delegated result
      */
-    boolean isCCHidden();
+    String getCmdUrl();
 
     /**
-     * Get URLs
+     * getConnectivityTester through the reviewed RPC contract.
+     * @return The delegated result
      */
-    String getStoreUrl();
-    String getCmdUrl();
-    String getHelpUrl();
+    SafeConnectivityTester getConnectivityTester();
+
+    /**
+     * getFeedbackUrl through the reviewed RPC contract.
+     * @return The delegated result
+     */
     String getFeedbackUrl();
+
+    /**
+     * getFullVersion through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    String getFullVersion();
+
+    /**
+     * getHelpUrl through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    String getHelpUrl();
+
+    /**
+     * getLegalUrl through the reviewed RPC contract.
+     * @return The delegated result
+     */
     String getLegalUrl();
 
     /**
-     * Check if store is available
+     * getRegionName through the reviewed RPC contract.
+     * @return The delegated result
      */
-    boolean isStoreAvailable();
+    String getRegionName();
 
     /**
-     * Convenience method, log an event to the database
+     * getServerSerialNumber through the reviewed RPC contract.
+     * @return The delegated result
      */
-    void logEvent(LogEvent evt);
+    String getServerSerialNumber();
 
     /**
-     * Appeand a javascript excception to uvm.log
+     * getServerUID through the reviewed RPC contract.
+     * @return The delegated result
      */
-    void logJavascriptException(JSONObject o);
+    String getServerUID();
 
     /**
-     * Convenience method to load all the object the webUI needs in one object to avoid
-     * multiple calls
+     * getSetupStartupInfo through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    JSONObject getSetupStartupInfo();
+
+    /**
+     * getStoreUrl through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    String getStoreUrl();
+
+    /**
+     * getTempBackupTimer through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    long getTempBackupTimer();
+
+    /**
+     * getWebuiStartupInfo through the reviewed RPC contract.
+     * @return The delegated result
      */
     JSONObject getWebuiStartupInfo();
 
     /**
-     * Convenience method to load all the object the webUI needs in one object to avoid
-     * multiple calls
+     * getWizardSettings through the reviewed RPC contract.
+     * @return The delegated result
      */
-    JSONObject getSetupStartupInfo();
+    WizardSettings getWizardSettings();
+
+    /**
+     * googleManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeGoogleManager googleManager();
+
+    /**
+     * hostTable through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeHostTable hostTable();
+
+    /**
+     * isAppliance through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isAppliance();
+
+    /**
+     * isAts through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isAts();
+
+    /**
+     * isCCHidden through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isCCHidden();
+
+    /**
+     * isDevel through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isDevel();
+
+    /**
+     * isDiskless through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isDiskless();
+
+    /**
+     * isExpertMode through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isExpertMode();
+
+    /**
+     * isNetBoot through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isNetBoot();
+
+    /**
+     * isRegistered through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isRegistered();
+
+    /**
+     * isRemoteSetup through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isRemoteSetup();
+
+    /**
+     * isStoreAvailable through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isStoreAvailable();
+
+    /**
+     * isWizardComplete through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean isWizardComplete();
+
+    /**
+     * languageManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeLanguageManager languageManager();
+
+    /**
+     * licenseManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeLicenseManager licenseManager();
+
+    /**
+     * localDirectory through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeLocalDirectory localDirectory();
+
+    /**
+     * logEvent through the reviewed RPC contract.
+     * @param evt The evt argument
+     */
+    void logEvent(LogEvent evt);
+
+    /**
+     * logJavascriptException through the reviewed RPC contract.
+     * @param o The o argument
+     */
+    void logJavascriptException(JSONObject o);
+
+    /**
+     * loggingManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeLoggingManager loggingManager();
+
+    /**
+     * mailSender through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeMailSender mailSender();
+
+    /**
+     * metricManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeMetricManager metricManager();
+
+    /**
+     * netcapManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeNetcapManager netcapManager();
+
+    /**
+     * netspaceManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeNetspaceManager netspaceManager();
+
+    /**
+     * networkManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeNetworkManager networkManager();
+
+    /**
+     * notificationManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeNotificationManager notificationManager();
+
+    /**
+     * oemManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeOemManager oemManager();
+
+    /**
+     * pipelineFoundry through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafePipelineFoundry pipelineFoundry();
+
+    /**
+     * pluginManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafePluginManager pluginManager();
+
+    /**
+     * rebootBox through the reviewed RPC contract.
+     */
+    void rebootBox();
+
+    /**
+     * sessionMonitor through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeSessionMonitor sessionMonitor();
+
+    /**
+     * setRegistered through the reviewed RPC contract.
+     */
+    void setRegistered();
+
+    /**
+     * setRemoteSetup through the reviewed RPC contract.
+     * @param enabled The enabled argument
+     */
+    void setRemoteSetup(boolean enabled);
+
+    /**
+     * setWizardSettings through the reviewed RPC contract.
+     * @param wizardSettings The wizardSettings argument
+     */
+    void setWizardSettings(WizardSettings wizardSettings);
+
+    /**
+     * settingsManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeSettingsManager settingsManager();
+
+    /**
+     * shutdownBox through the reviewed RPC contract.
+     */
+    void shutdownBox();
+
+    /**
+     * state through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    UvmState state();
+
+    /**
+     * systemManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeSystemManager systemManager();
+
+    /**
+     * uriManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeUriManager uriManager();
+
+    /**
+     * useTempFileSystem through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    boolean useTempFileSystem();
+
+    /**
+     * userTable through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    SafeUserTable userTable();
+
+    /**
+     * version through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    String version();
+
+    /**
+     * wizardComplete through the reviewed RPC contract.
+     */
+    void wizardComplete();
 }

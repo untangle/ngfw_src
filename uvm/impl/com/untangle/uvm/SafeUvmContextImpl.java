@@ -1,47 +1,104 @@
 /**
- * $Id$
+ * Restricted JSON-RPC contracts for this subsystem.
  */
 package com.untangle.uvm;
 
-import com.untangle.uvm.app.App;
-import com.untangle.uvm.app.AppManager;
-import com.untangle.uvm.app.AppSettings.AppState;
-import com.untangle.uvm.app.LicenseManager;
-import com.untangle.uvm.logging.LogEvent;
-import com.untangle.uvm.logging.LoggingManager;
-import com.untangle.uvm.vnet.PipelineFoundry;
+import java.util.Objects;
+import java.util.function.Supplier;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
+import com.untangle.uvm.app.App;
+import com.untangle.uvm.app.AppSettings.AppState;
+import com.untangle.uvm.logging.LogEvent;
 
-/** SafeUvmContextImpl */
-
-/** This is the root object "context" providing the Untangle VM functionality for applications and the user interface */
-public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
+/**
+ * Concrete restricted facade; the full delegate is never exported.
+ */
+public final class SafeUvmContextImpl implements SafeUvmContext
 {
-    private static final SafeUvmContextImpl CONTEXT = new SafeUvmContextImpl();
-
+    private final Supplier<UvmContext> delegate;
     private static final Logger logger = LogManager.getLogger(SafeUvmContextImpl.class);
-
-    private static int threadNumber = 1;
-
-    private SafeDaemonManager safeDaemonManager;
+    private static final SafeUvmContextImpl CONTEXT = new SafeUvmContextImpl(UvmContextFactory::context);
+    private final SafeAppManager appManager;
+    private final SafeLoggingManager loggingManager;
+    private final SafeAdminManager adminManager;
+    private final SafeSystemManager systemManager;
+    private final SafeNetworkManager networkManager;
+    private final SafeConnectivityTester getConnectivityTester;
+    private final SafeMailSender mailSender;
+    private final SafeCertificateManager certificateManager;
+    private final SafeConfigManager configManager;
+    private final SafeGoogleManager googleManager;
+    private final SafeGeographyManager geographyManager;
+    private final SafeNetspaceManager netspaceManager;
+    private final SafeDaemonManager daemonManager;
+    private final SafeLocalDirectory localDirectory;
+    private final SafeMetricManager metricManager;
+    private final SafeLanguageManager languageManager;
+    private final SafeLicenseManager licenseManager;
+    private final SafeSettingsManager settingsManager;
+    private final SafeDashboardManager dashboardManager;
+    private final SafeSessionMonitor sessionMonitor;
+    private final SafeOemManager oemManager;
+    private final SafeNotificationManager notificationManager;
+    private final SafeCloudManager cloudManager;
+    private final SafePluginManager pluginManager;
+    private final SafeNetcapManager netcapManager;
+    private final SafeEventManager eventManager;
+    private final SafeUriManager uriManager;
+    private final SafeHostTable hostTable;
+    private final SafeDeviceTable deviceTable;
+    private final SafeUserTable userTable;
+    private final SafePipelineFoundry pipelineFoundry;
 
     /**
-     * getInstance gets the singleton SafeUvmContextImpl reference
-     * @return SafeUvmContextImpl
+     * Create the restricted facade.
+     * @param delegate The internal delegate
      */
-    protected static SafeUvmContextImpl getInstance()
+    SafeUvmContextImpl(Supplier<UvmContext> delegate)
     {
-        return CONTEXT;
+        this.delegate = Objects.requireNonNull(delegate, "delegate");
+        this.appManager = new SafeAppManagerImpl(() -> this.delegate.get().appManager());
+        this.loggingManager = new SafeLoggingManagerImpl(() -> this.delegate.get().loggingManager());
+        this.adminManager = new SafeAdminManagerImpl(() -> this.delegate.get().adminManager());
+        this.systemManager = new SafeSystemManagerImpl(() -> this.delegate.get().systemManager());
+        this.networkManager = new SafeNetworkManagerImpl(() -> this.delegate.get().networkManager());
+        this.getConnectivityTester = new SafeConnectivityTesterImpl(() -> this.delegate.get().getConnectivityTester());
+        this.mailSender = new SafeMailSenderImpl(() -> this.delegate.get().mailSender());
+        this.certificateManager = new SafeCertificateManagerImpl(() -> this.delegate.get().certificateManager());
+        this.configManager = new SafeConfigManagerImpl(() -> this.delegate.get().configManager());
+        this.googleManager = new SafeGoogleManagerImpl(() -> this.delegate.get().googleManager());
+        this.geographyManager = new SafeGeographyManagerImpl(() -> this.delegate.get().geographyManager());
+        this.netspaceManager = new SafeNetspaceManagerImpl(() -> this.delegate.get().netspaceManager());
+        this.daemonManager = new SafeDaemonManagerImpl(() -> this.delegate.get().daemonManager());
+        this.localDirectory = new SafeLocalDirectoryImpl(() -> this.delegate.get().localDirectory());
+        this.metricManager = new SafeMetricManagerImpl(() -> this.delegate.get().metricManager());
+        this.languageManager = new SafeLanguageManagerImpl(() -> this.delegate.get().languageManager());
+        this.licenseManager = new SafeLicenseManagerImpl(() -> this.delegate.get().licenseManager());
+        this.settingsManager = new SafeSettingsManagerImpl(() -> this.delegate.get().settingsManager());
+        this.dashboardManager = new SafeDashboardManagerImpl(() -> this.delegate.get().dashboardManager());
+        this.sessionMonitor = new SafeSessionMonitorImpl(() -> this.delegate.get().sessionMonitor());
+        this.oemManager = new SafeOemManagerImpl(() -> this.delegate.get().oemManager());
+        this.notificationManager = new SafeNotificationManagerImpl(() -> this.delegate.get().notificationManager());
+        this.cloudManager = new SafeCloudManagerImpl(() -> this.delegate.get().cloudManager());
+        this.pluginManager = new SafePluginManagerImpl(() -> this.delegate.get().pluginManager());
+        this.netcapManager = new SafeNetcapManagerImpl(() -> this.delegate.get().netcapManager());
+        this.eventManager = new SafeEventManagerImpl(() -> this.delegate.get().eventManager());
+        this.uriManager = new SafeUriManagerImpl(() -> this.delegate.get().uriManager());
+        this.hostTable = new SafeHostTableImpl(() -> this.delegate.get().hostTable());
+        this.deviceTable = new SafeDeviceTableImpl(() -> this.delegate.get().deviceTable());
+        this.userTable = new SafeUserTableImpl(() -> this.delegate.get().userTable());
+        this.pipelineFoundry = new SafePipelineFoundryImpl(() -> this.delegate.get().pipelineFoundry());
     }
 
     /**
-     * context gets the singleton UvmContext reference
-     * @return UvmContext
+     * Return the singleton Safe context.
+     * @return The restricted context
      */
     public static SafeUvmContext context()
     {
@@ -49,835 +106,277 @@ public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
     }
 
     /**
-     * Get LocalDirectory
-     * @return LocalDirectory
+     * adminManager through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public LocalDirectory localDirectory()
+    public SafeAdminManager adminManager()
     {
-        return UvmContextFactory.context().localDirectory();
+        return adminManager;
     }
 
     /**
-     * Get BrandingManager
-     * @return BrandingManager
+     * appManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeAppManager appManager()
+    {
+        return appManager;
+    }
+
+    /**
+     * Return the existing branding manager without a separate Safe facade.
+     * @return The full branding manager
      */
     @Override
     public BrandingManager brandingManager()
     {
-        return UvmContextFactory.context().brandingManager();
+        return delegate.get().brandingManager();
     }
 
     /**
-     * Get SkinManager
-     * @return SkinManager
+     * certificateManager through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public SkinManagerImpl skinManager()
+    public SafeCertificateManager certificateManager()
     {
-        return (SkinManagerImpl) UvmContextFactory.context().skinManager();
+        return certificateManager;
     }
 
     /**
-     * Get MetricManager
-     * @return MetricManager
+     * cloudManager through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public MetricManager metricManager()
+    public SafeCloudManager cloudManager()
     {
-        return UvmContextFactory.context().metricManager();
+        return cloudManager;
     }
 
     /**
-     * Get LanguageManager
-     * @return LanguageManager
+     * configManager through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public LanguageManagerImpl languageManager()
+    public SafeConfigManager configManager()
     {
-        return (LanguageManagerImpl) UvmContextFactory.context().languageManager();
+        return configManager;
     }
 
     /**
-     * Get CertificateManager
-     * @return CertificateManager
+     * daemonManager through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public CertificateManager certificateManager()
+    public SafeDaemonManager daemonManager()
     {
-        return UvmContextFactory.context().certificateManager();
+        return daemonManager;
     }
 
     /**
-     * Get ConfigManager
-     * @return ConfigManager
+     * dashboardManager through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public ConfigManager configManager()
+    public SafeDashboardManager dashboardManager()
     {
-        return UvmContextFactory.context().configManager();
+        return dashboardManager;
     }
 
     /**
-     * Get GoogleManager
-     * @return GoogleManager
+     * deviceTable through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public GoogleManager googleManager()
+    public SafeDeviceTable deviceTable()
     {
-        return UvmContextFactory.context().googleManager();
+        return deviceTable;
     }
 
     /**
-     * Get GeographyManager
-     * @return GeographyManager
+     * eventManager through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public GeographyManager geographyManager()
+    public SafeEventManager eventManager()
     {
-        return UvmContextFactory.context().geographyManager();
+        return eventManager;
     }
 
     /**
-     * Get NetspaceManager
-     * @return NetspaceManager
-     */
-    @Override
-    public NetspaceManager netspaceManager()
-    {
-        return UvmContextFactory.context().netspaceManager();
-    }
-
-    /**
-     * Get the daemon status facade
-     * @return SafeDaemonManager
-     */
-    @Override
-    public synchronized SafeDaemonManager daemonManager()
-    {
-        if (safeDaemonManager == null) {
-            safeDaemonManager = new SafeDaemonManagerImpl(UvmContextFactory.context().daemonManager());
-        }
-        return safeDaemonManager;
-    }
-
-    /**
-     * Get AppManager
-     * @return AppManager
-     */
-    @Override
-    public AppManager appManager()
-    {
-        return UvmContextFactory.context().appManager();
-    }
-
-
-    /**
-     * Get LoggingManager
-     * @return LoggingManager
-     */
-    @Override
-    public LoggingManager loggingManager() {
-        return UvmContextFactory.context().loggingManager();
-    }
-
-    /**
-     * Get MailSender
-     * @return MailSender
-     */
-    @Override
-    public MailSenderImpl mailSender()
-    {
-        return (MailSenderImpl) UvmContextFactory.context().mailSender();
-    }
-
-    /**
-     * Get AdminManager
-     * @return AdminManager
-     */
-    @Override
-    public AdminManagerImpl adminManager()
-    {
-        return (AdminManagerImpl) UvmContextFactory.context().adminManager();
-    }
-
-    /**
-     * Get SystemManager
-     * @return SystemManager
-     */
-    @Override
-    public SystemManagerImpl systemManager()
-    {
-        return (SystemManagerImpl) UvmContextFactory.context().systemManager();
-    }
-
-    /**
-     * Get DashboardManager
-     * @return DashboardManager
-     */
-    @Override
-    public DashboardManagerImpl dashboardManager()
-    {
-        return (DashboardManagerImpl) UvmContextFactory.context().dashboardManager();
-    }
-    
-    /**
-     * Get NetworkManager
-     * @return NetworkManager
-     */
-    @Override
-    public NetworkManager networkManager()
-    {
-        return UvmContextFactory.context().networkManager();
-    }
-
-    /**
-     * Get GetConnectivityTester
-     * @return GetConnectivityTester
-     */
-    @Override
-    public ConnectivityTesterImpl getConnectivityTester()
-    {
-        return (ConnectivityTesterImpl) UvmContextFactory.context().getConnectivityTester();
-    }
-
-    /**
-     * Get EventManager
-     * @return EventManager
-     */
-    @Override
-    public EventManager eventManager()
-    {
-        return UvmContextFactory.context().eventManager();
-    }
-
-    /**
-     * Get UriManager
-     * @return UriManager
-     */
-    @Override
-    public UriManager uriManager()
-    {
-        return UvmContextFactory.context().uriManager();
-    }
-
-    /**
-     * Get SettingsManager
-     * @return SettingsManager
-     */
-    @Override
-    public SettingsManager settingsManager()
-    {
-        return UvmContextFactory.context().settingsManager();
-    }
-
-    /**
-     * Get NotificationManager
-     * @return NotificationManager
-     */
-    @Override
-    public NotificationManagerImpl notificationManager()
-    {
-        return (NotificationManagerImpl) UvmContextFactory.context().notificationManager();
-    }
-
-    /**
-     * Get CloudManager
-     * @return CloudManager
-     */
-    @Override
-    public CloudManager cloudManager()
-    {
-        return UvmContextFactory.context().cloudManager();
-    }
-
-    /**
-     * Get PluginManager
-     * @return PluginManager
-     */
-    @Override
-    public PluginManager pluginManager() {
-        return UvmContextFactory.context().pluginManager();
-    }
-
-    /**
-     * Get NetcapManager
-     * @return NetcapManager
-     */
-    @Override
-    public NetcapManager netcapManager() {
-        return UvmContextFactory.context().netcapManager();
-    }
-
-    /**
-     * Get SessionMonitor
-     * @return SessionMonitor
-     */
-    @Override
-    public SessionMonitor sessionMonitor()
-    {
-        return UvmContextFactory.context().sessionMonitor();
-    }
-
-    /**
-     * Get OemManager
-     * @return OemManager
-     */
-    @Override
-    public OemManager oemManager() {
-        return UvmContextFactory.context().oemManager();
-    }
-
-    /**
-     * Get HostTable
-     * @return HostTable
-     */
-    @Override
-    public HostTable hostTable()
-    {
-        return UvmContextFactory.context().hostTable();
-    }
-
-    /**
-     * Get DeviceTable
-     * @return DeviceTable
-     */
-    @Override
-    public DeviceTable deviceTable()
-    {
-        return UvmContextFactory.context().deviceTable();
-    }
-
-    /**
-     * Get UserTable
-     * @return UserTable
-     */
-    @Override
-    public UserTable userTable()
-    {
-        return UvmContextFactory.context().userTable();
-    }
-
-    /**
-     * Get LicenseManager 
-     * @return LicenseManager 
-     */
-    @Override
-    public LicenseManager licenseManager()
-    {
-        return UvmContextFactory.context().licenseManager();
-    }
-
-    /**
-     * newThread starts a new thread
-     * @param runnable
-     * @return Thread running at normal priority
-     */
-    @Override
-    public Thread newThread(final Runnable runnable)
-    {
-        return newThread(runnable, Thread.NORM_PRIORITY);
-    }
-
-    /**
-     * newThread starts a new thread
-     * @param runnable
-     * @param priority 
-     * @return Thread running at specified priority.
-     */
-    @Override
-    public Thread newThread(final Runnable runnable, int priority)
-    {
-        int threadNum;
-        synchronized( SafeUvmContextImpl.class ) {
-            threadNum = threadNumber++;
-        }
-        Thread thread = new Thread(runnable, "UTThread-" + threadNum);
-        thread.setPriority(priority);
-        return thread;
-    }
-
-    /**
-     * newThread starts a new thread
-     * @param runnable
-     * @param name
-     * @return Thread running at normal priority
-     */
-    @Override
-    public Thread newThread(final Runnable runnable, final String name)
-    {
-        return newThread(runnable, name, Thread.NORM_PRIORITY);
-    }
-
-    /**
-     * newThread starts a new thread
-     * @param runnable
-     * @param name
-     * @param priority Thread priority
-     * @return Thread running at specified priority.
-     */
-    @Override
-    public Thread newThread(final Runnable runnable, final String name, int priority)
-    {
-        Runnable task = () -> {
-                try {
-                    runnable.run();
-                } catch (OutOfMemoryError exn) {
-                    SafeUvmContextImpl.getInstance().fatalError("SafeUvmContextImpl", exn);
-                } catch (Exception exn) {
-                    logger.error("Exception running: {}", runnable, exn);
-            }
-        };
-        Thread thread = new Thread(task, name);
-        thread.setPriority(priority);
-        return thread;
-    }
-
-    /**
-     * Get PipelineFoundry
-     * @return PipelineFoundry
-     */
-    @Override
-    public PipelineFoundry pipelineFoundry() {
-        return UvmContextFactory.context().pipelineFoundry();
-    }
-
-    /**
-     * shutdown stops the UVM
-     */
-    @Override
-    public void shutdown()
-    {
-        UvmContextFactory.context().shutdown();
-    }
-
-    /**
-     * rebootBox reboots the server
-     */
-    @Override
-    public void rebootBox()
-    {
-        UvmContextFactory.context().rebootBox();
-    }
-
-    /**
-     * shutdownBox shuts down the server
-     */
-    @Override
-    public void shutdownBox()
-    {
-        UvmContextFactory.context().shutdownBox();
-    }
-
-    /**
-     * Forces the system to synchronize time with the internet
-     * @return exit code value
+     * forceTimeSync through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
     public int forceTimeSync()
     {
-        return UvmContextFactory.context().forceTimeSync();
+        return delegate.get().forceTimeSync();
     }
 
     /**
-     * state returns the current UVM run state
-     * @return UvmState
-     */
-    @Override
-    public UvmState state()
-    {
-        return UvmContextFactory.context().state();
-    }
-
-    /**
-     * version returns the version (short version) as a string 
-     * @return version
-     */
-    @Override
-    public String version()
-    {
-        return UvmContextFactory.context().version();
-    }
-
-    /**
-     * gc initiates the garbage collector
+     * gc through the reviewed RPC contract.
      */
     @Override
     public void gc()
     {
-        UvmContextFactory.context().gc();
-    }
-    
-    /**
-     * getFullVersion returns the version (long version) as a string 
-     * @return version
-     */
-    @Override
-    public String getFullVersion()
-    {
-        return UvmContextFactory.context().getFullVersion();
+        delegate.get().gc();
     }
 
     /**
-     * isExpertMode returns true if the system has the expert mode flag, false otherwise
-     * @return bool
+     * geographyManager through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public boolean isExpertMode()
+    public SafeGeographyManager geographyManager()
     {
-        return UvmContextFactory.context().isExpertMode();
-    }
-    
-    /**
-     * isWizardComplete returns true if the wizard is complete, false otherwise
-     * @return bool
-     */
-    @Override
-    public boolean isWizardComplete()
-    {
-        return UvmContextFactory.context().isWizardComplete();
+        return geographyManager;
     }
 
     /**
-     * wizardComplete sets the wizardComplete flag to true
-     */
-    @Override
-    public void wizardComplete()
-    {
-        UvmContextFactory.context().wizardComplete();
-    }
-    
-    /**
-     * getWizardSettings gets the current wizard settings
-     * @return WizardSettings
-     */
-    @Override
-    public WizardSettings getWizardSettings()
-    {
-        return UvmContextFactory.context().getWizardSettings();
-    }
-    
-    /**
-     * setWizardSettings sets the new wizard settings
-     * @param wizardSettings
-     */
-    @Override
-    public void setWizardSettings( WizardSettings wizardSettings )
-    {
-        UvmContextFactory.context().setWizardSettings(wizardSettings);
-    }
-
-    /**
-     * isRegistered returns true if registration is completed, false otherwise
-     * @return bool
-     */
-    @Override
-    public boolean isRegistered()
-    {
-        return UvmContextFactory.context().isRegistered();
-    }
-
-    /**
-     * setRegistered - set the registration completed flag to true
-     */
-    @Override
-    public void setRegistered()
-    {
-        UvmContextFactory.context().setRegistered();
-    }
-
-    /**
-     * isRemoteSetup returns true if Setup Wizard is to be run remotely, false for local.
-     * @return bool
-     */
-    @Override
-    public boolean isRemoteSetup()
-    {
-        return UvmContextFactory.context().isRemoteSetup();
-    }
-
-    /**
-     * setRemoteSetup - set the registration completed flag to true
-     * @param enabled   If true, remove the flag.  If false, create it.
-     */
-    @Override
-    public void setRemoteSetup(boolean enabled)
-    {
-        UvmContextFactory.context().setRemoteSetup(enabled);
-    }
-
-    /**
-     * isAppliance returns true if this is an official untangle appliance, false otherwise
-     * @return bool
-     */
-    @Override
-    public boolean isAppliance()
-    {
-        return UvmContextFactory.context().isAppliance();
-    }
-
-    /**
-     * Get the hardware model type.
-     *
-     * First see if this is an Untangle hardware appliance product 
-     * and if not, see if we're running under a virtual environment.
-     *
-     * @return
-     *  String containing Untangle appliance name or virtual environment. 
-     *  If empty, unknown (likely baremetal)
+     * getApplianceModel through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
     public String getApplianceModel()
     {
-        return UvmContextFactory.context().getApplianceModel();
-    }
-
-
-    /**
-     * isCCHidden - returns true if the CC hidden flag file exists
-     * @return boolean - True if we should hide CC elements, false otherwise
-     */
-    @Override
-    public boolean isCCHidden()
-    {
-        return UvmContextFactory.context().isCCHidden();
+        return delegate.get().getApplianceModel();
     }
 
     /**
-     * isDiskless - returns true if this is a diskless system
-     * @return bool
-     */
-    @Override
-    public boolean isDiskless()
-    {
-        return UvmContextFactory.context().isDiskless();
-    }
-
-    /**
-     * useTempFileSystem - returns true if this is a system where we need special
-     * handling of frequently written files to reduce wear on limited write media
-     * @return bool
-     */
-    @Override
-    public boolean useTempFileSystem()
-    {
-        return UvmContextFactory.context().useTempFileSystem();
-    }
-
-    /**
-     * getTempBackupTimer - returns the number of seconds to be used for the
-     * periodic backup interval of the tempfs database or zero if the
-     * configuration file does not exist.
-     *
-     * @return long
-     */
-    @Override
-    public long getTempBackupTimer()
-    {
-        return UvmContextFactory.context().getTempBackupTimer();
-    }
-
-    /**
-     * Returns true if this is a developer build in the development
-     * environment
-     * @return <doc>
-     */
-    @Override
-    public boolean isDevel()
-    {
-        return UvmContextFactory.context().isDevel();
-    }
-
-    /**
-     * Returns true if running with the ATS utilities installed
-     * @return <doc>
-     */
-    @Override
-    public boolean isAts()
-    {
-        return UvmContextFactory.context().isAts();
-    }
-
-    /**
-     * isNetBoot
-     * Returns true if this is a netbooted install on Untangle internal network
-     * If this is netbooted on our internal network (using netboot.preseed)
-     * We automatically enable some access rules to make it easier to access
-     * via SSH and HTTPS
-     * @return bool
-     */
-    @Override
-    public boolean isNetBoot()
-    {
-        return UvmContextFactory.context().isNetBoot();
-    }
-
-    /**
-     * getTranslations get the translation map for the specified module
-     * @param module
-     * @return map
-     */
-    @Override
-    public Map<String, String> getTranslations(String module)
-    {
-        return this.languageManager().getTranslations(module);
-    }
-
-    /**
-     * getCompanyName - gets the company name from branding manager
-     * @return String
-     */
-    @Override
-    public String getCompanyName()
-    {
-        return this.brandingManager().getCompanyName();
-    }
-
-    /**
-     * No op init method
-     */
-    @Override
-    protected void init() {
-        // no-op
-    }
-
-    /**
-     * No op postInit method
-     */
-    @Override
-    protected void postInit() {
-        // no-op
-    }
-
-    /**
-     * No op destroy method
-     */
-    @Override
-    protected void destroy() {
-        // no-op
-    }
-
-    /**
-     * getStoreUrl - gets the store (untangle cloud) API url
-     * @return String
-     */
-    @Override
-    public String getStoreUrl()
-    {
-        return UvmContextFactory.context().getStoreUrl();
-    }
-
-    /**
-     * getCmdUrl - gets the store (untangle cloud) API url
-     * @return String
+     * getCmdUrl through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
     public String getCmdUrl()
     {
-        return UvmContextFactory.context().getCmdUrl();
+        return delegate.get().getCmdUrl();
     }
 
     /**
-     * isStoreAvailable - checks to see if the Untangle cloud API is reachable
-     * @return bool
+     * getConnectivityTester through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public boolean isStoreAvailable()
+    public SafeConnectivityTester getConnectivityTester()
     {
-        return UvmContextFactory.context().isStoreAvailable();
+        return getConnectivityTester;
     }
 
     /**
-     * getHelpUrl - get the help URL for the UI
-     * @return String
-     */
-    @Override
-    public String getHelpUrl()
-    {
-        return UvmContextFactory.context().getHelpUrl();
-    }
-
-    /**
-     * getFeedbackUrl - get the feedback URL for the UI
-     * @return String
+     * getFeedbackUrl through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
     public String getFeedbackUrl()
     {
-        return UvmContextFactory.context().getFeedbackUrl();
+        return delegate.get().getFeedbackUrl();
     }
 
     /**
-     * getLegalUrl - get the URL for legal information in the UI
-     * @return String
+     * getFullVersion through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public String getFullVersion()
+    {
+        return delegate.get().getFullVersion();
+    }
+
+    /**
+     * getHelpUrl through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public String getHelpUrl()
+    {
+        return delegate.get().getHelpUrl();
+    }
+
+    /**
+     * getLegalUrl through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
     public String getLegalUrl()
     {
-        return UvmContextFactory.context().getLegalUrl();
+        return delegate.get().getLegalUrl();
     }
 
     /**
-     * logEvent - sends an event to reports for logging
-     * @param evt
-     */
-    @Override
-    public void logEvent(LogEvent evt)
-    {
-        UvmContextFactory.context().logEvent(evt);
-    }
-
-    /**
-     * logJavascriptException logs an exception to the logs
-     * This is used by the UI to append javascript exceptions to the logs
-     * so when debugging we see them in the logs instead of them
-     * going to the admin's browser console only
-     * @param json - the jsonobject
-     */
-    @Override
-    public void logJavascriptException(JSONObject json)
-    {
-        UvmContextFactory.context().logJavascriptException(json);
-    }
-
-    /**
-     * getServerUID - returns the server UID (aaaa-xxxx-bbbb-xxxx)
-     * @return the UID
-     */
-    @Override
-    public String getServerUID()
-    {
-        return UvmContextFactory.context().getServerUID();
-    }
-
-    /**
-     * getRegion - returns the name of the region
-     * @return the region
+     * getRegionName through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
     public String getRegionName()
     {
-        return UvmContextFactory.context().getRegionName();
+        return delegate.get().getRegionName();
     }
 
-
     /**
-     * getServerSerialNumber - returns the server serial number (aaaa-xxxx-bbbb-xxxx)
-     * @return the serial number
+     * getServerSerialNumber through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
     public String getServerSerialNumber()
     {
-        return UvmContextFactory.context().getServerSerialNumber();
+        return delegate.get().getServerSerialNumber();
     }
 
     /**
-     * getWebuiStartupInfo
-     * This call returns one big JSONObject with references to all the
-     * important information This is used to avoid lots of separate
-     * synchronous calls via the Web UI. Reducing all these separate
-     * calls to initialize the UI reduces startup time
-     * @return JSONObject
+     * getServerUID through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public String getServerUID()
+    {
+        return delegate.get().getServerUID();
+    }
+
+    /**
+     * getSetupStartupInfo through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public JSONObject getSetupStartupInfo()
+    {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("adminManager", adminManager());
+            json.put("networkManager", networkManager());
+            json.put("connectivityTester", getConnectivityTester());
+            json.put("systemManager", systemManager());
+            json.put("mailSender", mailSender());
+        } catch (JSONException exception) {
+            throw new IllegalStateException("Cannot construct safe setup startup information", exception);
+        }
+        return json;
+    }
+
+    /**
+     * getStoreUrl through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public String getStoreUrl()
+    {
+        return delegate.get().getStoreUrl();
+    }
+
+    /**
+     * getTempBackupTimer through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public long getTempBackupTimer()
+    {
+        return delegate.get().getTempBackupTimer();
+    }
+
+    /**
+     * getWebuiStartupInfo through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
     public JSONObject getWebuiStartupInfo()
@@ -910,12 +409,12 @@ public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
             json.put("architecture", System.getProperty("os.arch"));
             json.put("applianceModel", this.getApplianceModel());
             json.put("translations", this.languageManager().getTranslations("untangle"));
-            json.put("skinInfo", this.skinManager().getSkinInfo());
+            json.put("skinInfo", delegate.get().skinManager().getSkinInfo());
             json.put("hostname", this.networkManager().getNetworkSettings().getHostName());
             json.put("networkSettings", this.networkManager().getNetworkSettings());
-            json.put("companyName", this.brandingManager().getCompanyName());
-            json.put("companyURL", this.brandingManager().getCompanyUrl());
-            
+            json.put("companyName", delegate.get().brandingManager().getCompanyName());
+            json.put("companyURL", delegate.get().brandingManager().getCompanyUrl());
+
             String serialNumber = this.getServerSerialNumber();
             if(serialNumber == null){
                 serialNumber = StringUtils.EMPTY;
@@ -923,7 +422,7 @@ public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
             json.put("serverUID", this.getServerUID());
             json.put("serverSerialnumber", serialNumber );
             json.put("fullVersion", this.getFullVersion());
-            json.put("fullVersionAndRevision", this.adminManager().getFullVersionAndRevision());
+            json.put("fullVersionAndRevision", delegate.get().adminManager().getFullVersionAndRevision());
             json.put("regionName", this.getRegionName());
             json.put("storeUrl", this.getStoreUrl());
             json.put("helpUrl", this.getHelpUrl());
@@ -931,7 +430,7 @@ public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
             json.put("isRegistered", this.isRegistered());
             json.put("isExpertMode", this.isExpertMode());
             json.put("supportEnabled", this.systemManager().getSettings().getSupportEnabled());
-            json.put("timeZoneOffset", this.systemManager().getTimeZoneOffset());
+            json.put("timeZoneOffset", delegate.get().systemManager().getTimeZoneOffset());
             json.put("installType", (this.systemManager().getSettings()==null?"":this.systemManager().getSettings().getInstallType()));
 
             boolean reportsEnabled = false;
@@ -945,30 +444,432 @@ public class SafeUvmContextImpl extends UvmContextBase implements SafeUvmContext
             logger.error("Error generating WebUI startup object", e);
         }
         return json;
+
     }
 
     /**
-     * getSetupStartupInfo
-     * This call returns one big JSONObject with references to all the
-     * important information This is used to avoid lots of separate
-     * synchronous calls via the Setup UI. Reducing all these separate
-     * calls to initialize the UI reduces startup time
-     * @return JSONObject
+     * getWizardSettings through the reviewed RPC contract.
+     * @return The delegated result
      */
     @Override
-    public JSONObject getSetupStartupInfo()
+    public WizardSettings getWizardSettings()
     {
-        // Setup startup objects from UvmContext do not hold reference to any malicious command. Hence returning as is.
-        return UvmContextFactory.context().getSetupStartupInfo();
+        return delegate.get().getWizardSettings();
     }
 
     /**
-     * fatalError - prints an error and exits
-     * @param str
-     * @param x - the exception cause or null
+     * googleManager through the reviewed RPC contract.
+     * @return The delegated result
      */
-    protected void fatalError(String str, Throwable x)
+    @Override
+    public SafeGoogleManager googleManager()
     {
-        main.fatalError(str, x);
+        return googleManager;
+    }
+
+    /**
+     * hostTable through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeHostTable hostTable()
+    {
+        return hostTable;
+    }
+
+    /**
+     * isAppliance through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isAppliance()
+    {
+        return delegate.get().isAppliance();
+    }
+
+    /**
+     * isAts through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isAts()
+    {
+        return delegate.get().isAts();
+    }
+
+    /**
+     * isCCHidden through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isCCHidden()
+    {
+        return delegate.get().isCCHidden();
+    }
+
+    /**
+     * isDevel through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isDevel()
+    {
+        return delegate.get().isDevel();
+    }
+
+    /**
+     * isDiskless through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isDiskless()
+    {
+        return delegate.get().isDiskless();
+    }
+
+    /**
+     * isExpertMode through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isExpertMode()
+    {
+        return delegate.get().isExpertMode();
+    }
+
+    /**
+     * isNetBoot through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isNetBoot()
+    {
+        return delegate.get().isNetBoot();
+    }
+
+    /**
+     * isRegistered through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isRegistered()
+    {
+        return delegate.get().isRegistered();
+    }
+
+    /**
+     * isRemoteSetup through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isRemoteSetup()
+    {
+        return delegate.get().isRemoteSetup();
+    }
+
+    /**
+     * isStoreAvailable through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isStoreAvailable()
+    {
+        return delegate.get().isStoreAvailable();
+    }
+
+    /**
+     * isWizardComplete through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean isWizardComplete()
+    {
+        return delegate.get().isWizardComplete();
+    }
+
+    /**
+     * languageManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeLanguageManager languageManager()
+    {
+        return languageManager;
+    }
+
+    /**
+     * licenseManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeLicenseManager licenseManager()
+    {
+        return licenseManager;
+    }
+
+    /**
+     * localDirectory through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeLocalDirectory localDirectory()
+    {
+        return localDirectory;
+    }
+
+    /**
+     * logEvent through the reviewed RPC contract.
+     * @param evt The evt argument
+     */
+    @Override
+    public void logEvent(LogEvent evt)
+    {
+        delegate.get().logEvent(evt);
+    }
+
+    /**
+     * logJavascriptException through the reviewed RPC contract.
+     * @param o The o argument
+     */
+    @Override
+    public void logJavascriptException(JSONObject o)
+    {
+        delegate.get().logJavascriptException(o);
+    }
+
+    /**
+     * loggingManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeLoggingManager loggingManager()
+    {
+        return loggingManager;
+    }
+
+    /**
+     * mailSender through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeMailSender mailSender()
+    {
+        return mailSender;
+    }
+
+    /**
+     * metricManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeMetricManager metricManager()
+    {
+        return metricManager;
+    }
+
+    /**
+     * netcapManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeNetcapManager netcapManager()
+    {
+        return netcapManager;
+    }
+
+    /**
+     * netspaceManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeNetspaceManager netspaceManager()
+    {
+        return netspaceManager;
+    }
+
+    /**
+     * networkManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeNetworkManager networkManager()
+    {
+        return networkManager;
+    }
+
+    /**
+     * notificationManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeNotificationManager notificationManager()
+    {
+        return notificationManager;
+    }
+
+    /**
+     * oemManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeOemManager oemManager()
+    {
+        return oemManager;
+    }
+
+    /**
+     * pipelineFoundry through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafePipelineFoundry pipelineFoundry()
+    {
+        return pipelineFoundry;
+    }
+
+    /**
+     * pluginManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafePluginManager pluginManager()
+    {
+        return pluginManager;
+    }
+
+    /**
+     * rebootBox through the reviewed RPC contract.
+     */
+    @Override
+    public void rebootBox()
+    {
+        delegate.get().rebootBox();
+    }
+
+    /**
+     * sessionMonitor through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeSessionMonitor sessionMonitor()
+    {
+        return sessionMonitor;
+    }
+
+    /**
+     * setRegistered through the reviewed RPC contract.
+     */
+    @Override
+    public void setRegistered()
+    {
+        delegate.get().setRegistered();
+    }
+
+    /**
+     * setRemoteSetup through the reviewed RPC contract.
+     * @param enabled The enabled argument
+     */
+    @Override
+    public void setRemoteSetup(boolean enabled)
+    {
+        delegate.get().setRemoteSetup(enabled);
+    }
+
+    /**
+     * setWizardSettings through the reviewed RPC contract.
+     * @param wizardSettings The wizardSettings argument
+     */
+    @Override
+    public void setWizardSettings(WizardSettings wizardSettings)
+    {
+        delegate.get().setWizardSettings(wizardSettings);
+    }
+
+    /**
+     * settingsManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeSettingsManager settingsManager()
+    {
+        return settingsManager;
+    }
+
+    /**
+     * shutdownBox through the reviewed RPC contract.
+     */
+    @Override
+    public void shutdownBox()
+    {
+        delegate.get().shutdownBox();
+    }
+
+    /**
+     * state through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public UvmState state()
+    {
+        return delegate.get().state();
+    }
+
+    /**
+     * systemManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeSystemManager systemManager()
+    {
+        return systemManager;
+    }
+
+    /**
+     * uriManager through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeUriManager uriManager()
+    {
+        return uriManager;
+    }
+
+    /**
+     * useTempFileSystem through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public boolean useTempFileSystem()
+    {
+        return delegate.get().useTempFileSystem();
+    }
+
+    /**
+     * userTable through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public SafeUserTable userTable()
+    {
+        return userTable;
+    }
+
+    /**
+     * version through the reviewed RPC contract.
+     * @return The delegated result
+     */
+    @Override
+    public String version()
+    {
+        return delegate.get().version();
+    }
+
+    /**
+     * wizardComplete through the reviewed RPC contract.
+     */
+    @Override
+    public void wizardComplete()
+    {
+        delegate.get().wizardComplete();
     }
 }

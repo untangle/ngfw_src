@@ -130,7 +130,7 @@ public class ConfigurationBackupApp extends AppBase
      * get GoogleManager
      * @return GoogleManager
      */
-    public GoogleManager getGoogleManager() {
+    GoogleManager getGoogleManager() {
         return UvmContextFactory.context().googleManager();
     }
 

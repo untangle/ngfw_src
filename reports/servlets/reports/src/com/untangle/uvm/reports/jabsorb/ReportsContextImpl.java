@@ -8,27 +8,24 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import com.untangle.app.reports.ReportEntry;
 import com.untangle.app.reports.ReportsApp;
 import com.untangle.app.reports.ReportsManager;
+import com.untangle.app.reports.ReportsManagerImpl;
 import com.untangle.app.reports.ResultSetReader;
 import com.untangle.app.reports.SqlCondition;
 import com.untangle.app.reports.SqlFrom;
 import com.untangle.uvm.LanguageManager;
 import com.untangle.uvm.LanguageSettings;
 import com.untangle.uvm.LocaleInfo;
-import com.untangle.uvm.SkinInfo;
-import com.untangle.uvm.SkinManager;
-import com.untangle.uvm.SkinSettings;
 import com.untangle.uvm.UvmContext;
 import com.untangle.uvm.UvmContextFactory;
 
@@ -42,7 +39,6 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     private final UvmContext context;
     private static final String TIMEZONE_FILE = "/etc/timezone";
 
-    private final SkinManager skinManager = new SkinManagerImpl();
     private final LanguageManager languageManager = new LanguageManagerImpl();
     private final ReportsManager reportsManager = new ReportsManagerImpl();
 
@@ -94,18 +90,7 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
      */
     public ReportsManager reportsManager()
     {
-        return this.reportsManager;
-    }
-
-    /**
-     * Return skin manager.
-     * 
-     * @return
-     *  Skin manager.
-     */
-    public SkinManager skinManager()
-    {
-        return this.skinManager;
+        return reportsManager;
     }
 
     /**
@@ -155,48 +140,6 @@ public class ReportsContextImpl implements UtJsonRpcServlet.ReportsContext
     {
         UvmContext uvm = UvmContextFactory.context();
         return new ReportsContextImpl( uvm );
-    }
-
-    /**
-     * This proxy object is used so the reports servlet does not have access to setSettings and related methods
-     */
-    public class SkinManagerImpl implements SkinManager
-    {
-        /**
-         * Proxy return skin settings.
-         *
-         * @return
-         *  SkinSettings.
-         */
-        public SkinSettings getSettings() { return context.skinManager().getSettings(); }
-        /**
-         * Proxy save skin settings.
-         *
-         * @param skinSettings
-         *  New SkinSettings to save.
-         */
-        public void setSettings( SkinSettings skinSettings ) { throw new RuntimeException("Unable to change the skin settings."); }
-        /**
-         * Proxy upload skin
-         *
-         * @param item
-         *  File item containing new skin.
-         */
-        public void uploadSkin(FileItem item) { throw new RuntimeException("Unable to change the skin settings."); }
-        /**
-         * Proxy Return available skin list.
-         *
-         * @return
-         *  List of SkinInfo.
-         */
-        public List<SkinInfo> getSkinsList( ) { return context.skinManager().getSkinsList(); }
-        /**
-         * Proxy return skin information.
-         *
-         * @return
-         *  SkinInfo object.
-         */
-        public SkinInfo getSkinInfo() { return context.skinManager().getSkinInfo(); }
     }
 
     /**

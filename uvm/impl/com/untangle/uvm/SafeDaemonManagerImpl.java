@@ -3,6 +3,9 @@
  */
 package com.untangle.uvm;
 
+import java.util.Objects;
+import java.util.function.Supplier;
+
 /**
  * Exposes daemon status without exposing lifecycle or monitoring operations.
  * Callable references are registered by concrete class, so this facade must
@@ -10,7 +13,7 @@ package com.untangle.uvm;
  */
 public final class SafeDaemonManagerImpl implements SafeDaemonManager
 {
-    private final DaemonManager delegate;
+    private final Supplier<DaemonManager> delegate;
 
     /**
      * Create a status facade for the internal manager.
@@ -19,7 +22,16 @@ public final class SafeDaemonManagerImpl implements SafeDaemonManager
      */
     SafeDaemonManagerImpl(DaemonManager delegate)
     {
-        this.delegate = delegate;
+        this(() -> delegate);
+    }
+
+    /**
+     * Create a status facade without initializing the internal manager.
+     * @param delegate The current internal manager supplier
+     */
+    SafeDaemonManagerImpl(Supplier<DaemonManager> delegate)
+    {
+        this.delegate = Objects.requireNonNull(delegate, "delegate");
     }
 
     /**
@@ -31,6 +43,6 @@ public final class SafeDaemonManagerImpl implements SafeDaemonManager
     @Override
     public boolean isRunning(String daemonName)
     {
-        return delegate.isRunning(daemonName);
+        return delegate.get().isRunning(daemonName);
     }
 }

@@ -123,7 +123,7 @@ public class WireGuardVpnApp extends AppBase
      * 
      * @return wireguard manager
      */
-    public WireGuardVpnManager getWireGuardVpnManager(){
+    WireGuardVpnManager getWireGuardVpnManager(){
         return this.WireGuardVpnManager;
     }
 
