@@ -76,7 +76,7 @@ public class CaptivePortalSSLEngine extends SslEngineBase
         boolean allowed = false;
         if (sniHostname == null){
             try{
-                sniHostname = HttpUtility.extractSniHostname(data.duplicate());
+                sniHostname = HttpUtility.extractSniHostname(data.duplicate(),false);
             }catch (Exception exn) {
                 // The client is almost certainly sending us a bad TLS packet.
                 session.release();
