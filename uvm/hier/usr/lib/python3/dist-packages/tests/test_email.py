@@ -90,7 +90,7 @@ class EmailTests(NGFWTestCase):
 
         # uvm_context_timeout = 60
         uvm_context_timeout = 30
-        local_uvm_context = Uvm().getUvmContext(timeout=uvm_context_timeout)
+        local_uvm_context = Uvm().getAtsUvmContext(timeout=uvm_context_timeout)
 
         # Wipe out exim spool directory
         subprocess.call(f"systemctl stop {exim_service}", shell=True)
@@ -216,7 +216,7 @@ class EmailTests(NGFWTestCase):
         The EMAIL SafeType rejects shell metachars, embedded whitespace and
         addresses without a valid TLD.
         """
-        mail_sender = global_functions.uvmContext.mailSender()
+        mail_sender = global_functions.normalUvmContext.mailSender()
         # INVALID — semicolon inside local part (shell-style injection)
         with pytest.raises(Exception):
             mail_sender.sendTestMessage("admin;id@example.com")
@@ -242,9 +242,9 @@ class EmailTests(NGFWTestCase):
                 cls._smtp_app = None
         try:
             if global_functions.uvmContext.appManager().isInstantiated("smtp"):
-                cls._smtp_app = global_functions.uvmContext.appManager().app("smtp")
+                cls._smtp_app = global_functions.normalUvmContext.appManager().app("smtp")
             else:
-                cls._smtp_app = global_functions.uvmContext.appManager().instantiate("smtp", 1)
+                cls._smtp_app = global_functions.normalUvmContext.appManager().instantiate("smtp", 1)
                 cls._smtp_app.start()
                 cls._smtp_installed_by_test = True
             return cls._smtp_app

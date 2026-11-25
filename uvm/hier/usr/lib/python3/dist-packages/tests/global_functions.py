@@ -61,8 +61,9 @@ LIST_SYSLOG_SERVER = '10.112.56.23'
 
 Smtp_timeout_seconds = overrides.get("Smtp_timeout_seconds", default=30)
 
-uvmContext = Uvm().getUvmContext(timeout=240)
-uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
+uvmContext = Uvm().getAtsUvmContext(timeout=240)
+uvmContextLongTimeout = Uvm().getAtsUvmContext(timeout=300)
+normalUvmContext = Uvm().getUvmContext(timeout=240)
 prefix = "@PREFIX@"
 
 # get the IP address of the test.untangle.com if not use static value.
@@ -881,7 +882,7 @@ def restart_uvm():
     fully exits, netcap initialization fails ("Unable to initialize netcap")
     because NFQUEUE 1981/1982 are still held by the dying process.
     """
-    global uvmContext, uvmContextLongTimeout
+    global uvmContext, uvmContextLongTimeout, normalUvmContext
 
     subprocess.call(["/etc/init.d/untangle-vm", "stop"],
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -901,12 +902,15 @@ def restart_uvm():
     subprocess.call(["/etc/init.d/untangle-vm", "start"],
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    uvmContext = None
+    uvmContext = uvmContextLongTimeout = normalUvmContext = None
     max_tries = 60
     while max_tries > 0:
         try:
-            uvmContext = Uvm().getUvmContext(timeout=240)
-            uvmContextLongTimeout = Uvm().getUvmContext(timeout=300)
+            uvmContext, uvmContextLongTimeout, normalUvmContext = (
+                Uvm().getAtsUvmContext(timeout=240),
+                Uvm().getAtsUvmContext(timeout=300),
+                Uvm().getUvmContext(timeout=240),
+            )
         except Exception as e:
             pass
         if uvmContext is not None:
@@ -2016,4 +2020,3 @@ def build_upload_v2_multipart_body_with_args(type_field, args, file_bytes):
     parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="file"\r\n\r\n{file_value}\r\n')
     parts.append(f'--{boundary}--\r\n')
     return boundary, "".join(parts).encode()
-

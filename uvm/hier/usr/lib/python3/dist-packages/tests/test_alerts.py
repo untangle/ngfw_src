@@ -164,7 +164,7 @@ class AlertTests(NGFWTestCase):
         every other Cc-class control character (NUL, BEL, ESC). Those would
         enable SMTP header smuggling at the downstream mailer.
         """
-        evt_mgr = uvmContext.eventManager()
+        evt_mgr = global_functions.normalUvmContext.eventManager()
         NUL = chr(0x00)
         BEL = chr(0x07)
         # INVALID — NUL in subject template

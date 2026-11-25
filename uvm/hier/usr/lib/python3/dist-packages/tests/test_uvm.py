@@ -1066,7 +1066,7 @@ class UvmTests(NGFWTestCase):
         status_file = "/var/lib/interface-status/test_injection_trigger"
         subprocess.call(f"rm -f {poc_file} {status_file}", shell=True)
 
-        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = global_functions.normalUvmContext.networkManager().getNetworkSettings()
         try:
             malicious_settings = copy.deepcopy(orig_netsettings)
             malicious_settings['hostName'] = "ngfw; touch " + poc_file + "; echo"
@@ -1078,10 +1078,10 @@ class UvmTests(NGFWTestCase):
 
             # Layer 1 - typed @SafeCheck must reject at the RPC boundary.
             with pytest.raises(Exception):
-                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+                global_functions.normalUvmContext.networkManager().setNetworkSettings(malicious_settings)
         finally:
             subprocess.call(f"rm -f {status_file}", shell=True)
-            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         time.sleep(1)
         # Layer 2 defense-in-depth - even if layer 1 was bypassed somehow,
@@ -1394,7 +1394,7 @@ class UvmTests(NGFWTestCase):
         poc_file = "/tmp/conn_server_injection_test.txt"
         subprocess.call(f"rm -f {poc_file}", shell=True)
 
-        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = global_functions.normalUvmContext.networkManager().getNetworkSettings()
         try:
             malicious_settings = copy.deepcopy(orig_netsettings)
             for iface in malicious_settings.get('interfaces', {}).get('list', []):
@@ -1402,13 +1402,13 @@ class UvmTests(NGFWTestCase):
                     iface['v4StaticDns1'] = "8.8.8.8; touch " + poc_file
                     break
             try:
-                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+                global_functions.normalUvmContext.networkManager().setNetworkSettings(malicious_settings)
             except JSONRPCException:
                 # Expected: the server rejects the malicious value because v4StaticDns1
                 # is unmarshalled as InetAddress, which only accepts valid IP addresses.
                 pass
         finally:
-            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
         time.sleep(1)
         assert not os.path.exists(poc_file), \
@@ -1472,7 +1472,7 @@ class UvmTests(NGFWTestCase):
 
             # downloadUpgrades() will return False (wget exit ≠ 0 for 127.0.0.1),
             # but we only care whether the sentinel file was created.
-            global_functions.uvmContext.systemManager().downloadUpgrades()
+            global_functions.normalUvmContext.systemManager().downloadUpgrades()
         finally:
             subprocess.call(f"mv {backup_script} {helper_script}", shell=True)
 
@@ -1500,27 +1500,27 @@ class UvmTests(NGFWTestCase):
         bypass_flag = "/usr/share/untangle/conf/safecheck-disabled-flag"
         bad_hostname = "ngfw;injected"  # semicolon violates SafeType.HOSTNAME
 
-        orig = global_functions.uvmContext.networkManager().getNetworkSettings()
+        orig = global_functions.normalUvmContext.networkManager().getNetworkSettings()
         bad = copy.deepcopy(orig)
         bad['hostName'] = bad_hostname
 
         try:
             # No flag: SafeCheck must reject the bad hostName at the RPC boundary.
             with pytest.raises(Exception):
-                global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+                global_functions.normalUvmContext.networkManager().setNetworkSettings(bad)
 
             # Flag present: bypass allows the save through without a UVM restart.
             subprocess.call(f"touch {bypass_flag}", shell=True)
-            global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(bad)
 
             # Flag removed: SafeCheck must reject the bad hostName again.
             subprocess.call(f"rm -f {bypass_flag}", shell=True)
             with pytest.raises(Exception):
-                global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+                global_functions.normalUvmContext.networkManager().setNetworkSettings(bad)
 
         finally:
             subprocess.call(f"rm -f {bypass_flag}", shell=True)
-            global_functions.uvmContext.networkManager().setNetworkSettings(orig)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(orig)
 
     def test_132_safecheck_bypass_flag_param(self):
         """
@@ -1538,18 +1538,18 @@ class UvmTests(NGFWTestCase):
         try:
             # No flag: SafeCheck must reject the bad param at the RPC boundary.
             with pytest.raises(Exception):
-                global_functions.uvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
+                global_functions.normalUvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
 
             # Flag present: bypass allows the call through.
             # getAppSpecificGoogleDrivePath returns null when Google Drive is unconfigured,
             # so the call completes without error regardless of the bypassed param value.
             subprocess.call(f"touch {bypass_flag}", shell=True)
-            global_functions.uvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
+            global_functions.normalUvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
 
             # Flag removed: SafeCheck must reject the bad param again.
             subprocess.call(f"rm -f {bypass_flag}", shell=True)
             with pytest.raises(Exception):
-                global_functions.uvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
+                global_functions.normalUvmContext.googleManager().getAppSpecificGoogleDrivePath(bad_dir)
 
         finally:
             subprocess.call(f"rm -f {bypass_flag}", shell=True)
@@ -1570,7 +1570,7 @@ class UvmTests(NGFWTestCase):
         move the file - the source disappears and an attacker-controlled file
         lands in the settings tree.
         """
-        sm = global_functions.uvmContext.settingsManager()
+        sm = global_functions.normalUvmContext.settingsManager()
         settings_dir = "/usr/share/untangle/settings"
         tmp_input = "/tmp/test_sm_path_validation.js"
         settings_output = settings_dir + "/untangle-vm/test_sm_path_validation.js"
@@ -2267,7 +2267,7 @@ class UvmTests(NGFWTestCase):
         """ Test to check if the google drive authorization URL contains valid google drive connector oauth2 credentials"""
 
         creds_file = '/var/lib/google-drive/.gd/credentials.json'
-        auth_url = global_functions.uvmContext.googleManager().getAuthorizationUrl('http:', global_functions.get_lan_ip())
+        auth_url = global_functions.normalUvmContext.googleManager().getAuthorizationUrl('http:', global_functions.get_lan_ip())
 
         with open(creds_file, 'r') as f:
             creds = json.load(f)
@@ -2297,7 +2297,7 @@ class UvmTests(NGFWTestCase):
         """getAuthorizationUrl throws GoogleDriveOperationFailedException
         once the outstanding-nonce cap (100) is reached; the exception message
         instructs the caller to retry after 10 minutes."""
-        g_mgr = global_functions.uvmContext.googleManager()
+        g_mgr = global_functions.normalUvmContext.googleManager()
         lan_ip = global_functions.get_lan_ip()
         issued_nonces = []
         cap_hit_details = None

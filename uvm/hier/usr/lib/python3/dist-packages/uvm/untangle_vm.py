@@ -77,6 +77,16 @@ class Uvm:
         proxy = ServiceProxy( f"{uri}/admin/JSON-RPC", None, handler, None )
         return proxy.UvmContext
 
+    def getAtsUvmContext( self, hostname="127.0.0.1", username=None, password=None, timeout=240, scheme="http" ):
+        """Select ATS RPC; the server must also authorize the local OS identity."""
+        handler = CurlRequestHandler( timeout, verify_certs=False )
+        uri = f"{scheme}://{hostname}"
+
+        if username is not None and password is not None:
+            handler.make_request( f"{uri}/auth/login?url=/admin&realm=Administrator", urllib.parse.urlencode({ "fragment":"", "username":username, "password":password }), follow_redirects=True )
+
+        proxy = ServiceProxy( f"{uri}/ats/JSON-RPC", None, handler, None )
+        return proxy.UvmContext
 
 
 

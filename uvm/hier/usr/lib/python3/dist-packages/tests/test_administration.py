@@ -555,7 +555,7 @@ class AdministrationTests(NGFWTestCase):
         if os.path.exists(sentinel_file):
             os.remove(sentinel_file)
 
-        orig_settings = global_functions.uvmContext.adminManager().getSettings()
+        orig_settings = global_functions.normalUvmContext.adminManager().getSettings()
 
         try:
             # Payload anatomy when inserted into the old template
@@ -578,7 +578,7 @@ class AdministrationTests(NGFWTestCase):
 
             # setSettings() calls setRootPasswordAndShadowHash() internally,
             # which is where the exec()/execCommand() call lives.
-            global_functions.uvmContext.adminManager().setSettings(settings)
+            global_functions.normalUvmContext.adminManager().setSettings(settings)
 
             assert not os.path.exists(sentinel_file), (
                 "Command injection succeeded: sentinel file was created. "
@@ -586,7 +586,7 @@ class AdministrationTests(NGFWTestCase):
             )
         finally:
             # Always restore the original working settings regardless of outcome.
-            global_functions.uvmContext.adminManager().setSettings(orig_settings)
+            global_functions.normalUvmContext.adminManager().setSettings(orig_settings)
             if os.path.exists(sentinel_file):
                 os.remove(sentinel_file)
 
@@ -613,7 +613,7 @@ class AdministrationTests(NGFWTestCase):
         """
         import copy
 
-        orig_settings = global_functions.uvmContext.systemManager().getSettings()
+        orig_settings = global_functions.normalUvmContext.systemManager().getSettings()
         # Baseline must use values that pass the typed regexes so the initial
         # setSettings round-trip succeeds.
         baseline = copy.deepcopy(orig_settings)
@@ -628,7 +628,7 @@ class AdministrationTests(NGFWTestCase):
 
         try:
             # Persist the clean baseline first; round-trip must succeed.
-            global_functions.uvmContext.systemManager().setSettings(baseline)
+            global_functions.normalUvmContext.systemManager().setSettings(baseline)
 
             # Each malicious payload must be rejected and must NOT mutate the
             # stored snmpSettings.
@@ -649,15 +649,15 @@ class AdministrationTests(NGFWTestCase):
                 bad = copy.deepcopy(baseline)
                 bad["snmpSettings"][field_name] = payload
                 with pytest.raises(Exception):
-                    global_functions.uvmContext.systemManager().setSettings(bad)
-                current = global_functions.uvmContext.systemManager().getSettings()["snmpSettings"]
+                    global_functions.normalUvmContext.systemManager().setSettings(bad)
+                current = global_functions.normalUvmContext.systemManager().getSettings()["snmpSettings"]
                 assert current[field_name] == baseline_snmp[field_name], (
                     f"NGFW-15741: SnmpSettings.{field_name} mutated despite "
                     f"SafeCheckValidator rejection. Stored: {current[field_name]!r}, "
                     f"expected: {baseline_snmp[field_name]!r}"
                 )
         finally:
-            global_functions.uvmContext.systemManager().setSettings(orig_settings)
+            global_functions.normalUvmContext.systemManager().setSettings(orig_settings)
 
     def test_051_snmp_config_fields_no_newline_injection(self):
         """Verify SNMP config-file fields are rejected by @SafeCheck against newline injection.
@@ -681,7 +681,7 @@ class AdministrationTests(NGFWTestCase):
         """
         import copy
 
-        orig_settings = global_functions.uvmContext.systemManager().getSettings()
+        orig_settings = global_functions.normalUvmContext.systemManager().getSettings()
         baseline = copy.deepcopy(orig_settings)
         baseline_snmp = baseline["snmpSettings"]
         baseline_snmp["enabled"] = False
@@ -694,7 +694,7 @@ class AdministrationTests(NGFWTestCase):
         baseline_snmp["communityString"] = "publiccomm"
 
         try:
-            global_functions.uvmContext.systemManager().setSettings(baseline)
+            global_functions.normalUvmContext.systemManager().setSettings(baseline)
 
             payloads = {
                 "trapHost":        "trap.example.com\nextend .1.2.3.4 /bin/id",
@@ -708,8 +708,8 @@ class AdministrationTests(NGFWTestCase):
                 bad = copy.deepcopy(baseline)
                 bad["snmpSettings"][field_name] = payload
                 with pytest.raises(Exception):
-                    global_functions.uvmContext.systemManager().setSettings(bad)
-                current = global_functions.uvmContext.systemManager().getSettings()["snmpSettings"]
+                    global_functions.normalUvmContext.systemManager().setSettings(bad)
+                current = global_functions.normalUvmContext.systemManager().getSettings()["snmpSettings"]
                 assert current[field_name] == baseline_snmp[field_name], (
                     f"NGFW-15741: SnmpSettings.{field_name} mutated despite "
                     f"SafeCheckValidator rejection of newline payload. "
@@ -717,7 +717,7 @@ class AdministrationTests(NGFWTestCase):
                 )
 
         finally:
-            global_functions.uvmContext.systemManager().setSettings(orig_settings)
+            global_functions.normalUvmContext.systemManager().setSettings(orig_settings)
 
     def test_060_certificate_subject_no_injection(self):
         """Verify generateServerCertificate() does not execute injection payloads via certSubject/altNames.
@@ -738,7 +738,7 @@ class AdministrationTests(NGFWTestCase):
             execCommand(CERTIFICATE_GENERATOR_SCRIPT, List.of(certFileName, certSubject, altNames))
         """
         import time
-        cert_manager = global_functions.uvmContext.certificateManager()
+        cert_manager = global_functions.normalUvmContext.certificateManager()
         sentinel_file = "/tmp/cert_subject_injection_sentinel"
 
         if os.path.exists(sentinel_file):
@@ -843,7 +843,7 @@ class AdministrationTests(NGFWTestCase):
         if os.path.exists(sentinel_file):
             os.remove(sentinel_file)
 
-        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = global_functions.normalUvmContext.networkManager().getNetworkSettings()
 
         try:
             # ------------------------------------------------------------------ #
@@ -855,7 +855,7 @@ class AdministrationTests(NGFWTestCase):
             malicious_settings = copy.deepcopy(orig_netsettings)
             malicious_settings['domainName'] = f"evil.com; touch {sentinel_file} #"
             with pytest.raises(Exception):
-                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+                global_functions.normalUvmContext.networkManager().setNetworkSettings(malicious_settings)
 
             # Even if layer 1 was bypassed, no hook should have fired with the
             # malicious value because the RPC throws before the change reaches
@@ -875,7 +875,7 @@ class AdministrationTests(NGFWTestCase):
             # invoked. We exercise that path directly with a CN containing the   #
             # injection payload.                                                  #
             # ------------------------------------------------------------------ #
-            cert_manager = global_functions.uvmContext.certificateManager()
+            cert_manager = global_functions.normalUvmContext.certificateManager()
             try:
                 cert_manager.generateServerCertificate(
                     f"/CN=ngfw.evil.com; touch {sentinel_file} #", ""
@@ -892,7 +892,7 @@ class AdministrationTests(NGFWTestCase):
             )
 
         finally:
-            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(orig_netsettings)
             if os.path.exists(sentinel_file):
                 os.remove(sentinel_file)
 
@@ -918,7 +918,7 @@ class AdministrationTests(NGFWTestCase):
         import re
         import time
 
-        orig_netsettings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        orig_netsettings = global_functions.normalUvmContext.networkManager().getNetworkSettings()
         sentinel_file = "/tmp/cert_fqdn_space_injection_sentinel"
 
         if os.path.exists(sentinel_file):
@@ -933,10 +933,10 @@ class AdministrationTests(NGFWTestCase):
             malicious_settings['hostName'] = "foo bar"  # space in hostName
             malicious_settings['domainName'] = "test.local"
             with pytest.raises(Exception):
-                global_functions.uvmContext.networkManager().setNetworkSettings(malicious_settings)
+                global_functions.normalUvmContext.networkManager().setNetworkSettings(malicious_settings)
 
             # Confirm the stored hostName is unchanged (no partial-apply).
-            saved_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
+            saved_settings = global_functions.normalUvmContext.networkManager().getNetworkSettings()
             saved_hostname = saved_settings.get('hostName', '')
             original_hostname = orig_netsettings.get('hostName', '')
             assert saved_hostname == original_hostname, (
@@ -962,7 +962,7 @@ class AdministrationTests(NGFWTestCase):
             # C. Cert generation with a space-containing CN must not produce      #
             #    argument-injection side effects — exercises execCommand(argv).  #
             # ------------------------------------------------------------------ #
-            cert_manager = global_functions.uvmContext.certificateManager()
+            cert_manager = global_functions.normalUvmContext.certificateManager()
             try:
                 cert_manager.generateServerCertificate(f"/CN={space_fqdn}", "")
             except Exception:
@@ -978,7 +978,7 @@ class AdministrationTests(NGFWTestCase):
             )
 
         finally:
-            global_functions.uvmContext.networkManager().setNetworkSettings(orig_netsettings)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(orig_netsettings)
             if os.path.exists(sentinel_file):
                 os.remove(sentinel_file)
 
@@ -1006,7 +1006,7 @@ class AdministrationTests(NGFWTestCase):
              symlinkRootCerts() was never reached.
         """
         ROOT_CERT_SYMLINK = "/usr/share/untangle/settings/untangle-certificates/untangle.crt"
-        cert_manager = global_functions.uvmContext.certificateManager()
+        cert_manager = global_functions.normalUvmContext.certificateManager()
 
         if not os.path.islink(ROOT_CERT_SYMLINK):
             pytest.skip(f"Root CA symlink not found at {ROOT_CERT_SYMLINK}; cannot verify.")
@@ -1055,7 +1055,7 @@ class AdministrationTests(NGFWTestCase):
         never called.
         """
         ROOT_CERT_SYMLINK = "/usr/share/untangle/settings/untangle-certificates/untangle.crt"
-        cert_manager = global_functions.uvmContext.certificateManager()
+        cert_manager = global_functions.normalUvmContext.certificateManager()
         cert_store = "/usr/share/untangle/settings/untangle-certificates/"
 
         if not os.path.islink(ROOT_CERT_SYMLINK):
@@ -1109,7 +1109,7 @@ class AdministrationTests(NGFWTestCase):
         that symlinkRootCerts() was never called.
         """
         ROOT_CERT_SYMLINK = "/usr/share/untangle/settings/untangle-certificates/untangle.crt"
-        cert_manager = global_functions.uvmContext.certificateManager()
+        cert_manager = global_functions.normalUvmContext.certificateManager()
         cert_store = "/usr/share/untangle/settings/untangle-certificates/"
 
         if not os.path.islink(ROOT_CERT_SYMLINK):
@@ -1165,7 +1165,7 @@ class AdministrationTests(NGFWTestCase):
         is the direct evidence that symlinkRootCerts() was never called.
         """
         ROOT_CERT_SYMLINK = "/usr/share/untangle/settings/untangle-certificates/untangle.crt"
-        cert_manager = global_functions.uvmContext.certificateManager()
+        cert_manager = global_functions.normalUvmContext.certificateManager()
         cert_store = "/usr/share/untangle/settings/untangle-certificates/"
 
         if not os.path.islink(ROOT_CERT_SYMLINK):
@@ -1219,7 +1219,7 @@ class AdministrationTests(NGFWTestCase):
         """
         import copy
 
-        orig_settings = global_functions.uvmContext.systemManager().getSettings()
+        orig_settings = global_functions.normalUvmContext.systemManager().getSettings()
 
         try:
             baseline = copy.deepcopy(orig_settings)
@@ -1229,8 +1229,8 @@ class AdministrationTests(NGFWTestCase):
                 bad = copy.deepcopy(baseline)
                 bad[field] = "apache.pem" + injection_suffix
                 with pytest.raises(Exception):
-                    global_functions.uvmContext.systemManager().setSettings(bad)
-                current = global_functions.uvmContext.systemManager().getSettings()
+                    global_functions.normalUvmContext.systemManager().setSettings(bad)
+                current = global_functions.normalUvmContext.systemManager().getSettings()
                 assert current.get(field) == baseline.get(field), (
                     f"NGFW-15741: SystemSettings.{field} was mutated despite "
                     f"@SafeCheck rejection. Stored: {current.get(field)!r}, "
@@ -1238,7 +1238,7 @@ class AdministrationTests(NGFWTestCase):
                 )
 
         finally:
-            global_functions.uvmContext.systemManager().setSettings(orig_settings)
+            global_functions.normalUvmContext.systemManager().setSettings(orig_settings)
 
     def test_068_activate_apache_certificate_execcommand(self):
         """Verify activateApacheCertificate() uses execCommand() so metacharacters in
@@ -1273,7 +1273,7 @@ class AdministrationTests(NGFWTestCase):
         if os.path.exists(sentinel_file):
             os.remove(sentinel_file)
 
-        orig_settings = global_functions.uvmContext.systemManager().getSettings()
+        orig_settings = global_functions.normalUvmContext.systemManager().getSettings()
 
         try:
             # @SafeCheck will strip ";" injection, so we need to test at the
@@ -1285,13 +1285,13 @@ class AdministrationTests(NGFWTestCase):
             settings = orig_settings.copy()
             # A realistic safe value to ensure activateApacheCertificate() is reachable.
             settings["webCertificate"] = "apache.pem"
-            global_functions.uvmContext.systemManager().setSettings(settings)
+            global_functions.normalUvmContext.systemManager().setSettings(settings)
 
             # Directly call activateApacheCertificate() — it must not raise an
             # exception even if the graceful restart has no visible effect in the
             # test environment.
             try:
-                global_functions.uvmContext.systemManager().activateApacheCertificate()
+                global_functions.normalUvmContext.systemManager().activateApacheCertificate()
             except Exception:
                 pass  # a non-zero cp exit is acceptable; the shell must not be called
 
@@ -1304,7 +1304,7 @@ class AdministrationTests(NGFWTestCase):
             )
 
         finally:
-            global_functions.uvmContext.systemManager().setSettings(orig_settings)
+            global_functions.normalUvmContext.systemManager().setSettings(orig_settings)
             if os.path.exists(sentinel_file):
                 os.remove(sentinel_file)
 
@@ -1336,7 +1336,7 @@ class AdministrationTests(NGFWTestCase):
         if os.path.exists(sentinel_file):
             os.remove(sentinel_file)
 
-        orig_settings = global_functions.uvmContext.systemManager().getSettings()
+        orig_settings = global_functions.normalUvmContext.systemManager().getSettings()
 
         try:
             baseline = copy.deepcopy(orig_settings)
@@ -1345,9 +1345,9 @@ class AdministrationTests(NGFWTestCase):
             bad["radiusCertificate"] = "apache.pem$(touch " + sentinel_file + ")"
 
             with pytest.raises(Exception):
-                global_functions.uvmContext.systemManager().setSettings(bad)
+                global_functions.normalUvmContext.systemManager().setSettings(bad)
 
-            current = global_functions.uvmContext.systemManager().getSettings()
+            current = global_functions.normalUvmContext.systemManager().getSettings()
             assert current.get("radiusCertificate") == baseline.get("radiusCertificate"), (
                 f"NGFW-15741: SystemSettings.radiusCertificate was mutated despite "
                 f"@SafeCheck rejection. Stored: {current.get('radiusCertificate')!r}, "
@@ -1362,7 +1362,7 @@ class AdministrationTests(NGFWTestCase):
             )
 
         finally:
-            global_functions.uvmContext.systemManager().setSettings(orig_settings)
+            global_functions.normalUvmContext.systemManager().setSettings(orig_settings)
             if os.path.exists(sentinel_file):
                 os.remove(sentinel_file)
 
@@ -1386,7 +1386,7 @@ class AdministrationTests(NGFWTestCase):
         """
         import copy
 
-        orig_settings = global_functions.uvmContext.systemManager().getSettings()
+        orig_settings = global_functions.normalUvmContext.systemManager().getSettings()
         try:
             # Positive — valid values round-trip.
             positive = copy.deepcopy(orig_settings)
@@ -1395,8 +1395,8 @@ class AdministrationTests(NGFWTestCase):
             positive["radiusProxyRealm"]     = "example.com"
             positive["radiusProxyUsername"]  = "admin"
             positive["radiusProxyPassword"]  = "Str0ng!Pass-Phrase"
-            global_functions.uvmContext.systemManager().setSettings(positive)
-            saved = global_functions.uvmContext.systemManager().getSettings()
+            global_functions.normalUvmContext.systemManager().setSettings(positive)
+            saved = global_functions.normalUvmContext.systemManager().getSettings()
             assert saved["radiusProxyServer"]    == "ads.example.com"
             assert saved["radiusProxyWorkgroup"] == "EXAMPLE"
             assert saved["radiusProxyRealm"]     == "example.com"
@@ -1407,7 +1407,7 @@ class AdministrationTests(NGFWTestCase):
             # We keep the previous valid `positive` settings as the baseline and
             # confirm that after each rejection the stored value still equals
             # the baseline (i.e. setSettings never partially applied).
-            baseline = global_functions.uvmContext.systemManager().getSettings()
+            baseline = global_functions.normalUvmContext.systemManager().getSettings()
             negative_payloads = {
                 "radiusProxyServer":    "ads.example.com; touch /tmp/x",
                 "radiusProxyWorkgroup": "EXAMPLE`id`",
@@ -1419,15 +1419,15 @@ class AdministrationTests(NGFWTestCase):
                 bad = copy.deepcopy(baseline)
                 bad[field] = payload
                 with pytest.raises(Exception):
-                    global_functions.uvmContext.systemManager().setSettings(bad)
-                current = global_functions.uvmContext.systemManager().getSettings()
+                    global_functions.normalUvmContext.systemManager().setSettings(bad)
+                current = global_functions.normalUvmContext.systemManager().getSettings()
                 assert current[field] == baseline[field], (
                     f"NGFW-15768: SystemSettings.{field} was mutated despite "
                     f"SafeCheckValidator rejection. Stored: {current[field]!r}, "
                     f"expected: {baseline[field]!r}"
                 )
         finally:
-            global_functions.uvmContext.systemManager().setSettings(orig_settings)
+            global_functions.normalUvmContext.systemManager().setSettings(orig_settings)
 
     def test_073_safecheck_dynamic_dns_fields(self):
         """Verify NGFW-15768 @SafeCheck annotations on NetworkSettings.dynamicDns* fields.
@@ -1448,7 +1448,7 @@ class AdministrationTests(NGFWTestCase):
         """
         import copy
 
-        orig_settings = global_functions.uvmContext.networkManager().getNetworkSettings()
+        orig_settings = global_functions.normalUvmContext.networkManager().getNetworkSettings()
         try:
             # Positive: valid values round-trip.
             positive = copy.deepcopy(orig_settings)
@@ -1457,8 +1457,8 @@ class AdministrationTests(NGFWTestCase):
             positive["dynamicDnsServicePassword"]  = "Str0ng!P@ss-Phrase"
             positive["dynamicDnsServiceZone"]      = "example.com"
             positive["dynamicDnsServiceHostnames"] = "vpn.example.com,www.example.com"
-            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
-            saved = global_functions.uvmContext.networkManager().getNetworkSettings()
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(positive)
+            saved = global_functions.normalUvmContext.networkManager().getNetworkSettings()
             assert saved["dynamicDnsServiceName"]      == "cloudflare"
             assert saved["dynamicDnsServiceUsername"]  == "ddns_user"
             assert saved["dynamicDnsServiceZone"]      == "example.com"
@@ -1467,15 +1467,15 @@ class AdministrationTests(NGFWTestCase):
             # USERNAME_OR_EMAIL accepts email-format logins (ALPHANUM rejected '@').
             # Cloudflare, No-IP, DynDNS all use email as the login identifier.
             positive["dynamicDnsServiceUsername"] = "user@provider.com"
-            global_functions.uvmContext.networkManager().setNetworkSettings(positive)
-            saved = global_functions.uvmContext.networkManager().getNetworkSettings()
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(positive)
+            saved = global_functions.normalUvmContext.networkManager().getNetworkSettings()
             assert saved["dynamicDnsServiceUsername"] == "user@provider.com", (
                 "NGFW-15768: USERNAME_OR_EMAIL failed to accept email-format DDNS "
                 f"username; got {saved['dynamicDnsServiceUsername']!r}"
             )
 
             # Negative: each historically-confirmed RCE payload is rejected.
-            baseline = global_functions.uvmContext.networkManager().getNetworkSettings()
+            baseline = global_functions.normalUvmContext.networkManager().getNetworkSettings()
             negative_payloads = {
                 "dynamicDnsServiceName":      "cloudflare; touch /tmp/x",
                 "dynamicDnsServiceUsername":  "ddns_user`id`",
@@ -1487,15 +1487,15 @@ class AdministrationTests(NGFWTestCase):
                 bad = copy.deepcopy(baseline)
                 bad[field] = payload
                 with pytest.raises(Exception):
-                    global_functions.uvmContext.networkManager().setNetworkSettings(bad)
-                current = global_functions.uvmContext.networkManager().getNetworkSettings()
+                    global_functions.normalUvmContext.networkManager().setNetworkSettings(bad)
+                current = global_functions.normalUvmContext.networkManager().getNetworkSettings()
                 assert current[field] == baseline[field], (
                     f"NGFW-15768: NetworkSettings.{field} was mutated despite "
                     f"SafeCheckValidator rejection. Stored: {current[field]!r}, "
                     f"expected: {baseline[field]!r}"
                 )
         finally:
-            global_functions.uvmContext.networkManager().setNetworkSettings(orig_settings)
+            global_functions.normalUvmContext.networkManager().setNetworkSettings(orig_settings)
 
     # ------------------------------------------------------------------
     # NGFW-15768 / NGFW-15765 @SafeCheckParam coverage
@@ -1535,7 +1535,7 @@ class AdministrationTests(NGFWTestCase):
     def test_082_safecheckparam_generate_certificate_authority(self):
         """CertificateManagerImpl.generateCertificateAuthority(commonName: NATURAL_NAME,
                                                               certSubject: CERT_SUBJECT)."""
-        cert_mgr = global_functions.uvmContext.certificateManager()
+        cert_mgr = global_functions.normalUvmContext.certificateManager()
         # INVALID — commonName carries shell metachar
         with pytest.raises(Exception):
             cert_mgr.generateCertificateAuthority("CA;rm -rf /", "/CN=Test/O=Untangle")
@@ -1553,7 +1553,7 @@ class AdministrationTests(NGFWTestCase):
     def test_083_safecheckparam_generate_server_certificate(self):
         """CertificateManagerImpl.generateServerCertificate(certSubject: CERT_SUBJECT,
                                                             altNames:    SAN_LIST)."""
-        cert_mgr = global_functions.uvmContext.certificateManager()
+        cert_mgr = global_functions.normalUvmContext.certificateManager()
         # INVALID — certSubject shape violation
         with pytest.raises(Exception):
             cert_mgr.generateServerCertificate("not a /CN= subject", "DNS:example.com")
@@ -1572,7 +1572,7 @@ class AdministrationTests(NGFWTestCase):
         """CertificateManagerImpl.uploadCertificate(certMode: ALPHANUM,
                                                     certData: PEM, keyData: PEM,
                                                     extraData: PEM)."""
-        cert_mgr = global_functions.uvmContext.certificateManager()
+        cert_mgr = global_functions.normalUvmContext.certificateManager()
         # INVALID — certMode contains semicolon (ALPHANUM rejection)
         with pytest.raises(Exception):
             cert_mgr.uploadCertificate("SERVER;id", certData, keyData, "")
@@ -1602,7 +1602,7 @@ class AdministrationTests(NGFWTestCase):
 
     def test_085_safecheckparam_import_signed_request(self):
         """CertificateManagerImpl.importSignedRequest(certData: PEM, extraData: PEM)."""
-        cert_mgr = global_functions.uvmContext.certificateManager()
+        cert_mgr = global_functions.normalUvmContext.certificateManager()
         # INVALID — certData missing PEM envelope. The PEM SafeType only
         # checks envelope shape and forbids control chars; shell-metachar
         # bodies like '$(id)' are valid printable ASCII and not the
@@ -1615,7 +1615,7 @@ class AdministrationTests(NGFWTestCase):
 
     def test_086_safecheckparam_remove_certificate(self):
         """CertificateManagerImpl.removeCertificate(type: ALPHANUM, fileName)."""
-        cert_mgr = global_functions.uvmContext.certificateManager()
+        cert_mgr = global_functions.normalUvmContext.certificateManager()
         # INVALID — type carries shell metachar
         with pytest.raises(Exception):
             cert_mgr.removeCertificate("SERVER;id", "junk.pem")
@@ -1641,7 +1641,7 @@ class AdministrationTests(NGFWTestCase):
 
     def test_091_safecheckparam_google_drive_path(self):
         """GoogleManagerImpl.getAppSpecificGoogleDrivePath(appDirectory: SIMPLE_TEXT)."""
-        g_mgr = global_functions.uvmContext.googleManager()
+        g_mgr = global_functions.normalUvmContext.googleManager()
         # INVALID — SIMPLE_TEXT forbids ';' and shell metachar
         with pytest.raises(Exception):
             g_mgr.getAppSpecificGoogleDrivePath("backup;rm -rf /")
@@ -1652,7 +1652,7 @@ class AdministrationTests(NGFWTestCase):
     def test_092_safecheckparam_get_authorization_url(self):
         """GoogleManagerImpl.getAuthorizationUrl(windowProtocol: SIMPLE_TEXT,
                                                  windowLocation: SIMPLE_TEXT)."""
-        g_mgr = global_functions.uvmContext.googleManager()
+        g_mgr = global_functions.normalUvmContext.googleManager()
         with pytest.raises(Exception):
             g_mgr.getAuthorizationUrl("https;evil", "host/path")
         with pytest.raises(Exception):
@@ -1662,7 +1662,7 @@ class AdministrationTests(NGFWTestCase):
 
     def test_094_safecheckparam_upload_to_drive(self):
         """GoogleManagerImpl.uploadToDrive(filePath: FILE_PATH, parentFolder: SIMPLE_TEXT)."""
-        g_mgr = global_functions.uvmContext.googleManager()
+        g_mgr = global_functions.normalUvmContext.googleManager()
         with pytest.raises(Exception):
             g_mgr.uploadToDrive("../../etc/passwd", "Backup")
         with pytest.raises(Exception):
