@@ -35,13 +35,13 @@ public class ActiveDirectorySettings implements java.io.Serializable, JSONString
      *
      * @return List of ActiveDirectoryServer for all defined AD servers.
      */
-    public List<ActiveDirectoryServer> getServers() { return servers; }
+    public List<ActiveDirectoryServer> getServers() { return new LinkedList<>(servers); }
     /**
      * Sets list of active directory servers.
      *
      * @param servers List of ActiveDirectoryServer for all defined AD servers.
      */
-    public void setServers( List<ActiveDirectoryServer> servers ) { this.servers = servers; }
+    public void setServers( List<ActiveDirectoryServer> servers ) { this.servers = servers == null ? new LinkedList<>() : new LinkedList<>(servers); }
 
     /**
     * Constructor

@@ -31,6 +31,10 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
     private int ldapPort;
     private boolean isEnabled = false;
     private boolean azure = false;
+    private String recordId;
+    private String certificateValidationMode;
+    private boolean includePublicRoots = true;
+    private List<LdapsTrustAnchor> ldapsTrustAnchors = new LinkedList<>();
 
     /**
      * Initialize active directory server.
@@ -65,7 +69,7 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
         this.ldapHost = ldapHost;
         this.ldapPort = ldapPort;
         this.ldapSecure = ldapSecure;
-        this.ouFilters = new LinkedList<>();
+        this.ouFilters = ouFilters == null ? new LinkedList<>() : new LinkedList<>(ouFilters);
         this.azure = azure;
         this.encryptSuperUserPass();
     }
@@ -228,14 +232,42 @@ public class ActiveDirectoryServer implements java.io.Serializable, JSONString
      * @return
      *      List of OU filters.
      */
-    public List<String> getOUFilters() { return ouFilters; }
+    public List<String> getOUFilters() { return new LinkedList<>(ouFilters); }
     /**
      * Set OU filters
      *
      * @param ouFilters
      *      List of OU filters.
      */
-    public void setOUFilters(List<String> ouFilters) { this.ouFilters = ouFilters; }
+    public void setOUFilters(List<String> ouFilters) { this.ouFilters = ouFilters == null ? new LinkedList<>() : new LinkedList<>(ouFilters); }
+
+    /** @return Backend-assigned identity used to authorize retention of legacy trust. */
+    public String getRecordId() { return recordId; }
+    /** @param value Persisted record identity; validated by the settings boundary. */
+    public void setRecordId(String value) { recordId = value; }
+    /** @return Explicit LDAPS certificate-validation mode. */
+    public String getCertificateValidationMode() { return certificateValidationMode; }
+    /** @param value Explicit LDAPS certificate-validation mode. */
+    public void setCertificateValidationMode(String value) { certificateValidationMode = value; }
+    /** @return Whether to include the Directory Connector public-root catalog. */
+    public boolean getIncludePublicRoots() { return includePublicRoots; }
+    /** @param value Whether to include the public-root catalog. */
+    public void setIncludePublicRoots(boolean value) { includePublicRoots = value; }
+    /** @return A copy of this record's explicitly enrolled trust certificates. */
+    public List<LdapsTrustAnchor> getLdapsTrustAnchors()
+    {
+        List<LdapsTrustAnchor> result = new LinkedList<>();
+        for (LdapsTrustAnchor anchor : ldapsTrustAnchors) result.add(anchor == null ? null : new LdapsTrustAnchor(anchor));
+        return result;
+    }
+    /** @param values Public certificates to retain with this record, copied on input. */
+    public void setLdapsTrustAnchors(List<LdapsTrustAnchor> values)
+    {
+        ldapsTrustAnchors = new LinkedList<>();
+        if (values != null) {
+            for (LdapsTrustAnchor anchor : values) ldapsTrustAnchors.add(anchor == null ? null : new LdapsTrustAnchor(anchor));
+        }
+    }
 
     /**
      * Returns settings as a JSON string.

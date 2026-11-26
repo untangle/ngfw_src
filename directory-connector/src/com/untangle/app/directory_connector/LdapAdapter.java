@@ -3,6 +3,7 @@
  */
 package com.untangle.app.directory_connector;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,8 +76,32 @@ abstract class LdapAdapter
     private static final int DEFAULT_PAGE_SIZE = 1000;
     private static final String DN = "dn=";
     private TrustManager[] trustAllCerts = null;
+    private static final String LDAPS_VALIDATION_DISABLED_FLAG =
+        System.getProperty("uvm.conf.dir") + "/ldaps-validation-disabled-flag";
+    private static boolean observedTrustAllOverride;
 
-    private final Logger logger = LogManager.getLogger(LdapAdapter.class);
+    private static final Logger logger = LogManager.getLogger(LdapAdapter.class);
+
+    /**
+     * Check the support flag on LDAPS connections and status requests, logging observed transitions.
+     * Creating or removing the flag takes effect without restarting UVM or rewriting settings.
+     *
+     * @return True while the explicit Trust-All support flag exists.
+     */
+    static synchronized boolean ldapsValidationDisabled()
+    {
+        boolean active = new File(LDAPS_VALIDATION_DISABLED_FLAG).exists();
+        if (active != observedTrustAllOverride) {
+            if (active) {
+                logger.warn("LDAPS validation BYPASS active: Directory Connector accepts arbitrary server certificates while {} exists",
+                            LDAPS_VALIDATION_DISABLED_FLAG);
+            } else {
+                logger.warn("LDAPS validation BYPASS inactive: new Directory Connector connections use their configured mode");
+            }
+            observedTrustAllOverride = active;
+        }
+        return active;
+    }
 
     /**
      * For subclasses to hold the settings.
@@ -648,8 +673,16 @@ abstract class LdapAdapter
     {
         SSLContext sslCtx = null;
         Hashtable<String, String> ldapEnv = new Hashtable<>(11);
+        boolean trustAllOverride = secure && ldapsValidationDisabled();
 
         if( secure ){
+            // Jira 1 must not let PKI or missing-mode records enter the old Trust-All path.
+            // The support flag permits recognized PKI records without rewriting their trust settings.
+            String mode = getSettings().getCertificateValidationMode();
+            if (!LdapsValidationMode.LEGACY_INSECURE.name().equals(mode) &&
+                !(trustAllOverride && LdapsValidationMode.PKI.name().equals(mode))) {
+                throw new ServiceUnavailableException("PKI LDAPS connections require the validating connection implementation");
+            }
             /**
              * Override certificate authentication to allow any certificate.
              * Yes, to be 100% security minded we should only allow specified certificates.
@@ -708,7 +741,8 @@ abstract class LdapAdapter
         ldapEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
         ldapEnv.put(Context.SECURITY_PRINCIPAL, dn);
         ldapEnv.put(Context.SECURITY_CREDENTIALS, pass);
-        ldapEnv.put("com.sun.jndi.ldap.connect.pool", "true");
+        // Temporary Trust-All connections must not be pooled across override changes.
+        ldapEnv.put("com.sun.jndi.ldap.connect.pool", trustAllOverride ? "false" : "true");
         ldapEnv.put("com.sun.jndi.ldap.connect.timeout", "30000");
         ldapEnv.put("com.sun.jndi.ldap.read.timeout", "30000");
 
