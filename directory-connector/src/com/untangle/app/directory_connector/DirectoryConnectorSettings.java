@@ -12,7 +12,8 @@ import org.json.JSONString;
 @SuppressWarnings("serial")
 public class DirectoryConnectorSettings implements java.io.Serializable, JSONString
 {
-    private int version = 4;
+    public static final int CURRENT_SETTINGS_VERSION = 5;
+    private int version = CURRENT_SETTINGS_VERSION;
 
     private boolean apiEnabled = false;
     private String apiSecretKey = null;
@@ -25,6 +26,12 @@ public class DirectoryConnectorSettings implements java.io.Serializable, JSONStr
      * Constructor with default values.
      */
     public DirectoryConnectorSettings() { }
+
+    /** @return An independent copy including non-AD settings and encrypted credentials. */
+    public DirectoryConnectorSettings copy()
+    {
+        return org.apache.commons.lang3.SerializationUtils.clone(this);
+    }
 
     /**
      * Get active directory settings.

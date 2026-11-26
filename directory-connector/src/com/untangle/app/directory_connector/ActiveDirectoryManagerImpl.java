@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.ServiceUnavailableException;
@@ -59,7 +60,7 @@ public class ActiveDirectoryManagerImpl
      *
      * @param settings  Active Directory settings.
      */
-    public void setSettings( ActiveDirectorySettings settings )
+    void setSettings( ActiveDirectorySettings settings )
     {
         this.currentSettings = settings;
 
@@ -264,7 +265,8 @@ public class ActiveDirectoryManagerImpl
                         "domain='" + testServerSettings.getDomain() + "', " +
                         "ou_filters='" + ouFiltersString + "')");
 
-            tempAdAdapter = new ActiveDirectoryLdapAdapter(testServerSettings);
+            // Candidate tests cannot authorize a new connection with grandfathered Trust-All settings.
+            tempAdAdapter = getAdapterForTest(testServerSettings);
             userCount = tempAdAdapter.listAll().size();
             statusResult = userCount == 0 ? STATUS_RESULTS.WARN_QUERY_NO_USERS : STATUS_RESULTS.PASS;
         } catch (Exception e) {
@@ -287,6 +289,8 @@ public class ActiveDirectoryManagerImpl
             try{
                 status.put("status", statusResult);
                 status.put("userCount", userCount);
+                // The test dialog joins this array even when validation fails before adapter creation.
+                status.put("searchBases", new JSONArray());
                 if(tempAdAdapter != null){
                     status.put("searchBases", tempAdAdapter.getSearchBases());
                     status.put("groupCount", tempAdAdapter.listAllGroups(false).size());
@@ -296,6 +300,49 @@ public class ActiveDirectoryManagerImpl
             }
         }
         return status;
+    }
+
+    /**
+     * Test matching saved legacy endpoints, using a separate adapter for edited credentials.
+     * An empty editor password retains the saved password, including when the username changes.
+     * Other secure candidates must request PKI, never inherit Trust-All from a supplied ID.
+     *
+     * @param candidate Server settings supplied by the Test dialog.
+     * @return An adapter authorized for the candidate's endpoint and credentials.
+     * @throws ServiceUnavailableException If a secure candidate cannot use its requested trust mode.
+     */
+    private ActiveDirectoryLdapAdapter getAdapterForTest(ActiveDirectoryServer candidate)
+        throws ServiceUnavailableException
+    {
+        if (!candidate.getLDAPSecure() || LdapsValidationMode.PKI.name().equals(candidate.getCertificateValidationMode())) {
+            return new ActiveDirectoryLdapAdapter(candidate);
+        }
+        if (LdapsValidationMode.LEGACY_INSECURE.name().equals(candidate.getCertificateValidationMode()) &&
+            candidate.getRecordId() != null) {
+            for (ActiveDirectoryLdapAdapter adapter : this.adAdapters) {
+                ActiveDirectoryServer saved = adapter.getSettings();
+                if (saved.getLDAPSecure() &&
+                    LdapsValidationMode.LEGACY_INSECURE.name().equals(saved.getCertificateValidationMode()) &&
+                    candidate.getRecordId().equals(saved.getRecordId()) &&
+                    Objects.equals(candidate.getLDAPHost(), saved.getLDAPHost()) &&
+                    candidate.getLDAPPort() == saved.getLDAPPort() &&
+                    Objects.equals(candidate.getDomain(), saved.getDomain()) &&
+                    Objects.equals(candidate.getEncrSupUserPass(), saved.getEncrSupUserPass()) &&
+                    candidate.getAzure() == saved.getAzure() &&
+                    candidate.getOUFilters().equals(saved.getOUFilters())) {
+                    if (Objects.equals(candidate.getSuperuser(), saved.getSuperuser()) &&
+                        StringUtils.isEmpty(candidate.getSuperuserPass())) return adapter;
+                    // Test edited credentials without changing or falling back to saved credentials.
+                    ActiveDirectoryServer testSettings = org.apache.commons.lang3.SerializationUtils.clone(saved);
+                    testSettings.setSuperuser(candidate.getSuperuser());
+                    if (StringUtils.isNotEmpty(candidate.getSuperuserPass())) {
+                        testSettings.setSuperuserPass(candidate.getSuperuserPass());
+                    }
+                    return new ActiveDirectoryLdapAdapter(testSettings);
+                }
+            }
+        }
+        throw new ServiceUnavailableException("Directory Test requires PKI certificate validation for new or changed LDAPS settings");
     }
 
     /**

@@ -47,7 +47,8 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     /**
      * Directory Connector settings (mostly for RADIUS and AD)
      */
-    private DirectoryConnectorSettings settings = null;
+    private volatile DirectoryConnectorSettings settings = null;
+    private LdapsPublicRootCatalog publicRootCatalog;
 
     /**
      * The group manager
@@ -110,10 +111,14 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
 
     /**
      * Load settings and perform setting conversions.
+     * Configure managers once, after any required settings write has succeeded.
      */
     @Override
     protected void postInit()
     {
+        publicRootCatalog = LdapsPublicRootCatalog.load();
+        if (!publicRootCatalog.isHealthy()) logger.warn("Directory Connector public-root catalog is unavailable: {}",
+                                                       publicRootCatalog.describe().get("failureCategory"));
         SettingsManager settingsManager = UvmContextFactory.context().settingsManager();
         String appID = this.getAppSettings().getId().toString();
         DirectoryConnectorSettings readSettings = null;
@@ -123,6 +128,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             readSettings = settingsManager.load(DirectoryConnectorSettings.class, settingsFileName);
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to load settings:", e);
+            throw new IllegalStateException("Cannot load Directory Connector settings", e);
         }
 
         /**
@@ -134,6 +140,9 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
         } else {
 
             logger.info("Loading Settings...");
+
+            LdapsSettings.requireSupportedVersion(readSettings);
+            readSettings = readSettings.copy();
 
             boolean writeFlag = false;
 
@@ -175,18 +184,24 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
                 writeFlag = true;
             }
 
+            if (readSettings.getVersion() == 4) {
+                LdapsSettings.migrateV4(readSettings);
+                writeFlag = true;
+            }
+            readSettings = LdapsSettings.normalize(readSettings, null, true);
+
             if (writeFlag == true) {
                 // if any changes were made we need to write the updated settings
-                this.setSettings( readSettings );
+                setEncryptedPassword(readSettings);
+                this.saveAndApplySettings(readSettings);
             } else {
                 // no changes made so use the settings but don't write the file
                 this.settings = readSettings;
+                this.reconfigure();
             }
 
             logger.debug("Settings: " + this.settings.toJSONString());
         }
-
-        this.reconfigure();
     }
 
     /**
@@ -209,7 +224,17 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      */
     public DirectoryConnectorSettings getSettings()
     {
-        return this.settings;
+        DirectoryConnectorSettings current = this.settings;
+        return current == null ? null : current.copy();
+    }
+
+    /** @return Safe startup catalog metadata and the currently observed connection-recovery override state. */
+    public java.util.Map<String, Object> getLdapsPublicRootStatus()
+    {
+        if (publicRootCatalog == null) throw new IllegalStateException("Public-root catalog has not been initialized");
+        java.util.Map<String, Object> status = publicRootCatalog.describe();
+        status.put("overrideActive", LdapAdapter.ldapsValidationDisabled());
+        return status;
     }
 
     /**
@@ -218,19 +243,20 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
      * @param newSettings
      *      New settings to configure.
      */
-    public void setSettings(final DirectoryConnectorSettings newSettings)
+    public synchronized void setSettings(final DirectoryConnectorSettings newSettings)
     {
-        if (newSettings.getActiveDirectorySettings() == null) {
-            throw new IllegalArgumentException("Must provide settings for ActiveDirectory");
-        }
-        if (newSettings.getRadiusSettings() == null) {
-            throw new IllegalArgumentException("Must provide settings for RADIUS");
-        }
-        if (newSettings.getGoogleSettings() == null) {
-            throw new IllegalArgumentException("Must provide settings for Google");
-        }
+        DirectoryConnectorSettings candidate = LdapsSettings.normalize(newSettings, this.settings, false);
+        setEncryptedPassword(candidate);
+        saveAndApplySettings(candidate);
+    }
 
-        setEncryptedPassword(newSettings);
+    /**
+     * Persist a validated candidate before publishing it or reconfiguring managers.
+     *
+     * @param newSettings Validated, independent settings to persist and publish.
+     */
+    private void saveAndApplySettings(DirectoryConnectorSettings newSettings)
+    {
         /**
          * Save the settings
          */
@@ -240,7 +266,7 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
             settingsManager.save( System.getProperty("uvm.settings.dir") + "/" + "directory-connector/" + "settings_" + appID + ".js", newSettings );
         } catch (SettingsManager.SettingsException e) {
             logger.warn("Failed to save settings.", e);
-            return;
+            throw new IllegalStateException("Cannot save Directory Connector settings", e);
         }
 
         /**
@@ -563,12 +589,11 @@ public class DirectoryConnectorApp extends AppBase implements com.untangle.uvm.a
     @Override
     public void initializeSettings()
     {
-        this.settings = new DirectoryConnectorSettings();
-        this.settings.setVersion(2);
-        this.settings.setActiveDirectorySettings(new ActiveDirectorySettings("Administrator", "mypassword", "mydomain.int", "ad_server.mydomain.int", 636, true ));
-        this.settings.setRadiusSettings(new RadiusSettings(false, "1.2.3.4", 1812, 1813, "mysharedsecret", "PAP"));
-        this.settings.setGoogleSettings(new GoogleSettings());
-        setSettings(this.settings);
+        DirectoryConnectorSettings initial = new DirectoryConnectorSettings();
+        initial.setActiveDirectorySettings(new ActiveDirectorySettings());
+        initial.setRadiusSettings(new RadiusSettings(false, "1.2.3.4", 1812, 1813, "mysharedsecret", "PAP"));
+        initial.setGoogleSettings(new GoogleSettings());
+        setSettings(initial);
     }
 
     /**
